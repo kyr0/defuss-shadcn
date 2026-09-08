@@ -628,6 +628,39 @@
                 location.href = href;
                 return;
             }
+            /* Adopt the assets the incoming page declares and this document does
+               not already have. Only <main> is swapped, so the <head> of the page
+               the visitor first loaded is the one that persists for the session —
+               without this, a page reached through the sidebar renders with
+               whatever CSS the *previous* page happened to import, and a component
+               whose stylesheet is missing shows as unstyled markup. Stylesheets
+               are awaited so the swapped-in content never flashes unstyled;
+               component modules are not, since each self-initializes through its
+               own MutationObserver whenever it finishes loading. */
+            var adopted = [];
+            doc.querySelectorAll('link[rel="stylesheet"][href]').forEach(function (link) {
+                var cssHref = link.getAttribute('href');
+                if (document.querySelector('link[rel="stylesheet"][href="' + cssHref + '"]'))
+                    return;
+                var el = document.createElement('link');
+                el.rel = 'stylesheet';
+                el.href = cssHref;
+                adopted.push(new Promise(function (resolve) {
+                    /* resolve on error too — a missing asset must not wedge navigation */
+                    el.addEventListener('load', resolve);
+                    el.addEventListener('error', resolve);
+                }));
+                document.head.appendChild(el);
+            });
+            doc.querySelectorAll('script[type="module"][src]').forEach(function (script) {
+                var jsSrc = script.getAttribute('src');
+                if (document.querySelector('script[type="module"][src="' + jsSrc + '"]'))
+                    return;
+                var el = document.createElement('script');
+                el.type = 'module';
+                el.src = jsSrc;
+                document.head.appendChild(el);
+            });
             var swap = function () {
                 /* Swap main content */
                 oldMain.innerHTML = newMain.innerHTML;
@@ -678,14 +711,20 @@
                not the async VT, so rapid navs (Enter key + section click) can
                stack them. Track the active transition and swap immediately
                (exactly what a skipped VT does anyway) while one is in flight. */
-            if (document.startViewTransition && !docs.__vtActive) {
-                var vt = document.startViewTransition(swap);
-                docs.__vtActive = true;
-                vt.finished.finally(function () { docs.__vtActive = false; });
-            }
-            else {
-                swap();
-            }
+            /* Wait for any newly adopted stylesheet before swapping, so the new
+               markup is never painted before the CSS that styles it. Resolves
+               immediately when the page needed nothing new, which is the common
+               case. */
+            Promise.all(adopted).then(function () {
+                if (document.startViewTransition && !docs.__vtActive) {
+                    var vt = document.startViewTransition(swap);
+                    docs.__vtActive = true;
+                    vt.finished.finally(function () { docs.__vtActive = false; });
+                }
+                else {
+                    swap();
+                }
+            });
         })
             .catch(function () {
             location.href = href;
