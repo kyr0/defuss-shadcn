@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="images/favicon.webp" type="image/webp">
+  <meta name="description" content="Rating component — star rating built on a native radio group, plus a read-only fractional display.">
+  <meta property="og:title" content="Rating — defuss-shadcn">
+  <meta property="og:description" content="Rating component — star rating built on a native radio group, plus a read-only fractional display.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kyr0.github.io/defuss-shadcn/rating.html">
+  <meta property="og:site_name" content="defuss-shadcn">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Rating — defuss-shadcn">
+  <meta name="twitter:description" content="Rating component — star rating built on a native radio group, plus a read-only fractional display.">
+  <title>Rating — defuss-shadcn</title>
+  <script src="js/themes.js"></script>
+  <script src="js/theme-switcher.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/search-index.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/default-semantic-tokens.css">
+  <link rel="stylesheet" href="css/docs-theme.css">
+  <link rel="stylesheet" href="css/docs-utilities.css">
+  <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/button/button.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/card/card.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/badge/badge.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/rating/rating.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/input/input.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/accordion/accordion.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tabs/tabs.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dropdown/dropdown.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toast/toast.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/combobox/combobox.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sheet/sheet.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toggle/toggle.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/icon/icon.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/typography/typography.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/separator/separator.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/label/label.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toggle-group/toggle-group.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/button-group/button-group.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toolbar/toolbar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/textarea/textarea.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/checkbox/checkbox.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/radio/radio.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/switch/switch.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/slider/slider.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/select/select.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/number-input/number-input.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/file-input/file-input.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/color-picker/color-picker.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/date-picker/date-picker.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/form/form.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/avatar/avatar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/image/image.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/statistic/statistic.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/table/table.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/collapsible/collapsible.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/timeline/timeline.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tree-view/tree-view.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/calendar/calendar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/spinner/spinner.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/skeleton/skeleton.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/progress/progress.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/alert/alert.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/alert-dialog/alert-dialog.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/popover/popover.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tooltip/tooltip.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/context-menu/context-menu.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/command/command.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/breadcrumb/breadcrumb.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/pagination/pagination.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/steps/steps.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/navigation-menu/navigation-menu.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/scroll-area/scroll-area.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/carousel/carousel.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sidebar/sidebar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sortable/sortable.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/site-header/site-header.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/hero/hero.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/product-showcase/product-showcase.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/brand-logos/brand-logos.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/feature-details/feature-details.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/testimonials/testimonials.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/stats/stats.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/pricing/pricing.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/blog/blog.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/faq/faq.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/get-in-touch/get-in-touch.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/newsletter/newsletter.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/site-footer/site-footer.css">
+</head>
+<body>
+  <site-header></site-header>
+
+  <div class="flex" style="margin-top: 3.5rem; min-height: calc(100vh - 3.5rem);">
+    <site-nav></site-nav>
+
+    <main style="flex: 1; min-width: 0; max-width: 44rem; padding: 2rem 3.5rem 8rem;">
+      <div class="page-header">
+        <div class="flex items-baseline justify-between mb-1">
+          <p class="text-sm text-muted-foreground" style="font-family:var(--font-mono);">defuss-shadcn / rating</p>
+          <div style="display:flex;align-items:baseline;gap:0.375rem;"><span class="text-xs text-muted-foreground" style="font-family:var(--font-mono);white-space:nowrap;">Built with:</span> <a href="#source-css" class="badge built-with-pill" data-variant="outline">CSS</a></div>
+        </div>
+        <h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">Rating<span class="type-badge" data-type="MOL" title="Molecule">MOL</span></h1>
+        <p class="text-muted-foreground leading-relaxed mb-6">
+          A score out of five. The interactive form is a native radio group styled as stars, so keyboard
+          support, exclusivity and form submission are the browser's. No JavaScript required.
+        </p>
+        <!-- Component Skill -->
+        <details style="margin-bottom:2rem;border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;">
+          <summary style="padding:0.875rem 1.25rem;background:var(--muted);cursor:pointer;font-size:0.8125rem;font-weight:600;font-family:var(--font-mono);color:var(--muted-foreground);list-style:none;display:flex;align-items:center;gap:0.5rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 200ms;"><path d="m9 18 6-6-6-6"/></svg>
+            Component Skill — <span data-spec-href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/rating/component-skill.md" style="text-decoration:underline;text-underline-offset:3px;">components/rating/component-skill.md</span>
+          </summary>
+          <div style="padding:1.5rem;font-size:0.875rem;line-height:1.85;">
+            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Native basis</p>
+            <p class="text-muted-foreground" style="margin:0 0 1.25rem;"><code>&lt;input type=&quot;radio&quot;&gt;</code> elements sharing one <code>name</code> inside a <code>&lt;fieldset&gt;</code>. CSS draws a star over each radio; the radio keeps focus, keyboard and form behaviour.</p>
+
+            <p style="margin:0 0 0.625rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Web Platform APIs</p>
+            <div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;">
+              <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio" target="_blank" rel="noopener" title="native radio with group exclusivity via name" class="api-pill"><code>&lt;input type=&quot;radio&quot;&gt;</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset" target="_blank" rel="noopener" title="groups the radios and propagates disabled" class="api-pill"><code>&lt;fieldset&gt;</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" target="_blank" rel="noopener" title="fills every star up to the checked or hovered one" class="api-pill"><code>:has()</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:checked" target="_blank" rel="noopener" title="matches the selected radio" class="api-pill"><code>:checked</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible" target="_blank" rel="noopener" title="keyboard-only focus ring" class="api-pill"><code>:focus-visible</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/hover" target="_blank" rel="noopener" title="hover preview only where a pointer exists" class="api-pill"><code>@media (hover)</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+            </div>
+
+            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Classes</p>
+            <div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;">
+              <code>.rating</code>
+              <code>.rating-item</code>
+              <code>.rating-input</code>
+              <code>.rating-value</code>
+            </div>
+
+            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Variants</p>
+            <div style="display:grid;grid-template-columns:auto 1fr;gap:0.25rem 1rem;margin-bottom:1.25rem;">
+              <code>data-readonly</code><span class="text-muted-foreground">Display-only, fractional value via <code>--rating-value</code></span>
+              <code>disabled</code><span class="text-muted-foreground">On the <code>&lt;fieldset&gt;</code> — propagates to every radio</span>
+            </div>
+
+            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Sizes (data-size)</p>
+            <div style="display:grid;grid-template-columns:auto 1fr;gap:0.25rem 1rem;margin-bottom:1.25rem;">
+              <code>sm</code><span class="text-muted-foreground">1rem stars</span>
+              <code>lg</code><span class="text-muted-foreground">1.75rem stars</span>
+            </div>
+
+            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Custom properties</p>
+            <div style="display:grid;grid-template-columns:auto 1fr;gap:0.25rem 1rem;margin-bottom:1.25rem;">
+              <code>--rating-color</code><span class="text-muted-foreground">Filled star — amber by default</span>
+              <code>--rating-empty</code><span class="text-muted-foreground">Unfilled star</span>
+              <code>--rating-size</code><span class="text-muted-foreground">Star size (set by <code>data-size</code>)</span>
+            </div>
+
+            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Accessibility</p>
+            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Name the group with <code>aria-label</code> on <code>.rating</code></p>
+            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Give every radio an <code>aria-label</code> — &quot;1 star&quot;, &quot;2 stars&quot;, …</p>
+            <p class="text-muted-foreground" style="margin:0 0 0;">• The read-only form is <code>role=&quot;img&quot;</code> with the value in its <code>aria-label</code></p>
+          </div>
+        </details>
+      </div>
+
+        <!-- Default -->
+        <p class="text-sm font-medium mb-2 mt-6">Default</p>
+        <p class="text-xs text-muted-foreground mb-3">A native radio group. Click a star, or Tab to it and use the arrow keys.</p>
+        <div class="preview">
+          <fieldset class="rating" aria-label="Rate this product">
+            <label class="rating-item">
+              <input class="rating-input" type="radio" name="demo-score" value="1" aria-label="1 star">
+            </label>
+            <label class="rating-item">
+              <input class="rating-input" type="radio" name="demo-score" value="2" aria-label="2 stars">
+            </label>
+            <label class="rating-item">
+              <input class="rating-input" type="radio" name="demo-score" value="3" aria-label="3 stars">
+            </label>
+            <label class="rating-item">
+              <input class="rating-input" type="radio" name="demo-score" value="4" aria-label="4 stars">
+            </label>
+            <label class="rating-item">
+              <input class="rating-input" type="radio" name="demo-score" value="5" aria-label="5 stars">
+            </label>
+          </fieldset>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;fieldset class=&quot;rating&quot; aria-label=&quot;Rate this product&quot;&gt;
+  &lt;label class=&quot;rating-item&quot;&gt;
+    &lt;input class=&quot;rating-input&quot; type=&quot;radio&quot; name=&quot;score&quot; value=&quot;1&quot; aria-label=&quot;1 star&quot;&gt;
+  &lt;/label&gt;
+  &lt;!-- …one .rating-item per star… --&gt;
+&lt;/fieldset&gt;</code></pre>
+        </div>
+
+        <!-- Sizes -->
+        <p class="text-sm font-medium mb-2 mt-8">Sizes</p>
+        <p class="text-xs text-muted-foreground mb-3">Set <code>data-size</code> on the group.</p>
+        <div class="preview">
+          <div style="display:flex;flex-direction:column;gap:1rem;align-items:flex-start;">
+            <fieldset class="rating" data-size="sm" aria-label="Small rating">
+            <label class="rating-item">
+              <input class="rating-input" type="radio" name="demo-sm" value="1" aria-label="1 star">
+            </label>
+            <label class="rating-item">
+              <input class="rating-input" type="radio" name="demo-sm" value="2" aria-label="2 stars">
+            </label>
+            <label class="rating-item">
+              <input class="rating-input" type="radio" name="demo-sm" value="3" aria-label="3 stars" checked>
+            </label>
+            <label class="rating-item">
+              <input class="rating-input" type="radio" name="demo-sm" value="4" aria-label="4 stars">
+            </label>
+            <label class="rating-item">
+              <input class="rating-input" type="radio" name="demo-sm" value="5" aria-label="5 stars">
+            </label>
+            </fieldset>
+            <fieldset class="rating" aria-label="Default rating">
+            <label class="rating-item">
+              <input class="rating-input" type="radio" name="demo-md" value="1" aria-label="1 star">
+            </label>
+            <label class="rating-item">
+              <input class="rating-input" type="radio" name="demo-md" value="2" aria-label="2 stars">
+            </label>
+            <label class="rating-item">
+              <input class="rating-input" type="radio" name="demo-md" value="3" aria-label="3 stars" checked>
+            </label>
+            <label class="rating-item">
+              <input class="rating-input" type="radio" name="demo-md" value="4" aria-label="4 stars">
+            </label>
+            <label class="rating-item">
+              <input class="rating-input" type="radio" name="demo-md" value="5" aria-label="5 stars">
+            </label>
+            </fieldset>
+            <fieldset class="rating" data-size="lg" aria-label="Large rating">
+            <label class="rating-item">
+              <input class="rating-input" type="radio" name="demo-lg" value="1" aria-label="1 star">
+            </label>
+            <label class="rating-item">
+              <input class="rating-input" type="radio" name="demo-lg" value="2" aria-label="2 stars">
+            </label>
+            <label class="rating-item">
+              <input class="rating-input" type="radio" name="demo-lg" value="3" aria-label="3 stars" checked>
+            </label>
+            <label class="rating-item">
+              <input class="rating-input" type="radio" name="demo-lg" value="4" aria-label="4 stars">
+            </label>
+            <label class="rating-item">
+              <input class="rating-input" type="radio" name="demo-lg" value="5" aria-label="5 stars">
+            </label>
+            </fieldset>
+          </div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;fieldset class=&quot;rating&quot; data-size=&quot;sm&quot; aria-label=&quot;Small rating&quot;&gt;…&lt;/fieldset&gt;
+&lt;fieldset class=&quot;rating&quot; aria-label=&quot;Default rating&quot;&gt;…&lt;/fieldset&gt;
+&lt;fieldset class=&quot;rating&quot; data-size=&quot;lg&quot; aria-label=&quot;Large rating&quot;&gt;…&lt;/fieldset&gt;</code></pre>
+        </div>
+
+        <!-- Read-only -->
+        <p class="text-sm font-medium mb-2 mt-8">Read-only</p>
+        <p class="text-xs text-muted-foreground mb-3">A value you display rather than collect. <code>--rating-value</code> takes fractions, so half stars need no extra markup.</p>
+        <div class="preview">
+          <div style="display:flex;flex-direction:column;gap:0.75rem;align-items:flex-start;">
+            <div style="display:flex;align-items:center;">
+              <div class="rating" data-readonly style="--rating-value:5" role="img" aria-label="Rated 5 out of 5"></div>
+              <span class="rating-value">5.0</span>
+            </div>
+            <div style="display:flex;align-items:center;">
+              <div class="rating" data-readonly style="--rating-value:4.2" role="img" aria-label="Rated 4.2 out of 5"></div>
+              <span class="rating-value">4.2 (128 reviews)</span>
+            </div>
+            <div style="display:flex;align-items:center;">
+              <div class="rating" data-readonly style="--rating-value:3.5" role="img" aria-label="Rated 3.5 out of 5"></div>
+              <span class="rating-value">3.5</span>
+            </div>
+            <div style="display:flex;align-items:center;">
+              <div class="rating" data-readonly style="--rating-value:0" role="img" aria-label="Not yet rated"></div>
+              <span class="rating-value">No ratings yet</span>
+            </div>
+          </div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;div class=&quot;rating&quot; data-readonly style=&quot;--rating-value:4.2&quot;
+     role=&quot;img&quot; aria-label=&quot;Rated 4.2 out of 5&quot;&gt;&lt;/div&gt;
+&lt;span class=&quot;rating-value&quot;&gt;4.2 (128 reviews)&lt;/span&gt;</code></pre>
+        </div>
+
+        <!-- Disabled -->
+        <p class="text-sm font-medium mb-2 mt-8">Disabled</p>
+        <p class="text-xs text-muted-foreground mb-3">Put <code>disabled</code> on the <code>&lt;fieldset&gt;</code> — it propagates to every radio natively.</p>
+        <div class="preview">
+          <fieldset class="rating" disabled aria-label="Rating (not editable)">
+            <label class="rating-item">
+              <input class="rating-input" type="radio" name="demo-disabled" value="1" aria-label="1 star" disabled>
+            </label>
+            <label class="rating-item">
+              <input class="rating-input" type="radio" name="demo-disabled" value="2" aria-label="2 stars" disabled>
+            </label>
+            <label class="rating-item">
+              <input class="rating-input" type="radio" name="demo-disabled" value="3" aria-label="3 stars" disabled>
+            </label>
+            <label class="rating-item">
+              <input class="rating-input" type="radio" name="demo-disabled" value="4" aria-label="4 stars" checked disabled>
+            </label>
+            <label class="rating-item">
+              <input class="rating-input" type="radio" name="demo-disabled" value="5" aria-label="5 stars" disabled>
+            </label>
+          </fieldset>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;fieldset class=&quot;rating&quot; disabled aria-label=&quot;Rating (not editable)&quot;&gt;
+  &lt;label class=&quot;rating-item&quot;&gt;
+    &lt;input class=&quot;rating-input&quot; type=&quot;radio&quot; name=&quot;locked&quot; value=&quot;1&quot; aria-label=&quot;1 star&quot; disabled&gt;
+  &lt;/label&gt;
+  …
+&lt;/fieldset&gt;</code></pre>
+        </div>
+
+        <!-- Custom colour -->
+        <p class="text-sm font-medium mb-2 mt-8">Custom Colour</p>
+        <p class="text-xs text-muted-foreground mb-3">Amber has no token in the tweakcn shape, so the fill is a local custom property. Override <code>--rating-color</code> per instance.</p>
+        <div class="preview">
+          <div style="display:flex;flex-direction:column;gap:1rem;align-items:flex-start;">
+            <div class="rating" data-readonly style="--rating-value:4;--rating-color:var(--primary);" role="img" aria-label="Rated 4 out of 5"></div>
+            <div class="rating" data-readonly style="--rating-value:4;--rating-color:var(--destructive);" role="img" aria-label="Rated 4 out of 5"></div>
+          </div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;div class=&quot;rating&quot; data-readonly
+     style=&quot;--rating-value:4;--rating-color:var(--primary);&quot;
+     role=&quot;img&quot; aria-label=&quot;Rated 4 out of 5&quot;&gt;&lt;/div&gt;</code></pre>
+        </div>
+
+        <!-- In a card -->
+        <p class="text-sm font-medium mb-2 mt-8">In a Card</p>
+        <p class="text-xs text-muted-foreground mb-3">Read-only rating in a product summary.</p>
+        <div class="preview" style="justify-content:center;">
+          <div class="card" style="max-width:22rem;width:100%;">
+            <div class="card-header">
+              <h3 class="card-title">Ergonomic Keyboard</h3>
+              <p class="card-description">Mechanical, hot-swappable, low profile.</p>
+            </div>
+            <div class="card-content" style="display:flex;align-items:center;">
+              <div class="rating" data-readonly data-size="sm" style="--rating-value:4.5" role="img" aria-label="Rated 4.5 out of 5"></div>
+              <span class="rating-value">4.5 · 312 reviews</span>
+            </div>
+          </div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;div class=&quot;card-content&quot; style=&quot;display:flex;align-items:center;&quot;&gt;
+  &lt;div class=&quot;rating&quot; data-readonly data-size=&quot;sm&quot; style=&quot;--rating-value:4.5&quot;
+       role=&quot;img&quot; aria-label=&quot;Rated 4.5 out of 5&quot;&gt;&lt;/div&gt;
+  &lt;span class=&quot;rating-value&quot;&gt;4.5 · 312 reviews&lt;/span&gt;
+&lt;/div&gt;</code></pre>
+        </div>
+
+        <!-- States -->
+        <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:3rem 0 0.375rem;">States</h2>
+        <p class="text-muted-foreground text-sm mb-4">The rating is CSS-only, so it has a single state: <code>default</code>. The current value lives in the checked radio, exactly as in any radio group — read it with <code>form.elements.score.value</code>.</p>
+
+        <!-- -- CSS --------------------------------------- -->
+        <section style="margin-top:3rem;" id="source-css">
+          <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;">CSS <a href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/rating/rating.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2>
+          <p class="text-muted-foreground text-sm mb-4">Styles for the rating component. Uses design tokens for colors, spacing, and radius.</p>
+          <div style="position:relative;margin-top:0.5rem;">
+            <button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button>
+            <pre><code class="language-scss">/* -- Rating component ------------------------------------------- */
+/* Star rating. Interactive form is a native radio group (no JS);   */
+/* the read-only form is a display-only fraction of five stars.     */
+
+@layer components {
+  .rating {
+    /* Local knobs — not theme tokens: there is no amber in the tweakcn
+       shape, and a rating's fill colour is a per-instance decision
+       (stars amber, hearts destructive, …). Override inline or in a
+       wrapper rule; both forms below read them. */
+    --rating-color: #f59e0b;
+    --rating-empty: var(--border);
+    --rating-size: 1.25rem;
+
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.125rem;
+    line-height: 1;
+
+    &amp;[data-size=&quot;sm&quot;] {
+      --rating-size: 1rem;
+    }
+
+    &amp;[data-size=&quot;lg&quot;] {
+      --rating-size: 1.75rem;
+    }
+  }
+
+  /* -- Interactive form (radio group) ------------------------- */
+  .rating-item {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    line-height: 1;
+
+    &amp;::before {
+      content: &quot;★&quot;;
+      font-size: var(--rating-size);
+      color: var(--rating-empty);
+      transition: color 150ms, scale 150ms;
+    }
+  }
+
+  /* The radio stays in the accessibility tree and keeps keyboard support —
+     it is only visually replaced by the star drawn above. */
+  .rating-input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  /* Filled: this star, and every star before the checked one. */
+  .rating-item:has(.rating-input:checked)::before,
+  .rating-item:has(~ .rating-item .rating-input:checked)::before {
+    color: var(--rating-color);
+  }
+
+  /* Hover preview wins over the current value while the pointer is on the
+     group: reset all, then fill up to the hovered star. Specificity is
+     deliberate — each rule must outrank the checked rules above.
+     A disabled group is excluded: previewing a value there would promise a
+     choice the control cannot accept. */
+  @media (hover: hover) {
+    .rating:not(:has(.rating-input:disabled)):has(.rating-item:hover) .rating-item::before {
+      color: var(--rating-empty);
+    }
+
+    .rating:not(:has(.rating-input:disabled)):has(.rating-item:hover) .rating-item:hover::before,
+    .rating:not(:has(.rating-input:disabled)):has(.rating-item:hover) .rating-item:has(~ .rating-item:hover)::before {
+      color: var(--rating-color);
+      scale: 1.1;
+    }
+  }
+
+  .rating-item:has(.rating-input:focus-visible) {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  /* Disabled — native &lt;fieldset disabled&gt; propagates to every radio. */
+  .rating:has(.rating-input:disabled) {
+    opacity: 0.5;
+
+    /* the star and the radio stretched over it must agree — a hand on one and
+       &quot;no entry&quot; on the other invites a click the control cannot take */
+    &amp; .rating-item,
+    &amp; .rating-input {
+      cursor: not-allowed;
+    }
+  }
+
+  .rating[data-readonly] .rating-item {
+    cursor: default;
+  }
+
+  /* -- Read-only form (fractional display) -------------------- */
+  /* Two layers of five stars: empty underneath, filled on top clipped to
+     the value — so 3.5 renders a half star with no extra markup. */
+  .rating[data-readonly] {
+    position: relative;
+    display: inline-block;
+    font-size: var(--rating-size);
+    letter-spacing: 0.125rem;
+
+    &amp;::before,
+    &amp;::after {
+      content: &quot;★★★★★&quot;;
+      line-height: 1;
+    }
+
+    &amp;::before {
+      color: var(--rating-empty);
+    }
+
+    &amp;::after {
+      position: absolute;
+      inset-block: 0;
+      inset-inline-start: 0;
+      width: calc(var(--rating-value, 0) / 5 * 100%);
+      overflow: hidden;
+      white-space: nowrap;
+      color: var(--rating-color);
+    }
+  }
+
+  /* -- Label beside the stars --------------------------------- */
+  .rating-value {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+    margin-inline-start: 0.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .rating,
+    .rating *,
+    .rating::before,
+    .rating::after,
+    .rating *::before,
+    .rating *::after,
+    .rating-item,
+    .rating-item *,
+    .rating-item::before,
+    .rating-item::after {
+      transition: none;
+      animation: none;
+      scale: none;
+    }
+  }
+}
+
+@media (prefers-contrast: more) {
+  @layer components {
+    .rating {
+      --rating-empty: var(--muted-foreground);
+    }
+
+    .rating-item:has(.rating-input:focus-visible) {
+      outline-width: 3px;
+    }
+  }
+}
+
+@media (forced-colors: active) {
+  @layer components {
+    .rating {
+      --rating-color: Highlight;
+      --rating-empty: GrayText;
+
+      &amp;:has(.rating-input:disabled) {
+        --rating-color: GrayText;
+      }
+    }
+
+    .rating-item:has(.rating-input:focus-visible) {
+      outline-color: Highlight;
+    }
+  }
+}</code></pre>
+          </div>
+        </section>
+
+
+    </main>
+  </div>
+
+  <script src="js/site.js" defer></script>
+  <script type="module" src="js/shiki-highlight.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/accordion/accordion.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/combobox/combobox.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dropdown/dropdown.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sheet/sheet.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tabs/tabs.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toast/toast.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toggle/toggle.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toggle-group/toggle-group.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toolbar/toolbar.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/number-input/number-input.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/color-picker/color-picker.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/avatar/avatar.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/image/image.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tree-view/tree-view.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/calendar/calendar.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/alert-dialog/alert-dialog.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/popover/popover.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tooltip/tooltip.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/context-menu/context-menu.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/command/command.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/navigation-menu/navigation-menu.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sidebar/sidebar.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/carousel/carousel.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/slider/slider.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sortable/sortable.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/product-showcase/product-showcase.js"></script>
+  <script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script>
+  <script>globalThis.lucide?.createIcons();</script>
+</body>
+</html>

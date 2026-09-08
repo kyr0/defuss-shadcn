@@ -11,7 +11,7 @@
 
 **A UI component system that scales with _local_ AI.** Themeable components built on semantic HTML, modern CSS, and vanilla JavaScript. No framework. No build step for consumers — `dist/` is committed and ready to use as-is. The simplest possible foundation for AI-driven prototyping.
 
-41 of 68 components need no JavaScript — native HTML and modern CSS cover them entirely.
+42 of 69 components need no JavaScript — native HTML and modern CSS cover them entirely.
 
 The set includes 13 marketing blocks (Site Header, Hero, Pricing, Testimonials, Blog, Footer, …) — full-page sections composed from the same tokens and primitives, all CSS-only.
 

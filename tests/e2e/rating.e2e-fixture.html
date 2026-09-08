@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rating e2e fixture</title>
+  <link rel="stylesheet" href="/dist/theme/default-semantic-tokens.css">
+  <link rel="stylesheet" href="/dist/components/rating/rating.css">
+  <style>
+    /* plain block flow: a flex body would blockify the components and change
+       their computed display, which is part of what these checks assert */
+    /* spacing only — never set `display` here: a flex body blockifies its
+       children and a `display` rule would overwrite the very property the
+       checks below assert the component sets for itself */
+    body { font-family: system-ui, sans-serif; padding: 2rem; }
+    body > * { margin: 0 1rem 1.5rem 0; }
+  </style>
+</head>
+<body>
+  <!-- default interactive group, nothing chosen -->
+  <fieldset class="rating" id="r-default" aria-label="Default rating">
+    <label class="rating-item" id="r-star-1"><input class="rating-input" type="radio" name="d" value="1" aria-label="1 star"></label>
+    <label class="rating-item" id="r-star-2"><input class="rating-input" type="radio" name="d" value="2" aria-label="2 stars"></label>
+    <label class="rating-item" id="r-star-3"><input class="rating-input" type="radio" name="d" value="3" aria-label="3 stars"></label>
+    <label class="rating-item" id="r-star-4"><input class="rating-input" type="radio" name="d" value="4" aria-label="4 stars"></label>
+    <label class="rating-item" id="r-star-5"><input class="rating-input" type="radio" name="d" value="5" aria-label="5 stars"></label>
+  </fieldset>
+
+  <!-- checked group: value 3, so stars 1-3 fill and 4-5 stay empty -->
+  <fieldset class="rating" id="r-checked" aria-label="Checked rating">
+    <label class="rating-item" id="r-checked-1"><input class="rating-input" type="radio" name="c" value="1" aria-label="1 star"></label>
+    <label class="rating-item" id="r-checked-2"><input class="rating-input" type="radio" name="c" value="2" aria-label="2 stars"></label>
+    <label class="rating-item" id="r-checked-3"><input class="rating-input" type="radio" name="c" value="3" aria-label="3 stars" checked></label>
+    <label class="rating-item" id="r-checked-4"><input class="rating-input" type="radio" name="c" value="4" aria-label="4 stars"></label>
+    <label class="rating-item" id="r-checked-5"><input class="rating-input" type="radio" name="c" value="5" aria-label="5 stars"></label>
+  </fieldset>
+
+  <!-- sizes -->
+  <fieldset class="rating" id="r-sm" data-size="sm" aria-label="Small rating">
+    <label class="rating-item" id="r-sm-1"><input class="rating-input" type="radio" name="s" value="1" aria-label="1 star"></label>
+  </fieldset>
+  <fieldset class="rating" id="r-md" aria-label="Default size rating">
+    <label class="rating-item" id="r-md-1"><input class="rating-input" type="radio" name="m" value="1" aria-label="1 star"></label>
+  </fieldset>
+  <fieldset class="rating" id="r-lg" data-size="lg" aria-label="Large rating">
+    <label class="rating-item" id="r-lg-1"><input class="rating-input" type="radio" name="l" value="1" aria-label="1 star"></label>
+  </fieldset>
+
+  <!-- disabled: fieldset propagates to every radio -->
+  <fieldset class="rating" id="r-disabled" disabled aria-label="Disabled rating">
+    <label class="rating-item" id="r-disabled-1"><input class="rating-input" type="radio" name="x" value="1" aria-label="1 star" disabled></label>
+    <label class="rating-item" id="r-disabled-2"><input class="rating-input" type="radio" name="x" value="2" aria-label="2 stars" disabled></label>
+  </fieldset>
+
+  <!-- read-only display, including a fractional value and a custom colour -->
+  <div class="rating" id="r-readonly" data-readonly style="--rating-value:4" role="img" aria-label="Rated 4 out of 5"></div>
+  <div class="rating" id="r-readonly-half" data-readonly style="--rating-value:3.5" role="img" aria-label="Rated 3.5 out of 5"></div>
+  <div class="rating" id="r-readonly-zero" data-readonly style="--rating-value:0" role="img" aria-label="Not yet rated"></div>
+  <div class="rating" id="r-readonly-custom" data-readonly style="--rating-value:4;--rating-color:var(--primary);" role="img" aria-label="Rated 4 out of 5"></div>
+  <div class="rating" id="r-readonly-sm" data-readonly data-size="sm" style="--rating-value:4.5" role="img" aria-label="Rated 4.5 out of 5"></div>
+
+  <span class="rating-value" id="r-value">4.2 (128 reviews)</span>
+</body>
+</html>

@@ -1,0 +1,187 @@
+/* -- Rating component ------------------------------------------- */
+/* Star rating. Interactive form is a native radio group (no JS);   */
+/* the read-only form is a display-only fraction of five stars.     */
+
+@layer components {
+  .rating {
+    /* Local knobs — not theme tokens: there is no amber in the tweakcn
+       shape, and a rating's fill colour is a per-instance decision
+       (stars amber, hearts destructive, …). Override inline or in a
+       wrapper rule; both forms below read them. */
+    --rating-color: #f59e0b;
+    --rating-empty: var(--border);
+    --rating-size: 1.25rem;
+
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.125rem;
+    line-height: 1;
+
+    &[data-size="sm"] {
+      --rating-size: 1rem;
+    }
+
+    &[data-size="lg"] {
+      --rating-size: 1.75rem;
+    }
+  }
+
+  /* -- Interactive form (radio group) ------------------------- */
+  .rating-item {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    line-height: 1;
+
+    &::before {
+      content: "★";
+      font-size: var(--rating-size);
+      color: var(--rating-empty);
+      transition: color 150ms, scale 150ms;
+    }
+  }
+
+  /* The radio stays in the accessibility tree and keeps keyboard support —
+     it is only visually replaced by the star drawn above. */
+  .rating-input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  /* Filled: this star, and every star before the checked one. */
+  .rating-item:has(.rating-input:checked)::before,
+  .rating-item:has(~ .rating-item .rating-input:checked)::before {
+    color: var(--rating-color);
+  }
+
+  /* Hover preview wins over the current value while the pointer is on the
+     group: reset all, then fill up to the hovered star. Specificity is
+     deliberate — each rule must outrank the checked rules above.
+     A disabled group is excluded: previewing a value there would promise a
+     choice the control cannot accept. */
+  @media (hover: hover) {
+    .rating:not(:has(.rating-input:disabled)):has(.rating-item:hover) .rating-item::before {
+      color: var(--rating-empty);
+    }
+
+    .rating:not(:has(.rating-input:disabled)):has(.rating-item:hover) .rating-item:hover::before,
+    .rating:not(:has(.rating-input:disabled)):has(.rating-item:hover) .rating-item:has(~ .rating-item:hover)::before {
+      color: var(--rating-color);
+      scale: 1.1;
+    }
+  }
+
+  .rating-item:has(.rating-input:focus-visible) {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  /* Disabled — native <fieldset disabled> propagates to every radio. */
+  .rating:has(.rating-input:disabled) {
+    opacity: 0.5;
+
+    /* the star and the radio stretched over it must agree — a hand on one and
+       "no entry" on the other invites a click the control cannot take */
+    & .rating-item,
+    & .rating-input {
+      cursor: not-allowed;
+    }
+  }
+
+  .rating[data-readonly] .rating-item {
+    cursor: default;
+  }
+
+  /* -- Read-only form (fractional display) -------------------- */
+  /* Two layers of five stars: empty underneath, filled on top clipped to
+     the value — so 3.5 renders a half star with no extra markup. */
+  .rating[data-readonly] {
+    position: relative;
+    display: inline-block;
+    font-size: var(--rating-size);
+    letter-spacing: 0.125rem;
+
+    &::before,
+    &::after {
+      content: "★★★★★";
+      line-height: 1;
+    }
+
+    &::before {
+      color: var(--rating-empty);
+    }
+
+    &::after {
+      position: absolute;
+      inset-block: 0;
+      inset-inline-start: 0;
+      width: calc(var(--rating-value, 0) / 5 * 100%);
+      overflow: hidden;
+      white-space: nowrap;
+      color: var(--rating-color);
+    }
+  }
+
+  /* -- Label beside the stars --------------------------------- */
+  .rating-value {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+    margin-inline-start: 0.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .rating,
+    .rating *,
+    .rating::before,
+    .rating::after,
+    .rating *::before,
+    .rating *::after,
+    .rating-item,
+    .rating-item *,
+    .rating-item::before,
+    .rating-item::after {
+      transition: none;
+      animation: none;
+      scale: none;
+    }
+  }
+}
+
+@media (prefers-contrast: more) {
+  @layer components {
+    .rating {
+      --rating-empty: var(--muted-foreground);
+    }
+
+    .rating-item:has(.rating-input:focus-visible) {
+      outline-width: 3px;
+    }
+  }
+}
+
+@media (forced-colors: active) {
+  @layer components {
+    .rating {
+      --rating-color: Highlight;
+      --rating-empty: GrayText;
+
+      &:has(.rating-input:disabled) {
+        --rating-color: GrayText;
+      }
+    }
+
+    .rating-item:has(.rating-input:focus-visible) {
+      outline-color: Highlight;
+    }
+  }
+}

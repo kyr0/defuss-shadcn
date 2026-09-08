@@ -473,6 +473,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/radio.png
 **Skill:** [components/radio/component-skill.md](components/radio/component-skill.md)
 
+## Rating
+
+**Type:** MOL
+**Why:** Native radio group styled as stars — keyboard, form submission and exclusivity are the browser's, so no JavaScript.
+**When:** Collecting or displaying a score out of five — reviews, feedback, quality scores. Use radio for a general small choice set.
+**Files:** dist/components/rating/rating.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/rating.png
+**Skill:** [components/rating/component-skill.md](components/rating/component-skill.md)
+
 ## Scroll Area
 
 **Type:** ATM
