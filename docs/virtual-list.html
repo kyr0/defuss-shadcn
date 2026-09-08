@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="images/favicon.webp" type="image/webp">
+  <meta name="description" content="Virtual List component — windowed list that recycles row elements, so ten rows and ten million cost the same.">
+  <meta property="og:title" content="Virtual List — defuss-shadcn">
+  <meta property="og:description" content="Virtual List component — windowed list that recycles row elements, so ten rows and ten million cost the same.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kyr0.github.io/defuss-shadcn/virtual-list.html">
+  <meta property="og:site_name" content="defuss-shadcn">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Virtual List — defuss-shadcn">
+  <meta name="twitter:description" content="Virtual List component — windowed list that recycles row elements, so ten rows and ten million cost the same.">
+  <title>Virtual List — defuss-shadcn</title>
+  <script src="js/themes.js"></script>
+  <script src="js/theme-switcher.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/search-index.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/default-semantic-tokens.css">
+  <link rel="stylesheet" href="css/docs-theme.css">
+  <link rel="stylesheet" href="css/docs-utilities.css">
+  <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/button/button.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/card/card.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/badge/badge.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/virtual-list/virtual-list.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/input/input.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/accordion/accordion.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tabs/tabs.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dropdown/dropdown.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toast/toast.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/combobox/combobox.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sheet/sheet.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toggle/toggle.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/icon/icon.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/typography/typography.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/separator/separator.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/label/label.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toggle-group/toggle-group.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/button-group/button-group.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toolbar/toolbar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/textarea/textarea.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/checkbox/checkbox.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/radio/radio.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/switch/switch.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/slider/slider.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/select/select.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/number-input/number-input.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/file-input/file-input.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/color-picker/color-picker.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/date-picker/date-picker.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/form/form.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/avatar/avatar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/image/image.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/statistic/statistic.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/table/table.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/collapsible/collapsible.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/timeline/timeline.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tree-view/tree-view.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/calendar/calendar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/spinner/spinner.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/skeleton/skeleton.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/progress/progress.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/alert/alert.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/alert-dialog/alert-dialog.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/popover/popover.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tooltip/tooltip.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/context-menu/context-menu.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/command/command.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/breadcrumb/breadcrumb.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/pagination/pagination.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/steps/steps.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/navigation-menu/navigation-menu.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/scroll-area/scroll-area.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/carousel/carousel.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sidebar/sidebar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sortable/sortable.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/site-header/site-header.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/hero/hero.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/product-showcase/product-showcase.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/brand-logos/brand-logos.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/feature-details/feature-details.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/testimonials/testimonials.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/stats/stats.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/pricing/pricing.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/blog/blog.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/faq/faq.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/get-in-touch/get-in-touch.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/newsletter/newsletter.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/site-footer/site-footer.css">
+</head>
+<body>
+  <site-header></site-header>
+
+  <div class="flex" style="margin-top: 3.5rem; min-height: calc(100vh - 3.5rem);">
+    <site-nav></site-nav>
+
+    <main style="flex: 1; min-width: 0; max-width: 44rem; padding: 2rem 3.5rem 8rem;">
+      <div class="page-header">
+        <div class="flex items-baseline justify-between mb-1">
+          <p class="text-sm text-muted-foreground" style="font-family:var(--font-mono);">defuss-shadcn / virtual-list</p>
+          <div style="display:flex;align-items:baseline;gap:0.375rem;"><span class="text-xs text-muted-foreground" style="font-family:var(--font-mono);white-space:nowrap;">Built with:</span> <a href="#source-css" class="badge built-with-pill" data-variant="outline">CSS</a> <a href="#source-js" class="badge built-with-pill" data-variant="outline">JS</a></div>
+        </div>
+        <h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">Virtual List<span class="type-badge" data-type="ATM" title="Atom">ATM</span></h1>
+        <p class="text-muted-foreground leading-relaxed mb-6">
+          A list too long to render. Only the rows on screen exist in the DOM and their elements are
+          recycled as you scroll, so ten rows and ten million cost the same.
+        </p>
+        <!-- Component Skill -->
+        <details style="margin-bottom:2rem;border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;">
+          <summary style="padding:0.875rem 1.25rem;background:var(--muted);cursor:pointer;font-size:0.8125rem;font-weight:600;font-family:var(--font-mono);color:var(--muted-foreground);list-style:none;display:flex;align-items:center;gap:0.5rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 200ms;"><path d="m9 18 6-6-6-6"/></svg>
+            Component Skill — <span data-spec-href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/virtual-list/component-skill.md" style="text-decoration:underline;text-underline-offset:3px;">components/virtual-list/component-skill.md</span>
+          </summary>
+          <div style="padding:1.5rem;font-size:0.875rem;line-height:1.85;">
+            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Native basis</p>
+            <p class="text-muted-foreground" style="margin:0 0 1.25rem;">A scroll container whose scrollbar length comes from a sizer element, with a small pool of recycled row elements positioned inside it. Scrolling is the browser's; only the window of rows is ours.</p>
+
+            <p style="margin:0 0 0.625rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Web Platform APIs</p>
+            <div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;">
+              <a href="https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver" target="_blank" rel="noopener" title="the visible window depends on the container height" class="api-pill"><code>ResizeObserver</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame" target="_blank" rel="noopener" title="one render per frame however many scroll events arrive" class="api-pill"><code>requestAnimationFrame</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver" target="_blank" rel="noopener" title="initializes lists added after load" class="api-pill"><code>MutationObserver</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/contain" target="_blank" rel="noopener" title="the browser need not look outside the list when painting" class="api-pill"><code>contain: strict</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior" target="_blank" rel="noopener" title="reaching an end does not scroll the page" class="api-pill"><code>overscroll-behavior</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/scrollbar-gutter" target="_blank" rel="noopener" title="no layout shift when the scrollbar appears" class="api-pill"><code>scrollbar-gutter</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+            </div>
+
+            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Classes</p>
+            <div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;">
+              <code>.virtual-list</code>
+              <code>.virtual-list-row</code>
+              <code>.virtual-list-cell</code>
+              <code>.virtual-list-row-meta</code>
+            </div>
+
+            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Sizes (data-size)</p>
+            <div style="display:grid;grid-template-columns:auto 1fr;gap:0.25rem 1rem;margin-bottom:1.25rem;">
+              <code>sm</code><span class="text-muted-foreground">32px rows</span>
+              <code>lg</code><span class="text-muted-foreground">56px rows</span>
+            </div>
+
+            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Accessibility</p>
+            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Name the list with <code>aria-label</code> on <code>.virtual-list</code></p>
+            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Each row carries <code>aria-posinset</code> and <code>aria-setsize</code>, so a screen reader announces the real length, not the size of the window</p>
+            <p class="text-muted-foreground" style="margin:0 0 0;">• The container is focusable, so arrows, Page Up/Down and Home/End scroll it natively</p>
+          </div>
+        </details>
+      </div>
+
+        <!-- Default -->
+        <p class="text-sm font-medium mb-2 mt-6">Default</p>
+        <p class="text-xs text-muted-foreground mb-3">Ten million rows. Scroll it — the DOM never holds more than about twenty.</p>
+        <div class="preview">
+          <div class="virtual-list" id="demo-virtual-list" data-state-demo data-empty-text="No results found" aria-label="Ten million rows" style="height:20rem;width:100%;max-width:28rem;"></div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;div class=&quot;virtual-list&quot; id=&quot;results&quot; aria-label=&quot;Search results&quot;
+     style=&quot;height: 20rem;&quot;&gt;&lt;/div&gt;</code></pre>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-javascript">// -- Virtual List ---------------------------------------------
+// Windowed list: only the rows on screen exist in the DOM, and their elements
+// are recycled as you scroll, so a list of ten rows and a list of ten million
+// cost the same. Plus the named-state API so agents/tests can drive states by
+// name (AGENTS.md &quot;State API&quot;).
+
+// Shared preamble (AGENTS.md &quot;State API&quot;); build.ts inlines it into the
+// shipped .js, so this import never appears in dist/.
+import { defussGlobals } from '../../shared/state-api.js';
+
+const _defussShadcn = defussGlobals();
+
+const virtualListStates = ['default', 'loading', 'empty'];
+
+/** Rows kept above and below the viewport so a fast flick never shows a gap. */
+const OVERSCAN = 4;
+
+/**
+ * Browsers clamp how tall an element may be — Chrome around 33.5M px, Firefox
+ * lower. A million 40px rows would need 40M px of sizer, past the cap, and the
+ * end of the list would simply be unreachable. Past this threshold the sizer is
+ * capped and scroll positions are mapped onto the real range instead, trading
+ * scrollbar granularity (which nobody can perceive at that length) for a list
+ * that actually reaches its last row.
+ */
+const MAX_SIZER_PX = 15_000_000;
+
+/** Items per row: 1 is a list, more is a grid. */
+const columnsOf = (list) =&gt; Math.max(1, parseInt(list.dataset.columns || '1', 10) || 1);
+
+/** How many rows the items occupy — the unit the window is measured in. */
+const rowCount = (list) =&gt; Math.ceil(list._count / columnsOf(list));
+
+/** Total pixel height the rows would occupy if they all existed. */
+const contentHeight = (list) =&gt; rowCount(list) * list._rowHeight;
+
+/** Height given to the sizer — clamped so the browser can render it. */
+const sizerHeight = (list) =&gt; Math.min(contentHeight(list), MAX_SIZER_PX);
+
+/** scrollTop (capped space) -&gt; offset into the full content (real space). */
+function virtualOffset(list) {
+  const viewport = list.clientHeight;
+  const real = contentHeight(list) - viewport;
+  const capped = sizerHeight(list) - viewport;
+  if (real &lt;= 0 || capped &lt;= 0) return 0;
+  return (list.scrollTop / capped) * real;
+}
+
+/** Writes the window of rows that belongs at the current scroll position. */
+function render(list) {
+  const rows = list._rows;
+  if (!rows) return;
+  const count = list._count;
+  const cols = columnsOf(list);
+  const total = rowCount(list);
+  const rowHeight = list._rowHeight;
+  const visible = Math.ceil(list.clientHeight / rowHeight) + OVERSCAN * 2;
+  const offset = virtualOffset(list);
+  let first = Math.max(0, Math.floor(offset / rowHeight) - OVERSCAN);
+  if (first + visible &gt; total) first = Math.max(0, total - visible);
+
+  // grow/shrink the recycled pool to the window size
+  while (rows.children.length &lt; Math.min(visible, total)) {
+    const row = document.createElement('div');
+    row.className = 'virtual-list-row';
+    row.setAttribute('role', cols &gt; 1 ? 'row' : 'listitem');
+    rows.appendChild(row);
+  }
+  while (rows.children.length &gt; Math.min(visible, total)) {
+    rows.lastElementChild.remove();
+  }
+
+  // The pool sits inside a translated wrapper: one transform per scroll frame
+  // instead of one `top` write per row.
+  const shift = first * rowHeight - (offset - list.scrollTop);
+  rows.style.transform = `translateY(${shift}px)`;
+
+  for (let i = 0; i &lt; rows.children.length; i++) {
+    const row = rows.children[i];
+    const index = first + i;
+    if (row._index === index) continue; // already showing this row — leave it be
+    row._index = index;
+    row.dataset.index = String(index);
+
+    if (cols === 1) {
+      row.setAttribute('aria-posinset', String(index + 1));
+      row.setAttribute('aria-setsize', String(count));
+      list._renderRow(row, index);
+      continue;
+    }
+
+    // grid: the row holds `cols` recycled cells, and the tail row may be short
+    row.setAttribute('aria-rowindex', String(index + 1));
+    while (row.children.length &lt; cols) {
+      const cell = document.createElement('div');
+      cell.className = 'virtual-list-cell';
+      cell.setAttribute('role', 'gridcell');
+      row.appendChild(cell);
+    }
+    for (let c = 0; c &lt; cols; c++) {
+      const cell = row.children[c];
+      const itemIndex = index * cols + c;
+      cell.setAttribute('aria-colindex', String(c + 1));
+      if (itemIndex &gt;= count) {
+        // past the last item: keep the cell for recycling, hide it from view
+        cell.hidden = true;
+        cell.dataset.index = '';
+        continue;
+      }
+      cell.hidden = false;
+      cell.dataset.index = String(itemIndex);
+      list._renderRow(cell, itemIndex);
+    }
+  }
+}
+
+/** Default row content when the consumer supplies no renderer. */
+const defaultRenderRow = (row, index) =&gt; {
+  row.textContent = `Row ${index + 1}`;
+};
+
+/**
+ * UI side of setState: 'default' shows the rows (config `{ index }` scrolls
+ * that row into view), 'loading' shows placeholder rows and marks the list
+ * busy, 'empty' shows the empty message. State lives on the element.
+ */
+function triggerStateChange(list, stateName, config) {
+  list.dataset.state = stateName;
+  switch (stateName) {
+    case 'default':
+      list.removeAttribute('aria-busy');
+      render(list);
+      if (typeof config.index === 'number') {
+        const item = Math.max(0, Math.min(list._count - 1, config.index));
+        const real = Math.floor(item / columnsOf(list)) * list._rowHeight;
+        const viewport = list.clientHeight;
+        const ratio = Math.max(0, contentHeight(list) - viewport)
+          ? (sizerHeight(list) - viewport) / (contentHeight(list) - viewport)
+          : 0;
+        list.scrollTop = real * ratio;
+        render(list);
+      }
+      break;
+    case 'loading':
+      list.setAttribute('aria-busy', 'true');
+      break;
+    case 'empty':
+      list.removeAttribute('aria-busy');
+      break;
+  }
+}
+
+/** Registry-level API; pass the list element explicitly. Unknown names throw. */
+export const virtualListApi = {
+  setState(list, stateName, config = {}) {
+    if (!virtualListStates.includes(stateName)) {
+      throw new Error(
+        `virtual-list: unknown state &quot;${stateName}&quot; (supported: ${virtualListStates.join(', ')})`,
+      );
+    }
+    triggerStateChange(list, stateName, config);
+    // state lives on the ELEMENT, not the module: every instance on a page may
+    // sit in a different state
+    list.dataset.stateName = stateName;
+    list._stateConfig = config;
+  },
+  getState(list) {
+    return { name: list.dataset.stateName || 'default', config: list._stateConfig ?? {} };
+  },
+};
+
+_defussShadcn.virtualListApi = virtualListApi;
+_defussShadcn.virtualListStates = virtualListStates;
+
+/**
+ * Public imperative API (AGENTS.md &quot;No window globals&quot;): hand a list its data.
+ * `count` may be any number the platform can hold — nothing is allocated per
+ * row. `renderRow(rowElement, index)` fills a recycled element; it must not
+ * assume the element is empty or new.
+ */
+_defussShadcn.virtualList = {
+  setData(list, count, renderRow) {
+    list._count = Math.max(0, Math.floor(count) || 0);
+    if (renderRow) list._renderRow = renderRow;
+    const sizer = list.querySelector('.virtual-list-sizer');
+    if (sizer) sizer.style.height = `${sizerHeight(list)}px`;
+    if (columnsOf(list) &gt; 1) list.setAttribute('aria-rowcount', String(rowCount(list)));
+    if (list._rows) {
+      Array.from(list._rows.children).forEach((row) =&gt; { row._index = -1; });
+    }
+    virtualListApi.setState(list, list._count ? 'default' : 'empty');
+  },
+};
+
+function init() {
+  document.querySelectorAll('.virtual-list:not([data-init])').forEach((list) =&gt; {
+    list.dataset.init = '';
+
+    // the sizer gives the scrollbar its length; the pool rides inside it
+    let sizer = list.querySelector('.virtual-list-sizer');
+    if (!sizer) {
+      sizer = document.createElement('div');
+      sizer.className = 'virtual-list-sizer';
+      list.appendChild(sizer);
+    }
+    let rows = sizer.querySelector('.virtual-list-rows');
+    if (!rows) {
+      rows = document.createElement('div');
+      rows.className = 'virtual-list-rows';
+      sizer.appendChild(rows);
+    }
+
+    list._rows = rows;
+    list._renderRow = list._renderRow || defaultRenderRow;
+    list._rowHeight =
+      parseFloat(getComputedStyle(list).getPropertyValue('--virtual-list-row-height')) || 40;
+    list._count = parseInt(list.dataset.count || '0', 10) || 0;
+
+    const cols = columnsOf(list);
+    list.setAttribute('role', cols &gt; 1 ? 'grid' : 'list');
+    if (cols &gt; 1) list.setAttribute('aria-colcount', String(cols));
+    if (!list.hasAttribute('tabindex')) list.tabIndex = 0; // arrow keys scroll it
+
+    sizer.style.height = `${sizerHeight(list)}px`;
+
+    // one render per animation frame, however many scroll events arrive
+    let queued = false;
+    list.addEventListener(
+      'scroll',
+      () =&gt; {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(() =&gt; {
+          queued = false;
+          if (list.dataset.state !== 'loading' &amp;&amp; list.dataset.state !== 'empty') render(list);
+        });
+      },
+      { passive: true },
+    );
+
+    // the visible window depends on the container height, not just scrolling
+    new ResizeObserver(() =&gt; {
+      if (list.dataset.state !== 'loading' &amp;&amp; list.dataset.state !== 'empty') render(list);
+    }).observe(list);
+
+    list.api = {
+      setState: (stateName, config) =&gt; virtualListApi.setState(list, stateName, config),
+      getState: () =&gt; virtualListApi.getState(list),
+    };
+
+    virtualListApi.setState(list, list._count ? 'default' : 'empty');
+  });
+}
+
+init();
+new MutationObserver(init).observe(document, { childList: true, subtree: true });</code></pre>
+        </div>
+
+        <!-- Sizes -->
+        <p class="text-sm font-medium mb-2 mt-8">Sizes</p>
+        <p class="text-xs text-muted-foreground mb-3">Row height comes from <code>data-size</code>. Every row in a list is the same height — the scroll maths depends on it.</p>
+        <div class="preview">
+          <div style="display:flex;gap:1rem;flex-wrap:wrap;width:100%;justify-content:center;">
+            <div class="virtual-list" id="demo-vl-sm" data-size="sm" aria-label="Small rows" style="height:12rem;width:13rem;"></div>
+            <div class="virtual-list" id="demo-vl-lg" data-size="lg" aria-label="Large rows" style="height:12rem;width:13rem;"></div>
+          </div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;div class=&quot;virtual-list&quot; data-size=&quot;sm&quot; aria-label=&quot;Small rows&quot; style=&quot;height:12rem;&quot;&gt;&lt;/div&gt;
+&lt;div class=&quot;virtual-list&quot; data-size=&quot;lg&quot; aria-label=&quot;Large rows&quot; style=&quot;height:12rem;&quot;&gt;&lt;/div&gt;</code></pre>
+        </div>
+
+        <!-- Jump to a row -->
+        <p class="text-sm font-medium mb-2 mt-8">Jump to a Row</p>
+        <p class="text-xs text-muted-foreground mb-3">The <code>default</code> state takes an index, so any row is one call away — no scrolling through the ones before it.</p>
+        <div class="preview">
+          <div style="display:flex;flex-direction:column;gap:0.75rem;align-items:center;width:100%;">
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;justify-content:center;">
+              <button class="btn" data-variant="outline" data-size="sm" data-vl-jump="0">First</button>
+              <button class="btn" data-variant="outline" data-size="sm" data-vl-jump="5000000">5,000,000</button>
+              <button class="btn" data-variant="outline" data-size="sm" data-vl-jump="9999999">Last</button>
+            </div>
+            <div class="virtual-list" id="demo-vl-jump" aria-label="Jump demo" style="height:12rem;width:100%;max-width:28rem;"></div>
+          </div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-javascript">document.querySelector('#results').api.setState('default', { index: 5_000_000 });</code></pre>
+        </div>
+
+        <!-- Grid -->
+        <p class="text-sm font-medium mb-2 mt-8">Grid</p>
+        <p class="text-xs text-muted-foreground mb-3">Add <code>data-columns</code> and the renderer is called once per <em>cell</em> instead of once per row — a virtualized grid of a million icons. Give the row enough height for a whole tile.</p>
+        <div class="preview">
+          <div class="virtual-list" id="demo-vl-grid" data-columns="3" style="--virtual-list-row-height:76px;height:16rem;width:100%;max-width:28rem;" aria-label="Icon grid"></div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;div class=&quot;virtual-list&quot; data-columns=&quot;3&quot; aria-label=&quot;Icon grid&quot;
+     style=&quot;--virtual-list-row-height: 76px; height: 16rem;&quot;&gt;&lt;/div&gt;</code></pre>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-javascript">// with data-columns the callback receives a CELL and an ITEM index
+virtualList.setData(document.getElementById('grid'), 1_000_000, (cell, index) =&gt; {
+  cell.textContent = '';
+  const glyph = document.createElement('span');
+  glyph.textContent = icons[index % icons.length];
+  const label = document.createElement('span');
+  label.textContent = `Icon ${index + 1}`;
+  cell.append(glyph, label);
+});</code></pre>
+        </div>
+
+        <!-- Empty -->
+        <p class="text-sm font-medium mb-2 mt-8">Empty</p>
+        <p class="text-xs text-muted-foreground mb-3">With no rows the list shows <code>data-empty-text</code>.</p>
+        <div class="preview">
+          <div class="virtual-list" id="demo-vl-empty" data-empty-text="No results found" aria-label="Empty list" style="height:10rem;width:100%;max-width:28rem;"></div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;div class=&quot;virtual-list&quot; data-empty-text=&quot;No results found&quot;
+     aria-label=&quot;Search results&quot; style=&quot;height: 10rem;&quot;&gt;&lt;/div&gt;</code></pre>
+        </div>
+
+        <!-- States -->
+        <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:3rem 0 0.375rem;">States</h2>
+        <p class="text-muted-foreground text-sm mb-4">Drive the list by name through its <code>api</code>. The state lives on the element, so several lists on one page can sit in different states.</p>
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:0.5rem 1rem;margin-bottom:1rem;font-size:0.875rem;">
+          <code>default</code><span class="text-muted-foreground">Rows are rendered. <code>config.index</code> scrolls that row into view.</span>
+          <code>loading</code><span class="text-muted-foreground">Placeholder rows; the list is marked <code>aria-busy</code>.</span>
+          <code>empty</code><span class="text-muted-foreground">No rows; shows <code>data-empty-text</code>.</span>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-javascript">const list = document.querySelector('#results');
+
+list.api.setState('default', { index: 9_999_990 });   // jump to a row
+list.api.setState('loading');
+list.api.setState('empty');
+list.api.getState();                                   // → { name, config }</code></pre>
+        </div>
+
+        <!-- -- CSS --------------------------------------- -->
+        <section style="margin-top:3rem;" id="source-css">
+          <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;">CSS <a href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/virtual-list/virtual-list.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2>
+          <p class="text-muted-foreground text-sm mb-4">Styles for the virtual-list component. Uses design tokens for colors, spacing, and radius.</p>
+          <div style="position:relative;margin-top:0.5rem;">
+            <button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button>
+            <pre><code class="language-scss">/* -- Virtual List ----------------------------------------------- */
+/* Windowed list: only the rows on screen exist in the DOM. The     */
+/* sizer supplies the scrollbar length, the pool rides inside it.   */
+
+@layer components {
+  .virtual-list {
+    --virtual-list-row-height: 40px;
+
+    position: relative;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+
+    /* the rows are absolutely placed inside the sizer — tell the browser it
+       need not look outside this box when painting or laying out */
+    contain: strict;
+
+    &amp;:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+
+    &amp;[data-size=&quot;sm&quot;] {
+      --virtual-list-row-height: 32px;
+    }
+
+    &amp;[data-size=&quot;lg&quot;] {
+      --virtual-list-row-height: 56px;
+    }
+  }
+
+  /* Height stands in for every row that could exist, so the scrollbar has the
+     right length and feel. */
+  .virtual-list-sizer {
+    position: relative;
+    width: 100%;
+  }
+
+  /* The recycled pool. Translated as a block once per frame rather than
+     repositioning every row individually. */
+  .virtual-list-rows {
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    will-change: transform;
+  }
+
+  .virtual-list-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    height: var(--virtual-list-row-height);
+    padding-inline: 0.875rem;
+    font-size: 0.875rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--card);
+
+    &amp;:hover {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+  }
+
+  /* -- Grid (several items per row) --------------------------- */
+  /* data-columns turns each recycled row into a grid of cells. The row height
+     still governs the scroll maths, so make it tall enough for a whole tile. */
+  .virtual-list[data-columns] {
+    &amp; .virtual-list-row {
+      display: grid;
+      grid-template-columns: repeat(var(--virtual-list-columns, 3), 1fr);
+      gap: 0.5rem;
+      padding: 0.25rem 0.5rem;
+      border-bottom: none;
+      background: transparent;
+
+      &amp;:hover {
+        background: transparent;
+        color: inherit;
+      }
+    }
+  }
+
+  .virtual-list-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    min-width: 0;
+    padding: 0.375rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--card);
+    font-size: 0.75rem;
+    text-align: center;
+
+    &amp; &gt; span {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--muted-foreground);
+    }
+
+    &amp; svg {
+      width: 1.25rem;
+      height: 1.25rem;
+      color: var(--foreground);
+    }
+
+    &amp;:hover {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+  }
+
+  /* Secondary text inside a row. */
+  .virtual-list-row-meta {
+    margin-inline-start: auto;
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* -- Loading and empty states ------------------------------- */
+  /* Both replace the rows entirely, so the pool is simply hidden. */
+  .virtual-list[data-state=&quot;loading&quot;],
+  .virtual-list[data-state=&quot;empty&quot;] {
+    &amp; .virtual-list-rows {
+      display: none;
+    }
+
+    &amp; .virtual-list-sizer {
+      height: 100% !important; /* no scrollable content in these states */
+    }
+  }
+
+  /* Both overlays hang off .virtual-list itself, not the sizer: attr() reads
+     the attribute of the element the pseudo-element belongs to, and
+     data-empty-text is authored on the list. */
+  .virtual-list[data-state=&quot;loading&quot;]::before {
+    content: &quot;&quot;;
+    position: absolute;
+    inset: 0;
+    /* placeholder rows, drawn rather than built from elements */
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        var(--muted) 0,
+        var(--muted) calc(var(--virtual-list-row-height) - 1px),
+        transparent calc(var(--virtual-list-row-height) - 1px),
+        transparent var(--virtual-list-row-height)
+      );
+    opacity: 0.6;
+    animation: virtual-list-pulse 1.6s ease-in-out infinite;
+  }
+
+  .virtual-list[data-state=&quot;empty&quot;]::after {
+    content: attr(data-empty-text);
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+  }
+
+  @keyframes virtual-list-pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 0.3; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .virtual-list,
+    .virtual-list *,
+    .virtual-list::before,
+    .virtual-list::after,
+    .virtual-list *::before,
+    .virtual-list *::after,
+    .virtual-list-row,
+    .virtual-list-row::before,
+    .virtual-list-row::after {
+      transition: none;
+      animation: none;
+      scroll-behavior: auto;
+    }
+  }
+}
+
+@media (prefers-contrast: more) {
+  @layer components {
+    .virtual-list-row {
+      border-bottom-color: var(--muted-foreground);
+    }
+
+    .virtual-list:focus-visible {
+      outline-width: 3px;
+    }
+  }
+}
+
+@media (forced-colors: active) {
+  @layer components {
+    .virtual-list {
+      border-color: ButtonText;
+    }
+
+    .virtual-list-row {
+      border-bottom-color: ButtonText;
+
+      &amp;:hover {
+        background: Highlight;
+        color: HighlightText;
+      }
+    }
+
+    .virtual-list:focus-visible {
+      outline-color: Highlight;
+    }
+  }
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- -- JS ---------------------------------------- -->
+        <section style="margin-top:3rem;" id="source-js">
+          <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;">JavaScript <a href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/virtual-list/virtual-list.js" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2>
+          <p class="text-muted-foreground text-sm mb-4">Windowing, row recycling and the named-state API.</p>
+          <div style="position:relative;margin-top:0.5rem;">
+            <button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button>
+            <pre><code class="language-javascript">/* replaced by sync-js-snippets */</code></pre>
+          </div>
+        </section>
+
+        <script type="module">
+          /* Doc-page demo data. Re-runs after SPA navigation via onPageReady. */
+          globalThis._defussShadcn.docs.onPageReady(function () {
+            var ns = globalThis._defussShadcn;
+            if (!ns.virtualList) return;
+            var renderRow = function (row, index) {
+              row.textContent = '';
+              var label = document.createElement('span');
+              label.textContent = 'Item ' + (index + 1).toLocaleString();
+              var meta = document.createElement('span');
+              meta.className = 'virtual-list-row-meta';
+              meta.textContent = '#' + (index + 1).toLocaleString();
+              row.append(label, meta);
+            };
+            [
+              ['demo-virtual-list', 10000000],
+              ['demo-vl-sm', 1000],
+              ['demo-vl-lg', 1000],
+              ['demo-vl-jump', 10000000],
+            ].forEach(function (pair) {
+              var el = document.getElementById(pair[0]);
+              if (el) ns.virtualList.setData(el, pair[1], renderRow);
+            });
+            var grid = document.getElementById('demo-vl-grid');
+            if (grid) {
+              var glyphs = ['📁', '📄', '🖼️', '🎵', '🎬', '📦', '🔧', '🌍'];
+              ns.virtualList.setData(grid, 1000000, function (cell, index) {
+                cell.textContent = '';
+                var glyph = document.createElement('span');
+                glyph.textContent = glyphs[index % glyphs.length];
+                var label = document.createElement('span');
+                label.textContent = 'Icon ' + (index + 1).toLocaleString();
+                cell.append(glyph, label);
+              });
+            }
+            document.querySelectorAll('[data-vl-jump]').forEach(function (btn) {
+              if (btn.dataset.vlInit) return;
+              btn.dataset.vlInit = '';
+              btn.addEventListener('click', function () {
+                var list = document.getElementById('demo-vl-jump');
+                if (list && list.api) list.api.setState('default', { index: Number(btn.dataset.vlJump) });
+              });
+            });
+          });
+        </script>
+
+
+    </main>
+  </div>
+
+  <script src="js/site.js" defer></script>
+  <script type="module" src="js/shiki-highlight.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/accordion/accordion.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/combobox/combobox.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dropdown/dropdown.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sheet/sheet.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tabs/tabs.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toast/toast.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toggle/toggle.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toggle-group/toggle-group.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toolbar/toolbar.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/number-input/number-input.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/color-picker/color-picker.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/avatar/avatar.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/image/image.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tree-view/tree-view.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/virtual-list/virtual-list.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/calendar/calendar.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/alert-dialog/alert-dialog.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/popover/popover.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tooltip/tooltip.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/context-menu/context-menu.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/command/command.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/navigation-menu/navigation-menu.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sidebar/sidebar.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/carousel/carousel.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/slider/slider.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sortable/sortable.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/product-showcase/product-showcase.js"></script>
+  <script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script>
+  <script>globalThis.lucide?.createIcons();</script>
+</body>
+</html>

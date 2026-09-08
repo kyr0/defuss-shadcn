@@ -1,0 +1,227 @@
+/* -- Virtual List ----------------------------------------------- */
+/* Windowed list: only the rows on screen exist in the DOM. The     */
+/* sizer supplies the scrollbar length, the pool rides inside it.   */
+
+@layer components {
+  .virtual-list {
+    --virtual-list-row-height: 40px;
+
+    position: relative;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+
+    /* the rows are absolutely placed inside the sizer — tell the browser it
+       need not look outside this box when painting or laying out */
+    contain: strict;
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+
+    &[data-size="sm"] {
+      --virtual-list-row-height: 32px;
+    }
+
+    &[data-size="lg"] {
+      --virtual-list-row-height: 56px;
+    }
+  }
+
+  /* Height stands in for every row that could exist, so the scrollbar has the
+     right length and feel. */
+  .virtual-list-sizer {
+    position: relative;
+    width: 100%;
+  }
+
+  /* The recycled pool. Translated as a block once per frame rather than
+     repositioning every row individually. */
+  .virtual-list-rows {
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    will-change: transform;
+  }
+
+  .virtual-list-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    height: var(--virtual-list-row-height);
+    padding-inline: 0.875rem;
+    font-size: 0.875rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--card);
+
+    &:hover {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+  }
+
+  /* -- Grid (several items per row) --------------------------- */
+  /* data-columns turns each recycled row into a grid of cells. The row height
+     still governs the scroll maths, so make it tall enough for a whole tile. */
+  .virtual-list[data-columns] {
+    & .virtual-list-row {
+      display: grid;
+      grid-template-columns: repeat(var(--virtual-list-columns, 3), 1fr);
+      gap: 0.5rem;
+      padding: 0.25rem 0.5rem;
+      border-bottom: none;
+      background: transparent;
+
+      &:hover {
+        background: transparent;
+        color: inherit;
+      }
+    }
+  }
+
+  .virtual-list-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    min-width: 0;
+    padding: 0.375rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--card);
+    font-size: 0.75rem;
+    text-align: center;
+
+    & > span {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--muted-foreground);
+    }
+
+    & svg {
+      width: 1.25rem;
+      height: 1.25rem;
+      color: var(--foreground);
+    }
+
+    &:hover {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+  }
+
+  /* Secondary text inside a row. */
+  .virtual-list-row-meta {
+    margin-inline-start: auto;
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* -- Loading and empty states ------------------------------- */
+  /* Both replace the rows entirely, so the pool is simply hidden. */
+  .virtual-list[data-state="loading"],
+  .virtual-list[data-state="empty"] {
+    & .virtual-list-rows {
+      display: none;
+    }
+
+    & .virtual-list-sizer {
+      height: 100% !important; /* no scrollable content in these states */
+    }
+  }
+
+  /* Both overlays hang off .virtual-list itself, not the sizer: attr() reads
+     the attribute of the element the pseudo-element belongs to, and
+     data-empty-text is authored on the list. */
+  .virtual-list[data-state="loading"]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    /* placeholder rows, drawn rather than built from elements */
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        var(--muted) 0,
+        var(--muted) calc(var(--virtual-list-row-height) - 1px),
+        transparent calc(var(--virtual-list-row-height) - 1px),
+        transparent var(--virtual-list-row-height)
+      );
+    opacity: 0.6;
+    animation: virtual-list-pulse 1.6s ease-in-out infinite;
+  }
+
+  .virtual-list[data-state="empty"]::after {
+    content: attr(data-empty-text);
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+  }
+
+  @keyframes virtual-list-pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 0.3; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .virtual-list,
+    .virtual-list *,
+    .virtual-list::before,
+    .virtual-list::after,
+    .virtual-list *::before,
+    .virtual-list *::after,
+    .virtual-list-row,
+    .virtual-list-row::before,
+    .virtual-list-row::after {
+      transition: none;
+      animation: none;
+      scroll-behavior: auto;
+    }
+  }
+}
+
+@media (prefers-contrast: more) {
+  @layer components {
+    .virtual-list-row {
+      border-bottom-color: var(--muted-foreground);
+    }
+
+    .virtual-list:focus-visible {
+      outline-width: 3px;
+    }
+  }
+}
+
+@media (forced-colors: active) {
+  @layer components {
+    .virtual-list {
+      border-color: ButtonText;
+    }
+
+    .virtual-list-row {
+      border-bottom-color: ButtonText;
+
+      &:hover {
+        background: Highlight;
+        color: HighlightText;
+      }
+    }
+
+    .virtual-list:focus-visible {
+      outline-color: Highlight;
+    }
+  }
+}

@@ -742,3 +742,13 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/typography.png
 **Skill:** [components/typography/component-skill.md](components/typography/component-skill.md)
+
+## Virtual List
+
+**Type:** ATM
+**Why:** Only the rows on screen exist in the DOM and their elements are recycled, so ten rows and ten million cost the same.
+**When:** Lists too long to render — search results, logs, pickers over large sets. Use a plain list or table when every row can exist at once.
+**Files:** dist/components/virtual-list/virtual-list.css + dist/components/virtual-list/virtual-list.js
+**Supported states:** default, loading, empty
+**Screenshots:** screenshots/{light,dark}/virtual-list.png, screenshots/{light,dark}/virtual-list-loading.png, screenshots/{light,dark}/virtual-list-empty.png
+**Skill:** [components/virtual-list/component-skill.md](components/virtual-list/component-skill.md)

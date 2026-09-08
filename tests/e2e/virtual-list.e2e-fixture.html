@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Virtual List e2e fixture</title>
+  <link rel="stylesheet" href="/dist/theme/default-semantic-tokens.css">
+  <link rel="stylesheet" href="/dist/components/virtual-list/virtual-list.css">
+  <style>
+    /* spacing and container height only — never layout properties the checks assert */
+    body { font-family: system-ui, sans-serif; padding: 2rem; }
+    .virtual-list { height: 320px; max-width: 30rem; margin-bottom: 1.5rem; }
+  </style>
+</head>
+<body>
+  <!-- ten million rows: the point of the component -->
+  <div class="virtual-list" id="vl-huge" aria-label="Ten million rows"></div>
+
+  <!-- a small list, where the sizer is the real content height -->
+  <div class="virtual-list" id="vl-small" aria-label="Fifty rows"></div>
+
+  <!-- sizes -->
+  <div class="virtual-list" id="vl-sm" data-size="sm" aria-label="Small rows"></div>
+  <div class="virtual-list" id="vl-lg" data-size="lg" aria-label="Large rows"></div>
+
+  <!-- grid: three items per row, tail row deliberately short (1_000_000 % 3 = 1) -->
+  <div class="virtual-list" id="vl-grid" data-columns="3" style="--virtual-list-row-height:72px;" aria-label="Icon grid"></div>
+
+  <!-- empty, via markup rather than a later setData call -->
+  <div class="virtual-list" id="vl-empty" data-empty-text="No results found" aria-label="Empty list"></div>
+
+  <script type="module" src="/dist/components/virtual-list/virtual-list.js"></script>
+  <script type="module">
+    const api = globalThis._defussShadcn.virtualList;
+    const renderRow = (row, i) => {
+      row.textContent = '';
+      const label = document.createElement('span');
+      label.textContent = 'Item ' + (i + 1);
+      const meta = document.createElement('span');
+      meta.className = 'virtual-list-row-meta';
+      meta.textContent = '#' + (i + 1);
+      row.append(label, meta);
+    };
+    // wait for init() to have claimed the elements
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    api.setData(document.getElementById('vl-huge'), 10_000_000, renderRow);
+    api.setData(document.getElementById('vl-small'), 50, renderRow);
+    api.setData(document.getElementById('vl-sm'), 1000, renderRow);
+    api.setData(document.getElementById('vl-lg'), 1000, renderRow);
+    api.setData(document.getElementById('vl-grid'), 1_000_000, (cell, i) => {
+      cell.textContent = '';
+      const glyph = document.createElement('span');
+      glyph.textContent = String.fromCodePoint(0x1f4c1 + (i % 6));
+      const label = document.createElement('span');
+      label.textContent = 'Icon ' + (i + 1);
+      cell.append(glyph, label);
+    });
+    globalThis.__fixtureReady = true;
+  </script>
+</body>
+</html>
