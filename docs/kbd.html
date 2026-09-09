@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="images/favicon.webp" type="image/webp">
+  <meta name="description" content="Kbd component — keyboard keys on the native <kbd> element, with nested kbd for combinations.">
+  <meta property="og:title" content="Kbd — defuss-shadcn">
+  <meta property="og:description" content="Kbd component — keyboard keys on the native <kbd> element, with nested kbd for combinations.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kyr0.github.io/defuss-shadcn/kbd.html">
+  <meta property="og:site_name" content="defuss-shadcn">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Kbd — defuss-shadcn">
+  <meta name="twitter:description" content="Kbd component — keyboard keys on the native <kbd> element, with nested kbd for combinations.">
+  <title>Kbd — defuss-shadcn</title>
+  <script src="js/themes.js"></script>
+  <script src="js/theme-switcher.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/search-index.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/default-semantic-tokens.css">
+  <link rel="stylesheet" href="css/docs-theme.css">
+  <link rel="stylesheet" href="css/docs-utilities.css">
+  <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/button/button.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/card/card.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/badge/badge.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/kbd/kbd.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/input/input.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/accordion/accordion.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tabs/tabs.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dropdown/dropdown.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toast/toast.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/combobox/combobox.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sheet/sheet.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toggle/toggle.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/icon/icon.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/typography/typography.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/separator/separator.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/label/label.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toggle-group/toggle-group.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/button-group/button-group.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toolbar/toolbar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/textarea/textarea.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/checkbox/checkbox.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/radio/radio.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/switch/switch.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/slider/slider.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/select/select.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/number-input/number-input.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/file-input/file-input.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/color-picker/color-picker.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/date-picker/date-picker.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/form/form.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/avatar/avatar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/image/image.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/statistic/statistic.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/table/table.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/collapsible/collapsible.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/timeline/timeline.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tree-view/tree-view.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/calendar/calendar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/spinner/spinner.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/skeleton/skeleton.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/progress/progress.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/alert/alert.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/alert-dialog/alert-dialog.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/popover/popover.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tooltip/tooltip.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/context-menu/context-menu.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/command/command.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/breadcrumb/breadcrumb.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/pagination/pagination.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/steps/steps.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/navigation-menu/navigation-menu.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/scroll-area/scroll-area.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/carousel/carousel.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sidebar/sidebar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sortable/sortable.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/site-header/site-header.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/hero/hero.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/product-showcase/product-showcase.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/brand-logos/brand-logos.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/feature-details/feature-details.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/testimonials/testimonials.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/stats/stats.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/pricing/pricing.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/blog/blog.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/faq/faq.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/get-in-touch/get-in-touch.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/newsletter/newsletter.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/site-footer/site-footer.css">
+</head>
+<body>
+  <site-header></site-header>
+
+  <div class="flex" style="margin-top: 3.5rem; min-height: calc(100vh - 3.5rem);">
+    <site-nav></site-nav>
+
+    <main style="flex: 1; min-width: 0; max-width: 44rem; padding: 2rem 3.5rem 8rem;">
+      <div class="page-header">
+        <div class="flex items-baseline justify-between mb-1">
+          <p class="text-sm text-muted-foreground" style="font-family:var(--font-mono);">defuss-shadcn / kbd</p>
+          <div style="display:flex;align-items:baseline;gap:0.375rem;"><span class="text-xs text-muted-foreground" style="font-family:var(--font-mono);white-space:nowrap;">Built with:</span> <a href="#source-css" class="badge built-with-pill" data-variant="outline">CSS</a></div>
+        </div>
+        <h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">Kbd<span class="type-badge" data-type="ATM" title="Atom">ATM</span></h1>
+        <p class="text-muted-foreground leading-relaxed mb-6">
+          A keyboard key. Built on the native <code>&lt;kbd&gt;</code> element — and a combination is
+          <code>&lt;kbd&gt;</code> nested inside <code>&lt;kbd&gt;</code>, exactly as the HTML spec
+          prescribes, so the markup already says "these keys together". No JavaScript required.
+        </p>
+        <!-- Component Skill -->
+        <details style="margin-bottom:2rem;border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;">
+          <summary style="padding:0.875rem 1.25rem;background:var(--muted);cursor:pointer;font-size:0.8125rem;font-weight:600;font-family:var(--font-mono);color:var(--muted-foreground);list-style:none;display:flex;align-items:center;gap:0.5rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 200ms;"><path d="m9 18 6-6-6-6"/></svg>
+            Component Skill — <span data-spec-href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/kbd/component-skill.md" style="text-decoration:underline;text-underline-offset:3px;">components/kbd/component-skill.md</span>
+          </summary>
+          <div style="padding:1.5rem;font-size:0.875rem;line-height:1.85;">
+            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Native basis</p>
+            <p class="text-muted-foreground" style="margin:0 0 1.25rem;">The <code>&lt;kbd&gt;</code> element. For a combination the spec nests them: an outer <code>&lt;kbd&gt;</code> for the chord, one inner <code>&lt;kbd&gt;</code> per key — so no wrapper <code>&lt;div&gt;</code> and no JavaScript.</p>
+
+            <p style="margin:0 0 0.625rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Web Platform APIs</p>
+            <div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;">
+              <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/kbd" target="_blank" rel="noopener" title="keyboard input; nested for combinations" class="api-pill"><code>&lt;kbd&gt;</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix" target="_blank" rel="noopener" title="border derived from the surrounding control's text colour" class="api-pill"><code>color-mix()</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" target="_blank" rel="noopener" title="Windows High Contrast Mode" class="api-pill"><code>forced-colors</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+            </div>
+
+            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Classes</p>
+            <div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;">
+              <code>.kbd</code>
+              <code>.kbd-group</code>
+            </div>
+
+            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Variants</p>
+            <div style="display:grid;grid-template-columns:auto 1fr;gap:0.25rem 1rem;margin-bottom:1.25rem;">
+              <code>data-separator</code><span class="text-muted-foreground">Draws a <code>+</code> in the gap between keys</span>
+            </div>
+
+            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Sizes (data-size)</p>
+            <div style="display:grid;grid-template-columns:auto 1fr;gap:0.25rem 1rem;margin-bottom:1.25rem;">
+              <code>sm</code><span class="text-muted-foreground">1.125rem — for use inside buttons and menu items</span>
+              <code>lg</code><span class="text-muted-foreground">1.75rem</span>
+            </div>
+
+            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Accessibility</p>
+            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• No ARIA — <code>&lt;kbd&gt;</code> carries the meaning and the key's label is its text</p>
+            <p class="text-muted-foreground" style="margin:0 0 0;">• Decorative shortcuts beside a control that already announces its action can take <code>aria-hidden="true"</code></p>
+          </div>
+        </details>
+      </div>
+
+        <!-- Default -->
+        <p class="text-sm font-medium mb-2 mt-6">Default</p>
+        <p class="text-xs text-muted-foreground mb-3">A single key. The heavier bottom border is what makes a rectangle read as a key.</p>
+        <div class="preview">
+          <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;justify-content:center;">
+            <kbd class="kbd">Esc</kbd>
+            <kbd class="kbd">Enter</kbd>
+            <kbd class="kbd">⇧</kbd>
+            <kbd class="kbd">⌥</kbd>
+            <kbd class="kbd">Tab</kbd>
+            <kbd class="kbd">?</kbd>
+          </div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;kbd class=&quot;kbd&quot;&gt;Esc&lt;/kbd&gt;</code></pre>
+        </div>
+
+        <!-- Combination -->
+        <p class="text-sm font-medium mb-2 mt-8">Combination</p>
+        <p class="text-xs text-muted-foreground mb-3">An outer <code>&lt;kbd&gt;</code> holds one <code>&lt;kbd&gt;</code> per key — the nesting the HTML spec prescribes for a chord. The outer element carries no key styling of its own.</p>
+        <div class="preview">
+          <div style="display:flex;gap:1.25rem;align-items:center;flex-wrap:wrap;justify-content:center;">
+            <kbd class="kbd-group">
+              <kbd class="kbd">⌘</kbd>
+              <kbd class="kbd">K</kbd>
+            </kbd>
+            <kbd class="kbd-group">
+              <kbd class="kbd">⌘</kbd>
+              <kbd class="kbd">⇧</kbd>
+              <kbd class="kbd">P</kbd>
+            </kbd>
+          </div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;kbd class=&quot;kbd-group&quot;&gt;
+  &lt;kbd class=&quot;kbd&quot;&gt;⌘&lt;/kbd&gt;
+  &lt;kbd class=&quot;kbd&quot;&gt;K&lt;/kbd&gt;
+&lt;/kbd&gt;</code></pre>
+        </div>
+
+        <!-- Separator -->
+        <p class="text-sm font-medium mb-2 mt-8">With a Separator</p>
+        <p class="text-xs text-muted-foreground mb-3">Add <code>data-separator</code> for a <code>+</code> between keys. It sits in the gap, outside the key boxes.</p>
+        <div class="preview">
+          <kbd class="kbd-group" data-separator>
+            <kbd class="kbd">Ctrl</kbd>
+            <kbd class="kbd">Shift</kbd>
+            <kbd class="kbd">P</kbd>
+          </kbd>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;kbd class=&quot;kbd-group&quot; data-separator&gt;
+  &lt;kbd class=&quot;kbd&quot;&gt;Ctrl&lt;/kbd&gt;
+  &lt;kbd class=&quot;kbd&quot;&gt;Shift&lt;/kbd&gt;
+  &lt;kbd class=&quot;kbd&quot;&gt;P&lt;/kbd&gt;
+&lt;/kbd&gt;</code></pre>
+        </div>
+
+        <!-- Sizes -->
+        <p class="text-sm font-medium mb-2 mt-8">Sizes</p>
+        <p class="text-xs text-muted-foreground mb-3">Use <code>sm</code> inside buttons and menu items, where a full size key would out-shout the label.</p>
+        <div class="preview">
+          <div style="display:flex;gap:0.75rem;align-items:center;justify-content:center;">
+            <kbd class="kbd" data-size="sm">Esc</kbd>
+            <kbd class="kbd">Esc</kbd>
+            <kbd class="kbd" data-size="lg">Esc</kbd>
+          </div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;kbd class=&quot;kbd&quot; data-size=&quot;sm&quot;&gt;Esc&lt;/kbd&gt;
+&lt;kbd class=&quot;kbd&quot;&gt;Esc&lt;/kbd&gt;
+&lt;kbd class=&quot;kbd&quot; data-size=&quot;lg&quot;&gt;Esc&lt;/kbd&gt;</code></pre>
+        </div>
+
+        <!-- In context -->
+        <p class="text-sm font-medium mb-2 mt-8">In a Control</p>
+        <p class="text-xs text-muted-foreground mb-3">Inside a button, a command item or a dropdown item the key drops its own background and borrows the control's text colour — so it works on every variant without a rule per variant.</p>
+        <div class="preview">
+          <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;justify-content:center;">
+            <button class="btn" data-variant="outline">Search <kbd class="kbd" data-size="sm">⌘K</kbd></button>
+            <button class="btn" data-variant="default">Save <kbd class="kbd" data-size="sm">⌘S</kbd></button>
+            <button class="btn" data-variant="ghost">Undo <kbd class="kbd" data-size="sm">⌘Z</kbd></button>
+          </div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;button class=&quot;btn&quot; data-variant=&quot;outline&quot;&gt;
+  Search
+  &lt;kbd class=&quot;kbd&quot; data-size=&quot;sm&quot;&gt;⌘K&lt;/kbd&gt;
+&lt;/button&gt;</code></pre>
+        </div>
+
+        <!-- In prose -->
+        <p class="text-sm font-medium mb-2 mt-8">In Prose</p>
+        <p class="text-xs text-muted-foreground mb-3">Keys line up with the text around them.</p>
+        <div class="preview">
+          <p class="p" style="max-width:28rem;text-align:left;">
+            Press <kbd class="kbd-group"><kbd class="kbd">⌘</kbd><kbd class="kbd">K</kbd></kbd> to open the
+            command palette, or <kbd class="kbd">Esc</kbd> to dismiss it.
+          </p>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;p class=&quot;p&quot;&gt;
+  Press &lt;kbd class=&quot;kbd-group&quot;&gt;&lt;kbd class=&quot;kbd&quot;&gt;⌘&lt;/kbd&gt;&lt;kbd class=&quot;kbd&quot;&gt;K&lt;/kbd&gt;&lt;/kbd&gt;
+  to open the command palette, or &lt;kbd class=&quot;kbd&quot;&gt;Esc&lt;/kbd&gt; to dismiss it.
+&lt;/p&gt;</code></pre>
+        </div>
+
+        <!-- States -->
+        <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:3rem 0 0.375rem;">States</h2>
+        <p class="text-muted-foreground text-sm mb-4">Kbd is CSS-only, so it has a single state: <code>default</code>. A key is static — it displays a shortcut, it does not respond to one.</p>
+
+        <!-- -- CSS --------------------------------------- -->
+        <section style="margin-top:3rem;" id="source-css">
+          <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;">CSS <a href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/kbd/kbd.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2>
+          <p class="text-muted-foreground text-sm mb-4">Styles for the kbd component. Uses design tokens for colors, spacing, and radius.</p>
+          <div style="position:relative;margin-top:0.5rem;">
+            <button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button>
+            <pre><code class="language-scss">/* -- Kbd ---------------------------------------------------------- */
+/* Keyboard keys. Built on the native &lt;kbd&gt; element; a combination is a  */
+/* &lt;kbd&gt; holding one &lt;kbd&gt; per key, which is what the HTML spec          */
+/* prescribes — so the markup already says &quot;these keys together&quot;.        */
+
+@layer components {
+  .kbd {
+    --kbd-size: 1.375rem;
+
+    display: inline-grid;
+    place-items: center;
+    min-width: var(--kbd-size);
+    height: var(--kbd-size);
+    padding-inline: 0.375rem;
+    border: 1px solid var(--border);
+    /* the bottom edge is thicker, which is what reads as a physical key */
+    border-bottom-width: 2px;
+    border-radius: var(--radius-sm);
+    background: var(--muted);
+    color: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    vertical-align: middle;
+
+    &amp;[data-size=&quot;sm&quot;] {
+      --kbd-size: 1.125rem;
+      padding-inline: 0.25rem;
+      font-size: 0.6875rem;
+    }
+
+    &amp;[data-size=&quot;lg&quot;] {
+      --kbd-size: 1.75rem;
+      padding-inline: 0.5rem;
+      font-size: 0.875rem;
+    }
+  }
+
+  /* A key combination: an outer &lt;kbd&gt; holding one &lt;kbd&gt; per key. The outer
+     element is not a key itself, so it keeps none of the key styling. */
+  .kbd-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    vertical-align: middle;
+    font-family: inherit;
+    background: none;
+    border: 0;
+    padding: 0;
+  }
+
+  /* Optional &quot;+&quot; between keys. Absolutely placed in the gap so it never sits
+     inside a key's box. */
+  .kbd-group[data-separator] {
+    gap: 0.875rem;
+
+    &amp; &gt; .kbd + .kbd {
+      position: relative;
+
+      &amp;::before {
+        content: &quot;+&quot;;
+        position: absolute;
+        inset-inline-start: -0.625rem;
+        color: var(--muted-foreground);
+        font-size: 0.6875rem;
+        line-height: 1;
+        pointer-events: none;
+      }
+    }
+  }
+
+  /* Inside a control the key should not out-shout its label. */
+  .btn .kbd,
+  .command-item .kbd,
+  .dropdown-item .kbd {
+    background: transparent;
+    border-color: color-mix(in oklch, currentColor 25%, transparent);
+    color: inherit;
+    opacity: 0.75;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .kbd,
+    .kbd *,
+    .kbd::before,
+    .kbd::after,
+    .kbd *::before,
+    .kbd *::after,
+    .kbd-group,
+    .kbd-group::before,
+    .kbd-group::after {
+      transition: none;
+      animation: none;
+    }
+  }
+}
+
+@media (prefers-contrast: more) {
+  @layer components {
+    .kbd {
+      border-color: var(--foreground);
+      color: var(--foreground);
+    }
+  }
+}
+
+@media (forced-colors: active) {
+  @layer components {
+    .kbd {
+      border-color: ButtonText;
+      color: ButtonText;
+      background: ButtonFace;
+    }
+
+    .kbd-group[data-separator] &gt; .kbd + .kbd::before {
+      color: ButtonText;
+    }
+  }
+}</code></pre>
+          </div>
+        </section>
+
+
+    </main>
+  </div>
+
+  <script src="js/site.js" defer></script>
+  <script type="module" src="js/shiki-highlight.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/accordion/accordion.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/combobox/combobox.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dropdown/dropdown.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sheet/sheet.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tabs/tabs.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toast/toast.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toggle/toggle.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toggle-group/toggle-group.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toolbar/toolbar.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/number-input/number-input.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/color-picker/color-picker.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/avatar/avatar.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/image/image.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tree-view/tree-view.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/calendar/calendar.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/alert-dialog/alert-dialog.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/popover/popover.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tooltip/tooltip.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/context-menu/context-menu.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/command/command.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/navigation-menu/navigation-menu.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sidebar/sidebar.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/carousel/carousel.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/slider/slider.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sortable/sortable.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/product-showcase/product-showcase.js"></script>
+  <script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script>
+  <script>globalThis.lucide?.createIcons();</script>
+</body>
+</html>

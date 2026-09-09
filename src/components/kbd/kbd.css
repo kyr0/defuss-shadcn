@@ -1,0 +1,123 @@
+/* -- Kbd ---------------------------------------------------------- */
+/* Keyboard keys. Built on the native <kbd> element; a combination is a  */
+/* <kbd> holding one <kbd> per key, which is what the HTML spec          */
+/* prescribes — so the markup already says "these keys together".        */
+
+@layer components {
+  .kbd {
+    --kbd-size: 1.375rem;
+
+    display: inline-grid;
+    place-items: center;
+    min-width: var(--kbd-size);
+    height: var(--kbd-size);
+    padding-inline: 0.375rem;
+    border: 1px solid var(--border);
+    /* the bottom edge is thicker, which is what reads as a physical key */
+    border-bottom-width: 2px;
+    border-radius: var(--radius-sm);
+    background: var(--muted);
+    color: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    vertical-align: middle;
+
+    &[data-size="sm"] {
+      --kbd-size: 1.125rem;
+      padding-inline: 0.25rem;
+      font-size: 0.6875rem;
+    }
+
+    &[data-size="lg"] {
+      --kbd-size: 1.75rem;
+      padding-inline: 0.5rem;
+      font-size: 0.875rem;
+    }
+  }
+
+  /* A key combination: an outer <kbd> holding one <kbd> per key. The outer
+     element is not a key itself, so it keeps none of the key styling. */
+  .kbd-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    vertical-align: middle;
+    font-family: inherit;
+    background: none;
+    border: 0;
+    padding: 0;
+  }
+
+  /* Optional "+" between keys. Absolutely placed in the gap so it never sits
+     inside a key's box. */
+  .kbd-group[data-separator] {
+    gap: 0.875rem;
+
+    & > .kbd + .kbd {
+      position: relative;
+
+      &::before {
+        content: "+";
+        position: absolute;
+        inset-inline-start: -0.625rem;
+        color: var(--muted-foreground);
+        font-size: 0.6875rem;
+        line-height: 1;
+        pointer-events: none;
+      }
+    }
+  }
+
+  /* Inside a control the key should not out-shout its label. */
+  .btn .kbd,
+  .command-item .kbd,
+  .dropdown-item .kbd {
+    background: transparent;
+    border-color: color-mix(in oklch, currentColor 25%, transparent);
+    color: inherit;
+    opacity: 0.75;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .kbd,
+    .kbd *,
+    .kbd::before,
+    .kbd::after,
+    .kbd *::before,
+    .kbd *::after,
+    .kbd-group,
+    .kbd-group::before,
+    .kbd-group::after {
+      transition: none;
+      animation: none;
+    }
+  }
+}
+
+@media (prefers-contrast: more) {
+  @layer components {
+    .kbd {
+      border-color: var(--foreground);
+      color: var(--foreground);
+    }
+  }
+}
+
+@media (forced-colors: active) {
+  @layer components {
+    .kbd {
+      border-color: ButtonText;
+      color: ButtonText;
+      background: ButtonFace;
+    }
+
+    .kbd-group[data-separator] > .kbd + .kbd::before {
+      color: ButtonText;
+    }
+  }
+}

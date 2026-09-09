@@ -1,18 +1,18 @@
 {
-  "total": 68,
+  "total": 69,
   "byType": {
-    "ATM": 43,
+    "ATM": 44,
     "MOL": 11,
     "ORG": 1,
     "BLK": 13,
     "TPL": 0
   },
   "withJs": 27,
-  "withoutJs": 41,
-  "totalSize": 407047,
-  "totalSizeMinified": 183306,
-  "totalSizeGz": 136621,
-  "totalSizeGzMinified": 69569,
+  "withoutJs": 42,
+  "totalSize": 409944,
+  "totalSizeMinified": 184868,
+  "totalSizeGz": 137668,
+  "totalSizeGzMinified": 70209,
   "components": {
     "accordion": {
       "name": "accordion",
@@ -416,6 +416,19 @@
       "totalSizeGzMinified": 738,
       "totalSize": 3842,
       "totalSizeMinified": 2067
+    },
+    "kbd": {
+      "name": "kbd",
+      "type": "ATM",
+      "withJs": false,
+      "jsSize": 0,
+      "jsSizeMinified": 0,
+      "cssSize": 2897,
+      "cssSizeMinified": 1562,
+      "totalSizeGz": 1047,
+      "totalSizeGzMinified": 640,
+      "totalSize": 2897,
+      "totalSizeMinified": 1562
     },
     "label": {
       "name": "label",

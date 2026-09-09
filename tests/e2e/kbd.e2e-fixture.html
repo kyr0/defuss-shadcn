@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kbd e2e fixture</title>
+  <link rel="stylesheet" href="/dist/theme/default-semantic-tokens.css">
+  <link rel="stylesheet" href="/dist/components/button/button.css">
+  <link rel="stylesheet" href="/dist/components/kbd/kbd.css">
+  <style>
+    /* spacing only — never properties the checks assert */
+    body { font-family: system-ui, sans-serif; padding: 2rem; }
+    body > * { margin: 0 1rem 1.5rem 0; }
+  </style>
+</head>
+<body>
+  <!-- one key -->
+  <kbd class="kbd" id="k-default">Esc</kbd>
+
+  <!-- sizes -->
+  <kbd class="kbd" id="k-sm" data-size="sm">Esc</kbd>
+  <kbd class="kbd" id="k-lg" data-size="lg">Esc</kbd>
+
+  <!-- a combination: nested <kbd>, as the HTML spec prescribes -->
+  <kbd class="kbd-group" id="k-group">
+    <kbd class="kbd" id="k-group-1">⌘</kbd>
+    <kbd class="kbd" id="k-group-2">K</kbd>
+  </kbd>
+
+  <!-- with a "+" between keys -->
+  <kbd class="kbd-group" id="k-sep" data-separator>
+    <kbd class="kbd" id="k-sep-1">Ctrl</kbd>
+    <kbd class="kbd" id="k-sep-2">Shift</kbd>
+    <kbd class="kbd" id="k-sep-3">P</kbd>
+  </kbd>
+
+  <!-- inside a control, where the key must not out-shout the label -->
+  <button class="btn" data-variant="outline" id="k-btn">
+    Search
+    <kbd class="kbd" id="k-in-btn" data-size="sm">⌘K</kbd>
+  </button>
+</body>
+</html>

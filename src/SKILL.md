@@ -374,6 +374,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/input.png
 **Skill:** [components/input/component-skill.md](components/input/component-skill.md)
 
+## Kbd
+
+**Type:** ATM
+**Why:** Native <kbd>, and a combination is <kbd> nested inside <kbd> exactly as the HTML spec prescribes — the markup already says "these keys together".
+**When:** Showing a shortcut — in a menu item, a tooltip, a command palette row, or prose. Not for code, which is inline-code.
+**Files:** dist/components/kbd/kbd.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/kbd.png
+**Skill:** [components/kbd/component-skill.md](components/kbd/component-skill.md)
+
 ## Label
 
 **Type:** ATM

@@ -88,6 +88,7 @@
       { label: 'Typography', href: 'typography.html' },
       { label: 'Separator', href: 'separator.html' },
       { label: 'Icon', href: 'icon.html' },
+      { label: 'Kbd', href: 'kbd.html' },
     ]},
     { heading: 'Actions', items: [
       { label: 'Button', href: 'button.html' },
@@ -175,7 +176,7 @@
   /* Pages that have been built (have a real doc page) */
   var BUILT = new Set([
     'index.html', 'installation.html', 'theming.html', 'dark-mode.html', 'data-attribute-api.html', 'architecture.html', 'cascade-layers.html', 'es-modules.html', 'native-web-apis.html', 'animations.html', 'accessibility.html', 'component-skills.html', 'changelog.html',
-    'typography.html', 'separator.html', 'icon.html', 'label.html',
+    'typography.html', 'separator.html', 'icon.html', 'kbd.html', 'label.html',
     'button.html', 'toggle.html', 'toggle-group.html', 'button-group.html', 'toolbar.html',
     'input.html', 'textarea.html', 'checkbox.html', 'radio.html', 'switch.html',
     'slider.html', 'select.html', 'number-input.html', 'file-input.html',
