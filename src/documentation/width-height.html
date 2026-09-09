@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="images/favicon.webp" type="image/webp">
+  <meta name="description" content="Arithmetic dimensions, content and viewport sizing, and explicit constraints. Density does not change geometric sizes.">
+  <meta property="og:title" content="Width &amp; Height — defuss-shadcn">
+  <meta property="og:description" content="Arithmetic dimensions, content and viewport sizing, and explicit constraints. Density does not change geometric sizes.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kyr0.github.io/defuss-shadcn/documentation/width-height.html">
+  <meta property="og:site_name" content="defuss-shadcn">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Width &amp; Height — defuss-shadcn">
+  <meta name="twitter:description" content="Arithmetic dimensions, content and viewport sizing, and explicit constraints. Density does not change geometric sizes.">
+  <title>Width &amp; Height — defuss-shadcn</title>
+  <script src="js/themes.js"></script>
+  <script src="js/theme-switcher.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/search-index.js"></script>
+  <link rel="stylesheet" href="../theme/default-semantic-tokens.css">
+  <link rel="stylesheet" href="../theme/sizing.css">
+  <link rel="stylesheet" href="../theme/layout.css">
+  <link rel="stylesheet" href="css/docs-theme.css">
+  <link rel="stylesheet" href="css/docs-utilities.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="../components/button/button.css">
+  <link rel="stylesheet" href="../components/card/card.css">
+  <link rel="stylesheet" href="../components/dialog/dialog.css">
+  <link rel="stylesheet" href="../components/badge/badge.css">
+  <link rel="stylesheet" href="../components/input/input.css">
+  <link rel="stylesheet" href="../components/accordion/accordion.css">
+  <link rel="stylesheet" href="../components/tabs/tabs.css">
+  <link rel="stylesheet" href="../components/dropdown/dropdown.css">
+  <link rel="stylesheet" href="../components/toast/toast.css">
+  <link rel="stylesheet" href="../components/combobox/combobox.css">
+  <link rel="stylesheet" href="../components/sheet/sheet.css">
+  <link rel="stylesheet" href="../components/toggle/toggle.css">
+  <link rel="stylesheet" href="../components/icon/icon.css">
+  <link rel="stylesheet" href="../components/typography/typography.css">
+  <link rel="stylesheet" href="../components/separator/separator.css">
+  <link rel="stylesheet" href="../components/label/label.css">
+  <link rel="stylesheet" href="../components/toggle-group/toggle-group.css">
+  <link rel="stylesheet" href="../components/button-group/button-group.css">
+  <link rel="stylesheet" href="../components/toolbar/toolbar.css">
+  <link rel="stylesheet" href="../components/textarea/textarea.css">
+  <link rel="stylesheet" href="../components/checkbox/checkbox.css">
+  <link rel="stylesheet" href="../components/radio/radio.css">
+  <link rel="stylesheet" href="../components/switch/switch.css">
+  <link rel="stylesheet" href="../components/slider/slider.css">
+  <link rel="stylesheet" href="../components/select/select.css">
+  <link rel="stylesheet" href="../components/number-input/number-input.css">
+  <link rel="stylesheet" href="../components/file-input/file-input.css">
+  <link rel="stylesheet" href="../components/color-picker/color-picker.css">
+  <link rel="stylesheet" href="../components/date-picker/date-picker.css">
+  <link rel="stylesheet" href="../components/form/form.css">
+  <link rel="stylesheet" href="../components/avatar/avatar.css">
+  <link rel="stylesheet" href="../components/image/image.css">
+  <link rel="stylesheet" href="../components/statistic/statistic.css">
+  <link rel="stylesheet" href="../components/table/table.css">
+  <link rel="stylesheet" href="../components/collapsible/collapsible.css">
+  <link rel="stylesheet" href="../components/timeline/timeline.css">
+  <link rel="stylesheet" href="../components/tree-view/tree-view.css">
+  <link rel="stylesheet" href="../components/calendar/calendar.css">
+  <link rel="stylesheet" href="../components/spinner/spinner.css">
+  <link rel="stylesheet" href="../components/skeleton/skeleton.css">
+  <link rel="stylesheet" href="../components/progress/progress.css">
+  <link rel="stylesheet" href="../components/alert/alert.css">
+  <link rel="stylesheet" href="../components/alert-dialog/alert-dialog.css">
+  <link rel="stylesheet" href="../components/popover/popover.css">
+  <link rel="stylesheet" href="../components/tooltip/tooltip.css">
+  <link rel="stylesheet" href="../components/context-menu/context-menu.css">
+  <link rel="stylesheet" href="../components/command/command.css">
+  <link rel="stylesheet" href="../components/breadcrumb/breadcrumb.css">
+  <link rel="stylesheet" href="../components/pagination/pagination.css">
+  <link rel="stylesheet" href="../components/steps/steps.css">
+  <link rel="stylesheet" href="../components/navigation-menu/navigation-menu.css">
+  <link rel="stylesheet" href="../components/scroll-area/scroll-area.css">
+  <link rel="stylesheet" href="../components/carousel/carousel.css">
+  <link rel="stylesheet" href="../components/sidebar/sidebar.css">
+  <link rel="stylesheet" href="../components/sortable/sortable.css">
+  <link rel="stylesheet" href="../components/site-header/site-header.css">
+  <link rel="stylesheet" href="../components/hero/hero.css">
+  <link rel="stylesheet" href="../components/product-showcase/product-showcase.css">
+  <link rel="stylesheet" href="../components/brand-logos/brand-logos.css">
+  <link rel="stylesheet" href="../components/feature-details/feature-details.css">
+  <link rel="stylesheet" href="../components/testimonials/testimonials.css">
+  <link rel="stylesheet" href="../components/stats/stats.css">
+  <link rel="stylesheet" href="../components/pricing/pricing.css">
+  <link rel="stylesheet" href="../components/blog/blog.css">
+  <link rel="stylesheet" href="../components/faq/faq.css">
+  <link rel="stylesheet" href="../components/get-in-touch/get-in-touch.css">
+  <link rel="stylesheet" href="../components/newsletter/newsletter.css">
+  <link rel="stylesheet" href="../components/site-footer/site-footer.css">
+</head>
+<body>
+  <site-header></site-header>
+  <div class="flex" style="margin-top:3.5rem;min-height:calc(100vh - 3.5rem);">
+    <site-nav></site-nav>
+    <main style="flex:1;min-width:0;max-width:44rem;padding:2rem 3.5rem 8rem;">
+      <div class="page-header">
+        <p class="text-sm text-muted-foreground mb-3" style="font-family:var(--font-mono);">defuss-shadcn / sizing / width &amp; height</p>
+        <h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">Width &amp; Height</h1>
+        <p class="text-muted-foreground leading-relaxed mb-10" style="max-width:38rem;">Arithmetic dimensions, content and viewport sizing, and explicit constraints. Density does not change geometric sizes.</p>
+      </div>
+<div class="sep"></div>
+<h2 id="numeric" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Numeric dimensions</h2>
+<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;"><code>w-n</code>, <code>h-n</code> and <code>size-n</code> map directly to <code>n × --size-base</code>. Width and height are physical axes, matching their CSS names. Density does not change them. <code>inline-n</code> and <code>block-n</code> are the logical-axis alternatives.</p>
+<div class="preview" style="display:block;padding:0;overflow:hidden;border:1px solid var(--border);border-radius:var(--radius-xl);margin-bottom:1.5rem;">
+<div class="stack gap-4" style="padding:1.5rem;" data-demo="width-height">
+  <div class="w-48 h-8" style="border-radius:var(--radius-sm);background:var(--primary);color:var(--primary-foreground);font-size:0.75rem;display:flex;align-items:center;justify-content:center;">w-48 h-8</div>
+  <div class="w-1/2 h-8" style="border-radius:var(--radius-sm);background:var(--secondary);color:var(--secondary-foreground);font-size:0.75rem;display:flex;align-items:center;justify-content:center;">w-1/2</div>
+  <div class="size-8" style="border-radius:var(--radius-sm);background:var(--accent);color:var(--accent-foreground);font-size:0.75rem;display:flex;align-items:center;justify-content:center;">size-8</div>
+</div>
+</div>
+<div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:1.5rem;">
+<div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">HTML</div>
+<pre style="border-radius:0;border:none;margin:0;background:transparent;overflow-x:auto;"><code class="language-html">&lt;div class="w-48 h-16"&gt;192 × 64px at the default 16px root&lt;/div&gt;
+&lt;div class="size-8"&gt;Square&lt;/div&gt;
+&lt;div class="w-1/2 max-w-full"&gt;Half of the containing width&lt;/div&gt;
+&lt;div class="inline-48 block-16"&gt;Writing-mode-aware dimensions&lt;/div&gt;</code></pre></div>
+<div class="sep"></div>
+<h2 id="available" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Available classes</h2>
+<div style="overflow-x:auto;margin-bottom:1.5rem;"><table class="table" data-variant="simple"><thead><tr><th scope="col">Family</th><th scope="col">Values</th></tr></thead><tbody><tr><td><code>w-*, h-*, size-*, min-w-*, min-h-*, max-w-*, max-h-*</code></td><td>Numeric scale below; <code>px</code> = one CSS pixel.</td></tr><tr><td><code>inline-*, block-*</code></td><td>Numeric scale; <code>px</code>; auto/full/min/max/fit; fractions.</td></tr><tr><td><code>w-*, h-*</code></td><td>auto, full, min, max, fit; 1/2, 1/3, 2/3, 1/4, 3/4.</td></tr><tr><td><code>min-w-*, min-h-*, max-w-*, max-h-*</code></td><td>full, min, max, fit; max-w-none and max-h-none remove caps.</td></tr><tr><td><code>h-*, min-h-*, max-h-*</code></td><td>screen (100vh), dvh, svh, lvh.</td></tr><tr><td><code>w-screen</code></td><td>100vw; includes viewport width rather than parent width.</td></tr><tr><td><code>box-border, box-content</code></td><td>Explicit box-sizing; no global reset is installed.</td></tr></tbody></table></div>
+<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">Numeric scale: <code>0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 20, 24, 28, 32, 36, 40, 48, 56, 64, 72, 80, 96</code>. Values not listed require ordinary CSS. <code>size-4</code> sets both width and height; it does not set flex-shrink or box-sizing.</p>
+<div class="sep"></div>
+<h2 id="constraints" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Dimensions are constraints, not clipping</h2>
+<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">Percentage heights need a definite containing height. <code>w-full</code> is usually preferable to <code>w-screen</code> inside a page. In flex layouts, a requested width may shrink: add <code>shrink-0</code> when that is intentional. Use <code>min-w-0</code> on a flexible child and give long content an explicit wrapping or scroll policy.</p>
+<div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:1.5rem;">
+<div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">HTML</div>
+<pre style="border-radius:0;border:none;margin:0;background:transparent;overflow-x:auto;"><code class="language-html">&lt;div class="flex gap-4"&gt;
+  &lt;aside class="w-48 shrink-0"&gt;Navigation&lt;/aside&gt;
+  &lt;main class="flex-1 min-w-0" style="overflow-wrap:anywhere;"&gt;
+    AnUnusuallyLongIdentifierThatMustWrapInsteadOfWideningThePage
+  &lt;/main&gt;
+&lt;/div&gt;</code></pre></div>
+<div class="sep"></div>
+<h2 id="custom" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Application-specific sizes</h2>
+<div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:1.5rem;">
+<div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">CSS</div>
+<pre style="border-radius:0;border:none;margin:0;background:transparent;overflow-x:auto;"><code class="language-css">.inspector { width: clamp(16rem, 30vw, 24rem); }
+.application-shell { min-height: 100dvh; }
+.article-copy { max-inline-size: 70ch; }</code></pre></div>
+<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">Keep content widths, typography and control recipes semantically distinct from the small geometric <code>--size-xs…xl</code> aliases. Load sizing.css; load layout.css as well for Flex/Grid helpers.</p>
+<div class="sep"></div>
+<h2 id="references" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Platform references</h2>
+<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;"><a href="https://www.w3.org/TR/css-values-4/" target="_blank" rel="noopener">CSS Values and Units</a> · <a href="https://www.w3.org/TR/css-logical-1/" target="_blank" rel="noopener">CSS logical properties</a></p>
+    </main>
+  </div>
+  <script src="js/site.js" defer></script>
+  <script type="module" src="js/shiki-highlight.js"></script>
+  <script type="module" src="../components/accordion/accordion.js"></script>
+  <script type="module" src="../components/combobox/combobox.js"></script>
+  <script type="module" src="../components/dialog/dialog.js"></script>
+  <script type="module" src="../components/dropdown/dropdown.js"></script>
+  <script type="module" src="../components/sheet/sheet.js"></script>
+  <script type="module" src="../components/tabs/tabs.js"></script>
+  <script type="module" src="../components/toast/toast.js"></script>
+  <script type="module" src="../components/toggle/toggle.js"></script>
+  <script type="module" src="../components/toggle-group/toggle-group.js"></script>
+  <script type="module" src="../components/toolbar/toolbar.js"></script>
+  <script type="module" src="../components/number-input/number-input.js"></script>
+  <script type="module" src="../components/color-picker/color-picker.js"></script>
+  <script type="module" src="../components/avatar/avatar.js"></script>
+  <script type="module" src="../components/image/image.js"></script>
+  <script type="module" src="../components/tree-view/tree-view.js"></script>
+  <script type="module" src="../components/calendar/calendar.js"></script>
+  <script type="module" src="../components/alert-dialog/alert-dialog.js"></script>
+  <script type="module" src="../components/popover/popover.js"></script>
+  <script type="module" src="../components/tooltip/tooltip.js"></script>
+  <script type="module" src="../components/context-menu/context-menu.js"></script>
+  <script type="module" src="../components/command/command.js"></script>
+  <script type="module" src="../components/navigation-menu/navigation-menu.js"></script>
+  <script type="module" src="../components/sidebar/sidebar.js"></script>
+  <script type="module" src="../components/carousel/carousel.js"></script>
+  <script type="module" src="../components/slider/slider.js"></script>
+  <script type="module" src="../components/sortable/sortable.js"></script>
+  <script type="module" src="../components/product-showcase/product-showcase.js"></script>
+  <script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script>
+  <script>globalThis.lucide?.createIcons();</script>
+</body>
+</html>

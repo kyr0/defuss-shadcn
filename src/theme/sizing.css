@@ -1,0 +1,1078 @@
+/* defuss-shadcn — optional sizing utilities.
+ * Standalone native CSS. No Tailwind, scan, runtime or consumer build.
+ * Numeric dimensions = n × --size-base. Spacing additionally uses density.
+ * Theme export remains untouched. Place this sheet before component CSS.
+ * Unlayered application rules override normal library rules.
+ */
+@layer components, utilities;
+
+@layer components {
+  :where(:root) {
+    --size-base: var(--spacing, 0.25rem);
+    --layout-density: 1;
+  }
+
+  /* Custom-property formulas resolve before inheritance. Recompute aliases
+     at an explicit boundary after overriding --size-base on that boundary. */
+  :where(:root, [data-size-scope]) {
+    --size-xs: calc(var(--size-base) * 2);
+    --size-sm: calc(var(--size-base) * 3);
+    --size-md: calc(var(--size-base) * 4);
+    --size-lg: calc(var(--size-base) * 6);
+    --size-xl: calc(var(--size-base) * 8);
+  }
+
+  :where([data-density="compact"]) { --layout-density: 0.75; }
+  :where([data-density="comfortable"]) { --layout-density: 1; }
+  :where([data-density="spacious"]) { --layout-density: 1.25; }
+}
+
+@layer utilities {
+  /* These helpers do not change box-sizing: native CSS sizing semantics. */
+  :where(.w-0) { width: 0px; }
+  :where(.h-0) { height: 0px; }
+  :where(.size-0) { width: 0px; height: 0px; }
+  :where(.min-w-0) { min-width: 0px; }
+  :where(.min-h-0) { min-height: 0px; }
+  :where(.max-w-0) { max-width: 0px; }
+  :where(.max-h-0) { max-height: 0px; }
+  :where(.inline-0) { inline-size: 0px; }
+  :where(.block-0) { block-size: 0px; }
+  :where(.w-0\.5) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5); }
+  :where(.h-0\.5) { height: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5); }
+  :where(.size-0\.5) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5); height: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5); }
+  :where(.min-w-0\.5) { min-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5); }
+  :where(.min-h-0\.5) { min-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5); }
+  :where(.max-w-0\.5) { max-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5); }
+  :where(.max-h-0\.5) { max-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5); }
+  :where(.inline-0\.5) { inline-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5); }
+  :where(.block-0\.5) { block-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5); }
+  :where(.w-1) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 1); }
+  :where(.h-1) { height: calc(var(--size-base, var(--spacing, 0.25rem)) * 1); }
+  :where(.size-1) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 1); height: calc(var(--size-base, var(--spacing, 0.25rem)) * 1); }
+  :where(.min-w-1) { min-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 1); }
+  :where(.min-h-1) { min-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 1); }
+  :where(.max-w-1) { max-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 1); }
+  :where(.max-h-1) { max-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 1); }
+  :where(.inline-1) { inline-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 1); }
+  :where(.block-1) { block-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 1); }
+  :where(.w-1\.5) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5); }
+  :where(.h-1\.5) { height: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5); }
+  :where(.size-1\.5) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5); height: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5); }
+  :where(.min-w-1\.5) { min-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5); }
+  :where(.min-h-1\.5) { min-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5); }
+  :where(.max-w-1\.5) { max-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5); }
+  :where(.max-h-1\.5) { max-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5); }
+  :where(.inline-1\.5) { inline-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5); }
+  :where(.block-1\.5) { block-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5); }
+  :where(.w-2) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 2); }
+  :where(.h-2) { height: calc(var(--size-base, var(--spacing, 0.25rem)) * 2); }
+  :where(.size-2) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 2); height: calc(var(--size-base, var(--spacing, 0.25rem)) * 2); }
+  :where(.min-w-2) { min-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 2); }
+  :where(.min-h-2) { min-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 2); }
+  :where(.max-w-2) { max-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 2); }
+  :where(.max-h-2) { max-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 2); }
+  :where(.inline-2) { inline-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 2); }
+  :where(.block-2) { block-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 2); }
+  :where(.w-2\.5) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5); }
+  :where(.h-2\.5) { height: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5); }
+  :where(.size-2\.5) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5); height: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5); }
+  :where(.min-w-2\.5) { min-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5); }
+  :where(.min-h-2\.5) { min-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5); }
+  :where(.max-w-2\.5) { max-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5); }
+  :where(.max-h-2\.5) { max-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5); }
+  :where(.inline-2\.5) { inline-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5); }
+  :where(.block-2\.5) { block-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5); }
+  :where(.w-3) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 3); }
+  :where(.h-3) { height: calc(var(--size-base, var(--spacing, 0.25rem)) * 3); }
+  :where(.size-3) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 3); height: calc(var(--size-base, var(--spacing, 0.25rem)) * 3); }
+  :where(.min-w-3) { min-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 3); }
+  :where(.min-h-3) { min-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 3); }
+  :where(.max-w-3) { max-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 3); }
+  :where(.max-h-3) { max-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 3); }
+  :where(.inline-3) { inline-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 3); }
+  :where(.block-3) { block-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 3); }
+  :where(.w-3\.5) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5); }
+  :where(.h-3\.5) { height: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5); }
+  :where(.size-3\.5) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5); height: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5); }
+  :where(.min-w-3\.5) { min-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5); }
+  :where(.min-h-3\.5) { min-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5); }
+  :where(.max-w-3\.5) { max-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5); }
+  :where(.max-h-3\.5) { max-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5); }
+  :where(.inline-3\.5) { inline-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5); }
+  :where(.block-3\.5) { block-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5); }
+  :where(.w-4) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 4); }
+  :where(.h-4) { height: calc(var(--size-base, var(--spacing, 0.25rem)) * 4); }
+  :where(.size-4) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 4); height: calc(var(--size-base, var(--spacing, 0.25rem)) * 4); }
+  :where(.min-w-4) { min-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 4); }
+  :where(.min-h-4) { min-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 4); }
+  :where(.max-w-4) { max-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 4); }
+  :where(.max-h-4) { max-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 4); }
+  :where(.inline-4) { inline-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 4); }
+  :where(.block-4) { block-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 4); }
+  :where(.w-5) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 5); }
+  :where(.h-5) { height: calc(var(--size-base, var(--spacing, 0.25rem)) * 5); }
+  :where(.size-5) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 5); height: calc(var(--size-base, var(--spacing, 0.25rem)) * 5); }
+  :where(.min-w-5) { min-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 5); }
+  :where(.min-h-5) { min-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 5); }
+  :where(.max-w-5) { max-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 5); }
+  :where(.max-h-5) { max-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 5); }
+  :where(.inline-5) { inline-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 5); }
+  :where(.block-5) { block-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 5); }
+  :where(.w-6) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 6); }
+  :where(.h-6) { height: calc(var(--size-base, var(--spacing, 0.25rem)) * 6); }
+  :where(.size-6) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 6); height: calc(var(--size-base, var(--spacing, 0.25rem)) * 6); }
+  :where(.min-w-6) { min-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 6); }
+  :where(.min-h-6) { min-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 6); }
+  :where(.max-w-6) { max-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 6); }
+  :where(.max-h-6) { max-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 6); }
+  :where(.inline-6) { inline-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 6); }
+  :where(.block-6) { block-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 6); }
+  :where(.w-7) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 7); }
+  :where(.h-7) { height: calc(var(--size-base, var(--spacing, 0.25rem)) * 7); }
+  :where(.size-7) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 7); height: calc(var(--size-base, var(--spacing, 0.25rem)) * 7); }
+  :where(.min-w-7) { min-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 7); }
+  :where(.min-h-7) { min-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 7); }
+  :where(.max-w-7) { max-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 7); }
+  :where(.max-h-7) { max-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 7); }
+  :where(.inline-7) { inline-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 7); }
+  :where(.block-7) { block-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 7); }
+  :where(.w-8) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 8); }
+  :where(.h-8) { height: calc(var(--size-base, var(--spacing, 0.25rem)) * 8); }
+  :where(.size-8) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 8); height: calc(var(--size-base, var(--spacing, 0.25rem)) * 8); }
+  :where(.min-w-8) { min-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 8); }
+  :where(.min-h-8) { min-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 8); }
+  :where(.max-w-8) { max-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 8); }
+  :where(.max-h-8) { max-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 8); }
+  :where(.inline-8) { inline-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 8); }
+  :where(.block-8) { block-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 8); }
+  :where(.w-9) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 9); }
+  :where(.h-9) { height: calc(var(--size-base, var(--spacing, 0.25rem)) * 9); }
+  :where(.size-9) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 9); height: calc(var(--size-base, var(--spacing, 0.25rem)) * 9); }
+  :where(.min-w-9) { min-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 9); }
+  :where(.min-h-9) { min-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 9); }
+  :where(.max-w-9) { max-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 9); }
+  :where(.max-h-9) { max-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 9); }
+  :where(.inline-9) { inline-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 9); }
+  :where(.block-9) { block-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 9); }
+  :where(.w-10) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 10); }
+  :where(.h-10) { height: calc(var(--size-base, var(--spacing, 0.25rem)) * 10); }
+  :where(.size-10) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 10); height: calc(var(--size-base, var(--spacing, 0.25rem)) * 10); }
+  :where(.min-w-10) { min-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 10); }
+  :where(.min-h-10) { min-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 10); }
+  :where(.max-w-10) { max-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 10); }
+  :where(.max-h-10) { max-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 10); }
+  :where(.inline-10) { inline-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 10); }
+  :where(.block-10) { block-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 10); }
+  :where(.w-11) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 11); }
+  :where(.h-11) { height: calc(var(--size-base, var(--spacing, 0.25rem)) * 11); }
+  :where(.size-11) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 11); height: calc(var(--size-base, var(--spacing, 0.25rem)) * 11); }
+  :where(.min-w-11) { min-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 11); }
+  :where(.min-h-11) { min-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 11); }
+  :where(.max-w-11) { max-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 11); }
+  :where(.max-h-11) { max-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 11); }
+  :where(.inline-11) { inline-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 11); }
+  :where(.block-11) { block-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 11); }
+  :where(.w-12) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 12); }
+  :where(.h-12) { height: calc(var(--size-base, var(--spacing, 0.25rem)) * 12); }
+  :where(.size-12) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 12); height: calc(var(--size-base, var(--spacing, 0.25rem)) * 12); }
+  :where(.min-w-12) { min-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 12); }
+  :where(.min-h-12) { min-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 12); }
+  :where(.max-w-12) { max-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 12); }
+  :where(.max-h-12) { max-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 12); }
+  :where(.inline-12) { inline-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 12); }
+  :where(.block-12) { block-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 12); }
+  :where(.w-14) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 14); }
+  :where(.h-14) { height: calc(var(--size-base, var(--spacing, 0.25rem)) * 14); }
+  :where(.size-14) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 14); height: calc(var(--size-base, var(--spacing, 0.25rem)) * 14); }
+  :where(.min-w-14) { min-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 14); }
+  :where(.min-h-14) { min-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 14); }
+  :where(.max-w-14) { max-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 14); }
+  :where(.max-h-14) { max-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 14); }
+  :where(.inline-14) { inline-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 14); }
+  :where(.block-14) { block-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 14); }
+  :where(.w-16) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 16); }
+  :where(.h-16) { height: calc(var(--size-base, var(--spacing, 0.25rem)) * 16); }
+  :where(.size-16) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 16); height: calc(var(--size-base, var(--spacing, 0.25rem)) * 16); }
+  :where(.min-w-16) { min-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 16); }
+  :where(.min-h-16) { min-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 16); }
+  :where(.max-w-16) { max-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 16); }
+  :where(.max-h-16) { max-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 16); }
+  :where(.inline-16) { inline-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 16); }
+  :where(.block-16) { block-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 16); }
+  :where(.w-20) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 20); }
+  :where(.h-20) { height: calc(var(--size-base, var(--spacing, 0.25rem)) * 20); }
+  :where(.size-20) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 20); height: calc(var(--size-base, var(--spacing, 0.25rem)) * 20); }
+  :where(.min-w-20) { min-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 20); }
+  :where(.min-h-20) { min-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 20); }
+  :where(.max-w-20) { max-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 20); }
+  :where(.max-h-20) { max-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 20); }
+  :where(.inline-20) { inline-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 20); }
+  :where(.block-20) { block-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 20); }
+  :where(.w-24) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 24); }
+  :where(.h-24) { height: calc(var(--size-base, var(--spacing, 0.25rem)) * 24); }
+  :where(.size-24) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 24); height: calc(var(--size-base, var(--spacing, 0.25rem)) * 24); }
+  :where(.min-w-24) { min-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 24); }
+  :where(.min-h-24) { min-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 24); }
+  :where(.max-w-24) { max-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 24); }
+  :where(.max-h-24) { max-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 24); }
+  :where(.inline-24) { inline-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 24); }
+  :where(.block-24) { block-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 24); }
+  :where(.w-28) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 28); }
+  :where(.h-28) { height: calc(var(--size-base, var(--spacing, 0.25rem)) * 28); }
+  :where(.size-28) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 28); height: calc(var(--size-base, var(--spacing, 0.25rem)) * 28); }
+  :where(.min-w-28) { min-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 28); }
+  :where(.min-h-28) { min-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 28); }
+  :where(.max-w-28) { max-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 28); }
+  :where(.max-h-28) { max-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 28); }
+  :where(.inline-28) { inline-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 28); }
+  :where(.block-28) { block-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 28); }
+  :where(.w-32) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 32); }
+  :where(.h-32) { height: calc(var(--size-base, var(--spacing, 0.25rem)) * 32); }
+  :where(.size-32) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 32); height: calc(var(--size-base, var(--spacing, 0.25rem)) * 32); }
+  :where(.min-w-32) { min-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 32); }
+  :where(.min-h-32) { min-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 32); }
+  :where(.max-w-32) { max-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 32); }
+  :where(.max-h-32) { max-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 32); }
+  :where(.inline-32) { inline-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 32); }
+  :where(.block-32) { block-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 32); }
+  :where(.w-36) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 36); }
+  :where(.h-36) { height: calc(var(--size-base, var(--spacing, 0.25rem)) * 36); }
+  :where(.size-36) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 36); height: calc(var(--size-base, var(--spacing, 0.25rem)) * 36); }
+  :where(.min-w-36) { min-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 36); }
+  :where(.min-h-36) { min-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 36); }
+  :where(.max-w-36) { max-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 36); }
+  :where(.max-h-36) { max-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 36); }
+  :where(.inline-36) { inline-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 36); }
+  :where(.block-36) { block-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 36); }
+  :where(.w-40) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 40); }
+  :where(.h-40) { height: calc(var(--size-base, var(--spacing, 0.25rem)) * 40); }
+  :where(.size-40) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 40); height: calc(var(--size-base, var(--spacing, 0.25rem)) * 40); }
+  :where(.min-w-40) { min-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 40); }
+  :where(.min-h-40) { min-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 40); }
+  :where(.max-w-40) { max-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 40); }
+  :where(.max-h-40) { max-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 40); }
+  :where(.inline-40) { inline-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 40); }
+  :where(.block-40) { block-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 40); }
+  :where(.w-48) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 48); }
+  :where(.h-48) { height: calc(var(--size-base, var(--spacing, 0.25rem)) * 48); }
+  :where(.size-48) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 48); height: calc(var(--size-base, var(--spacing, 0.25rem)) * 48); }
+  :where(.min-w-48) { min-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 48); }
+  :where(.min-h-48) { min-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 48); }
+  :where(.max-w-48) { max-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 48); }
+  :where(.max-h-48) { max-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 48); }
+  :where(.inline-48) { inline-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 48); }
+  :where(.block-48) { block-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 48); }
+  :where(.w-56) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 56); }
+  :where(.h-56) { height: calc(var(--size-base, var(--spacing, 0.25rem)) * 56); }
+  :where(.size-56) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 56); height: calc(var(--size-base, var(--spacing, 0.25rem)) * 56); }
+  :where(.min-w-56) { min-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 56); }
+  :where(.min-h-56) { min-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 56); }
+  :where(.max-w-56) { max-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 56); }
+  :where(.max-h-56) { max-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 56); }
+  :where(.inline-56) { inline-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 56); }
+  :where(.block-56) { block-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 56); }
+  :where(.w-64) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 64); }
+  :where(.h-64) { height: calc(var(--size-base, var(--spacing, 0.25rem)) * 64); }
+  :where(.size-64) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 64); height: calc(var(--size-base, var(--spacing, 0.25rem)) * 64); }
+  :where(.min-w-64) { min-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 64); }
+  :where(.min-h-64) { min-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 64); }
+  :where(.max-w-64) { max-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 64); }
+  :where(.max-h-64) { max-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 64); }
+  :where(.inline-64) { inline-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 64); }
+  :where(.block-64) { block-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 64); }
+  :where(.w-72) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 72); }
+  :where(.h-72) { height: calc(var(--size-base, var(--spacing, 0.25rem)) * 72); }
+  :where(.size-72) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 72); height: calc(var(--size-base, var(--spacing, 0.25rem)) * 72); }
+  :where(.min-w-72) { min-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 72); }
+  :where(.min-h-72) { min-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 72); }
+  :where(.max-w-72) { max-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 72); }
+  :where(.max-h-72) { max-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 72); }
+  :where(.inline-72) { inline-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 72); }
+  :where(.block-72) { block-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 72); }
+  :where(.w-80) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 80); }
+  :where(.h-80) { height: calc(var(--size-base, var(--spacing, 0.25rem)) * 80); }
+  :where(.size-80) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 80); height: calc(var(--size-base, var(--spacing, 0.25rem)) * 80); }
+  :where(.min-w-80) { min-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 80); }
+  :where(.min-h-80) { min-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 80); }
+  :where(.max-w-80) { max-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 80); }
+  :where(.max-h-80) { max-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 80); }
+  :where(.inline-80) { inline-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 80); }
+  :where(.block-80) { block-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 80); }
+  :where(.w-96) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 96); }
+  :where(.h-96) { height: calc(var(--size-base, var(--spacing, 0.25rem)) * 96); }
+  :where(.size-96) { width: calc(var(--size-base, var(--spacing, 0.25rem)) * 96); height: calc(var(--size-base, var(--spacing, 0.25rem)) * 96); }
+  :where(.min-w-96) { min-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 96); }
+  :where(.min-h-96) { min-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 96); }
+  :where(.max-w-96) { max-width: calc(var(--size-base, var(--spacing, 0.25rem)) * 96); }
+  :where(.max-h-96) { max-height: calc(var(--size-base, var(--spacing, 0.25rem)) * 96); }
+  :where(.inline-96) { inline-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 96); }
+  :where(.block-96) { block-size: calc(var(--size-base, var(--spacing, 0.25rem)) * 96); }
+  :where(.w-px) { width: 1px; }
+  :where(.h-px) { height: 1px; }
+  :where(.size-px) { width: 1px; height: 1px; }
+  :where(.min-w-px) { min-width: 1px; }
+  :where(.min-h-px) { min-height: 1px; }
+  :where(.max-w-px) { max-width: 1px; }
+  :where(.max-h-px) { max-height: 1px; }
+  :where(.inline-px) { inline-size: 1px; }
+  :where(.block-px) { block-size: 1px; }
+
+  /* Content-, parent- and viewport-relative dimensions. */
+  :where(.w-auto) { width: auto; }
+  :where(.w-full) { width: 100%; }
+  :where(.w-min) { width: min-content; }
+  :where(.w-max) { width: max-content; }
+  :where(.w-fit) { width: fit-content; }
+  :where(.w-1\/2) { width: 50%; }
+  :where(.w-1\/3) { width: calc(100% / 3); }
+  :where(.w-2\/3) { width: calc(200% / 3); }
+  :where(.w-1\/4) { width: 25%; }
+  :where(.w-3\/4) { width: 75%; }
+  :where(.h-auto) { height: auto; }
+  :where(.h-full) { height: 100%; }
+  :where(.h-min) { height: min-content; }
+  :where(.h-max) { height: max-content; }
+  :where(.h-fit) { height: fit-content; }
+  :where(.h-1\/2) { height: 50%; }
+  :where(.h-1\/3) { height: calc(100% / 3); }
+  :where(.h-2\/3) { height: calc(200% / 3); }
+  :where(.h-1\/4) { height: 25%; }
+  :where(.h-3\/4) { height: 75%; }
+  :where(.inline-auto) { inline-size: auto; }
+  :where(.inline-full) { inline-size: 100%; }
+  :where(.inline-min) { inline-size: min-content; }
+  :where(.inline-max) { inline-size: max-content; }
+  :where(.inline-fit) { inline-size: fit-content; }
+  :where(.inline-1\/2) { inline-size: 50%; }
+  :where(.inline-1\/3) { inline-size: calc(100% / 3); }
+  :where(.inline-2\/3) { inline-size: calc(200% / 3); }
+  :where(.inline-1\/4) { inline-size: 25%; }
+  :where(.inline-3\/4) { inline-size: 75%; }
+  :where(.block-auto) { block-size: auto; }
+  :where(.block-full) { block-size: 100%; }
+  :where(.block-min) { block-size: min-content; }
+  :where(.block-max) { block-size: max-content; }
+  :where(.block-fit) { block-size: fit-content; }
+  :where(.block-1\/2) { block-size: 50%; }
+  :where(.block-1\/3) { block-size: calc(100% / 3); }
+  :where(.block-2\/3) { block-size: calc(200% / 3); }
+  :where(.block-1\/4) { block-size: 25%; }
+  :where(.block-3\/4) { block-size: 75%; }
+  :where(.min-w-full) { min-width: 100%; }
+  :where(.min-w-min) { min-width: min-content; }
+  :where(.min-w-max) { min-width: max-content; }
+  :where(.min-w-fit) { min-width: fit-content; }
+  :where(.min-h-full) { min-height: 100%; }
+  :where(.min-h-min) { min-height: min-content; }
+  :where(.min-h-max) { min-height: max-content; }
+  :where(.min-h-fit) { min-height: fit-content; }
+  :where(.max-w-full) { max-width: 100%; }
+  :where(.max-w-min) { max-width: min-content; }
+  :where(.max-w-max) { max-width: max-content; }
+  :where(.max-w-fit) { max-width: fit-content; }
+  :where(.max-h-full) { max-height: 100%; }
+  :where(.max-h-min) { max-height: min-content; }
+  :where(.max-h-max) { max-height: max-content; }
+  :where(.max-h-fit) { max-height: fit-content; }
+  :where(.max-w-none) { max-width: none; }
+  :where(.max-h-none) { max-height: none; }
+  :where(.h-screen) { height: 100vh; }
+  :where(.min-h-screen) { min-height: 100vh; }
+  :where(.max-h-screen) { max-height: 100vh; }
+  :where(.h-dvh) { height: 100dvh; }
+  :where(.min-h-dvh) { min-height: 100dvh; }
+  :where(.max-h-dvh) { max-height: 100dvh; }
+  :where(.h-svh) { height: 100svh; }
+  :where(.min-h-svh) { min-height: 100svh; }
+  :where(.max-h-svh) { max-height: 100svh; }
+  :where(.h-lvh) { height: 100lvh; }
+  :where(.min-h-lvh) { min-height: 100lvh; }
+  :where(.max-h-lvh) { max-height: 100lvh; }
+  :where(.w-screen) { width: 100vw; }
+  :where(.box-border) { box-sizing: border-box; }
+  :where(.box-content) { box-sizing: content-box; }
+
+  /* Spacing: compatible names; density is an explicit extension. */
+  :where(.gap-0) { gap: 0px; }
+  :where(.gap-x-0) { column-gap: 0px; }
+  :where(.gap-y-0) { row-gap: 0px; }
+  :where(.p-0) { padding: 0px; }
+  :where(.px-0) { padding-inline: 0px; }
+  :where(.py-0) { padding-block: 0px; }
+  :where(.pt-0) { padding-top: 0px; }
+  :where(.pr-0) { padding-right: 0px; }
+  :where(.pb-0) { padding-bottom: 0px; }
+  :where(.pl-0) { padding-left: 0px; }
+  :where(.ps-0) { padding-inline-start: 0px; }
+  :where(.pe-0) { padding-inline-end: 0px; }
+  :where(.m-0) { margin: 0px; }
+  :where(.mx-0) { margin-inline: 0px; }
+  :where(.my-0) { margin-block: 0px; }
+  :where(.mt-0) { margin-top: 0px; }
+  :where(.mr-0) { margin-right: 0px; }
+  :where(.mb-0) { margin-bottom: 0px; }
+  :where(.ml-0) { margin-left: 0px; }
+  :where(.ms-0) { margin-inline-start: 0px; }
+  :where(.me-0) { margin-inline-end: 0px; }
+  :where(.gap-0\.5) { gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5 * max(0, var(--layout-density, 1))); }
+  :where(.gap-x-0\.5) { column-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5 * max(0, var(--layout-density, 1))); }
+  :where(.gap-y-0\.5) { row-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5 * max(0, var(--layout-density, 1))); }
+  :where(.p-0\.5) { padding: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5 * max(0, var(--layout-density, 1))); }
+  :where(.px-0\.5) { padding-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5 * max(0, var(--layout-density, 1))); }
+  :where(.py-0\.5) { padding-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5 * max(0, var(--layout-density, 1))); }
+  :where(.pt-0\.5) { padding-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5 * max(0, var(--layout-density, 1))); }
+  :where(.pr-0\.5) { padding-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5 * max(0, var(--layout-density, 1))); }
+  :where(.pb-0\.5) { padding-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5 * max(0, var(--layout-density, 1))); }
+  :where(.pl-0\.5) { padding-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5 * max(0, var(--layout-density, 1))); }
+  :where(.ps-0\.5) { padding-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5 * max(0, var(--layout-density, 1))); }
+  :where(.pe-0\.5) { padding-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5 * max(0, var(--layout-density, 1))); }
+  :where(.m-0\.5) { margin: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5 * max(0, var(--layout-density, 1))); }
+  :where(.mx-0\.5) { margin-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5 * max(0, var(--layout-density, 1))); }
+  :where(.my-0\.5) { margin-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5 * max(0, var(--layout-density, 1))); }
+  :where(.mt-0\.5) { margin-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5 * max(0, var(--layout-density, 1))); }
+  :where(.mr-0\.5) { margin-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5 * max(0, var(--layout-density, 1))); }
+  :where(.mb-0\.5) { margin-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5 * max(0, var(--layout-density, 1))); }
+  :where(.ml-0\.5) { margin-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5 * max(0, var(--layout-density, 1))); }
+  :where(.ms-0\.5) { margin-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5 * max(0, var(--layout-density, 1))); }
+  :where(.me-0\.5) { margin-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 0.5 * max(0, var(--layout-density, 1))); }
+  :where(.gap-1) { gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 1 * max(0, var(--layout-density, 1))); }
+  :where(.gap-x-1) { column-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 1 * max(0, var(--layout-density, 1))); }
+  :where(.gap-y-1) { row-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 1 * max(0, var(--layout-density, 1))); }
+  :where(.p-1) { padding: calc(var(--size-base, var(--spacing, 0.25rem)) * 1 * max(0, var(--layout-density, 1))); }
+  :where(.px-1) { padding-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 1 * max(0, var(--layout-density, 1))); }
+  :where(.py-1) { padding-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 1 * max(0, var(--layout-density, 1))); }
+  :where(.pt-1) { padding-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 1 * max(0, var(--layout-density, 1))); }
+  :where(.pr-1) { padding-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 1 * max(0, var(--layout-density, 1))); }
+  :where(.pb-1) { padding-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 1 * max(0, var(--layout-density, 1))); }
+  :where(.pl-1) { padding-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 1 * max(0, var(--layout-density, 1))); }
+  :where(.ps-1) { padding-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 1 * max(0, var(--layout-density, 1))); }
+  :where(.pe-1) { padding-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 1 * max(0, var(--layout-density, 1))); }
+  :where(.m-1) { margin: calc(var(--size-base, var(--spacing, 0.25rem)) * 1 * max(0, var(--layout-density, 1))); }
+  :where(.mx-1) { margin-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 1 * max(0, var(--layout-density, 1))); }
+  :where(.my-1) { margin-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 1 * max(0, var(--layout-density, 1))); }
+  :where(.mt-1) { margin-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 1 * max(0, var(--layout-density, 1))); }
+  :where(.mr-1) { margin-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 1 * max(0, var(--layout-density, 1))); }
+  :where(.mb-1) { margin-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 1 * max(0, var(--layout-density, 1))); }
+  :where(.ml-1) { margin-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 1 * max(0, var(--layout-density, 1))); }
+  :where(.ms-1) { margin-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 1 * max(0, var(--layout-density, 1))); }
+  :where(.me-1) { margin-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 1 * max(0, var(--layout-density, 1))); }
+  :where(.gap-1\.5) { gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5 * max(0, var(--layout-density, 1))); }
+  :where(.gap-x-1\.5) { column-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5 * max(0, var(--layout-density, 1))); }
+  :where(.gap-y-1\.5) { row-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5 * max(0, var(--layout-density, 1))); }
+  :where(.p-1\.5) { padding: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5 * max(0, var(--layout-density, 1))); }
+  :where(.px-1\.5) { padding-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5 * max(0, var(--layout-density, 1))); }
+  :where(.py-1\.5) { padding-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5 * max(0, var(--layout-density, 1))); }
+  :where(.pt-1\.5) { padding-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5 * max(0, var(--layout-density, 1))); }
+  :where(.pr-1\.5) { padding-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5 * max(0, var(--layout-density, 1))); }
+  :where(.pb-1\.5) { padding-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5 * max(0, var(--layout-density, 1))); }
+  :where(.pl-1\.5) { padding-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5 * max(0, var(--layout-density, 1))); }
+  :where(.ps-1\.5) { padding-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5 * max(0, var(--layout-density, 1))); }
+  :where(.pe-1\.5) { padding-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5 * max(0, var(--layout-density, 1))); }
+  :where(.m-1\.5) { margin: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5 * max(0, var(--layout-density, 1))); }
+  :where(.mx-1\.5) { margin-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5 * max(0, var(--layout-density, 1))); }
+  :where(.my-1\.5) { margin-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5 * max(0, var(--layout-density, 1))); }
+  :where(.mt-1\.5) { margin-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5 * max(0, var(--layout-density, 1))); }
+  :where(.mr-1\.5) { margin-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5 * max(0, var(--layout-density, 1))); }
+  :where(.mb-1\.5) { margin-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5 * max(0, var(--layout-density, 1))); }
+  :where(.ml-1\.5) { margin-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5 * max(0, var(--layout-density, 1))); }
+  :where(.ms-1\.5) { margin-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5 * max(0, var(--layout-density, 1))); }
+  :where(.me-1\.5) { margin-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 1.5 * max(0, var(--layout-density, 1))); }
+  :where(.gap-2) { gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 2 * max(0, var(--layout-density, 1))); }
+  :where(.gap-x-2) { column-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 2 * max(0, var(--layout-density, 1))); }
+  :where(.gap-y-2) { row-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 2 * max(0, var(--layout-density, 1))); }
+  :where(.p-2) { padding: calc(var(--size-base, var(--spacing, 0.25rem)) * 2 * max(0, var(--layout-density, 1))); }
+  :where(.px-2) { padding-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 2 * max(0, var(--layout-density, 1))); }
+  :where(.py-2) { padding-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 2 * max(0, var(--layout-density, 1))); }
+  :where(.pt-2) { padding-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 2 * max(0, var(--layout-density, 1))); }
+  :where(.pr-2) { padding-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 2 * max(0, var(--layout-density, 1))); }
+  :where(.pb-2) { padding-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 2 * max(0, var(--layout-density, 1))); }
+  :where(.pl-2) { padding-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 2 * max(0, var(--layout-density, 1))); }
+  :where(.ps-2) { padding-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 2 * max(0, var(--layout-density, 1))); }
+  :where(.pe-2) { padding-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 2 * max(0, var(--layout-density, 1))); }
+  :where(.m-2) { margin: calc(var(--size-base, var(--spacing, 0.25rem)) * 2 * max(0, var(--layout-density, 1))); }
+  :where(.mx-2) { margin-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 2 * max(0, var(--layout-density, 1))); }
+  :where(.my-2) { margin-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 2 * max(0, var(--layout-density, 1))); }
+  :where(.mt-2) { margin-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 2 * max(0, var(--layout-density, 1))); }
+  :where(.mr-2) { margin-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 2 * max(0, var(--layout-density, 1))); }
+  :where(.mb-2) { margin-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 2 * max(0, var(--layout-density, 1))); }
+  :where(.ml-2) { margin-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 2 * max(0, var(--layout-density, 1))); }
+  :where(.ms-2) { margin-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 2 * max(0, var(--layout-density, 1))); }
+  :where(.me-2) { margin-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 2 * max(0, var(--layout-density, 1))); }
+  :where(.gap-2\.5) { gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5 * max(0, var(--layout-density, 1))); }
+  :where(.gap-x-2\.5) { column-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5 * max(0, var(--layout-density, 1))); }
+  :where(.gap-y-2\.5) { row-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5 * max(0, var(--layout-density, 1))); }
+  :where(.p-2\.5) { padding: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5 * max(0, var(--layout-density, 1))); }
+  :where(.px-2\.5) { padding-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5 * max(0, var(--layout-density, 1))); }
+  :where(.py-2\.5) { padding-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5 * max(0, var(--layout-density, 1))); }
+  :where(.pt-2\.5) { padding-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5 * max(0, var(--layout-density, 1))); }
+  :where(.pr-2\.5) { padding-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5 * max(0, var(--layout-density, 1))); }
+  :where(.pb-2\.5) { padding-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5 * max(0, var(--layout-density, 1))); }
+  :where(.pl-2\.5) { padding-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5 * max(0, var(--layout-density, 1))); }
+  :where(.ps-2\.5) { padding-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5 * max(0, var(--layout-density, 1))); }
+  :where(.pe-2\.5) { padding-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5 * max(0, var(--layout-density, 1))); }
+  :where(.m-2\.5) { margin: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5 * max(0, var(--layout-density, 1))); }
+  :where(.mx-2\.5) { margin-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5 * max(0, var(--layout-density, 1))); }
+  :where(.my-2\.5) { margin-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5 * max(0, var(--layout-density, 1))); }
+  :where(.mt-2\.5) { margin-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5 * max(0, var(--layout-density, 1))); }
+  :where(.mr-2\.5) { margin-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5 * max(0, var(--layout-density, 1))); }
+  :where(.mb-2\.5) { margin-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5 * max(0, var(--layout-density, 1))); }
+  :where(.ml-2\.5) { margin-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5 * max(0, var(--layout-density, 1))); }
+  :where(.ms-2\.5) { margin-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5 * max(0, var(--layout-density, 1))); }
+  :where(.me-2\.5) { margin-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 2.5 * max(0, var(--layout-density, 1))); }
+  :where(.gap-3) { gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 3 * max(0, var(--layout-density, 1))); }
+  :where(.gap-x-3) { column-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 3 * max(0, var(--layout-density, 1))); }
+  :where(.gap-y-3) { row-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 3 * max(0, var(--layout-density, 1))); }
+  :where(.p-3) { padding: calc(var(--size-base, var(--spacing, 0.25rem)) * 3 * max(0, var(--layout-density, 1))); }
+  :where(.px-3) { padding-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 3 * max(0, var(--layout-density, 1))); }
+  :where(.py-3) { padding-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 3 * max(0, var(--layout-density, 1))); }
+  :where(.pt-3) { padding-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 3 * max(0, var(--layout-density, 1))); }
+  :where(.pr-3) { padding-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 3 * max(0, var(--layout-density, 1))); }
+  :where(.pb-3) { padding-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 3 * max(0, var(--layout-density, 1))); }
+  :where(.pl-3) { padding-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 3 * max(0, var(--layout-density, 1))); }
+  :where(.ps-3) { padding-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 3 * max(0, var(--layout-density, 1))); }
+  :where(.pe-3) { padding-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 3 * max(0, var(--layout-density, 1))); }
+  :where(.m-3) { margin: calc(var(--size-base, var(--spacing, 0.25rem)) * 3 * max(0, var(--layout-density, 1))); }
+  :where(.mx-3) { margin-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 3 * max(0, var(--layout-density, 1))); }
+  :where(.my-3) { margin-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 3 * max(0, var(--layout-density, 1))); }
+  :where(.mt-3) { margin-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 3 * max(0, var(--layout-density, 1))); }
+  :where(.mr-3) { margin-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 3 * max(0, var(--layout-density, 1))); }
+  :where(.mb-3) { margin-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 3 * max(0, var(--layout-density, 1))); }
+  :where(.ml-3) { margin-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 3 * max(0, var(--layout-density, 1))); }
+  :where(.ms-3) { margin-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 3 * max(0, var(--layout-density, 1))); }
+  :where(.me-3) { margin-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 3 * max(0, var(--layout-density, 1))); }
+  :where(.gap-3\.5) { gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5 * max(0, var(--layout-density, 1))); }
+  :where(.gap-x-3\.5) { column-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5 * max(0, var(--layout-density, 1))); }
+  :where(.gap-y-3\.5) { row-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5 * max(0, var(--layout-density, 1))); }
+  :where(.p-3\.5) { padding: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5 * max(0, var(--layout-density, 1))); }
+  :where(.px-3\.5) { padding-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5 * max(0, var(--layout-density, 1))); }
+  :where(.py-3\.5) { padding-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5 * max(0, var(--layout-density, 1))); }
+  :where(.pt-3\.5) { padding-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5 * max(0, var(--layout-density, 1))); }
+  :where(.pr-3\.5) { padding-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5 * max(0, var(--layout-density, 1))); }
+  :where(.pb-3\.5) { padding-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5 * max(0, var(--layout-density, 1))); }
+  :where(.pl-3\.5) { padding-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5 * max(0, var(--layout-density, 1))); }
+  :where(.ps-3\.5) { padding-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5 * max(0, var(--layout-density, 1))); }
+  :where(.pe-3\.5) { padding-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5 * max(0, var(--layout-density, 1))); }
+  :where(.m-3\.5) { margin: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5 * max(0, var(--layout-density, 1))); }
+  :where(.mx-3\.5) { margin-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5 * max(0, var(--layout-density, 1))); }
+  :where(.my-3\.5) { margin-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5 * max(0, var(--layout-density, 1))); }
+  :where(.mt-3\.5) { margin-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5 * max(0, var(--layout-density, 1))); }
+  :where(.mr-3\.5) { margin-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5 * max(0, var(--layout-density, 1))); }
+  :where(.mb-3\.5) { margin-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5 * max(0, var(--layout-density, 1))); }
+  :where(.ml-3\.5) { margin-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5 * max(0, var(--layout-density, 1))); }
+  :where(.ms-3\.5) { margin-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5 * max(0, var(--layout-density, 1))); }
+  :where(.me-3\.5) { margin-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 3.5 * max(0, var(--layout-density, 1))); }
+  :where(.gap-4) { gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 4 * max(0, var(--layout-density, 1))); }
+  :where(.gap-x-4) { column-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 4 * max(0, var(--layout-density, 1))); }
+  :where(.gap-y-4) { row-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 4 * max(0, var(--layout-density, 1))); }
+  :where(.p-4) { padding: calc(var(--size-base, var(--spacing, 0.25rem)) * 4 * max(0, var(--layout-density, 1))); }
+  :where(.px-4) { padding-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 4 * max(0, var(--layout-density, 1))); }
+  :where(.py-4) { padding-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 4 * max(0, var(--layout-density, 1))); }
+  :where(.pt-4) { padding-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 4 * max(0, var(--layout-density, 1))); }
+  :where(.pr-4) { padding-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 4 * max(0, var(--layout-density, 1))); }
+  :where(.pb-4) { padding-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 4 * max(0, var(--layout-density, 1))); }
+  :where(.pl-4) { padding-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 4 * max(0, var(--layout-density, 1))); }
+  :where(.ps-4) { padding-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 4 * max(0, var(--layout-density, 1))); }
+  :where(.pe-4) { padding-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 4 * max(0, var(--layout-density, 1))); }
+  :where(.m-4) { margin: calc(var(--size-base, var(--spacing, 0.25rem)) * 4 * max(0, var(--layout-density, 1))); }
+  :where(.mx-4) { margin-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 4 * max(0, var(--layout-density, 1))); }
+  :where(.my-4) { margin-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 4 * max(0, var(--layout-density, 1))); }
+  :where(.mt-4) { margin-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 4 * max(0, var(--layout-density, 1))); }
+  :where(.mr-4) { margin-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 4 * max(0, var(--layout-density, 1))); }
+  :where(.mb-4) { margin-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 4 * max(0, var(--layout-density, 1))); }
+  :where(.ml-4) { margin-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 4 * max(0, var(--layout-density, 1))); }
+  :where(.ms-4) { margin-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 4 * max(0, var(--layout-density, 1))); }
+  :where(.me-4) { margin-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 4 * max(0, var(--layout-density, 1))); }
+  :where(.gap-5) { gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 5 * max(0, var(--layout-density, 1))); }
+  :where(.gap-x-5) { column-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 5 * max(0, var(--layout-density, 1))); }
+  :where(.gap-y-5) { row-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 5 * max(0, var(--layout-density, 1))); }
+  :where(.p-5) { padding: calc(var(--size-base, var(--spacing, 0.25rem)) * 5 * max(0, var(--layout-density, 1))); }
+  :where(.px-5) { padding-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 5 * max(0, var(--layout-density, 1))); }
+  :where(.py-5) { padding-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 5 * max(0, var(--layout-density, 1))); }
+  :where(.pt-5) { padding-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 5 * max(0, var(--layout-density, 1))); }
+  :where(.pr-5) { padding-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 5 * max(0, var(--layout-density, 1))); }
+  :where(.pb-5) { padding-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 5 * max(0, var(--layout-density, 1))); }
+  :where(.pl-5) { padding-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 5 * max(0, var(--layout-density, 1))); }
+  :where(.ps-5) { padding-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 5 * max(0, var(--layout-density, 1))); }
+  :where(.pe-5) { padding-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 5 * max(0, var(--layout-density, 1))); }
+  :where(.m-5) { margin: calc(var(--size-base, var(--spacing, 0.25rem)) * 5 * max(0, var(--layout-density, 1))); }
+  :where(.mx-5) { margin-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 5 * max(0, var(--layout-density, 1))); }
+  :where(.my-5) { margin-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 5 * max(0, var(--layout-density, 1))); }
+  :where(.mt-5) { margin-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 5 * max(0, var(--layout-density, 1))); }
+  :where(.mr-5) { margin-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 5 * max(0, var(--layout-density, 1))); }
+  :where(.mb-5) { margin-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 5 * max(0, var(--layout-density, 1))); }
+  :where(.ml-5) { margin-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 5 * max(0, var(--layout-density, 1))); }
+  :where(.ms-5) { margin-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 5 * max(0, var(--layout-density, 1))); }
+  :where(.me-5) { margin-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 5 * max(0, var(--layout-density, 1))); }
+  :where(.gap-6) { gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 6 * max(0, var(--layout-density, 1))); }
+  :where(.gap-x-6) { column-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 6 * max(0, var(--layout-density, 1))); }
+  :where(.gap-y-6) { row-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 6 * max(0, var(--layout-density, 1))); }
+  :where(.p-6) { padding: calc(var(--size-base, var(--spacing, 0.25rem)) * 6 * max(0, var(--layout-density, 1))); }
+  :where(.px-6) { padding-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 6 * max(0, var(--layout-density, 1))); }
+  :where(.py-6) { padding-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 6 * max(0, var(--layout-density, 1))); }
+  :where(.pt-6) { padding-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 6 * max(0, var(--layout-density, 1))); }
+  :where(.pr-6) { padding-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 6 * max(0, var(--layout-density, 1))); }
+  :where(.pb-6) { padding-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 6 * max(0, var(--layout-density, 1))); }
+  :where(.pl-6) { padding-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 6 * max(0, var(--layout-density, 1))); }
+  :where(.ps-6) { padding-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 6 * max(0, var(--layout-density, 1))); }
+  :where(.pe-6) { padding-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 6 * max(0, var(--layout-density, 1))); }
+  :where(.m-6) { margin: calc(var(--size-base, var(--spacing, 0.25rem)) * 6 * max(0, var(--layout-density, 1))); }
+  :where(.mx-6) { margin-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 6 * max(0, var(--layout-density, 1))); }
+  :where(.my-6) { margin-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 6 * max(0, var(--layout-density, 1))); }
+  :where(.mt-6) { margin-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 6 * max(0, var(--layout-density, 1))); }
+  :where(.mr-6) { margin-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 6 * max(0, var(--layout-density, 1))); }
+  :where(.mb-6) { margin-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 6 * max(0, var(--layout-density, 1))); }
+  :where(.ml-6) { margin-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 6 * max(0, var(--layout-density, 1))); }
+  :where(.ms-6) { margin-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 6 * max(0, var(--layout-density, 1))); }
+  :where(.me-6) { margin-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 6 * max(0, var(--layout-density, 1))); }
+  :where(.gap-7) { gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 7 * max(0, var(--layout-density, 1))); }
+  :where(.gap-x-7) { column-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 7 * max(0, var(--layout-density, 1))); }
+  :where(.gap-y-7) { row-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 7 * max(0, var(--layout-density, 1))); }
+  :where(.p-7) { padding: calc(var(--size-base, var(--spacing, 0.25rem)) * 7 * max(0, var(--layout-density, 1))); }
+  :where(.px-7) { padding-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 7 * max(0, var(--layout-density, 1))); }
+  :where(.py-7) { padding-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 7 * max(0, var(--layout-density, 1))); }
+  :where(.pt-7) { padding-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 7 * max(0, var(--layout-density, 1))); }
+  :where(.pr-7) { padding-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 7 * max(0, var(--layout-density, 1))); }
+  :where(.pb-7) { padding-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 7 * max(0, var(--layout-density, 1))); }
+  :where(.pl-7) { padding-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 7 * max(0, var(--layout-density, 1))); }
+  :where(.ps-7) { padding-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 7 * max(0, var(--layout-density, 1))); }
+  :where(.pe-7) { padding-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 7 * max(0, var(--layout-density, 1))); }
+  :where(.m-7) { margin: calc(var(--size-base, var(--spacing, 0.25rem)) * 7 * max(0, var(--layout-density, 1))); }
+  :where(.mx-7) { margin-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 7 * max(0, var(--layout-density, 1))); }
+  :where(.my-7) { margin-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 7 * max(0, var(--layout-density, 1))); }
+  :where(.mt-7) { margin-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 7 * max(0, var(--layout-density, 1))); }
+  :where(.mr-7) { margin-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 7 * max(0, var(--layout-density, 1))); }
+  :where(.mb-7) { margin-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 7 * max(0, var(--layout-density, 1))); }
+  :where(.ml-7) { margin-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 7 * max(0, var(--layout-density, 1))); }
+  :where(.ms-7) { margin-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 7 * max(0, var(--layout-density, 1))); }
+  :where(.me-7) { margin-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 7 * max(0, var(--layout-density, 1))); }
+  :where(.gap-8) { gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 8 * max(0, var(--layout-density, 1))); }
+  :where(.gap-x-8) { column-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 8 * max(0, var(--layout-density, 1))); }
+  :where(.gap-y-8) { row-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 8 * max(0, var(--layout-density, 1))); }
+  :where(.p-8) { padding: calc(var(--size-base, var(--spacing, 0.25rem)) * 8 * max(0, var(--layout-density, 1))); }
+  :where(.px-8) { padding-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 8 * max(0, var(--layout-density, 1))); }
+  :where(.py-8) { padding-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 8 * max(0, var(--layout-density, 1))); }
+  :where(.pt-8) { padding-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 8 * max(0, var(--layout-density, 1))); }
+  :where(.pr-8) { padding-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 8 * max(0, var(--layout-density, 1))); }
+  :where(.pb-8) { padding-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 8 * max(0, var(--layout-density, 1))); }
+  :where(.pl-8) { padding-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 8 * max(0, var(--layout-density, 1))); }
+  :where(.ps-8) { padding-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 8 * max(0, var(--layout-density, 1))); }
+  :where(.pe-8) { padding-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 8 * max(0, var(--layout-density, 1))); }
+  :where(.m-8) { margin: calc(var(--size-base, var(--spacing, 0.25rem)) * 8 * max(0, var(--layout-density, 1))); }
+  :where(.mx-8) { margin-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 8 * max(0, var(--layout-density, 1))); }
+  :where(.my-8) { margin-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 8 * max(0, var(--layout-density, 1))); }
+  :where(.mt-8) { margin-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 8 * max(0, var(--layout-density, 1))); }
+  :where(.mr-8) { margin-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 8 * max(0, var(--layout-density, 1))); }
+  :where(.mb-8) { margin-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 8 * max(0, var(--layout-density, 1))); }
+  :where(.ml-8) { margin-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 8 * max(0, var(--layout-density, 1))); }
+  :where(.ms-8) { margin-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 8 * max(0, var(--layout-density, 1))); }
+  :where(.me-8) { margin-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 8 * max(0, var(--layout-density, 1))); }
+  :where(.gap-9) { gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 9 * max(0, var(--layout-density, 1))); }
+  :where(.gap-x-9) { column-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 9 * max(0, var(--layout-density, 1))); }
+  :where(.gap-y-9) { row-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 9 * max(0, var(--layout-density, 1))); }
+  :where(.p-9) { padding: calc(var(--size-base, var(--spacing, 0.25rem)) * 9 * max(0, var(--layout-density, 1))); }
+  :where(.px-9) { padding-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 9 * max(0, var(--layout-density, 1))); }
+  :where(.py-9) { padding-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 9 * max(0, var(--layout-density, 1))); }
+  :where(.pt-9) { padding-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 9 * max(0, var(--layout-density, 1))); }
+  :where(.pr-9) { padding-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 9 * max(0, var(--layout-density, 1))); }
+  :where(.pb-9) { padding-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 9 * max(0, var(--layout-density, 1))); }
+  :where(.pl-9) { padding-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 9 * max(0, var(--layout-density, 1))); }
+  :where(.ps-9) { padding-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 9 * max(0, var(--layout-density, 1))); }
+  :where(.pe-9) { padding-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 9 * max(0, var(--layout-density, 1))); }
+  :where(.m-9) { margin: calc(var(--size-base, var(--spacing, 0.25rem)) * 9 * max(0, var(--layout-density, 1))); }
+  :where(.mx-9) { margin-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 9 * max(0, var(--layout-density, 1))); }
+  :where(.my-9) { margin-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 9 * max(0, var(--layout-density, 1))); }
+  :where(.mt-9) { margin-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 9 * max(0, var(--layout-density, 1))); }
+  :where(.mr-9) { margin-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 9 * max(0, var(--layout-density, 1))); }
+  :where(.mb-9) { margin-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 9 * max(0, var(--layout-density, 1))); }
+  :where(.ml-9) { margin-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 9 * max(0, var(--layout-density, 1))); }
+  :where(.ms-9) { margin-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 9 * max(0, var(--layout-density, 1))); }
+  :where(.me-9) { margin-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 9 * max(0, var(--layout-density, 1))); }
+  :where(.gap-10) { gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 10 * max(0, var(--layout-density, 1))); }
+  :where(.gap-x-10) { column-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 10 * max(0, var(--layout-density, 1))); }
+  :where(.gap-y-10) { row-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 10 * max(0, var(--layout-density, 1))); }
+  :where(.p-10) { padding: calc(var(--size-base, var(--spacing, 0.25rem)) * 10 * max(0, var(--layout-density, 1))); }
+  :where(.px-10) { padding-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 10 * max(0, var(--layout-density, 1))); }
+  :where(.py-10) { padding-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 10 * max(0, var(--layout-density, 1))); }
+  :where(.pt-10) { padding-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 10 * max(0, var(--layout-density, 1))); }
+  :where(.pr-10) { padding-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 10 * max(0, var(--layout-density, 1))); }
+  :where(.pb-10) { padding-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 10 * max(0, var(--layout-density, 1))); }
+  :where(.pl-10) { padding-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 10 * max(0, var(--layout-density, 1))); }
+  :where(.ps-10) { padding-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 10 * max(0, var(--layout-density, 1))); }
+  :where(.pe-10) { padding-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 10 * max(0, var(--layout-density, 1))); }
+  :where(.m-10) { margin: calc(var(--size-base, var(--spacing, 0.25rem)) * 10 * max(0, var(--layout-density, 1))); }
+  :where(.mx-10) { margin-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 10 * max(0, var(--layout-density, 1))); }
+  :where(.my-10) { margin-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 10 * max(0, var(--layout-density, 1))); }
+  :where(.mt-10) { margin-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 10 * max(0, var(--layout-density, 1))); }
+  :where(.mr-10) { margin-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 10 * max(0, var(--layout-density, 1))); }
+  :where(.mb-10) { margin-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 10 * max(0, var(--layout-density, 1))); }
+  :where(.ml-10) { margin-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 10 * max(0, var(--layout-density, 1))); }
+  :where(.ms-10) { margin-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 10 * max(0, var(--layout-density, 1))); }
+  :where(.me-10) { margin-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 10 * max(0, var(--layout-density, 1))); }
+  :where(.gap-11) { gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 11 * max(0, var(--layout-density, 1))); }
+  :where(.gap-x-11) { column-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 11 * max(0, var(--layout-density, 1))); }
+  :where(.gap-y-11) { row-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 11 * max(0, var(--layout-density, 1))); }
+  :where(.p-11) { padding: calc(var(--size-base, var(--spacing, 0.25rem)) * 11 * max(0, var(--layout-density, 1))); }
+  :where(.px-11) { padding-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 11 * max(0, var(--layout-density, 1))); }
+  :where(.py-11) { padding-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 11 * max(0, var(--layout-density, 1))); }
+  :where(.pt-11) { padding-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 11 * max(0, var(--layout-density, 1))); }
+  :where(.pr-11) { padding-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 11 * max(0, var(--layout-density, 1))); }
+  :where(.pb-11) { padding-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 11 * max(0, var(--layout-density, 1))); }
+  :where(.pl-11) { padding-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 11 * max(0, var(--layout-density, 1))); }
+  :where(.ps-11) { padding-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 11 * max(0, var(--layout-density, 1))); }
+  :where(.pe-11) { padding-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 11 * max(0, var(--layout-density, 1))); }
+  :where(.m-11) { margin: calc(var(--size-base, var(--spacing, 0.25rem)) * 11 * max(0, var(--layout-density, 1))); }
+  :where(.mx-11) { margin-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 11 * max(0, var(--layout-density, 1))); }
+  :where(.my-11) { margin-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 11 * max(0, var(--layout-density, 1))); }
+  :where(.mt-11) { margin-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 11 * max(0, var(--layout-density, 1))); }
+  :where(.mr-11) { margin-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 11 * max(0, var(--layout-density, 1))); }
+  :where(.mb-11) { margin-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 11 * max(0, var(--layout-density, 1))); }
+  :where(.ml-11) { margin-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 11 * max(0, var(--layout-density, 1))); }
+  :where(.ms-11) { margin-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 11 * max(0, var(--layout-density, 1))); }
+  :where(.me-11) { margin-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 11 * max(0, var(--layout-density, 1))); }
+  :where(.gap-12) { gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 12 * max(0, var(--layout-density, 1))); }
+  :where(.gap-x-12) { column-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 12 * max(0, var(--layout-density, 1))); }
+  :where(.gap-y-12) { row-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 12 * max(0, var(--layout-density, 1))); }
+  :where(.p-12) { padding: calc(var(--size-base, var(--spacing, 0.25rem)) * 12 * max(0, var(--layout-density, 1))); }
+  :where(.px-12) { padding-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 12 * max(0, var(--layout-density, 1))); }
+  :where(.py-12) { padding-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 12 * max(0, var(--layout-density, 1))); }
+  :where(.pt-12) { padding-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 12 * max(0, var(--layout-density, 1))); }
+  :where(.pr-12) { padding-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 12 * max(0, var(--layout-density, 1))); }
+  :where(.pb-12) { padding-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 12 * max(0, var(--layout-density, 1))); }
+  :where(.pl-12) { padding-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 12 * max(0, var(--layout-density, 1))); }
+  :where(.ps-12) { padding-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 12 * max(0, var(--layout-density, 1))); }
+  :where(.pe-12) { padding-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 12 * max(0, var(--layout-density, 1))); }
+  :where(.m-12) { margin: calc(var(--size-base, var(--spacing, 0.25rem)) * 12 * max(0, var(--layout-density, 1))); }
+  :where(.mx-12) { margin-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 12 * max(0, var(--layout-density, 1))); }
+  :where(.my-12) { margin-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 12 * max(0, var(--layout-density, 1))); }
+  :where(.mt-12) { margin-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 12 * max(0, var(--layout-density, 1))); }
+  :where(.mr-12) { margin-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 12 * max(0, var(--layout-density, 1))); }
+  :where(.mb-12) { margin-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 12 * max(0, var(--layout-density, 1))); }
+  :where(.ml-12) { margin-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 12 * max(0, var(--layout-density, 1))); }
+  :where(.ms-12) { margin-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 12 * max(0, var(--layout-density, 1))); }
+  :where(.me-12) { margin-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 12 * max(0, var(--layout-density, 1))); }
+  :where(.gap-14) { gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 14 * max(0, var(--layout-density, 1))); }
+  :where(.gap-x-14) { column-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 14 * max(0, var(--layout-density, 1))); }
+  :where(.gap-y-14) { row-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 14 * max(0, var(--layout-density, 1))); }
+  :where(.p-14) { padding: calc(var(--size-base, var(--spacing, 0.25rem)) * 14 * max(0, var(--layout-density, 1))); }
+  :where(.px-14) { padding-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 14 * max(0, var(--layout-density, 1))); }
+  :where(.py-14) { padding-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 14 * max(0, var(--layout-density, 1))); }
+  :where(.pt-14) { padding-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 14 * max(0, var(--layout-density, 1))); }
+  :where(.pr-14) { padding-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 14 * max(0, var(--layout-density, 1))); }
+  :where(.pb-14) { padding-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 14 * max(0, var(--layout-density, 1))); }
+  :where(.pl-14) { padding-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 14 * max(0, var(--layout-density, 1))); }
+  :where(.ps-14) { padding-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 14 * max(0, var(--layout-density, 1))); }
+  :where(.pe-14) { padding-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 14 * max(0, var(--layout-density, 1))); }
+  :where(.m-14) { margin: calc(var(--size-base, var(--spacing, 0.25rem)) * 14 * max(0, var(--layout-density, 1))); }
+  :where(.mx-14) { margin-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 14 * max(0, var(--layout-density, 1))); }
+  :where(.my-14) { margin-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 14 * max(0, var(--layout-density, 1))); }
+  :where(.mt-14) { margin-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 14 * max(0, var(--layout-density, 1))); }
+  :where(.mr-14) { margin-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 14 * max(0, var(--layout-density, 1))); }
+  :where(.mb-14) { margin-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 14 * max(0, var(--layout-density, 1))); }
+  :where(.ml-14) { margin-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 14 * max(0, var(--layout-density, 1))); }
+  :where(.ms-14) { margin-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 14 * max(0, var(--layout-density, 1))); }
+  :where(.me-14) { margin-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 14 * max(0, var(--layout-density, 1))); }
+  :where(.gap-16) { gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 16 * max(0, var(--layout-density, 1))); }
+  :where(.gap-x-16) { column-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 16 * max(0, var(--layout-density, 1))); }
+  :where(.gap-y-16) { row-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 16 * max(0, var(--layout-density, 1))); }
+  :where(.p-16) { padding: calc(var(--size-base, var(--spacing, 0.25rem)) * 16 * max(0, var(--layout-density, 1))); }
+  :where(.px-16) { padding-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 16 * max(0, var(--layout-density, 1))); }
+  :where(.py-16) { padding-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 16 * max(0, var(--layout-density, 1))); }
+  :where(.pt-16) { padding-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 16 * max(0, var(--layout-density, 1))); }
+  :where(.pr-16) { padding-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 16 * max(0, var(--layout-density, 1))); }
+  :where(.pb-16) { padding-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 16 * max(0, var(--layout-density, 1))); }
+  :where(.pl-16) { padding-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 16 * max(0, var(--layout-density, 1))); }
+  :where(.ps-16) { padding-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 16 * max(0, var(--layout-density, 1))); }
+  :where(.pe-16) { padding-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 16 * max(0, var(--layout-density, 1))); }
+  :where(.m-16) { margin: calc(var(--size-base, var(--spacing, 0.25rem)) * 16 * max(0, var(--layout-density, 1))); }
+  :where(.mx-16) { margin-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 16 * max(0, var(--layout-density, 1))); }
+  :where(.my-16) { margin-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 16 * max(0, var(--layout-density, 1))); }
+  :where(.mt-16) { margin-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 16 * max(0, var(--layout-density, 1))); }
+  :where(.mr-16) { margin-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 16 * max(0, var(--layout-density, 1))); }
+  :where(.mb-16) { margin-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 16 * max(0, var(--layout-density, 1))); }
+  :where(.ml-16) { margin-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 16 * max(0, var(--layout-density, 1))); }
+  :where(.ms-16) { margin-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 16 * max(0, var(--layout-density, 1))); }
+  :where(.me-16) { margin-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 16 * max(0, var(--layout-density, 1))); }
+  :where(.gap-20) { gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 20 * max(0, var(--layout-density, 1))); }
+  :where(.gap-x-20) { column-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 20 * max(0, var(--layout-density, 1))); }
+  :where(.gap-y-20) { row-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 20 * max(0, var(--layout-density, 1))); }
+  :where(.p-20) { padding: calc(var(--size-base, var(--spacing, 0.25rem)) * 20 * max(0, var(--layout-density, 1))); }
+  :where(.px-20) { padding-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 20 * max(0, var(--layout-density, 1))); }
+  :where(.py-20) { padding-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 20 * max(0, var(--layout-density, 1))); }
+  :where(.pt-20) { padding-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 20 * max(0, var(--layout-density, 1))); }
+  :where(.pr-20) { padding-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 20 * max(0, var(--layout-density, 1))); }
+  :where(.pb-20) { padding-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 20 * max(0, var(--layout-density, 1))); }
+  :where(.pl-20) { padding-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 20 * max(0, var(--layout-density, 1))); }
+  :where(.ps-20) { padding-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 20 * max(0, var(--layout-density, 1))); }
+  :where(.pe-20) { padding-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 20 * max(0, var(--layout-density, 1))); }
+  :where(.m-20) { margin: calc(var(--size-base, var(--spacing, 0.25rem)) * 20 * max(0, var(--layout-density, 1))); }
+  :where(.mx-20) { margin-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 20 * max(0, var(--layout-density, 1))); }
+  :where(.my-20) { margin-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 20 * max(0, var(--layout-density, 1))); }
+  :where(.mt-20) { margin-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 20 * max(0, var(--layout-density, 1))); }
+  :where(.mr-20) { margin-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 20 * max(0, var(--layout-density, 1))); }
+  :where(.mb-20) { margin-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 20 * max(0, var(--layout-density, 1))); }
+  :where(.ml-20) { margin-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 20 * max(0, var(--layout-density, 1))); }
+  :where(.ms-20) { margin-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 20 * max(0, var(--layout-density, 1))); }
+  :where(.me-20) { margin-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 20 * max(0, var(--layout-density, 1))); }
+  :where(.gap-24) { gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 24 * max(0, var(--layout-density, 1))); }
+  :where(.gap-x-24) { column-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 24 * max(0, var(--layout-density, 1))); }
+  :where(.gap-y-24) { row-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 24 * max(0, var(--layout-density, 1))); }
+  :where(.p-24) { padding: calc(var(--size-base, var(--spacing, 0.25rem)) * 24 * max(0, var(--layout-density, 1))); }
+  :where(.px-24) { padding-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 24 * max(0, var(--layout-density, 1))); }
+  :where(.py-24) { padding-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 24 * max(0, var(--layout-density, 1))); }
+  :where(.pt-24) { padding-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 24 * max(0, var(--layout-density, 1))); }
+  :where(.pr-24) { padding-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 24 * max(0, var(--layout-density, 1))); }
+  :where(.pb-24) { padding-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 24 * max(0, var(--layout-density, 1))); }
+  :where(.pl-24) { padding-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 24 * max(0, var(--layout-density, 1))); }
+  :where(.ps-24) { padding-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 24 * max(0, var(--layout-density, 1))); }
+  :where(.pe-24) { padding-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 24 * max(0, var(--layout-density, 1))); }
+  :where(.m-24) { margin: calc(var(--size-base, var(--spacing, 0.25rem)) * 24 * max(0, var(--layout-density, 1))); }
+  :where(.mx-24) { margin-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 24 * max(0, var(--layout-density, 1))); }
+  :where(.my-24) { margin-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 24 * max(0, var(--layout-density, 1))); }
+  :where(.mt-24) { margin-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 24 * max(0, var(--layout-density, 1))); }
+  :where(.mr-24) { margin-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 24 * max(0, var(--layout-density, 1))); }
+  :where(.mb-24) { margin-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 24 * max(0, var(--layout-density, 1))); }
+  :where(.ml-24) { margin-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 24 * max(0, var(--layout-density, 1))); }
+  :where(.ms-24) { margin-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 24 * max(0, var(--layout-density, 1))); }
+  :where(.me-24) { margin-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 24 * max(0, var(--layout-density, 1))); }
+  :where(.gap-28) { gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 28 * max(0, var(--layout-density, 1))); }
+  :where(.gap-x-28) { column-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 28 * max(0, var(--layout-density, 1))); }
+  :where(.gap-y-28) { row-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 28 * max(0, var(--layout-density, 1))); }
+  :where(.p-28) { padding: calc(var(--size-base, var(--spacing, 0.25rem)) * 28 * max(0, var(--layout-density, 1))); }
+  :where(.px-28) { padding-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 28 * max(0, var(--layout-density, 1))); }
+  :where(.py-28) { padding-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 28 * max(0, var(--layout-density, 1))); }
+  :where(.pt-28) { padding-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 28 * max(0, var(--layout-density, 1))); }
+  :where(.pr-28) { padding-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 28 * max(0, var(--layout-density, 1))); }
+  :where(.pb-28) { padding-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 28 * max(0, var(--layout-density, 1))); }
+  :where(.pl-28) { padding-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 28 * max(0, var(--layout-density, 1))); }
+  :where(.ps-28) { padding-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 28 * max(0, var(--layout-density, 1))); }
+  :where(.pe-28) { padding-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 28 * max(0, var(--layout-density, 1))); }
+  :where(.m-28) { margin: calc(var(--size-base, var(--spacing, 0.25rem)) * 28 * max(0, var(--layout-density, 1))); }
+  :where(.mx-28) { margin-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 28 * max(0, var(--layout-density, 1))); }
+  :where(.my-28) { margin-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 28 * max(0, var(--layout-density, 1))); }
+  :where(.mt-28) { margin-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 28 * max(0, var(--layout-density, 1))); }
+  :where(.mr-28) { margin-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 28 * max(0, var(--layout-density, 1))); }
+  :where(.mb-28) { margin-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 28 * max(0, var(--layout-density, 1))); }
+  :where(.ml-28) { margin-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 28 * max(0, var(--layout-density, 1))); }
+  :where(.ms-28) { margin-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 28 * max(0, var(--layout-density, 1))); }
+  :where(.me-28) { margin-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 28 * max(0, var(--layout-density, 1))); }
+  :where(.gap-32) { gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 32 * max(0, var(--layout-density, 1))); }
+  :where(.gap-x-32) { column-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 32 * max(0, var(--layout-density, 1))); }
+  :where(.gap-y-32) { row-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 32 * max(0, var(--layout-density, 1))); }
+  :where(.p-32) { padding: calc(var(--size-base, var(--spacing, 0.25rem)) * 32 * max(0, var(--layout-density, 1))); }
+  :where(.px-32) { padding-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 32 * max(0, var(--layout-density, 1))); }
+  :where(.py-32) { padding-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 32 * max(0, var(--layout-density, 1))); }
+  :where(.pt-32) { padding-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 32 * max(0, var(--layout-density, 1))); }
+  :where(.pr-32) { padding-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 32 * max(0, var(--layout-density, 1))); }
+  :where(.pb-32) { padding-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 32 * max(0, var(--layout-density, 1))); }
+  :where(.pl-32) { padding-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 32 * max(0, var(--layout-density, 1))); }
+  :where(.ps-32) { padding-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 32 * max(0, var(--layout-density, 1))); }
+  :where(.pe-32) { padding-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 32 * max(0, var(--layout-density, 1))); }
+  :where(.m-32) { margin: calc(var(--size-base, var(--spacing, 0.25rem)) * 32 * max(0, var(--layout-density, 1))); }
+  :where(.mx-32) { margin-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 32 * max(0, var(--layout-density, 1))); }
+  :where(.my-32) { margin-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 32 * max(0, var(--layout-density, 1))); }
+  :where(.mt-32) { margin-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 32 * max(0, var(--layout-density, 1))); }
+  :where(.mr-32) { margin-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 32 * max(0, var(--layout-density, 1))); }
+  :where(.mb-32) { margin-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 32 * max(0, var(--layout-density, 1))); }
+  :where(.ml-32) { margin-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 32 * max(0, var(--layout-density, 1))); }
+  :where(.ms-32) { margin-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 32 * max(0, var(--layout-density, 1))); }
+  :where(.me-32) { margin-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 32 * max(0, var(--layout-density, 1))); }
+  :where(.gap-36) { gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 36 * max(0, var(--layout-density, 1))); }
+  :where(.gap-x-36) { column-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 36 * max(0, var(--layout-density, 1))); }
+  :where(.gap-y-36) { row-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 36 * max(0, var(--layout-density, 1))); }
+  :where(.p-36) { padding: calc(var(--size-base, var(--spacing, 0.25rem)) * 36 * max(0, var(--layout-density, 1))); }
+  :where(.px-36) { padding-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 36 * max(0, var(--layout-density, 1))); }
+  :where(.py-36) { padding-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 36 * max(0, var(--layout-density, 1))); }
+  :where(.pt-36) { padding-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 36 * max(0, var(--layout-density, 1))); }
+  :where(.pr-36) { padding-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 36 * max(0, var(--layout-density, 1))); }
+  :where(.pb-36) { padding-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 36 * max(0, var(--layout-density, 1))); }
+  :where(.pl-36) { padding-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 36 * max(0, var(--layout-density, 1))); }
+  :where(.ps-36) { padding-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 36 * max(0, var(--layout-density, 1))); }
+  :where(.pe-36) { padding-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 36 * max(0, var(--layout-density, 1))); }
+  :where(.m-36) { margin: calc(var(--size-base, var(--spacing, 0.25rem)) * 36 * max(0, var(--layout-density, 1))); }
+  :where(.mx-36) { margin-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 36 * max(0, var(--layout-density, 1))); }
+  :where(.my-36) { margin-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 36 * max(0, var(--layout-density, 1))); }
+  :where(.mt-36) { margin-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 36 * max(0, var(--layout-density, 1))); }
+  :where(.mr-36) { margin-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 36 * max(0, var(--layout-density, 1))); }
+  :where(.mb-36) { margin-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 36 * max(0, var(--layout-density, 1))); }
+  :where(.ml-36) { margin-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 36 * max(0, var(--layout-density, 1))); }
+  :where(.ms-36) { margin-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 36 * max(0, var(--layout-density, 1))); }
+  :where(.me-36) { margin-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 36 * max(0, var(--layout-density, 1))); }
+  :where(.gap-40) { gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 40 * max(0, var(--layout-density, 1))); }
+  :where(.gap-x-40) { column-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 40 * max(0, var(--layout-density, 1))); }
+  :where(.gap-y-40) { row-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 40 * max(0, var(--layout-density, 1))); }
+  :where(.p-40) { padding: calc(var(--size-base, var(--spacing, 0.25rem)) * 40 * max(0, var(--layout-density, 1))); }
+  :where(.px-40) { padding-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 40 * max(0, var(--layout-density, 1))); }
+  :where(.py-40) { padding-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 40 * max(0, var(--layout-density, 1))); }
+  :where(.pt-40) { padding-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 40 * max(0, var(--layout-density, 1))); }
+  :where(.pr-40) { padding-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 40 * max(0, var(--layout-density, 1))); }
+  :where(.pb-40) { padding-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 40 * max(0, var(--layout-density, 1))); }
+  :where(.pl-40) { padding-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 40 * max(0, var(--layout-density, 1))); }
+  :where(.ps-40) { padding-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 40 * max(0, var(--layout-density, 1))); }
+  :where(.pe-40) { padding-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 40 * max(0, var(--layout-density, 1))); }
+  :where(.m-40) { margin: calc(var(--size-base, var(--spacing, 0.25rem)) * 40 * max(0, var(--layout-density, 1))); }
+  :where(.mx-40) { margin-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 40 * max(0, var(--layout-density, 1))); }
+  :where(.my-40) { margin-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 40 * max(0, var(--layout-density, 1))); }
+  :where(.mt-40) { margin-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 40 * max(0, var(--layout-density, 1))); }
+  :where(.mr-40) { margin-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 40 * max(0, var(--layout-density, 1))); }
+  :where(.mb-40) { margin-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 40 * max(0, var(--layout-density, 1))); }
+  :where(.ml-40) { margin-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 40 * max(0, var(--layout-density, 1))); }
+  :where(.ms-40) { margin-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 40 * max(0, var(--layout-density, 1))); }
+  :where(.me-40) { margin-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 40 * max(0, var(--layout-density, 1))); }
+  :where(.gap-48) { gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 48 * max(0, var(--layout-density, 1))); }
+  :where(.gap-x-48) { column-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 48 * max(0, var(--layout-density, 1))); }
+  :where(.gap-y-48) { row-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 48 * max(0, var(--layout-density, 1))); }
+  :where(.p-48) { padding: calc(var(--size-base, var(--spacing, 0.25rem)) * 48 * max(0, var(--layout-density, 1))); }
+  :where(.px-48) { padding-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 48 * max(0, var(--layout-density, 1))); }
+  :where(.py-48) { padding-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 48 * max(0, var(--layout-density, 1))); }
+  :where(.pt-48) { padding-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 48 * max(0, var(--layout-density, 1))); }
+  :where(.pr-48) { padding-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 48 * max(0, var(--layout-density, 1))); }
+  :where(.pb-48) { padding-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 48 * max(0, var(--layout-density, 1))); }
+  :where(.pl-48) { padding-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 48 * max(0, var(--layout-density, 1))); }
+  :where(.ps-48) { padding-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 48 * max(0, var(--layout-density, 1))); }
+  :where(.pe-48) { padding-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 48 * max(0, var(--layout-density, 1))); }
+  :where(.m-48) { margin: calc(var(--size-base, var(--spacing, 0.25rem)) * 48 * max(0, var(--layout-density, 1))); }
+  :where(.mx-48) { margin-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 48 * max(0, var(--layout-density, 1))); }
+  :where(.my-48) { margin-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 48 * max(0, var(--layout-density, 1))); }
+  :where(.mt-48) { margin-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 48 * max(0, var(--layout-density, 1))); }
+  :where(.mr-48) { margin-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 48 * max(0, var(--layout-density, 1))); }
+  :where(.mb-48) { margin-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 48 * max(0, var(--layout-density, 1))); }
+  :where(.ml-48) { margin-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 48 * max(0, var(--layout-density, 1))); }
+  :where(.ms-48) { margin-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 48 * max(0, var(--layout-density, 1))); }
+  :where(.me-48) { margin-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 48 * max(0, var(--layout-density, 1))); }
+  :where(.gap-56) { gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 56 * max(0, var(--layout-density, 1))); }
+  :where(.gap-x-56) { column-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 56 * max(0, var(--layout-density, 1))); }
+  :where(.gap-y-56) { row-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 56 * max(0, var(--layout-density, 1))); }
+  :where(.p-56) { padding: calc(var(--size-base, var(--spacing, 0.25rem)) * 56 * max(0, var(--layout-density, 1))); }
+  :where(.px-56) { padding-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 56 * max(0, var(--layout-density, 1))); }
+  :where(.py-56) { padding-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 56 * max(0, var(--layout-density, 1))); }
+  :where(.pt-56) { padding-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 56 * max(0, var(--layout-density, 1))); }
+  :where(.pr-56) { padding-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 56 * max(0, var(--layout-density, 1))); }
+  :where(.pb-56) { padding-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 56 * max(0, var(--layout-density, 1))); }
+  :where(.pl-56) { padding-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 56 * max(0, var(--layout-density, 1))); }
+  :where(.ps-56) { padding-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 56 * max(0, var(--layout-density, 1))); }
+  :where(.pe-56) { padding-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 56 * max(0, var(--layout-density, 1))); }
+  :where(.m-56) { margin: calc(var(--size-base, var(--spacing, 0.25rem)) * 56 * max(0, var(--layout-density, 1))); }
+  :where(.mx-56) { margin-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 56 * max(0, var(--layout-density, 1))); }
+  :where(.my-56) { margin-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 56 * max(0, var(--layout-density, 1))); }
+  :where(.mt-56) { margin-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 56 * max(0, var(--layout-density, 1))); }
+  :where(.mr-56) { margin-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 56 * max(0, var(--layout-density, 1))); }
+  :where(.mb-56) { margin-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 56 * max(0, var(--layout-density, 1))); }
+  :where(.ml-56) { margin-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 56 * max(0, var(--layout-density, 1))); }
+  :where(.ms-56) { margin-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 56 * max(0, var(--layout-density, 1))); }
+  :where(.me-56) { margin-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 56 * max(0, var(--layout-density, 1))); }
+  :where(.gap-64) { gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 64 * max(0, var(--layout-density, 1))); }
+  :where(.gap-x-64) { column-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 64 * max(0, var(--layout-density, 1))); }
+  :where(.gap-y-64) { row-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 64 * max(0, var(--layout-density, 1))); }
+  :where(.p-64) { padding: calc(var(--size-base, var(--spacing, 0.25rem)) * 64 * max(0, var(--layout-density, 1))); }
+  :where(.px-64) { padding-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 64 * max(0, var(--layout-density, 1))); }
+  :where(.py-64) { padding-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 64 * max(0, var(--layout-density, 1))); }
+  :where(.pt-64) { padding-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 64 * max(0, var(--layout-density, 1))); }
+  :where(.pr-64) { padding-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 64 * max(0, var(--layout-density, 1))); }
+  :where(.pb-64) { padding-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 64 * max(0, var(--layout-density, 1))); }
+  :where(.pl-64) { padding-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 64 * max(0, var(--layout-density, 1))); }
+  :where(.ps-64) { padding-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 64 * max(0, var(--layout-density, 1))); }
+  :where(.pe-64) { padding-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 64 * max(0, var(--layout-density, 1))); }
+  :where(.m-64) { margin: calc(var(--size-base, var(--spacing, 0.25rem)) * 64 * max(0, var(--layout-density, 1))); }
+  :where(.mx-64) { margin-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 64 * max(0, var(--layout-density, 1))); }
+  :where(.my-64) { margin-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 64 * max(0, var(--layout-density, 1))); }
+  :where(.mt-64) { margin-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 64 * max(0, var(--layout-density, 1))); }
+  :where(.mr-64) { margin-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 64 * max(0, var(--layout-density, 1))); }
+  :where(.mb-64) { margin-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 64 * max(0, var(--layout-density, 1))); }
+  :where(.ml-64) { margin-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 64 * max(0, var(--layout-density, 1))); }
+  :where(.ms-64) { margin-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 64 * max(0, var(--layout-density, 1))); }
+  :where(.me-64) { margin-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 64 * max(0, var(--layout-density, 1))); }
+  :where(.gap-72) { gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 72 * max(0, var(--layout-density, 1))); }
+  :where(.gap-x-72) { column-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 72 * max(0, var(--layout-density, 1))); }
+  :where(.gap-y-72) { row-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 72 * max(0, var(--layout-density, 1))); }
+  :where(.p-72) { padding: calc(var(--size-base, var(--spacing, 0.25rem)) * 72 * max(0, var(--layout-density, 1))); }
+  :where(.px-72) { padding-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 72 * max(0, var(--layout-density, 1))); }
+  :where(.py-72) { padding-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 72 * max(0, var(--layout-density, 1))); }
+  :where(.pt-72) { padding-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 72 * max(0, var(--layout-density, 1))); }
+  :where(.pr-72) { padding-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 72 * max(0, var(--layout-density, 1))); }
+  :where(.pb-72) { padding-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 72 * max(0, var(--layout-density, 1))); }
+  :where(.pl-72) { padding-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 72 * max(0, var(--layout-density, 1))); }
+  :where(.ps-72) { padding-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 72 * max(0, var(--layout-density, 1))); }
+  :where(.pe-72) { padding-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 72 * max(0, var(--layout-density, 1))); }
+  :where(.m-72) { margin: calc(var(--size-base, var(--spacing, 0.25rem)) * 72 * max(0, var(--layout-density, 1))); }
+  :where(.mx-72) { margin-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 72 * max(0, var(--layout-density, 1))); }
+  :where(.my-72) { margin-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 72 * max(0, var(--layout-density, 1))); }
+  :where(.mt-72) { margin-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 72 * max(0, var(--layout-density, 1))); }
+  :where(.mr-72) { margin-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 72 * max(0, var(--layout-density, 1))); }
+  :where(.mb-72) { margin-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 72 * max(0, var(--layout-density, 1))); }
+  :where(.ml-72) { margin-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 72 * max(0, var(--layout-density, 1))); }
+  :where(.ms-72) { margin-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 72 * max(0, var(--layout-density, 1))); }
+  :where(.me-72) { margin-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 72 * max(0, var(--layout-density, 1))); }
+  :where(.gap-80) { gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 80 * max(0, var(--layout-density, 1))); }
+  :where(.gap-x-80) { column-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 80 * max(0, var(--layout-density, 1))); }
+  :where(.gap-y-80) { row-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 80 * max(0, var(--layout-density, 1))); }
+  :where(.p-80) { padding: calc(var(--size-base, var(--spacing, 0.25rem)) * 80 * max(0, var(--layout-density, 1))); }
+  :where(.px-80) { padding-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 80 * max(0, var(--layout-density, 1))); }
+  :where(.py-80) { padding-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 80 * max(0, var(--layout-density, 1))); }
+  :where(.pt-80) { padding-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 80 * max(0, var(--layout-density, 1))); }
+  :where(.pr-80) { padding-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 80 * max(0, var(--layout-density, 1))); }
+  :where(.pb-80) { padding-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 80 * max(0, var(--layout-density, 1))); }
+  :where(.pl-80) { padding-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 80 * max(0, var(--layout-density, 1))); }
+  :where(.ps-80) { padding-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 80 * max(0, var(--layout-density, 1))); }
+  :where(.pe-80) { padding-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 80 * max(0, var(--layout-density, 1))); }
+  :where(.m-80) { margin: calc(var(--size-base, var(--spacing, 0.25rem)) * 80 * max(0, var(--layout-density, 1))); }
+  :where(.mx-80) { margin-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 80 * max(0, var(--layout-density, 1))); }
+  :where(.my-80) { margin-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 80 * max(0, var(--layout-density, 1))); }
+  :where(.mt-80) { margin-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 80 * max(0, var(--layout-density, 1))); }
+  :where(.mr-80) { margin-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 80 * max(0, var(--layout-density, 1))); }
+  :where(.mb-80) { margin-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 80 * max(0, var(--layout-density, 1))); }
+  :where(.ml-80) { margin-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 80 * max(0, var(--layout-density, 1))); }
+  :where(.ms-80) { margin-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 80 * max(0, var(--layout-density, 1))); }
+  :where(.me-80) { margin-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 80 * max(0, var(--layout-density, 1))); }
+  :where(.gap-96) { gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 96 * max(0, var(--layout-density, 1))); }
+  :where(.gap-x-96) { column-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 96 * max(0, var(--layout-density, 1))); }
+  :where(.gap-y-96) { row-gap: calc(var(--size-base, var(--spacing, 0.25rem)) * 96 * max(0, var(--layout-density, 1))); }
+  :where(.p-96) { padding: calc(var(--size-base, var(--spacing, 0.25rem)) * 96 * max(0, var(--layout-density, 1))); }
+  :where(.px-96) { padding-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 96 * max(0, var(--layout-density, 1))); }
+  :where(.py-96) { padding-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 96 * max(0, var(--layout-density, 1))); }
+  :where(.pt-96) { padding-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 96 * max(0, var(--layout-density, 1))); }
+  :where(.pr-96) { padding-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 96 * max(0, var(--layout-density, 1))); }
+  :where(.pb-96) { padding-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 96 * max(0, var(--layout-density, 1))); }
+  :where(.pl-96) { padding-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 96 * max(0, var(--layout-density, 1))); }
+  :where(.ps-96) { padding-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 96 * max(0, var(--layout-density, 1))); }
+  :where(.pe-96) { padding-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 96 * max(0, var(--layout-density, 1))); }
+  :where(.m-96) { margin: calc(var(--size-base, var(--spacing, 0.25rem)) * 96 * max(0, var(--layout-density, 1))); }
+  :where(.mx-96) { margin-inline: calc(var(--size-base, var(--spacing, 0.25rem)) * 96 * max(0, var(--layout-density, 1))); }
+  :where(.my-96) { margin-block: calc(var(--size-base, var(--spacing, 0.25rem)) * 96 * max(0, var(--layout-density, 1))); }
+  :where(.mt-96) { margin-top: calc(var(--size-base, var(--spacing, 0.25rem)) * 96 * max(0, var(--layout-density, 1))); }
+  :where(.mr-96) { margin-right: calc(var(--size-base, var(--spacing, 0.25rem)) * 96 * max(0, var(--layout-density, 1))); }
+  :where(.mb-96) { margin-bottom: calc(var(--size-base, var(--spacing, 0.25rem)) * 96 * max(0, var(--layout-density, 1))); }
+  :where(.ml-96) { margin-left: calc(var(--size-base, var(--spacing, 0.25rem)) * 96 * max(0, var(--layout-density, 1))); }
+  :where(.ms-96) { margin-inline-start: calc(var(--size-base, var(--spacing, 0.25rem)) * 96 * max(0, var(--layout-density, 1))); }
+  :where(.me-96) { margin-inline-end: calc(var(--size-base, var(--spacing, 0.25rem)) * 96 * max(0, var(--layout-density, 1))); }
+  :where(.gap-px) { gap: 1px; }
+  :where(.gap-x-px) { column-gap: 1px; }
+  :where(.gap-y-px) { row-gap: 1px; }
+  :where(.p-px) { padding: 1px; }
+  :where(.px-px) { padding-inline: 1px; }
+  :where(.py-px) { padding-block: 1px; }
+  :where(.pt-px) { padding-top: 1px; }
+  :where(.pr-px) { padding-right: 1px; }
+  :where(.pb-px) { padding-bottom: 1px; }
+  :where(.pl-px) { padding-left: 1px; }
+  :where(.ps-px) { padding-inline-start: 1px; }
+  :where(.pe-px) { padding-inline-end: 1px; }
+  :where(.m-px) { margin: 1px; }
+  :where(.mx-px) { margin-inline: 1px; }
+  :where(.my-px) { margin-block: 1px; }
+  :where(.mt-px) { margin-top: 1px; }
+  :where(.mr-px) { margin-right: 1px; }
+  :where(.mb-px) { margin-bottom: 1px; }
+  :where(.ml-px) { margin-left: 1px; }
+  :where(.ms-px) { margin-inline-start: 1px; }
+  :where(.me-px) { margin-inline-end: 1px; }
+  :where(.m-auto) { margin: auto; }
+  :where(.mx-auto) { margin-inline: auto; }
+  :where(.my-auto) { margin-block: auto; }
+  :where(.mt-auto) { margin-top: auto; }
+  :where(.mr-auto) { margin-right: auto; }
+  :where(.mb-auto) { margin-bottom: auto; }
+  :where(.ml-auto) { margin-left: auto; }
+  :where(.ms-auto) { margin-inline-start: auto; }
+  :where(.me-auto) { margin-inline-end: auto; }
+}

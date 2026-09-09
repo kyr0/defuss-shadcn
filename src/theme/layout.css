@@ -1,0 +1,151 @@
+/* defuss-shadcn — optional native layout utilities.
+ * .flex / .grid only select a formatting context: no default gap or tracks.
+ * .stack / .center / .container / .query and .grid-cols-auto are extensions.
+ * Params are instance-owned: nested primitives do not inherit outer configs.
+ * Native hidden/closed states are not overridden by display helpers.
+ */
+@layer components, utilities;
+
+@layer components {
+  :where(.flex, .inline-flex, .grid, .inline-grid, .stack, .center) {
+    --layout-gap: initial;
+  }
+  :where(.grid, .inline-grid) { --layout-min: 16rem; }
+  :where(.stack) {
+    gap: var(--layout-gap, calc(var(--size-base, var(--spacing, 0.25rem)) * 4 * max(0, var(--layout-density, 1))));
+    flex-direction: column;
+  }
+  :where(.flex, .inline-flex, .grid, .inline-grid, .center) {
+    gap: var(--layout-gap, 0px);
+  }
+  :where(.container) {
+    --layout-max: 80rem;
+    --layout-gutter: calc(var(--size-base, var(--spacing, 0.25rem)) * 4 * max(0, var(--layout-density, 1)));
+    box-sizing: border-box;
+    inline-size: 100%;
+    max-inline-size: var(--layout-max);
+    min-inline-size: 0;
+    margin-inline: auto;
+    padding-inline: var(--layout-gutter);
+  }
+  :where(.center) { place-items: center; }
+  :where(.query) { container: layout / inline-size; }
+}
+
+@layer utilities {
+  :where(.flex:not([hidden]):not(dialog:not([open])):not([popover]:not(:popover-open)), .stack:not([hidden]):not(dialog:not([open])):not([popover]:not(:popover-open))) { display: flex; }
+  :where(.inline-flex:not([hidden]):not(dialog:not([open])):not([popover]:not(:popover-open))) { display: inline-flex; }
+  :where(.grid:not([hidden]):not(dialog:not([open])):not([popover]:not(:popover-open)), .center:not([hidden]):not(dialog:not([open])):not([popover]:not(:popover-open))) { display: grid; }
+  :where(.inline-grid:not([hidden]):not(dialog:not([open])):not([popover]:not(:popover-open))) { display: inline-grid; }
+  :where(.block:not([hidden]):not(dialog:not([open])):not([popover]:not(:popover-open))) { display: block; }
+  :where(.inline-block:not([hidden]):not(dialog:not([open])):not([popover]:not(:popover-open))) { display: inline-block; }
+  :where(.inline:not([hidden]):not(dialog:not([open])):not([popover]:not(:popover-open))) { display: inline; }
+  :where(.hidden) { display: none; }
+  :where(.flex-row) { flex-direction: row; }
+  :where(.flex-col) { flex-direction: column; }
+  :where(.flex-wrap) { flex-wrap: wrap; }
+  :where(.flex-nowrap) { flex-wrap: nowrap; }
+  :where(.flex-1) { flex: 1 1 0%; }
+  :where(.flex-auto) { flex: 1 1 auto; }
+  :where(.flex-initial) { flex: 0 1 auto; }
+  :where(.flex-none) { flex: none; }
+  :where(.grow) { flex-grow: 1; }
+  :where(.grow-0) { flex-grow: 0; }
+  :where(.shrink) { flex-shrink: 1; }
+  :where(.shrink-0) { flex-shrink: 0; }
+  :where(.basis-0) { flex-basis: 0px; }
+  :where(.basis-auto) { flex-basis: auto; }
+  :where(.basis-full) { flex-basis: 100%; }
+  :where(.items-start) { align-items: flex-start; }
+  :where(.items-end) { align-items: flex-end; }
+  :where(.items-center) { align-items: center; }
+  :where(.items-baseline) { align-items: baseline; }
+  :where(.items-stretch) { align-items: stretch; }
+  :where(.justify-start) { justify-content: flex-start; }
+  :where(.justify-end) { justify-content: flex-end; }
+  :where(.justify-center) { justify-content: center; }
+  :where(.justify-between) { justify-content: space-between; }
+  :where(.justify-around) { justify-content: space-around; }
+  :where(.justify-evenly) { justify-content: space-evenly; }
+  :where(.justify-normal) { justify-content: normal; }
+  :where(.self-auto) { align-self: auto; }
+  :where(.self-start) { align-self: flex-start; }
+  :where(.self-end) { align-self: flex-end; }
+  :where(.self-center) { align-self: center; }
+  :where(.self-baseline) { align-self: baseline; }
+  :where(.self-stretch) { align-self: stretch; }
+  :where(.content-start) { align-content: flex-start; }
+  :where(.content-end) { align-content: flex-end; }
+  :where(.content-center) { align-content: center; }
+  :where(.content-between) { align-content: space-between; }
+  :where(.content-around) { align-content: space-around; }
+  :where(.content-evenly) { align-content: space-evenly; }
+  :where(.content-stretch) { align-content: stretch; }
+  :where(.content-normal) { align-content: normal; }
+  :where(.justify-items-start) { justify-items: start; }
+  :where(.justify-items-end) { justify-items: end; }
+  :where(.justify-items-center) { justify-items: center; }
+  :where(.justify-items-stretch) { justify-items: stretch; }
+  :where(.justify-self-auto) { justify-self: auto; }
+  :where(.justify-self-start) { justify-self: start; }
+  :where(.justify-self-end) { justify-self: end; }
+  :where(.justify-self-center) { justify-self: center; }
+  :where(.justify-self-stretch) { justify-self: stretch; }
+  :where(.place-items-start) { place-items: start; }
+  :where(.place-items-end) { place-items: end; }
+  :where(.place-items-center) { place-items: center; }
+  :where(.place-items-stretch) { place-items: stretch; }
+  :where(.place-items-baseline) { place-items: baseline; }
+  :where(.place-self-auto) { place-self: auto; }
+  :where(.place-self-start) { place-self: start; }
+  :where(.place-self-end) { place-self: end; }
+  :where(.place-self-center) { place-self: center; }
+  :where(.place-self-stretch) { place-self: stretch; }
+
+  /* Intrinsic and explicit tracks; no implicit breakpoint generator. */
+  :where(.grid-cols-auto) { grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--layout-min, 16rem)), 1fr)); }
+  :where(.grid-cols-1) { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+  :where(.col-span-1) { grid-column: span 1 / span 1; }
+  :where(.grid-cols-2) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  :where(.col-span-2) { grid-column: span 2 / span 2; }
+  :where(.grid-cols-3) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  :where(.col-span-3) { grid-column: span 3 / span 3; }
+  :where(.grid-cols-4) { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  :where(.col-span-4) { grid-column: span 4 / span 4; }
+  :where(.grid-cols-5) { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  :where(.col-span-5) { grid-column: span 5 / span 5; }
+  :where(.grid-cols-6) { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  :where(.col-span-6) { grid-column: span 6 / span 6; }
+  :where(.grid-cols-7) { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+  :where(.col-span-7) { grid-column: span 7 / span 7; }
+  :where(.grid-cols-8) { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+  :where(.col-span-8) { grid-column: span 8 / span 8; }
+  :where(.grid-cols-9) { grid-template-columns: repeat(9, minmax(0, 1fr)); }
+  :where(.col-span-9) { grid-column: span 9 / span 9; }
+  :where(.grid-cols-10) { grid-template-columns: repeat(10, minmax(0, 1fr)); }
+  :where(.col-span-10) { grid-column: span 10 / span 10; }
+  :where(.grid-cols-11) { grid-template-columns: repeat(11, minmax(0, 1fr)); }
+  :where(.col-span-11) { grid-column: span 11 / span 11; }
+  :where(.grid-cols-12) { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+  :where(.col-span-12) { grid-column: span 12 / span 12; }
+  :where(.grid-rows-1) { grid-template-rows: repeat(1, minmax(0, 1fr)); }
+  :where(.row-span-1) { grid-row: span 1 / span 1; }
+  :where(.grid-rows-2) { grid-template-rows: repeat(2, minmax(0, 1fr)); }
+  :where(.row-span-2) { grid-row: span 2 / span 2; }
+  :where(.grid-rows-3) { grid-template-rows: repeat(3, minmax(0, 1fr)); }
+  :where(.row-span-3) { grid-row: span 3 / span 3; }
+  :where(.grid-rows-4) { grid-template-rows: repeat(4, minmax(0, 1fr)); }
+  :where(.row-span-4) { grid-row: span 4 / span 4; }
+  :where(.grid-rows-5) { grid-template-rows: repeat(5, minmax(0, 1fr)); }
+  :where(.row-span-5) { grid-row: span 5 / span 5; }
+  :where(.grid-rows-6) { grid-template-rows: repeat(6, minmax(0, 1fr)); }
+  :where(.row-span-6) { grid-row: span 6 / span 6; }
+  :where(.col-span-full) { grid-column: 1 / -1; }
+  :where(.row-span-full) { grid-row: 1 / -1; }
+  :where(.grid-cols-none) { grid-template-columns: none; }
+  :where(.grid-rows-none) { grid-template-rows: none; }
+  :where(.grid-cols-subgrid) { grid-template-columns: subgrid; }
+  :where(.grid-rows-subgrid) { grid-template-rows: subgrid; }
+  :where(.auto-rows-auto) { grid-auto-rows: auto; }
+  :where(.auto-cols-auto) { grid-auto-columns: auto; }
+}

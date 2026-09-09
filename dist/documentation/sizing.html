@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="images/favicon.webp" type="image/webp">
+  <meta name="description" content="A single geometric scale, explicit density, and independent interaction targets. Familiar classes, native CSS, no Tailwind dependency.">
+  <meta property="og:title" content="Sizing — defuss-shadcn">
+  <meta property="og:description" content="A single geometric scale, explicit density, and independent interaction targets. Familiar classes, native CSS, no Tailwind dependency.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kyr0.github.io/defuss-shadcn/documentation/sizing.html">
+  <meta property="og:site_name" content="defuss-shadcn">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Sizing — defuss-shadcn">
+  <meta name="twitter:description" content="A single geometric scale, explicit density, and independent interaction targets. Familiar classes, native CSS, no Tailwind dependency.">
+  <title>Sizing — defuss-shadcn</title>
+  <script src="js/themes.js"></script>
+  <script src="js/theme-switcher.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/search-index.js"></script>
+  <link rel="stylesheet" href="../theme/default-semantic-tokens.css">
+  <link rel="stylesheet" href="../theme/sizing.css">
+  <link rel="stylesheet" href="../theme/layout.css">
+  <link rel="stylesheet" href="css/docs-theme.css">
+  <link rel="stylesheet" href="css/docs-utilities.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="../components/button/button.css">
+  <link rel="stylesheet" href="../components/card/card.css">
+  <link rel="stylesheet" href="../components/dialog/dialog.css">
+  <link rel="stylesheet" href="../components/badge/badge.css">
+  <link rel="stylesheet" href="../components/input/input.css">
+  <link rel="stylesheet" href="../components/accordion/accordion.css">
+  <link rel="stylesheet" href="../components/tabs/tabs.css">
+  <link rel="stylesheet" href="../components/dropdown/dropdown.css">
+  <link rel="stylesheet" href="../components/toast/toast.css">
+  <link rel="stylesheet" href="../components/combobox/combobox.css">
+  <link rel="stylesheet" href="../components/sheet/sheet.css">
+  <link rel="stylesheet" href="../components/toggle/toggle.css">
+  <link rel="stylesheet" href="../components/icon/icon.css">
+  <link rel="stylesheet" href="../components/typography/typography.css">
+  <link rel="stylesheet" href="../components/separator/separator.css">
+  <link rel="stylesheet" href="../components/label/label.css">
+  <link rel="stylesheet" href="../components/toggle-group/toggle-group.css">
+  <link rel="stylesheet" href="../components/button-group/button-group.css">
+  <link rel="stylesheet" href="../components/toolbar/toolbar.css">
+  <link rel="stylesheet" href="../components/textarea/textarea.css">
+  <link rel="stylesheet" href="../components/checkbox/checkbox.css">
+  <link rel="stylesheet" href="../components/radio/radio.css">
+  <link rel="stylesheet" href="../components/switch/switch.css">
+  <link rel="stylesheet" href="../components/slider/slider.css">
+  <link rel="stylesheet" href="../components/select/select.css">
+  <link rel="stylesheet" href="../components/number-input/number-input.css">
+  <link rel="stylesheet" href="../components/file-input/file-input.css">
+  <link rel="stylesheet" href="../components/color-picker/color-picker.css">
+  <link rel="stylesheet" href="../components/date-picker/date-picker.css">
+  <link rel="stylesheet" href="../components/form/form.css">
+  <link rel="stylesheet" href="../components/avatar/avatar.css">
+  <link rel="stylesheet" href="../components/image/image.css">
+  <link rel="stylesheet" href="../components/statistic/statistic.css">
+  <link rel="stylesheet" href="../components/table/table.css">
+  <link rel="stylesheet" href="../components/collapsible/collapsible.css">
+  <link rel="stylesheet" href="../components/timeline/timeline.css">
+  <link rel="stylesheet" href="../components/tree-view/tree-view.css">
+  <link rel="stylesheet" href="../components/calendar/calendar.css">
+  <link rel="stylesheet" href="../components/spinner/spinner.css">
+  <link rel="stylesheet" href="../components/skeleton/skeleton.css">
+  <link rel="stylesheet" href="../components/progress/progress.css">
+  <link rel="stylesheet" href="../components/alert/alert.css">
+  <link rel="stylesheet" href="../components/alert-dialog/alert-dialog.css">
+  <link rel="stylesheet" href="../components/popover/popover.css">
+  <link rel="stylesheet" href="../components/tooltip/tooltip.css">
+  <link rel="stylesheet" href="../components/context-menu/context-menu.css">
+  <link rel="stylesheet" href="../components/command/command.css">
+  <link rel="stylesheet" href="../components/breadcrumb/breadcrumb.css">
+  <link rel="stylesheet" href="../components/pagination/pagination.css">
+  <link rel="stylesheet" href="../components/steps/steps.css">
+  <link rel="stylesheet" href="../components/navigation-menu/navigation-menu.css">
+  <link rel="stylesheet" href="../components/scroll-area/scroll-area.css">
+  <link rel="stylesheet" href="../components/carousel/carousel.css">
+  <link rel="stylesheet" href="../components/sidebar/sidebar.css">
+  <link rel="stylesheet" href="../components/sortable/sortable.css">
+  <link rel="stylesheet" href="../components/site-header/site-header.css">
+  <link rel="stylesheet" href="../components/hero/hero.css">
+  <link rel="stylesheet" href="../components/product-showcase/product-showcase.css">
+  <link rel="stylesheet" href="../components/brand-logos/brand-logos.css">
+  <link rel="stylesheet" href="../components/feature-details/feature-details.css">
+  <link rel="stylesheet" href="../components/testimonials/testimonials.css">
+  <link rel="stylesheet" href="../components/stats/stats.css">
+  <link rel="stylesheet" href="../components/pricing/pricing.css">
+  <link rel="stylesheet" href="../components/blog/blog.css">
+  <link rel="stylesheet" href="../components/faq/faq.css">
+  <link rel="stylesheet" href="../components/get-in-touch/get-in-touch.css">
+  <link rel="stylesheet" href="../components/newsletter/newsletter.css">
+  <link rel="stylesheet" href="../components/site-footer/site-footer.css">
+</head>
+<body>
+  <site-header></site-header>
+  <div class="flex" style="margin-top:3.5rem;min-height:calc(100vh - 3.5rem);">
+    <site-nav></site-nav>
+    <main style="flex:1;min-width:0;max-width:44rem;padding:2rem 3.5rem 8rem;">
+      <div class="page-header">
+        <p class="text-sm text-muted-foreground mb-3" style="font-family:var(--font-mono);">defuss-shadcn / sizing</p>
+        <h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">Sizing</h1>
+        <p class="text-muted-foreground leading-relaxed mb-10" style="max-width:38rem;">A single geometric scale, explicit density, and independent interaction targets. Familiar classes, native CSS, no Tailwind dependency.</p>
+      </div>
+<div class="sep"></div>
+<h2 id="one-scale" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">One scale, two vocabularies</h2>
+<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">A numeric size is a quantity, not an index: <code>w-4</code> means four base units. Named properties select useful points on the same scale. The default <code>--size-base</code> reads the existing <code>--spacing</code> token, with <code>0.25rem</code> as its fallback. These are predictable design defaults, not a claim of universally optimal dimensions.</p>
+<div style="overflow-x:auto;margin-bottom:1.5rem;"><table class="table" data-variant="simple"><thead><tr><th scope="col">Property</th><th scope="col">Base units</th><th scope="col">At a 16px root</th></tr></thead><tbody><tr><td><code>--size-base</code></td><td>1</td><td>4px</td></tr><tr><td><code>--size-xs</code></td><td>2</td><td>8px</td></tr><tr><td><code>--size-sm</code></td><td>3</td><td>12px</td></tr><tr><td><code>--size-md</code></td><td>4</td><td>16px</td></tr><tr><td><code>--size-lg</code></td><td>6</td><td>24px</td></tr><tr><td><code>--size-xl</code></td><td>8</td><td>32px</td></tr></tbody></table></div>
+<div class="preview" style="display:block;padding:0;overflow:hidden;border:1px solid var(--border);border-radius:var(--radius-xl);margin-bottom:1.5rem;">
+<div class="flex items-end gap-8" style="padding:2rem 1.5rem;" data-demo="sizing-scale">
+  <div class="flex flex-col items-center gap-2"><div style="inline-size:var(--size-xs);block-size:var(--size-xs);border-radius:var(--radius-sm);background:var(--primary);"></div><span class="text-xs text-muted-foreground" style="font-family:var(--font-mono);">xs</span></div>
+  <div class="flex flex-col items-center gap-2"><div style="inline-size:var(--size-sm);block-size:var(--size-sm);border-radius:var(--radius-sm);background:var(--primary);"></div><span class="text-xs text-muted-foreground" style="font-family:var(--font-mono);">sm</span></div>
+  <div class="flex flex-col items-center gap-2"><div style="inline-size:var(--size-md);block-size:var(--size-md);border-radius:var(--radius-sm);background:var(--primary);"></div><span class="text-xs text-muted-foreground" style="font-family:var(--font-mono);">md</span></div>
+  <div class="flex flex-col items-center gap-2"><div style="inline-size:var(--size-lg);block-size:var(--size-lg);border-radius:var(--radius-sm);background:var(--primary);"></div><span class="text-xs text-muted-foreground" style="font-family:var(--font-mono);">lg</span></div>
+  <div class="flex flex-col items-center gap-2"><div style="inline-size:var(--size-xl);block-size:var(--size-xl);border-radius:var(--radius-sm);background:var(--primary);"></div><span class="text-xs text-muted-foreground" style="font-family:var(--font-mono);">xl</span></div>
+</div>
+</div>
+<div class="sep"></div>
+<h2 id="density-is-not-resolution" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Density is not display resolution</h2>
+<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">CSS pixels already abstract device pixels; <code>rem</code> follows the root font size. No device-pixel-ratio multiplier and no root-font reset are added. Layout density changes opted-in gaps, margins, padding and container gutters—not numeric widths, heights, icons or typography. <a href="https://www.w3.org/TR/css-values-4/" target="_blank" rel="noopener">CSS Values and Units</a></p>
+<div class="sep"></div>
+<h2 id="targets" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Size the target, not only the icon</h2>
+<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">WCAG 2.2 AA uses a <strong>24 × 24 CSS-pixel</strong> target-size criterion, with exceptions including sufficient spacing. The enhanced AAA criterion uses <strong>44 × 44 CSS pixels</strong>, also with exceptions. These concern the interactive target, not the visible icon. <a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html" target="_blank" rel="noopener">WCAG 2.2: Target Size (Minimum), AA</a> · <a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-enhanced.html" target="_blank" rel="noopener">WCAG 2.2: Target Size (Enhanced), AAA</a></p>
+<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">Use 44px minimum dimensions as a starting point for touch-oriented controls; assess the actual clickable shape and surrounding targets. A minimum-size declaration alone does not certify WCAG conformance. Existing buttons are not silently resized by this module.</p>
+<div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:1.5rem;">
+<div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">HTML</div>
+<pre style="border-radius:0;border:none;margin:0;background:transparent;overflow-x:auto;"><code class="language-html">&lt;button class="btn" type="button" aria-label="Add project"
+  style="min-inline-size:44px;min-block-size:44px;"&gt;
+  &lt;svg class="size-4" viewBox="0 0 16 16" aria-hidden="true"&gt;
+    &lt;path d="M8 2v12M2 8h12" fill="none" stroke="currentColor"/&gt;
+  &lt;/svg&gt;
+&lt;/button&gt;</code></pre></div>
+<div class="sep"></div>
+<h2 id="install" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Install only what you use</h2>
+<div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:1.5rem;">
+<div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">HTML</div>
+<pre style="border-radius:0;border:none;margin:0;background:transparent;overflow-x:auto;"><code class="language-html">&lt;link rel="stylesheet" href="../theme/default-semantic-tokens.css"&gt;
+&lt;link rel="stylesheet" href="../theme/sizing.css"&gt;
+&lt;link rel="stylesheet" href="../theme/layout.css"&gt;
+&lt;!-- Load the component stylesheets you actually use next. --&gt;
+&lt;link rel="stylesheet" href="../components/button/button.css"&gt;</code></pre></div>
+<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">The optional modules live beside the theme assets so the existing copy build and CDN mirror work unchanged. They are not part of the replaceable semantic-token export. Both files declare <code>@layer components, utilities</code>; load them before component CSS so that order is established first. A later layer declaration cannot reorder layers that already exist. Normal unlayered application CSS overrides both.</p>
+<div class="sep"></div>
+<h2 id="customize" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Override properties, not generated classes</h2>
+<div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:1.5rem;">
+<div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">CSS</div>
+<pre style="border-radius:0;border:none;margin:0;background:transparent;overflow-x:auto;"><code class="language-css">/* Global application CSS; do not edit a tweakcn export. */
+:root {
+  --size-base: 0.3rem;
+  --layout-density: 1;
+}
+
+/* Local scale: redeclare aliases at this explicit boundary. */
+.compact-panel {
+  --size-base: 0.2rem;
+}</code></pre></div>
+<div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:1.5rem;">
+<div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">HTML</div>
+<pre style="border-radius:0;border:none;margin:0;background:transparent;overflow-x:auto;"><code class="language-html">&lt;section class="compact-panel" data-size-scope&gt;
+  &lt;div class="w-16 h-8"&gt;Local scale&lt;/div&gt;
+  &lt;div style="padding:var(--size-sm);"&gt;Named local size&lt;/div&gt;
+&lt;/section&gt;</code></pre></div>
+<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">Custom-property formulas resolve before inheritance. When a local <code>--size-base</code> changes, add <code>data-size-scope</code> on that element to recompute its named aliases. Numeric utilities use the base directly. Prefer custom properties or a small semantic rule to inventing unsupported class names.</p>
+<div class="sep"></div>
+<h2 id="references" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Platform references</h2>
+<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;"><a href="https://www.w3.org/TR/css-variables-1/" target="_blank" rel="noopener">CSS custom-property inheritance</a> · <a href="https://www.w3.org/TR/css-cascade-5/" target="_blank" rel="noopener">CSS cascade layers</a></p>
+    </main>
+  </div>
+  <script src="js/site.js" defer></script>
+  <script type="module" src="js/shiki-highlight.js"></script>
+  <script type="module" src="../components/accordion/accordion.js"></script>
+  <script type="module" src="../components/combobox/combobox.js"></script>
+  <script type="module" src="../components/dialog/dialog.js"></script>
+  <script type="module" src="../components/dropdown/dropdown.js"></script>
+  <script type="module" src="../components/sheet/sheet.js"></script>
+  <script type="module" src="../components/tabs/tabs.js"></script>
+  <script type="module" src="../components/toast/toast.js"></script>
+  <script type="module" src="../components/toggle/toggle.js"></script>
+  <script type="module" src="../components/toggle-group/toggle-group.js"></script>
+  <script type="module" src="../components/toolbar/toolbar.js"></script>
+  <script type="module" src="../components/number-input/number-input.js"></script>
+  <script type="module" src="../components/color-picker/color-picker.js"></script>
+  <script type="module" src="../components/avatar/avatar.js"></script>
+  <script type="module" src="../components/image/image.js"></script>
+  <script type="module" src="../components/tree-view/tree-view.js"></script>
+  <script type="module" src="../components/calendar/calendar.js"></script>
+  <script type="module" src="../components/alert-dialog/alert-dialog.js"></script>
+  <script type="module" src="../components/popover/popover.js"></script>
+  <script type="module" src="../components/tooltip/tooltip.js"></script>
+  <script type="module" src="../components/context-menu/context-menu.js"></script>
+  <script type="module" src="../components/command/command.js"></script>
+  <script type="module" src="../components/navigation-menu/navigation-menu.js"></script>
+  <script type="module" src="../components/sidebar/sidebar.js"></script>
+  <script type="module" src="../components/carousel/carousel.js"></script>
+  <script type="module" src="../components/slider/slider.js"></script>
+  <script type="module" src="../components/sortable/sortable.js"></script>
+  <script type="module" src="../components/product-showcase/product-showcase.js"></script>
+  <script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script>
+  <script>globalThis.lucide?.createIcons();</script>
+</body>
+</html>

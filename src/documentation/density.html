@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="images/favicon.webp" type="image/webp">
+  <meta name="description" content="Compactness is an explicit whitespace policy—not a global zoom factor. Keep typography, geometry and target sizes independent.">
+  <meta property="og:title" content="Density — defuss-shadcn">
+  <meta property="og:description" content="Compactness is an explicit whitespace policy—not a global zoom factor. Keep typography, geometry and target sizes independent.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kyr0.github.io/defuss-shadcn/documentation/density.html">
+  <meta property="og:site_name" content="defuss-shadcn">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Density — defuss-shadcn">
+  <meta name="twitter:description" content="Compactness is an explicit whitespace policy—not a global zoom factor. Keep typography, geometry and target sizes independent.">
+  <title>Density — defuss-shadcn</title>
+  <script src="js/themes.js"></script>
+  <script src="js/theme-switcher.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/search-index.js"></script>
+  <link rel="stylesheet" href="../theme/default-semantic-tokens.css">
+  <link rel="stylesheet" href="../theme/sizing.css">
+  <link rel="stylesheet" href="../theme/layout.css">
+  <link rel="stylesheet" href="css/docs-theme.css">
+  <link rel="stylesheet" href="css/docs-utilities.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="../components/button/button.css">
+  <link rel="stylesheet" href="../components/card/card.css">
+  <link rel="stylesheet" href="../components/dialog/dialog.css">
+  <link rel="stylesheet" href="../components/badge/badge.css">
+  <link rel="stylesheet" href="../components/input/input.css">
+  <link rel="stylesheet" href="../components/accordion/accordion.css">
+  <link rel="stylesheet" href="../components/tabs/tabs.css">
+  <link rel="stylesheet" href="../components/dropdown/dropdown.css">
+  <link rel="stylesheet" href="../components/toast/toast.css">
+  <link rel="stylesheet" href="../components/combobox/combobox.css">
+  <link rel="stylesheet" href="../components/sheet/sheet.css">
+  <link rel="stylesheet" href="../components/toggle/toggle.css">
+  <link rel="stylesheet" href="../components/icon/icon.css">
+  <link rel="stylesheet" href="../components/typography/typography.css">
+  <link rel="stylesheet" href="../components/separator/separator.css">
+  <link rel="stylesheet" href="../components/label/label.css">
+  <link rel="stylesheet" href="../components/toggle-group/toggle-group.css">
+  <link rel="stylesheet" href="../components/button-group/button-group.css">
+  <link rel="stylesheet" href="../components/toolbar/toolbar.css">
+  <link rel="stylesheet" href="../components/textarea/textarea.css">
+  <link rel="stylesheet" href="../components/checkbox/checkbox.css">
+  <link rel="stylesheet" href="../components/radio/radio.css">
+  <link rel="stylesheet" href="../components/switch/switch.css">
+  <link rel="stylesheet" href="../components/slider/slider.css">
+  <link rel="stylesheet" href="../components/select/select.css">
+  <link rel="stylesheet" href="../components/number-input/number-input.css">
+  <link rel="stylesheet" href="../components/file-input/file-input.css">
+  <link rel="stylesheet" href="../components/color-picker/color-picker.css">
+  <link rel="stylesheet" href="../components/date-picker/date-picker.css">
+  <link rel="stylesheet" href="../components/form/form.css">
+  <link rel="stylesheet" href="../components/avatar/avatar.css">
+  <link rel="stylesheet" href="../components/image/image.css">
+  <link rel="stylesheet" href="../components/statistic/statistic.css">
+  <link rel="stylesheet" href="../components/table/table.css">
+  <link rel="stylesheet" href="../components/collapsible/collapsible.css">
+  <link rel="stylesheet" href="../components/timeline/timeline.css">
+  <link rel="stylesheet" href="../components/tree-view/tree-view.css">
+  <link rel="stylesheet" href="../components/calendar/calendar.css">
+  <link rel="stylesheet" href="../components/spinner/spinner.css">
+  <link rel="stylesheet" href="../components/skeleton/skeleton.css">
+  <link rel="stylesheet" href="../components/progress/progress.css">
+  <link rel="stylesheet" href="../components/alert/alert.css">
+  <link rel="stylesheet" href="../components/alert-dialog/alert-dialog.css">
+  <link rel="stylesheet" href="../components/popover/popover.css">
+  <link rel="stylesheet" href="../components/tooltip/tooltip.css">
+  <link rel="stylesheet" href="../components/context-menu/context-menu.css">
+  <link rel="stylesheet" href="../components/command/command.css">
+  <link rel="stylesheet" href="../components/breadcrumb/breadcrumb.css">
+  <link rel="stylesheet" href="../components/pagination/pagination.css">
+  <link rel="stylesheet" href="../components/steps/steps.css">
+  <link rel="stylesheet" href="../components/navigation-menu/navigation-menu.css">
+  <link rel="stylesheet" href="../components/scroll-area/scroll-area.css">
+  <link rel="stylesheet" href="../components/carousel/carousel.css">
+  <link rel="stylesheet" href="../components/sidebar/sidebar.css">
+  <link rel="stylesheet" href="../components/sortable/sortable.css">
+  <link rel="stylesheet" href="../components/site-header/site-header.css">
+  <link rel="stylesheet" href="../components/hero/hero.css">
+  <link rel="stylesheet" href="../components/product-showcase/product-showcase.css">
+  <link rel="stylesheet" href="../components/brand-logos/brand-logos.css">
+  <link rel="stylesheet" href="../components/feature-details/feature-details.css">
+  <link rel="stylesheet" href="../components/testimonials/testimonials.css">
+  <link rel="stylesheet" href="../components/stats/stats.css">
+  <link rel="stylesheet" href="../components/pricing/pricing.css">
+  <link rel="stylesheet" href="../components/blog/blog.css">
+  <link rel="stylesheet" href="../components/faq/faq.css">
+  <link rel="stylesheet" href="../components/get-in-touch/get-in-touch.css">
+  <link rel="stylesheet" href="../components/newsletter/newsletter.css">
+  <link rel="stylesheet" href="../components/site-footer/site-footer.css">
+</head>
+<body>
+  <site-header></site-header>
+  <div class="flex" style="margin-top:3.5rem;min-height:calc(100vh - 3.5rem);">
+    <site-nav></site-nav>
+    <main style="flex:1;min-width:0;max-width:44rem;padding:2rem 3.5rem 8rem;">
+      <div class="page-header">
+        <p class="text-sm text-muted-foreground mb-3" style="font-family:var(--font-mono);">defuss-shadcn / sizing / density</p>
+        <h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">Density</h1>
+        <p class="text-muted-foreground leading-relaxed mb-10" style="max-width:38rem;">Compactness is an explicit whitespace policy—not a global zoom factor. Keep typography, geometry and target sizes independent.</p>
+      </div>
+<div class="sep"></div>
+<h2 id="presets" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Opt in to interface density</h2>
+<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">Density changes whitespace, not display resolution. The presets are adjustable design choices: compact <code>0.75</code>, comfortable <code>1</code>, spacious <code>1.25</code>. They inherit into descendants; an inner density attribute starts a new density context.</p>
+<div class="preview" style="display:block;padding:0;overflow:hidden;border:1px solid var(--border);border-radius:var(--radius-xl);margin-bottom:1.5rem;">
+<div class="flex flex-wrap gap-4" style="padding:1.5rem;" data-demo="density">
+  <div data-density="compact" class="stack" style="flex:1;min-width:12rem;border:1px dashed var(--border);border-radius:var(--radius-md);padding:0.75rem;">
+    <span class="text-xs text-muted-foreground" style="font-family:var(--font-mono);">compact</span>
+    <div class="p-4" style="background:var(--muted);border-radius:var(--radius-sm);color:var(--muted-foreground);">p-4</div>
+    <div class="p-4" style="background:var(--muted);border-radius:var(--radius-sm);color:var(--muted-foreground);">p-4</div>
+  </div>
+  <div class="stack" style="flex:1;min-width:12rem;border:1px dashed var(--border);border-radius:var(--radius-md);padding:0.75rem;">
+    <span class="text-xs text-muted-foreground" style="font-family:var(--font-mono);">comfortable</span>
+    <div class="p-4" style="background:var(--muted);border-radius:var(--radius-sm);color:var(--muted-foreground);">p-4</div>
+    <div class="p-4" style="background:var(--muted);border-radius:var(--radius-sm);color:var(--muted-foreground);">p-4</div>
+  </div>
+  <div data-density="spacious" class="stack" style="flex:1;min-width:12rem;border:1px dashed var(--border);border-radius:var(--radius-md);padding:0.75rem;">
+    <span class="text-xs text-muted-foreground" style="font-family:var(--font-mono);">spacious</span>
+    <div class="p-4" style="background:var(--muted);border-radius:var(--radius-sm);color:var(--muted-foreground);">p-4</div>
+    <div class="p-4" style="background:var(--muted);border-radius:var(--radius-sm);color:var(--muted-foreground);">p-4</div>
+  </div>
+</div>
+</div>
+<div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:1.5rem;">
+<div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">HTML</div>
+<pre style="border-radius:0;border:none;margin:0;background:transparent;overflow-x:auto;"><code class="language-html">&lt;section data-density="compact"&gt;
+  &lt;div class="flex gap-4 p-4"&gt;Compact spacing&lt;/div&gt;
+  &lt;div data-density="comfortable" class="p-4"&gt;Normal inner spacing&lt;/div&gt;
+&lt;/section&gt;</code></pre></div>
+<div class="sep"></div>
+<h2 id="what-changes" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">What changes—and what does not</h2>
+<div style="overflow-x:auto;margin-bottom:1.5rem;"><table class="table" data-variant="simple"><thead><tr><th scope="col">Quantity</th><th scope="col">Density behavior</th></tr></thead><tbody><tr><td>Numeric gaps, padding, margins; stack gap; default container gutters</td><td>Scaled.</td></tr><tr><td>Numeric widths, heights, square sizes, icon dimensions</td><td>Unchanged.</td></tr><tr><td>Fonts and line heights</td><td>Unchanged.</td></tr><tr><td>Literal px spacing, automatic margins, percentage sizes</td><td>Unchanged.</td></tr><tr><td>Existing button/input recipes and their fixed dimensions</td><td>Unchanged until explicitly migrated.</td></tr><tr><td>Interaction target minima</td><td>Independent CSS-pixel constraints.</td></tr></tbody></table></div>
+<div class="sep"></div>
+<h2 id="custom-density" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Customize a context</h2>
+<div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:1.5rem;">
+<div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">CSS</div>
+<pre style="border-radius:0;border:none;margin:0;background:transparent;overflow-x:auto;"><code class="language-css">.dense-inspector { --layout-density: 0.9; }
+
+/* Component-owned opt-in recipe. No changes to existing .btn rules. */
+.inspector-action {
+  min-inline-size: 44px;
+  min-block-size: 44px;
+  padding-inline: calc(var(--size-base) * 3 * var(--layout-density));
+}</code></pre></div>
+<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">Use a valid nonnegative number. Numeric spacing clamps negative density to zero; invalid CSS token types are not runtime-validated. Named size aliases stay geometric. Do not express density by changing the root font size or devicePixelRatio.</p>
+<div class="sep"></div>
+<h2 id="input-policy" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Pointer capability is a separate policy</h2>
+<div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:1.5rem;">
+<div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">CSS</div>
+<pre style="border-radius:0;border:none;margin:0;background:transparent;overflow-x:auto;"><code class="language-css">.inspector-action {
+  min-inline-size: 44px;
+  min-block-size: 44px;
+}
+
+@media (any-pointer: coarse) {
+  .inspector-action { padding-inline: 1rem; }
+}</code></pre></div>
+<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">The example already keeps a 44px target baseline; the media query only adds breathing room. <code>any-pointer: coarse</code> can detect an available coarse pointer on a hybrid device, but it is not a complete description of a user’s access needs. Keep controls usable without that signal. <a href="https://www.w3.org/TR/mediaqueries-4/#any-input" target="_blank" rel="noopener">Media Queries: available pointer capabilities</a></p>
+<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">The AA target-size criterion is 24 × 24 CSS pixels with exceptions; the enhanced AAA criterion uses 44 × 44 with exceptions. Check actual target geometry, not just icon dimensions. <a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html" target="_blank" rel="noopener">WCAG 2.2: Target Size (Minimum), AA</a> · <a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-enhanced.html" target="_blank" rel="noopener">WCAG 2.2: Target Size (Enhanced), AAA</a></p>
+    </main>
+  </div>
+  <script src="js/site.js" defer></script>
+  <script type="module" src="js/shiki-highlight.js"></script>
+  <script type="module" src="../components/accordion/accordion.js"></script>
+  <script type="module" src="../components/combobox/combobox.js"></script>
+  <script type="module" src="../components/dialog/dialog.js"></script>
+  <script type="module" src="../components/dropdown/dropdown.js"></script>
+  <script type="module" src="../components/sheet/sheet.js"></script>
+  <script type="module" src="../components/tabs/tabs.js"></script>
+  <script type="module" src="../components/toast/toast.js"></script>
+  <script type="module" src="../components/toggle/toggle.js"></script>
+  <script type="module" src="../components/toggle-group/toggle-group.js"></script>
+  <script type="module" src="../components/toolbar/toolbar.js"></script>
+  <script type="module" src="../components/number-input/number-input.js"></script>
+  <script type="module" src="../components/color-picker/color-picker.js"></script>
+  <script type="module" src="../components/avatar/avatar.js"></script>
+  <script type="module" src="../components/image/image.js"></script>
+  <script type="module" src="../components/tree-view/tree-view.js"></script>
+  <script type="module" src="../components/calendar/calendar.js"></script>
+  <script type="module" src="../components/alert-dialog/alert-dialog.js"></script>
+  <script type="module" src="../components/popover/popover.js"></script>
+  <script type="module" src="../components/tooltip/tooltip.js"></script>
+  <script type="module" src="../components/context-menu/context-menu.js"></script>
+  <script type="module" src="../components/command/command.js"></script>
+  <script type="module" src="../components/navigation-menu/navigation-menu.js"></script>
+  <script type="module" src="../components/sidebar/sidebar.js"></script>
+  <script type="module" src="../components/carousel/carousel.js"></script>
+  <script type="module" src="../components/slider/slider.js"></script>
+  <script type="module" src="../components/sortable/sortable.js"></script>
+  <script type="module" src="../components/product-showcase/product-showcase.js"></script>
+  <script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script>
+  <script>globalThis.lucide?.createIcons();</script>
+</body>
+</html>

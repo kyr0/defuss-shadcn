@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="images/favicon.webp" type="image/webp">
+  <meta name="description" content="Intrinsic card grids, explicit tracks and aligned subgrids. Responsive to available space without a breakpoint utility generator.">
+  <meta property="og:title" content="Grid — defuss-shadcn">
+  <meta property="og:description" content="Intrinsic card grids, explicit tracks and aligned subgrids. Responsive to available space without a breakpoint utility generator.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kyr0.github.io/defuss-shadcn/grid.html">
+  <meta property="og:site_name" content="defuss-shadcn">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Grid — defuss-shadcn">
+  <meta name="twitter:description" content="Intrinsic card grids, explicit tracks and aligned subgrids. Responsive to available space without a breakpoint utility generator.">
+  <title>Grid — defuss-shadcn</title>
+  <script src="js/themes.js"></script>
+  <script src="js/theme-switcher.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/search-index.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/default-semantic-tokens.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/sizing.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/layout.css">
+  <link rel="stylesheet" href="css/docs-theme.css">
+  <link rel="stylesheet" href="css/docs-utilities.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/button/button.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/card/card.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/badge/badge.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/input/input.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/accordion/accordion.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tabs/tabs.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dropdown/dropdown.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toast/toast.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/combobox/combobox.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sheet/sheet.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toggle/toggle.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/icon/icon.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/typography/typography.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/separator/separator.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/label/label.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toggle-group/toggle-group.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/button-group/button-group.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toolbar/toolbar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/textarea/textarea.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/checkbox/checkbox.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/radio/radio.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/switch/switch.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/slider/slider.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/select/select.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/number-input/number-input.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/file-input/file-input.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/color-picker/color-picker.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/date-picker/date-picker.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/form/form.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/avatar/avatar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/image/image.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/statistic/statistic.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/table/table.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/collapsible/collapsible.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/timeline/timeline.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tree-view/tree-view.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/calendar/calendar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/spinner/spinner.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/skeleton/skeleton.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/progress/progress.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/alert/alert.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/alert-dialog/alert-dialog.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/popover/popover.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tooltip/tooltip.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/context-menu/context-menu.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/command/command.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/breadcrumb/breadcrumb.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/pagination/pagination.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/steps/steps.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/navigation-menu/navigation-menu.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/scroll-area/scroll-area.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/carousel/carousel.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sidebar/sidebar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sortable/sortable.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/site-header/site-header.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/hero/hero.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/product-showcase/product-showcase.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/brand-logos/brand-logos.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/feature-details/feature-details.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/testimonials/testimonials.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/stats/stats.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/pricing/pricing.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/blog/blog.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/faq/faq.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/get-in-touch/get-in-touch.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/newsletter/newsletter.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/site-footer/site-footer.css">
+</head>
+<body>
+  <site-header></site-header>
+  <div class="flex" style="margin-top:3.5rem;min-height:calc(100vh - 3.5rem);">
+    <site-nav></site-nav>
+    <main style="flex:1;min-width:0;max-width:44rem;padding:2rem 3.5rem 8rem;">
+      <div class="page-header">
+        <p class="text-sm text-muted-foreground mb-3" style="font-family:var(--font-mono);">defuss-shadcn / layout / grid</p>
+        <h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">Grid</h1>
+        <p class="text-muted-foreground leading-relaxed mb-10" style="max-width:38rem;">Intrinsic card grids, explicit tracks and aligned subgrids. Responsive to available space without a breakpoint utility generator.</p>
+      </div>
+<div class="sep"></div>
+<h2 id="intrinsic" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Intrinsic columns without breakpoints</h2>
+<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;"><code>grid</code> only enables Grid. Add <code>grid-cols-auto</code> for auto-fit columns with a preferred minimum; <code>--layout-min</code> defaults to 16rem. Empty tracks collapse, and populated tracks share spare space.</p>
+<div class="preview" style="display:block;padding:0;overflow:hidden;border:1px solid var(--border);border-radius:var(--radius-xl);margin-bottom:1.5rem;">
+<div class="grid grid-cols-auto gap-4" style="--layout-min:12rem;padding:1.5rem;" data-demo="grid">
+  <div class="p-4" style="background:var(--muted);border-radius:var(--radius-md);color:var(--muted-foreground);text-align:center;">Research</div>
+  <div class="p-4" style="background:var(--muted);border-radius:var(--radius-md);color:var(--muted-foreground);text-align:center;">Design</div>
+  <div class="p-4" style="background:var(--muted);border-radius:var(--radius-md);color:var(--muted-foreground);text-align:center;">Engineering</div>
+</div>
+</div>
+<div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:1.5rem;">
+<div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">HTML</div>
+<pre style="border-radius:0;border:none;margin:0;background:transparent;overflow-x:auto;"><code class="language-html">&lt;div class="grid grid-cols-auto gap-4" style="--layout-min:12rem;"&gt;
+  &lt;article&gt;Research&lt;/article&gt;
+  &lt;article&gt;Design&lt;/article&gt;
+  &lt;article&gt;Engineering&lt;/article&gt;
+&lt;/div&gt;</code></pre></div>
+<div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:1.5rem;">
+<div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">CSS</div>
+<pre style="border-radius:0;border:none;margin:0;background:transparent;overflow-x:auto;"><code class="language-css">grid-template-columns:
+  repeat(auto-fit, minmax(min(100%, var(--layout-min)), 1fr));</code></pre></div>
+<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">The inner minimum prevents the preferred track width itself from exceeding a narrow container. It does not wrap long identifiers, shrink arbitrary media or eliminate intrinsic child overflow. Set those policies on the content.</p>
+<div class="sep"></div>
+<h2 id="explicit" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Explicit tracks and spans</h2>
+<div style="overflow-x:auto;margin-bottom:1.5rem;"><table class="table" data-variant="simple"><thead><tr><th scope="col">Concern</th><th scope="col">Classes</th></tr></thead><tbody><tr><td>Columns</td><td><code>grid-cols-1</code> through <code>grid-cols-12</code>; equal <code>minmax(0, 1fr)</code> tracks.</td></tr><tr><td>Rows</td><td><code>grid-rows-1</code> through <code>grid-rows-6</code>.</td></tr><tr><td>Spans</td><td><code>col-span-1…12</code>, <code>row-span-1…6</code>, <code>col-span-full</code>, <code>row-span-full</code>.</td></tr><tr><td>Other tracks</td><td><code>grid-cols-none, grid-rows-none, auto-cols-auto, auto-rows-auto</code>.</td></tr><tr><td>Subgrid</td><td><code>grid-cols-subgrid, grid-rows-subgrid</code>.</td></tr><tr><td>Alignment</td><td><code>items-*</code>, <code>justify-items-start/end/center/stretch</code>, <code>justify-self-auto/start/end/center/stretch</code>, <code>place-items-start/end/center/stretch/baseline</code>, <code>place-self-auto/start/end/center/stretch</code>.</td></tr></tbody></table></div>
+<div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:1.5rem;">
+<div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">HTML</div>
+<pre style="border-radius:0;border:none;margin:0;background:transparent;overflow-x:auto;"><code class="language-html">&lt;div class="grid grid-cols-3 gap-4"&gt;
+  &lt;header class="col-span-full"&gt;Dashboard&lt;/header&gt;
+  &lt;aside&gt;Filters&lt;/aside&gt;
+  &lt;section class="col-span-2"&gt;Results&lt;/section&gt;
+&lt;/div&gt;</code></pre></div>
+<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">A span larger than the available explicit tracks can create implicit columns. Keep spans compatible with every responsive track configuration; do not use a fixed span in a one-column auto-fit layout without an intentional override.</p>
+<div class="sep"></div>
+<h2 id="subgrid" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Share track alignment with subgrid</h2>
+<div class="preview" style="display:block;padding:0;overflow:hidden;border:1px solid var(--border);border-radius:var(--radius-xl);margin-bottom:1.5rem;">
+<div class="grid grid-cols-2 gap-4" style="padding:1.5rem;" data-demo="subgrid">
+  <div class="grid row-span-3 grid-rows-subgrid" style="border:1px solid var(--border);border-radius:var(--radius-md);">
+    <h3 style="margin:0.75rem;font-size:1rem;">Card A</h3>
+    <p class="text-sm text-muted-foreground" style="margin:0 0.75rem;">Short body — its footer still aligns with Card B because the row tracks are shared.</p>
+    <button class="btn" type="button" data-variant="outline" data-size="sm" style="margin:0.75rem;justify-self:start;">Open</button>
+  </div>
+  <div class="grid row-span-3 grid-rows-subgrid" style="border:1px solid var(--border);border-radius:var(--radius-md);">
+    <h3 style="margin:0.75rem;font-size:1rem;">Card B</h3>
+    <p class="text-sm text-muted-foreground" style="margin:0 0.75rem;">A much longer body that would push a naive footer down. Subgrid keeps both footers on one line.</p>
+    <button class="btn" type="button" data-variant="outline" data-size="sm" style="margin:0.75rem;justify-self:start;">Open</button>
+  </div>
+</div>
+</div>
+<div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:1.5rem;">
+<div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">HTML</div>
+<pre style="border-radius:0;border:none;margin:0;background:transparent;overflow-x:auto;"><code class="language-html">&lt;div class="grid grid-cols-2 gap-4"&gt;
+  &lt;article class="grid row-span-3 grid-rows-subgrid"&gt;
+    &lt;h3&gt;Starter&lt;/h3&gt;
+    &lt;p&gt;For a small project.&lt;/p&gt;
+    &lt;button class="btn" type="button" aria-label="Choose Starter"&gt;Select&lt;/button&gt;
+  &lt;/article&gt;
+  &lt;article class="grid row-span-3 grid-rows-subgrid"&gt;
+    &lt;h3&gt;Team&lt;/h3&gt;
+    &lt;p&gt;For a larger group working across several projects.&lt;/p&gt;
+    &lt;button class="btn" type="button" aria-label="Choose Team"&gt;Select&lt;/button&gt;
+  &lt;/article&gt;
+&lt;/div&gt;</code></pre></div>
+<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">Each card spans three parent rows and adopts those rows as its subgrid. Subgrid is a structure contract, not a universal card rule. Without support, the cards retain ordinary independent grids; shared row alignment is the enhancement. CSS Grid is layout, not an ARIA grid widget.</p>
+<div class="sep"></div>
+<h2 id="references" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Platform references</h2>
+<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;"><a href="https://www.w3.org/TR/css-grid-2/" target="_blank" rel="noopener">CSS Grid and subgrid</a> · <a href="https://www.w3.org/TR/css-contain-3/" target="_blank" rel="noopener">CSS container queries</a></p>
+    </main>
+  </div>
+  <script src="js/site.js" defer></script>
+  <script type="module" src="js/shiki-highlight.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/accordion/accordion.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/combobox/combobox.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dropdown/dropdown.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sheet/sheet.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tabs/tabs.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toast/toast.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toggle/toggle.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toggle-group/toggle-group.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toolbar/toolbar.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/number-input/number-input.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/color-picker/color-picker.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/avatar/avatar.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/image/image.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tree-view/tree-view.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/calendar/calendar.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/alert-dialog/alert-dialog.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/popover/popover.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tooltip/tooltip.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/context-menu/context-menu.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/command/command.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/navigation-menu/navigation-menu.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sidebar/sidebar.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/carousel/carousel.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/slider/slider.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sortable/sortable.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/product-showcase/product-showcase.js"></script>
+  <script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script>
+  <script>globalThis.lucide?.createIcons();</script>
+</body>
+</html>

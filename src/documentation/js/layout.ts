@@ -80,9 +80,21 @@
       { label: 'ES Modules', href: 'es-modules.html' },
       { label: 'Native Web APIs', href: 'native-web-apis.html' },
       { label: 'Animations', href: 'animations.html' },
+      { label: 'Sizing', href: 'sizing.html' },
+      { label: 'Layout', href: 'layout.html' },
       { label: 'Accessibility', href: 'accessibility.html' },
       { label: 'Component Skills', href: 'component-skills.html' },
       { label: 'Changelog', href: 'changelog.html' },
+    ]},
+    { heading: 'Sizing', items: [
+      { label: 'Width &amp; Height', href: 'width-height.html' },
+      { label: 'Spacing', href: 'spacing.html' },
+      { label: 'Density', href: 'density.html' },
+    ]},
+    { heading: 'Layout', items: [
+      { label: 'Container', href: 'container.html' },
+      { label: 'Flex', href: 'flex.html' },
+      { label: 'Grid', href: 'grid.html' },
     ]},
     { heading: 'Primitives', items: [
       { label: 'Typography', href: 'typography.html' },
@@ -174,6 +186,7 @@
 
   /* Pages that have been built (have a real doc page) */
   var BUILT = new Set([
+    'sizing.html', 'layout.html', 'width-height.html', 'spacing.html', 'density.html', 'container.html', 'flex.html', 'grid.html',
     'index.html', 'installation.html', 'theming.html', 'dark-mode.html', 'data-attribute-api.html', 'architecture.html', 'cascade-layers.html', 'es-modules.html', 'native-web-apis.html', 'animations.html', 'accessibility.html', 'component-skills.html', 'changelog.html',
     'typography.html', 'separator.html', 'icon.html', 'label.html',
     'button.html', 'toggle.html', 'toggle-group.html', 'button-group.html', 'toolbar.html',

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="images/favicon.webp" type="image/webp">
+  <meta name="description" content="Direction, wrapping, alignment and flexible sizing using native Flexbox. No implicit gap and no visual reordering helpers.">
+  <meta property="og:title" content="Flex — defuss-shadcn">
+  <meta property="og:description" content="Direction, wrapping, alignment and flexible sizing using native Flexbox. No implicit gap and no visual reordering helpers.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kyr0.github.io/defuss-shadcn/flex.html">
+  <meta property="og:site_name" content="defuss-shadcn">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Flex — defuss-shadcn">
+  <meta name="twitter:description" content="Direction, wrapping, alignment and flexible sizing using native Flexbox. No implicit gap and no visual reordering helpers.">
+  <title>Flex — defuss-shadcn</title>
+  <script src="js/themes.js"></script>
+  <script src="js/theme-switcher.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/search-index.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/default-semantic-tokens.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/sizing.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/layout.css">
+  <link rel="stylesheet" href="css/docs-theme.css">
+  <link rel="stylesheet" href="css/docs-utilities.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/button/button.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/card/card.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/badge/badge.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/input/input.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/accordion/accordion.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tabs/tabs.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dropdown/dropdown.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toast/toast.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/combobox/combobox.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sheet/sheet.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toggle/toggle.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/icon/icon.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/typography/typography.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/separator/separator.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/label/label.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toggle-group/toggle-group.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/button-group/button-group.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toolbar/toolbar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/textarea/textarea.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/checkbox/checkbox.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/radio/radio.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/switch/switch.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/slider/slider.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/select/select.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/number-input/number-input.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/file-input/file-input.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/color-picker/color-picker.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/date-picker/date-picker.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/form/form.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/avatar/avatar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/image/image.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/statistic/statistic.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/table/table.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/collapsible/collapsible.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/timeline/timeline.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tree-view/tree-view.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/calendar/calendar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/spinner/spinner.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/skeleton/skeleton.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/progress/progress.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/alert/alert.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/alert-dialog/alert-dialog.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/popover/popover.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tooltip/tooltip.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/context-menu/context-menu.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/command/command.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/breadcrumb/breadcrumb.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/pagination/pagination.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/steps/steps.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/navigation-menu/navigation-menu.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/scroll-area/scroll-area.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/carousel/carousel.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sidebar/sidebar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sortable/sortable.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/site-header/site-header.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/hero/hero.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/product-showcase/product-showcase.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/brand-logos/brand-logos.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/feature-details/feature-details.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/testimonials/testimonials.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/stats/stats.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/pricing/pricing.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/blog/blog.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/faq/faq.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/get-in-touch/get-in-touch.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/newsletter/newsletter.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/site-footer/site-footer.css">
+</head>
+<body>
+  <site-header></site-header>
+  <div class="flex" style="margin-top:3.5rem;min-height:calc(100vh - 3.5rem);">
+    <site-nav></site-nav>
+    <main style="flex:1;min-width:0;max-width:44rem;padding:2rem 3.5rem 8rem;">
+      <div class="page-header">
+        <p class="text-sm text-muted-foreground mb-3" style="font-family:var(--font-mono);">defuss-shadcn / layout / flex</p>
+        <h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">Flex</h1>
+        <p class="text-muted-foreground leading-relaxed mb-10" style="max-width:38rem;">Direction, wrapping, alignment and flexible sizing using native Flexbox. No implicit gap and no visual reordering helpers.</p>
+      </div>
+<div class="sep"></div>
+<h2 id="one-dimension" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">One-dimensional composition</h2>
+<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">Start with <code>flex</code> or <code>inline-flex</code>. Add direction, wrapping, alignment and spacing explicitly. <code>stack</code> is a convenience for a column with a default four-unit, density-aware gap.</p>
+<div class="preview" style="display:block;padding:0;overflow:hidden;border:1px solid var(--border);border-radius:var(--radius-xl);margin-bottom:1.5rem;">
+<div class="stack gap-6" style="padding:1.5rem;" data-demo="flex">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <strong>Workspace</strong>
+    <div class="flex flex-wrap gap-2">
+      <button class="btn" type="button">Save</button>
+      <button class="btn" type="button" data-variant="outline">Cancel</button>
+    </div>
+  </div>
+  <div class="flex gap-4" style="max-width:20rem;">
+    <span class="w-16 shrink-0 badge" data-variant="outline" style="justify-content:center;">Label</span>
+    <div class="flex-1 min-w-0" style="overflow-wrap:anywhere;font-size:0.875rem;color:var(--muted-foreground);">LongContentCanNowWrapWithoutWideningItsParent</div>
+  </div>
+</div>
+</div>
+<div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:1.5rem;">
+<div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">HTML</div>
+<pre style="border-radius:0;border:none;margin:0;background:transparent;overflow-x:auto;"><code class="language-html">&lt;div class="flex flex-wrap items-center justify-between gap-3"&gt;
+  &lt;strong&gt;Workspace&lt;/strong&gt;
+  &lt;div class="flex flex-wrap gap-2"&gt;
+    &lt;button class="btn" type="button"&gt;Save&lt;/button&gt;
+    &lt;button class="btn" type="button" data-variant="outline"&gt;Cancel&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre></div>
+<div class="sep"></div>
+<h2 id="helpers" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Available flex helpers</h2>
+<div style="overflow-x:auto;margin-bottom:1.5rem;"><table class="table" data-variant="simple"><thead><tr><th scope="col">Concern</th><th scope="col">Classes</th></tr></thead><tbody><tr><td>Direction</td><td><code>flex-row, flex-col</code></td></tr><tr><td>Wrapping</td><td><code>flex-wrap, flex-nowrap</code></td></tr><tr><td>Distribution</td><td><code>justify-start/end/center/between/around/evenly/normal</code></td></tr><tr><td>Cross-axis alignment</td><td><code>items-start/end/center/baseline/stretch</code></td></tr><tr><td>Individual alignment</td><td><code>self-auto/start/end/center/baseline/stretch</code></td></tr><tr><td>Wrapped lines</td><td><code>content-start/end/center/between/around/evenly/stretch/normal</code></td></tr><tr><td>Flexibility</td><td><code>flex-1, flex-auto, flex-initial, flex-none</code></td></tr><tr><td>Growth / shrink</td><td><code>grow, grow-0, shrink, shrink-0</code></td></tr><tr><td>Basis</td><td><code>basis-0, basis-auto, basis-full</code></td></tr></tbody></table></div>
+<div class="sep"></div>
+<h2 id="overflow" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Handle the real overflow source</h2>
+<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">A flex item’s automatic minimum can resist shrinking. Apply <code>min-w-0</code> to the flexible content region and choose text wrapping or scrolling. Do not fix overflow by clipping the entire layout. <code>justify-between</code> distributes spare space; it is not a substitute for a minimum gap.</p>
+<div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:1.5rem;">
+<div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">HTML</div>
+<pre style="border-radius:0;border:none;margin:0;background:transparent;overflow-x:auto;"><code class="language-html">&lt;div class="flex gap-4"&gt;
+  &lt;span class="w-16 shrink-0"&gt;Label&lt;/span&gt;
+  &lt;div class="flex-1 min-w-0" style="overflow-wrap:anywhere;"&gt;
+    LongContentCanNowWrapWithoutWideningItsParent
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre></div>
+<div class="sep"></div>
+<h2 id="responsive" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Change structure with a named query</h2>
+<div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:1.5rem;">
+<div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">HTML</div>
+<pre style="border-radius:0;border:none;margin:0;background:transparent;overflow-x:auto;"><code class="language-html">&lt;section class="query"&gt;
+  &lt;div class="flex flex-col gap-4 action-row"&gt;
+    &lt;button class="btn" type="button"&gt;First&lt;/button&gt;
+    &lt;button class="btn" type="button"&gt;Second&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</code></pre></div>
+<div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:1.5rem;">
+<div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">CSS</div>
+<pre style="border-radius:0;border:none;margin:0;background:transparent;overflow-x:auto;"><code class="language-css">@container layout (inline-size &gt;= 30rem) {
+  .action-row { flex-direction: row; }
+}</code></pre></div>
+<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">The custom rule is unlayered, so it overrides the helper intentionally. No reverse-direction or order helpers are shipped: preserve the relationship between visual, reading and keyboard order.</p>
+<div class="sep"></div>
+<h2 id="references" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Platform references</h2>
+<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;"><a href="https://www.w3.org/TR/css-flexbox-1/" target="_blank" rel="noopener">CSS Flexible Box Layout</a> · <a href="https://www.w3.org/TR/css-cascade-5/" target="_blank" rel="noopener">CSS cascade layers</a></p>
+    </main>
+  </div>
+  <script src="js/site.js" defer></script>
+  <script type="module" src="js/shiki-highlight.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/accordion/accordion.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/combobox/combobox.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dropdown/dropdown.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sheet/sheet.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tabs/tabs.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toast/toast.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toggle/toggle.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toggle-group/toggle-group.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toolbar/toolbar.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/number-input/number-input.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/color-picker/color-picker.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/avatar/avatar.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/image/image.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tree-view/tree-view.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/calendar/calendar.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/alert-dialog/alert-dialog.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/popover/popover.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tooltip/tooltip.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/context-menu/context-menu.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/command/command.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/navigation-menu/navigation-menu.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sidebar/sidebar.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/carousel/carousel.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/slider/slider.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sortable/sortable.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/product-showcase/product-showcase.js"></script>
+  <script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script>
+  <script>globalThis.lucide?.createIcons();</script>
+</body>
+</html>

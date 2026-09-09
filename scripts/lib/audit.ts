@@ -82,6 +82,27 @@ const TW = new RegExp(
 );
 
 /**
+ * Why: every doc page loads the shipped optional modules
+ * (theme/sizing.css + theme/layout.css), so their `:where(.…)` utilities are
+ * defined *in the page* — doc demos may use them without being flagged as
+ * undefined no-ops. Components never get this allowance: they ship standalone
+ * and a consumer page might not load the modules (the component scan keeps
+ * its own, stricter set).
+ */
+function moduleDefinedClasses(root: string): Set<string> {
+  const set = new Set<string>();
+  for (const sheet of ['sizing.css', 'layout.css']) {
+    const file = join(root, 'src/theme', sheet);
+    if (!existsSync(file)) continue;
+    // selectors are escaped CSS (`.w-0\.5` = class "w-0.5", `.w-1\/2` = "w-1/2")
+    for (const m of readFileSync(file, 'utf8').matchAll(/:where\(([^)]+)\)/g)) {
+      for (const cls of m[1].matchAll(/\.((?:\\.|[a-z0-9_-])+)/g)) set.add(cls[1].replaceAll('\\', ''));
+    }
+  }
+  return set;
+}
+
+/**
  * Returns `{ docIssues, compIssues }` — undefined utility-shaped classes in
  * doc pages (informational) and component files (must be empty; components
  * may not depend on doc-site utilities).
@@ -103,13 +124,13 @@ export function auditUtilities(root: string): { docIssues: string[]; compIssues:
     }
   }
 
-  function scan(paths: string[]): string[] {
+  function scan(paths: string[], extra?: Set<string>): string[] {
     const missing = new Map<string, string[]>();
     for (const f of paths) {
       const content = readFileSync(f, 'utf8');
       for (const m of content.matchAll(/class="([^"]+)"/g)) {
         for (const c of m[1].split(/\s+/)) {
-          if (defined.has(c) || componentClasses.has(c) || !TW.test(c)) continue;
+          if (defined.has(c) || componentClasses.has(c) || extra?.has(c) || !TW.test(c)) continue;
           if (!missing.has(c)) missing.set(c, []);
           missing.get(c)!.push(f);
         }
@@ -121,7 +142,10 @@ export function auditUtilities(root: string): { docIssues: string[]; compIssues:
   }
 
   return {
-    docIssues: scan(walk(DOC_DIR, ['.html'])),
+    // doc pages load theme/sizing.css + theme/layout.css globally (every page
+    // links them) → their utilities are legitimately usable in demos;
+    // components ship standalone → they may not depend on the modules.
+    docIssues: scan(walk(DOC_DIR, ['.html']), moduleDefinedClasses(root)),
     compIssues: scan(walk(COMP_DIR, ['.html', '.md'])),
   };
 }

@@ -40,7 +40,10 @@ defuss-shadcn/
 ├── dist/                              ← the distributable (drop into any project)
 │   ├── SKILL.md                       ← agent entry point (generated from src/SKILL_tpl.md + skill frontmatter)
 │   ├── stats.json                     ← generated size/surface summary (counts per type, JS split, byte sizes; `make stats`)
-│   ├── theme/default-semantic-tokens.css      ← design tokens (source of truth for colors, radius, shadows)
+│   ├── theme/                        ← design tokens + optional standalone modules
+│   │   ├── default-semantic-tokens.css        ← tokens (source of truth for colors, radius, shadows)
+│   │   ├── sizing.css                         ← opt-in numeric scale (w-4 = 4 base units, --size-* aliases, density)
+│   │   └── layout.css                         ← opt-in layout surface (flex, grid, stack, container, query)
 │   ├── components/                    ← self-contained component folders
 │   │   └── {name}/
 │   │       ├── component-skill.md      ← component skill (frontmatter + HTML structure & ARIA reference)
