@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>radial-progress e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/radial-progress/radial-progress.css" />
+  </head>
+  <!-- plain block flow: a flex body would blockify inline-grid to grid and
+       hide the display value the component CSS actually sets -->
+  <body style="padding:2rem;">
+    <!-- default state, the doc page's first .preview -->
+    <div class="radial-progress" id="rp-default" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="--value:70">70%</div>
+
+    <!-- no --value at all: proves the @property initial-value is registered -->
+    <div class="radial-progress" id="rp-unset" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+
+    <!-- value scale (same set the doc page shows) -->
+    <div class="radial-progress" id="rp-v0" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="--value:0">0%</div>
+    <div class="radial-progress" id="rp-v25" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="--value:25">25%</div>
+    <div class="radial-progress" id="rp-v50" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="--value:50">50%</div>
+    <div class="radial-progress" id="rp-v75" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="--value:75">75%</div>
+    <div class="radial-progress" id="rp-v100" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="--value:100">100%</div>
+
+    <!-- every documented variant -->
+    <div class="radial-progress" id="rp-variant-default" data-variant="default" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="--value:70">70%</div>
+    <div class="radial-progress" id="rp-secondary" data-variant="secondary" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="--value:70">70%</div>
+    <div class="radial-progress" id="rp-destructive" data-variant="destructive" role="progressbar" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100" style="--value:95">95%</div>
+    <div class="radial-progress" id="rp-success" data-variant="success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="--value:100">100%</div>
+
+    <!-- every documented size -->
+    <div class="radial-progress" id="rp-sm" data-size="sm" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="--value:40">40%</div>
+    <div class="radial-progress" id="rp-lg" data-size="lg" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="--value:40">40%</div>
+
+    <!-- custom --size / --thickness (the documented escape hatch) -->
+    <div class="radial-progress" id="rp-custom" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="--value:60;--size:12rem;--thickness:2px">60%</div>
+    <div class="radial-progress" id="rp-thick" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="--value:60;--size:8rem;--thickness:1.5rem">60%</div>
+
+    <!-- composition: label other than a percentage -->
+    <div class="radial-progress" id="rp-fraction" data-size="lg" role="progressbar" aria-valuenow="7" aria-valuemin="0" aria-valuemax="10" aria-valuetext="7 of 10 seats" style="--value:70">7/10</div>
+  </body>
+</html>

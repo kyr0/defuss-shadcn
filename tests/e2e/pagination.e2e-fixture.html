@@ -6,16 +6,105 @@
     <link rel="stylesheet" href="/dist/theme/default-semantic-tokens.css" />
     <link rel="stylesheet" href="/dist/components/pagination/pagination.css" />
   </head>
-  <body style="padding:2rem;">
-    <!-- mirrors the doc page: links, prev/next, active, ellipsis, disabled -->
-    <nav class="pagination" aria-label="Pagination">
+  <body style="padding: 2rem">
+    <!-- Every configuration the doc page demonstrates. Pagination is CSS-only,
+         so the stylesheet is the whole contract. -->
+
+    <!-- default variant, default size: prev/next + numbers + ellipsis -->
+    <nav class="pagination" id="p-default" data-variant="default" aria-label="Pagination">
+      <ul class="pagination-list" id="p-default-list">
+        <li>
+          <a class="pagination-prev" id="p-prev" href="#" aria-label="Go to previous page">
+            <svg aria-hidden="true" id="p-prev-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6" /></svg>
+            Previous
+          </a>
+        </li>
+        <li><a class="pagination-link" id="p-link" href="#">1</a></li>
+        <li><a class="pagination-link pagination-active" id="p-active" href="#" aria-current="page">2</a></li>
+        <li><a class="pagination-link" href="#">3</a></li>
+        <li><span class="pagination-ellipsis" id="p-ellipsis" aria-hidden="true">&hellip;</span></li>
+        <li>
+          <a class="pagination-next" id="p-next" href="#" aria-label="Go to next page" aria-disabled="true">
+            Next
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6" /></svg>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- sizes -->
+    <nav class="pagination" id="p-sm" data-size="sm" aria-label="Pagination small">
       <ul class="pagination-list">
-        <li><a class="pagination-prev" href="#">Prev</a></li>
-        <li><a class="pagination-link" id="pg-link" href="#">1</a></li>
-        <li><a class="pagination-link pagination-active" id="pg-active" href="#" aria-current="page">2</a></li>
-        <li><span class="pagination-ellipsis" id="pg-ellipsis"><span>…</span></span></li>
-        <li><a class="pagination-link" id="pg-disabled" href="#" aria-disabled="true">9</a></li>
-        <li><a class="pagination-next" id="pg-next" href="#">Next</a></li>
+        <li><a class="pagination-link" id="p-sm-link" href="#">1</a></li>
+        <li><a class="pagination-link pagination-active" href="#" aria-current="page">2</a></li>
+        <li><span class="pagination-ellipsis" id="p-sm-ellipsis" aria-hidden="true">&hellip;</span></li>
+      </ul>
+    </nav>
+
+    <nav class="pagination" id="p-lg" data-size="lg" aria-label="Pagination large">
+      <ul class="pagination-list">
+        <li>
+          <a class="pagination-prev" id="p-lg-prev" href="#" aria-label="Go to previous page">
+            <svg aria-hidden="true" id="p-lg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6" /></svg>
+            Previous
+          </a>
+        </li>
+        <li><a class="pagination-link" id="p-lg-link" href="#">1</a></li>
+        <li><a class="pagination-link pagination-active" href="#" aria-current="page">2</a></li>
+      </ul>
+    </nav>
+
+    <!-- outline variant -->
+    <nav class="pagination" id="p-outline" data-variant="outline" aria-label="Pagination outline">
+      <ul class="pagination-list">
+        <li><a class="pagination-link" id="p-outline-link" href="#">1</a></li>
+        <li><a class="pagination-link pagination-active" id="p-outline-active" href="#" aria-current="page">2</a></li>
+        <li><a class="pagination-link" href="#">3</a></li>
+      </ul>
+    </nav>
+
+    <!-- joined variant -->
+    <nav class="pagination" id="p-joined" data-variant="joined" aria-label="Pagination joined">
+      <ul class="pagination-list" id="p-joined-list">
+        <li>
+          <a class="pagination-prev" id="p-joined-first" href="#" aria-label="Go to previous page">
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6" /></svg>
+          </a>
+        </li>
+        <li><a class="pagination-link" id="p-joined-mid" href="#">1</a></li>
+        <li><a class="pagination-link pagination-active" href="#" aria-current="page">2</a></li>
+        <li><span class="pagination-ellipsis" id="p-joined-ellipsis" aria-hidden="true">&hellip;</span></li>
+        <li><a class="pagination-link" href="#">10</a></li>
+        <li>
+          <a class="pagination-next" id="p-joined-last" href="#" aria-label="Go to next page">
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6" /></svg>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- joined + sm: variant and size are independent axes -->
+    <nav class="pagination" id="p-joined-sm" data-variant="joined" data-size="sm" aria-label="Pagination joined small">
+      <ul class="pagination-list">
+        <li><a class="pagination-link" id="p-joined-sm-first" href="#">1</a></li>
+        <li><a class="pagination-link pagination-active" href="#" aria-current="page">2</a></li>
+        <li><a class="pagination-link" href="#">3</a></li>
+      </ul>
+    </nav>
+
+    <!-- split layout: prev/next only, two equal columns -->
+    <nav class="pagination" id="p-split" data-layout="split" data-variant="outline" aria-label="Pagination previous and next">
+      <ul class="pagination-list" id="p-split-list">
+        <li><a class="pagination-prev" id="p-split-prev" href="#" aria-label="Go to previous page">Previous</a></li>
+        <li><a class="pagination-next" id="p-split-next" href="#" aria-label="Go to next page">Next</a></li>
+      </ul>
+    </nav>
+
+    <!-- split + joined: the gap collapses, the columns stay equal -->
+    <nav class="pagination" id="p-split-joined" data-layout="split" data-variant="joined" aria-label="Pagination previous and next joined">
+      <ul class="pagination-list" id="p-split-joined-list">
+        <li><a class="pagination-prev" href="#" aria-label="Go to previous page" aria-disabled="true">Previous</a></li>
+        <li><a class="pagination-next" href="#" aria-label="Go to next page">Next</a></li>
       </ul>
     </nav>
   </body>

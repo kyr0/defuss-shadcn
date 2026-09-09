@@ -72,6 +72,29 @@ test('SPA router swaps <main> content on nav click without reloading', async () 
   expect(doc.querySelector('site-header button#theme-toggle')).toBeTruthy();
 });
 
+test('inline .preview scripts re-run after SPA navigation', async () => {
+  // regression: `indeterminate` is IDL-only, so the checkbox/swap demos set it
+  // from an inline <script> next to the demo. The router swaps pages with
+  // main.innerHTML, and innerHTML-inserted scripts never execute — so the demo
+  // rendered its unchecked face when you arrived via the sidebar, while a
+  // direct load looked right. site.js now re-creates those script nodes.
+  const { doc } = await openDocPage('index.html');
+  await waitFor(() => doc.querySelector('site-header button#theme-toggle'), 'shell to render');
+
+  await clickSelector(doc, 'site-nav a[href="checkbox.html"]');
+  await waitFor(() => doc.querySelector('main h1')?.textContent?.includes('Checkbox'), 'checkbox page');
+  await waitFor(
+    () => (doc.getElementById('d-indeterminate') as HTMLInputElement | null)?.indeterminate,
+    'checkbox demo to be indeterminate after nav',
+  );
+
+  await clickSelector(doc, 'site-nav a[href="swap.html"]');
+  await waitFor(() => doc.querySelector('main h1')?.textContent?.includes('Swap'), 'swap page');
+  await waitFor(() => doc.getElementById('swap-tri'), 'swap third-face demo');
+  const tri = doc.getElementById('swap-tri') as HTMLInputElement;
+  await waitFor(() => tri.indeterminate, 'swap demo to show its third face after nav');
+});
+
 test('dark-mode toggle flips the .dark class on <html>', async () => {
   const { doc } = await openDocPage('index.html');
   await waitFor(() => doc.querySelector('site-header button#theme-toggle'), 'shell to render');

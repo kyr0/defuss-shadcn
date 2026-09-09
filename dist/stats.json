@@ -1,18 +1,18 @@
 {
-  "total": 68,
+  "total": 70,
   "byType": {
-    "ATM": 43,
+    "ATM": 45,
     "MOL": 11,
     "ORG": 1,
     "BLK": 13,
     "TPL": 0
   },
   "withJs": 27,
-  "withoutJs": 41,
-  "totalSize": 407047,
-  "totalSizeMinified": 183306,
-  "totalSizeGz": 136621,
-  "totalSizeGzMinified": 69569,
+  "withoutJs": 43,
+  "totalSize": 425587,
+  "totalSizeMinified": 192184,
+  "totalSizeGz": 142141,
+  "totalSizeGzMinified": 72044,
   "components": {
     "accordion": {
       "name": "accordion",
@@ -475,12 +475,12 @@
       "withJs": false,
       "jsSize": 0,
       "jsSizeMinified": 0,
-      "cssSize": 2159,
-      "cssSizeMinified": 1648,
-      "totalSizeGz": 756,
-      "totalSizeGzMinified": 618,
-      "totalSize": 2159,
-      "totalSizeMinified": 1648
+      "cssSize": 7191,
+      "cssSizeMinified": 4142,
+      "totalSizeGz": 1985,
+      "totalSizeGzMinified": 1073,
+      "totalSize": 7191,
+      "totalSizeMinified": 4142
     },
     "popover": {
       "name": "popover",
@@ -533,6 +533,19 @@
       "totalSizeGzMinified": 422,
       "totalSize": 1920,
       "totalSizeMinified": 1185
+    },
+    "radial-progress": {
+      "name": "radial-progress",
+      "type": "ATM",
+      "withJs": false,
+      "jsSize": 0,
+      "jsSizeMinified": 0,
+      "cssSize": 5525,
+      "cssSizeMinified": 2317,
+      "totalSizeGz": 1955,
+      "totalSizeGzMinified": 790,
+      "totalSize": 5525,
+      "totalSizeMinified": 2317
     },
     "radio": {
       "name": "radio",
@@ -657,12 +670,12 @@
       "withJs": true,
       "jsSize": 5012,
       "jsSizeMinified": 1234,
-      "cssSize": 4213,
-      "cssSizeMinified": 2616,
-      "totalSizeGz": 3086,
-      "totalSizeGzMinified": 1357,
-      "totalSize": 9225,
-      "totalSizeMinified": 3850
+      "cssSize": 7456,
+      "cssSizeMinified": 4125,
+      "totalSizeGz": 4018,
+      "totalSizeGzMinified": 1695,
+      "totalSize": 12468,
+      "totalSizeMinified": 5359
     },
     "sortable": {
       "name": "sortable",
@@ -728,6 +741,19 @@
       "totalSizeGzMinified": 935,
       "totalSize": 4394,
       "totalSizeMinified": 3329
+    },
+    "swap": {
+      "name": "swap",
+      "type": "ATM",
+      "withJs": false,
+      "jsSize": 0,
+      "jsSizeMinified": 0,
+      "cssSize": 4740,
+      "cssSizeMinified": 2558,
+      "totalSizeGz": 1404,
+      "totalSizeGzMinified": 892,
+      "totalSize": 4740,
+      "totalSizeMinified": 2558
     },
     "switch": {
       "name": "switch",

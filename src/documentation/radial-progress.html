@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="images/favicon.webp" type="image/webp">
+  <meta name="description" content="Radial Progress component — a circular progress ring drawn with a masked conic-gradient.">
+  <meta property="og:title" content="Radial Progress — defuss-shadcn">
+  <meta property="og:description" content="Radial Progress component — a circular progress ring drawn with a masked conic-gradient.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kyr0.github.io/defuss-shadcn/documentation/radial-progress.html">
+  <meta property="og:site_name" content="defuss-shadcn">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Radial Progress — defuss-shadcn">
+  <meta name="twitter:description" content="Radial Progress component — a circular progress ring drawn with a masked conic-gradient.">
+  <title>Radial Progress — defuss-shadcn</title>
+  <script src="js/themes.js"></script>
+  <script src="js/theme-switcher.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/search-index.js"></script>
+  <link rel="stylesheet" href="../theme/default-semantic-tokens.css">
+  <link rel="stylesheet" href="css/docs-theme.css">
+  <link rel="stylesheet" href="css/docs-utilities.css">
+  <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="../components/button/button.css">
+  <link rel="stylesheet" href="../components/card/card.css">
+  <link rel="stylesheet" href="../components/dialog/dialog.css">
+  <link rel="stylesheet" href="../components/badge/badge.css">
+  <link rel="stylesheet" href="../components/input/input.css">
+  <link rel="stylesheet" href="../components/accordion/accordion.css">
+  <link rel="stylesheet" href="../components/tabs/tabs.css">
+  <link rel="stylesheet" href="../components/dropdown/dropdown.css">
+  <link rel="stylesheet" href="../components/toast/toast.css">
+  <link rel="stylesheet" href="../components/combobox/combobox.css">
+  <link rel="stylesheet" href="../components/sheet/sheet.css">
+  <link rel="stylesheet" href="../components/toggle/toggle.css">
+  <link rel="stylesheet" href="../components/icon/icon.css">
+  <link rel="stylesheet" href="../components/typography/typography.css">
+  <link rel="stylesheet" href="../components/separator/separator.css">
+  <link rel="stylesheet" href="../components/label/label.css">
+  <link rel="stylesheet" href="../components/toggle-group/toggle-group.css">
+  <link rel="stylesheet" href="../components/button-group/button-group.css">
+  <link rel="stylesheet" href="../components/toolbar/toolbar.css">
+  <link rel="stylesheet" href="../components/textarea/textarea.css">
+  <link rel="stylesheet" href="../components/checkbox/checkbox.css">
+  <link rel="stylesheet" href="../components/radio/radio.css">
+  <link rel="stylesheet" href="../components/switch/switch.css">
+  <link rel="stylesheet" href="../components/slider/slider.css">
+  <link rel="stylesheet" href="../components/select/select.css">
+  <link rel="stylesheet" href="../components/number-input/number-input.css">
+  <link rel="stylesheet" href="../components/file-input/file-input.css">
+  <link rel="stylesheet" href="../components/color-picker/color-picker.css">
+  <link rel="stylesheet" href="../components/date-picker/date-picker.css">
+  <link rel="stylesheet" href="../components/form/form.css">
+  <link rel="stylesheet" href="../components/avatar/avatar.css">
+  <link rel="stylesheet" href="../components/image/image.css">
+  <link rel="stylesheet" href="../components/statistic/statistic.css">
+  <link rel="stylesheet" href="../components/table/table.css">
+  <link rel="stylesheet" href="../components/collapsible/collapsible.css">
+  <link rel="stylesheet" href="../components/timeline/timeline.css">
+  <link rel="stylesheet" href="../components/tree-view/tree-view.css">
+  <link rel="stylesheet" href="../components/calendar/calendar.css">
+  <link rel="stylesheet" href="../components/spinner/spinner.css">
+  <link rel="stylesheet" href="../components/skeleton/skeleton.css">
+  <link rel="stylesheet" href="../components/progress/progress.css">
+  <link rel="stylesheet" href="../components/radial-progress/radial-progress.css">
+  <link rel="stylesheet" href="../components/alert/alert.css">
+  <link rel="stylesheet" href="../components/alert-dialog/alert-dialog.css">
+  <link rel="stylesheet" href="../components/popover/popover.css">
+  <link rel="stylesheet" href="../components/tooltip/tooltip.css">
+  <link rel="stylesheet" href="../components/context-menu/context-menu.css">
+  <link rel="stylesheet" href="../components/command/command.css">
+  <link rel="stylesheet" href="../components/breadcrumb/breadcrumb.css">
+  <link rel="stylesheet" href="../components/pagination/pagination.css">
+  <link rel="stylesheet" href="../components/steps/steps.css">
+  <link rel="stylesheet" href="../components/navigation-menu/navigation-menu.css">
+  <link rel="stylesheet" href="../components/scroll-area/scroll-area.css">
+  <link rel="stylesheet" href="../components/carousel/carousel.css">
+  <link rel="stylesheet" href="../components/sidebar/sidebar.css">
+  <link rel="stylesheet" href="../components/sortable/sortable.css">
+  <link rel="stylesheet" href="../components/site-header/site-header.css">
+  <link rel="stylesheet" href="../components/hero/hero.css">
+  <link rel="stylesheet" href="../components/product-showcase/product-showcase.css">
+  <link rel="stylesheet" href="../components/brand-logos/brand-logos.css">
+  <link rel="stylesheet" href="../components/feature-details/feature-details.css">
+  <link rel="stylesheet" href="../components/testimonials/testimonials.css">
+  <link rel="stylesheet" href="../components/stats/stats.css">
+  <link rel="stylesheet" href="../components/pricing/pricing.css">
+  <link rel="stylesheet" href="../components/blog/blog.css">
+  <link rel="stylesheet" href="../components/faq/faq.css">
+  <link rel="stylesheet" href="../components/get-in-touch/get-in-touch.css">
+  <link rel="stylesheet" href="../components/newsletter/newsletter.css">
+  <link rel="stylesheet" href="../components/site-footer/site-footer.css">
+  <link rel="stylesheet" href="../components/swap/swap.css">
+</head>
+<body>
+  <site-header></site-header>
+  <div class="flex" style="margin-top: 3.5rem; min-height: calc(100vh - 3.5rem);">
+    <site-nav></site-nav>
+    <main style="flex: 1; min-width: 0; max-width: 44rem; padding: 2rem 3.5rem 8rem;">
+      <div class="page-header">
+        <div class="flex items-baseline justify-between mb-1">
+          <p class="text-sm text-muted-foreground" style="font-family:var(--font-mono);">defuss-shadcn / radial-progress</p>
+          <div style="display:flex;align-items:baseline;gap:0.375rem;"><span class="text-xs text-muted-foreground" style="font-family:var(--font-mono);white-space:nowrap;">Built with:</span> <a href="#source-css" class="badge built-with-pill" data-variant="outline">CSS</a></div>
+        </div>
+        <h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">Radial Progress<span class="type-badge" data-type="ATM" title="Atom">ATM</span></h1>
+        <p class="text-muted-foreground leading-relaxed mb-6">
+          A circular progress ring with the value in its middle. One <code>conic-gradient</code> masked down to a ring — no SVG, no JavaScript.
+        </p>
+        <!-- Component Skill -->
+        <details style="margin-bottom:2rem;border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;">
+          <summary style="padding:0.875rem 1.25rem;background:var(--muted);cursor:pointer;font-size:0.8125rem;font-weight:600;font-family:var(--font-mono);color:var(--muted-foreground);list-style:none;display:flex;align-items:center;gap:0.5rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 200ms;"><path d="m9 18 6-6-6-6"/></svg>
+            Component Skill — <span data-spec-href="../components/radial-progress/component-skill.md" style="text-decoration:underline;text-underline-offset:3px;">components/radial-progress/component-skill.md</span>
+          </summary>
+          <div style="padding:1.5rem;font-size:0.875rem;line-height:1.85;">
+            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Native basis</p>
+            <p class="text-muted-foreground" style="margin:0 0 1.25rem;">A <code>&lt;div&gt;</code> carrying <code>role="progressbar"</code> — <em>not</em> <code>&lt;progress&gt;</code>: the ring must hold visible text in its center, which <code>&lt;progress&gt;</code> treats as no-support fallback content, and its bar lives in vendor pseudo-elements that cannot be masked into a ring.</p>
+
+            <p style="margin:0 0 0.625rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Web Platform APIs</p>
+            <div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;">
+              <a href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/progressbar_role" target="_blank" rel="noopener" title="ARIA progressbar semantics on an element that can own visible child text" class="api-pill"><code>role="progressbar"</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@property" target="_blank" rel="noopener" title="registers --value as a <number> so changes interpolate" class="api-pill"><code>@property</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/conic-gradient" target="_blank" rel="noopener" title="paints the arc directly from --value" class="api-pill"><code>conic-gradient()</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/mask" target="_blank" rel="noopener" title="cuts the filled disc down to a ring of --thickness" class="api-pill"><code>mask</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/cos" target="_blank" rel="noopener" title="places the leading round cap on the stroke centerline" class="api-pill"><code>cos()</code> / <code>sin()</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" target="_blank" rel="noopener" title="suppresses the value tween" class="api-pill"><code>prefers-reduced-motion</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast" target="_blank" rel="noopener" title="thickens the stroke and darkens the track" class="api-pill"><code>prefers-contrast</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" target="_blank" rel="noopener" title="repaints the ring with Highlight / GrayText in Windows High Contrast Mode" class="api-pill"><code>forced-colors</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+            </div>
+
+            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Classes</p>
+            <div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;">
+              <code>.radial-progress</code>
+            </div>
+
+            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Custom properties</p>
+            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>--value</code> — completion, <code>0</code>–<code>100</code> (unitless). Required.</p>
+            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>--size</code> — outer diameter, default <code>5rem</code></p>
+            <p class="text-muted-foreground" style="margin:0 0 1.25rem;">• <code>--thickness</code> — stroke width, default <code>calc(var(--size) / 10)</code></p>
+
+            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Accessibility</p>
+            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>role="progressbar"</code> with <code>aria-valuenow</code> / <code>aria-valuemin</code> / <code>aria-valuemax</code> is required — a <code>&lt;div&gt;</code> has no implicit semantics</p>
+            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Keep <code>aria-valuenow</code> in sync with <code>--value</code>; the visible label is decoration</p>
+            <p class="text-muted-foreground" style="margin:0 0 0;">• Use <code>aria-label</code> when nothing nearby names the measure, and <code>aria-valuetext</code> when the number needs a unit</p>
+          </div>
+        </details>
+      </div>
+        <!-- Default -->
+        <p class="text-sm font-medium mb-2 mt-6">Default</p>
+        <p class="text-xs text-muted-foreground mb-3">Set <code>--value</code> inline and mirror it in <code>aria-valuenow</code>.</p>
+        <div class="preview">
+          <div class="radial-progress" data-state-demo role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="--value:70">70%</div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;div class="radial-progress" role="progressbar"
+     aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"
+     style="--value:70"&gt;70%&lt;/div&gt;</code></pre>
+        </div>
+
+        <!-- Values -->
+        <p class="text-sm font-medium mb-2 mt-8">Values</p>
+        <p class="text-xs text-muted-foreground mb-3">The arc is a pure function of <code>--value</code> — <code>0</code> to <code>100</code>.</p>
+        <div class="preview">
+          <div style="display:flex;flex-wrap:wrap;gap:1rem;align-items:center;">
+            <div class="radial-progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="--value:0">0%</div>
+            <div class="radial-progress" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="--value:25">25%</div>
+            <div class="radial-progress" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="--value:50">50%</div>
+            <div class="radial-progress" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="--value:75">75%</div>
+            <div class="radial-progress" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="--value:100">100%</div>
+          </div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;div class="radial-progress" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="--value:25"&gt;25%&lt;/div&gt;
+&lt;div class="radial-progress" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="--value:75"&gt;75%&lt;/div&gt;</code></pre>
+        </div>
+
+        <!-- Variants -->
+        <p class="text-sm font-medium mb-2 mt-8">Variants</p>
+        <p class="text-xs text-muted-foreground mb-3"><code>data-variant</code> sets <code>color</code>, which paints the arc and the label together.</p>
+        <div class="preview">
+          <div style="display:flex;flex-wrap:wrap;gap:1rem;align-items:center;">
+            <div class="radial-progress" data-variant="default" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="--value:70">70%</div>
+            <div class="radial-progress" data-variant="secondary" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="--value:70">70%</div>
+            <div class="radial-progress" data-variant="destructive" role="progressbar" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100" style="--value:95">95%</div>
+            <div class="radial-progress" data-variant="success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="--value:100">100%</div>
+          </div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;div class="radial-progress" data-variant="secondary" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="--value:70"&gt;70%&lt;/div&gt;
+&lt;div class="radial-progress" data-variant="destructive" role="progressbar" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100" style="--value:95"&gt;95%&lt;/div&gt;
+&lt;div class="radial-progress" data-variant="success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="--value:100"&gt;100%&lt;/div&gt;</code></pre>
+        </div>
+
+        <!-- Sizes -->
+        <p class="text-sm font-medium mb-2 mt-8">Sizes</p>
+        <p class="text-xs text-muted-foreground mb-3"><code>data-size</code> covers the common diameters: <code>sm</code> (3.5rem), default (5rem), <code>lg</code> (8rem).</p>
+        <div class="preview">
+          <div style="display:flex;flex-wrap:wrap;gap:1rem;align-items:center;">
+            <div class="radial-progress" data-size="sm" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="--value:40">40%</div>
+            <div class="radial-progress" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="--value:40">40%</div>
+            <div class="radial-progress" data-size="lg" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="--value:40">40%</div>
+          </div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;div class="radial-progress" data-size="sm" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="--value:40"&gt;40%&lt;/div&gt;
+&lt;div class="radial-progress" data-size="lg" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="--value:40"&gt;40%&lt;/div&gt;</code></pre>
+        </div>
+
+        <!-- Custom size and thickness -->
+        <p class="text-sm font-medium mb-2 mt-8">Custom size &amp; thickness</p>
+        <p class="text-xs text-muted-foreground mb-3">Any diameter is <code>--size</code>; the stroke is <code>--thickness</code> (default 10% of the size).</p>
+        <div class="preview">
+          <div style="display:flex;flex-wrap:wrap;gap:1.5rem;align-items:center;">
+            <div class="radial-progress" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="--value:60;--size:12rem;--thickness:2px">60%</div>
+            <div class="radial-progress" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="--value:60;--size:8rem;--thickness:1.5rem">60%</div>
+          </div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;div class="radial-progress" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+     style="--value:60;--size:12rem;--thickness:2px"&gt;60%&lt;/div&gt;</code></pre>
+        </div>
+
+        <!-- In Cards -->
+        <p class="text-sm font-medium mb-2 mt-8">In Cards</p>
+        <p class="text-xs text-muted-foreground mb-3">Composed with <code>.card</code> and <code>.statistic</code> for a dashboard layout — the circular counterpart to <code>.progress</code>.</p>
+        <div class="preview" style="flex-direction:column;align-items:stretch;">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(12rem, 1fr));gap:1rem;max-width:42rem;">
+            <article class="card">
+              <div class="card-content" style="padding:1.5rem;display:flex;align-items:center;gap:1rem;">
+                <div class="radial-progress" data-size="sm" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" aria-label="Storage used" style="--value:75">75%</div>
+                <div class="statistic">
+                  <p class="statistic-title">Storage</p>
+                  <p class="statistic-value" style="font-size:1.25rem;">75%</p>
+                </div>
+              </div>
+            </article>
+            <article class="card">
+              <div class="card-content" style="padding:1.5rem;display:flex;align-items:center;gap:1rem;">
+                <div class="radial-progress" data-size="sm" data-variant="secondary" role="progressbar" aria-valuenow="42" aria-valuemin="0" aria-valuemax="100" aria-label="Bandwidth used" style="--value:42">42%</div>
+                <div class="statistic">
+                  <p class="statistic-title">Bandwidth</p>
+                  <p class="statistic-value" style="font-size:1.25rem;">42%</p>
+                </div>
+              </div>
+            </article>
+            <article class="card">
+              <div class="card-content" style="padding:1.5rem;display:flex;align-items:center;gap:1rem;">
+                <div class="radial-progress" data-size="sm" data-variant="destructive" role="progressbar" aria-valuenow="91" aria-valuemin="0" aria-valuemax="100" aria-label="CPU load" style="--value:91">91%</div>
+                <div class="statistic">
+                  <p class="statistic-title">CPU</p>
+                  <p class="statistic-value" style="font-size:1.25rem;">91%</p>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <!-- -- States ------------------------------------ -->
+        <section style="margin-top:3rem;" id="states">
+          <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;">States</h2>
+          <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">CSS-only component — one state, and no State API object to bind:</p>
+          <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
+            <li><code>default</code> — the ring renders whatever <code>--value</code> it is given; there is no second visual state</li>
+          </ul>
+          <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">The value is data, not state: write <code>--value</code> (and <code>aria-valuenow</code>) and the registered <code>@property</code> tweens the arc for you.</p>
+          <div style="position:relative;margin-top:0.5rem;">
+            <button class="copy-btn">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+              Copy
+            </button>
+            <pre><code class="language-javascript">const ring = document.querySelector('.radial-progress');
+ring.style.setProperty('--value', 82);
+ring.setAttribute('aria-valuenow', '82');</code></pre>
+          </div>
+          <p class="text-sm text-muted-foreground" style="margin-top:0.75rem;">The default demo carries <code>data-state-demo</code>; <code>bun run screenshots</code> captures <code>screenshots/{mode}/radial-progress-default.png</code> from it.</p>
+        </section>
+
+        <!-- -- CSS --------------------------------------- -->
+        <section style="margin-top:3rem;" id="source-css">
+          <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;">CSS <a href="../components/radial-progress/radial-progress.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2>
+          <div style="position:relative;margin-top:0.5rem;">
+            <button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button>
+            <pre><code class="language-scss">/* -- Radial Progress component --------------------------------- */
+
+/* Typed custom property: registering --value as a &lt;number&gt; makes it
+   interpolatable, so changing the value tweens the ring with zero JS
+   (AGENTS.md: &quot;@property for typed, animatable custom properties — not JS
+   animation of CSS values&quot;). @property is an at-rule, not a style rule, so
+   it carries no cascade weight and sits outside @layer components. */
+@property --value {
+  syntax: &quot;&lt;number&gt;&quot;;
+  inherits: true;
+  initial-value: 0;
+}
+
+@layer components {
+  /* Public custom properties (set them inline on the element):
+       --value      0–100, required — the completion percentage
+       --size       outer diameter        (default 5rem)
+       --thickness  ring stroke width     (default 10% of --size)
+     Colors come from the ring's own `color`, so a variant recolors the arc
+     and the label in one declaration. */
+  .radial-progress {
+    /* matches the @property initial-value; an inline style=&quot;--value:70&quot;
+       overrides it (and makes the declaration visible to tooling) */
+    --value: 0;
+    --size: 5rem;
+    --thickness: calc(var(--size) / 10);
+    /* leading-edge cap travels the stroke centerline: r = (size - thickness)/2 */
+    --radial-angle: calc(var(--value) * 3.6deg - 90deg);
+
+    position: relative;
+    display: inline-grid;
+    place-content: center;
+    box-sizing: content-box;
+    inline-size: var(--size);
+    block-size: var(--size);
+    border-radius: 9999px;
+    vertical-align: middle;
+    font-size: 0.875rem;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    color: var(--primary);
+    /* the arc is a function of --value, so the registered property tweens it */
+    transition: --value 600ms ease;
+
+    /* Track + indicator in one painted layer: a conic-gradient (arc up to
+       --value, track after it) masked down to a ring, plus a round dot at
+       12 o'clock so the arc's start is capped. */
+    &amp;::before {
+      content: &quot;&quot;;
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background:
+        radial-gradient(farthest-side, currentColor 98%, #0000)
+          top / var(--thickness) var(--thickness) no-repeat,
+        conic-gradient(currentColor calc(var(--value) * 1%), var(--secondary) 0);
+      -webkit-mask: radial-gradient(
+        farthest-side,
+        #0000 calc(99% - var(--thickness)),
+        #000 calc(100% - var(--thickness))
+      );
+      mask: radial-gradient(
+        farthest-side,
+        #0000 calc(99% - var(--thickness)),
+        #000 calc(100% - var(--thickness))
+      );
+    }
+
+    /* Round cap at the leading edge. Positioned with cos()/sin() rather than
+       a compound `transform: rotate() translate()` — individual transform
+       properties compose in the wrong order for a polar offset, and the trig
+       functions keep the position a pure function of --value (so it tweens). */
+    &amp;::after {
+      content: &quot;&quot;;
+      position: absolute;
+      inline-size: var(--thickness);
+      block-size: var(--thickness);
+      border-radius: 9999px;
+      background-color: currentColor;
+      inset-inline-start: calc(
+        50% + cos(var(--radial-angle)) * (var(--size) - var(--thickness)) / 2 -
+          var(--thickness) / 2
+      );
+      inset-block-start: calc(
+        50% + sin(var(--radial-angle)) * (var(--size) - var(--thickness)) / 2 -
+          var(--thickness) / 2
+      );
+    }
+
+    /* -- Variants (recolor arc + label together) ------------------ */
+    &amp;[data-variant=&quot;default&quot;] {
+      color: var(--primary);
+    }
+
+    &amp;[data-variant=&quot;secondary&quot;] {
+      color: var(--muted-foreground);
+    }
+
+    &amp;[data-variant=&quot;destructive&quot;] {
+      color: var(--destructive);
+    }
+
+    /* no semantic &quot;success&quot; token exists in the tweakcn shape — literal, same
+       green the toast component uses (token boundary rule) */
+    &amp;[data-variant=&quot;success&quot;] {
+      color: oklch(0.65 0.2 145);
+    }
+
+    /* -- Sizes ---------------------------------------------------- */
+    &amp;[data-size=&quot;sm&quot;] {
+      --size: 3.5rem;
+      font-size: 0.75rem;
+    }
+
+    &amp;[data-size=&quot;lg&quot;] {
+      --size: 8rem;
+      font-size: 1.25rem;
+    }
+  }
+
+  /* -- Accessibility -------------------------------------------- */
+
+  /* Suppress motion for users who request it (REQUIRED — AGENTS.md
+     &quot;Accessibility CSS&quot;). Near-zero instead of `none` keeps transitionend
+     firing for anything awaiting the value tween. */
+  @media (prefers-reduced-motion: reduce) {
+    .radial-progress {
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* Thicker stroke and a darker track when more contrast is requested. */
+  @media (prefers-contrast: more) {
+    .radial-progress {
+      --thickness: calc(var(--size) / 6);
+
+      &amp;::before {
+        background:
+          radial-gradient(farthest-side, currentColor 98%, #0000)
+            top / var(--thickness) var(--thickness) no-repeat,
+          conic-gradient(currentColor calc(var(--value) * 1%), var(--border) 0);
+      }
+    }
+  }
+
+  /* Windows High Contrast Mode: gradients are dropped by forced colors, so
+     opt out and repaint the ring with system colors instead. */
+  @media (forced-colors: active) {
+    .radial-progress {
+      forced-color-adjust: none;
+      color: Highlight;
+
+      &amp;::before {
+        background:
+          radial-gradient(farthest-side, Highlight 98%, #0000)
+            top / var(--thickness) var(--thickness) no-repeat,
+          conic-gradient(Highlight calc(var(--value) * 1%), GrayText 0);
+      }
+    }
+  }
+}</code></pre>
+          </div>
+        </section>
+    </main>
+  </div>
+  <script src="js/site.js" defer></script>
+  <script type="module" src="js/shiki-highlight.js"></script>
+  <script type="module" src="../components/accordion/accordion.js"></script>
+  <script type="module" src="../components/combobox/combobox.js"></script>
+  <script type="module" src="../components/dialog/dialog.js"></script>
+  <script type="module" src="../components/dropdown/dropdown.js"></script>
+  <script type="module" src="../components/sheet/sheet.js"></script>
+  <script type="module" src="../components/tabs/tabs.js"></script>
+  <script type="module" src="../components/toast/toast.js"></script>
+  <script type="module" src="../components/toggle/toggle.js"></script>
+  <script type="module" src="../components/toggle-group/toggle-group.js"></script>
+  <script type="module" src="../components/toolbar/toolbar.js"></script>
+  <script type="module" src="../components/number-input/number-input.js"></script>
+  <script type="module" src="../components/color-picker/color-picker.js"></script>
+  <script type="module" src="../components/avatar/avatar.js"></script>
+  <script type="module" src="../components/image/image.js"></script>
+  <script type="module" src="../components/tree-view/tree-view.js"></script>
+  <script type="module" src="../components/calendar/calendar.js"></script>
+  <script type="module" src="../components/alert-dialog/alert-dialog.js"></script>
+    <script type="module" src="../components/popover/popover.js"></script>
+  <script type="module" src="../components/tooltip/tooltip.js"></script>
+  <script type="module" src="../components/context-menu/context-menu.js"></script>
+  <script type="module" src="../components/command/command.js"></script>
+  <script type="module" src="../components/navigation-menu/navigation-menu.js"></script>
+  <script type="module" src="../components/sidebar/sidebar.js"></script>
+  <script type="module" src="../components/carousel/carousel.js"></script>
+  <script type="module" src="../components/slider/slider.js"></script>
+  <script type="module" src="../components/sortable/sortable.js"></script>
+  <script type="module" src="../components/product-showcase/product-showcase.js"></script>
+  <script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script>
+  <script>globalThis.lucide?.createIcons();</script>
+</body>
+</html>

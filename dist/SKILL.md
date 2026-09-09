@@ -417,7 +417,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 ## Pagination
 
 **Type:** ATM
-**Why:** Numbered page links in a nav > ol with aria-current="page" on the active page.
+**Why:** Numbered page links in a nav > ul with aria-current="page" on the active page.
 **When:** Splitting long lists or tables across pages.
 **Files:** dist/components/pagination/pagination.css
 **Supported states:** default
@@ -463,6 +463,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/progress.png
 **Skill:** [components/progress/component-skill.md](components/progress/component-skill.md)
+
+## Radial Progress
+
+**Type:** ATM
+**Why:** A conic-gradient masked to a ring plus a typed @property — the arc animates itself, no JS and no SVG.
+**When:** Percentage of a known total that must read at a glance with the number inside it; a linear bar takes progress, unknown totals take spinner.
+**Files:** dist/components/radial-progress/radial-progress.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/radial-progress.png
+**Skill:** [components/radial-progress/component-skill.md](components/radial-progress/component-skill.md)
 
 ## Radio Group
 
@@ -613,6 +623,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/steps.png
 **Skill:** [components/steps/component-skill.md](components/steps/component-skill.md)
+
+## Swap
+
+**Type:** ATM
+**Why:** A hidden <input type="checkbox"> inside a <label> is the whole state machine — :checked, :indeterminate and :has() pick the visible face, CSS transforms animate it.
+**When:** Toggling between two (or three) glyphs or words in place — theme icons, play/pause, hamburger/close; use toggle or switch when the control needs a pressed button or form-field appearance.
+**Files:** dist/components/swap/swap.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/swap.png
+**Skill:** [components/swap/component-skill.md](components/swap/component-skill.md)
 
 ## Switch
 

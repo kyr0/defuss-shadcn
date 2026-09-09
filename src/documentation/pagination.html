@@ -91,6 +91,8 @@
   <link rel="stylesheet" href="../components/get-in-touch/get-in-touch.css">
   <link rel="stylesheet" href="../components/newsletter/newsletter.css">
   <link rel="stylesheet" href="../components/site-footer/site-footer.css">
+  <link rel="stylesheet" href="../components/swap/swap.css">
+  <link rel="stylesheet" href="../components/radial-progress/radial-progress.css">
 </head>
 <body>
   <site-header></site-header>
@@ -195,7 +197,7 @@
         <div class="preview">
           <nav class="pagination" aria-label="Pagination">
             <ul class="pagination-list">
-              <li><a class="pagination-prev" href="#" onclick="event.preventDefault()" aria-label="Go to previous page" aria-disabled="true" style="pointer-events:none;opacity:0.5;">
+              <li><a class="pagination-prev" href="#" onclick="event.preventDefault()" aria-label="Go to previous page" aria-disabled="true">
                 <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
               </a></li>
               <li><span style="font-size:0.875rem;color:var(--muted-foreground);padding:0 0.5rem;">Page 1 of 10</span></li>
@@ -309,38 +311,364 @@
    aria-disabled="true"&gt;…&lt;/a&gt;</code></pre>
         </div>
 
+
+        <p class="text-sm font-medium mb-2 mt-8">Sizes</p>
+        <p class="text-xs text-muted-foreground mb-3">Small, default (medium) and large — <code>data-size</code> scales height, padding, font and icon size together.</p>
+        <div class="preview" style="display: flex; flex-direction: column; gap: 1.5rem; align-items: stretch;">
+          <nav class="pagination" data-size="sm" aria-label="Pagination — small">
+            <ul class="pagination-list">
+              <li><a class="pagination-link" href="#" onclick="event.preventDefault()">1</a></li>
+              <li><a class="pagination-link pagination-active" href="#" aria-current="page" onclick="event.preventDefault()">2</a></li>
+              <li><a class="pagination-link" href="#" onclick="event.preventDefault()">3</a></li>
+              <li><a class="pagination-link" href="#" onclick="event.preventDefault()">4</a></li>
+              <li><a class="pagination-link" href="#" onclick="event.preventDefault()">5</a></li>
+            </ul>
+          </nav>
+          <nav class="pagination" aria-label="Pagination — default size">
+            <ul class="pagination-list">
+              <li><a class="pagination-link" href="#" onclick="event.preventDefault()">1</a></li>
+              <li><a class="pagination-link pagination-active" href="#" aria-current="page" onclick="event.preventDefault()">2</a></li>
+              <li><a class="pagination-link" href="#" onclick="event.preventDefault()">3</a></li>
+              <li><a class="pagination-link" href="#" onclick="event.preventDefault()">4</a></li>
+              <li><a class="pagination-link" href="#" onclick="event.preventDefault()">5</a></li>
+            </ul>
+          </nav>
+          <nav class="pagination" data-size="lg" aria-label="Pagination — large">
+            <ul class="pagination-list">
+              <li><a class="pagination-link" href="#" onclick="event.preventDefault()">1</a></li>
+              <li><a class="pagination-link pagination-active" href="#" aria-current="page" onclick="event.preventDefault()">2</a></li>
+              <li><a class="pagination-link" href="#" onclick="event.preventDefault()">3</a></li>
+              <li><a class="pagination-link" href="#" onclick="event.preventDefault()">4</a></li>
+              <li><a class="pagination-link" href="#" onclick="event.preventDefault()">5</a></li>
+            </ul>
+          </nav>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;nav class=&quot;pagination&quot; data-size=&quot;sm&quot; aria-label=&quot;Pagination&quot;&gt;…&lt;/nav&gt;
+&lt;nav class=&quot;pagination&quot; aria-label=&quot;Pagination&quot;&gt;…&lt;/nav&gt;   &lt;!-- default (medium) --&gt;
+&lt;nav class=&quot;pagination&quot; data-size=&quot;lg&quot; aria-label=&quot;Pagination&quot;&gt;…&lt;/nav&gt;</code></pre>
+        </div>
+
+        <p class="text-sm font-medium mb-2 mt-8">Outline</p>
+        <p class="text-xs text-muted-foreground mb-3">Every item carries a border and surface — <code>data-variant="outline"</code>. The active page fills with the accent color so it stays distinguishable.</p>
+        <div class="preview">
+          <nav class="pagination" data-variant="outline" aria-label="Pagination — outline">
+            <ul class="pagination-list">
+              <li><a class="pagination-prev" href="#" onclick="event.preventDefault()" aria-label="Go to previous page"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>Previous</a></li>
+              <li><a class="pagination-link" href="#" onclick="event.preventDefault()">1</a></li>
+              <li><a class="pagination-link pagination-active" href="#" aria-current="page" onclick="event.preventDefault()">2</a></li>
+              <li><a class="pagination-link" href="#" onclick="event.preventDefault()">3</a></li>
+              <li><a class="pagination-next" href="#" onclick="event.preventDefault()" aria-label="Go to next page">Next<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></li>
+            </ul>
+          </nav>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;nav class=&quot;pagination&quot; data-variant=&quot;outline&quot; aria-label=&quot;Pagination&quot;&gt;
+  &lt;ul class=&quot;pagination-list&quot;&gt;
+    &lt;li&gt;&lt;a class=&quot;pagination-prev&quot; href=&quot;#&quot; aria-label=&quot;Go to previous page&quot;&gt;…&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a class=&quot;pagination-link&quot; href=&quot;#&quot;&gt;1&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a class=&quot;pagination-link pagination-active&quot; href=&quot;#&quot;
+            aria-current=&quot;page&quot;&gt;2&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a class=&quot;pagination-link&quot; href=&quot;#&quot;&gt;3&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a class=&quot;pagination-next&quot; href=&quot;#&quot; aria-label=&quot;Go to next page&quot;&gt;…&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;</code></pre>
+        </div>
+
+        <p class="text-sm font-medium mb-2 mt-8">Joined</p>
+        <p class="text-xs text-muted-foreground mb-3">Items share their borders and only the outer corners stay rounded — <code>data-variant="joined"</code>. Combines with any <code>data-size</code>.</p>
+        <div class="preview" style="display: flex; flex-direction: column; gap: 1.5rem; align-items: stretch;">
+          <nav class="pagination" data-variant="joined" aria-label="Pagination — joined">
+            <ul class="pagination-list">
+              <li><a class="pagination-prev" href="#" onclick="event.preventDefault()" aria-label="Go to previous page"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></a></li>
+              <li><a class="pagination-link" href="#" onclick="event.preventDefault()">1</a></li>
+              <li><a class="pagination-link pagination-active" href="#" aria-current="page" onclick="event.preventDefault()">2</a></li>
+              <li><a class="pagination-link" href="#" onclick="event.preventDefault()">3</a></li>
+              <li><span class="pagination-ellipsis" aria-hidden="true">&hellip;</span></li>
+              <li><a class="pagination-link" href="#" onclick="event.preventDefault()">10</a></li>
+              <li><a class="pagination-next" href="#" onclick="event.preventDefault()" aria-label="Go to next page"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></li>
+            </ul>
+          </nav>
+          <nav class="pagination" data-variant="joined" data-size="sm" aria-label="Pagination — joined small">
+            <ul class="pagination-list">
+              <li><a class="pagination-link" href="#" onclick="event.preventDefault()">1</a></li>
+              <li><a class="pagination-link" href="#" onclick="event.preventDefault()">2</a></li>
+              <li><a class="pagination-link pagination-active" href="#" aria-current="page" onclick="event.preventDefault()">3</a></li>
+              <li><a class="pagination-link" href="#" onclick="event.preventDefault()">4</a></li>
+              <li><a class="pagination-link" href="#" onclick="event.preventDefault()">5</a></li>
+            </ul>
+          </nav>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;nav class=&quot;pagination&quot; data-variant=&quot;joined&quot; aria-label=&quot;Pagination&quot;&gt;
+  &lt;ul class=&quot;pagination-list&quot;&gt;
+    &lt;li&gt;&lt;a class=&quot;pagination-prev&quot; href=&quot;#&quot; aria-label=&quot;Go to previous page&quot;&gt;…&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a class=&quot;pagination-link&quot; href=&quot;#&quot;&gt;1&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a class=&quot;pagination-link pagination-active&quot; href=&quot;#&quot;
+            aria-current=&quot;page&quot;&gt;2&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a class=&quot;pagination-link&quot; href=&quot;#&quot;&gt;3&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;span class=&quot;pagination-ellipsis&quot; aria-hidden=&quot;true&quot;&gt;&amp;hellip;&lt;/span&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a class=&quot;pagination-link&quot; href=&quot;#&quot;&gt;10&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a class=&quot;pagination-next&quot; href=&quot;#&quot; aria-label=&quot;Go to next page&quot;&gt;…&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;</code></pre>
+        </div>
+
+        <p class="text-sm font-medium mb-2 mt-8">Previous / Next only</p>
+        <p class="text-xs text-muted-foreground mb-3">A two-column layout that fills its container — <code>data-layout="split"</code>. Useful under an article or a detail view.</p>
+        <div class="preview" style="display: flex; flex-direction: column; gap: 1.5rem; align-items: stretch;">
+          <nav class="pagination" data-layout="split" data-variant="outline" aria-label="Pagination — previous and next">
+            <ul class="pagination-list">
+              <li><a class="pagination-prev" href="#" onclick="event.preventDefault()" aria-label="Go to previous page"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>Previous</a></li>
+              <li><a class="pagination-next" href="#" onclick="event.preventDefault()" aria-label="Go to next page">Next<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></li>
+            </ul>
+          </nav>
+          <nav class="pagination" data-layout="split" data-variant="joined" aria-label="Pagination — previous and next, joined">
+            <ul class="pagination-list">
+              <li><a class="pagination-prev" href="#" onclick="event.preventDefault()" aria-label="Go to previous page" aria-disabled="true"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>Previous</a></li>
+              <li><a class="pagination-next" href="#" onclick="event.preventDefault()" aria-label="Go to next page">Next<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></li>
+            </ul>
+          </nav>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;!-- two equal columns, filling the container width --&gt;
+&lt;nav class=&quot;pagination&quot; data-layout=&quot;split&quot; data-variant=&quot;outline&quot;
+     aria-label=&quot;Pagination&quot;&gt;
+  &lt;ul class=&quot;pagination-list&quot;&gt;
+    &lt;li&gt;&lt;a class=&quot;pagination-prev&quot; href=&quot;#&quot;
+           aria-label=&quot;Go to previous page&quot;&gt;… Previous&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a class=&quot;pagination-next&quot; href=&quot;#&quot;
+           aria-label=&quot;Go to next page&quot;&gt;Next …&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;</code></pre>
+        </div>
+
         <!-- -- CSS --------------------------------------- -->
         <section style="margin-top:3rem;" id="source-css">
           <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;">CSS <a href="../components/pagination/pagination.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2>
           <p class="text-muted-foreground text-sm mb-4">Styles for the pagination component. Uses design tokens for colors, spacing, and radius.</p>
           <div style="position:relative;margin-top:0.5rem;">
             <button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button>
-            <pre><code class="language-scss">@layer components {
-  .pagination { display: flex; justify-content: center; }
-  .pagination-list { display: flex; align-items: center; gap: 0.25rem; list-style: none; margin: 0; padding: 0; }
-  .pagination-link, .pagination-prev, .pagination-next {
-    display: inline-flex; align-items: center; justify-content: center;
-    min-width: 2.25rem; height: 2.25rem; padding-inline: 0.5rem;
-    border: 1px solid transparent; border-radius: var(--radius-md);
-    font-size: 0.875rem; color: var(--foreground); text-decoration: none;
-    cursor: pointer; outline: none;
-    transition: background-color 150ms ease, border-color 150ms ease; gap: 0.25rem;
-    &amp;:hover { background-color: var(--accent); }
-    &amp;:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
-    &amp; svg { width: 1rem; height: 1rem; flex-shrink: 0; }
+            <pre><code class="language-scss">/* -- Pagination component --------------------------------------- */
 
-    /* Disabled state for prev/next at boundaries */
-    &amp;[aria-disabled=&quot;true&quot;], &amp;.disabled {
-      pointer-events: none;
-      opacity: 0.5;
+@layer components {
+  .pagination {
+    display: flex;
+    justify-content: center;
+
+    /* Local size scale — the single knob every item geometry reads from, so
+       data-size only has to re-declare four values instead of restating every
+       rule. Local custom props (never global tokens): the token file must stay
+       a pure subset of the tweakcn export shape. */
+    --pagination-item-size: 2.25rem;
+    --pagination-font-size: 0.875rem;
+    --pagination-padding: 0.5rem;
+    --pagination-nav-padding: 0.75rem;
+    --pagination-icon-size: 1rem;
+    --pagination-radius: var(--radius-md);
+    --pagination-gap: 0.25rem;
+
+    /* -- Sizes ------------------------------------------------ */
+    &amp;[data-size=&quot;sm&quot;] {
+      --pagination-item-size: 2rem;
+      --pagination-font-size: 0.8125rem;
+      --pagination-padding: 0.375rem;
+      --pagination-nav-padding: 0.625rem;
+      --pagination-icon-size: 0.875rem;
+      --pagination-radius: var(--radius-sm);
+    }
+
+    &amp;[data-size=&quot;lg&quot;] {
+      --pagination-item-size: 2.75rem;
+      --pagination-font-size: 1rem;
+      --pagination-padding: 0.75rem;
+      --pagination-nav-padding: 1rem;
+      --pagination-icon-size: 1.125rem;
+      --pagination-radius: var(--radius-lg);
+    }
+
+    /* -- Variants: bordered surfaces (outline + joined share them) --- */
+    &amp;[data-variant=&quot;outline&quot;],
+    &amp;[data-variant=&quot;joined&quot;] {
+      &amp; :is(.pagination-link, .pagination-prev, .pagination-next) {
+        border-color: var(--border);
+        background-color: var(--background);
+        box-shadow: var(--shadow-xs);
+
+        &amp;:hover {
+          background-color: var(--accent);
+          color: var(--accent-foreground);
+        }
+      }
+
+      /* The bordered variants make every item look like the default active
+         item, so the active page needs its own filled treatment to stay
+         distinguishable. Specificity (0,3,0) intentionally beats the bare
+         .pagination-active rule below. */
+      &amp; .pagination-active {
+        background-color: var(--accent);
+        color: var(--accent-foreground);
+        font-weight: 500;
+      }
+    }
+
+    /* -- Variant: joined (collapsed borders, outer corners only) ----- */
+    &amp;[data-variant=&quot;joined&quot;] {
+      &amp; :is(.pagination-link, .pagination-prev, .pagination-next, .pagination-ellipsis) {
+        border-radius: 0;
+      }
+
+      /* The ellipsis joins the chain instead of floating between two groups */
+      &amp; .pagination-ellipsis {
+        border: 1px solid var(--border);
+        background-color: var(--background);
+      }
+
+      &amp; .pagination-list &gt; li:first-child &gt; * {
+        border-start-start-radius: var(--pagination-radius);
+        border-end-start-radius: var(--pagination-radius);
+      }
+
+      &amp; .pagination-list &gt; li:last-child &gt; * {
+        border-start-end-radius: var(--pagination-radius);
+        border-end-end-radius: var(--pagination-radius);
+      }
+
+      /* Collapse the shared border between adjacent items */
+      &amp; .pagination-list &gt; li + li &gt; * {
+        margin-inline-start: -1px;
+      }
+
+      /* Keep the hovered/focused/active item's own border above its neighbours */
+      &amp; :is(.pagination-link, .pagination-prev, .pagination-next):is(:hover, :focus-visible),
+      &amp; .pagination-active {
+        position: relative;
+        z-index: 1;
+      }
+    }
+
+    /* -- Layout: split (prev/next only, one row of equal columns) ---- */
+    &amp;[data-layout=&quot;split&quot;] {
+      --pagination-gap: 0.5rem;
+      width: 100%;
+
+      &amp; .pagination-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        width: 100%;
+      }
+
+      &amp; .pagination-list &gt; li {
+        display: flex;
+      }
+
+      &amp; :is(.pagination-link, .pagination-prev, .pagination-next) {
+        flex: 1;
+      }
+    }
+
+    /* Declared after the layout block so a joined split layout still
+       collapses its gap (same specificity — source order decides) */
+    &amp;[data-variant=&quot;joined&quot;] {
+      --pagination-gap: 0;
     }
   }
-  .pagination-prev, .pagination-next { padding-inline: 0.75rem; gap: 0.375rem; }
-  .pagination-active { border-color: var(--border); background-color: var(--background); font-weight: 500; }
+
+  .pagination-list {
+    display: flex;
+    align-items: center;
+    gap: var(--pagination-gap, 0.25rem);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .pagination-link,
+  .pagination-prev,
+  .pagination-next {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--pagination-item-size, 2.25rem);
+    height: var(--pagination-item-size, 2.25rem);
+    padding-inline: var(--pagination-padding, 0.5rem);
+    border: 1px solid transparent;
+    border-radius: var(--pagination-radius, var(--radius-md));
+    font-size: var(--pagination-font-size, 0.875rem);
+    color: var(--foreground);
+    text-decoration: none;
+    cursor: pointer;
+    outline: none;
+    transition: background-color 150ms ease, border-color 150ms ease;
+    gap: 0.25rem;
+
+    &amp;:hover { background-color: var(--accent); }
+    &amp;:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+    &amp; svg {
+      width: var(--pagination-icon-size, 1rem);
+      height: var(--pagination-icon-size, 1rem);
+      flex-shrink: 0;
+    }
+
+    /* Disabled state for prev/next at boundaries. aria-disabled is the whole
+       API — a11y state and rendering must never disagree, so the attribute
+       alone makes the link non-interactive (pointer AND keyboard) and muted;
+       no inline styles, no parallel .disabled bookkeeping. */
+    &amp;[aria-disabled=&quot;true&quot;],
+    &amp;.disabled {
+      pointer-events: none;
+      cursor: default;
+      opacity: 0.5;
+      color: var(--muted-foreground);
+    }
+  }
+
+  .pagination-prev,
+  .pagination-next {
+    padding-inline: var(--pagination-nav-padding, 0.75rem);
+    gap: 0.375rem;
+  }
+
+  .pagination-active {
+    border-color: var(--border);
+    background-color: var(--background);
+    font-weight: 500;
+  }
+
   .pagination-ellipsis {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 2.25rem; height: 2.25rem; color: var(--muted-foreground);
-    &amp; span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--pagination-item-size, 2.25rem);
+    height: var(--pagination-item-size, 2.25rem);
+    font-size: var(--pagination-font-size, 0.875rem);
+    color: var(--muted-foreground);
+
+    &amp; span {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
   }
 
   /* -- Accessibility ------------------------------------------ */
@@ -363,6 +691,10 @@
     }
     .pagination-link, .pagination-prev, .pagination-next {
       &amp;:hover { forced-color-adjust: none; background: Highlight; color: HighlightText; }
+      &amp;[aria-disabled=&quot;true&quot;], &amp;.disabled { color: GrayText; }
+    }
+    .pagination[data-variant=&quot;joined&quot;] :is(.pagination-link, .pagination-prev, .pagination-next, .pagination-ellipsis) {
+      border-color: ButtonText;
     }
   }
 }</code></pre>

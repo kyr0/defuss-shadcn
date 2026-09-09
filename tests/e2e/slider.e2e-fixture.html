@@ -18,6 +18,45 @@
       <input class="slider" id="s-disabled" type="range" min="0" max="100" value="30" disabled aria-label="Disabled" />
     </div>
 
+    <!-- sizes: sm / default (no attribute) / lg -->
+    <div style="width:20rem;">
+      <input class="slider" id="s-sm" type="range" data-size="sm" min="0" max="100" value="30" aria-label="Small" />
+    </div>
+    <div style="width:20rem;">
+      <input class="slider" id="s-lg" type="range" data-size="lg" min="0" max="100" value="70" aria-label="Large" />
+    </div>
+
+    <!-- variants -->
+    <div style="width:20rem;">
+      <input class="slider" id="s-v-default" type="range" data-variant="default" min="0" max="100" value="50" aria-label="Default variant" />
+    </div>
+    <div style="width:20rem;">
+      <input class="slider" id="s-v-secondary" type="range" data-variant="secondary" min="0" max="100" value="50" aria-label="Secondary" />
+    </div>
+    <div style="width:20rem;">
+      <input class="slider" id="s-v-destructive" type="range" data-variant="destructive" min="0" max="100" value="50" aria-label="Destructive" />
+    </div>
+
+    <!-- stepped slider + CSS-only measure marks -->
+    <div style="width:20rem;">
+      <input class="slider" id="s-steps" type="range" min="0" max="100" step="25" value="50" aria-label="Steps" />
+      <div class="slider-marks" id="s-marks" aria-hidden="true">
+        <span>0</span><span>25</span><span>50</span><span>75</span><span>100</span>
+      </div>
+    </div>
+    <div style="width:20rem;">
+      <input class="slider" id="s-steps-lg" type="range" data-size="lg" min="0" max="100" step="25" value="50" aria-label="Steps large" />
+      <div class="slider-marks" id="s-marks-lg" data-size="lg" aria-hidden="true">
+        <span>0</span><span>25</span><span>50</span><span>75</span><span>100</span>
+      </div>
+    </div>
+
+    <!-- vertical, incl. combined with a size -->
+    <div style="display:flex;gap:2rem;">
+      <input class="slider" id="s-vertical" type="range" data-orientation="vertical" min="0" max="100" value="60" aria-label="Vertical" />
+      <input class="slider" id="s-vertical-lg" type="range" data-orientation="vertical" data-size="lg" min="0" max="100" value="80" aria-label="Vertical large" />
+    </div>
+
     <script type="module" src="/dist/components/slider/slider.js"></script>
   </body>
 </html>

@@ -91,6 +91,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/get-in-touch/get-in-touch.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/newsletter/newsletter.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/site-footer/site-footer.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/swap/swap.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/radial-progress/radial-progress.css">
 </head>
 <body>
   <site-header></site-header>
@@ -133,9 +135,12 @@
             <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Classes</p>
             <div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;">
               <code>.slider</code>
+              <code>.slider-marks</code>
             </div>
 
             <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Data attributes</p>
+            <p class="text-muted-foreground" style="margin:0 0 0.25rem;"><code>data-variant=&quot;default | secondary | destructive&quot;</code> — track/thumb color pair (theme tokens only).</p>
+            <p class="text-muted-foreground" style="margin:0 0 0.25rem;"><code>data-size=&quot;sm | lg&quot;</code> — track and thumb geometry; mirror it on <code>.slider-marks</code> to keep the ticks aligned.</p>
             <p class="text-muted-foreground" style="margin:0 0 1.25rem;"><code>data-orientation=&quot;vertical&quot;</code> — renders as a vertical slider.</p>
 
             <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Keyboard</p>
@@ -155,7 +160,8 @@
             <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Notes</p>
             <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Firefox uses <code>::-moz-range-progress</code> for the filled track. WebKit/Blink uses a <code>linear-gradient</code> on the track with <code>--slider-value</code> set by JS.</p>
             <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Vertical sliders use <code>writing-mode: vertical-lr; direction: rtl</code> for cross-browser support.</p>
-            <p class="text-muted-foreground" style="margin:0 0 0;">• <code>accent-color</code> set as fallback for browsers that don't support custom pseudo-element styling.</p>
+            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>accent-color</code> set as fallback for browsers that don't support custom pseudo-element styling.</p>
+            <p class="text-muted-foreground" style="margin:0 0 0;">• <code>.slider-marks</code> is a CSS-only tick scale: zero-width flex children under <code>space-between</code>, inset by half a thumb, so tick centres land on the thumb travel. No JS.</p>
           </div>
         </details>
       </div>
@@ -235,11 +241,76 @@
           <pre><code class="language-markup">&lt;input class="slider" type="range" min="0" max="100" step="25" value="50"&gt;</code></pre>
         </div>
 
+        <!-- Steps with measure marks -->
+        <p class="text-sm font-medium mb-2 mt-8">Steps with measure marks</p>
+        <p class="text-xs text-muted-foreground mb-3">A CSS-only tick scale via the <code>.slider-marks</code> sibling — the ticks and labels are generated, no JavaScript positioning.</p>
+        <div class="preview">
+          <div style="width:100%;max-width:20rem;">
+            <label class="label" for="d-marks">Quality</label>
+            <input class="slider" type="range" id="d-marks" min="0" max="100" step="25" value="50">
+            <div class="slider-marks" aria-hidden="true">
+              <span>0</span><span>25</span><span>50</span><span>75</span><span>100</span>
+            </div>
+          </div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;input class="slider" type="range" min="0" max="100" step="25" value="50"&gt;
+&lt;div class="slider-marks" aria-hidden="true"&gt;
+  &lt;span&gt;0&lt;/span&gt;&lt;span&gt;25&lt;/span&gt;&lt;span&gt;50&lt;/span&gt;&lt;span&gt;75&lt;/span&gt;&lt;span&gt;100&lt;/span&gt;
+&lt;/div&gt;</code></pre>
+        </div>
+
+        <!-- Sizes -->
+        <p class="text-sm font-medium mb-2 mt-8">Sizes</p>
+        <p class="text-xs text-muted-foreground mb-3">Three sizes via <code>data-size</code>: <code>sm</code>, default (omit the attribute), and <code>lg</code>. The thumb re-centres on the track automatically.</p>
+        <div class="preview">
+          <div style="width:100%;max-width:20rem;display:flex;flex-direction:column;gap:1.5rem;">
+            <input class="slider" type="range" data-size="sm" min="0" max="100" value="30" aria-label="Small">
+            <input class="slider" type="range" min="0" max="100" value="50" aria-label="Default size">
+            <input class="slider" type="range" data-size="lg" min="0" max="100" value="70" aria-label="Large">
+          </div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;input class="slider" type="range" data-size="sm" min="0" max="100" value="30"&gt;
+&lt;input class="slider" type="range" min="0" max="100" value="50"&gt;
+&lt;input class="slider" type="range" data-size="lg" min="0" max="100" value="70"&gt;</code></pre>
+        </div>
+
+        <!-- Variants -->
+        <p class="text-sm font-medium mb-2 mt-8">Variants</p>
+        <p class="text-xs text-muted-foreground mb-3">Track and thumb colors via <code>data-variant</code>. Only theme-export tokens are used — <code>default</code> paints <code>--primary</code>, <code>secondary</code> paints <code>--muted-foreground</code>, <code>destructive</code> paints <code>--destructive</code>.</p>
+        <div class="preview">
+          <div style="width:100%;max-width:20rem;display:flex;flex-direction:column;gap:1.5rem;">
+            <input class="slider" type="range" data-variant="default" min="0" max="100" value="50" aria-label="Default variant">
+            <input class="slider" type="range" data-variant="secondary" min="0" max="100" value="50" aria-label="Secondary">
+            <input class="slider" type="range" data-variant="destructive" min="0" max="100" value="50" aria-label="Destructive">
+          </div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;input class="slider" type="range" data-variant="default" min="0" max="100" value="50"&gt;
+&lt;input class="slider" type="range" data-variant="secondary" min="0" max="100" value="50"&gt;
+&lt;input class="slider" type="range" data-variant="destructive" min="0" max="100" value="50"&gt;</code></pre>
+        </div>
+
         <!-- Vertical -->
         <p class="text-sm font-medium mb-2 mt-8">Vertical</p>
         <p class="text-xs text-muted-foreground mb-3">Vertical orientation using <code>data-orientation="vertical"</code>.</p>
-        <div class="preview" style="min-height:14rem;">
+        <div class="preview" style="min-height:14rem;gap:2rem;">
+          <input class="slider" type="range" data-orientation="vertical" data-size="sm" min="0" max="100" value="40" aria-label="Vertical small">
           <input class="slider" type="range" data-orientation="vertical" min="0" max="100" value="60">
+          <input class="slider" type="range" data-orientation="vertical" data-size="lg" data-variant="destructive" min="0" max="100" value="80" aria-label="Vertical large destructive">
         </div>
         <div style="position:relative;margin-top:0.5rem;">
           <button class="copy-btn">
@@ -285,66 +356,74 @@
 
 @layer components {
   .slider {
+    /* component-local geometry/paint knobs — every rule below reads these, so
+       a size/variant is a two-line override instead of a pseudo-element fork */
     --slider-value: 50%;
+    --slider-track-size: 0.5rem;
+    --slider-thumb-size: 1.25rem;
+    --slider-fill: var(--primary);
+    --slider-track: var(--secondary);
+
     -webkit-appearance: none;
     appearance: none;
     width: 100%;
-    height: 0.5rem;
+    height: var(--slider-track-size);
     border-radius: 9999px;
-    background: var(--secondary);
+    background: var(--slider-track);
     cursor: pointer;
     outline: none;
     border: none;
-    accent-color: var(--primary);
+    accent-color: var(--slider-fill);
 
     /* Track — WebKit (filled via gradient) */
     &amp;::-webkit-slider-runnable-track {
-      height: 0.5rem;
+      height: var(--slider-track-size);
       border-radius: 9999px;
       background: linear-gradient(
         to right,
-        var(--primary) 0%,
-        var(--primary) var(--slider-value),
-        var(--secondary) var(--slider-value),
-        var(--secondary) 100%
+        var(--slider-fill) 0%,
+        var(--slider-fill) var(--slider-value),
+        var(--slider-track) var(--slider-value),
+        var(--slider-track) 100%
       );
     }
 
     /* Track — Firefox */
     &amp;::-moz-range-track {
-      height: 0.5rem;
+      height: var(--slider-track-size);
       border-radius: 9999px;
-      background: var(--secondary);
+      background: var(--slider-track);
       border: none;
     }
 
     /* Filled portion — Firefox */
     &amp;::-moz-range-progress {
-      height: 0.5rem;
+      height: var(--slider-track-size);
       border-radius: 9999px;
-      background: var(--primary);
+      background: var(--slider-fill);
     }
 
     /* Thumb — WebKit */
     &amp;::-webkit-slider-thumb {
       -webkit-appearance: none;
-      width: 1.25rem;
-      height: 1.25rem;
+      width: var(--slider-thumb-size);
+      height: var(--slider-thumb-size);
       border-radius: 50%;
       background: var(--background);
-      border: 2px solid var(--primary);
-      margin-top: -0.375rem;
+      border: 2px solid var(--slider-fill);
+      /* centre the thumb on the track regardless of the size pair */
+      margin-top: calc((var(--slider-track-size) - var(--slider-thumb-size)) / 2);
       cursor: pointer;
       transition: box-shadow 150ms, transform 150ms;
     }
 
     /* Thumb — Firefox */
     &amp;::-moz-range-thumb {
-      width: 1.25rem;
-      height: 1.25rem;
+      width: var(--slider-thumb-size);
+      height: var(--slider-thumb-size);
       border-radius: 50%;
       background: var(--background);
-      border: 2px solid var(--primary);
+      border: 2px solid var(--slider-fill);
       cursor: pointer;
       transition: box-shadow 150ms, transform 150ms;
     }
@@ -352,10 +431,10 @@
     /* Hover */
     &amp;:hover:not(:disabled) {
       &amp;::-webkit-slider-thumb {
-        box-shadow: 0 0 0 4px color-mix(in oklch, var(--primary) 15%, transparent);
+        box-shadow: 0 0 0 4px color-mix(in oklch, var(--slider-fill) 15%, transparent);
       }
       &amp;::-moz-range-thumb {
-        box-shadow: 0 0 0 4px color-mix(in oklch, var(--primary) 15%, transparent);
+        box-shadow: 0 0 0 4px color-mix(in oklch, var(--slider-fill) 15%, transparent);
       }
     }
 
@@ -380,29 +459,101 @@
       &amp;::-moz-range-thumb { cursor: not-allowed; }
     }
 
+    /* -- Variants ---------------------------------------------
+       Token boundary: only semantic pairs that exist in the theme
+       export are referenced — no invented --* tokens. */
+    &amp;[data-variant=&quot;default&quot;] {
+      --slider-fill: var(--primary);
+      --slider-track: var(--secondary);
+    }
+
+    &amp;[data-variant=&quot;secondary&quot;] {
+      /* low-emphasis pair: --secondary-foreground is identical to --primary in
+         the default theme, so the muted pair is what actually reads as a
+         second, quieter slider */
+      --slider-fill: var(--muted-foreground);
+      --slider-track: var(--muted);
+    }
+
+    &amp;[data-variant=&quot;destructive&quot;] {
+      --slider-fill: var(--destructive);
+      --slider-track: var(--secondary);
+    }
+
+    /* -- Sizes ------------------------------------------------- */
+    &amp;[data-size=&quot;sm&quot;] {
+      --slider-track-size: 0.25rem;
+      --slider-thumb-size: 0.875rem;
+    }
+
+    &amp;[data-size=&quot;lg&quot;] {
+      --slider-track-size: 0.75rem;
+      --slider-thumb-size: 1.625rem;
+    }
+
     /* Vertical orientation */
     &amp;[data-orientation=&quot;vertical&quot;] {
       writing-mode: vertical-lr;
       direction: rtl;
-      width: 0.5rem;
+      width: var(--slider-track-size);
       height: 12rem;
 
       &amp;::-webkit-slider-runnable-track {
-        width: 0.5rem;
+        width: var(--slider-track-size);
         background: linear-gradient(
           to top,
-          var(--primary) 0%,
-          var(--primary) var(--slider-value),
-          var(--secondary) var(--slider-value),
-          var(--secondary) 100%
+          var(--slider-fill) 0%,
+          var(--slider-fill) var(--slider-value),
+          var(--slider-track) var(--slider-value),
+          var(--slider-track) 100%
         );
       }
 
       &amp;::-webkit-slider-thumb {
         margin-top: 0;
-        margin-left: -0.375rem;
+        margin-left: calc((var(--slider-track-size) - var(--slider-thumb-size)) / 2);
       }
     }
+  }
+
+  /* -- Measure marks -------------------------------------------
+     CSS-only tick scale for stepped sliders. Sibling of the input;
+     each child is a zero-width flex item so `space-between` lands the
+     tick centres exactly on the thumb-centre travel (which is inset by
+     half a thumb at each end). The tick line is generated, the child's
+     text is the optional label. */
+  .slider-marks {
+    --slider-thumb-size: 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    padding-inline: calc(var(--slider-thumb-size) / 2);
+    margin-top: 0.375rem;
+    font-size: 0.6875rem;
+    line-height: 1;
+    color: var(--muted-foreground);
+
+    &amp; &gt; * {
+      /* zero-width: flex-basis 0 alone leaves min-width:auto, which would
+         widen the item to its label and push the tick off its step */
+      flex: 0 0 0;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      white-space: nowrap;
+    }
+
+    &amp; &gt; *::before {
+      content: &quot;&quot;;
+      width: 1px;
+      height: 0.375rem;
+      background: var(--border);
+    }
+
+    /* keep the tick scale aligned when the slider is resized */
+    &amp;[data-size=&quot;sm&quot;] { --slider-thumb-size: 0.875rem; }
+    &amp;[data-size=&quot;lg&quot;] { --slider-thumb-size: 1.625rem; }
   }
 
   /* Reduced motion */
@@ -422,6 +573,12 @@
       &amp;::-moz-range-thumb {
         border-width: 3px;
       }
+    }
+
+    .slider-marks {
+      color: var(--foreground);
+
+      &amp; &gt; *::before { background: var(--foreground); }
     }
   }
 
@@ -456,6 +613,12 @@
           outline-color: Highlight;
         }
       }
+    }
+
+    .slider-marks {
+      color: CanvasText;
+
+      &amp; &gt; *::before { background: CanvasText; }
     }
   }
 }</code></pre>

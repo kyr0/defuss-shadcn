@@ -1,0 +1,162 @@
+/* -- Radial Progress component --------------------------------- */
+
+/* Typed custom property: registering --value as a <number> makes it
+   interpolatable, so changing the value tweens the ring with zero JS
+   (AGENTS.md: "@property for typed, animatable custom properties — not JS
+   animation of CSS values"). @property is an at-rule, not a style rule, so
+   it carries no cascade weight and sits outside @layer components. */
+@property --value {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+@layer components {
+  /* Public custom properties (set them inline on the element):
+       --value      0–100, required — the completion percentage
+       --size       outer diameter        (default 5rem)
+       --thickness  ring stroke width     (default 10% of --size)
+     Colors come from the ring's own `color`, so a variant recolors the arc
+     and the label in one declaration. */
+  .radial-progress {
+    /* matches the @property initial-value; an inline style="--value:70"
+       overrides it (and makes the declaration visible to tooling) */
+    --value: 0;
+    --size: 5rem;
+    --thickness: calc(var(--size) / 10);
+    /* leading-edge cap travels the stroke centerline: r = (size - thickness)/2 */
+    --radial-angle: calc(var(--value) * 3.6deg - 90deg);
+
+    position: relative;
+    display: inline-grid;
+    place-content: center;
+    box-sizing: content-box;
+    inline-size: var(--size);
+    block-size: var(--size);
+    border-radius: 9999px;
+    vertical-align: middle;
+    font-size: 0.875rem;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    color: var(--primary);
+    /* the arc is a function of --value, so the registered property tweens it */
+    transition: --value 600ms ease;
+
+    /* Track + indicator in one painted layer: a conic-gradient (arc up to
+       --value, track after it) masked down to a ring, plus a round dot at
+       12 o'clock so the arc's start is capped. */
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background:
+        radial-gradient(farthest-side, currentColor 98%, #0000)
+          top / var(--thickness) var(--thickness) no-repeat,
+        conic-gradient(currentColor calc(var(--value) * 1%), var(--secondary) 0);
+      -webkit-mask: radial-gradient(
+        farthest-side,
+        #0000 calc(99% - var(--thickness)),
+        #000 calc(100% - var(--thickness))
+      );
+      mask: radial-gradient(
+        farthest-side,
+        #0000 calc(99% - var(--thickness)),
+        #000 calc(100% - var(--thickness))
+      );
+    }
+
+    /* Round cap at the leading edge. Positioned with cos()/sin() rather than
+       a compound `transform: rotate() translate()` — individual transform
+       properties compose in the wrong order for a polar offset, and the trig
+       functions keep the position a pure function of --value (so it tweens). */
+    &::after {
+      content: "";
+      position: absolute;
+      inline-size: var(--thickness);
+      block-size: var(--thickness);
+      border-radius: 9999px;
+      background-color: currentColor;
+      inset-inline-start: calc(
+        50% + cos(var(--radial-angle)) * (var(--size) - var(--thickness)) / 2 -
+          var(--thickness) / 2
+      );
+      inset-block-start: calc(
+        50% + sin(var(--radial-angle)) * (var(--size) - var(--thickness)) / 2 -
+          var(--thickness) / 2
+      );
+    }
+
+    /* -- Variants (recolor arc + label together) ------------------ */
+    &[data-variant="default"] {
+      color: var(--primary);
+    }
+
+    &[data-variant="secondary"] {
+      color: var(--muted-foreground);
+    }
+
+    &[data-variant="destructive"] {
+      color: var(--destructive);
+    }
+
+    /* no semantic "success" token exists in the tweakcn shape — literal, same
+       green the toast component uses (token boundary rule) */
+    &[data-variant="success"] {
+      color: oklch(0.65 0.2 145);
+    }
+
+    /* -- Sizes ---------------------------------------------------- */
+    &[data-size="sm"] {
+      --size: 3.5rem;
+      font-size: 0.75rem;
+    }
+
+    &[data-size="lg"] {
+      --size: 8rem;
+      font-size: 1.25rem;
+    }
+  }
+
+  /* -- Accessibility -------------------------------------------- */
+
+  /* Suppress motion for users who request it (REQUIRED — AGENTS.md
+     "Accessibility CSS"). Near-zero instead of `none` keeps transitionend
+     firing for anything awaiting the value tween. */
+  @media (prefers-reduced-motion: reduce) {
+    .radial-progress {
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* Thicker stroke and a darker track when more contrast is requested. */
+  @media (prefers-contrast: more) {
+    .radial-progress {
+      --thickness: calc(var(--size) / 6);
+
+      &::before {
+        background:
+          radial-gradient(farthest-side, currentColor 98%, #0000)
+            top / var(--thickness) var(--thickness) no-repeat,
+          conic-gradient(currentColor calc(var(--value) * 1%), var(--border) 0);
+      }
+    }
+  }
+
+  /* Windows High Contrast Mode: gradients are dropped by forced colors, so
+     opt out and repaint the ring with system colors instead. */
+  @media (forced-colors: active) {
+    .radial-progress {
+      forced-color-adjust: none;
+      color: Highlight;
+
+      &::before {
+        background:
+          radial-gradient(farthest-side, Highlight 98%, #0000)
+            top / var(--thickness) var(--thickness) no-repeat,
+          conic-gradient(Highlight calc(var(--value) * 1%), GrayText 0);
+      }
+    }
+  }
+}

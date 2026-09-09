@@ -4,6 +4,9 @@ node_modules
 # Local Netlify folder
 .netlify
 
+#idea
+.vscode/
+rat
 # Vitest browser-mode artifacts
 .vitest/
 coverage/
@@ -20,3 +23,6 @@ tmp/
 issues/
 
 .playwright-mcp/
+
+.claude/
+CLAUDE.md

@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="images/favicon.webp" type="image/webp">
+  <meta name="description" content="Swap component — toggle between two faces with a hidden checkbox, no JavaScript.">
+  <meta property="og:title" content="Swap — defuss-shadcn">
+  <meta property="og:description" content="Swap component — toggle between two faces with a hidden checkbox, no JavaScript.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kyr0.github.io/defuss-shadcn/swap.html">
+  <meta property="og:site_name" content="defuss-shadcn">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Swap — defuss-shadcn">
+  <meta name="twitter:description" content="Swap component — toggle between two faces with a hidden checkbox, no JavaScript.">
+  <title>Swap — defuss-shadcn</title>
+  <script src="js/themes.js"></script>
+  <script src="js/theme-switcher.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/search-index.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/default-semantic-tokens.css">
+  <link rel="stylesheet" href="css/docs-theme.css">
+  <link rel="stylesheet" href="css/docs-utilities.css">
+  <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/button/button.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/card/card.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/badge/badge.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/input/input.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/accordion/accordion.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tabs/tabs.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dropdown/dropdown.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toast/toast.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/combobox/combobox.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sheet/sheet.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toggle/toggle.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/icon/icon.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/typography/typography.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/separator/separator.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/label/label.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toggle-group/toggle-group.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/swap/swap.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/button-group/button-group.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toolbar/toolbar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/textarea/textarea.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/checkbox/checkbox.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/radio/radio.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/switch/switch.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/slider/slider.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/select/select.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/number-input/number-input.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/file-input/file-input.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/color-picker/color-picker.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/date-picker/date-picker.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/form/form.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/avatar/avatar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/image/image.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/statistic/statistic.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/table/table.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/collapsible/collapsible.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/timeline/timeline.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tree-view/tree-view.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/calendar/calendar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/spinner/spinner.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/skeleton/skeleton.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/progress/progress.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/alert/alert.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/alert-dialog/alert-dialog.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/popover/popover.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tooltip/tooltip.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/context-menu/context-menu.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/command/command.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/breadcrumb/breadcrumb.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/pagination/pagination.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/steps/steps.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/navigation-menu/navigation-menu.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/scroll-area/scroll-area.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/carousel/carousel.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sidebar/sidebar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sortable/sortable.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/site-header/site-header.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/hero/hero.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/product-showcase/product-showcase.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/brand-logos/brand-logos.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/feature-details/feature-details.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/testimonials/testimonials.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/stats/stats.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/pricing/pricing.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/blog/blog.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/faq/faq.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/get-in-touch/get-in-touch.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/newsletter/newsletter.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/site-footer/site-footer.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/radial-progress/radial-progress.css">
+</head>
+<body>
+  <site-header></site-header>
+
+  <div class="flex" style="margin-top: 3.5rem; min-height: calc(100vh - 3.5rem);">
+    <site-nav></site-nav>
+
+    <main style="flex: 1; min-width: 0; max-width: 44rem; padding: 2rem 3.5rem 8rem;">
+      <div class="page-header">
+        <div class="flex items-baseline justify-between mb-1">
+          <p class="text-sm text-muted-foreground" style="font-family:var(--font-mono);">defuss-shadcn / swap</p>
+          <div style="display:flex;align-items:baseline;gap:0.375rem;"><span class="text-xs text-muted-foreground" style="font-family:var(--font-mono);white-space:nowrap;">Built with:</span> <a href="#source-css" class="badge built-with-pill" data-variant="outline">CSS</a></div>
+        </div>
+        <h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">Swap<span class="type-badge" data-type="ATM" title="Atom">ATM</span></h1>
+        <p class="text-muted-foreground leading-relaxed mb-6">
+          Swaps between two (or three) faces in place — icons, glyphs, or words. A hidden
+          <code>&lt;input type="checkbox"&gt;</code> inside a <code>&lt;label&gt;</code> holds the state and
+          <code>:has()</code> picks the visible face. No JavaScript.
+        </p>
+        <!-- Component Skill -->
+        <details style="margin-bottom:2rem;border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;">
+          <summary style="padding:0.875rem 1.25rem;background:var(--muted);cursor:pointer;font-size:0.8125rem;font-weight:600;font-family:var(--font-mono);color:var(--muted-foreground);list-style:none;display:flex;align-items:center;gap:0.5rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 200ms;"><path d="m9 18 6-6-6-6"/></svg>
+            Component Skill — <span data-spec-href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/swap/component-skill.md" style="text-decoration:underline;text-underline-offset:3px;">components/swap/component-skill.md</span>
+          </summary>
+          <div style="padding:1.5rem;font-size:0.875rem;line-height:1.85;">
+            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Native basis</p>
+            <p class="text-muted-foreground" style="margin:0 0 1.25rem;"><code>&lt;label&gt;</code> wrapping a hidden <code>&lt;input type="checkbox"&gt;</code> plus the face elements. The checkbox holds the state; CSS decides which face is visible.</p>
+
+            <p style="margin:0 0 0.625rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Web Platform APIs</p>
+            <div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;">
+              <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label" target="_blank" rel="noopener" title="implicit labelling makes the whole control clickable" class="api-pill"><code>&lt;label&gt;</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox" target="_blank" rel="noopener" title="native two-state value with keyboard toggling" class="api-pill"><code>&lt;input type="checkbox"&gt;</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:checked" target="_blank" rel="noopener" title="selects the on state" class="api-pill"><code>:checked</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:indeterminate" target="_blank" rel="noopener" title="third state, set from script" class="api-pill"><code>:indeterminate</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" target="_blank" rel="noopener" title="the label reacts to its own checkbox" class="api-pill"><code>:has()</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/rotate" target="_blank" rel="noopener" title="individual transform property for the animated variants" class="api-pill"><code>rotate</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/backface-visibility" target="_blank" rel="noopener" title="hides the reverse side of a flipping face" class="api-pill"><code>backface-visibility</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" target="_blank" rel="noopener" title="swap without animation when requested" class="api-pill"><code>prefers-reduced-motion</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+            </div>
+
+            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Classes</p>
+            <div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;">
+              <code>.swap</code>
+              <code>.swap-on</code>
+              <code>.swap-off</code>
+              <code>.swap-indeterminate</code>
+            </div>
+
+            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Variants (data-variant)</p>
+            <div style="display:grid;grid-template-columns:auto 1fr;gap:0.25rem 1rem;margin-bottom:1.25rem;">
+              <code>rotate</code><span class="text-muted-foreground">Crossfade plus a ±45° rotation</span>
+              <code>flip</code><span class="text-muted-foreground">Crossfade plus a 180° flip around the Y axis</span>
+            </div>
+
+            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Sizes (data-size)</p>
+            <div style="display:grid;grid-template-columns:auto 1fr;gap:0.25rem 1rem;margin-bottom:1.25rem;">
+              <code>sm</code><span class="text-muted-foreground">2rem floor, 0.75rem type, 1rem icons</span>
+              <code>lg</code><span class="text-muted-foreground">2.75rem floor, 1.125rem type, 1.5rem icons</span>
+            </div>
+          </div>
+        </details>
+      </div>
+
+        <!-- Default -->
+        <p class="text-sm font-medium mb-2 mt-6">Default</p>
+        <p class="text-xs text-muted-foreground mb-3">Crossfade between two faces. Click it — the checkbox is the state.</p>
+        <div class="preview">
+          <div style="display:flex;gap:1.5rem;align-items:center;">
+            <label class="swap" data-state-demo>
+              <input type="checkbox" aria-label="Toggle text">
+              <span class="swap-on">ON</span>
+              <span class="swap-off">OFF</span>
+            </label>
+            <label class="swap">
+              <input type="checkbox" checked aria-label="Toggle text, checked">
+              <span class="swap-on">ON</span>
+              <span class="swap-off">OFF</span>
+            </label>
+          </div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;label class="swap"&gt;
+  &lt;input type="checkbox" aria-label="Toggle text"&gt;
+  &lt;span class="swap-on"&gt;ON&lt;/span&gt;
+  &lt;span class="swap-off"&gt;OFF&lt;/span&gt;
+&lt;/label&gt;</code></pre>
+        </div>
+
+        <!-- Icons -->
+        <p class="text-sm font-medium mb-2 mt-8">Icons</p>
+        <p class="text-xs text-muted-foreground mb-3">Any content works as a face. Mark decorative glyphs <code>aria-hidden</code> and name the checkbox.</p>
+        <div class="preview">
+          <div style="display:flex;gap:1.5rem;align-items:center;">
+            <label class="swap">
+              <input type="checkbox" aria-label="Toggle sound">
+              <span class="swap-on" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>
+              </span>
+              <span class="swap-off" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="m23 9-6 6"/><path d="m17 9 6 6"/></svg>
+              </span>
+            </label>
+            <label class="swap">
+              <input type="checkbox" aria-label="Toggle bookmark">
+              <span class="swap-on" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+              </span>
+              <span class="swap-off" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+              </span>
+            </label>
+          </div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;label class="swap"&gt;
+  &lt;input type="checkbox" aria-label="Toggle sound"&gt;
+  &lt;span class="swap-on" aria-hidden="true"&gt;&lt;svg&gt;…&lt;/svg&gt;&lt;/span&gt;
+  &lt;span class="swap-off" aria-hidden="true"&gt;&lt;svg&gt;…&lt;/svg&gt;&lt;/span&gt;
+&lt;/label&gt;</code></pre>
+        </div>
+
+        <!-- Rotate -->
+        <p class="text-sm font-medium mb-2 mt-8">Rotate</p>
+        <p class="text-xs text-muted-foreground mb-3"><code>data-variant="rotate"</code> swings the faces in and out over ±45°.</p>
+        <div class="preview">
+          <div style="display:flex;gap:1.5rem;align-items:center;">
+            <label class="swap" data-variant="rotate">
+              <input type="checkbox" aria-label="Toggle theme">
+              <span class="swap-on" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/></svg>
+              </span>
+              <span class="swap-off" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></svg>
+              </span>
+            </label>
+            <label class="swap" data-variant="rotate">
+              <input type="checkbox" checked aria-label="Toggle menu">
+              <span class="swap-on" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+              </span>
+              <span class="swap-off" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+              </span>
+            </label>
+          </div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;label class="swap" data-variant="rotate"&gt;
+  &lt;input type="checkbox" aria-label="Toggle theme"&gt;
+  &lt;span class="swap-on" aria-hidden="true"&gt;&lt;svg&gt;…&lt;/svg&gt;&lt;/span&gt;
+  &lt;span class="swap-off" aria-hidden="true"&gt;&lt;svg&gt;…&lt;/svg&gt;&lt;/span&gt;
+&lt;/label&gt;</code></pre>
+        </div>
+
+        <!-- Flip -->
+        <p class="text-sm font-medium mb-2 mt-8">Flip</p>
+        <p class="text-xs text-muted-foreground mb-3"><code>data-variant="flip"</code> turns the control over on its Y axis.</p>
+        <div class="preview">
+          <div style="display:flex;gap:1.5rem;align-items:center;">
+            <label class="swap" data-variant="flip" data-size="lg">
+              <input type="checkbox" aria-label="Toggle mood">
+              <span class="swap-on" aria-hidden="true">😇</span>
+              <span class="swap-off" aria-hidden="true">😈</span>
+            </label>
+            <label class="swap" data-variant="flip" data-size="lg">
+              <input type="checkbox" checked aria-label="Toggle weather">
+              <span class="swap-on" aria-hidden="true">🌤️</span>
+              <span class="swap-off" aria-hidden="true">🌧️</span>
+            </label>
+          </div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;label class="swap" data-variant="flip" data-size="lg"&gt;
+  &lt;input type="checkbox" aria-label="Toggle mood"&gt;
+  &lt;span class="swap-on" aria-hidden="true"&gt;😇&lt;/span&gt;
+  &lt;span class="swap-off" aria-hidden="true"&gt;😈&lt;/span&gt;
+&lt;/label&gt;</code></pre>
+        </div>
+
+        <!-- Sizes -->
+        <p class="text-sm font-medium mb-2 mt-8">Sizes</p>
+        <p class="text-xs text-muted-foreground mb-3"><code>data-size</code> sets the minimum box plus the type and icon scale. The control still grows to fit its widest face.</p>
+        <div class="preview">
+          <div style="display:flex;gap:1.5rem;align-items:center;">
+            <label class="swap" data-size="sm">
+              <input type="checkbox" aria-label="Small swap">
+              <span class="swap-on">ON</span>
+              <span class="swap-off">OFF</span>
+            </label>
+            <label class="swap">
+              <input type="checkbox" aria-label="Medium swap">
+              <span class="swap-on">ON</span>
+              <span class="swap-off">OFF</span>
+            </label>
+            <label class="swap" data-size="lg">
+              <input type="checkbox" aria-label="Large swap">
+              <span class="swap-on">ON</span>
+              <span class="swap-off">OFF</span>
+            </label>
+          </div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;label class="swap" data-size="sm"&gt;…&lt;/label&gt;
+&lt;label class="swap"&gt;…&lt;/label&gt;
+&lt;label class="swap" data-size="lg"&gt;…&lt;/label&gt;</code></pre>
+        </div>
+
+        <!-- Indeterminate -->
+        <p class="text-sm font-medium mb-2 mt-8">Third face (indeterminate)</p>
+        <p class="text-xs text-muted-foreground mb-3">A <code>.swap-indeterminate</code> face shows while the checkbox is indeterminate. <code>indeterminate</code> is an IDL property only — set it from script.</p>
+        <div class="preview">
+          <div style="display:flex;gap:1.5rem;align-items:center;">
+            <label class="swap" data-size="lg">
+              <input type="checkbox" id="swap-tri" aria-label="Selection">
+              <span class="swap-on">All</span>
+              <span class="swap-indeterminate">Some</span>
+              <span class="swap-off">None</span>
+            </label>
+          </div>
+          <script>document.getElementById('swap-tri').indeterminate = true;</script>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;label class="swap"&gt;
+  &lt;input type="checkbox" id="tri" aria-label="Selection"&gt;
+  &lt;span class="swap-on"&gt;All&lt;/span&gt;
+  &lt;span class="swap-indeterminate"&gt;Some&lt;/span&gt;
+  &lt;span class="swap-off"&gt;None&lt;/span&gt;
+&lt;/label&gt;
+&lt;script&gt;document.getElementById('tri').indeterminate = true;&lt;/script&gt;</code></pre>
+        </div>
+
+        <!-- Forced on -->
+        <p class="text-sm font-medium mb-2 mt-8">Forced on</p>
+        <p class="text-xs text-muted-foreground mb-3"><code>data-active</code> on the label shows the on face regardless of the checkbox — for rendering server-side state without a checked input.</p>
+        <div class="preview">
+          <div style="display:flex;gap:1.5rem;align-items:center;">
+            <label class="swap" data-active>
+              <input type="checkbox" aria-label="Forced on">
+              <span class="swap-on">ON</span>
+              <span class="swap-off">OFF</span>
+            </label>
+            <label class="swap" data-variant="rotate" data-active>
+              <input type="checkbox" aria-label="Forced on, rotate">
+              <span class="swap-on">☀</span>
+              <span class="swap-off">☾</span>
+            </label>
+          </div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;label class="swap" data-active&gt;
+  &lt;input type="checkbox" aria-label="Forced on"&gt;
+  &lt;span class="swap-on"&gt;ON&lt;/span&gt;
+  &lt;span class="swap-off"&gt;OFF&lt;/span&gt;
+&lt;/label&gt;</code></pre>
+        </div>
+
+        <!-- Disabled -->
+        <p class="text-sm font-medium mb-2 mt-8">Disabled</p>
+        <p class="text-xs text-muted-foreground mb-3">A <code>disabled</code> checkbox dims the label and blocks pointer events — native, no extra class.</p>
+        <div class="preview">
+          <div style="display:flex;gap:1.5rem;align-items:center;">
+            <label class="swap">
+              <input type="checkbox" disabled aria-label="Disabled swap">
+              <span class="swap-on">ON</span>
+              <span class="swap-off">OFF</span>
+            </label>
+            <label class="swap">
+              <input type="checkbox" checked disabled aria-label="Disabled swap, checked">
+              <span class="swap-on">ON</span>
+              <span class="swap-off">OFF</span>
+            </label>
+          </div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;label class="swap"&gt;
+  &lt;input type="checkbox" disabled aria-label="Disabled swap"&gt;
+  &lt;span class="swap-on"&gt;ON&lt;/span&gt;
+  &lt;span class="swap-off"&gt;OFF&lt;/span&gt;
+&lt;/label&gt;</code></pre>
+        </div>
+
+        <!-- States -->
+        <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:3rem 0 0.375rem;">States</h2>
+        <p class="text-sm text-muted-foreground mb-3">
+          Swap is CSS-only, so it declares a single State API state: <code>default</code>. The visible
+          face follows the checkbox's DOM state rather than an <code>api.setState()</code> call.
+        </p>
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:0.375rem 1rem;font-size:0.875rem;margin-bottom:1rem;">
+          <code>default</code><span class="text-muted-foreground">Rendered by CSS; the face follows the checkbox</span>
+        </div>
+        <p class="text-sm text-muted-foreground mb-3">The DOM-level axes layered on top of it:</p>
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:0.375rem 1rem;font-size:0.875rem;margin-bottom:1rem;">
+          <code>input</code><span class="text-muted-foreground">unchecked → <code>.swap-off</code></span>
+          <code>input:checked</code><span class="text-muted-foreground">→ <code>.swap-on</code></span>
+          <code>input:indeterminate</code><span class="text-muted-foreground">→ <code>.swap-indeterminate</code></span>
+          <code>[data-active]</code><span class="text-muted-foreground">forces <code>.swap-on</code>, overriding the checkbox</span>
+          <code>input:disabled</code><span class="text-muted-foreground">current face, dimmed and non-interactive</span>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-javascript">// CSS-only: drive the checkbox, not api.setState()
+document.querySelector('.swap input').checked = true;         // on face
+document.querySelector('.swap input').indeterminate = true;   // third face</code></pre>
+        </div>
+        <p class="text-sm text-muted-foreground">The first demo carries <code>data-state-demo</code>; <code>bun run screenshots</code> uses it as the state-capture anchor and captures <code>screenshots/{mode}/swap.png</code>.</p>
+
+        <!-- -- CSS --------------------------------------- -->
+        <section style="margin-top:3rem;" id="source-css">
+          <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;">CSS <a href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/swap/swap.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2>
+          <div style="position:relative;margin-top:0.5rem;">
+            <button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button>
+            <pre><code class="language-scss">/* -- Swap component -------------------------------------------- */
+
+@layer components {
+  .swap {
+    /* the faces stack in one grid cell, so the box sizes to the widest one
+       and no absolute positioning / JS measurement is needed */
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    min-width: 2.25rem;
+    min-height: 2.25rem;
+    border-radius: var(--radius-md);
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--foreground);
+    cursor: pointer;
+    user-select: none;
+    vertical-align: middle;
+    /* flip needs depth; harmless for the other variants */
+    perspective: 40rem;
+
+    /* the checkbox IS the state — visually hidden but focusable and
+       hit-testable across the whole control (no .sr-only dependency) */
+    &amp; &gt; input[type=&quot;checkbox&quot;] {
+      grid-area: 1 / 1;
+      appearance: none;
+      -webkit-appearance: none;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      opacity: 0;
+      cursor: inherit;
+    }
+
+    &amp; .swap-on,
+    &amp; .swap-off,
+    &amp; .swap-indeterminate {
+      grid-area: 1 / 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      backface-visibility: hidden;
+      transition:
+        opacity 300ms cubic-bezier(0.4, 0, 0.2, 1),
+        rotate 300ms cubic-bezier(0.4, 0, 0.2, 1),
+        scale 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    &amp; svg:not([class*=&quot;size-&quot;]) {
+      width: 1.25rem;
+      height: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    /* -- Faces: default (off) ------------------------------- */
+    &amp; .swap-off { opacity: 1; }
+
+    /* -- Faces: indeterminate ------------------------------- */
+    &amp;:has(&gt; input:indeterminate) {
+      &amp; .swap-off { opacity: 0; }
+      &amp; .swap-indeterminate { opacity: 1; }
+    }
+
+    /* -- Faces: on (checked, or forced via data-active) ------ */
+    &amp;:has(&gt; input:checked),
+    &amp;[data-active] {
+      &amp; .swap-off,
+      &amp; .swap-indeterminate { opacity: 0; }
+      &amp; .swap-on { opacity: 1; }
+    }
+
+    /* -- Variant: rotate ------------------------------------ */
+    &amp;[data-variant=&quot;rotate&quot;] {
+      &amp; .swap-on,
+      &amp; .swap-indeterminate { rotate: -45deg; }
+
+      &amp;:has(&gt; input:indeterminate) {
+        &amp; .swap-off { rotate: 45deg; }
+        &amp; .swap-indeterminate { rotate: 0deg; }
+      }
+
+      &amp;:has(&gt; input:checked),
+      &amp;[data-active] {
+        &amp; .swap-off,
+        &amp; .swap-indeterminate { rotate: 45deg; }
+        &amp; .swap-on { rotate: 0deg; }
+      }
+    }
+
+    /* -- Variant: flip -------------------------------------- */
+    &amp;[data-variant=&quot;flip&quot;] {
+      &amp; .swap-on,
+      &amp; .swap-indeterminate { rotate: y 180deg; }
+
+      &amp;:has(&gt; input:indeterminate) {
+        &amp; .swap-off { rotate: y -180deg; }
+        &amp; .swap-indeterminate { rotate: y 0deg; }
+      }
+
+      &amp;:has(&gt; input:checked),
+      &amp;[data-active] {
+        &amp; .swap-off,
+        &amp; .swap-indeterminate { rotate: y -180deg; }
+        &amp; .swap-on { rotate: y 0deg; }
+      }
+    }
+
+    /* -- Sizes ---------------------------------------------- */
+    &amp;[data-size=&quot;sm&quot;] {
+      min-width: 2rem;
+      min-height: 2rem;
+      font-size: 0.75rem;
+
+      &amp; svg:not([class*=&quot;size-&quot;]) { width: 1rem; height: 1rem; }
+    }
+
+    &amp;[data-size=&quot;lg&quot;] {
+      min-width: 2.75rem;
+      min-height: 2.75rem;
+      font-size: 1.125rem;
+
+      &amp; svg:not([class*=&quot;size-&quot;]) { width: 1.5rem; height: 1.5rem; }
+    }
+
+    /* -- Interaction states --------------------------------- */
+    &amp;:hover { background-color: var(--accent); color: var(--accent-foreground); }
+
+    &amp;:has(&gt; input:focus-visible) {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+
+    &amp;:has(&gt; input:disabled) {
+      pointer-events: none;
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  /* Accessibility: honour a reduced-motion request — the faces still swap,
+     they just do not animate (near-zero duration keeps transitionend firing). */
+  @media (prefers-reduced-motion: reduce) {
+    .swap .swap-on,
+    .swap .swap-off,
+    .swap .swap-indeterminate {
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .swap {
+      border: 2px solid transparent;
+
+      &amp;:has(&gt; input:checked),
+      &amp;[data-active] { border-color: currentColor; }
+    }
+  }
+
+  @media (forced-colors: active) {
+    .swap {
+      border: 1px solid ButtonText;
+      color: ButtonText;
+      forced-color-adjust: none;
+
+      &amp;:has(&gt; input:checked),
+      &amp;[data-active] {
+        background: Highlight;
+        color: HighlightText;
+      }
+
+      &amp;:has(&gt; input:disabled) { border-color: GrayText; color: GrayText; }
+    }
+  }
+}</code></pre>
+          </div>
+        </section>
+
+    </main>
+  </div>
+
+  <script src="js/site.js" defer></script>
+  <script type="module" src="js/shiki-highlight.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/accordion/accordion.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/combobox/combobox.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dropdown/dropdown.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sheet/sheet.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tabs/tabs.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toast/toast.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toggle/toggle.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toggle-group/toggle-group.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toolbar/toolbar.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/number-input/number-input.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/color-picker/color-picker.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/avatar/avatar.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/image/image.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tree-view/tree-view.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/calendar/calendar.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/alert-dialog/alert-dialog.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/popover/popover.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tooltip/tooltip.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/context-menu/context-menu.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/command/command.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/navigation-menu/navigation-menu.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sidebar/sidebar.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/carousel/carousel.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/slider/slider.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sortable/sortable.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/product-showcase/product-showcase.js"></script>
+  <script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script>
+  <script>globalThis.lucide?.createIcons();</script>
+</body>
+</html>

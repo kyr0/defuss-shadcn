@@ -2,66 +2,74 @@
 
 @layer components {
   .slider {
+    /* component-local geometry/paint knobs — every rule below reads these, so
+       a size/variant is a two-line override instead of a pseudo-element fork */
     --slider-value: 50%;
+    --slider-track-size: 0.5rem;
+    --slider-thumb-size: 1.25rem;
+    --slider-fill: var(--primary);
+    --slider-track: var(--secondary);
+
     -webkit-appearance: none;
     appearance: none;
     width: 100%;
-    height: 0.5rem;
+    height: var(--slider-track-size);
     border-radius: 9999px;
-    background: var(--secondary);
+    background: var(--slider-track);
     cursor: pointer;
     outline: none;
     border: none;
-    accent-color: var(--primary);
+    accent-color: var(--slider-fill);
 
     /* Track — WebKit (filled via gradient) */
     &::-webkit-slider-runnable-track {
-      height: 0.5rem;
+      height: var(--slider-track-size);
       border-radius: 9999px;
       background: linear-gradient(
         to right,
-        var(--primary) 0%,
-        var(--primary) var(--slider-value),
-        var(--secondary) var(--slider-value),
-        var(--secondary) 100%
+        var(--slider-fill) 0%,
+        var(--slider-fill) var(--slider-value),
+        var(--slider-track) var(--slider-value),
+        var(--slider-track) 100%
       );
     }
 
     /* Track — Firefox */
     &::-moz-range-track {
-      height: 0.5rem;
+      height: var(--slider-track-size);
       border-radius: 9999px;
-      background: var(--secondary);
+      background: var(--slider-track);
       border: none;
     }
 
     /* Filled portion — Firefox */
     &::-moz-range-progress {
-      height: 0.5rem;
+      height: var(--slider-track-size);
       border-radius: 9999px;
-      background: var(--primary);
+      background: var(--slider-fill);
     }
 
     /* Thumb — WebKit */
     &::-webkit-slider-thumb {
       -webkit-appearance: none;
-      width: 1.25rem;
-      height: 1.25rem;
+      width: var(--slider-thumb-size);
+      height: var(--slider-thumb-size);
       border-radius: 50%;
       background: var(--background);
-      border: 2px solid var(--primary);
-      margin-top: -0.375rem;
+      border: 2px solid var(--slider-fill);
+      /* centre the thumb on the track regardless of the size pair */
+      margin-top: calc((var(--slider-track-size) - var(--slider-thumb-size)) / 2);
       cursor: pointer;
       transition: box-shadow 150ms, transform 150ms;
     }
 
     /* Thumb — Firefox */
     &::-moz-range-thumb {
-      width: 1.25rem;
-      height: 1.25rem;
+      width: var(--slider-thumb-size);
+      height: var(--slider-thumb-size);
       border-radius: 50%;
       background: var(--background);
-      border: 2px solid var(--primary);
+      border: 2px solid var(--slider-fill);
       cursor: pointer;
       transition: box-shadow 150ms, transform 150ms;
     }
@@ -69,10 +77,10 @@
     /* Hover */
     &:hover:not(:disabled) {
       &::-webkit-slider-thumb {
-        box-shadow: 0 0 0 4px color-mix(in oklch, var(--primary) 15%, transparent);
+        box-shadow: 0 0 0 4px color-mix(in oklch, var(--slider-fill) 15%, transparent);
       }
       &::-moz-range-thumb {
-        box-shadow: 0 0 0 4px color-mix(in oklch, var(--primary) 15%, transparent);
+        box-shadow: 0 0 0 4px color-mix(in oklch, var(--slider-fill) 15%, transparent);
       }
     }
 
@@ -97,29 +105,101 @@
       &::-moz-range-thumb { cursor: not-allowed; }
     }
 
+    /* -- Variants ---------------------------------------------
+       Token boundary: only semantic pairs that exist in the theme
+       export are referenced — no invented --* tokens. */
+    &[data-variant="default"] {
+      --slider-fill: var(--primary);
+      --slider-track: var(--secondary);
+    }
+
+    &[data-variant="secondary"] {
+      /* low-emphasis pair: --secondary-foreground is identical to --primary in
+         the default theme, so the muted pair is what actually reads as a
+         second, quieter slider */
+      --slider-fill: var(--muted-foreground);
+      --slider-track: var(--muted);
+    }
+
+    &[data-variant="destructive"] {
+      --slider-fill: var(--destructive);
+      --slider-track: var(--secondary);
+    }
+
+    /* -- Sizes ------------------------------------------------- */
+    &[data-size="sm"] {
+      --slider-track-size: 0.25rem;
+      --slider-thumb-size: 0.875rem;
+    }
+
+    &[data-size="lg"] {
+      --slider-track-size: 0.75rem;
+      --slider-thumb-size: 1.625rem;
+    }
+
     /* Vertical orientation */
     &[data-orientation="vertical"] {
       writing-mode: vertical-lr;
       direction: rtl;
-      width: 0.5rem;
+      width: var(--slider-track-size);
       height: 12rem;
 
       &::-webkit-slider-runnable-track {
-        width: 0.5rem;
+        width: var(--slider-track-size);
         background: linear-gradient(
           to top,
-          var(--primary) 0%,
-          var(--primary) var(--slider-value),
-          var(--secondary) var(--slider-value),
-          var(--secondary) 100%
+          var(--slider-fill) 0%,
+          var(--slider-fill) var(--slider-value),
+          var(--slider-track) var(--slider-value),
+          var(--slider-track) 100%
         );
       }
 
       &::-webkit-slider-thumb {
         margin-top: 0;
-        margin-left: -0.375rem;
+        margin-left: calc((var(--slider-track-size) - var(--slider-thumb-size)) / 2);
       }
     }
+  }
+
+  /* -- Measure marks -------------------------------------------
+     CSS-only tick scale for stepped sliders. Sibling of the input;
+     each child is a zero-width flex item so `space-between` lands the
+     tick centres exactly on the thumb-centre travel (which is inset by
+     half a thumb at each end). The tick line is generated, the child's
+     text is the optional label. */
+  .slider-marks {
+    --slider-thumb-size: 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    padding-inline: calc(var(--slider-thumb-size) / 2);
+    margin-top: 0.375rem;
+    font-size: 0.6875rem;
+    line-height: 1;
+    color: var(--muted-foreground);
+
+    & > * {
+      /* zero-width: flex-basis 0 alone leaves min-width:auto, which would
+         widen the item to its label and push the tick off its step */
+      flex: 0 0 0;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      white-space: nowrap;
+    }
+
+    & > *::before {
+      content: "";
+      width: 1px;
+      height: 0.375rem;
+      background: var(--border);
+    }
+
+    /* keep the tick scale aligned when the slider is resized */
+    &[data-size="sm"] { --slider-thumb-size: 0.875rem; }
+    &[data-size="lg"] { --slider-thumb-size: 1.625rem; }
   }
 
   /* Reduced motion */
@@ -139,6 +219,12 @@
       &::-moz-range-thumb {
         border-width: 3px;
       }
+    }
+
+    .slider-marks {
+      color: var(--foreground);
+
+      & > *::before { background: var(--foreground); }
     }
   }
 
@@ -173,6 +259,12 @@
           outline-color: Highlight;
         }
       }
+    }
+
+    .slider-marks {
+      color: CanvasText;
+
+      & > *::before { background: CanvasText; }
     }
   }
 }

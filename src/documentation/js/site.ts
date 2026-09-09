@@ -246,6 +246,32 @@
 
     // Code collapse/expand toggles
     initCodeCollapse();
+
+    // Inline <script> inside a .preview
+    runPreviewScripts();
+  }
+
+  // -- Inline demo scripts ---------------------------------
+  // A few demos need a line of script because the state they show has no HTML
+  // attribute — `indeterminate` is IDL-only (checkbox.html, swap.html). Those
+  // pages carry the script inline next to the demo so the visible markup is
+  // exactly the snippet we teach consumers to copy.
+  //
+  // The catch: layout.ts's SPA router swaps pages with `main.innerHTML = …`,
+  // and a <script> inserted by innerHTML never executes — per spec, and by
+  // design. So the demo works on a direct load and is silently dead when you
+  // navigate to the page from the sidebar. Re-create each one (a freshly
+  // built <script> node DOES run on insertion) so both paths behave alike.
+  //
+  // Contract for anyone adding one: preview scripts must be idempotent — on a
+  // direct load the original already ran, and this re-runs it once more.
+  function runPreviewScripts() {
+    document.querySelectorAll('main .preview script:not([data-ran])').forEach(function (old) {
+      var fresh = document.createElement('script');
+      fresh.textContent = old.textContent;
+      fresh.dataset.ran = '';
+      old.replaceWith(fresh);
+    });
   }
 
   // Register content initializer with SPA router

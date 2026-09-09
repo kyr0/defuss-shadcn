@@ -56,6 +56,28 @@ supportedStates: default, disabled
 <input class="slider" type="range" min="0" max="100" step="25" value="50">
 ```
 
+### With steps and measure marks
+```html
+<input class="slider" type="range" min="0" max="100" step="25" value="50">
+<div class="slider-marks" aria-hidden="true">
+  <span>0</span><span>25</span><span>50</span><span>75</span><span>100</span>
+</div>
+```
+
+### Sizes
+```html
+<input class="slider" type="range" data-size="sm" min="0" max="100" value="30">
+<input class="slider" type="range" min="0" max="100" value="50">
+<input class="slider" type="range" data-size="lg" min="0" max="100" value="70">
+```
+
+### Variants
+```html
+<input class="slider" type="range" data-variant="default" min="0" max="100" value="50">
+<input class="slider" type="range" data-variant="secondary" min="0" max="100" value="50">
+<input class="slider" type="range" data-variant="destructive" min="0" max="100" value="50">
+```
+
 ### Vertical
 ```html
 <input class="slider" type="range" data-orientation="vertical" min="0" max="100" value="50">
@@ -68,11 +90,59 @@ supportedStates: default, disabled
 
 ---
 
+## Variants
+
+| `data-variant` | Track fill | Use for |
+|----------------|-----------|---------|
+| *(omitted)* / `default` | `--primary` on `--secondary` | the standard slider |
+| `secondary` | `--muted-foreground` on `--muted` | a muted, low-emphasis control |
+| `destructive` | `--destructive` on `--secondary` | destructive or danger-zone magnitudes |
+
+---
+
+## Sizes
+
+| `data-size` | Track | Thumb |
+|-------------|-------|-------|
+| `sm` | `0.25rem` | `0.875rem` |
+| *(omitted)* | `0.5rem` | `1.25rem` |
+| `lg` | `0.75rem` | `1.625rem` |
+
+The thumb is re-centred on the track from these two values, so sizes work
+unchanged in the vertical orientation.
+
+---
+
 ## Data attributes
 
-| Attribute | Values | Description |
-|-----------|--------|-------------|
-| `data-orientation` | `vertical` | Renders as a vertical slider |
+| Attribute | Values | Element | Description |
+|-----------|--------|---------|-------------|
+| `data-variant` | `default`, `secondary`, `destructive` | `.slider` | Track/thumb color pair |
+| `data-size` | `sm`, `lg` | `.slider`, `.slider-marks` | Track and thumb geometry (mirror it on the marks so the ticks stay aligned) |
+| `data-orientation` | `vertical` | `.slider` | Renders as a vertical slider |
+
+---
+
+## Measure marks
+
+`.slider-marks` is an optional sibling element that draws a CSS-only tick
+scale under a stepped slider — no JavaScript, no positioning math:
+
+```html
+<input class="slider" type="range" min="0" max="100" step="25" value="50" data-size="lg">
+<div class="slider-marks" data-size="lg" aria-hidden="true">
+  <span>0</span><span>25</span><span>50</span><span>75</span><span>100</span>
+</div>
+```
+
+- Each child is a zero-width flex item under `justify-content: space-between`,
+  so tick centres land exactly on the thumb-centre travel (inset by half a
+  thumb at each end via `padding-inline`).
+- The tick line itself is a generated `::before`; the child's text content is
+  the optional label — leave a child empty for a tick with no label.
+- Give the marks the same `data-size` as the slider it belongs to.
+- Mark it `aria-hidden="true"`: the values are already announced by the range
+  input, so the ticks are decorative.
 
 ---
 
@@ -127,5 +197,7 @@ The api is bound per input; the registry global is
 - **Vertical**: Uses `writing-mode: vertical-lr; direction: rtl` to render vertically across all browsers. Add `data-orientation="vertical"` to activate.
 - **Value display**: Use `<output for="slider-id">` to show the current value. Wire the update in your own script or inline `oninput`.
 - **`accent-color`**: Set as a CSS fallback for browsers that don't fully support custom styling pseudo-elements.
-- **Step attribute**: Use `step` to control increment granularity. Omit for continuous (default step is 1).
+- **Step attribute**: Use `step` to control increment granularity. Omit for continuous (default step is 1). Pair it with `.slider-marks` to make the discrete stops visible.
+- **Sizes and marks**: `data-size` drives two component-local custom properties (`--slider-track-size`, `--slider-thumb-size`); `.slider-marks` reads the thumb size to align its padding, which is why it takes the same `data-size`.
+- **Variants**: only theme-export tokens are used (`--primary`, `--secondary`, `--muted`, `--muted-foreground`, `--destructive`) — there is no invented status palette. For a color the token set does not carry, override `--slider-fill` / `--slider-track` inline on the element.
 - **Form integration**: Native `<input type="range">` submits its value with forms automatically when given a `name` attribute.

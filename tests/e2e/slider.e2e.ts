@@ -6,8 +6,9 @@ import { startServer } from './server.ts';
  * Why: E2E smoke test for the shipped slider component. Loads the fixture
  * (default + custom-range + authored-disabled sliders, mirroring the doc
  * page) over HTTP in a real browser, then verifies the fill-track custom
- * property, keyboard stepping, native disabled behavior, and the named State
- * API ({ value } preset) — the same files consumers copy from dist/,
+ * property, keyboard stepping, native disabled behavior, the data-size /
+ * data-variant axes, the CSS-only .slider-marks tick scale, and the named
+ * State API ({ value } preset) — the same files consumers copy from dist/,
  * unmodified.
  */
 
@@ -56,7 +57,7 @@ try {
           .find((t) => t.includes('::-webkit-slider-runnable-track') && t.includes('linear-gradient')) ?? '',
     );
     assert.ok(rule, 'runnable-track gradient rule shipped');
-    assert.match(rule, /var\(--primary\)\s*var\(--slider-value\)/, 'fill stops at the value');
+    assert.match(rule, /var\(--slider-fill\)\s*var\(--slider-value\)/, 'fill stops at the value');
   });
 
   await check('keyboard arrows step the value and repaint the fill', async () => {
@@ -76,6 +77,105 @@ try {
     }));
     assert.equal(info.disabled, true);
     assert.equal(info.cursor, 'not-allowed', 'disabled styling applied');
+  });
+
+  // -- Sizes / variants / marks (daisyUI "range" feature parity) -------------
+  const cssVar = (page: Page, id: string, prop: string) =>
+    page.$eval(`#${id}`, (el, p) => getComputedStyle(el).getPropertyValue(p).trim(), prop);
+
+  await check('data-size scales the track (sm < default < lg) — computed height', async () => {
+    const h = async (id: string) =>
+      parseFloat(await page.$eval(`#${id}`, (el) => getComputedStyle(el).height));
+    const [sm, md, lg] = [await h('s-sm'), await h('s-default'), await h('s-lg')];
+    assert.equal(sm, 4, 'data-size="sm" -> 0.25rem track');
+    assert.equal(md, 8, 'default -> 0.5rem track');
+    assert.equal(lg, 12, 'data-size="lg" -> 0.75rem track');
+    assert.ok(sm < md && md < lg, `expected sm < default < lg, got ${sm}/${md}/${lg}`);
+  });
+
+  await check('data-size drives the thumb size knob and keeps the thumb centred', async () => {
+    for (const [id, track, thumb] of [
+      ['s-sm', '0.25rem', '0.875rem'],
+      ['s-default', '0.5rem', '1.25rem'],
+      ['s-lg', '0.75rem', '1.625rem'],
+    ] as const) {
+      assert.equal(await cssVar(page, id, '--slider-track-size'), track, `${id} track knob`);
+      assert.equal(await cssVar(page, id, '--slider-thumb-size'), thumb, `${id} thumb knob`);
+    }
+  });
+
+  await check('data-variant repaints the fill from theme tokens (pairwise distinct)', async () => {
+    const fill = (id: string) => cssVar(page, id, '--slider-fill');
+    const base = await fill('s-default');
+    const dflt = await fill('s-v-default');
+    const secondary = await fill('s-v-secondary');
+    const destructive = await fill('s-v-destructive');
+    assert.ok(dflt, 'variant fill resolves to a real color');
+    assert.equal(dflt, base, 'data-variant="default" matches the un-attributed slider');
+    assert.notEqual(secondary, dflt, 'secondary differs from default');
+    assert.notEqual(destructive, dflt, 'destructive differs from default');
+    assert.notEqual(destructive, secondary, 'destructive differs from secondary');
+    // accent-color (the no-pseudo-element fallback) follows the variant too
+    const accent = (id: string) => page.$eval(`#${id}`, (el) => getComputedStyle(el).accentColor);
+    assert.notEqual(await accent('s-v-destructive'), await accent('s-v-default'));
+  });
+
+  await check('.slider-marks renders a CSS-only tick per step, inset by half a thumb', async () => {
+    const marks = await page.$eval('#s-marks', (el) => ({
+      children: el.children.length,
+      padLeft: getComputedStyle(el).paddingLeft,
+      padRight: getComputedStyle(el).paddingRight,
+      tick: getComputedStyle(el.firstElementChild!, '::before').height,
+      display: getComputedStyle(el).display,
+      justify: getComputedStyle(el).justifyContent,
+    }));
+    assert.equal(marks.children, 5, 'one mark per step stop (0,25,50,75,100)');
+    assert.equal(marks.display, 'flex');
+    assert.equal(marks.justify, 'space-between');
+    assert.equal(marks.padLeft, '10px', 'half of the 1.25rem default thumb');
+    assert.equal(marks.padRight, '10px');
+    assert.equal(marks.tick, '6px', 'generated tick line is drawn');
+  });
+
+  await check('.slider-marks[data-size] realigns with the larger thumb', async () => {
+    const pad = await page.$eval('#s-marks-lg', (el) => getComputedStyle(el).paddingLeft);
+    assert.equal(pad, '13px', 'half of the 1.625rem lg thumb');
+  });
+
+  await check('mark centres line up with the thumb travel (first/last on the ends)', async () => {
+    const geo = await page.$eval('#s-marks', (el) => {
+      const box = el.getBoundingClientRect();
+      const kids = [...el.children].map((k) => {
+        const r = k.getBoundingClientRect();
+        return r.left + r.width / 2;
+      });
+      return { first: kids[0] - box.left, last: box.right - kids[kids.length - 1], width: box.width };
+    });
+    // zero-width flex items under space-between sit exactly on the padding edges
+    assert.ok(Math.abs(geo.first - 10) < 0.6, `first tick at half-thumb inset, got ${geo.first}`);
+    assert.ok(Math.abs(geo.last - 10) < 0.6, `last tick at half-thumb inset, got ${geo.last}`);
+  });
+
+  await check('stepped slider snaps to the step and repaints the fill', async () => {
+    await page.focus('#s-steps');
+    await page.keyboard.press('ArrowRight');
+    assert.equal(await sliderValue(page, 's-steps'), '75', 'step=25 -> one arrow moves a quarter');
+    assert.equal(await fillVar(page, 's-steps'), '75%');
+  });
+
+  await check('vertical orientation still works with data-size', async () => {
+    const geo = async (id: string) =>
+      page.$eval(`#${id}`, (el) => {
+        const cs = getComputedStyle(el);
+        return { width: cs.width, writingMode: cs.writingMode, thumb: cs.getPropertyValue('--slider-thumb-size').trim() };
+      });
+    const md = await geo('s-vertical');
+    const lg = await geo('s-vertical-lg');
+    assert.equal(md.writingMode, 'vertical-lr', 'vertical uses writing-mode, not a JS rotation');
+    assert.equal(md.width, '8px', 'vertical default track thickness');
+    assert.equal(lg.width, '12px', 'vertical lg track thickness');
+    assert.equal(lg.thumb, '1.625rem');
+    assert.equal(await fillVar(page, 's-vertical'), '60%', 'vertical fill painted by slider.js');
   });
 
   // -- State API (AGENTS.md "State API") -------------------------------------
