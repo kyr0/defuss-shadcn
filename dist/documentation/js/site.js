@@ -197,6 +197,40 @@
             syncAllBtn();
         });
     }
+    // -- Viewport-width toolbar for .demo[data-viewport] -------
+    // Why: layout demos (auto-fit grids, wrapping flex, container queries) only
+    // make sense when the reader can change the available width. Any .demo with
+    // data-viewport gets a toolbar (Mobile/Tablet/Desktop/Full) that resizes its
+    // .demo-viewport — the "mini browser" the demo renders into. Container
+    // queries react because the width really changes; no iframes involved.
+    var VP_SIZES = [['Mobile', 360], ['Tablet', 768], ['Desktop', 1024], ['Full', null]];
+    function initViewportStages() {
+        document.querySelectorAll('.demo[data-viewport]:not([data-vp-init])').forEach(function (demo) {
+            demo.setAttribute('data-vp-init', '');
+            var viewport = demo.querySelector('.demo-viewport');
+            if (!viewport)
+                return;
+            var toolbar = document.createElement('div');
+            toolbar.className = 'vp-toolbar';
+            toolbar.setAttribute('role', 'toolbar');
+            toolbar.setAttribute('aria-label', 'Preview width');
+            VP_SIZES.forEach(function (size) {
+                var label = size[0], width = size[1];
+                var btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'vp-btn';
+                btn.textContent = width ? label + ' ' + width : label;
+                btn.setAttribute('aria-pressed', width === null ? 'true' : 'false');
+                btn.addEventListener('click', function () {
+                    toolbar.querySelectorAll('.vp-btn').forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
+                    btn.setAttribute('aria-pressed', 'true');
+                    viewport.style.inlineSize = width === null ? '100%' : width + 'px';
+                });
+                toolbar.appendChild(btn);
+            });
+            demo.insertBefore(toolbar, demo.firstChild);
+        });
+    }
     // -- Reusable page content initializer -------------------
     // Called on initial load AND after each SPA navigation.
     function initPageContent() {
@@ -239,6 +273,8 @@
         initTokenSwatches();
         // Code collapse/expand toggles
         initCodeCollapse();
+        // Viewport-width toolbars on resizable demos
+        initViewportStages();
     }
     // Register content initializer with SPA router
     // (runs on initial load AND after each SPA navigation)

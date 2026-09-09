@@ -291,7 +291,7 @@ details[open] > summary svg:first-child {
 .arch-prose ol { margin: 0 0 1rem; padding-left: 1.5rem; list-style: decimal; color: var(--muted-foreground); }
 .arch-prose li { margin-bottom: 0.375rem; }
 .arch-prose li > strong:first-child { color: var(--foreground); }
-.arch-prose code { font-family: var(--font-mono); background: var(--muted); padding: 0.125em 0.375em; border-radius: var(--radius-sm); }
+.arch-prose code { font-family: var(--font-mono); font-size: 0.8125em; background: var(--muted); padding: 0.125em 0.375em; border-radius: var(--radius-sm); }
 .arch-prose pre { background: var(--muted); border-radius: var(--radius-lg); padding: 1rem; margin: 0.5rem 0 1.25rem; overflow-x: auto; }
 .arch-prose pre code { background: none; padding: 0; font-size: 0.8125rem; }
 .arch-prose a { color: var(--primary); text-decoration: underline; text-underline-offset: 3px; }
@@ -336,12 +336,117 @@ pre {
 }
 code {
   font-family: var(--font-mono);
+  font-size: 0.8125em;
   background: var(--muted);
   padding: 0.125rem 0.375rem;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border);
 }
 pre code { background: none; padding: 0; border: none; font-size: inherit; }
+
+/* -- Demo design system (guide pages) -------------------------
+   One card per example: .demo wraps the rendered .demo-stage and
+   optionally its matching code block (.demo-code). Replaces the
+   ad-hoc inline-style wrappers on guide pages — see AGENTS.md
+   "Demo ↔ code parity". Add data-viewport to .demo and site.js
+   adds the width toolbar that resizes .demo-viewport. */
+.demo {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  background: var(--background);
+}
+.demo-stage {
+  padding: 1.5rem;
+  overflow-x: auto;
+}
+/* The resizable mini-viewport the toolbar sizes (inline-size set by JS). */
+.demo-viewport {
+  margin-inline: auto;
+  inline-size: 100%;
+  max-inline-size: 100%;
+  transition: inline-size 160ms ease;
+}
+.demo > .demo-code:first-child { border-top: none; }
+.demo-code { border-top: 1px solid var(--border); }
+.demo-code-header {
+  padding: 0.625rem 1rem;
+  background: var(--muted);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  color: var(--muted-foreground);
+}
+.demo pre {
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  overflow-x: auto;
+}
+
+/* Visualization helpers for demo content. */
+.demo-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  overflow: hidden;
+}
+.demo-tile[data-variant="secondary"] { background: var(--secondary); color: var(--secondary-foreground); }
+.demo-tile[data-variant="accent"] { background: var(--accent); color: var(--accent-foreground); }
+.demo-tile[data-variant="muted"] { background: var(--muted); color: var(--muted-foreground); }
+.demo-tile[data-variant="outline"] {
+  background: transparent;
+  border: 1px dashed var(--border);
+  color: var(--muted-foreground);
+}
+.demo-label {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+.demo-outline { border: 1px dashed var(--border); border-radius: var(--radius-md); }
+.demo-stripes { background: repeating-linear-gradient(90deg, transparent 0 11px, var(--border) 11px 12px); }
+
+/* Viewport-width toolbar (injected by site.js into .demo[data-viewport]). */
+.vp-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+.vp-btn {
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--muted-foreground);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+}
+.vp-btn:hover { color: var(--foreground); }
+.vp-btn[aria-pressed="true"] {
+  background: var(--background);
+  border-color: var(--border);
+  color: var(--foreground);
+  box-shadow: var(--shadow-2xs, none);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-viewport { transition: none; }
+}
 
 /* -- Shiki dual-theme: light default, dark via html.dark --- */
 pre.shiki {

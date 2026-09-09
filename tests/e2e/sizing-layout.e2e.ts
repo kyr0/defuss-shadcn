@@ -107,6 +107,26 @@ try {
     assert.ok(Math.abs(gaps[2] - gaps[1] * 1.25) < 0.5, `spacious ${gaps[2]} vs comfortable ${gaps[1]}`);
   });
 
+  await check('viewport toolbar resizes a demo stage (container query reacts)', async () => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto(`${server.url}/dist/documentation/container.html`, { waitUntil: 'networkidle' });
+    const demo = page.locator('.demo[data-viewport]:has(.cq-demo-row)').first();
+    assert.ok(await demo.count(), 'the @container demo is resizable');
+    const viewport = demo.locator('.demo-viewport');
+    const wideWidth = (await viewport.boundingBox())?.width ?? 0;
+    assert.ok(wideWidth > 700, `full width stage: ${wideWidth}`);
+    const row = '.demo[data-viewport] .demo-viewport .cq-demo-row';
+    const dirWide = await page.$eval(row, (el) => getComputedStyle(el).flexDirection);
+    assert.equal(dirWide, 'row', `cq-demo-row at full width: ${dirWide}`);
+    await demo.locator('.vp-btn', { hasText: 'Mobile' }).click();
+    const narrowWidth = (await viewport.boundingBox())?.width ?? 0;
+    assert.ok(Math.abs(narrowWidth - 360) < 2, `mobile stage width: ${narrowWidth}`);
+    // the @container demo's row flips back to stacked at 360px
+    const dir = await page.$eval(row, (el) => getComputedStyle(el).flexDirection);
+    assert.equal(dir, 'column', `cq-demo-row at 360px: ${dir}`);
+    await demo.locator('.vp-btn', { hasText: 'Full' }).click();
+  });
+
   for (const width of [320, 1440]) {
     await check(`no page overflows its viewport at ${width}px`, async () => {
       for (const slug of PAGES) {
