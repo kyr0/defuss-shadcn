@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>Bundle E2E Fixture — defuss-shadcn</title>
+  <link rel="stylesheet" href="/dist/theme/default-semantic-tokens.css">
+  <link rel="stylesheet" href="/dist/components/all.css">
+</head>
+<body>
+  <main style="max-width:40rem;margin-inline:auto;padding:2rem;display:flex;flex-direction:column;gap:2rem;">
+
+    <span class="badge" id="badge">Bundled</span>
+
+    <button class="btn" data-variant="default" data-dialog-trigger="confirm" aria-haspopup="dialog" id="dialog-trigger">
+      Open Dialog
+    </button>
+    <dialog id="confirm" class="dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+      <div class="dialog-content">
+        <div class="dialog-header">
+          <h2 class="dialog-title" id="confirm-title">Bundle dialog</h2>
+          <p class="dialog-description">Served by all.js.</p>
+        </div>
+        <div class="dialog-footer">
+          <button class="btn" data-variant="outline" data-dialog-close>Close</button>
+        </div>
+      </div>
+    </dialog>
+
+    <div class="accordion" data-type="single" id="single">
+      <details class="accordion-item" data-item="1" open>
+        <summary class="accordion-trigger">
+          <span>Item 1</span>
+          <svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="accordion-content"><p>Content 1</p></div>
+      </details>
+      <details class="accordion-item" data-item="2">
+        <summary class="accordion-trigger">
+          <span>Item 2</span>
+          <svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="accordion-content"><p>Content 2</p></div>
+      </details>
+    </div>
+
+  </main>
+  <script type="module" src="/dist/components/all.js"></script>
+</body>
+</html>

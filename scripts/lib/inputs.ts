@@ -8,8 +8,9 @@ import { join, relative } from 'node:path';
  * mtimes — rebuilding dist/ with identical files must NOT invalidate
  * screenshots, and editing a component must invalidate exactly its own shots.
  *
- * Fingerprint per component = global shell (theme tokens, doc css/js/fonts —
- * every page loads these) + that component's shipped files + its doc page.
+ * Fingerprint per component = global shell (theme tokens, doc css/js/fonts,
+ * the all.css/all.js bundle — every page loads these) + that component's
+ * shipped files + its doc page.
  * Known ceiling (ponytail): cross-component demo bleed-through (e.g. a .btn
  * inside the dialog demo) is NOT tracked — editing button.css won't re-shoot
  * dialog.png. Escape hatch: `bun run screenshots --force`. Upgrade path if it
@@ -17,6 +18,9 @@ import { join, relative } from 'node:path';
  */
 
 const SHELL_DIRS = ['theme', 'documentation/css', 'documentation/js', 'documentation/fonts'];
+// every doc page loads the single-file bundle, so a bundle rebuild can shift
+// EVERY screenshot — hash it into the shell, not into any one component
+const SHELL_FILES = ['components/all.css', 'components/all.js'];
 
 /** Deterministic hash over a fixed set of files, relative path included. */
 function hashFiles(root: string, files: string[]): string {
@@ -59,7 +63,12 @@ export function declaredStates(tsSource: string): string[] {
  * (dist/documentation/<name>.html). Any global change shifts every entry.
  */
 export function componentFingerprints(dist: string): Record<string, string> {
-  const shellFiles = SHELL_DIRS.flatMap((d) => collect(join(dist, d)));
+  const shellFiles = [
+    ...SHELL_DIRS.flatMap((d) => collect(join(dist, d))),
+    ...SHELL_FILES.map((f) => join(dist, f)).filter(
+      (f) => statSync(f, { throwIfNoEntry: false })?.isFile() === true,
+    ),
+  ];
   const shell = hashFiles(dist, shellFiles);
 
   const comps = join(dist, 'components');

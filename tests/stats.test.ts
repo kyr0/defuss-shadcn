@@ -98,7 +98,25 @@ describe('statsClaimText / statsClaimProblems', () => {
 
   it('states every machine-checked number in one sentence', () => {
     const claim = statsClaimText(doc);
-    expect(claim).toBe('2 components — 1 with JavaScript, 1 CSS-only — 0.0 KiB minified + compressed');
+    expect(claim).toBe(
+      '2 components — 1 with JavaScript, 1 CSS-only — 0.0 KiB minified + compressed' +
+        ' — 0.0 KiB as the all.css/all.js bundle',
+    );
+  });
+
+  it('includes the measured bundle size in the claim', () => {
+    const withBundle = aggregateStats([comp({ name: 'badge', type: 'ATM' })], {
+      jsSize: 1000,
+      jsSizeMinified: 500,
+      cssSize: 2000,
+      cssSizeMinified: 1000,
+      totalSizeGz: 900,
+      totalSizeGzMinified: 1024,
+    });
+    expect(statsClaimText(withBundle)).toContain('1.0 KiB as the all.css/all.js bundle');
+    expect(withBundle.bundle.totalSizeGzMinified).toBe(1024);
+    // the bundle is an alternative consumption path — never folded into component totals
+    expect(withBundle.totalSizeGzMinified).toBe(4);
   });
 
   it('passes when the file states the claim (markup and bold allowed)', () => {

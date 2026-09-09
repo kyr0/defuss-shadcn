@@ -6,8 +6,8 @@
   "packageManager": "bun@1.3.9",
   "scripts": {
     "dev": "vite",
-    "build": "bun scripts/build.ts && bun scripts/minify.ts && bun scripts/stats.ts && bun scripts/verify.ts",
-    "docs": "bun scripts/build.ts && bun scripts/minify.ts && bun scripts/stats.ts && bun scripts/sync-docs.ts",
+    "build": "bun scripts/build.ts && bun scripts/bundle.ts && bun scripts/minify.ts && bun scripts/stats.ts && bun scripts/verify.ts",
+    "docs": "bun scripts/build.ts && bun scripts/bundle.ts && bun scripts/minify.ts && bun scripts/stats.ts && bun scripts/sync-docs.ts",
     "minify": "bun scripts/minify.ts",
     "stats": "bun scripts/stats.ts",
     "lint": "oxlint src tests scripts",

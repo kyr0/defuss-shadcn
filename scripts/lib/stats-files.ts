@@ -2,7 +2,7 @@ import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { join } from 'node:path';
 import { skillEntries } from './skill-files.ts';
-import { aggregateStats, buildStatsText, STATS_FILE, type StatsDoc } from './stats.ts';
+import { aggregateStats, buildStatsText, STATS_FILE, type BundleStats, type StatsDoc } from './stats.ts';
 import type { ComponentType } from './taxonomy.ts';
 
 /**
@@ -56,14 +56,38 @@ export function measureComponents(componentsDir: string) {
     });
 }
 
+/**
+ * Why: measure the single-file bundle (scripts/bundle.ts → minify.ts twins)
+ * like a component. Missing files measure as 0 rather than throwing — stats
+ * can run on a dist/ that predates the bundle, and the `stats.json fresh`
+ * gate forces a regeneration as soon as it exists.
+ */
+export function measureBundle(componentsDir: string): BundleStats {
+  const js = bytesOf(join(componentsDir, 'all.js'));
+  const jsMin = bytesOf(join(componentsDir, 'all.min.js'));
+  const css = bytesOf(join(componentsDir, 'all.css'));
+  const cssMin = bytesOf(join(componentsDir, 'all.min.css'));
+  return {
+    jsSize: sizeOf(js),
+    jsSizeMinified: sizeOf(jsMin),
+    cssSize: sizeOf(css),
+    cssSizeMinified: sizeOf(cssMin),
+    totalSizeGz: gzOf(js) + gzOf(css),
+    totalSizeGzMinified: gzOf(jsMin) + gzOf(cssMin),
+  };
+}
+
 /** The full stats.json text for one dist/ tree — writer and gate share this. */
 export function buildStatsFileText(distDir: string): string {
-  return buildStatsText(measureComponents(join(distDir, 'components')));
+  const componentsDir = join(distDir, 'components');
+  return buildStatsText(measureComponents(componentsDir), measureBundle(componentsDir));
 }
 
 /** Write dist/stats.json and return the document (for the CLI summary line). */
 export function writeStatsFile(distDir: string): StatsDoc {
-  const measures = measureComponents(join(distDir, 'components'));
-  writeFileSync(join(distDir, STATS_FILE), buildStatsText(measures));
-  return aggregateStats(measures);
+  const componentsDir = join(distDir, 'components');
+  const measures = measureComponents(componentsDir);
+  const bundle = measureBundle(componentsDir);
+  writeFileSync(join(distDir, STATS_FILE), buildStatsText(measures, bundle));
+  return aggregateStats(measures, bundle);
 }

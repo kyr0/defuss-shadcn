@@ -44,6 +44,26 @@ export type ComponentStats = ComponentMeasure & {
   totalSizeMinified: number;
 };
 
+/** The single-file bundle (all.css/all.js + min twins), measured like a component. */
+export type BundleStats = {
+  jsSize: number;
+  jsSizeMinified: number;
+  cssSize: number;
+  cssSizeMinified: number;
+  totalSizeGz: number;
+  totalSizeGzMinified: number;
+};
+
+/** Zero bundle — the default when none was measured (keeps the doc shape stable). */
+export const EMPTY_BUNDLE: BundleStats = {
+  jsSize: 0,
+  jsSizeMinified: 0,
+  cssSize: 0,
+  cssSizeMinified: 0,
+  totalSizeGz: 0,
+  totalSizeGzMinified: 0,
+};
+
 /** The whole dist/stats.json document. */
 export type StatsDoc = {
   total: number;
@@ -54,6 +74,7 @@ export type StatsDoc = {
   totalSizeMinified: number;
   totalSizeGz: number;
   totalSizeGzMinified: number;
+  bundle: BundleStats;
   components: Record<string, ComponentStats>;
 };
 
@@ -63,9 +84,15 @@ export type StatsDoc = {
  * component list. Totals are derived from the per-component parts (never
  * passed in), `byType` is zero-initialized for all five taxonomy types so
  * the shape is stable, and the components map keeps caller (alphabetical)
- * order — the document is deterministic byte-for-byte across builds.
+ * order — the document is deterministic byte-for-byte across builds. The
+ * bundle block is measured by the caller (fs + gzip) and passes through
+ * untouched — the bundle is an ALTERNATIVE way to consume the same components,
+ * so its bytes are never folded into the per-component totals.
  */
-export function aggregateStats(components: readonly ComponentMeasure[]): StatsDoc {
+export function aggregateStats(
+  components: readonly ComponentMeasure[],
+  bundle: BundleStats = EMPTY_BUNDLE,
+): StatsDoc {
   const doc: StatsDoc = {
     total: components.length,
     byType: Object.fromEntries(COMPONENT_TYPES.map((t) => [t, 0])) as Record<ComponentType, number>,
@@ -75,6 +102,7 @@ export function aggregateStats(components: readonly ComponentMeasure[]): StatsDo
     totalSizeMinified: 0,
     totalSizeGz: 0,
     totalSizeGzMinified: 0,
+    bundle,
     components: {},
   };
   for (const c of components) {
@@ -103,8 +131,11 @@ export function aggregateStats(components: readonly ComponentMeasure[]): StatsDo
  * exactly what the writer produces. Deliberately timestamp-free: a generated
  * date would make every rebuild dirty and the verify gate meaningless.
  */
-export function buildStatsText(components: readonly ComponentMeasure[]): string {
-  return `${JSON.stringify(aggregateStats(components), null, 2)}\n`;
+export function buildStatsText(
+  components: readonly ComponentMeasure[],
+  bundle: BundleStats = EMPTY_BUNDLE,
+): string {
+  return `${JSON.stringify(aggregateStats(components, bundle), null, 2)}\n`;
 }
 
 /**
@@ -112,13 +143,16 @@ export function buildStatsText(components: readonly ComponentMeasure[]): string 
  * verbatim (counts + the production KiB footprint, generated from
  * dist/stats.json). Human-facing prose that a machine can check — "we lack
  * information or information is outdated" becomes a failing gate, not a
- * silent lie. Only the minified+compressed size is claimed: that's the
- * payload a consumer actually ships; the raw-gzip figure stays in stats.json.
+ * silent lie. Only minified+compressed sizes are claimed: that's the
+ * payload a consumer actually ships; the raw-gzip figures stay in stats.json.
+ * The bundle figure covers both all.min.* files together — the two requests
+ * a bundle consumer actually makes.
  */
 export function statsClaimText(doc: StatsDoc): string {
   return (
     `${doc.total} components — ${doc.withJs} with JavaScript, ${doc.withoutJs} CSS-only` +
-    ` — ${formatKiB(doc.totalSizeGzMinified)} minified + compressed`
+    ` — ${formatKiB(doc.totalSizeGzMinified)} minified + compressed` +
+    ` — ${formatKiB(doc.bundle.totalSizeGzMinified)} as the all.css/all.js bundle`
   );
 }
 

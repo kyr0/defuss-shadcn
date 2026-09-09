@@ -10,6 +10,20 @@
 /** Files derived from a source file: minified twins + JavaScript source maps. */
 export const DERIVED_ARTIFACT = /\.(min\.css|min\.js|js\.map)$/;
 
+/**
+ * The single-file bundle (scripts/bundle.ts → minify.ts twins). These three
+ * are generated yet NOT matched by DERIVED_ARTIFACT: all.css/all.js have no
+ * src/ counterpart at all, and all.min.css.map is the system's only CSS source
+ * map (the regex predates it). verify's `dist 1:1` orphan check allow-lists
+ * them next to STATS_FILE. Kept OUT of isDerivedArtifact: minify.ts uses that
+ * to skip re-minifying twins, and all.js/all.css must still be minified.
+ */
+export const BUNDLE_ARTIFACTS: ReadonlySet<string> = new Set([
+  'components/all.css',
+  'components/all.js',
+  'components/all.min.css.map',
+]);
+
 /** True for `x.min.css`, `x.min.js`, `x.js.map` and `x.min.js.map`. */
 export function isDerivedArtifact(relPath: string): boolean {
   return DERIVED_ARTIFACT.test(relPath);

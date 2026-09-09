@@ -13,6 +13,14 @@
   "totalSizeMinified": 183306,
   "totalSizeGz": 136621,
   "totalSizeGzMinified": 69569,
+  "bundle": {
+    "jsSize": 100891,
+    "jsSizeMinified": 55452,
+    "cssSize": 203510,
+    "cssSizeMinified": 115982,
+    "totalSizeGz": 52327,
+    "totalSizeGzMinified": 30793
+  },
   "components": {
     "accordion": {
       "name": "accordion",

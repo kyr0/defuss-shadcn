@@ -5,7 +5,7 @@ import { join, relative, sep } from 'node:path';
 import { parseHTML } from 'linkedom';
 import { auditUtilities, walk } from './lib/audit.ts';
 import { componentFingerprints, declaredStates } from './lib/inputs.ts';
-import { isDerivedArtifact, minifyArtifactProblems } from './lib/minify.ts';
+import { BUNDLE_ARTIFACTS, isDerivedArtifact, minifyArtifactProblems } from './lib/minify.ts';
 import { STATS_FILE, statsClaimProblems, type StatsDoc } from './lib/stats.ts';
 import { buildStatsFileText } from './lib/stats-files.ts';
 import { snippetDrifts } from './lib/snippets.ts';
@@ -180,23 +180,31 @@ check(
   'repair the page markup: every <pre><code class="language-…"> block needs its opening tag, and each section id must appear exactly once',
 );
 
-// 7. every doc page imports every component's CSS and JS (cross-page demos)
+// 7. every doc page loads the single-file bundle (scripts/bundle.ts): one
+// all.css link + one all.js module script replace the old per-component
+// include lists (cross-page demos still work — the bundle covers all
+// components). Stray per-component stylesheet/script tags are banned so the
+// lists can't creep back; <a href> "view file" anchors, data-spec-href spans
+// and escaped code samples (&lt;link…) stay legal — only real tags match.
 const importProblems: string[] = [];
 for (const [page, html] of docHtml) {
-  for (const c of componentDirs) {
-    if (!html.includes(`../components/${c}/${c}.css`)) importProblems.push(`${page} missing ${c}.css link`);
-    if (
-      (existsSync(join(COMPS, c, `${c}.ts`)) || existsSync(join(COMPS, c, `${c}.js`))) &&
-      !html.includes(`../components/${c}/${c}.js`)
-    ) {
-      importProblems.push(`${page} missing ${c}.js import`);
-    }
+  if (!html.includes('<link rel="stylesheet" href="../components/all.css">')) {
+    importProblems.push(`${page} missing the all.css bundle link`);
+  }
+  if (!html.includes('<script type="module" src="../components/all.js"></script>')) {
+    importProblems.push(`${page} missing the all.js bundle script`);
+  }
+  for (const m of html.matchAll(/<link\b[^>]*\bhref="\.\.\/components\/[^/"]+\/[^/"]+\.css"/g)) {
+    importProblems.push(`${page} loads a per-component stylesheet (${m[0]}) — the all.css bundle replaced the include lists`);
+  }
+  for (const m of html.matchAll(/<script\b[^>]*\bsrc="\.\.\/components\/[^/"]+\/[^/"]+\.js"/g)) {
+    importProblems.push(`${page} imports a per-component script (${m[0]}) — the all.js bundle replaced the include lists`);
   }
 }
 check(
   'cross-page imports',
   importProblems,
-  'add the missing <link>/<script> tags to the page (all pages import all components)',
+  'load the bundle on every doc page: <link rel="stylesheet" href="../components/all.css"> and <script type="module" src="../components/all.js"></script>',
 );
 
 // 8. every doc page is reachable from the sidebar (layout.ts NAV/BUILT)
@@ -241,8 +249,9 @@ if (!existsSync(DIST)) {
   for (const f of walk(DIST, [''])) {
     const rel = relative(DIST, f);
     // scripts/minify.ts + tsc sourceMap write derived twins, scripts/stats.ts
-    // writes the generated stats document — none of them are orphans
-    if (isDerivedArtifact(rel) || rel === STATS_FILE) continue;
+    // writes the generated stats document, scripts/bundle.ts writes the
+    // single-file bundle — none of them are orphans
+    if (isDerivedArtifact(rel) || BUNDLE_ARTIFACTS.has(rel) || rel === STATS_FILE) continue;
     if (!srcSet.has(rel)) distProblems.push(`dist/${rel} is orphaned (no src/ counterpart) — rebuild`);
   }
 }

@@ -8,7 +8,7 @@
 
 ## Integrate
 
-**Via CDN** (pick only the components you use):
+**Via CDN** (everything at once, or pick only the components you use):
 
 ```html
 <!-- 1. theme (design tokens — swap this file to re-theme everything) -->
@@ -18,7 +18,11 @@
 <script src="https://unpkg.com/lucide@1.8.0"></script>
 <script>lucide.createIcons();</script>
 
-<!-- 3. one CSS link per component, one script per interactive component -->
+<!-- 3a. the bundle: every component's CSS + JS in two includes -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.css">
+<script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.js"></script>
+
+<!-- 3b. …or one CSS link per component, one script per interactive component -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/button/button.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.css">
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.js"></script>
@@ -43,6 +47,8 @@ dist/
 ├── SKILL.md                          ← you are here — start every task with this file
 ├── stats.json                        ← component counts (per type, JS/CSS-only) + byte sizes raw/minified/gzipped
 ├── theme/default-semantic-tokens.css ← design tokens (the only theme file)
+├── components/all.css                ← bundle: every component stylesheet (+ .min twin & map)
+├── components/all.js                 ← bundle: every component's behavior (+ .min twin & maps)
 ├── components/{name}/
 │   ├── component-skill.md            ← HOW to build the HTML — read this before using a component
 │   ├── {name}.css                    ← the stylesheet (tokens only; always include)

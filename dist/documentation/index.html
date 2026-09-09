@@ -25,74 +25,7 @@
   <link rel="stylesheet" href="css/docs-theme.css">
   <link rel="stylesheet" href="css/docs-utilities.css">
   <link rel="stylesheet" href="css/layout.css">
-    <link rel="stylesheet" href="../components/button/button.css">
-  <link rel="stylesheet" href="../components/card/card.css">
-  <link rel="stylesheet" href="../components/dialog/dialog.css">
-  <link rel="stylesheet" href="../components/badge/badge.css">
-  <link rel="stylesheet" href="../components/input/input.css">
-  <link rel="stylesheet" href="../components/accordion/accordion.css">
-  <link rel="stylesheet" href="../components/tabs/tabs.css">
-  <link rel="stylesheet" href="../components/dropdown/dropdown.css">
-  <link rel="stylesheet" href="../components/toast/toast.css">
-  <link rel="stylesheet" href="../components/combobox/combobox.css">
-  <link rel="stylesheet" href="../components/sheet/sheet.css">
-  <link rel="stylesheet" href="../components/toggle/toggle.css">
-  <link rel="stylesheet" href="../components/icon/icon.css">
-  <link rel="stylesheet" href="../components/typography/typography.css">
-  <link rel="stylesheet" href="../components/separator/separator.css">
-  <link rel="stylesheet" href="../components/label/label.css">
-  <link rel="stylesheet" href="../components/toggle-group/toggle-group.css">
-  <link rel="stylesheet" href="../components/button-group/button-group.css">
-  <link rel="stylesheet" href="../components/toolbar/toolbar.css">
-  <link rel="stylesheet" href="../components/textarea/textarea.css">
-  <link rel="stylesheet" href="../components/checkbox/checkbox.css">
-  <link rel="stylesheet" href="../components/radio/radio.css">
-  <link rel="stylesheet" href="../components/switch/switch.css">
-  <link rel="stylesheet" href="../components/slider/slider.css">
-  <link rel="stylesheet" href="../components/select/select.css">
-  <link rel="stylesheet" href="../components/number-input/number-input.css">
-  <link rel="stylesheet" href="../components/file-input/file-input.css">
-  <link rel="stylesheet" href="../components/color-picker/color-picker.css">
-  <link rel="stylesheet" href="../components/date-picker/date-picker.css">
-  <link rel="stylesheet" href="../components/form/form.css">
-  <link rel="stylesheet" href="../components/avatar/avatar.css">
-  <link rel="stylesheet" href="../components/image/image.css">
-  <link rel="stylesheet" href="../components/statistic/statistic.css">
-  <link rel="stylesheet" href="../components/table/table.css">
-  <link rel="stylesheet" href="../components/collapsible/collapsible.css">
-  <link rel="stylesheet" href="../components/timeline/timeline.css">
-  <link rel="stylesheet" href="../components/tree-view/tree-view.css">
-  <link rel="stylesheet" href="../components/calendar/calendar.css">
-  <link rel="stylesheet" href="../components/spinner/spinner.css">
-  <link rel="stylesheet" href="../components/skeleton/skeleton.css">
-  <link rel="stylesheet" href="../components/progress/progress.css">
-  <link rel="stylesheet" href="../components/alert/alert.css">
-  <link rel="stylesheet" href="../components/alert-dialog/alert-dialog.css">
-  <link rel="stylesheet" href="../components/popover/popover.css">
-  <link rel="stylesheet" href="../components/tooltip/tooltip.css">
-  <link rel="stylesheet" href="../components/context-menu/context-menu.css">
-  <link rel="stylesheet" href="../components/command/command.css">
-  <link rel="stylesheet" href="../components/breadcrumb/breadcrumb.css">
-  <link rel="stylesheet" href="../components/pagination/pagination.css">
-  <link rel="stylesheet" href="../components/steps/steps.css">
-  <link rel="stylesheet" href="../components/navigation-menu/navigation-menu.css">
-  <link rel="stylesheet" href="../components/scroll-area/scroll-area.css">
-  <link rel="stylesheet" href="../components/carousel/carousel.css">
-  <link rel="stylesheet" href="../components/sidebar/sidebar.css">
-  <link rel="stylesheet" href="../components/sortable/sortable.css">
-  <link rel="stylesheet" href="../components/site-header/site-header.css">
-  <link rel="stylesheet" href="../components/hero/hero.css">
-  <link rel="stylesheet" href="../components/product-showcase/product-showcase.css">
-  <link rel="stylesheet" href="../components/brand-logos/brand-logos.css">
-  <link rel="stylesheet" href="../components/feature-details/feature-details.css">
-  <link rel="stylesheet" href="../components/testimonials/testimonials.css">
-  <link rel="stylesheet" href="../components/stats/stats.css">
-  <link rel="stylesheet" href="../components/pricing/pricing.css">
-  <link rel="stylesheet" href="../components/blog/blog.css">
-  <link rel="stylesheet" href="../components/faq/faq.css">
-  <link rel="stylesheet" href="../components/get-in-touch/get-in-touch.css">
-  <link rel="stylesheet" href="../components/newsletter/newsletter.css">
-  <link rel="stylesheet" href="../components/site-footer/site-footer.css">
+  <link rel="stylesheet" href="../components/all.css">
 </head>
 <body>
   <site-header></site-header>
@@ -119,14 +52,15 @@
     </a>
   </div>
 
-  <!-- Dogfooding: the PUBLISHED site (docs/ via sync-docs.ts) loads every
-       component CSS/JS and the theme straight from the jsDelivr CDN, exactly
+  <!-- Dogfooding: the PUBLISHED site (docs/ via sync-docs.ts) loads the all.css/
+       all.js bundle and the theme straight from the jsDelivr CDN, exactly
        as README.md's "Via CDN" quick start shows. If this page renders, the
        CDN install works — the docs are their own proof. -->
   <p class="text-xs text-muted-foreground mb-8" style="max-width:36rem;">
-    This documentation dogfoods the system: on the published site every component
-    stylesheet, script, and theme you see styled here is loaded straight from the
-    jsDelivr CDN — the same URLs as the <a href="installation.html" style="text-decoration:underline;text-underline-offset:3px;">CDN quick start</a>.
+    This documentation dogfoods the system: on the published site the bundled
+    stylesheet and script every demo here is styled and driven by —
+    <code>all.css</code> / <code>all.js</code> — plus the theme
+    are loaded straight from the jsDelivr CDN — the same URLs as the <a href="installation.html" style="text-decoration:underline;text-underline-offset:3px;">CDN quick start</a>.
     Every demo that renders correctly is proof that the CDN install works in general.
   </p>
 
@@ -136,8 +70,8 @@
        sentence below, so a stale figure anywhere fails the build. -->
   <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.875rem;">Statistics</h2>
   <p class="text-sm text-muted-foreground mb-4" style="max-width:44rem;">
-    68 components — 27 with JavaScript, 41 CSS-only — 67.9 KiB minified + compressed.
-    Measured from the shipped files. Full details in: <code style="font-size:0.75rem;">dist/stats.json</code> - updated on every build.
+    68 components — 27 with JavaScript, 41 CSS-only — 67.9 KiB minified + compressed — 30.1 KiB as the all.css/all.js bundle.
+    Measured from the shipped files. Full details in: <code>dist/stats.json</code> - updated on every build.
   </p>
   <div class="grid gap-4 mb-12" style="grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));">
     <div class="statistic">
@@ -156,9 +90,9 @@
       <p class="statistic-description">zero behavior, pure markup</p>
     </div>
     <div class="statistic">
-      <p class="statistic-title">Minified + Compressed</p>
-      <p class="statistic-value">67.9 KiB</p>
-      <p class="statistic-description">the <code style="font-size:0.75rem;">*.min.css</code> / <code style="font-size:0.75rem;">*.min.js</code> twins</p>
+      <p class="statistic-title">Bundle</p>
+      <p class="statistic-value">30.1 KiB</p>
+      <p class="statistic-description"><code>all.min.css</code> + <code>all.min.js</code>, compressed</p>
     </div>
   </div>
 
@@ -186,7 +120,7 @@
           </div>
           <h3 class="card-title" style="font-size:0.9375rem;">Component Skills</h3>
         </div>
-        <p class="card-description" style="font-size:0.8125rem;">Every component includes a structured skill — markup, variants, ARIA, and wiring conventions — grounded in web standards. Point an agent at <code style="font-size:0.75rem;">dist/SKILL.md</code>: the generated index of every skill (type/why/when/where + supported states).</p>
+        <p class="card-description" style="font-size:0.8125rem;">Every component includes a structured skill — markup, variants, ARIA, and wiring conventions — grounded in web standards. Point an agent at <code>dist/SKILL.md</code>: the generated index of every skill (type/why/when/where + supported states).</p>
       </div>
       <div style="height:1.25rem;"></div>
     </div>
@@ -198,7 +132,7 @@
           </div>
           <h3 class="card-title" style="font-size:0.9375rem;">Observable state</h3>
         </div>
-        <p class="card-description" style="font-size:0.8125rem;">Interactive components expose a State API (<code style="font-size:0.75rem;">el.api.setState('open')</code>), so agents and tests can drive every documented state by name.</p>
+        <p class="card-description" style="font-size:0.8125rem;">Interactive components expose a State API (<code>el.api.setState('open')</code>), so agents and tests can drive every documented state by name.</p>
       </div>
       <div style="height:1.25rem;"></div>
     </div>
@@ -210,7 +144,7 @@
           </div>
           <h3 class="card-title" style="font-size:0.9375rem;">Accessible</h3>
         </div>
-        <p class="card-description" style="font-size:0.8125rem;">Built on native HTML elements and WAI-ARIA patterns. Keyboard navigation, focus management, and screen reader support by default — and every theme preset's nav text is contrast-gated (WCAG AA) by <code style="font-size:0.75rem;">verify</code>.</p>
+        <p class="card-description" style="font-size:0.8125rem;">Built on native HTML elements and WAI-ARIA patterns. Keyboard navigation, focus management, and screen reader support by default — and every theme preset's nav text is contrast-gated (WCAG AA) by <code>verify</code>.</p>
       </div>
       <div style="height:1.25rem;"></div>
     </div>
@@ -341,33 +275,7 @@ new MutationObserver(init).observe(document, { childList: true, subtree: true })
 
   <script src="js/site.js" defer></script>
   <script type="module" src="js/shiki-highlight.js"></script>
-  <script type="module" src="../components/accordion/accordion.js"></script>
-  <script type="module" src="../components/combobox/combobox.js"></script>
-  <script type="module" src="../components/dialog/dialog.js"></script>
-  <script type="module" src="../components/dropdown/dropdown.js"></script>
-  <script type="module" src="../components/sheet/sheet.js"></script>
-  <script type="module" src="../components/tabs/tabs.js"></script>
-  <script type="module" src="../components/toast/toast.js"></script>
-  <script type="module" src="../components/toggle/toggle.js"></script>
-  <script type="module" src="../components/toggle-group/toggle-group.js"></script>
-  <script type="module" src="../components/toolbar/toolbar.js"></script>
-  <script type="module" src="../components/number-input/number-input.js"></script>
-  <script type="module" src="../components/color-picker/color-picker.js"></script>
-  <script type="module" src="../components/avatar/avatar.js"></script>
-  <script type="module" src="../components/image/image.js"></script>
-  <script type="module" src="../components/tree-view/tree-view.js"></script>
-  <script type="module" src="../components/calendar/calendar.js"></script>
-  <script type="module" src="../components/alert-dialog/alert-dialog.js"></script>
-    <script type="module" src="../components/popover/popover.js"></script>
-  <script type="module" src="../components/tooltip/tooltip.js"></script>
-  <script type="module" src="../components/context-menu/context-menu.js"></script>
-  <script type="module" src="../components/command/command.js"></script>
-  <script type="module" src="../components/navigation-menu/navigation-menu.js"></script>
-  <script type="module" src="../components/sidebar/sidebar.js"></script>
-  <script type="module" src="../components/carousel/carousel.js"></script>
-  <script type="module" src="../components/slider/slider.js"></script>
-  <script type="module" src="../components/sortable/sortable.js"></script>
-  <script type="module" src="../components/product-showcase/product-showcase.js"></script>
+  <script type="module" src="../components/all.js"></script>
   <script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script>
   <script>globalThis.lucide?.createIcons();</script>
 </body>

@@ -11,7 +11,7 @@
 
 **A UI component system that scales with _local_ AI.** Themeable components built on semantic HTML, modern CSS, and vanilla JavaScript. No framework. No build step for consumers — `dist/` is committed and ready to use as-is. The simplest possible foundation for AI-driven prototyping.
 
-**68 components — 27 with JavaScript, 41 CSS-only — 67.9 KiB minified + compressed.**
+**68 components — 27 with JavaScript, 41 CSS-only — 67.9 KiB minified + compressed — 30.1 KiB as the all.css/all.js bundle.**
 41 of 68 components need no JavaScript — native HTML and modern CSS cover them entirely.
 The footprint is measured from the shipped `dist/` files on every build and published as
 [`dist/stats.json`](dist/stats.json); `verify` fails the build if this sentence and that file disagree.
@@ -42,11 +42,17 @@ A portable UI component system built on the [shadcn/ui](https://ui.shadcn.com) t
 <script src="https://unpkg.com/lucide@1.8.0"></script>
 <script>lucide.createIcons();</script>
 
-<!-- 3. Select the components you want -->
+<!-- 3. Everything at once: the bundle -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.css">
+<script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.js"></script>
+
+<!-- …or select only the components you want -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/button/button.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.css">
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.js"></script>
 ```
+
+`all.css` / `all.js` bundle every component (minified twins: `all.min.css` + `all.min.css.map`, `all.min.js` + `all.min.js.map`). The per-component files stay available — include only what you use, they're independent of each other.
 
 ### Self-hosting
 
@@ -60,11 +66,16 @@ Each component is a self-contained folder with up to five layers:
 
 ```
 components/
+├── all.css               ← generated bundle: every component stylesheet
+├── all.js                ← generated bundle: every component's behavior
 └── dialog/
     ├── component-skill.md    ← structured skill: HTML structure, attributes, ARIA
     ├── dialog.css            ← stylesheet (uses design tokens)
     └── dialog.js             ← interaction behavior (when needed)
 ```
+
+The `all.*` bundle files (with `.min` twins and source maps) are what the
+documentation site itself loads — one `<link>`, one `<script>`, everything included.
 
 1. **Semantic tokens** — `default-semantic-tokens.css` defines every design token for the default light and dark theme. To switch themes, you just switch this file.
 2. **Component CSS** — each component's stylesheet, built entirely on tokens.
@@ -146,7 +157,7 @@ not to produce it:
 
 ```bash
 bun install        # install dev dependencies
-bun run build      # compile src/ → dist/ (TypeScript → JS + copy everything else 1:1)
+bun run build      # compile src/ → dist/ (TypeScript → JS, 1:1 copy, all.css/all.js bundle)
 bun run dev        # doc site at http://localhost:3000/
 bun run test:run   # run the UI test suite (headless Chromium)
 ```
@@ -164,13 +175,13 @@ copies of the component assets. Refresh with `bun run docs`, never edit it direc
 A `Makefile` wraps the common tasks: `make setup` (install deps + Playwright browsers),
 `make dev`, `make test-run`, `make coverage`, `make e2e`, `make lint` (oxlint),
 `make typecheck`, `make verify`, `make screenshots`, `make stats`, `make docs`. **`make build`** runs
-the whole pipeline — lint → compile → minify → stats → screenshots → docs-mirror → verify → tests → e2e —
+the whole pipeline — lint → compile → bundle → minify → stats → screenshots → docs-mirror → verify → tests → e2e —
 the same loop CI runs.
 
 `bun run verify` is the static consistency gate (~0.3 s, runs automatically at the end
 of every build) and the contract every coding agent must satisfy. It checks, among others:
 
-- **structure** — component skills, doc pages, CSS/JS imports on every page, sidebar links,
+- **structure** — component skills, doc pages, the all.css/all.js bundle includes on every page, sidebar links,
   `.preview` blocks, `dist/` freshness (1:1 with `src/`), `docs/` mirror current (CDN-rewritten)
 - **consistency** — inline source snippets match the real files (and are properly escaped),
   skill ↔ docs ↔ CSS variant parity, State API contract + per-state coverage across

@@ -56,12 +56,21 @@ for (const file of jsFiles) {
 //    features (@layer, nesting, anchor positioning) pass through untouched.
 const cssFiles = walk(COMPONENTS, ['.css']).filter((f) => !isDerivedArtifact(f));
 for (const file of cssFiles) {
-  const { code } = transform({
+  // the single-file bundle (bundle.ts) is the one artifact that also ships a
+  // CSS source map — it's the file consumers debug in production
+  const withMap = file === join(COMPONENTS, 'all.css');
+  const { code, map } = transform({
     filename: relative(ROOT, file),
     code: Buffer.from(readFileSync(file)),
     minify: true,
+    sourceMap: withMap,
   });
-  writeFileSync(file.replace(/\.css$/, '.min.css'), code);
+  const minPath = file.replace(/\.css$/, '.min.css');
+  writeFileSync(
+    minPath,
+    withMap ? `${code}/*# sourceMappingURL=all.min.css.map */` : code,
+  );
+  if (withMap && map) writeFileSync(`${minPath}.map`, map);
 }
 
 const pct = (a: number, b: number) => `${Math.round((100 * a) / b)}%`;
