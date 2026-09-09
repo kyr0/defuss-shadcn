@@ -1,0 +1,169 @@
+/* -- OTP Input -------------------------------------------------- */
+/* One real <input> under a row of slots. The input keeps every native */
+/* behaviour (paste, one-time-code autofill, selection, form value);   */
+/* the slots are a mirror of its value.                                */
+
+@layer components {
+  .otp-input {
+    --otp-input-slot-size: 2.75rem;
+
+    position: relative;
+    display: inline-flex;
+    width: max-content;
+
+    /* The field covers the slots so clicks, drags and taps land on the real
+       control. Its own text is invisible — the slots do the drawing — but it
+       stays a normal input to the browser and to assistive technology. */
+    & > input {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: transparent;
+      caret-color: transparent;
+      font-size: 1rem; /* >=16px keeps iOS from zooming on focus */
+      text-align: center;
+      outline: none;
+      cursor: text;
+
+      /* the selection highlight would show through the transparent text */
+      &::selection {
+        background: transparent;
+      }
+
+      &:disabled {
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .otp-input-slots {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    pointer-events: none; /* the field beneath owns every pointer event */
+  }
+
+  .otp-input-slot {
+    display: grid;
+    place-items: center;
+    width: var(--otp-input-slot-size);
+    height: var(--otp-input-slot-size);
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-mono);
+    font-size: 1.125rem;
+    font-variant-numeric: tabular-nums;
+    transition: border-color 150ms, box-shadow 150ms;
+
+    &[data-filled] {
+      border-color: var(--ring);
+    }
+
+    /* the slot the caret sits in — the field's own caret is hidden */
+    &[data-active],
+    &[data-caret] {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 25%, transparent);
+    }
+
+    &[data-caret]::after {
+      content: "";
+      width: 1px;
+      height: 1.125rem;
+      background: var(--foreground);
+      animation: otp-input-caret 1s steps(2, start) infinite;
+    }
+  }
+
+  /* Gap between groups, e.g. 3-3 for a six digit code. */
+  .otp-input-separator {
+    width: 0.75rem;
+    height: 1px;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+
+  /* -- Invalid ------------------------------------------------ */
+  .otp-input[data-invalid] .otp-input-slot {
+    border-color: var(--destructive);
+
+    &[data-active],
+    &[data-caret] {
+      box-shadow: 0 0 0 3px color-mix(in oklch, var(--destructive) 25%, transparent);
+    }
+  }
+
+  /* -- Disabled ----------------------------------------------- */
+  /* Deliberately not a blanket opacity fade: the digits must stay readable,
+     so only the surface dims while the border and text keep their contrast. */
+  .otp-input:has(> input:disabled) .otp-input-slot {
+    background: var(--muted);
+    color: var(--muted-foreground);
+    border-color: var(--border);
+  }
+
+  @keyframes otp-input-caret {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .otp-input,
+    .otp-input *,
+    .otp-input::before,
+    .otp-input::after,
+    .otp-input *::before,
+    .otp-input *::after,
+    .otp-input-slot,
+    .otp-input-slot::before,
+    .otp-input-slot::after {
+      transition: none;
+      animation: none;
+    }
+  }
+}
+
+@media (prefers-contrast: more) {
+  @layer components {
+    .otp-input-slot {
+      border-width: 2px;
+      border-color: var(--foreground);
+    }
+
+    .otp-input[data-invalid] .otp-input-slot {
+      border-color: var(--destructive);
+    }
+  }
+}
+
+@media (forced-colors: active) {
+  @layer components {
+    .otp-input-slot {
+      border-color: ButtonText;
+      color: ButtonText;
+
+      &[data-active],
+      &[data-caret] {
+        border-color: Highlight;
+      }
+    }
+
+    .otp-input[data-invalid] .otp-input-slot {
+      border-color: LinkText;
+    }
+
+    .otp-input:has(> input:disabled) .otp-input-slot {
+      border-color: GrayText;
+      color: GrayText;
+    }
+  }
+}

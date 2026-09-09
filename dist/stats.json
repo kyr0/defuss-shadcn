@@ -1,18 +1,18 @@
 {
-  "total": 68,
+  "total": 69,
   "byType": {
     "ATM": 43,
-    "MOL": 11,
+    "MOL": 12,
     "ORG": 1,
     "BLK": 13,
     "TPL": 0
   },
-  "withJs": 27,
+  "withJs": 28,
   "withoutJs": 41,
-  "totalSize": 407047,
-  "totalSizeMinified": 183306,
-  "totalSizeGz": 136621,
-  "totalSizeGzMinified": 69569,
+  "totalSize": 421240,
+  "totalSizeMinified": 188863,
+  "totalSizeGz": 141497,
+  "totalSizeGzMinified": 71704,
   "components": {
     "accordion": {
       "name": "accordion",
@@ -468,6 +468,19 @@
       "totalSizeGzMinified": 1241,
       "totalSize": 7748,
       "totalSizeMinified": 2806
+    },
+    "otp-input": {
+      "name": "otp-input",
+      "type": "MOL",
+      "withJs": true,
+      "jsSize": 9901,
+      "jsSizeMinified": 3262,
+      "cssSize": 4292,
+      "cssSizeMinified": 2295,
+      "totalSizeGz": 4876,
+      "totalSizeGzMinified": 2135,
+      "totalSize": 14193,
+      "totalSizeMinified": 5557
     },
     "pagination": {
       "name": "pagination",

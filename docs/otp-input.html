@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="images/favicon.webp" type="image/webp">
+  <meta name="description" content="OTP Input component — one real input under a row of slots, so paste, SMS autofill and form submission stay native.">
+  <meta property="og:title" content="OTP Input — defuss-shadcn">
+  <meta property="og:description" content="OTP Input component — one real input under a row of slots, so paste, SMS autofill and form submission stay native.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kyr0.github.io/defuss-shadcn/otp-input.html">
+  <meta property="og:site_name" content="defuss-shadcn">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="OTP Input — defuss-shadcn">
+  <meta name="twitter:description" content="OTP Input component — one real input under a row of slots, so paste, SMS autofill and form submission stay native.">
+  <title>OTP Input — defuss-shadcn</title>
+  <script src="js/themes.js"></script>
+  <script src="js/theme-switcher.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/search-index.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/default-semantic-tokens.css">
+  <link rel="stylesheet" href="css/docs-theme.css">
+  <link rel="stylesheet" href="css/docs-utilities.css">
+  <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/button/button.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/card/card.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/badge/badge.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/otp-input/otp-input.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/input/input.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/accordion/accordion.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tabs/tabs.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dropdown/dropdown.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toast/toast.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/combobox/combobox.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sheet/sheet.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toggle/toggle.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/icon/icon.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/typography/typography.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/separator/separator.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/label/label.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toggle-group/toggle-group.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/button-group/button-group.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toolbar/toolbar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/textarea/textarea.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/checkbox/checkbox.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/radio/radio.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/switch/switch.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/slider/slider.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/select/select.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/number-input/number-input.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/file-input/file-input.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/color-picker/color-picker.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/date-picker/date-picker.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/form/form.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/avatar/avatar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/image/image.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/statistic/statistic.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/table/table.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/collapsible/collapsible.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/timeline/timeline.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tree-view/tree-view.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/calendar/calendar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/spinner/spinner.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/skeleton/skeleton.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/progress/progress.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/alert/alert.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/alert-dialog/alert-dialog.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/popover/popover.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tooltip/tooltip.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/context-menu/context-menu.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/command/command.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/breadcrumb/breadcrumb.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/pagination/pagination.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/steps/steps.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/navigation-menu/navigation-menu.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/scroll-area/scroll-area.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/carousel/carousel.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sidebar/sidebar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sortable/sortable.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/site-header/site-header.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/hero/hero.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/product-showcase/product-showcase.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/brand-logos/brand-logos.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/feature-details/feature-details.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/testimonials/testimonials.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/stats/stats.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/pricing/pricing.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/blog/blog.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/faq/faq.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/get-in-touch/get-in-touch.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/newsletter/newsletter.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/site-footer/site-footer.css">
+</head>
+<body>
+  <site-header></site-header>
+
+  <div class="flex" style="margin-top: 3.5rem; min-height: calc(100vh - 3.5rem);">
+    <site-nav></site-nav>
+
+    <main style="flex: 1; min-width: 0; max-width: 44rem; padding: 2rem 3.5rem 8rem;">
+      <div class="page-header">
+        <div class="flex items-baseline justify-between mb-1">
+          <p class="text-sm text-muted-foreground" style="font-family:var(--font-mono);">defuss-shadcn / otp-input</p>
+          <div style="display:flex;align-items:baseline;gap:0.375rem;"><span class="text-xs text-muted-foreground" style="font-family:var(--font-mono);white-space:nowrap;">Built with:</span> <a href="#source-css" class="badge built-with-pill" data-variant="outline">CSS</a> <a href="#source-js" class="badge built-with-pill" data-variant="outline">JS</a></div>
+        </div>
+        <h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">OTP Input<span class="type-badge" data-type="MOL" title="Molecule">MOL</span></h1>
+        <p class="text-muted-foreground leading-relaxed mb-6">
+          A short code typed once. One real <code>&lt;input&gt;</code> sits under the slots, so paste,
+          SMS autofill and form submission stay native — and a screen reader hears one field, not six.
+        </p>
+        <!-- Component Skill -->
+        <details style="margin-bottom:2rem;border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;">
+          <summary style="padding:0.875rem 1.25rem;background:var(--muted);cursor:pointer;font-size:0.8125rem;font-weight:600;font-family:var(--font-mono);color:var(--muted-foreground);list-style:none;display:flex;align-items:center;gap:0.5rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 200ms;"><path d="m9 18 6-6-6-6"/></svg>
+            Component Skill — <span data-spec-href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/otp-input/component-skill.md" style="text-decoration:underline;text-underline-offset:3px;">components/otp-input/component-skill.md</span>
+          </summary>
+          <div style="padding:1.5rem;font-size:0.875rem;line-height:1.85;">
+            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Native basis</p>
+            <p class="text-muted-foreground" style="margin:0 0 1.25rem;">A single <code>&lt;input&gt;</code> covering a row of slot elements. The input is the control; the slots are a mirror of its value, marked <code>aria-hidden</code>. One input per digit would break autofill, need hand-written paste logic, and announce six unlabelled fields.</p>
+
+            <p style="margin:0 0 0.625rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Web Platform APIs</p>
+            <div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;">
+              <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete" target="_blank" rel="noopener" title="iOS and Android offer the code from the SMS" class="api-pill"><code>one-time-code</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/inputmode" target="_blank" rel="noopener" title="numeric keypad without changing the input type" class="api-pill"><code>inputmode</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/setSelectionRange" target="_blank" rel="noopener" title="keeps the caret where typing left it" class="api-pill"><code>setSelectionRange()</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/API/FormData" target="_blank" rel="noopener" title="one value under one name" class="api-pill"><code>FormData</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" target="_blank" rel="noopener" title="slots dim when the input inside is disabled" class="api-pill"><code>:has()</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+            </div>
+
+            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Classes</p>
+            <div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;">
+              <code>.otp-input</code>
+              <code>.otp-input-slot</code>
+              <code>.otp-input-separator</code>
+            </div>
+
+            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Variants</p>
+            <div style="display:grid;grid-template-columns:auto 1fr;gap:0.25rem 1rem;margin-bottom:1.25rem;">
+              <code>data-length</code><span class="text-muted-foreground">Number of slots (default 6)</span>
+              <code>data-pattern</code><span class="text-muted-foreground"><code>digits</code> (default) or <code>alphanumeric</code></span>
+              <code>data-group-size</code><span class="text-muted-foreground">Separator every N slots</span>
+              <code>data-mask</code><span class="text-muted-foreground">Show a dot instead of the character</span>
+            </div>
+
+            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Accessibility</p>
+            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Label the <em>input</em> with <code>&lt;label for&gt;</code> — it is the control</p>
+            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• The slots are <code>aria-hidden</code>, so the field is announced once rather than once per digit</p>
+            <p class="text-muted-foreground" style="margin:0 0 0;">• The <code>invalid</code> state sets <code>aria-invalid</code>, not just a red border</p>
+          </div>
+        </details>
+      </div>
+
+        <!-- Default -->
+        <p class="text-sm font-medium mb-2 mt-6">Default</p>
+        <p class="text-xs text-muted-foreground mb-3">Six digits. Type, or paste a whole code at once — it lands in one action.</p>
+        <div class="preview">
+          <div style="display:flex;flex-direction:column;gap:0.5rem;align-items:center;">
+            <label class="label" for="demo-otp">Verification code</label>
+            <div class="otp-input" id="demo-otp-wrap" data-state-demo>
+              <input id="demo-otp" name="code" type="text" aria-describedby="demo-otp-hint">
+            </div>
+            <p class="field-description" id="demo-otp-hint">We sent a code to your phone.</p>
+          </div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;label class=&quot;label&quot; for=&quot;code&quot;&gt;Verification code&lt;/label&gt;
+&lt;div class=&quot;otp-input&quot;&gt;
+  &lt;input id=&quot;code&quot; name=&quot;code&quot; type=&quot;text&quot; aria-describedby=&quot;code-hint&quot;&gt;
+&lt;/div&gt;
+&lt;p class=&quot;field-description&quot; id=&quot;code-hint&quot;&gt;We sent a code to your phone.&lt;/p&gt;</code></pre>
+        </div>
+
+        <!-- Grouped -->
+        <p class="text-sm font-medium mb-2 mt-8">Grouped</p>
+        <p class="text-xs text-muted-foreground mb-3">A separator every <code>data-group-size</code> slots, so a six digit code reads as 3-3.</p>
+        <div class="preview">
+          <div class="otp-input" id="demo-otp-grouped" data-group-size="3">
+            <input id="demo-otp-grouped-field" name="grouped" type="text" aria-label="Grouped code">
+          </div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;div class=&quot;otp-input&quot; data-group-size=&quot;3&quot;&gt;
+  &lt;input id=&quot;code&quot; name=&quot;code&quot; type=&quot;text&quot; aria-label=&quot;Grouped code&quot;&gt;
+&lt;/div&gt;</code></pre>
+        </div>
+
+        <!-- Length and pattern -->
+        <p class="text-sm font-medium mb-2 mt-8">Length and Pattern</p>
+        <p class="text-xs text-muted-foreground mb-3">Four slots, letters allowed. Anything outside the pattern is dropped as it is typed or pasted.</p>
+        <div class="preview">
+          <div class="otp-input" id="demo-otp-alpha" data-length="4" data-pattern="alphanumeric">
+            <input id="demo-otp-alpha-field" name="alpha" type="text" aria-label="Alphanumeric code">
+          </div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;div class=&quot;otp-input&quot; data-length=&quot;4&quot; data-pattern=&quot;alphanumeric&quot;&gt;
+  &lt;input id=&quot;code&quot; name=&quot;code&quot; type=&quot;text&quot; aria-label=&quot;Alphanumeric code&quot;&gt;
+&lt;/div&gt;</code></pre>
+        </div>
+
+        <!-- Masked -->
+        <p class="text-sm font-medium mb-2 mt-8">Masked</p>
+        <p class="text-xs text-muted-foreground mb-3">A PIN: the slots show dots, the value is unchanged.</p>
+        <div class="preview">
+          <div class="otp-input" id="demo-otp-mask" data-length="4" data-mask>
+            <input id="demo-otp-mask-field" name="pin" type="text" aria-label="PIN">
+          </div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;div class=&quot;otp-input&quot; data-length=&quot;4&quot; data-mask&gt;
+  &lt;input id=&quot;pin&quot; name=&quot;pin&quot; type=&quot;text&quot; aria-label=&quot;PIN&quot;&gt;
+&lt;/div&gt;</code></pre>
+        </div>
+
+        <!-- Disabled -->
+        <p class="text-sm font-medium mb-2 mt-8">Disabled</p>
+        <p class="text-xs text-muted-foreground mb-3">Native <code>disabled</code> on the input. The digits stay readable — only the surface dims.</p>
+        <div class="preview">
+          <div class="otp-input" id="demo-otp-disabled" data-length="4">
+            <input id="demo-otp-disabled-field" name="disabled-code" type="text" value="1234" aria-label="Disabled code" disabled>
+          </div>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-markup">&lt;div class=&quot;otp-input&quot; data-length=&quot;4&quot;&gt;
+  &lt;input id=&quot;code&quot; name=&quot;code&quot; type=&quot;text&quot; value=&quot;1234&quot; aria-label=&quot;Disabled code&quot; disabled&gt;
+&lt;/div&gt;</code></pre>
+        </div>
+
+        <!-- Completion -->
+        <p class="text-sm font-medium mb-2 mt-8">Reacting to Completion</p>
+        <p class="text-xs text-muted-foreground mb-3"><code>otp-complete</code> fires when the last character lands, however it arrived — typed, pasted or autofilled.</p>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-js">document.querySelector('.otp-input').addEventListener('otp-complete', (e) =&gt; {
+  console.log(e.detail.value);   // '246810'
+  // ...verify it, then mark the field if the server rejects it:
+  // otp.api.setState('invalid');
+});</code></pre>
+        </div>
+
+        <!-- States -->
+        <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:3rem 0 0.375rem;">States</h2>
+        <p class="text-muted-foreground text-sm mb-4">The state lives on the wrapper, so several fields on a page can sit in different states.</p>
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:0.5rem 1rem;margin-bottom:1rem;font-size:0.875rem;">
+          <code>default</code><span class="text-muted-foreground">Empty or partly filled.</span>
+          <code>filled</code><span class="text-muted-foreground">A complete code is present — entered automatically the moment the field fills.</span>
+          <code>invalid</code><span class="text-muted-foreground">The code was rejected; sets <code>aria-invalid</code> on the input.</span>
+        </div>
+        <div style="position:relative;margin-top:0.5rem;">
+          <button class="copy-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copy
+          </button>
+          <pre><code class="language-js">const otp = document.querySelector('#code').closest('.otp-input');
+
+otp.api.setState('invalid');                    // the server said no
+otp.api.setState('default', { value: '' });     // clear and start again
+otp.api.setState('filled', { value: '246810' });
+otp.api.getState();                              // → { name, config }</code></pre>
+        </div>
+
+        <!-- -- CSS --------------------------------------- -->
+        <section style="margin-top:3rem;" id="source-css">
+          <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;">CSS <a href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/otp-input/otp-input.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2>
+          <p class="text-muted-foreground text-sm mb-4">Styles for the otp-input component. Uses design tokens for colors, spacing, and radius.</p>
+          <div style="position:relative;margin-top:0.5rem;">
+            <button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button>
+            <pre><code class="language-scss">/* -- OTP Input -------------------------------------------------- */
+/* One real &lt;input&gt; under a row of slots. The input keeps every native */
+/* behaviour (paste, one-time-code autofill, selection, form value);   */
+/* the slots are a mirror of its value.                                */
+
+@layer components {
+  .otp-input {
+    --otp-input-slot-size: 2.75rem;
+
+    position: relative;
+    display: inline-flex;
+    width: max-content;
+
+    /* The field covers the slots so clicks, drags and taps land on the real
+       control. Its own text is invisible — the slots do the drawing — but it
+       stays a normal input to the browser and to assistive technology. */
+    &amp; &gt; input {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: transparent;
+      caret-color: transparent;
+      font-size: 1rem; /* &gt;=16px keeps iOS from zooming on focus */
+      text-align: center;
+      outline: none;
+      cursor: text;
+
+      /* the selection highlight would show through the transparent text */
+      &amp;::selection {
+        background: transparent;
+      }
+
+      &amp;:disabled {
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .otp-input-slots {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    pointer-events: none; /* the field beneath owns every pointer event */
+  }
+
+  .otp-input-slot {
+    display: grid;
+    place-items: center;
+    width: var(--otp-input-slot-size);
+    height: var(--otp-input-slot-size);
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-mono);
+    font-size: 1.125rem;
+    font-variant-numeric: tabular-nums;
+    transition: border-color 150ms, box-shadow 150ms;
+
+    &amp;[data-filled] {
+      border-color: var(--ring);
+    }
+
+    /* the slot the caret sits in — the field's own caret is hidden */
+    &amp;[data-active],
+    &amp;[data-caret] {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 25%, transparent);
+    }
+
+    &amp;[data-caret]::after {
+      content: &quot;&quot;;
+      width: 1px;
+      height: 1.125rem;
+      background: var(--foreground);
+      animation: otp-input-caret 1s steps(2, start) infinite;
+    }
+  }
+
+  /* Gap between groups, e.g. 3-3 for a six digit code. */
+  .otp-input-separator {
+    width: 0.75rem;
+    height: 1px;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+
+  /* -- Invalid ------------------------------------------------ */
+  .otp-input[data-invalid] .otp-input-slot {
+    border-color: var(--destructive);
+
+    &amp;[data-active],
+    &amp;[data-caret] {
+      box-shadow: 0 0 0 3px color-mix(in oklch, var(--destructive) 25%, transparent);
+    }
+  }
+
+  /* -- Disabled ----------------------------------------------- */
+  /* Deliberately not a blanket opacity fade: the digits must stay readable,
+     so only the surface dims while the border and text keep their contrast. */
+  .otp-input:has(&gt; input:disabled) .otp-input-slot {
+    background: var(--muted);
+    color: var(--muted-foreground);
+    border-color: var(--border);
+  }
+
+  @keyframes otp-input-caret {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .otp-input,
+    .otp-input *,
+    .otp-input::before,
+    .otp-input::after,
+    .otp-input *::before,
+    .otp-input *::after,
+    .otp-input-slot,
+    .otp-input-slot::before,
+    .otp-input-slot::after {
+      transition: none;
+      animation: none;
+    }
+  }
+}
+
+@media (prefers-contrast: more) {
+  @layer components {
+    .otp-input-slot {
+      border-width: 2px;
+      border-color: var(--foreground);
+    }
+
+    .otp-input[data-invalid] .otp-input-slot {
+      border-color: var(--destructive);
+    }
+  }
+}
+
+@media (forced-colors: active) {
+  @layer components {
+    .otp-input-slot {
+      border-color: ButtonText;
+      color: ButtonText;
+
+      &amp;[data-active],
+      &amp;[data-caret] {
+        border-color: Highlight;
+      }
+    }
+
+    .otp-input[data-invalid] .otp-input-slot {
+      border-color: LinkText;
+    }
+
+    .otp-input:has(&gt; input:disabled) .otp-input-slot {
+      border-color: GrayText;
+      color: GrayText;
+    }
+  }
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- -- JS ---------------------------------------- -->
+        <section style="margin-top:3rem;" id="source-js">
+          <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;">JavaScript <a href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/otp-input/otp-input.js" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2>
+          <p class="text-muted-foreground text-sm mb-4">Slot mirroring, pattern filtering and the named-state API.</p>
+          <div style="position:relative;margin-top:0.5rem;">
+            <button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button>
+            <pre><code class="language-javascript">// -- OTP Input ------------------------------------------------
+// One real &lt;input&gt; under a row of slots. The input is the control — native
+// paste, one-time-code autofill, selection, IME and form submission all keep
+// working — and the slots are a mirror of its value, marked aria-hidden so the
+// field is announced once, not once per digit. Plus the named-state API
+// (AGENTS.md &quot;State API&quot;).
+
+// Shared preamble (AGENTS.md &quot;State API&quot;); build.ts inlines it into the
+// shipped .js, so this import never appears in dist/.
+import { defussGlobals } from '../../shared/state-api.js';
+
+const _defussShadcn = defussGlobals();
+
+const otpInputStates = ['default', 'filled', 'invalid'];
+
+/** Characters a field accepts, by data-pattern. */
+const PATTERNS = {
+  digits: /[^0-9]/g,
+  alphanumeric: /[^a-zA-Z0-9]/g,
+};
+
+const lengthOf = (otp) =&gt; Math.max(1, parseInt(otp.dataset.length || '6', 10) || 6);
+
+/** Strips anything the pattern disallows and trims to the field length. */
+function clean(otp, raw) {
+  const strip = PATTERNS[otp.dataset.pattern] ?? PATTERNS.digits;
+  return raw.replace(strip, '').slice(0, lengthOf(otp));
+}
+
+/**
+ * Paints the slots from the input's value and caret. Slots carry no text of
+ * their own — they are a view, so a repaint can never disagree with the value
+ * the form will submit.
+ */
+function paint(otp) {
+  const field = otp._field;
+  if (!field) return;
+  const value = field.value;
+  const focused = document.activeElement === field;
+  // the caret sits at selectionStart; past the end it belongs to the last slot
+  const caret = Math.min(field.selectionStart ?? value.length, lengthOf(otp) - 1);
+
+  otp._slots.forEach((slot, i) =&gt; {
+    const char = value[i] ?? '';
+    slot.textContent = otp.hasAttribute('data-mask') &amp;&amp; char ? '•' : char;
+    slot.toggleAttribute('data-filled', char !== '');
+    // the active slot stands in for the caret, which is invisible on the field
+    slot.toggleAttribute('data-active', focused &amp;&amp; i === caret &amp;&amp; value.length &lt; lengthOf(otp));
+    slot.toggleAttribute('data-caret', focused &amp;&amp; i === value.length &amp;&amp; value.length &lt; lengthOf(otp));
+  });
+}
+
+/** Fires when the field reaches its full length, so a form can submit itself. */
+function announceComplete(otp) {
+  otp.dispatchEvent(
+    new CustomEvent('otp-complete', { bubbles: true, detail: { value: otp._field.value } }),
+  );
+}
+
+/**
+ * UI side of setState. 'default' and 'filled' both accept `{ value }`; the
+ * difference is what they mean to a reader, and 'filled' fills the field when
+ * given no value of its own. 'invalid' marks the field aria-invalid.
+ */
+function triggerStateChange(otp, stateName, config) {
+  const field = otp._field;
+  switch (stateName) {
+    case 'default':
+      otp.removeAttribute('data-invalid');
+      field.removeAttribute('aria-invalid');
+      if (typeof config.value === 'string') field.value = clean(otp, config.value);
+      break;
+    case 'filled':
+      otp.removeAttribute('data-invalid');
+      field.removeAttribute('aria-invalid');
+      if (typeof config.value === 'string') {
+        field.value = clean(otp, config.value);
+      } else if (field.value.length &lt; lengthOf(otp)) {
+        // asked to *show* a complete field with nothing to show — stand in with
+        // zeros. Never overwrite a value that is already complete: this state
+        // is also entered automatically the moment the user finishes typing.
+        field.value = '0'.repeat(lengthOf(otp));
+      }
+      break;
+    case 'invalid':
+      otp.setAttribute('data-invalid', '');
+      field.setAttribute('aria-invalid', 'true');
+      if (typeof config.value === 'string') field.value = clean(otp, config.value);
+      break;
+  }
+  paint(otp);
+}
+
+/** Registry-level API; pass the otp-input element explicitly. Unknown names throw. */
+export const otpInputApi = {
+  setState(otp, stateName, config = {}) {
+    if (!otpInputStates.includes(stateName)) {
+      throw new Error(
+        `otp-input: unknown state &quot;${stateName}&quot; (supported: ${otpInputStates.join(', ')})`,
+      );
+    }
+    triggerStateChange(otp, stateName, config);
+    // state lives on the ELEMENT, not the module: a page may hold several
+    // fields, each in a different state
+    otp.dataset.stateName = stateName;
+    otp._stateConfig = config;
+  },
+  getState(otp) {
+    return { name: otp.dataset.stateName || 'default', config: otp._stateConfig ?? {} };
+  },
+};
+
+_defussShadcn.otpInputApi = otpInputApi;
+_defussShadcn.otpInputStates = otpInputStates;
+
+function init() {
+  document.querySelectorAll('.otp-input:not([data-init])').forEach((otp) =&gt; {
+    otp.dataset.init = '';
+
+    const field = otp.querySelector('input');
+    if (!field) return; // the input is authored, not generated — nothing to drive
+    otp._field = field;
+
+    const length = lengthOf(otp);
+    field.maxLength = length;
+    if (!field.getAttribute('inputmode')) {
+      field.setAttribute('inputmode', otp.dataset.pattern === 'alphanumeric' ? 'text' : 'numeric');
+    }
+    if (!field.getAttribute('autocomplete')) field.setAttribute('autocomplete', 'one-time-code');
+
+    // slots mirror the value; aria-hidden so the field is announced once
+    const groupSize = parseInt(otp.dataset.groupSize || '0', 10) || 0;
+    otp._slots = [];
+    const shell = document.createElement('div');
+    shell.className = 'otp-input-slots';
+    shell.setAttribute('aria-hidden', 'true');
+    for (let i = 0; i &lt; length; i++) {
+      if (groupSize &amp;&amp; i &gt; 0 &amp;&amp; i % groupSize === 0) {
+        const sep = document.createElement('div');
+        sep.className = 'otp-input-separator';
+        shell.appendChild(sep);
+      }
+      const slot = document.createElement('div');
+      slot.className = 'otp-input-slot';
+      shell.appendChild(slot);
+      otp._slots.push(slot);
+    }
+    otp.appendChild(shell);
+
+    const sync = () =&gt; {
+      const cleaned = clean(otp, field.value);
+      if (cleaned !== field.value) {
+        const at = field.selectionStart;
+        field.value = cleaned;
+        // keep the caret where the typing left it, not at the end
+        if (at !== null) field.setSelectionRange(Math.min(at, cleaned.length), Math.min(at, cleaned.length));
+      }
+      paint(otp);
+      if (field.value.length === length) {
+        // carry the value through, so the state change reports what the user
+        // actually entered rather than re-deriving it
+        otpInputApi.setState(otp, otp.hasAttribute('data-invalid') ? 'invalid' : 'filled', {
+          value: field.value,
+        });
+        announceComplete(otp);
+      }
+    };
+
+    field.addEventListener('input', sync);
+    field.addEventListener('focus', () =&gt; paint(otp));
+    field.addEventListener('blur', () =&gt; paint(otp));
+    // arrows/clicks move the caret without firing input
+    field.addEventListener('keyup', () =&gt; paint(otp));
+    field.addEventListener('click', () =&gt; paint(otp));
+    field.addEventListener('select', () =&gt; paint(otp));
+
+    otp.api = {
+      setState: (stateName, config) =&gt; otpInputApi.setState(otp, stateName, config),
+      getState: () =&gt; otpInputApi.getState(otp),
+    };
+
+    otpInputApi.setState(otp, field.value.length === length ? 'filled' : 'default', {});
+  });
+}
+
+init();
+new MutationObserver(init).observe(document, { childList: true, subtree: true });</code></pre>
+          </div>
+        </section>
+
+
+    </main>
+  </div>
+
+  <script src="js/site.js" defer></script>
+  <script type="module" src="js/shiki-highlight.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/accordion/accordion.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/combobox/combobox.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dropdown/dropdown.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sheet/sheet.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tabs/tabs.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toast/toast.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toggle/toggle.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toggle-group/toggle-group.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/toolbar/toolbar.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/number-input/number-input.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/otp-input/otp-input.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/color-picker/color-picker.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/avatar/avatar.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/image/image.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tree-view/tree-view.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/calendar/calendar.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/alert-dialog/alert-dialog.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/popover/popover.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/tooltip/tooltip.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/context-menu/context-menu.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/command/command.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/navigation-menu/navigation-menu.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sidebar/sidebar.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/carousel/carousel.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/slider/slider.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sortable/sortable.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/product-showcase/product-showcase.js"></script>
+  <script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script>
+  <script>globalThis.lucide?.createIcons();</script>
+</body>
+</html>

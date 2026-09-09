@@ -414,6 +414,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/number-input.png
 **Skill:** [components/number-input/component-skill.md](components/number-input/component-skill.md)
 
+## OTP Input
+
+**Type:** MOL
+**Why:** One real input under a row of slots — paste, one-time-code autofill, selection and form submission stay native, and a screen reader hears one field rather than six.
+**When:** Short codes typed once — SMS verification, email confirmation, a PIN. Use input for anything longer or free-form.
+**Files:** dist/components/otp-input/otp-input.css + dist/components/otp-input/otp-input.js
+**Supported states:** default, filled, invalid
+**Screenshots:** screenshots/{light,dark}/otp-input.png, screenshots/{light,dark}/otp-input-filled.png, screenshots/{light,dark}/otp-input-invalid.png
+**Skill:** [components/otp-input/component-skill.md](components/otp-input/component-skill.md)
+
 ## Pagination
 
 **Type:** ATM

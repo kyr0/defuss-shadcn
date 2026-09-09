@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OTP Input e2e fixture</title>
+  <link rel="stylesheet" href="/dist/theme/default-semantic-tokens.css">
+  <link rel="stylesheet" href="/dist/components/label/label.css">
+  <link rel="stylesheet" href="/dist/components/otp-input/otp-input.css">
+  <style>
+    /* spacing only — never properties the checks assert */
+    body { font-family: system-ui, sans-serif; padding: 2rem; }
+    body > * { margin-bottom: 1.5rem; }
+  </style>
+</head>
+<body>
+  <!-- default: six digits -->
+  <label class="label" for="otp-default">Verification code</label>
+  <div class="otp-input" id="otp-wrap-default">
+    <input id="otp-default" name="code" type="text">
+  </div>
+
+  <!-- grouped 3-3, so a separator sits in the middle -->
+  <label class="label" for="otp-grouped">Grouped code</label>
+  <div class="otp-input" id="otp-wrap-grouped" data-group-size="3">
+    <input id="otp-grouped" name="grouped" type="text">
+  </div>
+
+  <!-- four digits, alphanumeric -->
+  <label class="label" for="otp-alpha">Alphanumeric</label>
+  <div class="otp-input" id="otp-wrap-alpha" data-length="4" data-pattern="alphanumeric">
+    <input id="otp-alpha" name="alpha" type="text">
+  </div>
+
+  <!-- masked, like a PIN -->
+  <label class="label" for="otp-mask">PIN</label>
+  <div class="otp-input" id="otp-wrap-mask" data-length="4" data-mask>
+    <input id="otp-mask" name="pin" type="text">
+  </div>
+
+  <!-- disabled -->
+  <label class="label" for="otp-disabled">Disabled</label>
+  <div class="otp-input" id="otp-wrap-disabled" data-length="4">
+    <input id="otp-disabled" name="disabled-code" type="text" disabled>
+  </div>
+
+  <!-- inside a form, to prove one value is submitted -->
+  <form id="otp-form" onsubmit="return false;">
+    <label class="label" for="otp-form-field">In a form</label>
+    <div class="otp-input" id="otp-wrap-form" data-length="4">
+      <input id="otp-form-field" name="otp" type="text">
+    </div>
+  </form>
+
+  <script type="module" src="/dist/components/otp-input/otp-input.js"></script>
+</body>
+</html>
