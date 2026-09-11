@@ -1,0 +1,165 @@
+---
+title: "Accordion"
+description: "Accordion component — collapsible sections using <details>/<summary>."
+slug: "accordion"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="accordion" title="Accordion" component="accordion">
+  Collapsible content sections built on native <code>&lt;details&gt;</code> / <code>&lt;summary&gt;</code>. Multi-open needs zero JS. Single-open adds a small toggle handler.
+</PageHeader>
+
+<SkillPanel component="accordion">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;details&gt;</code> / <code>&lt;summary&gt;</code> elements. The browser provides:</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details" title="native disclosure widget with built-in open/close state"><code>&lt;details&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/summary" title="clickable heading that toggles the parent `<details>`"><code>&lt;summary&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/::details-content" title="pseudo-element for styling and animating the collapsible content"><code>::details-content</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLDetailsElement/toggle_event" title="fires when the `open` state changes"><code>toggle event</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style" title="defines entry animation starting values for open transition"><code>@starting-style</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.accordion</code>
+    <code>.accordion-item</code>
+    <code>.accordion-trigger</code>
+    <code>.accordion-chevron</code>
+    <code>.accordion-content</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText dense>• <code>data-type</code></SkillText>
+  <SkillText>• <code>data-collapsible</code></SkillText>
+  </SkillField>
+
+  <SkillField label="Keyboard">
+<SkillGrid>
+    <Variant name="Key" description="Behavior" />
+    <Variant name="Tab" description="Move focus between summary elements" />
+    <Variant name="Enter" description="Toggle the focused item" />
+    <Variant name="Space" description="Toggle the focused item" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• <code>&lt;details&gt;/&lt;summary&gt;</code> is the most accessible accordion implementation — it works with zero JS and zero ARIA</SkillText>
+  <SkillText dense>• For single-open behavior, the <code>toggle</code> event on <code>&lt;details&gt;</code> fires after the state changes</SkillText>
+  <SkillText dense>• The <code>open</code> attribute is the source of truth for whether an item is expanded</SkillText>
+  <SkillText dense>• Avoid nesting accordions — use a flat list with clear headings instead</SkillText>
+  <SkillText dense>• A non-collapsible single accordion never closes its last open item — the attempt is denied in the cancellable <code>beforetoggle</code> event (<code>preventDefault()</code>), so the click is a silent no-op; reopening in <code>toggle</code> would flicker</SkillText>
+  <SkillText dense>• The chevron rotation relies on <code>details\[open\] &gt;</code> selector — this is pure CSS</SkillText>
+  <SkillText dense>• Content height animation uses <code>::details-content</code> pseudo-element with <code>block-size</code> transition and <code>@starting-style</code> for the enter animation — fully CSS-only, no JS measurement needed</SkillText>
+  <SkillText dense>• Set <code>data-type="single"</code> for accordion behavior (only one open); omit for disclosure list (any number open)</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• Set <code>data-collapsible</code> alongside <code>data-type="single"</code> to allow all items to be closed</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first previewStyle="flex-direction:column;align-items:stretch;padding:2rem 2.5rem;">
+  <ExampleLabel>Multi-open</ExampleLabel>
+  <ExampleHint>Default behavior — multiple items can be open simultaneously. Uses native <code>&lt;details&gt;</code>/<code>&lt;summary&gt;</code> with zero JavaScript.</ExampleHint>
+  <div class="accordion" style="max-width:28rem;width:100%;">
+    <details class="accordion-item" open>
+      <summary class="accordion-trigger">
+        <span>Is it accessible?</span>
+        <svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </summary>
+      <div class="accordion-content">
+        <p>Yes. It uses native HTML details/summary elements which are fully accessible by default. Screen reader and keyboard support are built in.</p>
+      </div>
+    </details>
+    <details class="accordion-item" open>
+      <summary class="accordion-trigger">
+        <span>Is it styled?</span>
+        <svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </summary>
+      <div class="accordion-content">
+        <p>Yes. It follows the shadcn/ui token system for consistent theming across light and dark modes.</p>
+      </div>
+    </details>
+    <details class="accordion-item">
+      <summary class="accordion-trigger">
+        <span>Is it animated?</span>
+        <svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </summary>
+      <div class="accordion-content">
+        <p>Yes. Uses <code>::details-content</code> with <code>calc-size(auto, size)</code> for smooth height animation. The chevron rotates via CSS transition.</p>
+      </div>
+    </details>
+  </div>
+  <ExampleCode>{"<div class=\"accordion\">\n  <details class=\"accordion-item\" open>\n    <summary class=\"accordion-trigger\">\n      <span>Is it accessible?</span>\n      <svg class=\"accordion-chevron\" aria-hidden=\"true\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"m6 9 6 6 6-6\"/></svg>\n    </summary>\n    <div class=\"accordion-content\">\n      <p>Yes. It uses native HTML details/summary elements which are fully accessible by default. Screen reader and keyboard support are built in.</p>\n    </div>\n  </details>\n  <details class=\"accordion-item\" open>\n    <summary class=\"accordion-trigger\">\n      <span>Is it styled?</span>\n      <svg class=\"accordion-chevron\" aria-hidden=\"true\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"m6 9 6 6 6-6\"/></svg>\n    </summary>\n    <div class=\"accordion-content\">\n      <p>Yes. It follows the shadcn/ui token system for consistent theming across light and dark modes.</p>\n    </div>\n  </details>\n  <details class=\"accordion-item\">\n    <summary class=\"accordion-trigger\">\n      <span>Is it animated?</span>\n      <svg class=\"accordion-chevron\" aria-hidden=\"true\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"m6 9 6 6 6-6\"/></svg>\n    </summary>\n    <div class=\"accordion-content\">\n      <p>Yes. Uses ::details-content with calc-size(auto, size) for smooth height animation. The chevron rotates via CSS transition.</p>\n    </div>\n  </details>\n</div>"}</ExampleCode>
+</Example>
+
+<Example first previewStyle="flex-direction:column;align-items:stretch;padding:2rem 2.5rem;">
+  <ExampleLabel>Single-open</ExampleLabel>
+  <ExampleHint>Only one item can be open at a time. Add <code>data-type="single"</code> to the wrapper — a small JS handler closes siblings on toggle.</ExampleHint>
+  <div class="accordion" data-type="single" data-state-demo style="max-width:28rem;width:100%;">
+    <details class="accordion-item" open>
+      <summary class="accordion-trigger">
+        <span>What payment methods do you accept?</span>
+        <svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </summary>
+      <div class="accordion-content">
+        <p>We accept all major credit cards (Visa, Mastercard, AmEx), PayPal, and bank transfers for annual plans.</p>
+      </div>
+    </details>
+    <details class="accordion-item">
+      <summary class="accordion-trigger">
+        <span>Can I cancel my subscription?</span>
+        <svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </summary>
+      <div class="accordion-content">
+        <p>Yes, you can cancel at any time from your account settings. Your access continues until the end of the current billing period.</p>
+      </div>
+    </details>
+    <details class="accordion-item">
+      <summary class="accordion-trigger">
+        <span>Do you offer team pricing?</span>
+        <svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </summary>
+      <div class="accordion-content">
+        <p>Yes. Teams of 5 or more get a 20% discount. Contact our sales team for custom enterprise plans with dedicated support.</p>
+      </div>
+    </details>
+  </div>
+  <ExampleCode>{"<div class=\"accordion\" data-type=\"single\">\n  <details class=\"accordion-item\" open>\n    <summary class=\"accordion-trigger\">\n      <span>What payment methods do you accept?</span>\n      <svg class=\"accordion-chevron\" aria-hidden=\"true\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"m6 9 6 6 6-6\"/></svg>\n    </summary>\n    <div class=\"accordion-content\">\n      <p>We accept all major credit cards (Visa, Mastercard, AmEx), PayPal, and bank transfers for annual plans.</p>\n    </div>\n  </details>\n  <details class=\"accordion-item\">\n    <summary class=\"accordion-trigger\">\n      <span>Can I cancel my subscription?</span>\n      <svg class=\"accordion-chevron\" aria-hidden=\"true\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"m6 9 6 6 6-6\"/></svg>\n    </summary>\n    <div class=\"accordion-content\">\n      <p>Yes, you can cancel at any time from your account settings. Your access continues until the end of the current billing period.</p>\n    </div>\n  </details>\n  <details class=\"accordion-item\">\n    <summary class=\"accordion-trigger\">\n      <span>Do you offer team pricing?</span>\n      <svg class=\"accordion-chevron\" aria-hidden=\"true\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"m6 9 6 6 6-6\"/></svg>\n    </summary>\n    <div class=\"accordion-content\">\n      <p>Yes. Teams of 5 or more get a 20% discount. Contact our sales team for custom enterprise plans with dedicated support.</p>\n    </div>\n  </details>\n</div>"}</ExampleCode>
+</Example>
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
+    <li><code>default</code> — the authored markup, snapshotted when the component initializes</li>
+    <li><code>all-open</code> — every <code>&lt;details&gt;</code> item expanded (single-open enforcement suspended)</li>
+    <li><code>all-closed</code> — every item collapsed, even without <code>data-collapsible</code></li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The single-open demo carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/accordion-\{state\}.png</code>.</p>
+</StatesSection>
+
+<SourceFiles component="accordion" section="css" />
+
+<SourceFiles component="accordion" section="js">
+  <SourceNote for="js">Only needed for single-open mode (when <code>data-type="single"</code> is set). Multi-open accordions use zero JavaScript — native <code>&lt;details&gt;</code> handles everything.</SourceNote>
+</SourceFiles>
+
+</DocPage>

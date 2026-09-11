@@ -1,0 +1,125 @@
+---
+title: "Badge"
+description: "Badge component — small status indicators with variant styling."
+slug: "badge"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="badge" title="Badge" component="badge">
+  A small visual indicator for status, labels, or counts. Built on a <code>&lt;span&gt;</code> element with variant styling via <code>data-variant</code>. No JavaScript required.
+</PageHeader>
+
+<SkillPanel component="badge">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;span&gt;</code> element. No interactivity required — pure visual indicator.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span" title="inline container for phrasing content"><code>&lt;span&gt;</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.badge</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Variants (data-variant)">
+<SkillGrid>
+    <Variant name="outline" description="Color variation" />
+    <Variant name="secondary" description="Alternate background styling" />
+    <Variant name="default" description="Alternate background styling" />
+  </SkillGrid>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>High emphasis with primary background.</ExampleHint>
+  <div style="display:flex;gap:0.75rem;align-items:center;">
+    <span class="badge" data-variant="default">New</span>
+    <span class="badge" data-variant="default">3 unread</span>
+    <span class="badge" data-variant="default">Pro</span>
+  </div>
+  <ExampleCode>{"<span class=\"badge\" data-variant=\"default\">New</span>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Secondary</ExampleLabel>
+  <ExampleHint>Medium emphasis with secondary background.</ExampleHint>
+  <div style="display:flex;gap:0.75rem;align-items:center;">
+    <span class="badge" data-variant="secondary">Draft</span>
+    <span class="badge" data-variant="secondary">Pending</span>
+    <span class="badge" data-variant="secondary">Review</span>
+  </div>
+  <ExampleCode>{"<span class=\"badge\" data-variant=\"secondary\">Draft</span>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Outline</ExampleLabel>
+  <ExampleHint>Low emphasis with border only.</ExampleHint>
+  <div style="display:flex;gap:0.75rem;align-items:center;">
+    <span class="badge" data-variant="outline">v0.1.0</span>
+    <span class="badge" data-variant="outline">Beta</span>
+    <span class="badge" data-variant="outline">Optional</span>
+  </div>
+  <ExampleCode>{"<span class=\"badge\" data-variant=\"outline\">v0.1.0</span>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>All Variants</ExampleLabel>
+  <ExampleHint>Side-by-side comparison.</ExampleHint>
+  <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
+    <span class="badge" data-variant="default">Default</span>
+    <span class="badge" data-variant="secondary">Secondary</span>
+    <span class="badge" data-variant="outline">Outline</span>
+  </div>
+  <ExampleCode>{"<span class=\"badge\" data-variant=\"default\">Default</span>\n<span class=\"badge\" data-variant=\"secondary\">Secondary</span>\n<span class=\"badge\" data-variant=\"outline\">Outline</span>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Decorative</ExampleLabel>
+  <ExampleHint>If a badge is purely visual, hide it from screen readers with <code>aria-hidden</code>.</ExampleHint>
+  <div style="display:flex;gap:0.75rem;align-items:center;">
+    <span>Notifications</span>
+    <span class="badge" data-variant="default" aria-hidden="true">5</span>
+  </div>
+  <ExampleCode>{"<span class=\"badge\" data-variant=\"default\"\n      aria-hidden=\"true\">5</span>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>On a Button</ExampleLabel>
+  <ExampleHint>Badge inside a <code>.btn</code> for notification counts.</ExampleHint>
+  <div style="display:flex;gap:0.75rem;align-items:center;">
+    <button class="btn" data-variant="outline"> Inbox <span class="badge" data-variant="default">3</span></button>
+    <button class="btn" data-variant="default"> Notifications <span class="badge" data-variant="secondary">12</span></button>
+  </div>
+  <ExampleCode>{"<button class=\"btn\" data-variant=\"outline\">\n  Inbox\n  <span class=\"badge\" data-variant=\"default\">3</span>\n</button>"}</ExampleCode>
+</Example>
+
+<Example noCode>
+  <ExampleLabel>In a Card</ExampleLabel>
+  <ExampleHint>Badge in a <code>.card</code> header for status display.</ExampleHint>
+  <article class="card" style="width:20rem;">
+    <div class="card-header" style="display:flex;flex-direction:row;align-items:center;justify-content:space-between;">
+      <div>
+        <p class="card-title">API Usage</p>
+        <p class="card-description">Current billing period</p>
+      </div>
+      <span class="badge" data-variant="outline">Active</span>
+    </div>
+    <div class="card-content">
+      <p style="margin:0;font-size:1.5rem;font-weight:700;">12,489</p>
+      <p style="margin:0.25rem 0 0;font-size:0.75rem;color:var(--muted-foreground);">requests this month</p>
+    </div>
+  </article>
+</Example>
+
+<SourceFiles component="badge" section="css" />
+
+</DocPage>

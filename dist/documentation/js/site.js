@@ -160,18 +160,10 @@
         allBtn.className = 'code-collapse-all-btn';
         allBtn.innerHTML = CODE_ICON + ' Collapse all code';
         toolbar.appendChild(allBtn);
-        // Move spec <details> out of sticky page-header into scrollable area
-        var pageHeader = main.querySelector('.page-header');
-        var details = pageHeader ? pageHeader.querySelector('details') : main.querySelector('details');
-        if (details && pageHeader && pageHeader.contains(details)) {
-            pageHeader.insertAdjacentElement('afterend', details);
-        }
         // Place toolbar inside the sticky header (after the last child)
+        var pageHeader = main.querySelector('.page-header');
         if (pageHeader) {
             pageHeader.appendChild(toolbar);
-        }
-        else if (details) {
-            details.insertAdjacentElement('afterend', toolbar);
         }
         else {
             pairs[0].wrapper.insertAdjacentElement('beforebegin', toolbar);
@@ -280,9 +272,8 @@
     // (runs on initial load AND after each SPA navigation)
     docs.onPageReady(initPageContent);
     // The Component Skill `<details>` (with its `[data-spec-href]` link in the
-    // summary) toggles natively — a former modal viewer intercepted these clicks
-    // with preventDefault(), which killed that native toggle while duplicating
-    // content the panel already renders. Removed: the browser does it for free.
+    // summary) toggles natively. It renders as a sibling AFTER .page-header
+    // (statically — the old runtime used to move it there).
     // -- On DOM ready (one-time setup + initial content init) -
     document.addEventListener('DOMContentLoaded', function () {
         // Sync dark mode icon state
@@ -320,4 +311,3 @@
         });
     });
 })();
-//# sourceMappingURL=site.js.map

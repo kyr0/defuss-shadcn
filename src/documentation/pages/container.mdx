@@ -1,0 +1,118 @@
+---
+title: "Container"
+description: "Centered, bounded content with logical gutters. Query containment remains a separate, explicit choice."
+slug: "container"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="container" title="Container" crumb="layout / container" introStyle="max-width:38rem;">
+  Centered, bounded content with logical gutters. Query containment remains a separate, explicit choice. Every code block shows exactly the classes that render the demo above it — only the demo's decorative colors are omitted.
+</PageHeader>
+
+<h2 id="bounded" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Bound and center content</h2>
+
+<DocText><code>container</code> has a 100% border-box inline size, an 80rem maximum, automatic inline margins and four density-adjusted base units of inline padding. The cap includes gutters. It does not change display or create a query container. Each instance owns its parameters: a nested container applies its own cap and gutter, not the outer ones. Resize the demo with the toolbar: the vertical ruler lines (one every 12px) mark the frame's width — as the frame outgrows each cap, that box stops growing and centers.</DocText>
+
+<Demo viewport>
+  <div class="demo-viewport" style="max-inline-size:none;margin-inline:0;">
+    <div class="demo-stripes p-6" data-demo="container">
+      <p class="demo-label" style="text-align:center;">▼ frame width — the boxes clamp at their caps and center ▼</p>
+      <div class="container" style="--layout-max:36rem;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--background);">
+        <p class="text-sm" style="margin:0;text-align:center;">Outer container: max-width clamps, gutters keep content off the edge.</p>
+        <div class="container" style="--layout-max:20rem;margin-top:0.75rem;border:1px dashed var(--border);border-radius:var(--radius-md);background:var(--background);">
+          <p class="text-sm text-muted-foreground" style="margin:0;text-align:center;">Nested: its own cap and gutter, not the outer ones.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <DemoCode>{"<div class=\"container\" style=\"--layout-max:36rem;\">\n  <p>Outer container: max-width clamps, gutters keep content off the edge.</p>\n  <div class=\"container\" style=\"--layout-max:20rem;\">\n    <p>Nested: its own cap and gutter, not the outer ones.</p>\n  </div>\n</div>"}</DemoCode>
+</Demo>
+
+<div class="sep" />
+
+<h2 id="real-world" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Real world: a bounded article section</h2>
+
+<DocText>The everyday use: a page section that stays readable on any screen. The heading, lead and cards share one <code>container</code> — no media queries, no wrapper divs. Resize with the toolbar and watch the content clamp and center as a unit.</DocText>
+
+<Demo viewport>
+  <div class="demo-viewport" style="max-inline-size:none;margin-inline:0;">
+    <div class="demo-stripes p-6">
+      <section class="container stack gap-4" style="--layout-max:34rem;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--background);padding-block:1.5rem;">
+        <div>
+          <h3 style="margin:0;font-size:1.125rem;font-weight:600;">Changelog</h3>
+          <p class="text-muted-foreground" style="margin:0.25rem 0 0;font-size:0.8125rem;">Everything that shipped this week, in one bounded reading column.</p>
+        </div>
+        <div class="grid grid-cols-auto gap-3" style="--layout-min:9rem;">
+          <div class="demo-tile h-16" data-variant="muted">New</div>
+          <div class="demo-tile h-16" data-variant="muted">Improved</div>
+          <div class="demo-tile h-16" data-variant="muted">Fixed</div>
+        </div>
+      </section>
+    </div>
+  </div>
+  <DemoCode>{"<section class=\"container stack gap-4\" style=\"--layout-max:34rem;\">\n  <div>\n    <h3>Changelog</h3>\n    <p>Everything that shipped this week.</p>\n  </div>\n  <div class=\"grid grid-cols-auto gap-3\" style=\"--layout-min:9rem;\">\n    <div>New</div>\n    <div>Improved</div>\n    <div>Fixed</div>\n  </div>\n</section>"}</DemoCode>
+</Demo>
+
+<div class="sep" />
+
+<h2 id="customize" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Customize each instance</h2>
+
+<Demo>
+  <DemoCode header="CSS" lang="css">{".reading-area {\n  --layout-max: 70ch;\n  --layout-gutter: clamp(1rem, 3vw, 2rem);\n}"}</DemoCode>
+</Demo>
+
+<DocText>The maximum and gutter reset on every nested container. Override each root deliberately; an outer width limit is not inherited configuration. Container centering, gutters and the fixed 80rem default are extensions to Tailwind’s container behavior. A narrow container does not make overflowing child content safe automatically.</DocText>
+
+<div class="sep" />
+
+<h2 id="queries" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">A query boundary is explicit</h2>
+
+<DocText><code>query</code> opts an element into inline-size containment under the name <code>layout</code>, so descendants can react to the space the component actually gets — not to the viewport. Both boxes below carry the same markup; the narrow one renders stacked, the wide one flips to a title/actions row, driven only by each container's own inline size. The wide box starts wider than this prose column (the stage scrolls) — use the width toolbar to carry it across the threshold live.</DocText>
+
+<style>{"\n.cq-demo-row { flex-direction: column; }\n@container layout (inline-size >= 24rem) {\n  .cq-demo-row {\n    flex-direction: row;\n    align-items: center;\n    justify-content: space-between;\n  }\n}\n/* The wide demo starts wider than the prose column (the stage scrolls);\n   the width toolbar then carries it across the threshold live. */\n.cq-demo-narrow { inline-size: 14rem; }\n.cq-demo-viewport { inline-size: 45rem; max-inline-size: none; margin-inline: 0; transition: none; }\n"}</style>
+
+<Demo viewport>
+  <div class="stack gap-4">
+    <div>
+      <p class="demo-label">inline-size: 14rem — always below the 24rem threshold, stacked</p>
+      <div class="query cq-demo-narrow demo-outline p-3">
+        <div class="flex flex-col gap-2 cq-demo-row">
+          <strong style="font-size:0.875rem;">Workspace</strong>
+          <div class="flex flex-wrap gap-2">
+            <button class="btn" type="button" data-size="sm">Save</button>
+            <button class="btn" type="button" data-variant="outline" data-size="sm">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <p class="demo-label">resizable — flips to a row at ≥ 24rem and back below it</p>
+      <div class="demo-viewport cq-demo-viewport">
+        <div class="query demo-outline p-3">
+          <div class="flex flex-col gap-2 cq-demo-row">
+            <strong style="font-size:0.875rem;">Workspace</strong>
+            <div class="flex flex-wrap gap-2">
+              <button class="btn" type="button" data-size="sm">Save</button>
+              <button class="btn" type="button" data-variant="outline" data-size="sm">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <DemoCode>{"<div class=\"query cq-demo-narrow\">\n  <div class=\"flex flex-col gap-2 cq-demo-row\">\n    <strong>Workspace</strong>\n    <div class=\"flex flex-wrap gap-2\">\n      <button class=\"btn\" type=\"button\" data-size=\"sm\">Save</button>\n      <button class=\"btn\" type=\"button\" data-variant=\"outline\" data-size=\"sm\">Cancel</button>\n    </div>\n  </div>\n</div>\n\n<div class=\"cq-demo-viewport\">\n  <div class=\"query\">\n    <div class=\"flex flex-col gap-2 cq-demo-row\">\n      <strong>Workspace</strong>\n      <div class=\"flex flex-wrap gap-2\">\n        <button class=\"btn\" type=\"button\" data-size=\"sm\">Save</button>\n        <button class=\"btn\" type=\"button\" data-variant=\"outline\" data-size=\"sm\">Cancel</button>\n      </div>\n    </div>\n  </div>\n</div>"}</DemoCode>
+  <DemoCode header="CSS" lang="css">{".cq-demo-row { flex-direction: column; }\n@container layout (inline-size >= 24rem) {\n  .cq-demo-row {\n    flex-direction: row;\n    align-items: center;\n    justify-content: space-between;\n  }\n}\n/* The wide demo starts wider than the prose column (the stage scrolls);\n   the width toolbar then carries it across the threshold live. */\n.cq-demo-narrow { inline-size: 14rem; }\n.cq-demo-viewport { inline-size: 45rem; max-inline-size: none; margin-inline: 0; transition: none; }"}</DemoCode>
+</Demo>
+
+<DocText>The query selects the nearest ancestor named <code>layout</code>. It styles a descendant, not the query container itself. Inline-size containment changes intrinsic sizing, so it is opt-in; a shrink-to-fit query wrapper needs an externally determined width — the narrow demo sets <code>inline-size</code> explicitly for exactly this reason. The custom rule is unlayered, so it overrides the <code>flex-col</code> helper intentionally. Use literal query thresholds; custom properties are not breakpoint variables in size-query conditions.</DocText>
+
+<div class="sep" />
+
+<h2 id="references" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Platform references</h2>
+
+<DocText><a href="https://www.w3.org/TR/css-contain-3/" target="_blank" rel="noopener">CSS container queries</a> · <a href="https://www.w3.org/TR/css-logical-1/" target="_blank" rel="noopener">CSS logical properties</a></DocText>
+
+</DocPage>

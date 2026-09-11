@@ -142,7 +142,7 @@ try {
 
   // -- Sizes (documented in dialog.html + skill: sm/lg/xl/full) --------------
   // max-width from dialog.css; width is calc(100vw - 2rem) so the cap binds.
-  const sizeExpect: Record<string, number> = { 'size-sm': 24, 'size-lg': 32, 'size-xl': 40, 'size-full': 0 }; // rem; 0 = no cap below viewport
+  const sizeExpect: Record<string, number> = { 'size-sm': 24, 'size-md': 28, 'size-lg': 32, 'size-xl': 40, 'size-full': 0 }; // rem; 0 = no cap below viewport
   await check('data-size variants apply documented max-widths', async () => {
     for (const [id, rem] of Object.entries(sizeExpect)) {
       const px = await page.$eval(`#${id}`, (el) => parseFloat(getComputedStyle(el).maxWidth));

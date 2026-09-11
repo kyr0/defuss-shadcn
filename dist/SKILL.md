@@ -340,6 +340,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/get-in-touch.png
 **Skill:** [components/get-in-touch/component-skill.md](components/get-in-touch/component-skill.md)
 
+## Heading Anchor
+
+**Type:** ATM
+**Why:** A quiet § permalink on any heading — a visible, copyable deep link with zero JavaScript.
+**When:** Section permalinks in docs/blogs/specs — before or after the heading text.
+**Files:** dist/components/heading-anchor/heading-anchor.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/heading-anchor.png
+**Skill:** [components/heading-anchor/component-skill.md](components/heading-anchor/component-skill.md)
+
 ## Hero
 
 **Type:** BLK
@@ -690,6 +700,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/toast.png
 **Skill:** [components/toast/component-skill.md](components/toast/component-skill.md)
 
+## Table of Contents
+
+**Type:** BLK
+**Why:** A section-nav block of heading links with active-section tracking classes — pure markup, the observer is the host's.
+**When:** Docs/blog/spec pages with in-page sections that deserve a persistent rail.
+**Files:** dist/components/toc/toc.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/toc.png
+**Skill:** [components/toc/component-skill.md](components/toc/component-skill.md)
+
 ## Toggle
 
 **Type:** ATM
@@ -739,6 +759,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default, expanded
 **Screenshots:** screenshots/{light,dark}/tree-view.png, screenshots/{light,dark}/tree-view-expanded.png
 **Skill:** [components/tree-view/component-skill.md](components/tree-view/component-skill.md)
+
+## Type Badge
+
+**Type:** ATM
+**Why:** A mono chip marking a component's atomic-design type — one color identity per type, in both schemes.
+**When:** Tag components by taxonomy in docs, inventories, or design reviews (ATM/MOL/ORG/BLK/TPL).
+**Files:** dist/components/type-badge/type-badge.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/type-badge.png
+**Skill:** [components/type-badge/component-skill.md](components/type-badge/component-skill.md)
 
 ## Typography
 

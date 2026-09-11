@@ -24,6 +24,21 @@ await cssSmoke('button', [
     css: { height: '44px', padding: '0px 32px', 'font-size': '16px' },
   },
   {
+    label: 'md is the explicit default (36px)',
+    selector: '#bt-md',
+    css: { height: '36px' },
+  },
+  {
+    label: 'xl is the documented 3.25rem / 1.125rem',
+    selector: '#bt-xl',
+    css: { height: '52px', 'font-size': '18px' },
+  },
+  {
+    label: 'icon-xl is a 3.25rem square',
+    selector: '#bt-icon-xl',
+    css: { height: '52px', width: '52px' },
+  },
+  {
     label: 'icon sizes are square (height == width)',
     selector: '#bt-icon',
     css: { height: '36px', width: '36px', padding: '0px' },

@@ -1,0 +1,61 @@
+---
+title: "Scroll Area"
+description: "Scroll Area component — custom-styled scrollable containers."
+slug: "scroll-area"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="scroll-area" title="Scroll Area" component="scroll-area">
+  Scrollable container with custom-styled thin scrollbars.
+</PageHeader>
+
+<SkillPanel component="scroll-area">
+  <SkillField label="Native basis">
+<SkillText>CSS overflow with custom-styled scrollbars.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" title="scrollable container"><code>overflow</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/scrollbar-width" title="standard thin scrollbar"><code>scrollbar-width</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/scrollbar-gutter" title="prevents layout shift from scrollbar appearance"><code>scrollbar-gutter</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior" title="prevents scroll chaining"><code>overscroll-behavior</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/::-webkit-scrollbar" title="custom scrollbar styling"><code>::-webkit-scrollbar</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.scroll-area</code>
+  </SkillRow>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Default</ExampleLabel>
+  <div class="scroll-area" style="height:10rem;width:16rem;border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem;">
+    <div style="font-size:0.8125rem;color:var(--foreground);">
+      <p style="margin:0 0 0.75rem;font-weight:500;">Tags</p>
+      <p style="margin:0 0 0.5rem;margin:0 0 0.5rem;margin:0 0 0.5rem;margin:0 0 0.5rem;margin:0 0 0.5rem;margin:0 0 0.5rem;margin:0 0 0.5rem;margin:0 0 0.5rem;margin:0 0 0.5rem;margin:0;">v1.0.0-alpha</p>
+      <p>v0.9.0</p>
+      <p>v0.8.2</p>
+      <p>v0.8.1</p>
+      <p>v0.8.0</p>
+      <p>v0.7.0</p>
+      <p>v0.6.0</p>
+      <p>v0.5.0</p>
+      <p>v0.4.0</p>
+      <p>v0.3.0</p>
+    </div>
+  </div>
+  <ExampleCode>{"<div class=\"scroll-area\" style=\"height:12rem;\">\n  <!-- long content -->\n</div>"}</ExampleCode>
+</Example>
+
+<SourceFiles component="scroll-area" section="css">
+  <SourceNote for="css">Styles for the scroll-area component. Uses design tokens for colors, spacing, and radius.</SourceNote>
+</SourceFiles>
+
+</DocPage>

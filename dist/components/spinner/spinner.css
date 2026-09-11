@@ -6,6 +6,11 @@
     color: var(--muted-foreground);
     flex-shrink: 0;
 
+    &[data-size="xs"] {
+      width: 0.625rem;
+      height: 0.625rem;
+    }
+
     &[data-size="sm"] {
       width: 0.875rem;
       height: 0.875rem;
@@ -19,6 +24,11 @@
     &[data-size="lg"] {
       width: 1.5rem;
       height: 1.5rem;
+    }
+
+    &[data-size="xl"] {
+      width: 2rem;
+      height: 2rem;
     }
   }
 

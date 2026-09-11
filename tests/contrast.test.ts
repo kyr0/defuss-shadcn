@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 // Vite ?raw imports instead of node:fs — Vitest runs this suite in browser
 // mode (chromium), where the filesystem isn't available.
-import themesSource from '../src/documentation/js/themes.ts?raw';
+import themesSource from '../src/documentation/runtime/themes.ts?raw';
 import tokensSource from '../src/theme/default-semantic-tokens.css?raw';
 import {
   contrastRatio,
@@ -34,7 +34,7 @@ describe('parseColor', () => {
     expect(parseColor('oklch(1 0 0)')).toEqual([255, 255, 255]);
     expect(parseColor('oklch(0 0 0)')).toEqual([0, 0, 0]);
     // saturated blue lands near a saturated sRGB blue
-    const [r, g, b] = parseColor('oklch(0.45 0.3 264)')!;
+    const [r, , b] = parseColor('oklch(0.45 0.3 264)')!;
     expect(b).toBeGreaterThan(100);
     expect(r).toBeLessThan(100);
   });

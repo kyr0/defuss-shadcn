@@ -1,0 +1,150 @@
+---
+title: "Checkbox"
+description: "Checkbox component — native checkboxes with custom styling and indeterminate state."
+slug: "checkbox"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="checkbox" title="Checkbox" component="checkbox">
+  A control that toggles between checked and unchecked. Built on native <code>&lt;input type="checkbox"&gt;</code> with CSS-only checkmark.
+</PageHeader>
+
+<SkillPanel component="checkbox">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;input type="checkbox"&gt;</code> element styled with CSS <code>appearance: none</code>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox" title="native toggle control with built-in keyboard and form support"><code>&lt;input type="checkbox"&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:checked" title="matches checked state"><code>:checked</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:indeterminate" title="matches the indeterminate (mixed) state"><code>:indeterminate</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible" title="keyboard-only focus ring"><code>:focus-visible</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:user-invalid" title="post-interaction validation styling"><code>:user-invalid</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.checkbox</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• The native <code>&lt;input type="checkbox"&gt;</code> provides all keyboard and screen reader support.</SkillText>
+  <SkillText dense>• Use <code>&lt;label&gt;</code> with <code>for</code> to associate the label text.</SkillText>
+  <SkillText dense>• Use <code>&lt;fieldset&gt;</code> + <code>&lt;legend&gt;</code> for checkbox groups.</SkillText>
+  <SkillText dense>• Use <code>aria-invalid="true"</code> for validation errors.</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• Use <code>indeterminate</code> property via JS for the indeterminate (mixed) state.</p>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• Styled with <code>appearance: none</code> and a custom checkmark via <code>::after</code> pseudo-element.</SkillText>
+  <SkillText dense>• The checkmark uses a CSS-only approach — no SVG or icon font needed.</SkillText>
+  <SkillText dense>• Indeterminate state is set via JavaScript: <code>checkbox.indeterminate = true;</code>.</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• In <code>forced-colors: active</code>, the checkbox reverts to <code>appearance: auto</code> so Windows High Contrast Mode controls rendering.</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>Basic checkbox with label.</ExampleHint>
+  <div class="checkbox-item">
+    <input class="checkbox" type="checkbox" id="d-terms" />
+    <label for="d-terms" style="font-size:0.875rem;">Accept terms and conditions</label>
+  </div>
+  <ExampleCode>{"<input class=\"checkbox\" type=\"checkbox\" id=\"terms\">\n<label for=\"terms\">Accept terms and conditions</label>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>With description</ExampleLabel>
+  <ExampleHint>Checkbox with helper text.</ExampleHint>
+  <div class="checkbox-item-block">
+    <input class="checkbox" type="checkbox" id="d-notify" style="margin-top:0.125rem;" aria-describedby="d-notify-desc" />
+    <div>
+      <label for="d-notify" style="font-size:0.875rem;font-weight:500;">Enable notifications</label>
+      <p class="field-description" id="d-notify-desc">You can enable or disable notifications at any time.</p>
+    </div>
+  </div>
+  <ExampleCode>{"<input class=\"checkbox\" type=\"checkbox\" id=\"notify\" aria-describedby=\"notify-desc\">\n<div>\n  <label for=\"notify\">Enable notifications</label>\n  <p class=\"field-description\" id=\"notify-desc\">...</p>\n</div>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Disabled</ExampleLabel>
+  <div style="display:flex;align-items:center;gap:0.75rem;">
+    <div class="checkbox-item">
+      <input class="checkbox" type="checkbox" id="d-dis" disabled />
+      <label for="d-dis">Disabled</label>
+    </div>
+    <div class="checkbox-item">
+      <input class="checkbox" type="checkbox" id="d-dis-checked" disabled checked />
+      <label for="d-dis-checked">Disabled checked</label>
+    </div>
+  </div>
+  <ExampleCode>{"<input class=\"checkbox\" type=\"checkbox\" disabled>\n<input class=\"checkbox\" type=\"checkbox\" disabled checked>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Checked by default</ExampleLabel>
+  <div class="checkbox-item">
+    <input class="checkbox" type="checkbox" id="d-pre-checked" checked />
+    <label for="d-pre-checked" style="font-size:0.875rem;">Pre-checked option</label>
+  </div>
+  <ExampleCode>{"<input class=\"checkbox\" type=\"checkbox\" id=\"option\" checked>\n<label for=\"option\">Pre-checked option</label>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Indeterminate</ExampleLabel>
+  <ExampleHint>Set via JavaScript: <code>checkbox.indeterminate = true</code>.</ExampleHint>
+  <div class="checkbox-item">
+    <input class="checkbox" type="checkbox" id="d-indeterminate" />
+    <label for="d-indeterminate" style="font-size:0.875rem;">Select all</label>
+  </div>
+  <script>{"document.getElementById('d-indeterminate').indeterminate = true;"}</script>
+  <ExampleCode>{"<input class=\"checkbox\" type=\"checkbox\" id=\"select-all\">\n<label for=\"select-all\">Select all</label>\n\n<script>\n  document.getElementById('select-all').indeterminate = true;\n</script>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Invalid</ExampleLabel>
+  <ExampleHint>Shows destructive border via <code>aria-invalid="true"</code>.</ExampleHint>
+  <div class="checkbox-item">
+    <input class="checkbox" type="checkbox" id="d-invalid" aria-invalid="true" />
+    <label for="d-invalid" style="font-size:0.875rem;">Accept terms and conditions</label>
+  </div>
+  <ExampleCode>{"<input class=\"checkbox\" type=\"checkbox\" aria-invalid=\"true\">\n<label for=\"terms\">Accept terms and conditions</label>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Group</ExampleLabel>
+  <ExampleHint>Multiple checkboxes in a group using <code>&lt;fieldset&gt;</code> and <code>&lt;legend&gt;</code>.</ExampleHint>
+  <fieldset style="border:none;padding:0;margin:0;" aria-describedby="d-grp-desc">
+    <legend style="font-size:0.875rem;font-weight:500;margin-bottom:0.25rem;">Select items to display on the desktop:</legend>
+    <p class="field-description" id="d-grp-desc" style="margin-bottom:0.75rem;">Choose which items are visible.</p>
+    <div style="display:flex;flex-direction:column;gap:0.5rem;">
+      <div class="checkbox-item">
+        <input class="checkbox" type="checkbox" id="d-grp-1" checked />
+        <label for="d-grp-1" style="font-size:0.875rem;">Hard disks</label>
+      </div>
+      <div class="checkbox-item">
+        <input class="checkbox" type="checkbox" id="d-grp-2" checked />
+        <label for="d-grp-2" style="font-size:0.875rem;">External disks</label>
+      </div>
+      <div class="checkbox-item">
+        <input class="checkbox" type="checkbox" id="d-grp-3" />
+        <label for="d-grp-3" style="font-size:0.875rem;">CDs, DVDs, and iPods</label>
+      </div>
+      <div class="checkbox-item">
+        <input class="checkbox" type="checkbox" id="d-grp-4" />
+        <label for="d-grp-4" style="font-size:0.875rem;">Connected servers</label>
+      </div>
+    </div>
+  </fieldset>
+  <ExampleCode>{"<fieldset aria-describedby=\"grp-desc\">\n  <legend>Select items to display on the desktop:</legend>\n  <p class=\"field-description\" id=\"grp-desc\">Choose which items are visible.</p>\n  <div class=\"checkbox-item\">\n    <input class=\"checkbox\" type=\"checkbox\" id=\"item-1\" checked>\n    <label for=\"item-1\">Hard disks</label>\n  </div>\n  <div class=\"checkbox-item\">\n    <input class=\"checkbox\" type=\"checkbox\" id=\"item-2\" checked>\n    <label for=\"item-2\">External disks</label>\n  </div>\n  <!-- ... more items -->\n</fieldset>"}</ExampleCode>
+</Example>
+
+<SourceFiles component="checkbox" section="css" />
+
+</DocPage>

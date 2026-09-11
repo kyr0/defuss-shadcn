@@ -14,16 +14,34 @@
        shadcn's -right-1 dot) and clipping cut it to a sliver. Circular
        rendering comes from border-radius: inherit on image/fallback instead. */
 
+    &[data-size="xs"] {
+      width: 1.5rem;
+      height: 1.5rem;
+      font-size: 0.5625rem;
+    }
+
     &[data-size="sm"] {
       width: 2rem;
       height: 2rem;
       font-size: 0.6875rem;
     }
 
+    &[data-size="md"] {
+      width: 2.5rem;
+      height: 2.5rem;
+      font-size: 0.75rem;
+    }
+
     &[data-size="lg"] {
       width: 3rem;
       height: 3rem;
       font-size: 0.875rem;
+    }
+
+    &[data-size="xl"] {
+      width: 4rem;
+      height: 4rem;
+      font-size: 1rem;
     }
   }
 

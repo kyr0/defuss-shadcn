@@ -6,7 +6,7 @@ import { startServer } from './server.ts';
  * Why: the documentation site IS the product's public face — if index.html
  * doesn't render, or the SPA router / sidebar filter break, every consumer
  * and agent reading the docs is misled. This exercises the real shipped
- * dist/documentation/ pages over HTTP: web-component shell, token +
+ * dist/documentation/ pages over HTTP: static chrome shell, token +
  * component CSS chain, SPA navigation (title/main/active-link/history), and
  * the nav filter ("search"), including the jsDelivr dogfooding note that
  * pairs the site with README's CDN quick start (AGENTS.md "README ↔ index
@@ -38,12 +38,12 @@ try {
   page.on('pageerror', (e) => { if (!VENDOR.test(e.message)) pageErrors.push(e.message); });
   await page.goto(`${server.url}${PAGE}`);
 
-  await check('page renders: web-component shell mounted', async () => {
-    await page.waitForSelector('site-header .header-brand, site-nav .nav-link', { timeout: 10_000 });
+  await check('page renders: static chrome shell rendered', async () => {
+    await page.waitForSelector('.site-header .header-brand, .site-sidebar .nav-link', { timeout: 10_000 });
     const counts = await page.evaluate(() => ({
-      header: !!document.querySelector('site-header .header-brand'),
-      links: document.querySelectorAll('site-nav .nav-link').length,
-      sections: document.querySelectorAll('site-nav .nav-section').length,
+      header: !!document.querySelector('.site-header .header-brand'),
+      links: document.querySelectorAll('.site-sidebar .nav-link').length,
+      sections: document.querySelectorAll('.site-sidebar .nav-section').length,
     }));
     assert.ok(counts.header, 'site-header did not render the brand');
     // brand must read "defuss-shadcn" — the pre-fork "shadcn-html" regressed once
@@ -89,7 +89,7 @@ try {
 
   await check('SPA navigation: nav click swaps title, main and active link', async () => {
     const titleBefore = await page.title();
-    await page.click('site-nav a.nav-link[href="badge.html"]');
+    await page.click('.site-sidebar a.nav-link[href="badge.html"]');
     await page.waitForFunction(
       (t: string) => document.title !== t, titleBefore, { timeout: 5_000 },
     );
@@ -122,7 +122,7 @@ try {
       await page.evaluate(
         () =>
           !!document.querySelector('.site-header .header-search .header-search-input[readonly]') &&
-          !document.querySelector('site-nav .nav-filter-input'),
+          !document.querySelector('.site-sidebar .nav-filter-input'),
       ),
       'search trigger missing in header (or a stale sidebar filter exists)',
     );

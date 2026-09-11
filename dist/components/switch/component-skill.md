@@ -52,8 +52,12 @@ supportedStates: default
 
 | `data-size` | Track width | Track height |
 |-------------|-------------|--------------|
+| `xs`        | `1.5rem`    | `0.875rem`   |
 | `sm`        | `1.75rem`   | `1rem`       |
+| `md`        | `2.25rem`   | `1.25rem`    |
 | *(default)* | `2.25rem`   | `1.25rem`    |
+| `lg`        | `2.75rem`   | `1.5rem`     |
+| `xl`        | `3.25rem`   | `1.75rem`    |
 
 ---
 

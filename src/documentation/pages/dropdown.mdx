@@ -1,0 +1,152 @@
+---
+title: "Dropdown Menu"
+description: "Dropdown Menu component — action menus using native popover API."
+slug: "dropdown"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="dropdown" title="Dropdown Menu" component="dropdown" crumb="dropdown-menu">
+  Context menu built on the <code>popover</code> API. Light-dismiss is automatic. Supports groups, shortcuts, separators, and destructive items. Animated with <code>@starting-style</code>.
+</PageHeader>
+
+<SkillPanel component="dropdown">
+  <SkillField label="Native basis">
+<SkillText><code>popover</code> API + <code>&lt;button&gt;</code> trigger. The browser provides light-dismiss</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Popover_API" title="top-layer rendering and light-dismiss (click outside to close)"><code>Popover API</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning" title="positions dropdown relative to trigger without JavaScript"><code>CSS Anchor Positioning</code></ApiPill>
+    <ApiPill href="https://www.w3.org/WAI/ARIA/apg/patterns/menubar/" title="keyboard navigation and role contract for menu items"><code>WAI-ARIA Menu pattern</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style" title="entry animation for popover"><code>@starting-style</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="suppresses open/close animation"><code>prefers-reduced-motion</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" title="maps to system colors"><code>forced-colors</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.dropdown-content</code>
+    <code>.dropdown-item</code>
+    <code>.dropdown-separator</code>
+    <code>.dropdown-label</code>
+    <code>.dropdown-shortcut</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Variants (data-variant)">
+<SkillGrid>
+    <Variant name="destructive" description="Alternate background styling" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText>• <code>data-dropdown-trigger</code></SkillText>
+  </SkillField>
+
+  <SkillField label="State attributes (managed by JS)">
+<SkillText>• <code>data-highlighted</code></SkillText>
+  </SkillField>
+
+  <SkillField label="Wiring conventions">
+<SkillText>• <code>data-dropdown-trigger</code> on a <code>&lt;button&gt;</code> — opens the component (JS adds the native <code>popovertarget</code> command)</SkillText>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• Always use <code>popover</code> attribute for the menu — it renders in the top layer and avoids overflow clipping</SkillText>
+  <SkillText dense>• CSS anchor positioning (<code>position-anchor</code>, <code>anchor()</code>) handles placement — no JS positioning needed</SkillText>
+  <SkillText dense>• <code>position-try: flip-block</code> automatically flips the menu above the trigger if there's no room below</SkillText>
+  <SkillText dense>• The <code>popover</code> API handles light-dismiss (click outside) automatically</SkillText>
+  <SkillText dense>• For submenus, nest another <code>\[popover\]</code> element triggered by a <code>menuitem</code> with <code>aria-haspopup="menu"</code></SkillText>
+  <SkillText dense>• Escape closes the menu and returns focus to the trigger</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• Menu items use <code>tabindex="-1"</code> — only arrow keys move focus (roving focus pattern)</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first previewStyle="gap:0.75rem;min-height:14rem;align-items:flex-start;padding-top:2.5rem;">
+  <ExampleLabel>Standard Menu</ExampleLabel>
+  <ExampleHint>Full-featured menu with icons, keyboard shortcuts, groups, separators, a disabled item, and a destructive action.</ExampleHint>
+  <button class="btn" data-variant="default" aria-haspopup="menu" aria-expanded="false" aria-controls="demo-dropdown" data-dropdown-trigger="demo-dropdown"> Options <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6" /></svg></button>
+  <div id="demo-dropdown" role="menu" popover class="dropdown-content" data-state-demo aria-label="Options menu" style="min-width:12rem;">
+    <div class="dropdown-label">My Account</div>
+    <div role="group" aria-label="Navigation">
+      <button role="menuitem" class="dropdown-item" tabindex="-1"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /></svg> Profile <span class="dropdown-shortcut">⇧⌘P</span></button>
+      <button role="menuitem" class="dropdown-item" tabindex="-1"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /><circle cx="12" cy="12" r="3" /></svg> Settings <span class="dropdown-shortcut">⌘S</span></button>
+      <button role="menuitem" class="dropdown-item" tabindex="-1" disabled><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" x2="12" y1="3" y2="15" /></svg> Upload <span class="dropdown-shortcut">⌘U</span></button>
+    </div>
+    <div class="dropdown-separator" role="separator" />
+    <div role="group" aria-label="Actions">
+      <button role="menuitem" class="dropdown-item" tabindex="-1"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" /></svg> Export <span class="dropdown-shortcut">⌘E</span></button>
+      <button role="menuitem" class="dropdown-item" data-variant="destructive" tabindex="-1"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg> Delete <span class="dropdown-shortcut">⌘⌫</span></button>
+    </div>
+  </div>
+  <ExampleCode>{"<!-- Trigger -->\n<button class=\"btn\" data-variant=\"default\"\n        aria-haspopup=\"menu\" aria-expanded=\"false\"\n        aria-controls=\"demo-dropdown\"\n        data-dropdown-trigger=\"demo-dropdown\">\n  Options\n  <svg aria-hidden=\"true\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\"\n       fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">\n    <path d=\"m6 9 6 6 6-6\"/>\n  </svg>\n</button>\n\n<!-- Menu -->\n<div id=\"demo-dropdown\" role=\"menu\" popover\n     class=\"dropdown-content\" aria-label=\"Options menu\"\n     style=\"min-width:12rem;\">\n  <div class=\"dropdown-label\">My Account</div>\n  <div role=\"group\" aria-label=\"Navigation\">\n    <button role=\"menuitem\" class=\"dropdown-item\" tabindex=\"-1\">\n      <svg aria-hidden=\"true\" width=\"14\" height=\"14\">&hellip;</svg>\n      Profile\n      <span class=\"dropdown-shortcut\">⇧⌘P</span>\n    </button>\n    <button role=\"menuitem\" class=\"dropdown-item\" tabindex=\"-1\">\n      <svg aria-hidden=\"true\" width=\"14\" height=\"14\">&hellip;</svg>\n      Settings\n      <span class=\"dropdown-shortcut\">⌘S</span>\n    </button>\n    <button role=\"menuitem\" class=\"dropdown-item\"\n            tabindex=\"-1\" disabled>\n      <svg aria-hidden=\"true\" width=\"14\" height=\"14\">&hellip;</svg>\n      Upload\n      <span class=\"dropdown-shortcut\">⌘U</span>\n    </button>\n  </div>\n  <div class=\"dropdown-separator\" role=\"separator\"></div>\n  <div role=\"group\" aria-label=\"Actions\">\n    <button role=\"menuitem\" class=\"dropdown-item\" tabindex=\"-1\">\n      <svg aria-hidden=\"true\" width=\"14\" height=\"14\">&hellip;</svg>\n      Export\n      <span class=\"dropdown-shortcut\">⌘E</span>\n    </button>\n    <button role=\"menuitem\" class=\"dropdown-item\"\n            data-variant=\"destructive\" tabindex=\"-1\">\n      <svg aria-hidden=\"true\" width=\"14\" height=\"14\">&hellip;</svg>\n      Delete\n      <span class=\"dropdown-shortcut\">⌘⌫</span>\n    </button>\n  </div>\n</div>"}</ExampleCode>
+</Example>
+
+<Example first previewStyle="gap:0.75rem;min-height:14rem;align-items:flex-start;padding-top:2.5rem;">
+  <ExampleLabel>Checkbox &amp; Radio</ExampleLabel>
+  <ExampleHint>Use <code>menuitemcheckbox</code> for toggleable options and <code>menuitemradio</code> inside a <code>role="group"</code> for exclusive choices.</ExampleHint>
+  <button class="btn" data-variant="outline" aria-haspopup="menu" aria-expanded="false" aria-controls="demo-dropdown-checks" data-dropdown-trigger="demo-dropdown-checks"> View <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6" /></svg></button>
+  <div id="demo-dropdown-checks" role="menu" popover class="dropdown-content" aria-label="View options" style="min-width:11rem;">
+    <div class="dropdown-label">Appearance</div>
+    <div role="group" aria-label="Toggle columns">
+      <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="true" tabindex="-1">Status Bar</button>
+      <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="false" tabindex="-1">Activity Bar</button>
+      <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="true" tabindex="-1">Panel</button>
+    </div>
+    <div class="dropdown-separator" role="separator" />
+    <div class="dropdown-label">Layout</div>
+    <div role="group" aria-label="Layout style">
+      <button role="menuitemradio" class="dropdown-item dropdown-radio" aria-checked="true" tabindex="-1">Sidebar Left</button>
+      <button role="menuitemradio" class="dropdown-item dropdown-radio" aria-checked="false" tabindex="-1">Sidebar Right</button>
+    </div>
+  </div>
+  <ExampleCode>{"<!-- Trigger -->\n<button class=\"btn\" data-variant=\"outline\"\n        aria-haspopup=\"menu\" aria-expanded=\"false\"\n        aria-controls=\"demo-dropdown-checks\"\n        data-dropdown-trigger=\"demo-dropdown-checks\">\n  View\n  <svg aria-hidden=\"true\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\"\n       fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">\n    <path d=\"m6 9 6 6 6-6\"/>\n  </svg>\n</button>\n\n<!-- Checkbox / Radio Menu -->\n<div id=\"demo-dropdown-checks\" role=\"menu\" popover\n     class=\"dropdown-content\" aria-label=\"View options\"\n     style=\"min-width:11rem;\">\n  <div class=\"dropdown-label\">Appearance</div>\n  <div role=\"group\" aria-label=\"Toggle columns\">\n    <button role=\"menuitemcheckbox\"\n            class=\"dropdown-item dropdown-check\"\n            aria-checked=\"true\" tabindex=\"-1\">Status Bar</button>\n    <button role=\"menuitemcheckbox\"\n            class=\"dropdown-item dropdown-check\"\n            aria-checked=\"false\" tabindex=\"-1\">Activity Bar</button>\n    <button role=\"menuitemcheckbox\"\n            class=\"dropdown-item dropdown-check\"\n            aria-checked=\"true\" tabindex=\"-1\">Panel</button>\n  </div>\n  <div class=\"dropdown-separator\" role=\"separator\"></div>\n  <div class=\"dropdown-label\">Layout</div>\n  <div role=\"group\" aria-label=\"Layout style\">\n    <button role=\"menuitemradio\"\n            class=\"dropdown-item dropdown-radio\"\n            aria-checked=\"true\" tabindex=\"-1\">Sidebar Left</button>\n    <button role=\"menuitemradio\"\n            class=\"dropdown-item dropdown-radio\"\n            aria-checked=\"false\" tabindex=\"-1\">Sidebar Right</button>\n  </div>\n</div>"}</ExampleCode>
+</Example>
+
+<Example first previewStyle="gap:0.75rem;min-height:14rem;align-items:flex-start;padding-top:2.5rem;">
+  <ExampleLabel>Trigger Variants</ExampleLabel>
+  <ExampleHint>Any button variant can serve as a dropdown trigger. Here a <code>secondary</code> button and a <code>ghost</code> icon-only button open simple menus.</ExampleHint>
+  <button class="btn" data-variant="secondary" aria-haspopup="menu" aria-expanded="false" aria-controls="demo-dropdown-3" data-dropdown-trigger="demo-dropdown-3"> More <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6" /></svg></button>
+  <button class="btn" data-variant="ghost" data-size="icon" aria-haspopup="menu" aria-expanded="false" aria-controls="demo-dropdown-4" data-dropdown-trigger="demo-dropdown-4" aria-label="More options">
+    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <circle cx="12" cy="12" r="1" />
+      <circle cx="12" cy="5" r="1" />
+      <circle cx="12" cy="19" r="1" />
+    </svg>
+  </button>
+  <div id="demo-dropdown-3" role="menu" popover class="dropdown-content" aria-label="More options" style="min-width:10rem;">
+    <button role="menuitem" class="dropdown-item" tabindex="-1">Copy</button>
+    <button role="menuitem" class="dropdown-item" tabindex="-1">Paste</button>
+    <div class="dropdown-separator" role="separator" />
+    <button role="menuitem" class="dropdown-item" tabindex="-1">Select All</button>
+  </div>
+  <div id="demo-dropdown-4" role="menu" popover class="dropdown-content" aria-label="Actions" style="min-width:10rem;">
+    <button role="menuitem" class="dropdown-item" tabindex="-1">Edit</button>
+    <button role="menuitem" class="dropdown-item" tabindex="-1">Duplicate</button>
+    <div class="dropdown-separator" role="separator" />
+    <button role="menuitem" class="dropdown-item" data-variant="destructive" tabindex="-1">Delete</button>
+  </div>
+  <ExampleCode>{"<!-- Secondary trigger -->\n<button class=\"btn\" data-variant=\"secondary\"\n        aria-haspopup=\"menu\" aria-expanded=\"false\"\n        aria-controls=\"demo-dropdown-3\"\n        data-dropdown-trigger=\"demo-dropdown-3\">\n  More\n  <svg aria-hidden=\"true\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\"\n       fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">\n    <path d=\"m6 9 6 6 6-6\"/>\n  </svg>\n</button>\n\n<div id=\"demo-dropdown-3\" role=\"menu\" popover\n     class=\"dropdown-content\" aria-label=\"More options\"\n     style=\"min-width:10rem;\">\n  <button role=\"menuitem\" class=\"dropdown-item\" tabindex=\"-1\">Copy</button>\n  <button role=\"menuitem\" class=\"dropdown-item\" tabindex=\"-1\">Paste</button>\n  <div class=\"dropdown-separator\" role=\"separator\"></div>\n  <button role=\"menuitem\" class=\"dropdown-item\" tabindex=\"-1\">Select All</button>\n</div>\n\n<!-- Ghost icon trigger -->\n<button class=\"btn\" data-variant=\"ghost\" data-size=\"icon\"\n        aria-haspopup=\"menu\" aria-expanded=\"false\"\n        aria-controls=\"demo-dropdown-4\"\n        data-dropdown-trigger=\"demo-dropdown-4\"\n        aria-label=\"More options\">\n  <svg aria-hidden=\"true\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\"\n       fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"\n       stroke-linecap=\"round\">\n    <circle cx=\"12\" cy=\"12\" r=\"1\"/>\n    <circle cx=\"12\" cy=\"5\" r=\"1\"/>\n    <circle cx=\"12\" cy=\"19\" r=\"1\"/>\n  </svg>\n</button>\n\n<div id=\"demo-dropdown-4\" role=\"menu\" popover\n     class=\"dropdown-content\" aria-label=\"Actions\"\n     style=\"min-width:10rem;\">\n  <button role=\"menuitem\" class=\"dropdown-item\" tabindex=\"-1\">Edit</button>\n  <button role=\"menuitem\" class=\"dropdown-item\" tabindex=\"-1\">Duplicate</button>\n  <div class=\"dropdown-separator\" role=\"separator\"></div>\n  <button role=\"menuitem\" class=\"dropdown-item\"\n          data-variant=\"destructive\" tabindex=\"-1\">Delete</button>\n</div>"}</ExampleCode>
+</Example>
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per menu through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
+    <li><code>default</code> — closed (the authored state; the trigger toggles it)</li>
+    <li><code>open</code> — shown via the native <code>showPopover()</code>, first item highlighted</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first demo carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/dropdown-\{state\}.png</code>.</p>
+</StatesSection>
+
+<SourceFiles component="dropdown" section="css" />
+
+<SourceFiles component="dropdown" section="js">
+  <SourceNote for="js">Wires triggers to popover menus. CSS anchor positioning handles placement. Keyboard navigation (Arrow keys, Home/End, Escape, Enter/Space), typeahead, and checkbox/radio state management.</SourceNote>
+</SourceFiles>
+
+</DocPage>

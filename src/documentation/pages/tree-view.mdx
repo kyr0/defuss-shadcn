@@ -1,0 +1,159 @@
+---
+title: "Tree View"
+description: "Tree View component — hierarchical data display with expand/collapse."
+slug: "tree-view"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="tree-view" title="Tree View" component="tree-view">
+  A hierarchical tree for browsing nested data like file systems. Uses native <code>&lt;details&gt;</code> for expand/collapse with ARIA tree roles.
+</PageHeader>
+
+<SkillPanel component="tree-view">
+  <SkillField label="Native basis">
+<SkillText>Nested <code>&lt;ul&gt;</code> elements with <code>role="tree"</code> / <code>role="treeitem"</code> ARIA pattern for hierarchical data.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul" title="nested list structure"><code>&lt;ul&gt;</code></ApiPill>
+    <ApiPill href="https://www.w3.org/WAI/ARIA/apg/patterns/treeview/" title="ARIA tree roles and keyboard navigation"><code>Tree View WAI-ARIA pattern</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details" title="native expand/collapse for branches"><code>&lt;details&gt;</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.tree</code>
+    <code>.tree-group</code>
+    <code>.tree-item</code>
+    <code>.tree-branch</code>
+    <code>.tree-branch-trigger</code>
+    <code>.tree-leaf</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• Root <code>&lt;ul&gt;</code> has <code>role="tree"</code> and <code>aria-label</code></SkillText>
+  <SkillText dense>• Branch items have <code>role="treeitem"</code> and <code>aria-expanded</code></SkillText>
+  <SkillText dense>• Leaf items have <code>role="treeitem"</code> without <code>aria-expanded</code></SkillText>
+  <SkillText dense>• Nested groups use <code>role="group"</code></SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• Keyboard: Arrow keys navigate, Enter/Space toggles branches</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>File Explorer</ExampleLabel>
+  <ExampleHint>Nested tree with folders and files.</ExampleHint>
+  <div style="max-width:18rem;border:1px solid var(--border);border-radius:var(--radius-lg);padding:0.5rem;">
+    <ul class="tree" role="tree" aria-label="File explorer">
+      <li class="tree-item" role="treeitem" aria-expanded="true">
+        <details class="tree-branch" open>
+          <summary class="tree-branch-trigger" tabindex="0">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" />
+            </svg>
+            <span>src</span>
+          </summary>
+          <ul class="tree-group" role="group">
+            <li class="tree-item" role="treeitem" aria-expanded="false">
+              <details class="tree-branch" data-state-demo>
+                <summary class="tree-branch-trigger" tabindex="0">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m9 18 6-6-6-6" />
+                  </svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" />
+                  </svg>
+                  <span>components</span>
+                </summary>
+                <ul class="tree-group" role="group">
+                  <li class="tree-item" role="treeitem">
+                    <span class="tree-leaf" tabindex="0">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+                        <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+                      </svg>
+                      <span>button.tsx</span>
+                    </span>
+                  </li>
+                  <li class="tree-item" role="treeitem">
+                    <span class="tree-leaf" tabindex="0">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+                        <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+                      </svg>
+                      <span>card.tsx</span>
+                    </span>
+                  </li>
+                </ul>
+              </details>
+            </li>
+            <li class="tree-item" role="treeitem">
+              <span class="tree-leaf" tabindex="0">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+                  <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+                </svg>
+                <span>index.ts</span>
+              </span>
+            </li>
+            <li class="tree-item" role="treeitem">
+              <span class="tree-leaf" tabindex="0">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+                  <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+                </svg>
+                <span>globals.css</span>
+              </span>
+            </li>
+          </ul>
+        </details>
+      </li>
+      <li class="tree-item" role="treeitem">
+        <span class="tree-leaf" tabindex="0">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+            <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+          </svg>
+          <span>package.json</span>
+        </span>
+      </li>
+      <li class="tree-item" role="treeitem">
+        <span class="tree-leaf" tabindex="0">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+            <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+          </svg>
+          <span>README.md</span>
+        </span>
+      </li>
+    </ul>
+  </div>
+  <ExampleCode>{"<ul class=\"tree\" role=\"tree\" aria-label=\"File explorer\">\n  <li class=\"tree-item\" role=\"treeitem\" aria-expanded=\"true\">\n    <details class=\"tree-branch\" open>\n      <summary class=\"tree-branch-trigger\">\n        <svg>...chevron...</svg>\n        <svg>...folder...</svg>\n        <span>src</span>\n      </summary>\n      <ul class=\"tree-group\" role=\"group\">\n        <li class=\"tree-item\" role=\"treeitem\">\n          <span class=\"tree-leaf\">\n            <svg>...file...</svg>\n            <span>index.ts</span>\n          </span>\n        </li>\n      </ul>\n    </details>\n  </li>\n</ul>"}</ExampleCode>
+</Example>
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
+    <li><code>default</code> — the branch's authored open/closed state (restored from the init snapshot)</li>
+    <li><code>expanded</code> — branch open, children visible (per-branch API; <code>aria-expanded</code> stays in sync via the toggle event)</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/tree-view-\{state\}.png</code>.</p>
+</StatesSection>
+
+<SourceFiles component="tree-view" section="css">
+  <SourceNote for="css">Styles for the tree-view component. Uses design tokens for colors, spacing, and radius.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="tree-view" section="js">
+  <SourceNote for="js">Interaction logic for the tree-view component. Uses data attributes for wiring.</SourceNote>
+</SourceFiles>
+
+</DocPage>

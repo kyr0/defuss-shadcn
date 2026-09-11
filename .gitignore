@@ -20,3 +20,9 @@ tmp/
 issues/
 
 .playwright-mcp/
+
+# defuss-ssg build staging + compiled docs runtime
+.ssg-temp/
+src/documentation/.ssg-temp/
+src/documentation/dist/
+src/documentation/public/js/

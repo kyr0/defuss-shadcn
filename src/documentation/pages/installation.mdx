@@ -1,0 +1,92 @@
+---
+title: "Installation"
+description: "Install defuss-shadcn — copy CSS files, link tokens, and start building. No npm, no bundler required."
+slug: "installation"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="installation" title="Installation">
+  Each component is a self-contained folder with a static component skill, a stylesheet, and a JavaScript file if needed. No npm. No build step.
+</PageHeader>
+
+<h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 1rem;">Quick start</h2>
+
+<p class="text-sm text-muted-foreground mb-6">All files are served via <DocLink href="https://www.jsdelivr.com" target="_blank">jsDelivr</DocLink> CDN directly from the GitHub repo. No download or install required — just reference the URLs in your HTML.</p>
+
+<div class="flex flex-col gap-8">
+  <div>
+    <div class="flex items-center gap-3 mb-3">
+      <span style="width:1.625rem;height:1.625rem;border-radius:50%;background:var(--primary);color:var(--primary-foreground);font-size:0.75rem;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</span>
+      <h3 style="margin:0;font-size:1rem;font-weight:500;">Add a theme</h3>
+    </div>
+    <pre><code class="language-markup">{"<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/default-semantic-tokens.css\">"}</code></pre>
+    <p class="text-sm text-muted-foreground mt-2">This defines every token for the default light and dark theme. To switch themes, you just switch this file — that's all the theme selector in this documentation site is doing. Compatible with <DocLink href="https://tweakcn.com" target="_blank">tweakcn.com</DocLink> theme exports.</p>
+  </div>
+  <div>
+    <div class="flex items-center gap-3 mb-3">
+      <span style="width:1.625rem;height:1.625rem;border-radius:50%;background:var(--primary);color:var(--primary-foreground);font-size:0.75rem;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</span>
+      <h3 style="margin:0;font-size:1rem;font-weight:500;">Add the icons</h3>
+    </div>
+    <pre><code class="language-markup">{"<script src=\"https://unpkg.com/lucide@1.8.0\"></script>\n<script>lucide.createIcons();</script>"}</code></pre>
+    <p class="text-sm text-muted-foreground mt-2"><DocLink href="https://lucide.dev" target="_blank">Lucide</DocLink> provides ~1,500 icons via CDN. Use <code>&lt;i data-lucide="name"&gt;&lt;/i&gt;</code> anywhere in your HTML. The script replaces each element with an inline SVG on page load. See the <DocLink href="icon.html">Icon</DocLink> page for details.</p>
+  </div>
+  <div>
+    <div class="flex items-center gap-3 mb-3">
+      <span style="width:1.625rem;height:1.625rem;border-radius:50%;background:var(--primary);color:var(--primary-foreground);font-size:0.75rem;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</span>
+      <h3 style="margin:0;font-size:1rem;font-weight:500;">Add the components</h3>
+    </div>
+    <pre><code class="language-markup">{"<!-- Everything at once: the bundle -->\n<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.css\">\n<script type=\"module\" src=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.js\"></script>\n\n<!-- …or CSS — pick what you need -->\n<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/button/button.css\">\n<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.css\">\n\n<!-- JS — when the component needs it -->\n<script type=\"module\" src=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.js\"></script>"}</code></pre>
+    <p class="text-sm text-muted-foreground mt-2"><code>all.css</code> / <code>all.js</code> bundle every component — one stylesheet, one module script, done (this documentation site loads exactly these two files). Prefer a smaller payload? Each component also lives in <code>components/\{name\}/</code> with its own <code>.css</code> and <code>.js</code> when needed — include only the components you use, they're independent of each other.</p>
+  </div>
+  <div>
+    <div class="flex items-center gap-3 mb-3">
+      <span style="width:1.625rem;height:1.625rem;border-radius:50%;background:var(--primary);color:var(--primary-foreground);font-size:0.75rem;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</span>
+      <h3 style="margin:0;font-size:1rem;font-weight:500;">Read the component skill, write the HTML</h3>
+    </div>
+    <pre><code class="language-markup">{"<button class=\"btn\" data-variant=\"default\"\n        data-dialog-trigger=\"confirm\"\n        aria-haspopup=\"dialog\">\n  Open Dialog\n</button>\n\n<dialog id=\"confirm\" class=\"dialog\"\n        role=\"dialog\" aria-modal=\"true\"\n        aria-labelledby=\"confirm-title\">\n  <div class=\"dialog-content\">\n    <div class=\"dialog-header\">\n      <h2 class=\"dialog-title\" id=\"confirm-title\">Are you sure?</h2>\n      <p class=\"dialog-description\">This action cannot be undone.</p>\n    </div>\n    <div class=\"dialog-footer\">\n      <button class=\"btn\" data-variant=\"outline\" data-dialog-close>Cancel</button>\n      <button class=\"btn\" data-variant=\"default\">Confirm</button>\n    </div>\n  </div>\n</dialog>"}</code></pre>
+    <p class="text-sm text-muted-foreground mt-2">Each component folder has a <code>component-skill.md</code> that documents the exact HTML structure, attributes, variants, and ARIA. Read it, copy the pattern, fill in your content. The CSS and JS handle the rest.</p>
+  </div>
+  <div>
+    <div class="flex items-center gap-3 mb-3">
+      <span style="width:1.625rem;height:1.625rem;border-radius:50%;background:var(--primary);color:var(--primary-foreground);font-size:0.75rem;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">5</span>
+      <h3 style="margin:0;font-size:1rem;font-weight:500;">That's it</h3>
+    </div>
+    <p class="text-sm text-muted-foreground">Serve your HTML via any local server (e.g. <code>npx serve</code>). ES modules require HTTP — they don't run from <code>file://</code>. Dark mode toggles automatically when you add <code>class="dark"</code> to <code>&lt;html&gt;</code>.</p>
+  </div>
+</div>
+
+<div style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border);">
+  <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.75rem;">Pinning a version</h2>
+  <p class="text-sm text-muted-foreground mb-3">Replace <code>@latest</code> with a specific version tag to lock your project to a release:</p>
+  <pre><code class="language-markup">{"<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@v0.1.1/dist/theme/default-semantic-tokens.css\">"}</code></pre>
+  <p class="text-sm text-muted-foreground mt-2">This ensures your project won't break when new versions are published. Check the <DocLink href="https://github.com/kyr0/defuss-shadcn/tags" target="_blank">releases page</DocLink> for available versions.</p>
+</div>
+
+<div style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border);">
+  <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.75rem;">Self-hosting</h2>
+  <p class="text-sm text-muted-foreground mb-3">Download the full system and drop it into any project. All the files are static — no build step, no dependencies. Point an AI at the folder and it has everything it needs: component skills to read, CSS to include, JS to wire up, and this entire documentation site with working examples of every component.</p>
+  <p class="mb-4">
+    <a href="https://github.com/kyr0/defuss-shadcn/archive/refs/heads/main.zip" class="btn" data-variant="outline" style="text-decoration:none;"><i data-lucide="download" style="width:1rem;height:1rem;" /> Download latest (.zip)</a>
+  </p>
+</div>
+
+<div style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border);">
+  <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.75rem;">Component folder structure</h2>
+  <pre><code>{"components/\n├-- all.css      ← bundle: every component stylesheet (readable)\n├-- all.min.css  ← minified bundle\n├-- all.min.css.map\n├-- all.js       ← bundle: every component's behavior (readable)\n├-- all.js.map   ← source map back to the .ts sources\n├-- all.min.js   ← minified bundle\n├-- all.min.js.map\n└-- dialog/\n    ├-- component-skill.md    ← HTML structure, attributes, ARIA (read this first)\n    ├-- dialog.css   ← stylesheet (include via <link>)\n    ├-- dialog.min.css       ← minified stylesheet\n    ├-- dialog.js    ← interaction behavior (include via <script type=\"module\">)\n    ├-- dialog.js.map        ← source map for dialog.js\n    ├-- dialog.min.js        ← minified behavior\n    └-- dialog.min.js.map    ← source map for dialog.min.js"}</code></pre>
+  <p class="text-sm text-muted-foreground mt-2">Some components — like Button and Badge — are CSS-only. No JavaScript needed.</p>
+</div>
+
+<div style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border);">
+  <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.75rem;">Minified builds &amp; source maps</h2>
+  <p class="text-sm text-muted-foreground mb-3">Every component also ships minified twins, generated at build time with <DocLink href="https://oxc.rs" target="_blank">oxc-minify</DocLink> (JS) and <DocLink href="https://lightningcss.dev" target="_blank">Lightning CSS</DocLink> (CSS). Swap the extension to <code>.min.css</code> / <code>.min.js</code> in any URL:</p>
+  <pre><code class="language-markup">{"<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.min.css\">\n<script type=\"module\" src=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.min.js\"></script>"}</code></pre>
+  <p class="text-sm text-muted-foreground mt-2">Minification changes no behavior — the State API (<code>el.api.setState()</code>), globals and <code>data-\*</code> attributes work identically. Debugging stays intact: <code>dialog.js.map</code> maps the readable file back to its source and <code>dialog.min.js.map</code> maps the minified file through it; devtools pick both up automatically via <code>sourceMappingURL</code>, so you can set breakpoints in the original source even when loading the <code>.min.js</code>.</p>
+  <p class="text-sm text-muted-foreground" style="margin-top:0.75rem;">The bundle ships the same way: <code>all.min.css</code> (+ <code>all.min.css.map</code>) and <code>all.min.js</code> (+ <code>all.min.js.map</code>) are the minified twins of <code>all.css</code> / <code>all.js</code> — swap them in by URL alone:</p>
+  <pre><code class="language-markup">{"<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.min.css\">\n<script type=\"module\" src=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.min.js\"></script>"}</code></pre>
+  <p class="text-sm text-muted-foreground" style="margin-top:0.75rem;">Readable and minified files ship from the same source per release, so you can mix them freely — minified in production, readable while developing — and switch back by URL alone.</p>
+</div>
+
+</DocPage>

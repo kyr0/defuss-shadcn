@@ -1,0 +1,125 @@
+---
+title: "Navigation Menu"
+description: "Navigation Menu component — site-level navigation with dropdowns."
+slug: "navigation-menu"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="navigation-menu" title="Navigation Menu" component="navigation-menu">
+  Site-level navigation with dropdown content panels.
+</PageHeader>
+
+<SkillPanel component="navigation-menu">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;nav&gt;</code> + <code>&lt;ul&gt;</code> for site-level navigation with dropdown panels.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav" title="navigation landmark"><code>&lt;nav&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Popover_API" title="dropdown panels"><code>popover API</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#popovertarget" title="declarative trigger"><code>popovertarget</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning" title="positions dropdown relative to trigger"><code>CSS Anchor Positioning</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style" title="entry animation"><code>@starting-style</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="chevron rotation on open state"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="suppresses animations"><code>prefers-reduced-motion</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" title="maps border to system color"><code>forced-colors</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.nav-menu-list</code>
+    <code>.nav-menu-link</code>
+    <code>.nav-menu-trigger</code>
+    <code>.nav-menu-content</code>
+    <code>.nav-menu-content-link</code>
+  </SkillRow>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Default</ExampleLabel>
+  <nav class="nav-menu" aria-label="Main">
+    <ul class="nav-menu-list">
+      <li class="nav-menu-item">
+        <a class="nav-menu-link" href="#">Home</a>
+      </li>
+      <li class="nav-menu-item">
+        <a class="nav-menu-link" href="#">About</a>
+      </li>
+      <li class="nav-menu-item">
+        <a class="nav-menu-link" href="#">Contact</a>
+      </li>
+    </ul>
+  </nav>
+  <ExampleCode>{"<nav class=\"nav-menu\" aria-label=\"Main\">\n  <ul class=\"nav-menu-list\">\n    <li class=\"nav-menu-item\"><a class=\"nav-menu-link\" href=\"#\">Home</a></li>\n    <li class=\"nav-menu-item\">\n      <button class=\"nav-menu-trigger\" popovertarget=\"dd\">Products</button>\n      <div class=\"nav-menu-content\" id=\"dd\" popover>...</div>\n    </li>\n  </ul>\n</nav>"}</ExampleCode>
+</Example>
+
+<Example previewStyle="min-height: 14rem;">
+  <ExampleLabel>With dropdowns</ExampleLabel>
+  <ExampleHint>Triggers open anchor-positioned content panels. Chevron rotates when open.</ExampleHint>
+  <nav class="nav-menu" aria-label="Site navigation">
+    <ul class="nav-menu-list">
+      <li class="nav-menu-item">
+        <button class="nav-menu-trigger" popovertarget="nav-products"> Products <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg></button>
+        <div class="nav-menu-content" id="nav-products" popover data-state-demo>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">
+            <strong>Analytics</strong>
+            <p>View your dashboard and metrics</p>
+          </a>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">
+            <strong>Automation</strong>
+            <p>Build workflows and integrations</p>
+          </a>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">
+            <strong>Reports</strong>
+            <p>Generate custom data reports</p>
+          </a>
+        </div>
+      </li>
+      <li class="nav-menu-item">
+        <button class="nav-menu-trigger" popovertarget="nav-resources"> Resources <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg></button>
+        <div class="nav-menu-content" id="nav-resources" popover>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">
+            <strong>Documentation</strong>
+            <p>Guides and API reference</p>
+          </a>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">
+            <strong>Blog</strong>
+            <p>Latest news and updates</p>
+          </a>
+        </div>
+      </li>
+      <li class="nav-menu-item">
+        <a class="nav-menu-link" href="#" onclick="event.preventDefault()">Pricing</a>
+      </li>
+      <li class="nav-menu-item">
+        <a class="nav-menu-link" href="#" onclick="event.preventDefault()">Contact</a>
+      </li>
+    </ul>
+  </nav>
+  <ExampleCode>{"<nav class=\"nav-menu\" aria-label=\"Site navigation\">\n  <ul class=\"nav-menu-list\">\n    <li class=\"nav-menu-item\">\n      <button class=\"nav-menu-trigger\" popovertarget=\"nav-products\">\n        Products\n        <svg aria-hidden=\"true\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\"\n             fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">\n          <path d=\"m6 9 6 6 6-6\"/>\n        </svg>\n      </button>\n      <div class=\"nav-menu-content\" id=\"nav-products\" popover>\n        <a class=\"nav-menu-content-link\" href=\"#\">\n          <strong>Analytics</strong>\n          <p>View your dashboard and metrics</p>\n        </a>\n        <a class=\"nav-menu-content-link\" href=\"#\">...</a>\n      </div>\n    </li>\n    <li class=\"nav-menu-item\">\n      <a class=\"nav-menu-link\" href=\"#\">Pricing</a>\n    </li>\n  </ul>\n</nav>"}</ExampleCode>
+</Example>
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
+    <li><code>default</code> — hidden (the authored state; the trigger toggles it)</li>
+    <li><code>open</code> — shown via the native <code>showPopover()</code>, anchored below its trigger</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/navigation-menu-\{state\}.png</code>.</p>
+</StatesSection>
+
+<SourceFiles component="navigation-menu" section="css">
+  <SourceNote for="css">Styles for the navigation-menu component. Uses design tokens for colors, spacing, and radius.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="navigation-menu" section="js">
+  <SourceNote for="js">Sets CSS anchor positioning names for trigger→content pairs. The <code>popover</code> API handles open/close natively.</SourceNote>
+</SourceFiles>
+
+</DocPage>

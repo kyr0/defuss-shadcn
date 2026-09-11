@@ -1,0 +1,72 @@
+---
+title: "Date Picker"
+description: "Date Picker component — native date inputs with calendar popover."
+slug: "date-picker"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="date-picker" title="Date Picker" component="date-picker">
+  A date selection input. Built on native <code>&lt;input type="date"&gt;</code> and <code>&lt;input type="datetime-local"&gt;</code> — the browser provides the calendar UI.
+</PageHeader>
+
+<SkillPanel component="date-picker">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;input type="date"&gt;</code> element with native browser date picker.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/date" title="native date picker with calendar UI"><code>&lt;input type="date"&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local" title="date and time picker"><code>&lt;input type="datetime-local"&gt;</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.input</code>
+    <code>.date-input</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• Reuses the <code>.input</code> class — the native date picker provides the calendar UI.</SkillText>
+  <SkillText dense>• No custom calendar implementation needed — the browser handles it.</SkillText>
+  <SkillText dense>• The calendar popup is rendered by the OS/browser and cannot be styled.</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• For a fully custom date picker, a custom calendar component would be needed.</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Date</ExampleLabel>
+  <ExampleHint>Native date picker.</ExampleHint>
+  <div style="width:100%;max-width:16rem;">
+    <label class="label" for="d-bday">Birthday</label>
+    <input class="date-input" type="date" id="d-bday" />
+  </div>
+  <ExampleCode>{"<input class=\"date-input\" type=\"date\" id=\"birthday\">"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Date and time</ExampleLabel>
+  <div style="width:100%;max-width:16rem;">
+    <label class="label" for="d-meet">Meeting</label>
+    <input class="date-input" type="datetime-local" id="d-meet" />
+  </div>
+  <ExampleCode>{"<input class=\"date-input\" type=\"datetime-local\" id=\"meeting\">"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>With constraints</ExampleLabel>
+  <div style="width:100%;max-width:16rem;">
+    <label class="label" for="d-start">Start date</label>
+    <input class="date-input" type="date" id="d-start" min="2024-01-01" max="2026-12-31" />
+  </div>
+  <ExampleCode>{"<input class=\"date-input\" type=\"date\" min=\"2024-01-01\" max=\"2026-12-31\">"}</ExampleCode>
+</Example>
+
+<SourceFiles component="date-picker" section="css" />
+
+</DocPage>

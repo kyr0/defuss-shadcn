@@ -1,0 +1,194 @@
+---
+title: "Sidebar"
+description: "Sidebar component — collapsible side navigation panel."
+slug: "sidebar"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="sidebar" title="Sidebar" component="sidebar">
+  A composable, themeable application sidebar with collapsible state, mobile sheet overlay, collapsible groups, submenus, badges, and keyboard shortcut (Cmd+B).
+</PageHeader>
+
+<SkillPanel component="sidebar">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;aside&gt;</code> + <code>&lt;nav&gt;</code> + <code>&lt;dialog&gt;</code> for a full application sidebar with collapsible state, mobile overlay, collapsible groups, and submenus.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/aside" title="complementary content landmark"><code>&lt;aside&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav" title="navigation landmark"><code>&lt;nav&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog" title="native modal for mobile overlay"><code>&lt;dialog&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details" title="collapsible groups and submenus"><code>&lt;details&gt; / &lt;summary&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style" title="slide-in animation"><code>@starting-style</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible" title="keyboard-only focus ring"><code>:focus-visible</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="suppresses all transitions"><code>prefers-reduced-motion</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.sidebar-layout</code>
+    <code>.app-sidebar</code>
+    <code>.sidebar-header</code>
+    <code>.sidebar-logo</code>
+    <code>.sidebar-content</code>
+    <code>.sidebar-nav</code>
+    <code>.sidebar-link</code>
+    <code>.sidebar-badge</code>
+    <code>.sidebar-section-title</code>
+    <code>.sidebar-group</code>
+    <code>.sidebar-submenu</code>
+    <code>.sidebar-footer</code>
+    <code>.sidebar-trigger</code>
+    <code>.sidebar-mobile</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Notes">
+<p class="text-muted-foreground" style="margin:0 0 0;">• While the mobile sheet is modal, <code>html:has(.sidebar-mobile:modal)</code> sets <code>overflow: hidden</code> + <code>scrollbar-gutter: stable</code> — the page behind cannot scroll and its position is preserved for when the sheet closes (no JS scroll-lock).</p>
+  </SkillField>
+</SkillPanel>
+
+<p class="text-sm font-medium mb-2 mt-6">Default</p>
+
+<p class="text-muted-foreground text-sm mb-4">Full sidebar with collapsible groups, submenus, badges, and toggle button. Press <kbd style="font-size:0.6875rem;padding:0.125rem 0.25rem;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--muted);font-family:var(--font-mono);">⌘B</kbd> to toggle.</p>
+
+<Example previewStyle="padding:0;overflow:hidden;height:24rem;">
+  <div style="display:flex;width:100%;height:100%;border-radius:var(--radius-lg);overflow:hidden;">
+    <aside class="app-sidebar" id="demo-sidebar" data-state="expanded" data-state-demo style="position:relative;height:100%;">
+      <div class="sidebar-header">
+        <a class="sidebar-logo" href="#">
+          <i data-lucide="command" style="width:1rem;height:1rem;" />
+          <span class="sidebar-logo-text">MyApp</span>
+        </a>
+      </div>
+      <div class="sidebar-content">
+        <details class="sidebar-group" open>
+          <summary>
+            <span>Platform</span>
+            <i data-lucide="chevron-right" style="width:0.875rem;height:0.875rem;" />
+          </summary>
+          <nav class="sidebar-nav">
+            <a class="sidebar-link" href="#" aria-current="page">
+              <i data-lucide="home" />
+              <span>Dashboard</span>
+            </a>
+            <a class="sidebar-link" href="#">
+              <i data-lucide="inbox" />
+              <span>Inbox</span>
+              <span class="sidebar-badge">12</span>
+            </a>
+            <details class="sidebar-submenu">
+              <summary>
+                <i data-lucide="settings" />
+                <span>Settings</span>
+                <i data-lucide="chevron-right" style="width:0.875rem;height:0.875rem;" />
+              </summary>
+              <nav class="sidebar-nav">
+                <a class="sidebar-link" href="#">
+                  <span>General</span>
+                </a>
+                <a class="sidebar-link" href="#">
+                  <span>Team</span>
+                </a>
+                <a class="sidebar-link" href="#">
+                  <span>Billing</span>
+                </a>
+              </nav>
+            </details>
+          </nav>
+        </details>
+        <details class="sidebar-group" open>
+          <summary>
+            <span>Projects</span>
+            <i data-lucide="chevron-right" style="width:0.875rem;height:0.875rem;" />
+          </summary>
+          <nav class="sidebar-nav">
+            <a class="sidebar-link" href="#">
+              <i data-lucide="folder" />
+              <span>Design System</span>
+            </a>
+            <a class="sidebar-link" href="#">
+              <i data-lucide="folder" />
+              <span>Marketing</span>
+            </a>
+          </nav>
+        </details>
+      </div>
+      <div class="sidebar-footer">
+        <span>user@example.com</span>
+      </div>
+    </aside>
+    <div style="flex:1;padding:1rem;display:flex;align-items:flex-start;gap:0.5rem;background:var(--background);">
+      <button class="sidebar-trigger" data-sidebar-trigger="demo-sidebar" aria-label="Toggle sidebar">
+        <i data-lucide="panel-left" />
+      </button>
+      <span class="text-muted-foreground" style="font-size:0.875rem;padding-top:0.375rem;">Main content area</span>
+    </div>
+  </div>
+  <ExampleCode>{"<div class=\"sidebar-layout\">\n  <aside class=\"app-sidebar\" id=\"my-sidebar\" data-state=\"expanded\">\n    <div class=\"sidebar-header\">\n      <a class=\"sidebar-logo\" href=\"/\">MyApp</a>\n    </div>\n    <div class=\"sidebar-content\">\n      <details class=\"sidebar-group\" open>\n        <summary><span>Platform</span> <i data-lucide=\"chevron-right\"></i></summary>\n        <nav class=\"sidebar-nav\">\n          <a class=\"sidebar-link\" href=\"#\" aria-current=\"page\">\n            <i data-lucide=\"home\"></i> <span>Dashboard</span>\n          </a>\n          <a class=\"sidebar-link\" href=\"#\">\n            <i data-lucide=\"inbox\"></i> <span>Inbox</span>\n            <span class=\"sidebar-badge\">12</span>\n          </a>\n        </nav>\n      </details>\n    </div>\n    <div class=\"sidebar-footer\">user@example.com</div>\n  </aside>\n  <main style=\"flex:1\">\n    <button class=\"sidebar-trigger\" data-sidebar-trigger=\"my-sidebar\">\n      <i data-lucide=\"panel-left\"></i>\n    </button>\n  </main>\n</div>"}</ExampleCode>
+</Example>
+
+<Example previewStyle="padding:0;overflow:hidden;height:16rem;">
+  <ExampleLabel>Right Side</ExampleLabel>
+  <ExampleHint>Add <code>data-side="right"</code> to dock the sidebar to the right edge — the border flips to its left side automatically.</ExampleHint>
+  <div style="display:flex;width:100%;height:100%;border-radius:var(--radius-lg);overflow:hidden;">
+    <div style="flex:1;padding:1rem;display:flex;align-items:flex-start;gap:0.5rem;background:var(--background);">
+      <button class="sidebar-trigger" data-sidebar-trigger="demo-sidebar-right" aria-label="Toggle sidebar">
+        <i data-lucide="panel-right" />
+      </button>
+      <span class="text-muted-foreground" style="font-size:0.875rem;padding-top:0.375rem;">Main content area</span>
+    </div>
+    <aside class="app-sidebar" id="demo-sidebar-right" data-side="right" data-state="expanded" style="position:relative;height:100%;">
+      <div class="sidebar-header">
+        <a class="sidebar-logo" href="#">
+          <i data-lucide="command" style="width:1rem;height:1rem;" />
+          <span class="sidebar-logo-text">MyApp</span>
+        </a>
+      </div>
+      <div class="sidebar-content">
+        <nav class="sidebar-nav">
+          <a class="sidebar-link" href="#" aria-current="page">
+            <i data-lucide="home" />
+            <span>Dashboard</span>
+          </a>
+          <a class="sidebar-link" href="#">
+            <i data-lucide="inbox" />
+            <span>Inbox</span>
+          </a>
+          <a class="sidebar-link" href="#">
+            <i data-lucide="settings" />
+            <span>Settings</span>
+          </a>
+        </nav>
+      </div>
+      <div class="sidebar-footer">
+        <span>user@example.com</span>
+      </div>
+    </aside>
+  </div>
+  <ExampleCode>{"<div class=\"sidebar-layout\">\n  <main style=\"flex:1\">\n    <button class=\"sidebar-trigger\" data-sidebar-trigger=\"my-sidebar\">\n      <i data-lucide=\"panel-right\"></i>\n    </button>\n  </main>\n  <aside class=\"app-sidebar\" id=\"my-sidebar\" data-side=\"right\">\n    <div class=\"sidebar-header\">\n      <a class=\"sidebar-logo\" href=\"/\">MyApp</a>\n    </div>\n    <div class=\"sidebar-content\">\n      <nav class=\"sidebar-nav\">\n        <a class=\"sidebar-link\" href=\"#\" aria-current=\"page\">\n          <i data-lucide=\"home\"></i> <span>Dashboard</span>\n        </a>\n      </nav>\n    </div>\n  </aside>\n</div>"}</ExampleCode>
+</Example>
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
+    <li><code>default</code> — expanded (the authored width; <code>setState('default')</code> restores it)</li>
+    <li><code>collapsed</code> — icon-rail width via the documented <code>data-state="collapsed"</code> attribute</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/sidebar-\{state\}.png</code>.</p>
+</StatesSection>
+
+<SourceFiles component="sidebar" section="css">
+  <SourceNote for="css">Full sidebar layout with collapsible state, mobile dialog overlay, collapsible groups, submenus, badges, and responsive behavior.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="sidebar" section="js">
+  <SourceNote for="js">Toggle collapse, keyboard shortcut (Cmd+B / Ctrl+B), and mobile dialog management.</SourceNote>
+</SourceFiles>
+
+</DocPage>

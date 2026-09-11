@@ -1,10 +1,8 @@
 #!/usr/bin/env bun
 import { cpSync, existsSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
-import { buildSearchIndexText } from './lib/search-index.ts';
+import { join, relative } from 'node:path';
 import { SKILL_OUTPUT_FILE } from './lib/skill.ts';
 import { buildSkillText } from './lib/skill-files.ts';
-import { ARCH_OUTPUT_FILE, buildArchPageText } from './lib/arch-page.ts';
 
 /**
  * Why: the whole build — `bun run build` produces dist/ from src/ 1:1.
@@ -29,18 +27,7 @@ const SHARED_IMPORT = /import \{[^}]+\} from '\.\.\/\.\.\/shared\/state-api\.js'
 // fresh tree so deleted sources never linger in dist/
 rmSync(DIST, { recursive: true, force: true });
 
-// 0a. regenerate the Architecture Overview page from ARCH.md + the shell
-// template BEFORE the search index, so this page's own <h2>s are indexed.
-// verify's "architecture ↔ ARCH.md" gate fails when the two diverge (AGENTS.md).
-writeFileSync(join(SRC, 'documentation', ARCH_OUTPUT_FILE), buildArchPageText(SRC));
-
-// 0. regenerate the docs search index into src/ BEFORE copying, so the palette
-// index in dist/ (and the docs/ mirror) can never lag the doc pages. The
-// source of truth is the NAV array + every page's <h2>s, both of which live
-// in src/, so this is a pure function of the tree we're about to copy.
-writeFileSync(join(SRC, 'documentation/js/search-index.js'), buildSearchIndexText());
-
-// 0b. regenerate the agent-facing SKILL.md index from src/SKILL_tpl.md + the
+// 0. regenerate the agent-facing SKILL.md index from src/SKILL_tpl.md + the
 // component-skill.md frontmatter, BEFORE copying, so dist/SKILL.md (the file
 // agents actually read) can never lag the skills.
 writeFileSync(join(SRC, SKILL_OUTPUT_FILE), buildSkillText(SRC));
@@ -57,8 +44,18 @@ if (tsc.exitCode !== 0) {
 }
 
 // 2. everything that isn't a .ts source is copied as-is (tsc already wrote
-//    the .js twins into dist/, so only the originals are skipped)
-cpSync(SRC, DIST, { recursive: true, filter: (s) => !s.endsWith('.ts') });
+//    the .js twins into dist/, so only the originals are skipped).
+//    The docs tree (src/documentation/) is NOT copied at all: its pages,
+//    components, runtime and public assets are defuss-ssg inputs — the SSG
+//    build (scripts/build-docs.ts) renders dist/documentation/ from them.
+cpSync(SRC, DIST, {
+  recursive: true,
+  filter: (s) => {
+    const rel = relative(SRC, s).replace(/\\/g, '/');
+    if (rel === 'documentation' || rel.startsWith('documentation/')) return false;
+    return !s.endsWith('.ts');
+  },
+});
 
 // inline the shared preamble into each component .js that imports it, so the
 // shipped files keep zero local module dependencies

@@ -1,0 +1,128 @@
+---
+title: "Collapsible"
+description: "Collapsible component — expandable content sections using <details>/<summary>."
+slug: "collapsible"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="collapsible" title="Collapsible" component="collapsible">
+  An interactive panel that expands/collapses content. Built on native <code>&lt;details&gt;</code> with animated transitions.
+</PageHeader>
+
+<SkillPanel component="collapsible">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;details&gt;</code> element providing native expand/collapse behavior with animated transitions.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details" title="native disclosure widget"><code>&lt;details&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/summary" title="visible heading/trigger"><code>&lt;summary&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/::details-content" title="pseudo-element for content animation"><code>::details-content</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style" title="entry animation starting values"><code>@starting-style</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.collapsible</code>
+    <code>.collapsible-trigger</code>
+    <code>.collapsible-chevron</code>
+    <code>.collapsible-content</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• <code>&lt;details&gt;</code>/<code>&lt;summary&gt;</code> is natively accessible — keyboard and screen reader support built in</SkillText>
+  <SkillText dense>• No additional ARIA attributes needed</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• Summary text should clearly describe the hidden content</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Basic</ExampleLabel>
+  <ExampleHint>Simple collapsible with a trigger and content.</ExampleHint>
+  <div style="width:100%;max-width:24rem;">
+    <details class="collapsible">
+      <summary class="collapsible-trigger">
+        <span>Can I use this in my project?</span>
+        <svg xmlns="http://www.w3.org/2000/svg" class="collapsible-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </summary>
+      <div class="collapsible-content">
+        <p style="margin:0;">Yes. Free to use for personal and commercial projects. No attribution required.</p>
+      </div>
+    </details>
+  </div>
+  <ExampleCode>{"<details class=\"collapsible\">\n  <summary class=\"collapsible-trigger\">\n    <span>Can I use this?</span>\n    <svg class=\"collapsible-chevron\">...</svg>\n  </summary>\n  <div class=\"collapsible-content\">\n    <p>Yes, it's free to use.</p>\n  </div>\n</details>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Open by Default</ExampleLabel>
+  <ExampleHint>Use the <code>open</code> attribute to start expanded.</ExampleHint>
+  <div style="width:100%;max-width:24rem;">
+    <details class="collapsible" open>
+      <summary class="collapsible-trigger">
+        <span>Product details</span>
+        <svg xmlns="http://www.w3.org/2000/svg" class="collapsible-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </summary>
+      <div class="collapsible-content">
+        <p style="margin:0 0 0.5rem;">This component uses the native <code>&lt;details&gt;</code> element with CSS animations for smooth expand/collapse transitions.</p>
+        <p style="margin:0;">No JavaScript required for the basic functionality — the browser handles the toggle natively.</p>
+      </div>
+    </details>
+  </div>
+  <ExampleCode>{"<details class=\"collapsible\" open>\n  <summary class=\"collapsible-trigger\">...</summary>\n  <div class=\"collapsible-content\">...</div>\n</details>"}</ExampleCode>
+</Example>
+
+<Example noCode>
+  <ExampleLabel>Multiple Sections</ExampleLabel>
+  <ExampleHint>Stack multiple collapsibles for a settings-style panel.</ExampleHint>
+  <div style="width:100%;max-width:24rem;display:flex;flex-direction:column;gap:0.5rem;">
+    <details class="collapsible">
+      <summary class="collapsible-trigger">
+        <span>Appearance</span>
+        <svg xmlns="http://www.w3.org/2000/svg" class="collapsible-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </summary>
+      <div class="collapsible-content">
+        <p style="margin:0;">Customize the look and feel of your workspace.</p>
+      </div>
+    </details>
+    <details class="collapsible">
+      <summary class="collapsible-trigger">
+        <span>Notifications</span>
+        <svg xmlns="http://www.w3.org/2000/svg" class="collapsible-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </summary>
+      <div class="collapsible-content">
+        <p style="margin:0;">Manage your notification preferences.</p>
+      </div>
+    </details>
+    <details class="collapsible">
+      <summary class="collapsible-trigger">
+        <span>Privacy</span>
+        <svg xmlns="http://www.w3.org/2000/svg" class="collapsible-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </summary>
+      <div class="collapsible-content">
+        <p style="margin:0;">Control your privacy and data sharing settings.</p>
+      </div>
+    </details>
+  </div>
+</Example>
+
+<SourceFiles component="collapsible" section="css">
+  <SourceNote for="css">Styles for the collapsible component. Uses design tokens for colors, spacing, and radius.</SourceNote>
+</SourceFiles>
+
+</DocPage>

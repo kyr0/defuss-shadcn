@@ -1,0 +1,57 @@
+---
+title: "Hero"
+description: "Badge, headline, description and CTAs — a centered copy block; pair it with the Product Showcase below when you want a video."
+slug: "hero"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="hero" title="Hero" component="hero">
+  Badge, headline, description and CTAs — a centered copy block; pair it with the Product Showcase below when you want a video.
+</PageHeader>
+
+<SkillPanel component="hero">
+  <SkillField label="Native basis">
+<SkillText>Plain sectioning content: badge, <code>&lt;h1&gt;</code>, lead paragraph, CTA row. <code>text-wrap: balance</code> optically balances the headline and container queries swap the size step — no viewport coupling, no script.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/text-wrap" title="optical headline balancing"><code>text-wrap: balance</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="size steps follow the block, not the viewport"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-hero</code>
+    <code>.mk-hero-copy</code>
+    <code>.mk-hero-badge</code>
+    <code>.mk-hero-title</code>
+    <code>.mk-hero-desc</code>
+    <code>.mk-hero-actions</code>
+  </SkillRow>
+  </SkillField>
+</SkillPanel>
+
+<Example first previewStyle="align-items:stretch;">
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>Copy-only block; the title steps up to 60px at wide container widths.</ExampleHint>
+  <section class="mk-hero" style="width:100%">
+    <div class="mk-hero-copy">
+      <span class="mk-hero-badge">New features released</span>
+      <h1 class="mk-hero-title">Make Better Decisions, With Ease</h1>
+      <p class="mk-hero-desc">Acme's personal AI helps you cut through the noise, speed up delivery, and stay focused without switching contexts.</p>
+      <div class="mk-hero-actions">
+        <button type="button" class="btn">Get Started</button>
+      </div>
+    </div>
+  </section>
+  <ExampleCode>{"<section class=\"mk-hero\" style=\"width:100%\">\n  <div class=\"mk-hero-copy\">\n    <span class=\"mk-hero-badge\">New features released</span>\n    <h1 class=\"mk-hero-title\">Make Better Decisions, With Ease</h1>\n    <p class=\"mk-hero-desc\">Acme's personal AI helps you cut through the noise, speed up delivery, and stay focused without switching contexts.</p>\n    <div class=\"mk-hero-actions\"><button type=\"button\" class=\"btn\" >Get Started</button></div>\n  </div>\n</section>"}</ExampleCode>
+</Example>
+
+<SourceFiles component="hero" section="css" />
+
+</DocPage>

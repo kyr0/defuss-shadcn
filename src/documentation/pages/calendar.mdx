@@ -1,0 +1,129 @@
+---
+title: "Calendar"
+description: "Calendar component — month-view calendar grid built with native HTML table."
+slug: "calendar"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="calendar" title="Calendar" component="calendar">
+  A month-view calendar for date selection. Features navigation, today highlighting, and day selection. Built with vanilla JS rendering into a <code>&lt;table&gt;</code> grid.
+</PageHeader>
+
+<SkillPanel component="calendar">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;table&gt;</code> element rendered as a month grid with navigation controls. Uses <code>role="grid"</code> for accessible day cell navigation.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table" title="tabular grid for the month"><code>&lt;table&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/grid_role" title="ARIA grid pattern for 2D keyboard navigation"><code>role="grid"</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button" title="navigation and day selection buttons"><code>&lt;button&gt;</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.calendar</code>
+    <code>.calendar-header</code>
+    <code>.calendar-heading</code>
+    <code>.calendar-nav</code>
+    <code>.calendar-grid</code>
+    <code>.calendar-day-label</code>
+    <code>.calendar-day</code>
+    <code>\[data-today\]</code>
+    <code>\[data-selected\]</code>
+    <code>\[data-outside\]</code>
+    <code>\[data-disabled\]</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• Month heading uses <code>aria-live="polite"</code> for navigation announcements</SkillText>
+  <SkillText dense>• Day cells are focusable buttons within the grid</SkillText>
+  <SkillText dense>• Arrow keys navigate the grid, Enter/Space selects a day</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• Previous/next navigation buttons have <code>aria-label</code></p>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Basic Calendar</ExampleLabel>
+  <ExampleHint>Interactive calendar with month navigation and date selection.</ExampleHint>
+  <div class="calendar" data-state-demo>
+    <div class="calendar-header">
+      <button class="calendar-nav" data-action="prev-month" aria-label="Previous month">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m15 18-6-6 6-6" />
+        </svg>
+      </button>
+      <span class="calendar-heading" aria-live="polite" />
+      <button class="calendar-nav" data-action="next-month" aria-label="Next month">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m9 18 6-6-6-6" />
+        </svg>
+      </button>
+    </div>
+    <table class="calendar-grid" role="grid" />
+  </div>
+  <ExampleCode>{"<div class=\"calendar\">\n  <div class=\"calendar-header\">\n    <button class=\"calendar-nav\" data-action=\"prev-month\"\n            aria-label=\"Previous month\">\n      <svg>...chevron left...</svg>\n    </button>\n    <span class=\"calendar-heading\" aria-live=\"polite\"></span>\n    <button class=\"calendar-nav\" data-action=\"next-month\"\n            aria-label=\"Next month\">\n      <svg>...chevron right...</svg>\n    </button>\n  </div>\n  <table class=\"calendar-grid\" role=\"grid\"></table>\n</div>"}</ExampleCode>
+</Example>
+
+<Example noCode>
+  <ExampleLabel>Side by Side</ExampleLabel>
+  <ExampleHint>Place multiple calendars side-by-side for range selection patterns.</ExampleHint>
+  <div style="display:flex;gap:1.0rem;flex-wrap:wrap;">
+    <div class="calendar">
+      <div class="calendar-header">
+        <button class="calendar-nav" data-action="prev-month" aria-label="Previous month">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+        </button>
+        <span class="calendar-heading" aria-live="polite" />
+        <button class="calendar-nav" data-action="next-month" aria-label="Next month">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </button>
+      </div>
+      <table class="calendar-grid" role="grid" />
+    </div>
+    <div class="calendar">
+      <div class="calendar-header">
+        <button class="calendar-nav" data-action="prev-month" aria-label="Previous month">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+        </button>
+        <span class="calendar-heading" aria-live="polite" />
+        <button class="calendar-nav" data-action="next-month" aria-label="Next month">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </button>
+      </div>
+      <table class="calendar-grid" role="grid" />
+    </div>
+  </div>
+</Example>
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
+    <li><code>default</code> — reset to today's month with no selection; <code>setState('default', \{ year, month, day \})</code> (0-based month) navigates and optionally selects, and <code>getState().config</code> reports the live view</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/calendar-\{state\}.png</code>.</p>
+</StatesSection>
+
+<SourceFiles component="calendar" section="css">
+  <SourceNote for="css">Styles for the calendar component. Uses design tokens for colors, spacing, and radius.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="calendar" section="js">
+  <SourceNote for="js">Interaction logic for the calendar component. Uses data attributes for wiring.</SourceNote>
+</SourceFiles>
+
+</DocPage>

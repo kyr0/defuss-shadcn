@@ -1,81 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="color-scheme" content="light dark">
-  <link rel="icon" href="images/favicon.webp" type="image/webp">
-  <meta name="description" content="One arithmetic spacing scale for gaps, padding and margins, with optional density and direction-aware helpers.">
-  <meta property="og:title" content="Spacing — defuss-shadcn">
-  <meta property="og:description" content="One arithmetic spacing scale for gaps, padding and margins, with optional density and direction-aware helpers.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://kyr0.github.io/defuss-shadcn/documentation/spacing.html">
-  <meta property="og:site_name" content="defuss-shadcn">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Spacing — defuss-shadcn">
-  <meta name="twitter:description" content="One arithmetic spacing scale for gaps, padding and margins, with optional density and direction-aware helpers.">
-  <title>Spacing — defuss-shadcn</title>
-  <script src="js/themes.js"></script>
-  <script src="js/theme-switcher.js"></script>
-  <script src="js/layout.js"></script>
-  <script src="js/search-index.js"></script>
-  <link rel="stylesheet" href="../theme/default-semantic-tokens.css">
-  <link rel="stylesheet" href="../theme/sizing.css">
-  <link rel="stylesheet" href="../theme/layout.css">
-  <link rel="stylesheet" href="css/docs-theme.css">
-  <link rel="stylesheet" href="css/docs-utilities.css">
-  <link rel="stylesheet" href="css/layout.css">
-  <link rel="stylesheet" href="../components/all.css">
-</head>
-<body>
-  <site-header></site-header>
-  <div class="flex" style="margin-top:3.5rem;min-height:calc(100vh - 3.5rem);">
-    <site-nav></site-nav>
-    <main style="flex:1;min-width:0;max-width:44rem;padding:2rem 3.5rem 8rem;">
-      <div class="page-header">
-        <p class="text-sm text-muted-foreground mb-3" style="font-family:var(--font-mono);">defuss-shadcn / sizing / spacing</p>
-        <h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">Spacing</h1>
-        <p class="text-muted-foreground leading-relaxed mb-10" style="max-width:38rem;">One arithmetic spacing scale for gaps, padding and margins, with optional density and direction-aware helpers.</p>
-      </div>
-
-<h2 id="spacing-scale" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Spacing on the same base</h2>
-<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">Gaps, padding and margins use <code>n × --size-base × --layout-density</code>. Density is 1 by default. <code>gap-4</code> therefore matches <code>1rem</code> at the default base; <code>w-4</code> remains geometric when density changes. The <code>px</code> suffix always means one CSS pixel and is not density-scaled. Below, the three everyday jobs of spacing: <code>gap-2</code> between related actions, <code>gap-6</code> between independent cards, <code>p-6</code> inside a card.</p>
-<div class="demo">
-  <div class="demo-stage">
-    <div class="stack gap-8" data-demo="spacing">
-      <div>
-        <p class="demo-label">gap-2 — actions that belong together stay close</p>
-        <div class="flex flex-wrap gap-2">
-          <button class="btn" type="button" data-size="sm">Publish</button>
-          <button class="btn" type="button" data-variant="outline" data-size="sm">Preview</button>
-          <button class="btn" type="button" data-variant="ghost" data-size="sm">Discard</button>
-        </div>
-      </div>
-      <div>
-        <p class="demo-label">gap-6 — independent cards get room to breathe</p>
-        <div class="flex flex-wrap gap-6">
-          <div class="card" style="width:9rem;">
-            <div class="card-header"><p class="card-title" style="font-size:0.875rem;">Research</p></div>
-            <div style="padding:0 1rem 1rem;"><p class="text-muted-foreground" style="margin:0;font-size:0.75rem;">12 open</p></div>
-          </div>
-          <div class="card" style="width:9rem;">
-            <div class="card-header"><p class="card-title" style="font-size:0.875rem;">Design</p></div>
-            <div style="padding:0 1rem 1rem;"><p class="text-muted-foreground" style="margin:0;font-size:0.75rem;">4 open</p></div>
-          </div>
-        </div>
-      </div>
-      <div>
-        <p class="demo-label">p-6 — padding keeps content off the card's edge</p>
-        <div class="card p-6" style="max-width:20rem;">
-          <p style="margin:0;font-size:0.875rem;font-weight:500;">Weekly digest</p>
-          <p class="text-muted-foreground" style="margin:0.25rem 0 0;font-size:0.8125rem;">The same p-6 on every side — no measuring, no magic numbers.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="demo-code">
-    <div class="demo-code-header">HTML</div>
-    <pre><code class="language-html">&lt;div class="flex flex-wrap gap-2"&gt;
+<html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="color-scheme" content="light dark" /><link rel="icon" href="images/favicon.webp" type="image/webp" /><meta name="description" content="One arithmetic spacing scale for gaps, padding and margins, with optional density and direction-aware helpers." /><meta property="og:title" content="Spacing — defuss-shadcn" /><meta property="og:description" content="One arithmetic spacing scale for gaps, padding and margins, with optional density and direction-aware helpers." /><meta property="og:type" content="website" /><meta property="og:url" content="https://kyr0.github.io/defuss-shadcn/documentation/spacing.html" /><meta property="og:site_name" content="defuss-shadcn" /><meta name="twitter:card" content="summary" /><meta name="twitter:title" content="Spacing — defuss-shadcn" /><meta name="twitter:description" content="One arithmetic spacing scale for gaps, padding and margins, with optional density and direction-aware helpers." /><title>Spacing — defuss-shadcn</title><script src="js/themes.js"></script><script src="js/theme-switcher.js"></script><script src="js/layout.js"></script><script src="js/search-index.js"></script><link rel="stylesheet" href="../theme/default-semantic-tokens.css" /><link rel="stylesheet" href="../theme/sizing.css" /><link rel="stylesheet" href="../theme/layout.css" /><link rel="stylesheet" href="css/docs-theme.css" /><link rel="stylesheet" href="css/docs-utilities.css" /><link rel="stylesheet" href="css/layout.css" /><link rel="stylesheet" href="../components/all.css" /></head><body><header class="site-header"><button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle navigation menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><a href="index.html" class="header-brand"><img src="images/favicon.webp" alt="defuss-shadcn logo" class="header-brand-logo" /><span class="header-brand-name">defuss<em>-shadcn</em></span><span class="badge header-brand-version" data-variant="outline" style="font-family:var(--font-mono);">v0.8.3</span></a><div class="header-search" role="search"><input type="text" class="header-search-input" placeholder="Search docs… (⌘K)" aria-label="Search documentation" autocomplete="off" readonly="" /></div><div style="flex:1;"></div><nav style="display:flex;align-items:center;gap:0.25rem;"><a href="https://github.com/kyr0/defuss-shadcn" target="_blank" rel="noopener" class="header-action"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg><span class="github-label">GitHub</span><span class="github-stars"></span></a><button id="wide-toggle" class="header-action theme-toggle-btn" aria-label="Toggle wide layout" aria-pressed="false"><svg id="icon-wide-expand" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg><svg id="icon-wide-collapse" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/><path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/></svg></button><button id="theme-toggle" class="header-action theme-toggle-btn" aria-label="Toggle dark mode"><svg id="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg><svg id="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button><button id="theme-selector-btn" class="header-action theme-toggle-btn" aria-label="Change color theme" popovertarget="theme-popover"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="0.5" fill="currentColor"/><circle cx="17.5" cy="10.5" r="0.5" fill="currentColor"/><circle cx="8.5" cy="7.5" r="0.5" fill="currentColor"/><circle cx="6.5" cy="12" r="0.5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></button></nav></header><div id="theme-popover" popover="" class="theme-popover"><div class="theme-popover-header"><span class="theme-popover-title">Theme</span><button class="theme-reset-btn" id="theme-reset-btn">Reset</button></div><div class="theme-grid" id="theme-grid"></div></div><dialog id="docs-palette" class="command" aria-label="Search documentation"><div class="command-content"><div class="command-input-wrapper"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input class="command-input" type="text" placeholder="Search documentation…" autocomplete="off" autocorrect="off" spellcheck="false" /></div><div class="command-list" id="docs-palette-list"></div><div class="command-empty" hidden="">No results found.</div></div></dialog><div class="flex" style="margin-top: 3.5rem; min-height: calc(100vh - 3.5rem);"><aside class="site-sidebar"><div class="sidebar-scroll"><details class="nav-section sidebar-group" open="" data-nav-section="Overview" style="margin-bottom:0.75rem;"><summary class="nav-heading">Overview<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="index.html" style="display:flex;align-items:center;gap:0.375rem;">Introduction</a><a class="nav-link" href="installation.html" style="display:flex;align-items:center;gap:0.375rem;">Installation</a><a class="nav-link" href="theming.html" style="display:flex;align-items:center;gap:0.375rem;">Theming</a><a class="nav-link" href="dark-mode.html" style="display:flex;align-items:center;gap:0.375rem;">Dark Mode</a><a class="nav-link" href="data-attribute-api.html" style="display:flex;align-items:center;gap:0.375rem;">Data Attribute API</a><a class="nav-link" href="architecture.html" style="display:flex;align-items:center;gap:0.375rem;">Architecture</a><a class="nav-link" href="cascade-layers.html" style="display:flex;align-items:center;gap:0.375rem;">Cascade Layers</a><a class="nav-link" href="es-modules.html" style="display:flex;align-items:center;gap:0.375rem;">ES Modules</a><a class="nav-link" href="native-web-apis.html" style="display:flex;align-items:center;gap:0.375rem;">Native Web APIs</a><a class="nav-link" href="animations.html" style="display:flex;align-items:center;gap:0.375rem;">Animations</a><a class="nav-link" href="sizing.html" style="display:flex;align-items:center;gap:0.375rem;">Sizing</a><a class="nav-link" href="layout.html" style="display:flex;align-items:center;gap:0.375rem;">Layout</a><a class="nav-link" href="accessibility.html" style="display:flex;align-items:center;gap:0.375rem;">Accessibility</a><a class="nav-link" href="component-skills.html" style="display:flex;align-items:center;gap:0.375rem;">Component Skills</a><a class="nav-link" href="changelog.html" style="display:flex;align-items:center;gap:0.375rem;">Changelog</a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Sizing" style="margin-bottom:0.75rem;"><summary class="nav-heading">Sizing<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="width-height.html" style="display:flex;align-items:center;gap:0.375rem;">Width &amp; Height</a><a class="nav-link active" href="spacing.html" style="display:flex;align-items:center;gap:0.375rem;">Spacing</a><a class="nav-link" href="density.html" style="display:flex;align-items:center;gap:0.375rem;">Density</a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Layout" style="margin-bottom:0.75rem;"><summary class="nav-heading">Layout<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="container.html" style="display:flex;align-items:center;gap:0.375rem;">Container</a><a class="nav-link" href="flex.html" style="display:flex;align-items:center;gap:0.375rem;">Flex</a><a class="nav-link" href="grid.html" style="display:flex;align-items:center;gap:0.375rem;">Grid</a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Primitives" style="margin-bottom:0.75rem;"><summary class="nav-heading">Primitives<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="typography.html" style="display:flex;align-items:center;gap:0.375rem;">Typography <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="separator.html" style="display:flex;align-items:center;gap:0.375rem;">Separator <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="icon.html" style="display:flex;align-items:center;gap:0.375rem;">Icon <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="heading-anchor.html" style="display:flex;align-items:center;gap:0.375rem;">Heading Anchor <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Actions" style="margin-bottom:0.75rem;"><summary class="nav-heading">Actions<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="button.html" style="display:flex;align-items:center;gap:0.375rem;">Button <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="toggle.html" style="display:flex;align-items:center;gap:0.375rem;">Toggle <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="toggle-group.html" style="display:flex;align-items:center;gap:0.375rem;">Toggle Group <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="button-group.html" style="display:flex;align-items:center;gap:0.375rem;">Button Group <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="toolbar.html" style="display:flex;align-items:center;gap:0.375rem;">Toolbar <span class="type-badge" data-type="ORG" title="ORG">ORG</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Forms &amp; Inputs" style="margin-bottom:0.75rem;"><summary class="nav-heading">Forms &amp; Inputs<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="label.html" style="display:flex;align-items:center;gap:0.375rem;">Label <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="input.html" style="display:flex;align-items:center;gap:0.375rem;">Input <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="textarea.html" style="display:flex;align-items:center;gap:0.375rem;">Textarea <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="checkbox.html" style="display:flex;align-items:center;gap:0.375rem;">Checkbox <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="radio.html" style="display:flex;align-items:center;gap:0.375rem;">Radio Group <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="switch.html" style="display:flex;align-items:center;gap:0.375rem;">Switch <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="slider.html" style="display:flex;align-items:center;gap:0.375rem;">Slider <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="select.html" style="display:flex;align-items:center;gap:0.375rem;">Select <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="number-input.html" style="display:flex;align-items:center;gap:0.375rem;">Number Input <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="file-input.html" style="display:flex;align-items:center;gap:0.375rem;">File Input <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="color-picker.html" style="display:flex;align-items:center;gap:0.375rem;">Color Picker <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="date-picker.html" style="display:flex;align-items:center;gap:0.375rem;">Date Picker <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="combobox.html" style="display:flex;align-items:center;gap:0.375rem;">Combobox <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="form.html" style="display:flex;align-items:center;gap:0.375rem;">Form <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Data Display" style="margin-bottom:0.75rem;"><summary class="nav-heading">Data Display<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="badge.html" style="display:flex;align-items:center;gap:0.375rem;">Badge <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="type-badge.html" style="display:flex;align-items:center;gap:0.375rem;">Type Badge <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="avatar.html" style="display:flex;align-items:center;gap:0.375rem;">Avatar <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="card.html" style="display:flex;align-items:center;gap:0.375rem;">Card <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="image.html" style="display:flex;align-items:center;gap:0.375rem;">Image <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="statistic.html" style="display:flex;align-items:center;gap:0.375rem;">Statistic <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="table.html" style="display:flex;align-items:center;gap:0.375rem;">Table <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="collapsible.html" style="display:flex;align-items:center;gap:0.375rem;">Collapsible <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="timeline.html" style="display:flex;align-items:center;gap:0.375rem;">Timeline <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="tree-view.html" style="display:flex;align-items:center;gap:0.375rem;">Tree View <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="calendar.html" style="display:flex;align-items:center;gap:0.375rem;">Calendar <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="carousel.html" style="display:flex;align-items:center;gap:0.375rem;">Carousel <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="scroll-area.html" style="display:flex;align-items:center;gap:0.375rem;">Scroll Area <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="sortable.html" style="display:flex;align-items:center;gap:0.375rem;">Sortable <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Feedback &amp; Status" style="margin-bottom:0.75rem;"><summary class="nav-heading">Feedback &amp; Status<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="spinner.html" style="display:flex;align-items:center;gap:0.375rem;">Spinner <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="skeleton.html" style="display:flex;align-items:center;gap:0.375rem;">Skeleton <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="progress.html" style="display:flex;align-items:center;gap:0.375rem;">Progress <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="alert.html" style="display:flex;align-items:center;gap:0.375rem;">Alert <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="alert-dialog.html" style="display:flex;align-items:center;gap:0.375rem;">Alert Dialog <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="toast.html" style="display:flex;align-items:center;gap:0.375rem;">Toast <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Overlays" style="margin-bottom:0.75rem;"><summary class="nav-heading">Overlays<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="popover.html" style="display:flex;align-items:center;gap:0.375rem;">Popover <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="tooltip.html" style="display:flex;align-items:center;gap:0.375rem;">Tooltip <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="context-menu.html" style="display:flex;align-items:center;gap:0.375rem;">Context Menu <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="dialog.html" style="display:flex;align-items:center;gap:0.375rem;">Dialog <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="sheet.html" style="display:flex;align-items:center;gap:0.375rem;">Sheet <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="accordion.html" style="display:flex;align-items:center;gap:0.375rem;">Accordion <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="command.html" style="display:flex;align-items:center;gap:0.375rem;">Command <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Navigation" style="margin-bottom:0.75rem;"><summary class="nav-heading">Navigation<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="breadcrumb.html" style="display:flex;align-items:center;gap:0.375rem;">Breadcrumb <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="toc.html" style="display:flex;align-items:center;gap:0.375rem;">Table of Contents <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="pagination.html" style="display:flex;align-items:center;gap:0.375rem;">Pagination <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="steps.html" style="display:flex;align-items:center;gap:0.375rem;">Steps <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="tabs.html" style="display:flex;align-items:center;gap:0.375rem;">Tabs <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="dropdown.html" style="display:flex;align-items:center;gap:0.375rem;">Dropdown Menu <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="navigation-menu.html" style="display:flex;align-items:center;gap:0.375rem;">Navigation Menu <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Application" style="margin-bottom:0.75rem;"><summary class="nav-heading">Application<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="sidebar.html" style="display:flex;align-items:center;gap:0.375rem;">Sidebar <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Marketing" style="margin-bottom:0.75rem;"><summary class="nav-heading">Marketing<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="site-header.html" style="display:flex;align-items:center;gap:0.375rem;">Site Header <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="hero.html" style="display:flex;align-items:center;gap:0.375rem;">Hero <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="product-showcase.html" style="display:flex;align-items:center;gap:0.375rem;">Product Showcase <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="brand-logos.html" style="display:flex;align-items:center;gap:0.375rem;">Brand Logos <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="feature-details.html" style="display:flex;align-items:center;gap:0.375rem;">Feature Details <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="testimonials.html" style="display:flex;align-items:center;gap:0.375rem;">Testimonials <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="stats.html" style="display:flex;align-items:center;gap:0.375rem;">Stats <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="pricing.html" style="display:flex;align-items:center;gap:0.375rem;">Pricing <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="blog.html" style="display:flex;align-items:center;gap:0.375rem;">Blog <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="faq.html" style="display:flex;align-items:center;gap:0.375rem;">FAQ <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="get-in-touch.html" style="display:flex;align-items:center;gap:0.375rem;">Get In Touch <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="newsletter.html" style="display:flex;align-items:center;gap:0.375rem;">Newsletter <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="site-footer.html" style="display:flex;align-items:center;gap:0.375rem;">Site Footer <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a></nav></details></div></aside><main style="flex: 1; min-width: 0; max-width: 44rem; padding: 2rem 3.5rem 8rem;"><div class="page-header"><p class="text-sm text-muted-foreground mb-3" style="font-family:var(--font-mono);">defuss-shadcn / sizing / spacing</p><h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">Spacing</h1><p class="text-muted-foreground leading-relaxed mb-10" style="max-width:38rem;">One arithmetic spacing scale for gaps, padding and margins, with optional density and direction-aware helpers.</p></div><h2 id="spacing-scale" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;"><a class="heading-anchor" href="#spacing-scale" aria-label="Link to section: Spacing on the same base">§</a>Spacing on the same base</h2><p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">Gaps, padding and margins use <code>n × --size-base × --layout-density</code>. Density is 1 by default. <code>gap-4</code> therefore matches <code>1rem</code> at the default base; <code>w-4</code> remains geometric when density changes. The <code>px</code> suffix always means one CSS pixel and is not density-scaled. Below, the three everyday jobs of spacing: <code>gap-2</code> between related actions, <code>gap-6</code> between independent cards, <code>p-6</code> inside a card.</p><div class="demo"><div class="demo-stage"><div class="stack gap-8" data-demo="spacing"><div><p class="demo-label">gap-2 — actions that belong together stay close</p><div class="flex flex-wrap gap-2"><button class="btn" type="button" data-size="sm">Publish</button><button class="btn" type="button" data-variant="outline" data-size="sm">Preview</button><button class="btn" type="button" data-variant="ghost" data-size="sm">Discard</button></div></div><div><p class="demo-label">gap-6 — independent cards get room to breathe</p><div class="flex flex-wrap gap-6"><div class="card" style="width:9rem;"><div class="card-header"><p class="card-title" style="font-size:0.875rem;">Research</p></div><div style="padding:0 1rem 1rem;"><p class="text-muted-foreground" style="margin:0;font-size:0.75rem;">12 open</p></div></div><div class="card" style="width:9rem;"><div class="card-header"><p class="card-title" style="font-size:0.875rem;">Design</p></div><div style="padding:0 1rem 1rem;"><p class="text-muted-foreground" style="margin:0;font-size:0.75rem;">4 open</p></div></div></div></div><div><p class="demo-label">p-6 — padding keeps content off the card's edge</p><div class="card p-6" style="max-width:20rem;"><p style="margin:0;font-size:0.875rem;font-weight:500;">Weekly digest</p><p class="text-muted-foreground" style="margin:0.25rem 0 0;font-size:0.8125rem;">The same p-6 on every side — no measuring, no magic numbers.</p></div></div></div></div><div class="demo-code"><div class="demo-code-header">HTML</div><pre><code class="language-html">&lt;div class="flex flex-wrap gap-2"&gt;
   &lt;button class="btn" data-size="sm"&gt;Publish&lt;/button&gt;
   &lt;button class="btn" data-variant="outline" data-size="sm"&gt;Preview&lt;/button&gt;
   &lt;button class="btn" data-variant="ghost" data-size="sm"&gt;Discard&lt;/button&gt;
@@ -89,227 +13,38 @@
 &lt;div class="card p-6"&gt;
   &lt;p&gt;Weekly digest&lt;/p&gt;
   &lt;p&gt;The same p-6 on every side.&lt;/p&gt;
-&lt;/div&gt;</code></pre>
-  </div>
-</div>
-
-<div class="sep"></div>
-<h2 id="box-model" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">The box model, labeled</h2>
-<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">Every spacing utility addresses one zone of the box model: <code>m-*</code> works outside the border (against siblings), <code>p-*</code> inside it (against content). The physical sides (<code>t/r/b/l</code>) never move; the logical sides (<code>s/e</code>) follow the writing direction. The diagram uses <em>ordinary CSS colors</em> to make the zones visible — the classes label what each zone is.</p>
-<div class="demo">
-  <div class="demo-stage">
-    <div class="flex justify-center">
-      <div class="demo-tile p-6" data-variant="outline" style="display:block;">
-        <p class="demo-label" style="text-align:center;">m-6 — margin pushes siblings away (outside the border)</p>
-        <div class="demo-tile p-6" data-variant="secondary" style="display:block;border-style:solid;">
-          <p class="demo-label" style="text-align:center;color:var(--muted-foreground);">p-6 — padding pushes content inward (inside the border)</p>
-          <div class="demo-tile h-16">content</div>
-        </div>
-        <div class="flex justify-between" style="margin-top:0.5rem;">
-          <span class="demo-label" style="margin:0;">ms/me-* — start/end</span>
-          <span class="demo-label" style="margin:0;">mt/mr/mb/ml-* — physical</span>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="demo-code">
-    <div class="demo-code-header">HTML</div>
-    <pre><code class="language-html">&lt;div class="m-6"&gt;          &lt;!-- space against siblings --&gt;
+&lt;/div&gt;</code></pre></div></div><div class="sep"></div><h2 id="box-model" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;"><a class="heading-anchor" href="#box-model" aria-label="Link to section: The box model, labeled">§</a>The box model, labeled</h2><p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">Every spacing utility addresses one zone of the box model: <code>m-*</code> works outside the border (against siblings), <code>p-*</code> inside it (against content). The physical sides (<code>t/r/b/l</code>) never move; the logical sides (<code>s/e</code>) follow the writing direction. The diagram uses <em>ordinary CSS colors</em> to make the zones visible — the classes label what each zone is.</p><div class="demo"><div class="demo-stage"><div class="flex justify-center"><div class="demo-tile p-6" data-variant="outline" style="display:block;"><p class="demo-label" style="text-align:center;">m-6 — margin pushes siblings away (outside the border)</p><div class="demo-tile p-6" data-variant="secondary" style="display:block;border-style:solid;"><p class="demo-label" style="text-align:center;color:var(--muted-foreground);">p-6 — padding pushes content inward (inside the border)</p><div class="demo-tile h-16">content</div></div><div class="flex justify-between" style="margin-top:0.5rem;"><span class="demo-label" style="margin:0;">ms/me-* — start/end</span><span class="demo-label" style="margin:0;">mt/mr/mb/ml-* — physical</span></div></div></div></div><div class="demo-code"><div class="demo-code-header">HTML</div><pre><code class="language-html">&lt;div class="m-6"&gt;          &lt;!-- space against siblings --&gt;
   &lt;div class="p-6"&gt;        &lt;!-- space against content --&gt;
     content
   &lt;/div&gt;
 &lt;/div&gt;
 
 &lt;!-- side families: x/y = inline/block, t/r/b/l = physical, s/e = logical --&gt;
-&lt;div class="mt-4 pe-2"&gt;…&lt;/div&gt;</code></pre>
-  </div>
-</div>
-
-<div class="sep"></div>
-<h2 id="gap-axes" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Gap axes</h2>
-<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;"><code>gap-x-*</code> sets <code>column-gap</code>, <code>gap-y-*</code> sets <code>row-gap</code> — the two axes are independent. A calendar makes that tangible: days of a week sit <code>gap-x-3</code> apart while the weeks stack tightly at <code>gap-y-1</code>.</p>
-<div class="demo">
-  <div class="demo-stage">
-    <div style="max-width:22rem;">
-      <div class="flex flex-wrap gap-x-3 gap-y-1">
-        <div class="demo-tile w-10 h-8" data-variant="muted">Mon</div>
-        <div class="demo-tile w-10 h-8" data-variant="muted">Tue</div>
-        <div class="demo-tile w-10 h-8" data-variant="muted">Wed</div>
-        <div class="demo-tile w-10 h-8" data-variant="muted">Thu</div>
-        <div class="demo-tile w-10 h-8" data-variant="muted">Fri</div>
-        <div class="demo-tile w-10 h-8" data-variant="muted">Sat</div>
-        <div class="demo-tile w-10 h-8" data-variant="muted">Sun</div>
-        <div class="demo-tile w-10 h-8">1</div>
-        <div class="demo-tile w-10 h-8">2</div>
-        <div class="demo-tile w-10 h-8">3</div>
-        <div class="demo-tile w-10 h-8">4</div>
-        <div class="demo-tile w-10 h-8">5</div>
-        <div class="demo-tile w-10 h-8">6</div>
-        <div class="demo-tile w-10 h-8">7</div>
-        <div class="demo-tile w-10 h-8">8</div>
-        <div class="demo-tile w-10 h-8">9</div>
-        <div class="demo-tile w-10 h-8">10</div>
-        <div class="demo-tile w-10 h-8">11</div>
-        <div class="demo-tile w-10 h-8">12</div>
-        <div class="demo-tile w-10 h-8">13</div>
-        <div class="demo-tile w-10 h-8">14</div>
-      </div>
-    </div>
-  </div>
-  <div class="demo-code">
-    <div class="demo-code-header">HTML</div>
-    <pre><code class="language-html">&lt;div class="flex flex-wrap gap-x-3 gap-y-1" style="max-width:22rem;"&gt;
+&lt;div class="mt-4 pe-2"&gt;…&lt;/div&gt;</code></pre></div></div><div class="sep"></div><h2 id="gap-axes" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;"><a class="heading-anchor" href="#gap-axes" aria-label="Link to section: Gap axes">§</a>Gap axes</h2><p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;"><code>gap-x-*</code> sets <code>column-gap</code>, <code>gap-y-*</code> sets <code>row-gap</code> — the two axes are independent. A calendar makes that tangible: days of a week sit <code>gap-x-3</code> apart while the weeks stack tightly at <code>gap-y-1</code>.</p><div class="demo"><div class="demo-stage"><div style="max-width:22rem;"><div class="flex flex-wrap gap-x-3 gap-y-1"><div class="demo-tile w-10 h-8" data-variant="muted">Mon</div><div class="demo-tile w-10 h-8" data-variant="muted">Tue</div><div class="demo-tile w-10 h-8" data-variant="muted">Wed</div><div class="demo-tile w-10 h-8" data-variant="muted">Thu</div><div class="demo-tile w-10 h-8" data-variant="muted">Fri</div><div class="demo-tile w-10 h-8" data-variant="muted">Sat</div><div class="demo-tile w-10 h-8" data-variant="muted">Sun</div><div class="demo-tile w-10 h-8">1</div><div class="demo-tile w-10 h-8">2</div><div class="demo-tile w-10 h-8">3</div><div class="demo-tile w-10 h-8">4</div><div class="demo-tile w-10 h-8">5</div><div class="demo-tile w-10 h-8">6</div><div class="demo-tile w-10 h-8">7</div><div class="demo-tile w-10 h-8">8</div><div class="demo-tile w-10 h-8">9</div><div class="demo-tile w-10 h-8">10</div><div class="demo-tile w-10 h-8">11</div><div class="demo-tile w-10 h-8">12</div><div class="demo-tile w-10 h-8">13</div><div class="demo-tile w-10 h-8">14</div></div></div></div><div class="demo-code"><div class="demo-code-header">HTML</div><pre><code class="language-html">&lt;div class="flex flex-wrap gap-x-3 gap-y-1" style="max-width:22rem;"&gt;
   &lt;div class="w-10 h-8"&gt;Mon&lt;/div&gt;
   &lt;div class="w-10 h-8"&gt;Tue&lt;/div&gt;
   &lt;!-- … --&gt;
   &lt;div class="w-10 h-8"&gt;1&lt;/div&gt;
   &lt;div class="w-10 h-8"&gt;2&lt;/div&gt;
   &lt;!-- … --&gt;
-&lt;/div&gt;</code></pre>
-  </div>
-</div>
-<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">The same split works for masonry-like walls and tag clouds: keep rows tight (<code>gap-y-2</code>) so they read as one group, and let columns spread (<code>gap-x-6</code>) so entries don't collide.</p>
-
-<div class="sep"></div>
-<h2 id="padding" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Padding families</h2>
-<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">Padding shares the numeric scale with gap. <code>p-*</code> pads all four sides; <code>px-*</code> and <code>py-*</code> pad the inline and block axes independently — the recipe for chips, badges and inputs; a single-side helper like <code>pt-*</code> adds space in one direction, useful for optical alignment against a divider or media edge. The dashed outline marks the box edge: the band between it and the filled content is the padding.</p>
-<div class="demo">
-  <div class="demo-stage">
-    <div class="flex flex-wrap gap-6">
-      <div>
-        <p class="demo-label">p-4</p>
-        <div class="demo-tile p-4" data-variant="outline">
-          <div class="demo-tile h-8 px-2" data-variant="muted">content</div>
-        </div>
-      </div>
-      <div>
-        <p class="demo-label">px-6 py-2</p>
-        <div class="demo-tile px-6 py-2" data-variant="outline">
-          <div class="demo-tile h-8 px-2" data-variant="muted">content</div>
-        </div>
-      </div>
-      <div>
-        <p class="demo-label">pt-8</p>
-        <div class="demo-tile pt-8" data-variant="outline">
-          <div class="demo-tile h-8 px-2" data-variant="muted">content</div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="demo-code">
-    <div class="demo-code-header">HTML</div>
-    <pre><code class="language-html">&lt;div class="flex flex-wrap gap-6"&gt;
+&lt;/div&gt;</code></pre></div></div><p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">The same split works for masonry-like walls and tag clouds: keep rows tight (<code>gap-y-2</code>) so they read as one group, and let columns spread (<code>gap-x-6</code>) so entries don't collide.</p><div class="sep"></div><h2 id="padding" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;"><a class="heading-anchor" href="#padding" aria-label="Link to section: Padding families">§</a>Padding families</h2><p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">Padding shares the numeric scale with gap. <code>p-*</code> pads all four sides; <code>px-*</code> and <code>py-*</code> pad the inline and block axes independently — the recipe for chips, badges and inputs; a single-side helper like <code>pt-*</code> adds space in one direction, useful for optical alignment against a divider or media edge. The dashed outline marks the box edge: the band between it and the filled content is the padding.</p><div class="demo"><div class="demo-stage"><div class="flex flex-wrap gap-6"><div><p class="demo-label">p-4</p><div class="demo-tile p-4" data-variant="outline"><div class="demo-tile h-8 px-2" data-variant="muted">content</div></div></div><div><p class="demo-label">px-6 py-2</p><div class="demo-tile px-6 py-2" data-variant="outline"><div class="demo-tile h-8 px-2" data-variant="muted">content</div></div></div><div><p class="demo-label">pt-8</p><div class="demo-tile pt-8" data-variant="outline"><div class="demo-tile h-8 px-2" data-variant="muted">content</div></div></div></div></div><div class="demo-code"><div class="demo-code-header">HTML</div><pre><code class="language-html">&lt;div class="flex flex-wrap gap-6"&gt;
   &lt;div class="p-4"&gt;&lt;div&gt;content&lt;/div&gt;&lt;/div&gt;
   &lt;div class="px-6 py-2"&gt;&lt;div&gt;content&lt;/div&gt;&lt;/div&gt;
   &lt;div class="pt-8"&gt;&lt;div&gt;content&lt;/div&gt;&lt;/div&gt;
-&lt;/div&gt;</code></pre>
-  </div>
-</div>
-
-<div class="sep"></div>
-<h2 id="margins" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Centering and pushing with margins</h2>
-<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">Automatic margins absorb spare space. <code>mx-auto</code> on a fixed-width box centers it in its container — the classic content column. <code>ms-auto</code> on one flex item pushes it, and everything after it, to the inline end — the standard right-aligned toolbar action. Negative margins and margin-based <code>space-x/y</code> shortcuts are intentionally omitted.</p>
-<div class="demo">
-  <div class="demo-stage">
-    <div class="stack gap-4">
-      <div class="demo-outline p-2">
-        <div class="demo-tile w-32 h-8 mx-auto">w-32 mx-auto</div>
-      </div>
-      <div class="flex items-center gap-2 demo-outline p-2">
-        <span class="badge" data-variant="outline">Draft</span>
-        <button class="btn ms-auto" type="button">Publish</button>
-      </div>
-    </div>
-  </div>
-  <div class="demo-code">
-    <div class="demo-code-header">HTML</div>
-    <pre><code class="language-html">&lt;div class="stack gap-4"&gt;
+&lt;/div&gt;</code></pre></div></div><div class="sep"></div><h2 id="margins" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;"><a class="heading-anchor" href="#margins" aria-label="Link to section: Centering and pushing with margins">§</a>Centering and pushing with margins</h2><p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">Automatic margins absorb spare space. <code>mx-auto</code> on a fixed-width box centers it in its container — the classic content column. <code>ms-auto</code> on one flex item pushes it, and everything after it, to the inline end — the standard right-aligned toolbar action. Negative margins and margin-based <code>space-x/y</code> shortcuts are intentionally omitted.</p><div class="demo"><div class="demo-stage"><div class="stack gap-4"><div class="demo-outline p-2"><div class="demo-tile w-32 h-8 mx-auto">w-32 mx-auto</div></div><div class="flex items-center gap-2 demo-outline p-2"><span class="badge" data-variant="outline">Draft</span><button class="btn ms-auto" type="button">Publish</button></div></div></div><div class="demo-code"><div class="demo-code-header">HTML</div><pre><code class="language-html">&lt;div class="stack gap-4"&gt;
   &lt;div class="w-32 mx-auto"&gt;w-32 mx-auto&lt;/div&gt;
   &lt;div class="flex items-center gap-2"&gt;
     &lt;span class="badge" data-variant="outline"&gt;Draft&lt;/span&gt;
     &lt;button class="btn ms-auto" type="button"&gt;Publish&lt;/button&gt;
   &lt;/div&gt;
-&lt;/div&gt;</code></pre>
-  </div>
-</div>
-
-<div class="sep"></div>
-<h2 id="logical" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Physical vs logical sides</h2>
-<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">The axis families already follow the writing mode — <code>px-*</code> is <code>padding-inline</code>, <code>py-*</code> is <code>padding-block</code>. For single sides there are two families: physical <code>pt/pr/pb/pl-*</code> always hit the same physical edge, while logical <code>ps/pe-*</code> follow inline-start and inline-end. The same classes render below in <code>dir="ltr"</code> and in <code>dir="rtl"</code>: the logical box mirrors with the direction, the physical box does not move. The filled band is the content box; the empty bands are the padding.</p>
-<div class="demo">
-  <div class="demo-stage">
-    <div class="stack gap-4">
-      <div>
-        <p class="demo-label">dir="ltr"</p>
-        <div class="stack gap-3">
-          <div class="demo-tile ps-4 pe-8" data-variant="outline">
-            <div class="demo-tile h-8" data-variant="muted" style="flex:1;">ps-4 pe-8 — logical</div>
-          </div>
-          <div class="demo-tile pl-4 pr-8" data-variant="outline">
-            <div class="demo-tile h-8" data-variant="muted" style="flex:1;">pl-4 pr-8 — physical</div>
-          </div>
-        </div>
-      </div>
-      <div dir="rtl">
-        <p class="demo-label">dir="rtl" — same classes</p>
-        <div class="stack gap-3">
-          <div class="demo-tile ps-4 pe-8" data-variant="outline">
-            <div class="demo-tile h-8" data-variant="muted" style="flex:1;">ps-4 pe-8 — logical</div>
-          </div>
-          <div class="demo-tile pl-4 pr-8" data-variant="outline">
-            <div class="demo-tile h-8" data-variant="muted" style="flex:1;">pl-4 pr-8 — physical</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="demo-code">
-    <div class="demo-code-header">HTML</div>
-    <pre><code class="language-html">&lt;div dir="ltr"&gt;
+&lt;/div&gt;</code></pre></div></div><div class="sep"></div><h2 id="logical" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;"><a class="heading-anchor" href="#logical" aria-label="Link to section: Physical vs logical sides">§</a>Physical vs logical sides</h2><p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">The axis families already follow the writing mode — <code>px-*</code> is <code>padding-inline</code>, <code>py-*</code> is <code>padding-block</code>. For single sides there are two families: physical <code>pt/pr/pb/pl-*</code> always hit the same physical edge, while logical <code>ps/pe-*</code> follow inline-start and inline-end. The same classes render below in <code>dir="ltr"</code> and in <code>dir="rtl"</code>: the logical box mirrors with the direction, the physical box does not move. The filled band is the content box; the empty bands are the padding.</p><div class="demo"><div class="demo-stage"><div class="stack gap-4"><div><p class="demo-label">dir="ltr"</p><div class="stack gap-3"><div class="demo-tile ps-4 pe-8" data-variant="outline"><div class="demo-tile h-8" data-variant="muted" style="flex:1;">ps-4 pe-8 — logical</div></div><div class="demo-tile pl-4 pr-8" data-variant="outline"><div class="demo-tile h-8" data-variant="muted" style="flex:1;">pl-4 pr-8 — physical</div></div></div></div><div dir="rtl"><p class="demo-label">dir="rtl" — same classes</p><div class="stack gap-3"><div class="demo-tile ps-4 pe-8" data-variant="outline"><div class="demo-tile h-8" data-variant="muted" style="flex:1;">ps-4 pe-8 — logical</div></div><div class="demo-tile pl-4 pr-8" data-variant="outline"><div class="demo-tile h-8" data-variant="muted" style="flex:1;">pl-4 pr-8 — physical</div></div></div></div></div></div><div class="demo-code"><div class="demo-code-header">HTML</div><pre><code class="language-html">&lt;div dir="ltr"&gt;
   &lt;div class="ps-4 pe-8"&gt;ps-4 pe-8 — logical&lt;/div&gt;
   &lt;div class="pl-4 pr-8"&gt;pl-4 pr-8 — physical&lt;/div&gt;
 &lt;/div&gt;
 &lt;div dir="rtl"&gt;
   &lt;div class="ps-4 pe-8"&gt;ps-4 pe-8 — logical, mirrored&lt;/div&gt;
   &lt;div class="pl-4 pr-8"&gt;pl-4 pr-8 — physical, unchanged&lt;/div&gt;
-&lt;/div&gt;</code></pre>
-  </div>
-</div>
-
-<div class="sep"></div>
-<h2 id="families" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Spacing families</h2>
-<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">Every family in this table is demonstrated in the sections before it.</p>
-<div style="overflow-x:auto;margin-bottom:1.5rem;"><table class="table" data-variant="simple"><thead><tr><th scope="col">Classes</th><th scope="col">CSS property</th></tr></thead><tbody><tr><td><code>gap-*, gap-x-*, gap-y-*</code></td><td>gap, column-gap, row-gap</td></tr><tr><td><code>p-*, m-*</code></td><td>padding, margin</td></tr><tr><td><code>px-*, mx-*</code></td><td>padding-inline, margin-inline</td></tr><tr><td><code>py-*, my-*</code></td><td>padding-block, margin-block</td></tr><tr><td><code>pt/pr/pb/pl-*, mt/mr/mb/ml-*</code></td><td>Physical top/right/bottom/left.</td></tr><tr><td><code>ps/pe-*, ms/me-*</code></td><td>Logical inline-start/inline-end.</td></tr><tr><td><code>m/mx/my/mt/mr/mb/ml/ms/me-auto</code></td><td>Automatic margins.</td></tr></tbody></table></div>
-<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">Every family shares the numeric scale — rendered bar by bar on <a href="width-height.html#available" style="color:var(--primary);text-decoration:underline;text-underline-offset:4px;">Width &amp; Height</a> — plus <code>px</code>. Negative margins and margin-based <code>space-x/y</code> shortcuts are intentionally omitted. Gap does not create outer margins and works with wrapping layouts.</p>
-
-<div class="sep"></div>
-<h2 id="real-world" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Real world: a receipt</h2>
-<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">A whole component on one rhythm: <code>p-6</code> around the card, <code>stack gap-3</code> between line items, <code>ms-auto</code> to push amounts right, and <code>mt-4 pt-4</code> with a top border to separate the total. No custom CSS anywhere.</p>
-<div class="demo">
-  <div class="demo-stage">
-    <div class="card p-6 stack gap-3" style="max-width:22rem;margin-inline:auto;">
-      <p style="margin:0;font-size:0.9375rem;font-weight:600;">Order #1042</p>
-      <div class="flex items-baseline gap-2">
-        <span style="font-size:0.875rem;">Pro plan, monthly</span>
-        <span class="demo-label ms-auto" style="margin:0;">$24.00</span>
-      </div>
-      <div class="flex items-baseline gap-2">
-        <span style="font-size:0.875rem;">Extra seats × 2</span>
-        <span class="demo-label ms-auto" style="margin:0;">$12.00</span>
-      </div>
-      <div class="flex items-baseline gap-2">
-        <span style="font-size:0.875rem;">Priority support</span>
-        <span class="demo-label ms-auto" style="margin:0;">$8.00</span>
-      </div>
-      <div class="flex items-baseline gap-2 mt-4 pt-4" style="border-top:1px solid var(--border);">
-        <span style="font-size:0.875rem;font-weight:600;">Total</span>
-        <span class="ms-auto" style="font-size:0.875rem;font-weight:600;">$44.00</span>
-      </div>
-    </div>
-  </div>
-  <div class="demo-code">
-    <div class="demo-code-header">HTML</div>
-    <pre><code class="language-html">&lt;div class="card p-6 stack gap-3" style="max-width:22rem;"&gt;
+&lt;/div&gt;</code></pre></div></div><div class="sep"></div><h2 id="families" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;"><a class="heading-anchor" href="#families" aria-label="Link to section: Spacing families">§</a>Spacing families</h2><p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">Every family in this table is demonstrated in the sections before it.</p><div style="overflow-x:auto;margin-bottom:1.5rem;"><table class="table" data-variant="simple"><thead><tr><th scope="col">Classes</th><th scope="col">CSS property</th></tr></thead><tbody><tr><td><code>gap-*, gap-x-*, gap-y-*</code></td><td>gap, column-gap, row-gap</td></tr><tr><td><code>p-*, m-*</code></td><td>padding, margin</td></tr><tr><td><code>px-*, mx-*</code></td><td>padding-inline, margin-inline</td></tr><tr><td><code>py-*, my-*</code></td><td>padding-block, margin-block</td></tr><tr><td><code>pt/pr/pb/pl-*, mt/mr/mb/ml-*</code></td><td>Physical top/right/bottom/left.</td></tr><tr><td><code>ps/pe-*, ms/me-*</code></td><td>Logical inline-start/inline-end.</td></tr><tr><td><code>m/mx/my/mt/mr/mb/ml/ms/me-auto</code></td><td>Automatic margins.</td></tr></tbody></table></div><p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">Every family shares the numeric scale — rendered bar by bar on <a href="width-height.html#available" style="color:var(--primary);text-decoration:underline;text-underline-offset:4px;">Width &amp; Height</a> — plus <code>px</code>. Negative margins and margin-based <code>space-x/y</code> shortcuts are intentionally omitted. Gap does not create outer margins and works with wrapping layouts.</p><div class="sep"></div><h2 id="real-world" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;"><a class="heading-anchor" href="#real-world" aria-label="Link to section: Real world: a receipt">§</a>Real world: a receipt</h2><p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">A whole component on one rhythm: <code>p-6</code> around the card, <code>stack gap-3</code> between line items, <code>ms-auto</code> to push amounts right, and <code>mt-4 pt-4</code> with a top border to separate the total. No custom CSS anywhere.</p><div class="demo"><div class="demo-stage"><div class="card p-6 stack gap-3" style="max-width:22rem;margin-inline:auto;"><p style="margin:0;font-size:0.9375rem;font-weight:600;">Order #1042</p><div class="flex items-baseline gap-2"><span style="font-size:0.875rem;">Pro plan, monthly</span><span class="demo-label ms-auto" style="margin:0;">$24.00</span></div><div class="flex items-baseline gap-2"><span style="font-size:0.875rem;">Extra seats × 2</span><span class="demo-label ms-auto" style="margin:0;">$12.00</span></div><div class="flex items-baseline gap-2"><span style="font-size:0.875rem;">Priority support</span><span class="demo-label ms-auto" style="margin:0;">$8.00</span></div><div class="flex items-baseline gap-2 mt-4 pt-4" style="border-top:1px solid var(--border);"><span style="font-size:0.875rem;font-weight:600;">Total</span><span class="ms-auto" style="font-size:0.875rem;font-weight:600;">$44.00</span></div></div></div><div class="demo-code"><div class="demo-code-header">HTML</div><pre><code class="language-html">&lt;div class="card p-6 stack gap-3" style="max-width:22rem;"&gt;
   &lt;p&gt;Order #1042&lt;/p&gt;
   &lt;div class="flex items-baseline gap-2"&gt;
     &lt;span&gt;Pro plan, monthly&lt;/span&gt;
@@ -327,32 +62,14 @@
     &lt;span&gt;Total&lt;/span&gt;
     &lt;span class="ms-auto"&gt;$44.00&lt;/span&gt;
   &lt;/div&gt;
-&lt;/div&gt;</code></pre>
-  </div>
-</div>
-
-<div class="sep"></div>
-<h2 id="overrides" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Custom gaps and cascade</h2>
-<div class="demo">
-  <div class="demo-code">
-    <div class="demo-code-header">HTML</div>
-    <pre><code class="language-html">&lt;div class="stack" style="--layout-gap:clamp(1rem, 2vw, 2rem);"&gt;
+&lt;/div&gt;</code></pre></div></div><div class="sep"></div><h2 id="overrides" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;"><a class="heading-anchor" href="#overrides" aria-label="Link to section: Custom gaps and cascade">§</a>Custom gaps and cascade</h2><div class="demo"><div class="demo-code"><div class="demo-code-header">HTML</div><pre><code class="language-html">&lt;div class="stack" style="--layout-gap:clamp(1rem, 2vw, 2rem);"&gt;
   &lt;p&gt;First block&lt;/p&gt;
   &lt;p&gt;Second block&lt;/p&gt;
-&lt;/div&gt;</code></pre>
-  </div>
-</div>
-<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">A <code>--layout-gap</code> override configures a layout primitive. An explicit <code>gap-*</code> helper overrides that primitive default. To override a helper, use normal unlayered application CSS. Avoid conflicting helpers; class-attribute order does not determine CSS precedence. Existing documentation helpers are unlayered and will win unless removed or isolated.</p>
-
-<div class="sep"></div>
-<h2 id="references" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Platform references</h2>
-<p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;"><a href="https://www.w3.org/TR/css-cascade-5/" target="_blank" rel="noopener">CSS cascade layers</a> · <a href="https://www.w3.org/TR/css-logical-1/" target="_blank" rel="noopener">CSS logical properties</a></p>
-    </main>
-  </div>
-  <script src="js/site.js" defer></script>
-  <script type="module" src="js/shiki-highlight.js"></script>
-  <script type="module" src="../components/all.js"></script>
-  <script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script>
-  <script>globalThis.lucide?.createIcons();</script>
-</body>
-</html>
+&lt;/div&gt;</code></pre></div></div><p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;">A <code>--layout-gap</code> override configures a layout primitive. An explicit <code>gap-*</code> helper overrides that primitive default. To override a helper, use normal unlayered application CSS. Avoid conflicting helpers; class-attribute order does not determine CSS precedence. Existing documentation helpers are unlayered and will win unless removed or isolated.</p><div class="sep"></div><h2 id="references" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;"><a class="heading-anchor" href="#references" aria-label="Link to section: Platform references">§</a>Platform references</h2><p class="text-sm text-muted-foreground mb-5" style="line-height:1.7;"><a href="https://www.w3.org/TR/css-cascade-5/" target="_blank" rel="noopener">CSS cascade layers</a> · <a href="https://www.w3.org/TR/css-logical-1/" target="_blank" rel="noopener">CSS logical properties</a></p><nav class="page-nav"><a class="page-nav-link page-nav-prev" href="width-height.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><div><span class="page-nav-label">Previous</span><span class="page-nav-title">Width &amp; Height</span></div></a><a class="page-nav-link page-nav-next" href="density.html"><div><span class="page-nav-label">Next</span><span class="page-nav-title">Density</span></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></nav></main><aside class="site-toc"><div class="site-toc-content"><p class="toc-title">On This Page</p><a class="toc-link" href="#spacing-scale">Spacing on the same base</a><a class="toc-link" href="#box-model">The box model, labeled</a><a class="toc-link" href="#gap-axes">Gap axes</a><a class="toc-link" href="#padding">Padding families</a><a class="toc-link" href="#margins">Centering and pushing with margins</a><a class="toc-link" href="#logical">Physical vs logical sides</a><a class="toc-link" href="#families">Spacing families</a><a class="toc-link" href="#real-world">Real world: a receipt</a><a class="toc-link" href="#overrides">Custom gaps and cascade</a><a class="toc-link" href="#references">Platform references</a></div></aside></div><script>try {
+  var c = JSON.parse(localStorage.getItem('defuss-shadcn-nav-collapsed') || '[]');
+  for (var i = 0; i < c.length; i++) {
+    if (c[i] === 'Overview') continue;
+    var d = document.querySelector('details[data-nav-section="' + c[i] + '"]');
+    if (d && !d.querySelector('a.nav-link.active')) d.open = false;
+  }
+} catch (e) {}</script><footer class="site-footer"><p class="site-footer-tagline">Agentically engineered with local Qwen3.8-Flash-Next/vLLM, quality-gated automatically, and human-reviewed before release.</p><p class="site-footer-tagline" style="margin-top:0;">Reworked, enhanced and maintained by <a href="https://aron-homberg.de" target="_blank" rel="noopener">Aron Homberg</a></p><span class="site-footer-dot"> · </span>MIT Licensed<span class="site-footer-dot"> · </span><a href="https://github.com/kyr0/defuss-shadcn" target="_blank" rel="noopener">Source on GitHub</a></footer><script src="js/site.js" defer=""></script><script type="module" src="js/shiki-highlight.js"></script><script type="module" src="../components/all.js"></script><script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script><script>globalThis.lucide?.createIcons();</script></body></html>

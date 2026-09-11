@@ -1,0 +1,200 @@
+---
+title: "ES Modules"
+description: "How defuss-shadcn uses native ES modules for interactive components — no bundler needed."
+slug: "es-modules"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="es-modules" title="ES Modules" introStyle="max-width:38rem;">
+  Interactive components ship as native <DocLink href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules" target="_blank">ES modules</DocLink>. Load them with <code>&lt;script type="module"&gt;</code> — no bundler, no build step, no framework.
+</PageHeader>
+
+<H2>What is <code>type="module"</code>?</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> Adding <code>type="module"</code> to a <code>&lt;script&gt;</code> tag tells the browser to treat the file as an <DocLink href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules" target="_blank">ECMAScript module</DocLink> instead of a classic script. The key differences: </p>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(16rem, 1fr));gap:1rem;margin-bottom:2.5rem;">
+  <div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;display:flex;flex-direction:column;">
+    <div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);">
+      <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">Classic script</span>
+    </div>
+    <div style="padding:1.25rem;font-size:0.8125rem;display:flex;flex-direction:column;gap:0.75rem;">
+      <code style="display:block;font-size:0.75rem;background:var(--muted);padding:0.5rem 0.75rem;border-radius:var(--radius-md);">&lt;script src="..." defer&gt;</code>
+      <div class="text-muted-foreground">Variables leak to global scope</div>
+      <div class="text-muted-foreground">Must add <code>'use strict'</code> manually</div>
+      <div class="text-muted-foreground">Blocks parsing without <code>defer</code></div>
+      <div class="text-muted-foreground">IIFE wrappers needed for isolation</div>
+      <div class="text-muted-foreground">Generally works from <code>file://</code></div>
+    </div>
+  </div>
+  <div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;display:flex;flex-direction:column;">
+    <div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);">
+      <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">ES module</span>
+    </div>
+    <div style="padding:1.25rem;font-size:0.8125rem;display:flex;flex-direction:column;gap:0.75rem;">
+      <code style="display:block;font-size:0.75rem;background:var(--muted);padding:0.5rem 0.75rem;border-radius:var(--radius-md);">&lt;script type="module" src="..."&gt;</code>
+      <div class="text-muted-foreground">Module scope — nothing leaks</div>
+      <div class="text-muted-foreground">Strict mode by default</div>
+      <div class="text-muted-foreground">Deferred by default (like <code>defer</code>)</div>
+      <div class="text-muted-foreground">Each file is its own scope — no wrappers</div>
+      <div class="text-muted-foreground">Requires HTTP server (CORS policy)</div>
+    </div>
+  </div>
+</div>
+
+<p class="text-sm text-muted-foreground mb-5"> Module scope, strict mode, and deferred execution — with a classic script you'd need an IIFE, a <code>'use strict'</code> directive, and either <code>defer</code> or a <code>DOMContentLoaded</code> listener to get the same combination. With <code>type="module"</code>, the browser handles them automatically. </p>
+
+<div class="sep" />
+
+<H2>No <code>import</code>, no <code>export</code></H2>
+
+<p class="text-sm text-muted-foreground mb-5"> You'll notice our component modules don't use <code>import</code> or <code>export</code> at all. This is intentional. Each <code>.js</code> file is a <strong>side-effect module</strong> — it wraps its DOM-querying logic in an <code>init()</code> function, calls it once on load, and sets up a <code>MutationObserver</code> to re-run it whenever the DOM changes. There's nothing to export because the module's purpose <em>is</em> its side effect: wiring behavior to HTML elements. </p>
+
+<CodeCard title="dialog.js — init() + MutationObserver pattern" lang="javascript" mb="1.5rem">{"// No imports — this component has no dependencies\n// No exports — the side effect IS the module\n\nfunction init() {\n  document.querySelectorAll('[data-dialog-trigger]:not([data-init])').forEach((trigger) => {\n    trigger.dataset.init = '';\n    const dialog = document.getElementById(trigger.dataset.dialogTrigger);\n    if (!dialog) return;\n    trigger.addEventListener('click', () => {\n      dialog._trigger = trigger;\n      dialog.showModal();\n    });\n  });\n}\n\ninit();\nnew MutationObserver(init).observe(document, { childList: true, subtree: true });"}</CodeCard>
+
+<p class="text-sm text-muted-foreground mb-3"> There are no <code>import</code> statements either, because each component is fully self-contained. A dialog doesn't depend on a tooltip. A dropdown doesn't share code with a combobox. Each component works on its own — include only the <code>&lt;script&gt;</code> tags you need. </p>
+
+<p class="text-sm text-muted-foreground mb-5"> This is the key advantage of <em>this self-contained pattern</em>, not ES modules in general: <strong>no bundler, no import maps, no dependency resolution between components</strong>. Drop a <code>&lt;script type="module"&gt;</code> tag onto the page and the component works. Remove it and nothing breaks. You're composing at the HTML level, not the JavaScript level. </p>
+
+<div class="sep" />
+
+<H2>Static pages vs. SPAs</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> Component JS works the same way on both static and dynamic pages — load it once and it handles the rest. </p>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(16rem, 1fr));gap:1rem;margin-bottom:2.5rem;">
+  <div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;display:flex;flex-direction:column;">
+    <div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);">
+      <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">Static page</span>
+    </div>
+    <div style="padding:1.25rem;font-size:0.8125rem;display:flex;flex-direction:column;gap:0.75rem;">
+      <div class="text-muted-foreground">Add <code>&lt;script type="module"&gt;</code> tags and you're done</div>
+      <div class="text-muted-foreground">Modules run once after the HTML is parsed</div>
+      <div class="text-muted-foreground">All components initialize automatically</div>
+      <div class="text-muted-foreground">Nothing else to think about</div>
+    </div>
+  </div>
+  <div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;display:flex;flex-direction:column;">
+    <div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);">
+      <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">SPA / dynamic content</span>
+    </div>
+    <div style="padding:1.25rem;font-size:0.8125rem;display:flex;flex-direction:column;gap:0.75rem;">
+      <div class="text-muted-foreground">New HTML inserted after page load needs initialization</div>
+      <div class="text-muted-foreground">Each component uses a <code>MutationObserver</code> to watch for new elements</div>
+      <div class="text-muted-foreground">New elements are automatically initialized — no manual re-import needed</div>
+      <div class="text-muted-foreground">Already-initialized elements are skipped via <code>data-init</code> guard</div>
+    </div>
+  </div>
+</div>
+
+<p class="text-sm text-muted-foreground mb-3"> On a static page, the <code>&lt;script&gt;</code> tags run once after the DOM is ready and every component just works. No setup, no configuration. </p>
+
+<p class="text-sm text-muted-foreground mb-5"> In an SPA or any page that dynamically updates its HTML, new elements are initialized automatically. Each component module sets up a <code>MutationObserver</code> that watches the document for DOM changes and re-runs its initialization logic. The <code>data-init</code> attribute on every initialized element prevents double-binding — the <code>:not(\[data-init\])</code> selector ensures only new elements are wired up. Even with many component observers on the page, each callback is cheap because the <code>querySelectorAll</code> guard skips already-initialized elements immediately. There is nothing to call or configure: </p>
+
+<CodeCard title="how auto-initialization works inside each component module" lang="javascript" mb="2.5rem">{"// Each component module follows this pattern:\n\nfunction init() {\n  document.querySelectorAll('.my-component:not([data-init])').forEach((el) => {\n    el.dataset.init = '';\n    // ... bind event listeners, set ARIA attributes, etc.\n  });\n}\n\n// Run once on load\ninit();\n\n// Auto-run when the DOM changes (SPA navigation, dynamic content, etc.)\nnew MutationObserver(init).observe(document, { childList: true, subtree: true });"}</CodeCard>
+
+<div class="sep" />
+
+<H2>Which components need JS?</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> Most components are CSS-only. JavaScript is only used when HTML and CSS can't express the behavior — things like keyboard navigation, focus management, and state coordination. </p>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(16rem, 1fr));gap:1rem;margin-bottom:2.5rem;">
+  <div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;display:flex;flex-direction:column;">
+    <div style="padding:0.75rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);">
+      <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">CSS-only — no JS needed</span>
+    </div>
+    <div style="padding:1.25rem;font-size:0.8125rem;display:flex;flex-direction:column;gap:1rem;">
+      <div>
+        <div style="font-weight:600;margin-bottom:0.25rem;">Static display</div>
+        <div class="text-muted-foreground">Badge, Card, Alert, Spinner, Skeleton, Separator, Progress, Image, Avatar (fallback needs JS)</div>
+      </div>
+      <div>
+        <div style="font-weight:600;margin-bottom:0.25rem;">Native interactive</div>
+        <div class="text-muted-foreground">Checkbox, Radio, Select, Switch, Slider, Input, Textarea, File Input</div>
+      </div>
+      <div>
+        <div style="font-weight:600;margin-bottom:0.25rem;">Native with <code>&lt;details&gt;</code></div>
+        <div class="text-muted-foreground">Collapsible</div>
+      </div>
+    </div>
+  </div>
+  <div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;display:flex;flex-direction:column;">
+    <div style="padding:0.75rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);">
+      <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">Needs JavaScript</span>
+    </div>
+    <div style="padding:1.25rem;font-size:0.8125rem;display:flex;flex-direction:column;gap:1rem;">
+      <div>
+        <div style="font-weight:600;margin-bottom:0.25rem;">Modal coordination</div>
+        <div class="text-muted-foreground">Dialog, Sheet, Alert Dialog, Command</div>
+      </div>
+      <div>
+        <div style="font-weight:600;margin-bottom:0.25rem;">Keyboard navigation</div>
+        <div class="text-muted-foreground">Tabs, Dropdown, Combobox, Toolbar, Navigation Menu</div>
+      </div>
+      <div>
+        <div style="font-weight:600;margin-bottom:0.25rem;">Constraint logic</div>
+        <div class="text-muted-foreground">Accordion (single mode), Toggle, Toggle Group</div>
+      </div>
+      <div>
+        <div style="font-weight:600;margin-bottom:0.25rem;">Positioning &amp; wiring</div>
+        <div class="text-muted-foreground">Tooltip, Popover, Context Menu, Calendar, Carousel, Sortable</div>
+      </div>
+      <div>
+        <div style="font-weight:600;margin-bottom:0.25rem;">Programmatic API</div>
+        <div class="text-muted-foreground">Toast — exposes <code>\_defussShadcn.toast</code></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sep" />
+
+<H2>Serving locally</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> ES modules require HTTP due to browser CORS policy — they won't load from <code>file://</code> URLs. Use any local server: </p>
+
+<CodeCard title="any of these work" lang="bash" mb="2.5rem">{"make dev              # this repo: Vite dev server on :3000\nbun run dev           # same, without make\nbunx vite .           # bare Vite against dist/ in another project\nbunx serve dist/      # any static server works\npython3 -m http.server"}</CodeCard>
+
+<div class="sep" />
+
+<H2>Browser support</H2>
+
+<p class="text-sm text-muted-foreground mb-5">ES modules have been supported in all major browsers since 2018:</p>
+
+<div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:1.5rem;">
+  <div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);">
+    <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">browser support</span>
+  </div>
+  <div style="padding:1rem 1.25rem;font-size:0.8125rem;">
+    <table class="table" data-variant="simple" style="margin:0;">
+      <thead>
+        <tr>
+          <th>Browser</th>
+          <th>Supported since</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Chrome / Edge</td>
+          <td>61 (September 2017)</td>
+        </tr>
+        <tr>
+          <td>Firefox</td>
+          <td>60 (May 2018)</td>
+        </tr>
+        <tr>
+          <td>Safari</td>
+          <td>11 (September 2017)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<p class="text-sm text-muted-foreground mb-3"> See <DocLink href="https://caniuse.com/es6-module" target="_blank">caniuse.com/es6-module</DocLink> and the <DocLink href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules" target="_blank">MDN Modules guide</DocLink> for full details. </p>
+
+</DocPage>

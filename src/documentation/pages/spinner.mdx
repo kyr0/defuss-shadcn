@@ -1,0 +1,93 @@
+---
+title: "Spinner"
+description: "Spinner component — loading indicators with CSS animations."
+slug: "spinner"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="spinner" title="Spinner" component="spinner">
+  An animated loading indicator. Pure CSS animation on an SVG element — no JavaScript required.
+</PageHeader>
+
+<SkillPanel component="spinner">
+  <SkillField label="Native basis">
+<SkillText>CSS <code>@keyframes</code> animation on an SVG element. No JavaScript required.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@keyframes" title="CSS animation for continuous rotation"><code>@keyframes</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/status_role" title="ARIA live region for loading state"><code>role="status"</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/SVG" title="scalable vector graphic for the spinner icon"><code>&lt;svg&gt;</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.spinner</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Sizes (data-size)">
+<SkillGrid>
+    <Variant name="xs" description="Height: 0.625rem" />
+    <Variant name="sm" description="Height: 0.875rem" />
+    <Variant name="md" description="Height: 1.25rem" />
+    <Variant name="lg" description="Height: 1.5rem" />
+    <Variant name="xl" description="Height: 2rem" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• Must have <code>role="status"</code> and <code>aria-label="Loading"</code> (or contextual label)</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• Screen readers announce the loading state via the ARIA live region</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>Standard spinner at default size.</ExampleHint>
+  <svg class="spinner" role="status" aria-label="Loading" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+  </svg>
+  <ExampleCode>{"<svg class=\"spinner\" role=\"status\" aria-label=\"Loading\" viewBox=\"0 0 24 24\"\n     fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"\n     stroke-linecap=\"round\" stroke-linejoin=\"round\">\n  <path d=\"M21 12a9 9 0 1 1-6.219-8.56\"/>\n</svg>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Sizes</ExampleLabel>
+  <ExampleHint>The full five-step scale via <code>data-size</code> — the default is <code>1rem</code>, between <code>sm</code> and <code>md</code>.</ExampleHint>
+  <div style="display:flex;gap:1.5rem;align-items:center;">
+    <svg class="spinner" data-size="xs" role="status" aria-label="Loading" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+    </svg>
+    <svg class="spinner" data-size="sm" role="status" aria-label="Loading" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+    </svg>
+    <svg class="spinner" data-size="md" role="status" aria-label="Loading" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+    </svg>
+    <svg class="spinner" data-size="lg" role="status" aria-label="Loading" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+    </svg>
+    <svg class="spinner" data-size="xl" role="status" aria-label="Loading" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+    </svg>
+  </div>
+  <ExampleCode>{"<svg class=\"spinner\" data-size=\"xs\">...</svg>\n<svg class=\"spinner\" data-size=\"sm\">...</svg>\n<svg class=\"spinner\" data-size=\"md\">...</svg>\n<svg class=\"spinner\" data-size=\"lg\">...</svg>\n<svg class=\"spinner\" data-size=\"xl\">...</svg>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>In Button</ExampleLabel>
+  <ExampleHint>Spinner inside a loading button.</ExampleHint>
+  <button class="btn" data-variant="default" disabled><svg class="spinner" data-size="sm" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg> Loading... </button>
+  <ExampleCode>{"<button class=\"btn\" data-variant=\"default\" disabled>\n  <svg class=\"spinner\" data-size=\"sm\" aria-hidden=\"true\">...</svg>\n  Loading...\n</button>"}</ExampleCode>
+</Example>
+
+<SourceFiles component="spinner" section="css">
+  <SourceNote for="css">Styles for the spinner component. Uses design tokens for colors, spacing, and radius.</SourceNote>
+</SourceFiles>
+
+</DocPage>

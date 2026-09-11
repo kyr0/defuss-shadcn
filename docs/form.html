@@ -1,129 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="color-scheme" content="light dark">
-  <link rel="icon" href="images/favicon.webp" type="image/webp">
-  <meta name="description" content="Form component — form layouts with validation, error messages, and accessibility.">
-  <meta property="og:title" content="Form — defuss-shadcn">
-  <meta property="og:description" content="Form component — form layouts with validation, error messages, and accessibility.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://kyr0.github.io/defuss-shadcn/form.html">
-  <meta property="og:site_name" content="defuss-shadcn">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Form — defuss-shadcn">
-  <meta name="twitter:description" content="Form component — form layouts with validation, error messages, and accessibility.">
-  <title>Form — defuss-shadcn</title>
-  <script src="js/themes.js"></script>
-  <script src="js/theme-switcher.js"></script>
-  <script src="js/layout.js"></script>
-  <script src="js/search-index.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/default-semantic-tokens.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/sizing.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/layout.css">
-  <link rel="stylesheet" href="css/docs-theme.css">
-  <link rel="stylesheet" href="css/docs-utilities.css">
-  <link rel="stylesheet" href="css/layout.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.css">
-</head>
-<body>
-  <site-header></site-header>
-
-  <div class="flex" style="margin-top: 3.5rem; min-height: calc(100vh - 3.5rem);">
-    <site-nav></site-nav>
-
-    <main style="flex: 1; min-width: 0; max-width: 44rem; padding: 2rem 3.5rem 8rem;">
-      <div class="page-header">
-        <div class="flex items-baseline justify-between mb-1">
-          <p class="text-sm text-muted-foreground" style="font-family:var(--font-mono);">defuss-shadcn / form</p>
-          <div style="display:flex;align-items:baseline;gap:0.375rem;"><span class="text-xs text-muted-foreground" style="font-family:var(--font-mono);white-space:nowrap;">Built with:</span> <a href="#source-css" class="badge built-with-pill" data-variant="outline">CSS</a></div>
-        </div>
-        <h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">Form<span class="type-badge" data-type="MOL" title="Molecule">MOL</span></h1>
-        <p class="text-muted-foreground leading-relaxed mb-6">
-          Consistent field layout for forms. Built on native <code>&lt;form&gt;</code> with <code>.form-field</code> spacing, <code>.form-field-inline</code> for checkbox/switch rows, <code>.form-field-row</code> for notification-style items, and <code>.form-fieldset</code> for grouped fields.
-        </p>
-        <!-- Component Skill -->
-        <details style="margin-bottom:2rem;border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;">
-          <summary style="padding:0.875rem 1.25rem;background:var(--muted);cursor:pointer;font-size:0.8125rem;font-weight:600;font-family:var(--font-mono);color:var(--muted-foreground);list-style:none;display:flex;align-items:center;gap:0.5rem;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 200ms;"><path d="m9 18 6-6-6-6"/></svg>
-            Component Skill — <span data-spec-href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/form/component-skill.md" style="text-decoration:underline;text-underline-offset:3px;">components/form/component-skill.md</span>
-          </summary>
-          <div style="padding:1.5rem;font-size:0.875rem;line-height:1.85;">
-            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Native basis</p>
-            <p class="text-muted-foreground" style="margin:0 0 1.25rem;"><code>&lt;form&gt;</code> element with consistent field layout using Label, Input, and description/error helpers. Composes with all form control components.</p>
-
-            <p style="margin:0 0 0.625rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Web Platform APIs</p>
-            <div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;">
-              <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form" target="_blank" rel="noopener" title="native form with submission, validation, and reset" class="api-pill"><code>&lt;form&gt;</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-              <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset" target="_blank" rel="noopener" title="groups related fields" class="api-pill"><code>&lt;fieldset&gt;</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-              <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Constraint_validation" target="_blank" rel="noopener" title="native browser validation" class="api-pill"><code>Constraint Validation API</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:user-invalid" target="_blank" rel="noopener" title="post-interaction validation styling" class="api-pill"><code>:user-valid / :user-invalid</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-              <a href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-describedby" target="_blank" rel="noopener" title="connects descriptions and errors to inputs" class="api-pill"><code>aria-describedby</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-              <a href="https://developer.mozilla.org/en-US/docs/Web/API/FormData" target="_blank" rel="noopener" title="native form serialization" class="api-pill"><code>FormData</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-            </div>
-
-            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Classes</p>
-            <div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;">
-              <code>.form</code>
-              <code>.form-field</code>
-              <code>.form-field-inline</code>
-              <code>.form-field-row</code>
-              <code>.form-actions</code>
-              <code>.form-fieldset</code>
-              <code>.form-group</code>
-            </div>
-
-            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Data attributes</p>
-            <div style="display:grid;grid-template-columns:auto 1fr;gap:0.25rem 1rem;margin-bottom:1.25rem;">
-              <code>data-orientation="horizontal"</code><span class="text-muted-foreground">On <code>.form-field</code> — places label beside control</span>
-              <code>data-invalid</code><span class="text-muted-foreground">On <code>.form-field</code> — marks field as invalid, description turns destructive</span>
-              <code>data-disabled</code><span class="text-muted-foreground">On <code>.form-field-row</code> — reduces row opacity</span>
-            </div>
-
-            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Notes</p>
-            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>.form-field</code> provides consistent vertical spacing between fields.</p>
-            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>.form-field-inline</code> aligns checkbox/switch/radio horizontally with their label.</p>
-            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>.form-field-row</code> creates a card-like row for notification-style switch items.</p>
-            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>.form-fieldset</code> styles native <code>&lt;fieldset&gt;</code> with legend and description.</p>
-            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• No JavaScript needed for basic forms — use native Constraint Validation.</p>
-            <p class="text-muted-foreground" style="margin:0 0 0;">• Compose with Label, Input, Textarea, Select, Checkbox, Radio, Switch, Slider, etc.</p>
-          </div>
-        </details>
-      </div>
-
-        <!-- Default -->
-        <p class="text-sm font-medium mb-2 mt-6">Default</p>
-        <p class="text-xs text-muted-foreground mb-3">Simple form with labeled fields and descriptions.</p>
-        <div class="preview" style="justify-content:start;padding:2rem;">
-          <form class="form" style="width:100%;max-width:24rem;" onsubmit="return false;">
-            <div class="form-field">
-              <label class="label" for="f-name">Username</label>
-              <input class="input" type="text" id="f-name" placeholder="kyr0" required aria-describedby="f-name-desc">
-              <p class="field-description" id="f-name-desc">This is your public display name.</p>
-            </div>
-            <div class="form-field">
-              <label class="label" for="f-email">Email</label>
-              <input class="input" type="email" id="f-email" placeholder="you@example.com" required aria-describedby="f-email-desc">
-              <p class="field-description" id="f-email-desc">You can manage email addresses in your settings.</p>
-            </div>
-            <div class="form-field">
-              <label class="label" for="f-bio">Bio</label>
-              <textarea class="textarea" id="f-bio" placeholder="Tell us about yourself..." aria-describedby="f-bio-desc"></textarea>
-              <p class="field-description" id="f-bio-desc">You can @mention other users and organizations.</p>
-            </div>
-            <div class="form-actions">
-              <button class="btn" type="submit" data-variant="default">Submit</button>
-              <button class="btn" type="reset" data-variant="outline">Reset</button>
-            </div>
-          </form>
-        </div>
-        <div style="position:relative;margin-top:0.5rem;">
-          <button class="copy-btn">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-            Copy
-          </button>
-          <pre><code class="language-markup">&lt;form class="form"&gt;
+<html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="color-scheme" content="light dark" /><link rel="icon" href="images/favicon.webp" type="image/webp" /><meta name="description" content="Form component — form layouts with validation, error messages, and accessibility." /><meta property="og:title" content="Form — defuss-shadcn" /><meta property="og:description" content="Form component — form layouts with validation, error messages, and accessibility." /><meta property="og:type" content="website" /><meta property="og:url" content="https://kyr0.github.io/defuss-shadcn/form.html" /><meta property="og:site_name" content="defuss-shadcn" /><meta name="twitter:card" content="summary" /><meta name="twitter:title" content="Form — defuss-shadcn" /><meta name="twitter:description" content="Form component — form layouts with validation, error messages, and accessibility." /><title>Form — defuss-shadcn</title><script src="js/themes.js"></script><script src="js/theme-switcher.js"></script><script src="js/layout.js"></script><script src="js/search-index.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/default-semantic-tokens.css" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/sizing.css" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/layout.css" /><link rel="stylesheet" href="css/docs-theme.css" /><link rel="stylesheet" href="css/docs-utilities.css" /><link rel="stylesheet" href="css/layout.css" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.css" /></head><body><header class="site-header"><button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle navigation menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><a href="index.html" class="header-brand"><img src="images/favicon.webp" alt="defuss-shadcn logo" class="header-brand-logo" /><span class="header-brand-name">defuss<em>-shadcn</em></span><span class="badge header-brand-version" data-variant="outline" style="font-family:var(--font-mono);">v0.8.3</span></a><div class="header-search" role="search"><input type="text" class="header-search-input" placeholder="Search docs… (⌘K)" aria-label="Search documentation" autocomplete="off" readonly="" /></div><div style="flex:1;"></div><nav style="display:flex;align-items:center;gap:0.25rem;"><a href="https://github.com/kyr0/defuss-shadcn" target="_blank" rel="noopener" class="header-action"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg><span class="github-label">GitHub</span><span class="github-stars"></span></a><button id="wide-toggle" class="header-action theme-toggle-btn" aria-label="Toggle wide layout" aria-pressed="false"><svg id="icon-wide-expand" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg><svg id="icon-wide-collapse" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/><path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/></svg></button><button id="theme-toggle" class="header-action theme-toggle-btn" aria-label="Toggle dark mode"><svg id="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg><svg id="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button><button id="theme-selector-btn" class="header-action theme-toggle-btn" aria-label="Change color theme" popovertarget="theme-popover"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="0.5" fill="currentColor"/><circle cx="17.5" cy="10.5" r="0.5" fill="currentColor"/><circle cx="8.5" cy="7.5" r="0.5" fill="currentColor"/><circle cx="6.5" cy="12" r="0.5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></button></nav></header><div id="theme-popover" popover="" class="theme-popover"><div class="theme-popover-header"><span class="theme-popover-title">Theme</span><button class="theme-reset-btn" id="theme-reset-btn">Reset</button></div><div class="theme-grid" id="theme-grid"></div></div><dialog id="docs-palette" class="command" aria-label="Search documentation"><div class="command-content"><div class="command-input-wrapper"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input class="command-input" type="text" placeholder="Search documentation…" autocomplete="off" autocorrect="off" spellcheck="false" /></div><div class="command-list" id="docs-palette-list"></div><div class="command-empty" hidden="">No results found.</div></div></dialog><div class="flex" style="margin-top: 3.5rem; min-height: calc(100vh - 3.5rem);"><aside class="site-sidebar"><div class="sidebar-scroll"><details class="nav-section sidebar-group" open="" data-nav-section="Overview" style="margin-bottom:0.75rem;"><summary class="nav-heading">Overview<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="index.html" style="display:flex;align-items:center;gap:0.375rem;">Introduction</a><a class="nav-link" href="installation.html" style="display:flex;align-items:center;gap:0.375rem;">Installation</a><a class="nav-link" href="theming.html" style="display:flex;align-items:center;gap:0.375rem;">Theming</a><a class="nav-link" href="dark-mode.html" style="display:flex;align-items:center;gap:0.375rem;">Dark Mode</a><a class="nav-link" href="data-attribute-api.html" style="display:flex;align-items:center;gap:0.375rem;">Data Attribute API</a><a class="nav-link" href="architecture.html" style="display:flex;align-items:center;gap:0.375rem;">Architecture</a><a class="nav-link" href="cascade-layers.html" style="display:flex;align-items:center;gap:0.375rem;">Cascade Layers</a><a class="nav-link" href="es-modules.html" style="display:flex;align-items:center;gap:0.375rem;">ES Modules</a><a class="nav-link" href="native-web-apis.html" style="display:flex;align-items:center;gap:0.375rem;">Native Web APIs</a><a class="nav-link" href="animations.html" style="display:flex;align-items:center;gap:0.375rem;">Animations</a><a class="nav-link" href="sizing.html" style="display:flex;align-items:center;gap:0.375rem;">Sizing</a><a class="nav-link" href="layout.html" style="display:flex;align-items:center;gap:0.375rem;">Layout</a><a class="nav-link" href="accessibility.html" style="display:flex;align-items:center;gap:0.375rem;">Accessibility</a><a class="nav-link" href="component-skills.html" style="display:flex;align-items:center;gap:0.375rem;">Component Skills</a><a class="nav-link" href="changelog.html" style="display:flex;align-items:center;gap:0.375rem;">Changelog</a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Sizing" style="margin-bottom:0.75rem;"><summary class="nav-heading">Sizing<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="width-height.html" style="display:flex;align-items:center;gap:0.375rem;">Width &amp; Height</a><a class="nav-link" href="spacing.html" style="display:flex;align-items:center;gap:0.375rem;">Spacing</a><a class="nav-link" href="density.html" style="display:flex;align-items:center;gap:0.375rem;">Density</a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Layout" style="margin-bottom:0.75rem;"><summary class="nav-heading">Layout<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="container.html" style="display:flex;align-items:center;gap:0.375rem;">Container</a><a class="nav-link" href="flex.html" style="display:flex;align-items:center;gap:0.375rem;">Flex</a><a class="nav-link" href="grid.html" style="display:flex;align-items:center;gap:0.375rem;">Grid</a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Primitives" style="margin-bottom:0.75rem;"><summary class="nav-heading">Primitives<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="typography.html" style="display:flex;align-items:center;gap:0.375rem;">Typography <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="separator.html" style="display:flex;align-items:center;gap:0.375rem;">Separator <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="icon.html" style="display:flex;align-items:center;gap:0.375rem;">Icon <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="heading-anchor.html" style="display:flex;align-items:center;gap:0.375rem;">Heading Anchor <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Actions" style="margin-bottom:0.75rem;"><summary class="nav-heading">Actions<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="button.html" style="display:flex;align-items:center;gap:0.375rem;">Button <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="toggle.html" style="display:flex;align-items:center;gap:0.375rem;">Toggle <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="toggle-group.html" style="display:flex;align-items:center;gap:0.375rem;">Toggle Group <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="button-group.html" style="display:flex;align-items:center;gap:0.375rem;">Button Group <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="toolbar.html" style="display:flex;align-items:center;gap:0.375rem;">Toolbar <span class="type-badge" data-type="ORG" title="ORG">ORG</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Forms &amp; Inputs" style="margin-bottom:0.75rem;"><summary class="nav-heading">Forms &amp; Inputs<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="label.html" style="display:flex;align-items:center;gap:0.375rem;">Label <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="input.html" style="display:flex;align-items:center;gap:0.375rem;">Input <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="textarea.html" style="display:flex;align-items:center;gap:0.375rem;">Textarea <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="checkbox.html" style="display:flex;align-items:center;gap:0.375rem;">Checkbox <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="radio.html" style="display:flex;align-items:center;gap:0.375rem;">Radio Group <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="switch.html" style="display:flex;align-items:center;gap:0.375rem;">Switch <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="slider.html" style="display:flex;align-items:center;gap:0.375rem;">Slider <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="select.html" style="display:flex;align-items:center;gap:0.375rem;">Select <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="number-input.html" style="display:flex;align-items:center;gap:0.375rem;">Number Input <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="file-input.html" style="display:flex;align-items:center;gap:0.375rem;">File Input <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="color-picker.html" style="display:flex;align-items:center;gap:0.375rem;">Color Picker <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="date-picker.html" style="display:flex;align-items:center;gap:0.375rem;">Date Picker <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="combobox.html" style="display:flex;align-items:center;gap:0.375rem;">Combobox <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link active" href="form.html" style="display:flex;align-items:center;gap:0.375rem;">Form <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Data Display" style="margin-bottom:0.75rem;"><summary class="nav-heading">Data Display<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="badge.html" style="display:flex;align-items:center;gap:0.375rem;">Badge <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="type-badge.html" style="display:flex;align-items:center;gap:0.375rem;">Type Badge <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="avatar.html" style="display:flex;align-items:center;gap:0.375rem;">Avatar <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="card.html" style="display:flex;align-items:center;gap:0.375rem;">Card <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="image.html" style="display:flex;align-items:center;gap:0.375rem;">Image <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="statistic.html" style="display:flex;align-items:center;gap:0.375rem;">Statistic <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="table.html" style="display:flex;align-items:center;gap:0.375rem;">Table <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="collapsible.html" style="display:flex;align-items:center;gap:0.375rem;">Collapsible <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="timeline.html" style="display:flex;align-items:center;gap:0.375rem;">Timeline <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="tree-view.html" style="display:flex;align-items:center;gap:0.375rem;">Tree View <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="calendar.html" style="display:flex;align-items:center;gap:0.375rem;">Calendar <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="carousel.html" style="display:flex;align-items:center;gap:0.375rem;">Carousel <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="scroll-area.html" style="display:flex;align-items:center;gap:0.375rem;">Scroll Area <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="sortable.html" style="display:flex;align-items:center;gap:0.375rem;">Sortable <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Feedback &amp; Status" style="margin-bottom:0.75rem;"><summary class="nav-heading">Feedback &amp; Status<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="spinner.html" style="display:flex;align-items:center;gap:0.375rem;">Spinner <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="skeleton.html" style="display:flex;align-items:center;gap:0.375rem;">Skeleton <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="progress.html" style="display:flex;align-items:center;gap:0.375rem;">Progress <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="alert.html" style="display:flex;align-items:center;gap:0.375rem;">Alert <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="alert-dialog.html" style="display:flex;align-items:center;gap:0.375rem;">Alert Dialog <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="toast.html" style="display:flex;align-items:center;gap:0.375rem;">Toast <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Overlays" style="margin-bottom:0.75rem;"><summary class="nav-heading">Overlays<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="popover.html" style="display:flex;align-items:center;gap:0.375rem;">Popover <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="tooltip.html" style="display:flex;align-items:center;gap:0.375rem;">Tooltip <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="context-menu.html" style="display:flex;align-items:center;gap:0.375rem;">Context Menu <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="dialog.html" style="display:flex;align-items:center;gap:0.375rem;">Dialog <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="sheet.html" style="display:flex;align-items:center;gap:0.375rem;">Sheet <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="accordion.html" style="display:flex;align-items:center;gap:0.375rem;">Accordion <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="command.html" style="display:flex;align-items:center;gap:0.375rem;">Command <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Navigation" style="margin-bottom:0.75rem;"><summary class="nav-heading">Navigation<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="breadcrumb.html" style="display:flex;align-items:center;gap:0.375rem;">Breadcrumb <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="toc.html" style="display:flex;align-items:center;gap:0.375rem;">Table of Contents <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="pagination.html" style="display:flex;align-items:center;gap:0.375rem;">Pagination <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="steps.html" style="display:flex;align-items:center;gap:0.375rem;">Steps <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="tabs.html" style="display:flex;align-items:center;gap:0.375rem;">Tabs <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="dropdown.html" style="display:flex;align-items:center;gap:0.375rem;">Dropdown Menu <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="navigation-menu.html" style="display:flex;align-items:center;gap:0.375rem;">Navigation Menu <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Application" style="margin-bottom:0.75rem;"><summary class="nav-heading">Application<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="sidebar.html" style="display:flex;align-items:center;gap:0.375rem;">Sidebar <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Marketing" style="margin-bottom:0.75rem;"><summary class="nav-heading">Marketing<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="site-header.html" style="display:flex;align-items:center;gap:0.375rem;">Site Header <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="hero.html" style="display:flex;align-items:center;gap:0.375rem;">Hero <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="product-showcase.html" style="display:flex;align-items:center;gap:0.375rem;">Product Showcase <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="brand-logos.html" style="display:flex;align-items:center;gap:0.375rem;">Brand Logos <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="feature-details.html" style="display:flex;align-items:center;gap:0.375rem;">Feature Details <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="testimonials.html" style="display:flex;align-items:center;gap:0.375rem;">Testimonials <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="stats.html" style="display:flex;align-items:center;gap:0.375rem;">Stats <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="pricing.html" style="display:flex;align-items:center;gap:0.375rem;">Pricing <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="blog.html" style="display:flex;align-items:center;gap:0.375rem;">Blog <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="faq.html" style="display:flex;align-items:center;gap:0.375rem;">FAQ <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="get-in-touch.html" style="display:flex;align-items:center;gap:0.375rem;">Get In Touch <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="newsletter.html" style="display:flex;align-items:center;gap:0.375rem;">Newsletter <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="site-footer.html" style="display:flex;align-items:center;gap:0.375rem;">Site Footer <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a></nav></details></div></aside><main style="flex: 1; min-width: 0; max-width: 44rem; padding: 2rem 3.5rem 8rem;"><div class="page-header"><div class="flex items-baseline justify-between mb-1"><p class="text-sm text-muted-foreground" style="font-family:var(--font-mono);">defuss-shadcn / form</p><div style="display:flex;align-items:baseline;gap:0.375rem;"><span class="text-xs text-muted-foreground" style="font-family:var(--font-mono);white-space:nowrap;">Built with:</span> <a href="#source-css" class="badge built-with-pill" data-variant="outline">CSS</a></div></div><h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">Form<span class="type-badge" data-type="MOL" title="Molecule">MOL</span></h1><p class="text-muted-foreground leading-relaxed mb-6">Consistent field layout for forms. Built on native <code>&lt;form&gt;</code> with <code>.form-field</code> spacing, <code>.form-field-inline</code> for checkbox/switch rows, <code>.form-field-row</code> for notification-style items, and <code>.form-fieldset</code> for grouped fields.</p></div><details style="margin-bottom:2rem;border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;"><summary style="padding:0.875rem 1.25rem;background:var(--muted);cursor:pointer;font-size:0.8125rem;font-weight:600;font-family:var(--font-mono);color:var(--muted-foreground);list-style:none;display:flex;align-items:center;gap:0.5rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 200ms;"><path d="m9 18 6-6-6-6"/></svg>Component Skill — <span data-spec-href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/form/component-skill.md" style="text-decoration:underline;text-underline-offset:3px;">components/form/component-skill.md</span></summary><div style="padding:1.5rem;font-size:0.875rem;line-height:1.85;"><p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Native basis</p><p class="text-muted-foreground" style="margin:0 0 1.25rem;"><code>&lt;form&gt;</code> element with consistent field layout using Label, Input, and description/error helpers. Composes with all form control components.</p><p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Web Platform APIs</p><div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;"><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form" target="_blank" rel="noopener" title="native form with submission, validation, and reset" class="api-pill"><code>&lt;form&gt;</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset" target="_blank" rel="noopener" title="groups related fields" class="api-pill"><code>&lt;fieldset&gt;</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Constraint_validation" target="_blank" rel="noopener" title="native browser validation" class="api-pill"><code>Constraint Validation API</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:user-invalid" target="_blank" rel="noopener" title="post-interaction validation styling" class="api-pill"><code>:user-valid / :user-invalid</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-describedby" target="_blank" rel="noopener" title="connects descriptions and errors to inputs" class="api-pill"><code>aria-describedby</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/API/FormData" target="_blank" rel="noopener" title="native form serialization" class="api-pill"><code>FormData</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a></div><p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Classes</p><div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;"><code>.form</code><code>.form-field</code><code>.form-field-inline</code><code>.form-field-row</code><code>.form-actions</code><code>.form-fieldset</code><code>.form-group</code></div><p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Data attributes</p><div style="display:grid;grid-template-columns:auto 1fr;gap:0.25rem 1rem;margin-bottom:1.25rem;"><code>data-orientation="horizontal"</code><span class="text-muted-foreground">On <code>.form-field</code> — places label beside control</span><code>data-invalid</code><span class="text-muted-foreground">On <code>.form-field</code> — marks field as invalid, description turns destructive</span><code>data-disabled</code><span class="text-muted-foreground">On <code>.form-field-row</code> — reduces row opacity</span></div><p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Notes</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>.form-field</code> provides consistent vertical spacing between fields.</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>.form-field-inline</code> aligns checkbox/switch/radio horizontally with their label.</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>.form-field-row</code> creates a card-like row for notification-style switch items.</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>.form-fieldset</code> styles native <code>&lt;fieldset&gt;</code> with legend and description.</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• No JavaScript needed for basic forms — use native Constraint Validation.</p><p class="text-muted-foreground" style="margin:0 0 0;">• Compose with Label, Input, Textarea, Select, Checkbox, Radio, Switch, Slider, etc.</p></div></details><p class="text-sm font-medium mb-2 mt-6" id="toc-default"><a class="heading-anchor" href="#toc-default" aria-label="Link to section: Default">§</a>Default</p><p class="text-xs text-muted-foreground mb-3">Simple form with labeled fields and descriptions.</p><div class="preview" style="justify-content:start;padding:2rem;"><form class="form" style="width:100%;max-width:24rem;" onsubmit="return false;"><div class="form-field"><label class="label" for="f-name">Username</label><input class="input" type="text" id="f-name" placeholder="kyr0" required="" aria-describedby="f-name-desc" /><p class="field-description" id="f-name-desc">This is your public display name.</p></div><div class="form-field"><label class="label" for="f-email">Email</label><input class="input" type="email" id="f-email" placeholder="you@example.com" required="" aria-describedby="f-email-desc" /><p class="field-description" id="f-email-desc">You can manage email addresses in your settings.</p></div><div class="form-field"><label class="label" for="f-bio">Bio</label><textarea class="textarea" id="f-bio" placeholder="Tell us about yourself..." aria-describedby="f-bio-desc"></textarea><p class="field-description" id="f-bio-desc">You can @mention other users and organizations.</p></div><div class="form-actions"><button class="btn" type="submit" data-variant="default">Submit</button><button class="btn" type="reset" data-variant="outline">Reset</button></div></form></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;form class="form"&gt;
   &lt;div class="form-field"&gt;
     &lt;label class="label" for="name"&gt;Username&lt;/label&gt;
     &lt;input class="input" type="text" id="name" required aria-describedby="name-desc"&gt;
@@ -143,76 +19,14 @@
     &lt;button class="btn" type="submit" data-variant="default"&gt;Submit&lt;/button&gt;
     &lt;button class="btn" type="reset" data-variant="outline"&gt;Reset&lt;/button&gt;
   &lt;/div&gt;
-&lt;/form&gt;</code></pre>
-        </div>
-
-        <!-- Inline fields -->
-        <p class="text-sm font-medium mb-2 mt-8">Inline fields</p>
-        <p class="text-xs text-muted-foreground mb-3">Checkbox and switch aligned with labels.</p>
-        <div class="preview" style="justify-content:start;padding:2rem;">
-          <form class="form" style="width:100%;max-width:24rem;" onsubmit="return false;">
-            <div class="form-field">
-              <label class="label" for="f2-user">Username</label>
-              <input class="input" type="text" id="f2-user" placeholder="kyr0">
-            </div>
-            <div class="form-field-inline">
-              <input class="checkbox" type="checkbox" id="f2-terms">
-              <label for="f2-terms" style="font-size:0.875rem;">Accept terms and conditions</label>
-            </div>
-            <div class="form-field-inline">
-              <input class="switch" type="checkbox" role="switch" id="f2-news">
-              <label for="f2-news" style="font-size:0.875rem;">Subscribe to newsletter</label>
-            </div>
-            <div class="form-actions">
-              <button class="btn" type="submit" data-variant="default">Create account</button>
-            </div>
-          </form>
-        </div>
-        <div style="position:relative;margin-top:0.5rem;">
-          <button class="copy-btn">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-            Copy
-          </button>
-          <pre><code class="language-markup">&lt;div class="form-field-inline"&gt;
+&lt;/form&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-8" id="toc-inline-fields"><a class="heading-anchor" href="#toc-inline-fields" aria-label="Link to section: Inline fields">§</a>Inline fields</p><p class="text-xs text-muted-foreground mb-3">Checkbox and switch aligned with labels.</p><div class="preview" style="justify-content:start;padding:2rem;"><form class="form" style="width:100%;max-width:24rem;" onsubmit="return false;"><div class="form-field"><label class="label" for="f2-user">Username</label><input class="input" type="text" id="f2-user" placeholder="kyr0" /></div><div class="form-field-inline"><input class="checkbox" type="checkbox" id="f2-terms" /><label for="f2-terms" style="font-size:0.875rem;">Accept terms and conditions</label></div><div class="form-field-inline"><input class="switch" type="checkbox" role="switch" id="f2-news" /><label for="f2-news" style="font-size:0.875rem;">Subscribe to newsletter</label></div><div class="form-actions"><button class="btn" type="submit" data-variant="default">Create account</button></div></form></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;div class="form-field-inline"&gt;
   &lt;input class="checkbox" type="checkbox" id="terms"&gt;
   &lt;label for="terms"&gt;Accept terms and conditions&lt;/label&gt;
 &lt;/div&gt;
 &lt;div class="form-field-inline"&gt;
   &lt;input class="switch" type="checkbox" role="switch" id="news"&gt;
   &lt;label for="news"&gt;Subscribe to newsletter&lt;/label&gt;
-&lt;/div&gt;</code></pre>
-        </div>
-
-        <!-- Notification / switch rows -->
-        <p class="text-sm font-medium mb-2 mt-8">Switch rows (notifications)</p>
-        <p class="text-xs text-muted-foreground mb-3">Notification-style rows with label, description, and switch.</p>
-        <div class="preview" style="justify-content:start;padding:2rem;">
-          <form class="form" style="width:100%;max-width:28rem;" onsubmit="return false;">
-            <div class="form-field-row">
-              <div>
-                <label class="label" for="f3-marketing">Marketing emails</label>
-                <p class="field-description" id="f3-marketing-desc">Receive emails about new products, features, and more.</p>
-              </div>
-              <input class="switch" type="checkbox" role="switch" id="f3-marketing" aria-describedby="f3-marketing-desc">
-            </div>
-            <div class="form-field-row">
-              <div>
-                <label class="label" for="f3-security">Security emails</label>
-                <p class="field-description" id="f3-security-desc">Receive emails about your account security.</p>
-              </div>
-              <input class="switch" type="checkbox" role="switch" id="f3-security" checked disabled aria-describedby="f3-security-desc">
-            </div>
-            <div class="form-actions">
-              <button class="btn" type="submit" data-variant="default">Submit</button>
-            </div>
-          </form>
-        </div>
-        <div style="position:relative;margin-top:0.5rem;">
-          <button class="copy-btn">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-            Copy
-          </button>
-          <pre><code class="language-markup">&lt;div class="form-field-row"&gt;
+&lt;/div&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-8" id="toc-switch-rows-notifications"><a class="heading-anchor" href="#toc-switch-rows-notifications" aria-label="Link to section: Switch rows (notifications)">§</a>Switch rows (notifications)</p><p class="text-xs text-muted-foreground mb-3">Notification-style rows with label, description, and switch.</p><div class="preview" style="justify-content:start;padding:2rem;"><form class="form" style="width:100%;max-width:28rem;" onsubmit="return false;"><div class="form-field-row"><div><label class="label" for="f3-marketing">Marketing emails</label><p class="field-description" id="f3-marketing-desc">Receive emails about new products, features, and more.</p></div><input class="switch" type="checkbox" role="switch" id="f3-marketing" aria-describedby="f3-marketing-desc" /></div><div class="form-field-row"><div><label class="label" for="f3-security">Security emails</label><p class="field-description" id="f3-security-desc">Receive emails about your account security.</p></div><input class="switch" type="checkbox" role="switch" id="f3-security" checked="" disabled="" aria-describedby="f3-security-desc" /></div><div class="form-actions"><button class="btn" type="submit" data-variant="default">Submit</button></div></form></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;div class="form-field-row"&gt;
   &lt;div&gt;
     &lt;label class="label" for="marketing"&gt;Marketing emails&lt;/label&gt;
     &lt;p class="field-description" id="marketing-desc"&gt;Receive emails about new products, features, and more.&lt;/p&gt;
@@ -225,46 +39,7 @@
     &lt;p class="field-description" id="security-desc"&gt;Receive emails about your account security.&lt;/p&gt;
   &lt;/div&gt;
   &lt;input class="switch" type="checkbox" role="switch" id="security" checked disabled aria-describedby="security-desc"&gt;
-&lt;/div&gt;</code></pre>
-        </div>
-
-        <!-- Fieldset grouping -->
-        <p class="text-sm font-medium mb-2 mt-8">Fieldset grouping</p>
-        <p class="text-xs text-muted-foreground mb-3">Group related fields with <code>&lt;fieldset&gt;</code> and <code>&lt;legend&gt;</code>.</p>
-        <div class="preview" style="justify-content:start;padding:2rem;">
-          <form class="form" style="width:100%;max-width:24rem;" onsubmit="return false;">
-            <div class="form-field">
-              <label class="label" for="f4-name">Full name</label>
-              <input class="input" type="text" id="f4-name" placeholder="Jane Doe" required>
-            </div>
-            <fieldset class="form-fieldset">
-              <legend>Notify me about...</legend>
-              <div class="form-group">
-                <div class="form-field-inline">
-                  <input class="radio" type="radio" name="f4-notify" id="f4-all" checked>
-                  <label for="f4-all" style="font-size:0.875rem;">All new messages</label>
-                </div>
-                <div class="form-field-inline">
-                  <input class="radio" type="radio" name="f4-notify" id="f4-direct">
-                  <label for="f4-direct" style="font-size:0.875rem;">Direct messages and mentions</label>
-                </div>
-                <div class="form-field-inline">
-                  <input class="radio" type="radio" name="f4-notify" id="f4-none">
-                  <label for="f4-none" style="font-size:0.875rem;">Nothing</label>
-                </div>
-              </div>
-            </fieldset>
-            <div class="form-actions">
-              <button class="btn" type="submit" data-variant="default">Save preferences</button>
-            </div>
-          </form>
-        </div>
-        <div style="position:relative;margin-top:0.5rem;">
-          <button class="copy-btn">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-            Copy
-          </button>
-          <pre><code class="language-markup">&lt;fieldset class="form-fieldset"&gt;
+&lt;/div&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-8" id="toc-fieldset-grouping"><a class="heading-anchor" href="#toc-fieldset-grouping" aria-label="Link to section: Fieldset grouping">§</a>Fieldset grouping</p><p class="text-xs text-muted-foreground mb-3">Group related fields with <code>&lt;fieldset&gt;</code> and <code>&lt;legend&gt;</code>.</p><div class="preview" style="justify-content:start;padding:2rem;"><form class="form" style="width:100%;max-width:24rem;" onsubmit="return false;"><div class="form-field"><label class="label" for="f4-name">Full name</label><input class="input" type="text" id="f4-name" placeholder="Jane Doe" required="" /></div><fieldset class="form-fieldset"><legend>Notify me about...</legend><div class="form-group"><div class="form-field-inline"><input class="radio" type="radio" name="f4-notify" id="f4-all" checked="" /><label for="f4-all" style="font-size:0.875rem;">All new messages</label></div><div class="form-field-inline"><input class="radio" type="radio" name="f4-notify" id="f4-direct" /><label for="f4-direct" style="font-size:0.875rem;">Direct messages and mentions</label></div><div class="form-field-inline"><input class="radio" type="radio" name="f4-notify" id="f4-none" /><label for="f4-none" style="font-size:0.875rem;">Nothing</label></div></div></fieldset><div class="form-actions"><button class="btn" type="submit" data-variant="default">Save preferences</button></div></form></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;fieldset class="form-fieldset"&gt;
   &lt;legend&gt;Notify me about...&lt;/legend&gt;
   &lt;div class="form-group"&gt;
     &lt;div class="form-field-inline"&gt;
@@ -280,158 +55,20 @@
       &lt;label for="none"&gt;Nothing&lt;/label&gt;
     &lt;/div&gt;
   &lt;/div&gt;
-&lt;/fieldset&gt;</code></pre>
-        </div>
-
-        <!-- Horizontal layout -->
-        <p class="text-sm font-medium mb-2 mt-8">Horizontal layout</p>
-        <p class="text-xs text-muted-foreground mb-3">Label placed beside the control with <code>data-orientation="horizontal"</code>.</p>
-        <div class="preview" style="justify-content:start;padding:2rem;">
-          <form class="form" style="width:100%;max-width:32rem;" onsubmit="return false;">
-            <div class="form-field" data-orientation="horizontal">
-              <label class="label" for="f5-name">Name</label>
-              <div>
-                <input class="input" type="text" id="f5-name" placeholder="Jane Doe" aria-describedby="f5-name-desc">
-                <p class="field-description" id="f5-name-desc">Your full name for identification.</p>
-              </div>
-            </div>
-            <div class="form-field" data-orientation="horizontal">
-              <label class="label" for="f5-email">Email</label>
-              <div>
-                <input class="input" type="email" id="f5-email" placeholder="you@example.com">
-              </div>
-            </div>
-            <div class="form-actions">
-              <button class="btn" type="submit" data-variant="default">Save</button>
-              <button class="btn" type="reset" data-variant="outline">Cancel</button>
-            </div>
-          </form>
-        </div>
-        <div style="position:relative;margin-top:0.5rem;">
-          <button class="copy-btn">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-            Copy
-          </button>
-          <pre><code class="language-markup">&lt;div class="form-field" data-orientation="horizontal"&gt;
+&lt;/fieldset&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-8" id="toc-horizontal-layout"><a class="heading-anchor" href="#toc-horizontal-layout" aria-label="Link to section: Horizontal layout">§</a>Horizontal layout</p><p class="text-xs text-muted-foreground mb-3">Label placed beside the control with <code>data-orientation="horizontal"</code>.</p><div class="preview" style="justify-content:start;padding:2rem;"><form class="form" style="width:100%;max-width:32rem;" onsubmit="return false;"><div class="form-field" data-orientation="horizontal"><label class="label" for="f5-name">Name</label><div><input class="input" type="text" id="f5-name" placeholder="Jane Doe" aria-describedby="f5-name-desc" /><p class="field-description" id="f5-name-desc">Your full name for identification.</p></div></div><div class="form-field" data-orientation="horizontal"><label class="label" for="f5-email">Email</label><div><input class="input" type="email" id="f5-email" placeholder="you@example.com" /></div></div><div class="form-actions"><button class="btn" type="submit" data-variant="default">Save</button><button class="btn" type="reset" data-variant="outline">Cancel</button></div></form></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;div class="form-field" data-orientation="horizontal"&gt;
   &lt;label class="label" for="name"&gt;Name&lt;/label&gt;
   &lt;div&gt;
     &lt;input class="input" type="text" id="name" aria-describedby="name-desc"&gt;
     &lt;p class="field-description" id="name-desc"&gt;Your full name for identification.&lt;/p&gt;
   &lt;/div&gt;
-&lt;/div&gt;</code></pre>
-        </div>
-
-        <!-- Validation / error state -->
-        <p class="text-sm font-medium mb-2 mt-8">Validation with errors</p>
-        <p class="text-xs text-muted-foreground mb-3">Fields with <code>data-invalid</code> and <code>aria-invalid</code> for error states.</p>
-        <div class="preview" style="justify-content:start;padding:2rem;">
-          <form class="form" style="width:100%;max-width:24rem;" onsubmit="return false;" novalidate>
-            <div class="form-field" data-invalid>
-              <label class="label" for="f6-user">Username</label>
-              <input class="input" type="text" id="f6-user" aria-invalid="true" aria-describedby="f6-user-err" value="ab">
-              <p class="field-error" id="f6-user-err" role="alert">Username must be at least 3 characters.</p>
-            </div>
-            <div class="form-field" data-invalid>
-              <label class="label" for="f6-email">Email</label>
-              <input class="input" type="email" id="f6-email" aria-invalid="true" aria-describedby="f6-email-err" value="not-an-email">
-              <p class="field-error" id="f6-email-err" role="alert">Please enter a valid email address.</p>
-            </div>
-            <div class="form-field">
-              <label class="label" for="f6-msg">Message</label>
-              <textarea class="textarea" id="f6-msg" placeholder="Your message..." aria-describedby="f6-msg-desc"></textarea>
-              <p class="field-description" id="f6-msg-desc">Optional message.</p>
-            </div>
-            <div class="form-actions">
-              <button class="btn" type="submit" data-variant="default">Submit</button>
-            </div>
-          </form>
-        </div>
-        <div style="position:relative;margin-top:0.5rem;">
-          <button class="copy-btn">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-            Copy
-          </button>
-          <pre><code class="language-markup">&lt;div class="form-field" data-invalid&gt;
+&lt;/div&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-8" id="toc-validation-with-errors"><a class="heading-anchor" href="#toc-validation-with-errors" aria-label="Link to section: Validation with errors">§</a>Validation with errors</p><p class="text-xs text-muted-foreground mb-3">Fields with <code>data-invalid</code> and <code>aria-invalid</code> for error states.</p><div class="preview" style="justify-content:start;padding:2rem;"><form class="form" style="width:100%;max-width:24rem;" onsubmit="return false;" novalidate=""><div class="form-field" data-invalid=""><label class="label" for="f6-user">Username</label><input class="input" type="text" id="f6-user" aria-invalid="true" aria-describedby="f6-user-err" value="ab" /><p class="field-error" id="f6-user-err" role="alert">Username must be at least 3 characters.</p></div><div class="form-field" data-invalid=""><label class="label" for="f6-email">Email</label><input class="input" type="email" id="f6-email" aria-invalid="true" aria-describedby="f6-email-err" value="not-an-email" /><p class="field-error" id="f6-email-err" role="alert">Please enter a valid email address.</p></div><div class="form-field"><label class="label" for="f6-msg">Message</label><textarea class="textarea" id="f6-msg" placeholder="Your message..." aria-describedby="f6-msg-desc"></textarea><p class="field-description" id="f6-msg-desc">Optional message.</p></div><div class="form-actions"><button class="btn" type="submit" data-variant="default">Submit</button></div></form></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;div class="form-field" data-invalid&gt;
   &lt;label class="label" for="user"&gt;Username&lt;/label&gt;
   &lt;input class="input" type="text" id="user"
     aria-invalid="true" aria-describedby="user-err"&gt;
   &lt;p class="field-error" id="user-err" role="alert"&gt;
     Username must be at least 3 characters.
   &lt;/p&gt;
-&lt;/div&gt;</code></pre>
-        </div>
-
-        <!-- Full kitchen sink -->
-        <p class="text-sm font-medium mb-2 mt-8">Full composition</p>
-        <p class="text-xs text-muted-foreground mb-3">Comprehensive form composing multiple field types.</p>
-        <div class="preview" style="justify-content:start;padding:2rem;">
-          <form class="form" style="width:100%;max-width:28rem;" onsubmit="return false;">
-            <div class="form-field">
-              <label class="label" for="f7-name">Username</label>
-              <input class="input" type="text" id="f7-name" placeholder="kyr0" required aria-describedby="f7-name-desc">
-              <p class="field-description" id="f7-name-desc">This is your public display name.</p>
-            </div>
-            <div class="form-field">
-              <label class="label" for="f7-email">Email</label>
-              <select class="select" id="f7-email" aria-describedby="f7-email-desc">
-                <option value="m@example.com">m@example.com</option>
-                <option value="m@google.com">m@google.com</option>
-                <option value="m@support.com">m@support.com</option>
-              </select>
-              <p class="field-description" id="f7-email-desc">You can manage email addresses in your settings.</p>
-            </div>
-            <div class="form-field">
-              <label class="label" for="f7-bio">Bio</label>
-              <textarea class="textarea" id="f7-bio" placeholder="I like to..." aria-describedby="f7-bio-desc"></textarea>
-              <p class="field-description" id="f7-bio-desc">You can @mention other users and organizations.</p>
-            </div>
-            <div class="form-field">
-              <label class="label" for="f7-dob">Date of birth</label>
-              <input class="input" type="date" id="f7-dob" aria-describedby="f7-dob-desc">
-              <p class="field-description" id="f7-dob-desc">Your date of birth is used to calculate your age.</p>
-            </div>
-            <fieldset class="form-fieldset">
-              <legend>Notify me about...</legend>
-              <div class="form-group">
-                <div class="form-field-inline">
-                  <input class="radio" type="radio" name="f7-notify" id="f7-all" checked>
-                  <label for="f7-all" style="font-size:0.875rem;">All new messages</label>
-                </div>
-                <div class="form-field-inline">
-                  <input class="radio" type="radio" name="f7-notify" id="f7-direct">
-                  <label for="f7-direct" style="font-size:0.875rem;">Direct messages and mentions</label>
-                </div>
-                <div class="form-field-inline">
-                  <input class="radio" type="radio" name="f7-notify" id="f7-nothing">
-                  <label for="f7-nothing" style="font-size:0.875rem;">Nothing</label>
-                </div>
-              </div>
-            </fieldset>
-            <div class="form-field-row">
-              <div>
-                <label class="label" for="f7-marketing">Marketing emails</label>
-                <p class="field-description" id="f7-marketing-desc">Receive emails about new products, features, and more.</p>
-              </div>
-              <input class="switch" type="checkbox" role="switch" id="f7-marketing" aria-describedby="f7-marketing-desc">
-            </div>
-            <div class="form-field-row" data-disabled>
-              <div>
-                <label class="label" for="f7-security">Security emails</label>
-                <p class="field-description" id="f7-security-desc">Receive emails about your account security.</p>
-              </div>
-              <input class="switch" type="checkbox" role="switch" id="f7-security" checked disabled aria-describedby="f7-security-desc">
-            </div>
-            <div class="form-actions">
-              <button class="btn" type="submit" data-variant="default">Submit</button>
-            </div>
-          </form>
-        </div>
-        <div style="position:relative;margin-top:0.5rem;">
-          <button class="copy-btn">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-            Copy
-          </button>
-          <pre><code class="language-markup">&lt;form class="form"&gt;
+&lt;/div&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-8" id="toc-full-composition"><a class="heading-anchor" href="#toc-full-composition" aria-label="Link to section: Full composition">§</a>Full composition</p><p class="text-xs text-muted-foreground mb-3">Comprehensive form composing multiple field types.</p><div class="preview" style="justify-content:start;padding:2rem;"><form class="form" style="width:100%;max-width:28rem;" onsubmit="return false;"><div class="form-field"><label class="label" for="f7-name">Username</label><input class="input" type="text" id="f7-name" placeholder="kyr0" required="" aria-describedby="f7-name-desc" /><p class="field-description" id="f7-name-desc">This is your public display name.</p></div><div class="form-field"><label class="label" for="f7-email">Email</label><select class="select" id="f7-email" aria-describedby="f7-email-desc"><option value="m@example.com">m@example.com</option><option value="m@google.com">m@google.com</option><option value="m@support.com">m@support.com</option></select><p class="field-description" id="f7-email-desc">You can manage email addresses in your settings.</p></div><div class="form-field"><label class="label" for="f7-bio">Bio</label><textarea class="textarea" id="f7-bio" placeholder="I like to..." aria-describedby="f7-bio-desc"></textarea><p class="field-description" id="f7-bio-desc">You can @mention other users and organizations.</p></div><div class="form-field"><label class="label" for="f7-dob">Date of birth</label><input class="input" type="date" id="f7-dob" aria-describedby="f7-dob-desc" /><p class="field-description" id="f7-dob-desc">Your date of birth is used to calculate your age.</p></div><fieldset class="form-fieldset"><legend>Notify me about...</legend><div class="form-group"><div class="form-field-inline"><input class="radio" type="radio" name="f7-notify" id="f7-all" checked="" /><label for="f7-all" style="font-size:0.875rem;">All new messages</label></div><div class="form-field-inline"><input class="radio" type="radio" name="f7-notify" id="f7-direct" /><label for="f7-direct" style="font-size:0.875rem;">Direct messages and mentions</label></div><div class="form-field-inline"><input class="radio" type="radio" name="f7-notify" id="f7-nothing" /><label for="f7-nothing" style="font-size:0.875rem;">Nothing</label></div></div></fieldset><div class="form-field-row"><div><label class="label" for="f7-marketing">Marketing emails</label><p class="field-description" id="f7-marketing-desc">Receive emails about new products, features, and more.</p></div><input class="switch" type="checkbox" role="switch" id="f7-marketing" aria-describedby="f7-marketing-desc" /></div><div class="form-field-row" data-disabled=""><div><label class="label" for="f7-security">Security emails</label><p class="field-description" id="f7-security-desc">Receive emails about your account security.</p></div><input class="switch" type="checkbox" role="switch" id="f7-security" checked="" disabled="" aria-describedby="f7-security-desc" /></div><div class="form-actions"><button class="btn" type="submit" data-variant="default">Submit</button></div></form></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;form class="form"&gt;
   &lt;div class="form-field"&gt;
     &lt;label class="label" for="name"&gt;Username&lt;/label&gt;
     &lt;input class="input" type="text" id="name" required aria-describedby="name-desc"&gt;
@@ -462,15 +99,7 @@
   &lt;div class="form-actions"&gt;
     &lt;button class="btn" type="submit"&gt;Submit&lt;/button&gt;
   &lt;/div&gt;
-&lt;/form&gt;</code></pre>
-        </div>
-
-        <!-- -- CSS --------------------------------------- -->
-        <section style="margin-top:3rem;" id="source-css">
-          <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;">CSS <a href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/form/form.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2>
-          <div style="position:relative;margin-top:0.5rem;">
-            <button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button>
-            <pre><code class="language-scss">/* -- Form component --------------------------------------------- */
+&lt;/form&gt;</code></pre></div><section style="margin-top:3rem;" id="source-css"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-css"><a class="heading-anchor" href="#toc-css" aria-label="Link to section: CSS">§</a>CSS <a href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/form/form.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-scss">/* -- Form component --------------------------------------------- */
 
 @layer components {
   .form {
@@ -486,7 +115,7 @@
     gap: 0;
 
     /* -- Horizontal orientation (label beside control) ------- */
-    &amp;[data-orientation=&quot;horizontal&quot;] {
+    &amp;[data-orientation="horizontal"] {
       flex-direction: row;
       align-items: start;
       gap: 1rem;
@@ -604,17 +233,12 @@
       color: LinkText;
     }
   }
-}</code></pre>
-          </div>
-        </section>
-
-    </main>
-  </div>
-
-  <script src="js/site.js" defer></script>
-  <script type="module" src="js/shiki-highlight.js"></script>
-  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.js"></script>
-  <script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script>
-  <script>globalThis.lucide?.createIcons();</script>
-</body>
-</html>
+}
+</code></pre></div></section><nav class="page-nav"><a class="page-nav-link page-nav-prev" href="combobox.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><div><span class="page-nav-label">Previous</span><span class="page-nav-title">Combobox</span></div></a><a class="page-nav-link page-nav-next" href="badge.html"><div><span class="page-nav-label">Next</span><span class="page-nav-title">Badge</span></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></nav></main><aside class="site-toc"><div class="site-toc-content"><p class="toc-title">On This Page</p><a class="toc-link" href="#toc-default">Default</a><a class="toc-link" href="#toc-inline-fields">Inline fields</a><a class="toc-link" href="#toc-switch-rows-notifications">Switch rows (notifications)</a><a class="toc-link" href="#toc-fieldset-grouping">Fieldset grouping</a><a class="toc-link" href="#toc-horizontal-layout">Horizontal layout</a><a class="toc-link" href="#toc-validation-with-errors">Validation with errors</a><a class="toc-link" href="#toc-full-composition">Full composition</a><a class="toc-link" href="#toc-css">CSS</a></div></aside></div><script>try {
+  var c = JSON.parse(localStorage.getItem('defuss-shadcn-nav-collapsed') || '[]');
+  for (var i = 0; i < c.length; i++) {
+    if (c[i] === 'Overview') continue;
+    var d = document.querySelector('details[data-nav-section="' + c[i] + '"]');
+    if (d && !d.querySelector('a.nav-link.active')) d.open = false;
+  }
+} catch (e) {}</script><footer class="site-footer"><p class="site-footer-tagline">Agentically engineered with local Qwen3.8-Flash-Next/vLLM, quality-gated automatically, and human-reviewed before release.</p><p class="site-footer-tagline" style="margin-top:0;">Reworked, enhanced and maintained by <a href="https://aron-homberg.de" target="_blank" rel="noopener">Aron Homberg</a></p><span class="site-footer-dot"> · </span>MIT Licensed<span class="site-footer-dot"> · </span><a href="https://github.com/kyr0/defuss-shadcn" target="_blank" rel="noopener">Source on GitHub</a></footer><script src="js/site.js" defer=""></script><script type="module" src="js/shiki-highlight.js"></script><script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.js"></script><script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script><script>globalThis.lucide?.createIcons();</script></body></html>

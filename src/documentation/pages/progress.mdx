@@ -1,0 +1,110 @@
+---
+title: "Progress"
+description: "Progress component — native <progress> bars with custom styling."
+slug: "progress"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="progress" title="Progress" component="progress">
+  A progress bar showing completion percentage. Built on the native <code>&lt;progress&gt;</code> element.
+</PageHeader>
+
+<SkillPanel component="progress">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;progress&gt;</code> element with CSS styling for the track and indicator bar.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress" title="native HTML progress indicator"><code>&lt;progress&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/::-webkit-progress-bar" title="track pseudo-element (WebKit)"><code>::-webkit-progress-bar</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/::-webkit-progress-value" title="indicator pseudo-element (WebKit)"><code>::-webkit-progress-value</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/::-moz-progress-bar" title="indicator pseudo-element (Firefox)"><code>::-moz-progress-bar</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.progress</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• <code>&lt;progress&gt;</code> is natively accessible — screen readers announce the percentage</SkillText>
+  <SkillText dense>• The text content inside <code>&lt;progress&gt;</code> is the fallback for non-supporting browsers</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• Use <code>aria-label</code> if the progress bar lacks a visible label</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Determinate</ExampleLabel>
+  <ExampleHint>Shows a specific completion percentage.</ExampleHint>
+  <div style="width:24rem;">
+    <progress class="progress" value="66" max="100">66%</progress>
+  </div>
+  <ExampleCode>{"<progress class=\"progress\" value=\"66\" max=\"100\">66%</progress>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Values</ExampleLabel>
+  <ExampleHint>Different completion amounts.</ExampleHint>
+  <div style="display:flex;flex-direction:column;gap:1rem;width:24rem;">
+    <progress class="progress" value="10" max="100">10%</progress>
+    <progress class="progress" value="40" max="100">40%</progress>
+    <progress class="progress" value="75" max="100">75%</progress>
+    <progress class="progress" value="100" max="100">100%</progress>
+  </div>
+  <ExampleCode>{"<progress class=\"progress\" value=\"10\" max=\"100\">10%</progress>\n<progress class=\"progress\" value=\"40\" max=\"100\">40%</progress>\n<progress class=\"progress\" value=\"75\" max=\"100\">75%</progress>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Indeterminate</ExampleLabel>
+  <ExampleHint>Animated state when completion amount is unknown. Omit the <code>value</code> attribute.</ExampleHint>
+  <div style="width:24rem;">
+    <progress class="progress" max="100">Loading...</progress>
+  </div>
+  <ExampleCode>{"<progress class=\"progress\" max=\"100\">Loading...</progress>"}</ExampleCode>
+</Example>
+
+<Example noCode previewStyle="flex-direction:column;align-items:stretch;">
+  <ExampleLabel>In Cards</ExampleLabel>
+  <ExampleHint>Progress bars composed with <code>.card</code> and <code>.statistic</code> for a dashboard layout.</ExampleHint>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(12rem, 1fr));gap:1rem;max-width:42rem;">
+    <article class="card">
+      <div class="card-content" style="padding:1.5rem;">
+        <div class="statistic" style="margin-bottom:0.75rem;">
+          <p class="statistic-title">Storage</p>
+          <p class="statistic-value" style="font-size:1.25rem;">75%</p>
+        </div>
+        <progress class="progress" value="75" max="100">75%</progress>
+      </div>
+    </article>
+    <article class="card">
+      <div class="card-content" style="padding:1.5rem;">
+        <div class="statistic" style="margin-bottom:0.75rem;">
+          <p class="statistic-title">Bandwidth</p>
+          <p class="statistic-value" style="font-size:1.25rem;">42%</p>
+        </div>
+        <progress class="progress" value="42" max="100">42%</progress>
+      </div>
+    </article>
+    <article class="card">
+      <div class="card-content" style="padding:1.5rem;">
+        <div class="statistic" style="margin-bottom:0.75rem;">
+          <p class="statistic-title">CPU</p>
+          <p class="statistic-value" style="font-size:1.25rem;">91%</p>
+        </div>
+        <progress class="progress" value="91" max="100">91%</progress>
+      </div>
+    </article>
+  </div>
+</Example>
+
+<SourceFiles component="progress" section="css">
+  <SourceNote for="css">WebKit (Chrome, Safari, Edge)</SourceNote>
+</SourceFiles>
+
+</DocPage>

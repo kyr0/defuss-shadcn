@@ -1,170 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="color-scheme" content="light dark">
-  <link rel="icon" href="images/favicon.webp" type="image/webp">
-  <meta name="description" content="Accessibility patterns in defuss-shadcn: ARIA roles, keyboard navigation, focus management, and screen reader support.">
-  <meta property="og:title" content="Accessibility — defuss-shadcn">
-  <meta property="og:description" content="Accessibility patterns in defuss-shadcn: ARIA roles, keyboard navigation, focus management, and screen reader support.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://kyr0.github.io/defuss-shadcn/documentation/accessibility.html">
-  <meta property="og:site_name" content="defuss-shadcn">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Accessibility — defuss-shadcn">
-  <meta name="twitter:description" content="Accessibility patterns in defuss-shadcn: ARIA roles, keyboard navigation, focus management, and screen reader support.">
-  <title>Accessibility — defuss-shadcn</title>
-  <script src="js/themes.js"></script>
-  <script src="js/theme-switcher.js"></script>
-  <script src="js/layout.js"></script>
-  <script src="js/search-index.js"></script>
-  <link rel="stylesheet" href="../theme/default-semantic-tokens.css">
-  <link rel="stylesheet" href="../theme/sizing.css">
-  <link rel="stylesheet" href="../theme/layout.css">
-  <link rel="stylesheet" href="css/docs-theme.css">
-  <link rel="stylesheet" href="css/docs-utilities.css">
-  <link rel="stylesheet" href="css/layout.css">
-  <link rel="stylesheet" href="../components/all.css">
-</head>
-<body>
-  <site-header></site-header>
-
-  <div class="flex" style="margin-top: 3.5rem; min-height: calc(100vh - 3.5rem);">
-    <site-nav></site-nav>
-
-    <main style="flex: 1; min-width: 0; max-width: 44rem; padding: 2rem 3.5rem 8rem;">
-      <div class="page-header">
-<p class="text-sm text-muted-foreground mb-3" style="font-family:var(--font-mono);">defuss-shadcn / accessibility</p>
-  <h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">Accessibility</h1>
-  <p class="text-muted-foreground leading-relaxed mb-10" style="max-width:38rem;">
-    Every component follows WAI-ARIA Authoring Practices. Semantic HTML first, ARIA attributes where native semantics don't exist, full keyboard support throughout.
-  </p>
-      </div>
-
-  <!-- -- Semantic HTML First -- -->
-  <h2 style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Semantic HTML first</h2>
-  <p class="text-sm text-muted-foreground mb-5">Components start from the most semantic native element available. A <code>&lt;button&gt;</code> is already a button — no <code>role="button"</code> needed. A <code>&lt;dialog&gt;</code> already traps focus and handles Escape. ARIA is only added when the native element doesn't express the full semantics of the widget.</p>
-
-  <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(16rem, 1fr));gap:1rem;margin-bottom:2.5rem;">
-    <div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;display:flex;flex-direction:column;">
-      <div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);">
-        <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">Avoid: unnecessary ARIA</span>
-      </div>
-      <pre style="border-radius:0;border:none;margin:0;background:transparent;flex:1;overflow:hidden;"><code class="language-markup"><span class="dim">&lt;!-- Don't add ARIA roles to native elements --&gt;</span>
-&lt;div role="button" tabindex="0"
+<html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="color-scheme" content="light dark" /><link rel="icon" href="images/favicon.webp" type="image/webp" /><meta name="description" content="Accessibility patterns in defuss-shadcn: ARIA roles, keyboard navigation, focus management, and screen reader support." /><meta property="og:title" content="Accessibility — defuss-shadcn" /><meta property="og:description" content="Accessibility patterns in defuss-shadcn: ARIA roles, keyboard navigation, focus management, and screen reader support." /><meta property="og:type" content="website" /><meta property="og:url" content="https://kyr0.github.io/defuss-shadcn/documentation/accessibility.html" /><meta property="og:site_name" content="defuss-shadcn" /><meta name="twitter:card" content="summary" /><meta name="twitter:title" content="Accessibility — defuss-shadcn" /><meta name="twitter:description" content="Accessibility patterns in defuss-shadcn: ARIA roles, keyboard navigation, focus management, and screen reader support." /><title>Accessibility — defuss-shadcn</title><script src="js/themes.js"></script><script src="js/theme-switcher.js"></script><script src="js/layout.js"></script><script src="js/search-index.js"></script><link rel="stylesheet" href="../theme/default-semantic-tokens.css" /><link rel="stylesheet" href="../theme/sizing.css" /><link rel="stylesheet" href="../theme/layout.css" /><link rel="stylesheet" href="css/docs-theme.css" /><link rel="stylesheet" href="css/docs-utilities.css" /><link rel="stylesheet" href="css/layout.css" /><link rel="stylesheet" href="../components/all.css" /></head><body><header class="site-header"><button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle navigation menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><a href="index.html" class="header-brand"><img src="images/favicon.webp" alt="defuss-shadcn logo" class="header-brand-logo" /><span class="header-brand-name">defuss<em>-shadcn</em></span><span class="badge header-brand-version" data-variant="outline" style="font-family:var(--font-mono);">v0.8.3</span></a><div class="header-search" role="search"><input type="text" class="header-search-input" placeholder="Search docs… (⌘K)" aria-label="Search documentation" autocomplete="off" readonly="" /></div><div style="flex:1;"></div><nav style="display:flex;align-items:center;gap:0.25rem;"><a href="https://github.com/kyr0/defuss-shadcn" target="_blank" rel="noopener" class="header-action"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg><span class="github-label">GitHub</span><span class="github-stars"></span></a><button id="wide-toggle" class="header-action theme-toggle-btn" aria-label="Toggle wide layout" aria-pressed="false"><svg id="icon-wide-expand" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg><svg id="icon-wide-collapse" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/><path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/></svg></button><button id="theme-toggle" class="header-action theme-toggle-btn" aria-label="Toggle dark mode"><svg id="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg><svg id="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button><button id="theme-selector-btn" class="header-action theme-toggle-btn" aria-label="Change color theme" popovertarget="theme-popover"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="0.5" fill="currentColor"/><circle cx="17.5" cy="10.5" r="0.5" fill="currentColor"/><circle cx="8.5" cy="7.5" r="0.5" fill="currentColor"/><circle cx="6.5" cy="12" r="0.5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></button></nav></header><div id="theme-popover" popover="" class="theme-popover"><div class="theme-popover-header"><span class="theme-popover-title">Theme</span><button class="theme-reset-btn" id="theme-reset-btn">Reset</button></div><div class="theme-grid" id="theme-grid"></div></div><dialog id="docs-palette" class="command" aria-label="Search documentation"><div class="command-content"><div class="command-input-wrapper"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input class="command-input" type="text" placeholder="Search documentation…" autocomplete="off" autocorrect="off" spellcheck="false" /></div><div class="command-list" id="docs-palette-list"></div><div class="command-empty" hidden="">No results found.</div></div></dialog><div class="flex" style="margin-top: 3.5rem; min-height: calc(100vh - 3.5rem);"><aside class="site-sidebar"><div class="sidebar-scroll"><details class="nav-section sidebar-group" open="" data-nav-section="Overview" style="margin-bottom:0.75rem;"><summary class="nav-heading">Overview<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="index.html" style="display:flex;align-items:center;gap:0.375rem;">Introduction</a><a class="nav-link" href="installation.html" style="display:flex;align-items:center;gap:0.375rem;">Installation</a><a class="nav-link" href="theming.html" style="display:flex;align-items:center;gap:0.375rem;">Theming</a><a class="nav-link" href="dark-mode.html" style="display:flex;align-items:center;gap:0.375rem;">Dark Mode</a><a class="nav-link" href="data-attribute-api.html" style="display:flex;align-items:center;gap:0.375rem;">Data Attribute API</a><a class="nav-link" href="architecture.html" style="display:flex;align-items:center;gap:0.375rem;">Architecture</a><a class="nav-link" href="cascade-layers.html" style="display:flex;align-items:center;gap:0.375rem;">Cascade Layers</a><a class="nav-link" href="es-modules.html" style="display:flex;align-items:center;gap:0.375rem;">ES Modules</a><a class="nav-link" href="native-web-apis.html" style="display:flex;align-items:center;gap:0.375rem;">Native Web APIs</a><a class="nav-link" href="animations.html" style="display:flex;align-items:center;gap:0.375rem;">Animations</a><a class="nav-link" href="sizing.html" style="display:flex;align-items:center;gap:0.375rem;">Sizing</a><a class="nav-link" href="layout.html" style="display:flex;align-items:center;gap:0.375rem;">Layout</a><a class="nav-link active" href="accessibility.html" style="display:flex;align-items:center;gap:0.375rem;">Accessibility</a><a class="nav-link" href="component-skills.html" style="display:flex;align-items:center;gap:0.375rem;">Component Skills</a><a class="nav-link" href="changelog.html" style="display:flex;align-items:center;gap:0.375rem;">Changelog</a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Sizing" style="margin-bottom:0.75rem;"><summary class="nav-heading">Sizing<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="width-height.html" style="display:flex;align-items:center;gap:0.375rem;">Width &amp; Height</a><a class="nav-link" href="spacing.html" style="display:flex;align-items:center;gap:0.375rem;">Spacing</a><a class="nav-link" href="density.html" style="display:flex;align-items:center;gap:0.375rem;">Density</a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Layout" style="margin-bottom:0.75rem;"><summary class="nav-heading">Layout<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="container.html" style="display:flex;align-items:center;gap:0.375rem;">Container</a><a class="nav-link" href="flex.html" style="display:flex;align-items:center;gap:0.375rem;">Flex</a><a class="nav-link" href="grid.html" style="display:flex;align-items:center;gap:0.375rem;">Grid</a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Primitives" style="margin-bottom:0.75rem;"><summary class="nav-heading">Primitives<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="typography.html" style="display:flex;align-items:center;gap:0.375rem;">Typography <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="separator.html" style="display:flex;align-items:center;gap:0.375rem;">Separator <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="icon.html" style="display:flex;align-items:center;gap:0.375rem;">Icon <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="heading-anchor.html" style="display:flex;align-items:center;gap:0.375rem;">Heading Anchor <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Actions" style="margin-bottom:0.75rem;"><summary class="nav-heading">Actions<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="button.html" style="display:flex;align-items:center;gap:0.375rem;">Button <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="toggle.html" style="display:flex;align-items:center;gap:0.375rem;">Toggle <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="toggle-group.html" style="display:flex;align-items:center;gap:0.375rem;">Toggle Group <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="button-group.html" style="display:flex;align-items:center;gap:0.375rem;">Button Group <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="toolbar.html" style="display:flex;align-items:center;gap:0.375rem;">Toolbar <span class="type-badge" data-type="ORG" title="ORG">ORG</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Forms &amp; Inputs" style="margin-bottom:0.75rem;"><summary class="nav-heading">Forms &amp; Inputs<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="label.html" style="display:flex;align-items:center;gap:0.375rem;">Label <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="input.html" style="display:flex;align-items:center;gap:0.375rem;">Input <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="textarea.html" style="display:flex;align-items:center;gap:0.375rem;">Textarea <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="checkbox.html" style="display:flex;align-items:center;gap:0.375rem;">Checkbox <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="radio.html" style="display:flex;align-items:center;gap:0.375rem;">Radio Group <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="switch.html" style="display:flex;align-items:center;gap:0.375rem;">Switch <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="slider.html" style="display:flex;align-items:center;gap:0.375rem;">Slider <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="select.html" style="display:flex;align-items:center;gap:0.375rem;">Select <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="number-input.html" style="display:flex;align-items:center;gap:0.375rem;">Number Input <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="file-input.html" style="display:flex;align-items:center;gap:0.375rem;">File Input <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="color-picker.html" style="display:flex;align-items:center;gap:0.375rem;">Color Picker <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="date-picker.html" style="display:flex;align-items:center;gap:0.375rem;">Date Picker <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="combobox.html" style="display:flex;align-items:center;gap:0.375rem;">Combobox <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="form.html" style="display:flex;align-items:center;gap:0.375rem;">Form <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Data Display" style="margin-bottom:0.75rem;"><summary class="nav-heading">Data Display<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="badge.html" style="display:flex;align-items:center;gap:0.375rem;">Badge <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="type-badge.html" style="display:flex;align-items:center;gap:0.375rem;">Type Badge <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="avatar.html" style="display:flex;align-items:center;gap:0.375rem;">Avatar <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="card.html" style="display:flex;align-items:center;gap:0.375rem;">Card <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="image.html" style="display:flex;align-items:center;gap:0.375rem;">Image <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="statistic.html" style="display:flex;align-items:center;gap:0.375rem;">Statistic <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="table.html" style="display:flex;align-items:center;gap:0.375rem;">Table <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="collapsible.html" style="display:flex;align-items:center;gap:0.375rem;">Collapsible <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="timeline.html" style="display:flex;align-items:center;gap:0.375rem;">Timeline <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="tree-view.html" style="display:flex;align-items:center;gap:0.375rem;">Tree View <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="calendar.html" style="display:flex;align-items:center;gap:0.375rem;">Calendar <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="carousel.html" style="display:flex;align-items:center;gap:0.375rem;">Carousel <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="scroll-area.html" style="display:flex;align-items:center;gap:0.375rem;">Scroll Area <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="sortable.html" style="display:flex;align-items:center;gap:0.375rem;">Sortable <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Feedback &amp; Status" style="margin-bottom:0.75rem;"><summary class="nav-heading">Feedback &amp; Status<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="spinner.html" style="display:flex;align-items:center;gap:0.375rem;">Spinner <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="skeleton.html" style="display:flex;align-items:center;gap:0.375rem;">Skeleton <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="progress.html" style="display:flex;align-items:center;gap:0.375rem;">Progress <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="alert.html" style="display:flex;align-items:center;gap:0.375rem;">Alert <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="alert-dialog.html" style="display:flex;align-items:center;gap:0.375rem;">Alert Dialog <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="toast.html" style="display:flex;align-items:center;gap:0.375rem;">Toast <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Overlays" style="margin-bottom:0.75rem;"><summary class="nav-heading">Overlays<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="popover.html" style="display:flex;align-items:center;gap:0.375rem;">Popover <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="tooltip.html" style="display:flex;align-items:center;gap:0.375rem;">Tooltip <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="context-menu.html" style="display:flex;align-items:center;gap:0.375rem;">Context Menu <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="dialog.html" style="display:flex;align-items:center;gap:0.375rem;">Dialog <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="sheet.html" style="display:flex;align-items:center;gap:0.375rem;">Sheet <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="accordion.html" style="display:flex;align-items:center;gap:0.375rem;">Accordion <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="command.html" style="display:flex;align-items:center;gap:0.375rem;">Command <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Navigation" style="margin-bottom:0.75rem;"><summary class="nav-heading">Navigation<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="breadcrumb.html" style="display:flex;align-items:center;gap:0.375rem;">Breadcrumb <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="toc.html" style="display:flex;align-items:center;gap:0.375rem;">Table of Contents <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="pagination.html" style="display:flex;align-items:center;gap:0.375rem;">Pagination <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="steps.html" style="display:flex;align-items:center;gap:0.375rem;">Steps <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="tabs.html" style="display:flex;align-items:center;gap:0.375rem;">Tabs <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="dropdown.html" style="display:flex;align-items:center;gap:0.375rem;">Dropdown Menu <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="navigation-menu.html" style="display:flex;align-items:center;gap:0.375rem;">Navigation Menu <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Application" style="margin-bottom:0.75rem;"><summary class="nav-heading">Application<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="sidebar.html" style="display:flex;align-items:center;gap:0.375rem;">Sidebar <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Marketing" style="margin-bottom:0.75rem;"><summary class="nav-heading">Marketing<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="site-header.html" style="display:flex;align-items:center;gap:0.375rem;">Site Header <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="hero.html" style="display:flex;align-items:center;gap:0.375rem;">Hero <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="product-showcase.html" style="display:flex;align-items:center;gap:0.375rem;">Product Showcase <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="brand-logos.html" style="display:flex;align-items:center;gap:0.375rem;">Brand Logos <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="feature-details.html" style="display:flex;align-items:center;gap:0.375rem;">Feature Details <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="testimonials.html" style="display:flex;align-items:center;gap:0.375rem;">Testimonials <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="stats.html" style="display:flex;align-items:center;gap:0.375rem;">Stats <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="pricing.html" style="display:flex;align-items:center;gap:0.375rem;">Pricing <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="blog.html" style="display:flex;align-items:center;gap:0.375rem;">Blog <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="faq.html" style="display:flex;align-items:center;gap:0.375rem;">FAQ <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="get-in-touch.html" style="display:flex;align-items:center;gap:0.375rem;">Get In Touch <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="newsletter.html" style="display:flex;align-items:center;gap:0.375rem;">Newsletter <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="site-footer.html" style="display:flex;align-items:center;gap:0.375rem;">Site Footer <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a></nav></details></div></aside><main style="flex: 1; min-width: 0; max-width: 44rem; padding: 2rem 3.5rem 8rem;"><div class="page-header"><p class="text-sm text-muted-foreground mb-3" style="font-family:var(--font-mono);">defuss-shadcn / accessibility</p><h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">Accessibility</h1><p class="text-muted-foreground leading-relaxed mb-10" style="max-width:38rem;">Every component follows WAI-ARIA Authoring Practices. Semantic HTML first, ARIA attributes where native semantics don't exist, full keyboard support throughout.</p></div><h2 style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;" id="toc-semantic-html-first"><a class="heading-anchor" href="#toc-semantic-html-first" aria-label="Link to section: Semantic HTML first">§</a>Semantic HTML first</h2><p class="text-sm text-muted-foreground mb-5">Components start from the most semantic native element available. A <code>&lt;button&gt;</code> is already a button — no <code>role="button"</code> needed. A <code>&lt;dialog&gt;</code> already traps focus and handles Escape. ARIA is only added when the native element doesn't express the full semantics of the widget.</p><div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(16rem, 1fr));gap:1rem;margin-bottom:2.5rem;"><div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;display:flex;flex-direction:column;"><div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);"><span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">Avoid: unnecessary ARIA</span></div><pre style="border-radius:0;border:none;margin:0;background:transparent;flex:1;overflow:hidden;"><code class="language-markup"><span class="dim">&lt;!-- Don't add ARIA roles to native elements --&gt;</span>&lt;div role="button" tabindex="0"
   onclick="..."&gt;
   Click me
-&lt;/div&gt;</code></pre>
-    </div>
-    <div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;display:flex;flex-direction:column;">
-      <div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);">
-        <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">Prefer: native elements</span>
-      </div>
-      <pre style="border-radius:0;border:none;margin:0;background:transparent;flex:1;overflow:hidden;"><code class="language-markup"><span class="dim">&lt;!-- Native button: focusable, keyboard
-     activatable, announced correctly --&gt;</span>
-&lt;button class="btn"&gt;
+&lt;/div&gt;</code></pre></div><div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;display:flex;flex-direction:column;"><div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);"><span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">Prefer: native elements</span></div><pre style="border-radius:0;border:none;margin:0;background:transparent;flex:1;overflow:hidden;"><code class="language-markup"><span class="dim">&lt;!-- Native button: focusable, keyboard
+     activatable, announced correctly --&gt;</span>&lt;button class="btn"&gt;
   Click me
-&lt;/button&gt;</code></pre>
-    </div>
-  </div>
-
-  <div class="sep"></div>
-
-  <!-- -- ARIA Roles -- -->
-  <h2 style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">ARIA roles</h2>
-  <p class="text-sm text-muted-foreground mb-5">When no native element expresses the widget semantics, ARIA roles tell assistive technology what the element represents. These follow the <a href="https://www.w3.org/WAI/ARIA/apg/" target="_blank" rel="noopener" class="btn" data-variant="link">WAI-ARIA Authoring Practices Guide (APG)</a>.</p>
-
-  <div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:2.5rem;">
-    <div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);">
-      <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">ARIA roles by component</span>
-    </div>
-    <div style="padding:1rem 1.25rem;font-size:0.8125rem;overflow-x:auto;">
-      <table class="table" data-variant="simple" style="margin:0;">
-        <thead>
-          <tr><th style="white-space:nowrap;">Role</th><th>Component</th><th>Purpose</th></tr>
-        </thead>
-        <tbody>
-          <tr><td><code>menu</code></td><td>Dropdown, Context Menu</td><td>A list of actions or options</td></tr>
-          <tr><td><code>menuitem</code></td><td>Dropdown, Context Menu</td><td>A single action in a menu</td></tr>
-          <tr><td><code>menuitemcheckbox</code></td><td>Dropdown</td><td>A togglable menu item</td></tr>
-          <tr><td><code>menuitemradio</code></td><td>Dropdown</td><td>A mutually exclusive menu option</td></tr>
-          <tr><td><code>tablist</code></td><td>Tabs</td><td>Container for tab triggers</td></tr>
-          <tr><td><code>tab</code></td><td>Tabs</td><td>A single tab trigger</td></tr>
-          <tr><td><code>tabpanel</code></td><td>Tabs</td><td>Content area associated with a tab</td></tr>
-          <tr><td><code>listbox</code></td><td>Combobox</td><td>A list of selectable options</td></tr>
-          <tr><td><code>option</code></td><td>Combobox</td><td>A single option in a listbox</td></tr>
-          <tr><td><code>toolbar</code></td><td>Toolbar</td><td>A container for grouped actions</td></tr>
-          <tr><td><code>treeitem</code></td><td>Tree View</td><td>A node in a hierarchical tree</td></tr>
-          <tr><td><code>dialog</code></td><td>Dialog, Sheet</td><td>A modal or non-modal overlay (native via <code>&lt;dialog&gt;</code>)</td></tr>
-          <tr><td><code>alertdialog</code></td><td>Alert Dialog</td><td>A dialog requiring acknowledgment</td></tr>
-          <tr><td><code>alert</code></td><td>Alert</td><td>An important, time-sensitive message</td></tr>
-          <tr><td><code>status</code></td><td>Toast</td><td>A polite status notification</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="sep"></div>
-
-  <!-- -- ARIA State Attributes -- -->
-  <h2 style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">State attributes</h2>
-  <p class="text-sm text-muted-foreground mb-5">ARIA state attributes communicate dynamic state changes to assistive technology. These are managed by JavaScript at runtime.</p>
-
-  <div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:2.5rem;">
-    <div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);">
-      <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">ARIA state attributes</span>
-    </div>
-    <div style="padding:1rem 1.25rem;font-size:0.8125rem;overflow-x:auto;">
-      <table class="table" data-variant="simple" style="margin:0;">
-        <thead>
-          <tr><th style="white-space:nowrap;">Attribute</th><th>Values</th><th>Usage</th></tr>
-        </thead>
-        <tbody>
-          <tr><td><code>aria-expanded</code></td><td><code>true</code> / <code>false</code></td><td>Dropdown triggers, popover triggers, accordion headers — indicates whether the controlled content is visible</td></tr>
-          <tr><td><code>aria-selected</code></td><td><code>true</code> / <code>false</code></td><td>Tab triggers, combobox options — indicates the active selection</td></tr>
-          <tr><td><code>aria-checked</code></td><td><code>true</code> / <code>false</code> / <code>mixed</code></td><td>Menu item checkboxes, menu item radios, toggle buttons</td></tr>
-          <tr><td><code>aria-pressed</code></td><td><code>true</code> / <code>false</code></td><td>Toggle buttons — indicates pressed/active state</td></tr>
-          <tr><td><code>aria-disabled</code></td><td><code>true</code></td><td>Non-native disabled elements (menu items, links) where the HTML <code>disabled</code> attribute isn't available</td></tr>
-          <tr><td><code>aria-invalid</code></td><td><code>true</code></td><td>Form inputs with validation errors</td></tr>
-          <tr><td><code>aria-busy</code></td><td><code>true</code></td><td>Loading states — tells screen readers content is still loading</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="sep"></div>
-
-  <!-- -- Relationship Attributes -- -->
-  <h2 style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Relationship attributes</h2>
-  <p class="text-sm text-muted-foreground mb-5">These attributes create semantic connections between elements, allowing assistive technology to navigate related content.</p>
-
-  <div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:1.5rem;">
-    <div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);">
-      <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">relationship attributes</span>
-    </div>
-    <div style="padding:1rem 1.25rem;font-size:0.8125rem;overflow-x:auto;">
-      <table class="table" data-variant="simple" style="margin:0;">
-        <thead>
-          <tr><th style="white-space:nowrap;">Attribute</th><th>Purpose</th><th>Example</th></tr>
-        </thead>
-        <tbody>
-          <tr><td><code>aria-controls</code></td><td>Links a trigger to the element it controls</td><td>Tab trigger → tab panel</td></tr>
-          <tr><td><code>aria-labelledby</code></td><td>Labels an element using another element's text</td><td>Tab panel labeled by its tab trigger</td></tr>
-          <tr><td><code>aria-describedby</code></td><td>Provides additional descriptive text</td><td>Input described by its help text</td></tr>
-          <tr><td><code>aria-activedescendant</code></td><td>Points to the visually focused item in a composite widget</td><td>Combobox input → highlighted option</td></tr>
-          <tr><td><code>aria-haspopup</code></td><td>Indicates a trigger will open a popup</td><td><code>menu</code>, <code>dialog</code>, or <code>listbox</code></td></tr>
-          <tr><td><code>aria-owns</code></td><td>Creates parent-child relationship in the accessibility tree</td><td>Combobox input owns the listbox</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:2.5rem;">
-    <div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);">
-      <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">tabs — relationship attributes in action</span>
-    </div>
-    <pre style="border-radius:0;border:none;margin:0;background:transparent;flex:1;overflow:hidden;"><code class="language-markup">&lt;div role="tablist" aria-label="Settings"&gt;
+&lt;/button&gt;</code></pre></div></div><div class="sep"></div><h2 style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;" id="toc-aria-roles"><a class="heading-anchor" href="#toc-aria-roles" aria-label="Link to section: ARIA roles">§</a>ARIA roles</h2><p class="text-sm text-muted-foreground mb-5">When no native element expresses the widget semantics, ARIA roles tell assistive technology what the element represents. These follow the <a href="https://www.w3.org/WAI/ARIA/apg/" target="_blank" rel="noopener" class="btn" data-variant="link">WAI-ARIA Authoring Practices Guide (APG)</a>.</p><div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:2.5rem;"><div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);"><span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">ARIA roles by component</span></div><div style="padding:1rem 1.25rem;font-size:0.8125rem;overflow-x:auto;"><table class="table" data-variant="simple" style="margin:0;"><thead><tr><th style="white-space:nowrap;">Role</th><th>Component</th><th>Purpose</th></tr></thead><tbody><tr><td><code>menu</code></td><td>Dropdown, Context Menu</td><td>A list of actions or options</td></tr><tr><td><code>menuitem</code></td><td>Dropdown, Context Menu</td><td>A single action in a menu</td></tr><tr><td><code>menuitemcheckbox</code></td><td>Dropdown</td><td>A togglable menu item</td></tr><tr><td><code>menuitemradio</code></td><td>Dropdown</td><td>A mutually exclusive menu option</td></tr><tr><td><code>tablist</code></td><td>Tabs</td><td>Container for tab triggers</td></tr><tr><td><code>tab</code></td><td>Tabs</td><td>A single tab trigger</td></tr><tr><td><code>tabpanel</code></td><td>Tabs</td><td>Content area associated with a tab</td></tr><tr><td><code>listbox</code></td><td>Combobox</td><td>A list of selectable options</td></tr><tr><td><code>option</code></td><td>Combobox</td><td>A single option in a listbox</td></tr><tr><td><code>toolbar</code></td><td>Toolbar</td><td>A container for grouped actions</td></tr><tr><td><code>treeitem</code></td><td>Tree View</td><td>A node in a hierarchical tree</td></tr><tr><td><code>dialog</code></td><td>Dialog, Sheet</td><td>A modal or non-modal overlay (native via <code>&lt;dialog&gt;</code>)</td></tr><tr><td><code>alertdialog</code></td><td>Alert Dialog</td><td>A dialog requiring acknowledgment</td></tr><tr><td><code>alert</code></td><td>Alert</td><td>An important, time-sensitive message</td></tr><tr><td><code>status</code></td><td>Toast</td><td>A polite status notification</td></tr></tbody></table></div></div><div class="sep"></div><h2 style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;" id="toc-state-attributes"><a class="heading-anchor" href="#toc-state-attributes" aria-label="Link to section: State attributes">§</a>State attributes</h2><p class="text-sm text-muted-foreground mb-5">ARIA state attributes communicate dynamic state changes to assistive technology. These are managed by JavaScript at runtime.</p><div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:2.5rem;"><div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);"><span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">ARIA state attributes</span></div><div style="padding:1rem 1.25rem;font-size:0.8125rem;overflow-x:auto;"><table class="table" data-variant="simple" style="margin:0;"><thead><tr><th style="white-space:nowrap;">Attribute</th><th>Values</th><th>Usage</th></tr></thead><tbody><tr><td><code>aria-expanded</code></td><td><code>true</code> / <code>false</code></td><td>Dropdown triggers, popover triggers, accordion headers — indicates whether the controlled content is visible</td></tr><tr><td><code>aria-selected</code></td><td><code>true</code> / <code>false</code></td><td>Tab triggers, combobox options — indicates the active selection</td></tr><tr><td><code>aria-checked</code></td><td><code>true</code> / <code>false</code> / <code>mixed</code></td><td>Menu item checkboxes, menu item radios, toggle buttons</td></tr><tr><td><code>aria-pressed</code></td><td><code>true</code> / <code>false</code></td><td>Toggle buttons — indicates pressed/active state</td></tr><tr><td><code>aria-disabled</code></td><td><code>true</code></td><td>Non-native disabled elements (menu items, links) where the HTML <code>disabled</code> attribute isn't available</td></tr><tr><td><code>aria-invalid</code></td><td><code>true</code></td><td>Form inputs with validation errors</td></tr><tr><td><code>aria-busy</code></td><td><code>true</code></td><td>Loading states — tells screen readers content is still loading</td></tr></tbody></table></div></div><div class="sep"></div><h2 style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;" id="toc-relationship-attributes"><a class="heading-anchor" href="#toc-relationship-attributes" aria-label="Link to section: Relationship attributes">§</a>Relationship attributes</h2><p class="text-sm text-muted-foreground mb-5">These attributes create semantic connections between elements, allowing assistive technology to navigate related content.</p><div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:1.5rem;"><div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);"><span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">relationship attributes</span></div><div style="padding:1rem 1.25rem;font-size:0.8125rem;overflow-x:auto;"><table class="table" data-variant="simple" style="margin:0;"><thead><tr><th style="white-space:nowrap;">Attribute</th><th>Purpose</th><th>Example</th></tr></thead><tbody><tr><td><code>aria-controls</code></td><td>Links a trigger to the element it controls</td><td>Tab trigger → tab panel</td></tr><tr><td><code>aria-labelledby</code></td><td>Labels an element using another element's text</td><td>Tab panel labeled by its tab trigger</td></tr><tr><td><code>aria-describedby</code></td><td>Provides additional descriptive text</td><td>Input described by its help text</td></tr><tr><td><code>aria-activedescendant</code></td><td>Points to the visually focused item in a composite widget</td><td>Combobox input → highlighted option</td></tr><tr><td><code>aria-haspopup</code></td><td>Indicates a trigger will open a popup</td><td><code>menu</code>, <code>dialog</code>, or <code>listbox</code></td></tr><tr><td><code>aria-owns</code></td><td>Creates parent-child relationship in the accessibility tree</td><td>Combobox input owns the listbox</td></tr></tbody></table></div></div><div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:2.5rem;"><div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);"><span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">tabs — relationship attributes in action</span></div><pre style="border-radius:0;border:none;margin:0;background:transparent;flex:1;overflow:hidden;"><code class="language-markup">&lt;div role="tablist" aria-label="Settings"&gt;
   &lt;button role="tab"
     id="tab-1"
     aria-selected="true"
@@ -192,186 +33,33 @@
   aria-labelledby="tab-2"
   hidden&gt;
   Advanced settings content
-&lt;/div&gt;</code></pre>
-  </div>
-
-  <div class="sep"></div>
-
-  <!-- -- Keyboard Navigation -- -->
-  <h2 style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Keyboard navigation</h2>
-  <p class="text-sm text-muted-foreground mb-5">Every interactive component is fully keyboard accessible. The keyboard patterns follow WAI-ARIA APG conventions so users get consistent behavior across the web.</p>
-
-  <div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:2.5rem;">
-    <div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);">
-      <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">keyboard patterns by component type</span>
-    </div>
-    <div style="padding:1rem 1.25rem;font-size:0.8125rem;overflow-x:auto;">
-      <table class="table" data-variant="simple" style="margin:0;">
-        <thead>
-          <tr><th style="white-space:nowrap;">Key</th><th>Menus &amp; Dropdowns</th><th>Tabs</th><th>Dialogs</th></tr>
-        </thead>
-        <tbody>
-          <tr><td><kbd>↑</kbd> <kbd>↓</kbd></td><td>Navigate between menu items</td><td>Navigate tabs (vertical)</td><td>—</td></tr>
-          <tr><td><kbd>←</kbd> <kbd>→</kbd></td><td>—</td><td>Navigate tabs (horizontal)</td><td>—</td></tr>
-          <tr><td><kbd>Home</kbd></td><td>Jump to first item</td><td>Jump to first tab</td><td>—</td></tr>
-          <tr><td><kbd>End</kbd></td><td>Jump to last item</td><td>Jump to last tab</td><td>—</td></tr>
-          <tr><td><kbd>Enter</kbd> / <kbd>Space</kbd></td><td>Activate item</td><td>Activate tab</td><td>Activate focused button</td></tr>
-          <tr><td><kbd>Escape</kbd></td><td>Close menu, return focus to trigger</td><td>—</td><td>Close dialog, return focus to trigger</td></tr>
-          <tr><td><kbd>Tab</kbd></td><td>Close menu and move to next focusable</td><td>Move into tab panel</td><td>Trapped within dialog</td></tr>
-          <tr><td>Type-ahead</td><td>Jump to item starting with typed character</td><td>—</td><td>—</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="sep"></div>
-
-  <!-- -- Roving Tabindex -- -->
-  <h2 style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Roving tabindex</h2>
-  <p class="text-sm text-muted-foreground mb-5">Composite widgets (tabs, toolbars, menus) use roving tabindex so the entire widget acts as a single tab stop. Only one item has <code>tabindex="0"</code> at a time — all others have <code>tabindex="-1"</code>. Arrow keys move focus between items.</p>
-
-  <div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:1.5rem;">
-    <div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);">
-      <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">roving tabindex pattern</span>
-    </div>
-    <pre style="border-radius:0;border:none;margin:0;background:transparent;flex:1;overflow:hidden;"><code class="language-markup"><span class="dim">&lt;!-- Only the active tab is in the tab order --&gt;</span>
-&lt;div role="tablist"&gt;
-  &lt;button role="tab" tabindex="0"  aria-selected="true"&gt;Tab 1&lt;/button&gt;
-  &lt;button role="tab" tabindex="-1" aria-selected="false"&gt;Tab 2&lt;/button&gt;
-  &lt;button role="tab" tabindex="-1" aria-selected="false"&gt;Tab 3&lt;/button&gt;
-&lt;/div&gt;
-
-<span class="dim">&lt;!-- User presses → arrow → focus moves to Tab 2:
-     Tab 1: tabindex="-1", Tab 2: tabindex="0" --&gt;</span></code></pre>
-  </div>
-
-  <div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:1.5rem;">
-    <div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);">
-      <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">roving tabindex — JavaScript pattern</span>
-    </div>
-    <pre style="border-radius:0;border:none;margin:0;background:transparent;flex:1;overflow:hidden;"><code class="language-javascript"><span class="dim">// Move focus to the next item in the group</span>
+&lt;/div&gt;</code></pre></div><div class="sep"></div><h2 style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;" id="toc-keyboard-navigation"><a class="heading-anchor" href="#toc-keyboard-navigation" aria-label="Link to section: Keyboard navigation">§</a>Keyboard navigation</h2><p class="text-sm text-muted-foreground mb-5">Every interactive component is fully keyboard accessible. The keyboard patterns follow WAI-ARIA APG conventions so users get consistent behavior across the web.</p><div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:2.5rem;"><div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);"><span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">keyboard patterns by component type</span></div><div style="padding:1rem 1.25rem;font-size:0.8125rem;overflow-x:auto;"><table class="table" data-variant="simple" style="margin:0;"><thead><tr><th style="white-space:nowrap;">Key</th><th>Menus &amp; Dropdowns</th><th>Tabs</th><th>Dialogs</th></tr></thead><tbody><tr><td><kbd>↑</kbd><kbd>↓</kbd></td><td>Navigate between menu items</td><td>Navigate tabs (vertical)</td><td>—</td></tr><tr><td><kbd>←</kbd><kbd>→</kbd></td><td>—</td><td>Navigate tabs (horizontal)</td><td>—</td></tr><tr><td><kbd>Home</kbd></td><td>Jump to first item</td><td>Jump to first tab</td><td>—</td></tr><tr><td><kbd>End</kbd></td><td>Jump to last item</td><td>Jump to last tab</td><td>—</td></tr><tr><td><kbd>Enter</kbd> / <kbd>Space</kbd></td><td>Activate item</td><td>Activate tab</td><td>Activate focused button</td></tr><tr><td><kbd>Escape</kbd></td><td>Close menu, return focus to trigger</td><td>—</td><td>Close dialog, return focus to trigger</td></tr><tr><td><kbd>Tab</kbd></td><td>Close menu and move to next focusable</td><td>Move into tab panel</td><td>Trapped within dialog</td></tr><tr><td>Type-ahead</td><td>Jump to item starting with typed character</td><td>—</td><td>—</td></tr></tbody></table></div></div><div class="sep"></div><h2 style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;" id="toc-roving-tabindex"><a class="heading-anchor" href="#toc-roving-tabindex" aria-label="Link to section: Roving tabindex">§</a>Roving tabindex</h2><p class="text-sm text-muted-foreground mb-5">Composite widgets (tabs, toolbars, menus) use roving tabindex so the entire widget acts as a single tab stop. Only one item has <code>tabindex="0"</code> at a time — all others have <code>tabindex="-1"</code>. Arrow keys move focus between items.</p><div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:1.5rem;"><div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);"><span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">roving tabindex pattern</span></div><pre style="border-radius:0;border:none;margin:0;background:transparent;flex:1;overflow:hidden;"><code class="language-markup"><span class="dim">&lt;!-- Only the active tab is in the tab order --&gt;</span>&lt;div role="tablist"&gt;&lt;button role="tab" tabindex="0"  aria-selected="true"&gt;Tab 1&lt;/button&gt;&lt;button role="tab" tabindex="-1" aria-selected="false"&gt;Tab 2&lt;/button&gt;&lt;button role="tab" tabindex="-1" aria-selected="false"&gt;Tab 3&lt;/button&gt;&lt;/div&gt;<span class="dim">&lt;!-- User presses → arrow → focus moves to Tab 2:
+     Tab 1: tabindex="-1", Tab 2: tabindex="0" --&gt;</span></code></pre></div><div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:1.5rem;"><div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);"><span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">roving tabindex — JavaScript pattern</span></div><pre style="border-radius:0;border:none;margin:0;background:transparent;flex:1;overflow:hidden;"><code class="language-javascript"><span class="dim">// Move focus to the next item in the group</span>
 function focusItem(items, index) {
-  items.forEach((item, i) => {
+  items.forEach((item, i) =&gt; {
     item.setAttribute('tabindex', i === index ? '0' : '-1');
   });
   items[index].focus();
-}</code></pre>
-  </div>
-
-  <p class="text-sm text-muted-foreground mb-5"><strong>Used by:</strong> Tabs, Toolbar, Toggle Group, Dropdown Menu, Tree View</p>
-
-  <div class="sep"></div>
-
-  <!-- -- Focus Management -- -->
-  <h2 style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Focus management</h2>
-  <p class="text-sm text-muted-foreground mb-5">When overlays open and close, focus must move predictably. Dialogs trap focus. When a modal closes, focus returns to the trigger that opened it.</p>
-
-  <div style="display:grid;grid-template-columns:auto 1fr;gap:0.5rem 1rem;margin-bottom:1.5rem;align-items:baseline;">
-    <span style="font-weight:600;font-size:0.8125rem;">Focus trapping</span>
-    <span class="text-sm text-muted-foreground"><code>&lt;dialog&gt;</code> with <code>.showModal()</code> traps focus natively — Tab cycles within the dialog only. No JS focus-trap library needed.</span>
-
-    <span style="font-weight:600;font-size:0.8125rem;">Focus restoration</span>
-    <span class="text-sm text-muted-foreground">When a dialog or menu closes, focus returns to the trigger element that opened it. JS stores a reference to the trigger before opening.</span>
-
-    <span style="font-weight:600;font-size:0.8125rem;">Focus-visible</span>
-    <span class="text-sm text-muted-foreground"><code>:focus-visible</code> shows focus rings only on keyboard navigation, not mouse clicks. Applied to every interactive component.</span>
-  </div>
-
-  <div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:2.5rem;">
-    <div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);">
-      <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">focus restoration pattern</span>
-    </div>
-    <pre style="border-radius:0;border:none;margin:0;background:transparent;flex:1;overflow:hidden;"><code class="language-javascript"><span class="dim">// Store trigger reference before opening</span>
+}</code></pre></div><p class="text-sm text-muted-foreground mb-5"><strong>Used by:</strong> Tabs, Toolbar, Toggle Group, Dropdown Menu, Tree View</p><div class="sep"></div><h2 style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;" id="toc-focus-management"><a class="heading-anchor" href="#toc-focus-management" aria-label="Link to section: Focus management">§</a>Focus management</h2><p class="text-sm text-muted-foreground mb-5">When overlays open and close, focus must move predictably. Dialogs trap focus. When a modal closes, focus returns to the trigger that opened it.</p><div style="display:grid;grid-template-columns:auto 1fr;gap:0.5rem 1rem;margin-bottom:1.5rem;align-items:baseline;"><span style="font-weight:600;font-size:0.8125rem;">Focus trapping</span><span class="text-sm text-muted-foreground"><code>&lt;dialog&gt;</code> with <code>.showModal()</code> traps focus natively — Tab cycles within the dialog only. No JS focus-trap library needed.</span><span style="font-weight:600;font-size:0.8125rem;">Focus restoration</span><span class="text-sm text-muted-foreground">When a dialog or menu closes, focus returns to the trigger element that opened it. JS stores a reference to the trigger before opening.</span><span style="font-weight:600;font-size:0.8125rem;">Focus-visible</span><span class="text-sm text-muted-foreground"><code>:focus-visible</code> shows focus rings only on keyboard navigation, not mouse clicks. Applied to every interactive component.</span></div><div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:2.5rem;"><div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);"><span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">focus restoration pattern</span></div><pre style="border-radius:0;border:none;margin:0;background:transparent;flex:1;overflow:hidden;"><code class="language-javascript"><span class="dim">// Store trigger reference before opening</span>
 dialog._trigger = triggerButton;
 dialog.showModal();
 
 <span class="dim">// Restore focus when dialog closes</span>
-dialog.addEventListener('close', () => {
+dialog.addEventListener('close', () =&gt; {
   if (dialog._trigger) dialog._trigger.focus();
-});</code></pre>
-  </div>
-
-  <div class="sep"></div>
-
-  <!-- -- Live Regions -- -->
-  <h2 style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Live regions</h2>
-  <p class="text-sm text-muted-foreground mb-5">Live regions announce dynamic content changes to screen readers without moving focus. Toast notifications and alerts use these to ensure users are informed of updates.</p>
-
-  <div style="display:grid;grid-template-columns:auto 1fr;gap:0.5rem 1rem;margin-bottom:1.5rem;align-items:baseline;">
-    <code style="font-size:0.8125rem;font-weight:600;">aria-live="polite"</code>
-    <span class="text-sm text-muted-foreground">Announced after the screen reader finishes its current output. Used for info and success toasts.</span>
-
-    <code style="font-size:0.8125rem;font-weight:600;">aria-live="assertive"</code>
-    <span class="text-sm text-muted-foreground">Interrupts the screen reader immediately. Used for error/destructive toasts and alerts.</span>
-
-    <code style="font-size:0.8125rem;font-weight:600;">aria-atomic="true"</code>
-    <span class="text-sm text-muted-foreground">The entire region is announced as a whole, not just the changed parts.</span>
-  </div>
-
-  <div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:2.5rem;">
-    <div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);">
-      <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">live region — toast notification</span>
-    </div>
-    <pre style="border-radius:0;border:none;margin:0;background:transparent;flex:1;overflow:hidden;"><code class="language-markup"><span class="dim">&lt;!-- Success toast: polite announcement --&gt;</span>
-&lt;div class="toast" role="status"
+});</code></pre></div><div class="sep"></div><h2 style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;" id="toc-live-regions"><a class="heading-anchor" href="#toc-live-regions" aria-label="Link to section: Live regions">§</a>Live regions</h2><p class="text-sm text-muted-foreground mb-5">Live regions announce dynamic content changes to screen readers without moving focus. Toast notifications and alerts use these to ensure users are informed of updates.</p><div style="display:grid;grid-template-columns:auto 1fr;gap:0.5rem 1rem;margin-bottom:1.5rem;align-items:baseline;"><code style="font-size:0.8125rem;font-weight:600;">aria-live="polite"</code><span class="text-sm text-muted-foreground">Announced after the screen reader finishes its current output. Used for info and success toasts.</span><code style="font-size:0.8125rem;font-weight:600;">aria-live="assertive"</code><span class="text-sm text-muted-foreground">Interrupts the screen reader immediately. Used for error/destructive toasts and alerts.</span><code style="font-size:0.8125rem;font-weight:600;">aria-atomic="true"</code><span class="text-sm text-muted-foreground">The entire region is announced as a whole, not just the changed parts.</span></div><div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:2.5rem;"><div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);"><span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">live region — toast notification</span></div><pre style="border-radius:0;border:none;margin:0;background:transparent;flex:1;overflow:hidden;"><code class="language-markup"><span class="dim">&lt;!-- Success toast: polite announcement --&gt;</span>&lt;div class="toast" role="status"
   aria-live="polite" aria-atomic="true"&gt;
   Settings saved successfully.
-&lt;/div&gt;
-
-<span class="dim">&lt;!-- Error toast: assertive (immediate) announcement --&gt;</span>
-&lt;div class="toast" data-variant="destructive"
+&lt;/div&gt;<span class="dim">&lt;!-- Error toast: assertive (immediate) announcement --&gt;</span>&lt;div class="toast" data-variant="destructive"
   role="alert" aria-live="assertive" aria-atomic="true"&gt;
   Failed to save. Please try again.
-&lt;/div&gt;</code></pre>
-  </div>
-
-  <div class="sep"></div>
-
-  <!-- -- Screen Reader Considerations -- -->
-  <h2 style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Screen reader considerations</h2>
-  <p class="text-sm text-muted-foreground mb-5">A few patterns help screen readers present clean, meaningful content.</p>
-
-  <div style="display:grid;grid-template-columns:auto 1fr;gap:0.5rem 1rem;margin-bottom:1.5rem;align-items:baseline;">
-    <span style="font-weight:600;font-size:0.8125rem;">Decorative icons</span>
-    <span class="text-sm text-muted-foreground">Icons next to text labels get <code>aria-hidden="true"</code> so they're not announced redundantly.</span>
-
-    <span style="font-weight:600;font-size:0.8125rem;">Icon-only buttons</span>
-    <span class="text-sm text-muted-foreground">Buttons with no visible text need <code>aria-label</code> to provide an accessible name: <code>&lt;button aria-label="Close"&gt;</code>.</span>
-
-    <span style="font-weight:600;font-size:0.8125rem;">Visually hidden text</span>
-    <span class="text-sm text-muted-foreground">Text that should be announced but not visible uses a CSS visually-hidden utility (clipped off-screen, still in the accessibility tree).</span>
-
-    <span style="font-weight:600;font-size:0.8125rem;">Form labels</span>
-    <span class="text-sm text-muted-foreground">Every form input has a visible <code>&lt;label&gt;</code> element with a matching <code>for</code>/<code>id</code> pair, or <code>aria-label</code> for unlabeled inputs.</span>
-  </div>
-
-  <div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:2.5rem;">
-    <div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);">
-      <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">icon button accessibility</span>
-    </div>
-    <pre style="border-radius:0;border:none;margin:0;background:transparent;flex:1;overflow:hidden;"><code class="language-markup"><span class="dim">&lt;!-- Icon-only button: needs aria-label --&gt;</span>
-&lt;button class="btn" data-size="icon" aria-label="Close"&gt;
-  &lt;svg aria-hidden="true"&gt;...&lt;/svg&gt;
-&lt;/button&gt;
-
-<span class="dim">&lt;!-- Button with text: icon is decorative --&gt;</span>
-&lt;button class="btn"&gt;
-  &lt;svg aria-hidden="true"&gt;...&lt;/svg&gt;
+&lt;/div&gt;</code></pre></div><div class="sep"></div><h2 style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;" id="toc-screen-reader-considerations"><a class="heading-anchor" href="#toc-screen-reader-considerations" aria-label="Link to section: Screen reader considerations">§</a>Screen reader considerations</h2><p class="text-sm text-muted-foreground mb-5">A few patterns help screen readers present clean, meaningful content.</p><div style="display:grid;grid-template-columns:auto 1fr;gap:0.5rem 1rem;margin-bottom:1.5rem;align-items:baseline;"><span style="font-weight:600;font-size:0.8125rem;">Decorative icons</span><span class="text-sm text-muted-foreground">Icons next to text labels get <code>aria-hidden="true"</code> so they're not announced redundantly.</span><span style="font-weight:600;font-size:0.8125rem;">Icon-only buttons</span><span class="text-sm text-muted-foreground">Buttons with no visible text need <code>aria-label</code> to provide an accessible name: <code>&lt;button aria-label="Close"&gt;</code>.</span><span style="font-weight:600;font-size:0.8125rem;">Visually hidden text</span><span class="text-sm text-muted-foreground">Text that should be announced but not visible uses a CSS visually-hidden utility (clipped off-screen, still in the accessibility tree).</span><span style="font-weight:600;font-size:0.8125rem;">Form labels</span><span class="text-sm text-muted-foreground">Every form input has a visible <code>&lt;label&gt;</code> element with a matching <code>for</code>/<code>id</code> pair, or <code>aria-label</code> for unlabeled inputs.</span></div><div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:2.5rem;"><div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);"><span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">icon button accessibility</span></div><pre style="border-radius:0;border:none;margin:0;background:transparent;flex:1;overflow:hidden;"><code class="language-markup"><span class="dim">&lt;!-- Icon-only button: needs aria-label --&gt;</span>&lt;button class="btn" data-size="icon" aria-label="Close"&gt;&lt;svg aria-hidden="true"&gt;...&lt;/svg&gt;&lt;/button&gt;<span class="dim">&lt;!-- Button with text: icon is decorative --&gt;</span>&lt;button class="btn"&gt;&lt;svg aria-hidden="true"&gt;...&lt;/svg&gt;
   Save Changes
-&lt;/button&gt;</code></pre>
-  </div>
-
-  <p class="text-sm text-muted-foreground mb-8">
-    Each component's <code>component-skill.md</code> includes a dedicated ARIA section listing the exact attributes required for that component. See the <a href="https://www.w3.org/WAI/ARIA/apg/" target="_blank" rel="noopener" class="btn" data-variant="link">WAI-ARIA APG</a> for the full specifications these patterns implement.
-  </p>
-
-    </main>
-  </div>
-
-  <script src="js/site.js" defer></script>
-  <script type="module" src="js/shiki-highlight.js"></script>
-  <script type="module" src="../components/all.js"></script>
-  <script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script>
-  <script>globalThis.lucide?.createIcons();</script>
-</body>
-</html>
+&lt;/button&gt;</code></pre></div><p class="text-sm text-muted-foreground mb-8"> Each component's <code>component-skill.md</code> includes a dedicated ARIA section listing the exact attributes required for that component. See the <a href="https://www.w3.org/WAI/ARIA/apg/" target="_blank" rel="noopener" class="btn" data-variant="link">WAI-ARIA APG</a> for the full specifications these patterns implement. </p><nav class="page-nav"><a class="page-nav-link page-nav-prev" href="layout.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><div><span class="page-nav-label">Previous</span><span class="page-nav-title">Layout</span></div></a><a class="page-nav-link page-nav-next" href="component-skills.html"><div><span class="page-nav-label">Next</span><span class="page-nav-title">Component Skills</span></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></nav></main><aside class="site-toc"><div class="site-toc-content"><p class="toc-title">On This Page</p><a class="toc-link" href="#toc-semantic-html-first">Semantic HTML first</a><a class="toc-link" href="#toc-aria-roles">ARIA roles</a><a class="toc-link" href="#toc-state-attributes">State attributes</a><a class="toc-link" href="#toc-relationship-attributes">Relationship attributes</a><a class="toc-link" href="#toc-keyboard-navigation">Keyboard navigation</a><a class="toc-link" href="#toc-roving-tabindex">Roving tabindex</a><a class="toc-link" href="#toc-focus-management">Focus management</a><a class="toc-link" href="#toc-live-regions">Live regions</a><a class="toc-link" href="#toc-screen-reader-considerations">Screen reader considerations</a></div></aside></div><script>try {
+  var c = JSON.parse(localStorage.getItem('defuss-shadcn-nav-collapsed') || '[]');
+  for (var i = 0; i < c.length; i++) {
+    if (c[i] === 'Overview') continue;
+    var d = document.querySelector('details[data-nav-section="' + c[i] + '"]');
+    if (d && !d.querySelector('a.nav-link.active')) d.open = false;
+  }
+} catch (e) {}</script><footer class="site-footer"><p class="site-footer-tagline">Agentically engineered with local Qwen3.8-Flash-Next/vLLM, quality-gated automatically, and human-reviewed before release.</p><p class="site-footer-tagline" style="margin-top:0;">Reworked, enhanced and maintained by <a href="https://aron-homberg.de" target="_blank" rel="noopener">Aron Homberg</a></p><span class="site-footer-dot"> · </span>MIT Licensed<span class="site-footer-dot"> · </span><a href="https://github.com/kyr0/defuss-shadcn" target="_blank" rel="noopener">Source on GitHub</a></footer><script src="js/site.js" defer=""></script><script type="module" src="js/shiki-highlight.js"></script><script type="module" src="../components/all.js"></script><script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script><script>globalThis.lucide?.createIcons();</script></body></html>

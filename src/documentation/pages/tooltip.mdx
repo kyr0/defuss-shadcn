@@ -1,0 +1,193 @@
+---
+title: "Tooltip"
+description: "Tooltip component — hover hints using popover and CSS anchor positioning."
+slug: "tooltip"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="tooltip" title="Tooltip" component="tooltip">
+  A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it. Uses the Popover API with CSS anchor positioning for placement.
+</PageHeader>
+
+<SkillPanel component="tooltip">
+  <SkillField label="Native basis">
+<SkillText>Popover API (<code>popover="hint"</code>) for hover/focus hint popups with CSS anchor positioning for placement.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/popover" title="native popover with light dismiss"><code>popover (hint)</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning" title="tether tooltip to trigger"><code>CSS Anchor Positioning</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/position-area" title="declarative anchor-relative placement"><code>position-area</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/position-try-fallbacks" title="automatic collision avoidance"><code>position-try-fallbacks</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style" title="entry animation"><code>@starting-style</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.tooltip</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText dense>• <code>data-tooltip-trigger</code> — on trigger element, value is the tooltip ID</SkillText>
+  <SkillText dense>• <code>data-side</code> — on tooltip: <code>top</code> | <code>bottom</code> | <code>left</code> | <code>right</code></SkillText>
+  <SkillText dense>• <code>data-align</code> — on tooltip: <code>start</code> | <code>center</code> | <code>end</code></SkillText>
+  <SkillText dense>• <code>data-arrow</code> — on a child <code>&lt;div&gt;</code> inside tooltip for connecting caret</SkillText>
+  <SkillText dense>• <code>data-delay</code> — on trigger element, open delay in ms (default: 700)</SkillText>
+  <SkillText>• <code>data-close-delay</code> — on trigger element, close delay in ms (default: 0)</SkillText>
+  </SkillField>
+
+  <SkillField label="Wiring conventions">
+<SkillText>• <code>data-tooltip-trigger</code> on any element — opens the component</SkillText>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Default</ExampleLabel>
+  <div style="display:flex;align-items:center;justify-content:center;gap:1.0rem;padding:2.5rem 0;">
+    <button class="btn" data-variant="outline" data-tooltip-trigger="tip-default">Hover me</button>
+    <div class="tooltip" id="tip-default" popover="hint" role="tooltip" data-state-demo>Add to library</div>
+  </div>
+  <ExampleCode>{"<button class=\"btn\" data-variant=\"outline\" data-tooltip-trigger=\"my-tip\">Hover me</button>\n<div class=\"tooltip\" id=\"my-tip\" popover=\"hint\" role=\"tooltip\">Add to library</div>"}</ExampleCode>
+</Example>
+
+<p class="text-sm font-medium mb-2 mt-8">Side</p>
+
+<p class="text-muted-foreground text-sm mb-4">Use <code>data-side</code> on the tooltip to control placement.</p>
+
+<Example>
+  <div style="display:flex;align-items:center;justify-content:center;gap:1.0rem;flex-wrap:wrap;padding:2.5rem 0;">
+    <button class="btn" data-variant="outline" data-tooltip-trigger="tip-top">Top</button>
+    <div class="tooltip" id="tip-top" popover="hint" role="tooltip">Top tooltip</div>
+    <button class="btn" data-variant="outline" data-tooltip-trigger="tip-bottom">Bottom</button>
+    <div class="tooltip" id="tip-bottom" popover="hint" role="tooltip" data-side="bottom">Bottom tooltip</div>
+    <button class="btn" data-variant="outline" data-tooltip-trigger="tip-left">Left</button>
+    <div class="tooltip" id="tip-left" popover="hint" role="tooltip" data-side="left">Left tooltip</div>
+    <button class="btn" data-variant="outline" data-tooltip-trigger="tip-right">Right</button>
+    <div class="tooltip" id="tip-right" popover="hint" role="tooltip" data-side="right">Right tooltip</div>
+  </div>
+  <ExampleCode>{"<!-- Top (default) -->\n<button data-tooltip-trigger=\"tip-top\">Top</button>\n<div class=\"tooltip\" id=\"tip-top\" popover=\"hint\" role=\"tooltip\">Top tooltip</div>\n\n<!-- Bottom -->\n<button data-tooltip-trigger=\"tip-bottom\">Bottom</button>\n<div class=\"tooltip\" id=\"tip-bottom\" popover=\"hint\" role=\"tooltip\" data-side=\"bottom\">Bottom tooltip</div>\n\n<!-- Left -->\n<button data-tooltip-trigger=\"tip-left\">Left</button>\n<div class=\"tooltip\" id=\"tip-left\" popover=\"hint\" role=\"tooltip\" data-side=\"left\">Left tooltip</div>\n\n<!-- Right -->\n<button data-tooltip-trigger=\"tip-right\">Right</button>\n<div class=\"tooltip\" id=\"tip-right\" popover=\"hint\" role=\"tooltip\" data-side=\"right\">Right tooltip</div>"}</ExampleCode>
+</Example>
+
+<p class="text-sm font-medium mb-2 mt-8">With Arrow</p>
+
+<p class="text-muted-foreground text-sm mb-4">Add <code>&lt;div data-arrow&gt;&lt;/div&gt;</code> inside the tooltip for a connecting caret.</p>
+
+<Example>
+  <div style="display:flex;align-items:center;justify-content:center;gap:1.0rem;flex-wrap:wrap;padding:2.5rem 0;">
+    <button class="btn" data-variant="outline" data-tooltip-trigger="tip-arrow-top">Top</button>
+    <div class="tooltip" id="tip-arrow-top" popover="hint" role="tooltip"> Top with arrow <div data-arrow /></div>
+    <button class="btn" data-variant="outline" data-tooltip-trigger="tip-arrow-bottom">Bottom</button>
+    <div class="tooltip" id="tip-arrow-bottom" popover="hint" role="tooltip" data-side="bottom"> Bottom with arrow <div data-arrow /></div>
+    <button class="btn" data-variant="outline" data-tooltip-trigger="tip-arrow-left">Left</button>
+    <div class="tooltip" id="tip-arrow-left" popover="hint" role="tooltip" data-side="left"> Left with arrow <div data-arrow /></div>
+    <button class="btn" data-variant="outline" data-tooltip-trigger="tip-arrow-right">Right</button>
+    <div class="tooltip" id="tip-arrow-right" popover="hint" role="tooltip" data-side="right"> Right with arrow <div data-arrow /></div>
+  </div>
+  <ExampleCode>{"<button data-tooltip-trigger=\"my-tip\">Hover me</button>\n<div class=\"tooltip\" id=\"my-tip\" popover=\"hint\" role=\"tooltip\">\n  Tooltip text\n  <div data-arrow></div>\n</div>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>With Keyboard Shortcut</ExampleLabel>
+  <div style="display:flex;align-items:center;justify-content:center;gap:1.0rem;padding:2.5rem 0;">
+    <button class="btn" data-variant="outline" data-tooltip-trigger="tip-kbd"><i data-lucide="save" style="width:16px;height:16px;" /> Save </button>
+    <div class="tooltip" id="tip-kbd" popover="hint" role="tooltip" style="display:flex;align-items:center;gap:0.5rem;" data-side="bottom"> Save document <kbd style="font-size:0.625rem;padding:0.125rem 0.375rem;border-radius:var(--radius-sm);background:oklch(from var(--primary-foreground) l c h / 0.15);color:var(--primary-foreground);font-family:var(--font-mono);pointer-events:none;">⌘S</kbd></div>
+  </div>
+  <ExampleCode>{"<button class=\"btn\" data-variant=\"outline\" data-tooltip-trigger=\"tip-kbd\">Save</button>\n<div class=\"tooltip\" id=\"tip-kbd\" popover=\"hint\" role=\"tooltip\"\n     style=\"display:flex;align-items:center;gap:0.5rem;\" data-side=\"bottom\">\n  Save document\n  <kbd style=\"font-size:0.625rem;padding:0.125rem 0.375rem;border-radius:var(--radius-sm);\n    background:oklch(from var(--primary-foreground) l c h / 0.15);\n    color:var(--primary-foreground);font-family:var(--font-mono);\">⌘S</kbd>\n</div>"}</ExampleCode>
+</Example>
+
+<p class="text-sm font-medium mb-2 mt-8">Alignment</p>
+
+<p class="text-muted-foreground text-sm mb-4">Use <code>data-align</code> to control tooltip alignment relative to the trigger.</p>
+
+<Example>
+  <div style="display:flex;align-items:center;justify-content:center;gap:1.0rem;flex-wrap:wrap;padding:2.5rem 0;">
+    <button class="btn" data-variant="outline" data-tooltip-trigger="tip-align-start">Start</button>
+    <div class="tooltip" id="tip-align-start" popover="hint" role="tooltip" data-align="start"> Aligned to start <div data-arrow /></div>
+    <button class="btn" data-variant="outline" data-tooltip-trigger="tip-align-center">Center</button>
+    <div class="tooltip" id="tip-align-center" popover="hint" role="tooltip"> Aligned to center <div data-arrow /></div>
+    <button class="btn" data-variant="outline" data-tooltip-trigger="tip-align-end">End</button>
+    <div class="tooltip" id="tip-align-end" popover="hint" role="tooltip" data-align="end"> Aligned to end <div data-arrow /></div>
+  </div>
+  <ExampleCode>{"<!-- Start-aligned -->\n<div class=\"tooltip\" id=\"tip\" popover=\"hint\" role=\"tooltip\" data-align=\"start\">...</div>\n\n<!-- End-aligned -->\n<div class=\"tooltip\" id=\"tip\" popover=\"hint\" role=\"tooltip\" data-align=\"end\">...</div>"}</ExampleCode>
+</Example>
+
+<p class="text-sm font-medium mb-2 mt-8">Disabled Button</p>
+
+<p class="text-muted-foreground text-sm mb-4">Wrap a disabled button in a <code>&lt;span&gt;</code> with the trigger attribute, since disabled elements don't fire mouse events.</p>
+
+<Example>
+  <div style="display:flex;align-items:center;justify-content:center;gap:1.0rem;padding:2.5rem 0;">
+    <span data-tooltip-trigger="tip-disabled" style="cursor:not-allowed;">
+      <button class="btn" data-variant="outline" disabled style="pointer-events:none;">Disabled</button>
+    </span>
+    <div class="tooltip" id="tip-disabled" popover="hint" role="tooltip">This action is unavailable</div>
+  </div>
+  <ExampleCode>{"<span data-tooltip-trigger=\"tip-disabled\" style=\"cursor:not-allowed;\">\n  <button class=\"btn\" disabled style=\"pointer-events:none;\">Disabled</button>\n</span>\n<div class=\"tooltip\" id=\"tip-disabled\" popover=\"hint\" role=\"tooltip\">\n  This action is unavailable\n</div>"}</ExampleCode>
+</Example>
+
+<p class="text-sm font-medium mb-2 mt-8">Custom Delay</p>
+
+<p class="text-muted-foreground text-sm mb-4">Use <code>data-delay</code> on the trigger to override the default 700 ms open delay.</p>
+
+<Example>
+  <div style="display:flex;align-items:center;justify-content:center;gap:1.0rem;flex-wrap:wrap;padding:2.5rem 0;">
+    <button class="btn" data-variant="outline" data-tooltip-trigger="tip-instant" data-delay="0">Instant (0 ms)</button>
+    <div class="tooltip" id="tip-instant" popover="hint" role="tooltip">No delay!</div>
+    <button class="btn" data-variant="outline" data-tooltip-trigger="tip-fast" data-delay="200">Fast (200 ms)</button>
+    <div class="tooltip" id="tip-fast" popover="hint" role="tooltip">Fast tooltip</div>
+    <button class="btn" data-variant="outline" data-tooltip-trigger="tip-slow" data-delay="1500">Slow (1500 ms)</button>
+    <div class="tooltip" id="tip-slow" popover="hint" role="tooltip">Slow tooltip</div>
+  </div>
+  <ExampleCode>{"<!-- Instant -->\n<button data-tooltip-trigger=\"tip\" data-delay=\"0\">Instant</button>\n\n<!-- Custom delay -->\n<button data-tooltip-trigger=\"tip\" data-delay=\"200\">Fast</button>"}</ExampleCode>
+</Example>
+
+<p class="text-sm font-medium mb-2 mt-8">Group Behavior</p>
+
+<p class="text-muted-foreground text-sm mb-4">Once any tooltip opens, subsequent tooltips in the page skip the delay and appear instantly. After 400 ms with no tooltip visible, the delay resets. Hover across the buttons below to see the effect.</p>
+
+<Example>
+  <div style="display:flex;align-items:center;justify-content:center;gap:0.5rem;padding:2.5rem 0;">
+    <button class="btn" data-variant="outline" data-size="sm" data-tooltip-trigger="tip-g1">
+      <i data-lucide="bold" style="width:14px;height:14px;" />
+    </button>
+    <div class="tooltip" id="tip-g1" popover="hint" role="tooltip">Bold</div>
+    <button class="btn" data-variant="outline" data-size="sm" data-tooltip-trigger="tip-g2">
+      <i data-lucide="italic" style="width:14px;height:14px;" />
+    </button>
+    <div class="tooltip" id="tip-g2" popover="hint" role="tooltip">Italic</div>
+    <button class="btn" data-variant="outline" data-size="sm" data-tooltip-trigger="tip-g3">
+      <i data-lucide="underline" style="width:14px;height:14px;" />
+    </button>
+    <div class="tooltip" id="tip-g3" popover="hint" role="tooltip">Underline</div>
+    <button class="btn" data-variant="outline" data-size="sm" data-tooltip-trigger="tip-g4">
+      <i data-lucide="strikethrough" style="width:14px;height:14px;" />
+    </button>
+    <div class="tooltip" id="tip-g4" popover="hint" role="tooltip">Strikethrough</div>
+  </div>
+  <ExampleCode>{"<!-- Once any tooltip is open, the rest appear instantly -->\n<button data-tooltip-trigger=\"tip-bold\">B</button>\n<div class=\"tooltip\" id=\"tip-bold\" popover=\"hint\" role=\"tooltip\">Bold</div>\n\n<button data-tooltip-trigger=\"tip-italic\">I</button>\n<div class=\"tooltip\" id=\"tip-italic\" popover=\"hint\" role=\"tooltip\">Italic</div>"}</ExampleCode>
+</Example>
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per tooltip through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
+    <li><code>default</code> — hidden (the authored state; hover/focus reveal with delay)</li>
+    <li><code>visible</code> — shown immediately, bypassing the hover delay</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first demo carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/tooltip-\{state\}.png</code>.</p>
+</StatesSection>
+
+<SourceFiles component="tooltip" section="css">
+  <SourceNote for="css">Uses <code>position-area</code> for placement, <code>position-try-fallbacks</code> for collision avoidance, and <code>@starting-style</code> for direction-aware animations.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="tooltip" section="js">
+  <SourceNote for="js">Delay, group behavior, ARIA wiring, and scroll dismiss.</SourceNote>
+</SourceFiles>
+
+</DocPage>

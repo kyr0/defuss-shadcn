@@ -1,0 +1,88 @@
+---
+title: "Color Picker"
+description: "Color Picker component — native color input with swatch preview."
+slug: "color-picker"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="color-picker" title="Color Picker" component="color-picker">
+  A color selection control. Built on native <code>&lt;input type="color"&gt;</code> with a styled swatch and hex value display.
+</PageHeader>
+
+<SkillPanel component="color-picker">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;input type="color"&gt;</code> element with label.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/color" title="native color picker dialog"><code>&lt;input type="color"&gt;</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.color-picker</code>
+    <code>.color-picker-value</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• The native color picker renders a full-featured dialog — no JS needed.</SkillText>
+  <SkillText dense>• The wrapper adds a styled border and displays the current hex value.</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• The color swatch is provided by the browser's native <code>&lt;input type="color"&gt;</code>.</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>Color picker with hex value display.</ExampleHint>
+  <div>
+    <label class="label" for="d-color">Background Color</label>
+    <div class="color-picker" data-state-demo>
+      <input type="color" id="d-color" value="#6366f1" />
+      <span class="color-picker-value">#6366f1</span>
+    </div>
+  </div>
+  <ExampleCode>{"<div class=\"color-picker\">\n  <input type=\"color\" value=\"#6366f1\">\n  <span class=\"color-picker-value\">#6366f1</span>\n</div>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Multiple pickers</ExampleLabel>
+  <div style="display:flex;gap:1.0rem;">
+    <div>
+      <label class="label" for="d-fg">Foreground</label>
+      <div class="color-picker">
+        <input type="color" id="d-fg" value="#0a0a0a" />
+        <span class="color-picker-value">#0a0a0a</span>
+      </div>
+    </div>
+    <div>
+      <label class="label" for="d-bg">Background</label>
+      <div class="color-picker">
+        <input type="color" id="d-bg" value="#fafafa" />
+        <span class="color-picker-value">#fafafa</span>
+      </div>
+    </div>
+  </div>
+  <ExampleCode>{"<div class=\"color-picker\">\n  <input type=\"color\" value=\"#0a0a0a\">\n  <span class=\"color-picker-value\">#0a0a0a</span>\n</div>"}</ExampleCode>
+</Example>
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
+    <li><code>default</code> — <code>setState('default', \{ value \})</code> presets the color through the native input (events fire); <code>getState().config.value</code> reports the live hex</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/color-picker-\{state\}.png</code>.</p>
+</StatesSection>
+
+<SourceFiles component="color-picker" section="css" />
+
+<SourceFiles component="color-picker" section="js">
+  <SourceNote for="js">Color Picker</SourceNote>
+</SourceFiles>
+
+</DocPage>

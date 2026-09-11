@@ -49,9 +49,17 @@ export async function cssSmoke(component: string, checks: Check[]): Promise<void
       if ('css' in c) {
         await check(c.label, async () => {
           const props = Object.keys(c.css);
+          // read camelCase OR kebab-case prop names: `cs[k]` resolves camelCase
+          // directly, the getPropertyValue branch covers kebab (shared helper —
+          // some fixtures declare props in either style).
           const got = await page.$eval(
             c.selector,
-            (el, p) => p.map((k) => getComputedStyle(el).getPropertyValue(k).trim()),
+            (el, p) =>
+              p.map((k) => {
+                const cs = getComputedStyle(el);
+                const v = (cs as unknown as Record<string, string>)[k] ?? cs.getPropertyValue(k);
+                return String(v).trim();
+              }),
             props,
           );
           props.forEach((prop, i) => {
@@ -67,7 +75,11 @@ export async function cssSmoke(component: string, checks: Check[]): Promise<void
             vals.push(
               await page.$eval(
                 d.selector,
-                (el, p) => getComputedStyle(el).getPropertyValue(p).trim(),
+                (el, p) => {
+                  const cs = getComputedStyle(el);
+                  const v = (cs as unknown as Record<string, string>)[p] ?? cs.getPropertyValue(p);
+                  return String(v).trim();
+                },
                 d.prop,
               ),
             );

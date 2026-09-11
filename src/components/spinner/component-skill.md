@@ -32,10 +32,12 @@ CSS `@keyframes` animation on an SVG element. No JavaScript required.
 
 | Value     | Dimensions |
 |-----------|------------|
+| `xs`      | 0.625rem   |
 | `sm`      | 0.875rem   |
 | `default` | 1rem       |
 | `md`      | 1.25rem    |
 | `lg`      | 1.5rem     |
+| `xl`      | 2rem       |
 
 ## Accessibility
 

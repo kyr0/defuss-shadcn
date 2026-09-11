@@ -1,113 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="color-scheme" content="light dark">
-  <link rel="icon" href="images/favicon.webp" type="image/webp">
-  <meta name="description" content="Sortable component — drag-and-drop reorderable lists.">
-  <meta property="og:title" content="Sortable — defuss-shadcn">
-  <meta property="og:description" content="Sortable component — drag-and-drop reorderable lists.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://kyr0.github.io/defuss-shadcn/sortable.html">
-  <meta property="og:site_name" content="defuss-shadcn">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Sortable — defuss-shadcn">
-  <meta name="twitter:description" content="Sortable component — drag-and-drop reorderable lists.">
-  <title>Sortable — defuss-shadcn</title>
-  <script src="js/themes.js"></script>
-  <script src="js/theme-switcher.js"></script>
-  <script src="js/layout.js"></script>
-  <script src="js/search-index.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/default-semantic-tokens.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/sizing.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/layout.css">
-  <link rel="stylesheet" href="css/docs-theme.css">
-  <link rel="stylesheet" href="css/docs-utilities.css">
-  <link rel="stylesheet" href="css/layout.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.css">
-</head>
-<body>
-  <site-header></site-header>
-  <div class="flex" style="margin-top: 3.5rem; min-height: calc(100vh - 3.5rem);">
-    <site-nav></site-nav>
-    <main style="flex: 1; min-width: 0; max-width: 44rem; padding: 2rem 3.5rem 8rem;">
-      <div class="page-header">
-        <div class="flex items-baseline justify-between mb-1">
-          <p class="text-sm text-muted-foreground" style="font-family:var(--font-mono);">defuss-shadcn / sortable</p>
-          <div style="display:flex;align-items:baseline;gap:0.375rem;"><span class="text-xs text-muted-foreground" style="font-family:var(--font-mono);white-space:nowrap;">Built with:</span> <a href="#source-css" class="badge built-with-pill" data-variant="outline">CSS</a> <a href="#source-js" class="badge built-with-pill" data-variant="outline">JS</a></div>
-        </div>
-        <h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">Sortable<span class="type-badge" data-type="ATM" title="Atom">ATM</span></h1>
-        <p class="text-muted-foreground leading-relaxed mb-6">
-          Drag-and-drop reorderable list with keyboard support, using the native HTML Drag and Drop API. Supports mouse drag, Alt+Arrow keyboard reordering, and live screen reader announcements.
-        </p>
-        <!-- Component Skill -->
-        <details style="margin-bottom:2rem;border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;">
-          <summary style="padding:0.875rem 1.25rem;background:var(--muted);cursor:pointer;font-size:0.8125rem;font-weight:600;font-family:var(--font-mono);color:var(--muted-foreground);list-style:none;display:flex;align-items:center;gap:0.5rem;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 200ms;"><path d="m9 18 6-6-6-6"/></svg>
-            Component Skill — <span data-spec-href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sortable/component-skill.md" style="text-decoration:underline;text-underline-offset:3px;">components/sortable/component-skill.md</span>
-          </summary>
-          <div style="padding:1.5rem;font-size:0.875rem;line-height:1.85;">
-            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Native basis</p>
-            <p class="text-muted-foreground" style="margin:0 0 1.25rem;">HTML Drag and Drop API + keyboard reordering for accessible drag-and-drop lists.</p>
-
-            <p style="margin:0 0 0.625rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Web Platform APIs</p>
-            <div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;">
-              <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API" target="_blank" rel="noopener" title="native drag/drop reordering" class="api-pill"><code>Drag and Drop API</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-              <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/draggable" target="_blank" rel="noopener" title="makes elements draggable" class="api-pill"><code>draggable</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-              <a href="https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer" target="_blank" rel="noopener" title="drag operation data" class="api-pill"><code>DataTransfer</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-              <a href="https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent" target="_blank" rel="noopener" title="sortable-change event on reorder" class="api-pill"><code>CustomEvent</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-              <a href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-live" target="_blank" rel="noopener" title="live region for screen reader announcements" class="api-pill"><code>aria-live</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible" target="_blank" rel="noopener" title="keyboard-only focus ring" class="api-pill"><code>:focus-visible</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" target="_blank" rel="noopener" title="suppresses transitions" class="api-pill"><code>prefers-reduced-motion</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" target="_blank" rel="noopener" title="Windows High Contrast Mode" class="api-pill"><code>forced-colors</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast" target="_blank" rel="noopener" title="enhanced contrast support" class="api-pill"><code>prefers-contrast</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-            </div>
-
-            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Classes</p>
-            <div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;">
-              <code>.sortable</code>
-              <code>.sortable-item</code>
-              <code>.sortable-handle</code>
-              <code>.sortable-live</code>
-            </div>
-
-            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">State attributes (managed by JS)</p>
-            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>data-dragging</code> — item being dragged</p>
-            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>data-over="before|after"</code> — drop indicator position</p>
-            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>data-active</code> — keyboard-focused item</p>
-            <p class="text-muted-foreground" style="margin:0 0 1.25rem;">• <code>aria-disabled="true"</code> — non-interactive item</p>
-
-            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Keyboard</p>
-            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>↑</code> / <code>↓</code> — navigate items (vertical)</p>
-            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>←</code> / <code>→</code> — navigate items (horizontal)</p>
-            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>Alt + Arrow</code> — reorder focused item</p>
-            <p class="text-muted-foreground" style="margin:0 0 1.25rem;">• <code>Home</code> / <code>End</code> — jump to first/last item</p>
-          </div>
-        </details>
-      </div>
-
-        <!-- ═══ EXAMPLES ═══ -->
-
-        <!-- Default -->
-        <p class="text-sm font-medium mb-2 mt-6">Default</p>
-        <p class="text-muted-foreground text-sm mb-4">Drag items to reorder, or use keyboard: Tab to focus, Arrow keys to navigate, Alt+Arrow to move items.</p>
-        <div class="preview">
-          <div style="display:flex;align-items:center;justify-content:center;padding:2.5rem 0;" >
-            <ul class="sortable" role="listbox" aria-label="Task priority" data-state-demo style="width:20rem;">
-              <li class="sortable-item" draggable="true" role="option" tabindex="0"><span class="sortable-handle"><i data-lucide="grip-vertical"></i></span><span>Build components</span></li>
-              <li class="sortable-item" draggable="true" role="option" tabindex="-1"><span class="sortable-handle"><i data-lucide="grip-vertical"></i></span><span>Write documentation</span></li>
-              <li class="sortable-item" draggable="true" role="option" tabindex="-1"><span class="sortable-handle"><i data-lucide="grip-vertical"></i></span><span>Deploy to production</span></li>
-              <li class="sortable-item" draggable="true" role="option" tabindex="-1"><span class="sortable-handle"><i data-lucide="grip-vertical"></i></span><span>Run tests</span></li>
-            </ul>
-          </div>
-        </div>
-        <div style="position:relative;margin-top:0.5rem;">
-          <button class="copy-btn">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-            Copy
-          </button>
-          <pre><code class="language-markup">&lt;ul class="sortable" role="listbox" aria-label="Task priority"&gt;
+<html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="color-scheme" content="light dark" /><link rel="icon" href="images/favicon.webp" type="image/webp" /><meta name="description" content="Sortable component — drag-and-drop reorderable lists." /><meta property="og:title" content="Sortable — defuss-shadcn" /><meta property="og:description" content="Sortable component — drag-and-drop reorderable lists." /><meta property="og:type" content="website" /><meta property="og:url" content="https://kyr0.github.io/defuss-shadcn/sortable.html" /><meta property="og:site_name" content="defuss-shadcn" /><meta name="twitter:card" content="summary" /><meta name="twitter:title" content="Sortable — defuss-shadcn" /><meta name="twitter:description" content="Sortable component — drag-and-drop reorderable lists." /><title>Sortable — defuss-shadcn</title><script src="js/themes.js"></script><script src="js/theme-switcher.js"></script><script src="js/layout.js"></script><script src="js/search-index.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/default-semantic-tokens.css" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/sizing.css" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/layout.css" /><link rel="stylesheet" href="css/docs-theme.css" /><link rel="stylesheet" href="css/docs-utilities.css" /><link rel="stylesheet" href="css/layout.css" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.css" /></head><body><header class="site-header"><button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle navigation menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><a href="index.html" class="header-brand"><img src="images/favicon.webp" alt="defuss-shadcn logo" class="header-brand-logo" /><span class="header-brand-name">defuss<em>-shadcn</em></span><span class="badge header-brand-version" data-variant="outline" style="font-family:var(--font-mono);">v0.8.3</span></a><div class="header-search" role="search"><input type="text" class="header-search-input" placeholder="Search docs… (⌘K)" aria-label="Search documentation" autocomplete="off" readonly="" /></div><div style="flex:1;"></div><nav style="display:flex;align-items:center;gap:0.25rem;"><a href="https://github.com/kyr0/defuss-shadcn" target="_blank" rel="noopener" class="header-action"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg><span class="github-label">GitHub</span><span class="github-stars"></span></a><button id="wide-toggle" class="header-action theme-toggle-btn" aria-label="Toggle wide layout" aria-pressed="false"><svg id="icon-wide-expand" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg><svg id="icon-wide-collapse" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/><path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/></svg></button><button id="theme-toggle" class="header-action theme-toggle-btn" aria-label="Toggle dark mode"><svg id="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg><svg id="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button><button id="theme-selector-btn" class="header-action theme-toggle-btn" aria-label="Change color theme" popovertarget="theme-popover"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="0.5" fill="currentColor"/><circle cx="17.5" cy="10.5" r="0.5" fill="currentColor"/><circle cx="8.5" cy="7.5" r="0.5" fill="currentColor"/><circle cx="6.5" cy="12" r="0.5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></button></nav></header><div id="theme-popover" popover="" class="theme-popover"><div class="theme-popover-header"><span class="theme-popover-title">Theme</span><button class="theme-reset-btn" id="theme-reset-btn">Reset</button></div><div class="theme-grid" id="theme-grid"></div></div><dialog id="docs-palette" class="command" aria-label="Search documentation"><div class="command-content"><div class="command-input-wrapper"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input class="command-input" type="text" placeholder="Search documentation…" autocomplete="off" autocorrect="off" spellcheck="false" /></div><div class="command-list" id="docs-palette-list"></div><div class="command-empty" hidden="">No results found.</div></div></dialog><div class="flex" style="margin-top: 3.5rem; min-height: calc(100vh - 3.5rem);"><aside class="site-sidebar"><div class="sidebar-scroll"><details class="nav-section sidebar-group" open="" data-nav-section="Overview" style="margin-bottom:0.75rem;"><summary class="nav-heading">Overview<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="index.html" style="display:flex;align-items:center;gap:0.375rem;">Introduction</a><a class="nav-link" href="installation.html" style="display:flex;align-items:center;gap:0.375rem;">Installation</a><a class="nav-link" href="theming.html" style="display:flex;align-items:center;gap:0.375rem;">Theming</a><a class="nav-link" href="dark-mode.html" style="display:flex;align-items:center;gap:0.375rem;">Dark Mode</a><a class="nav-link" href="data-attribute-api.html" style="display:flex;align-items:center;gap:0.375rem;">Data Attribute API</a><a class="nav-link" href="architecture.html" style="display:flex;align-items:center;gap:0.375rem;">Architecture</a><a class="nav-link" href="cascade-layers.html" style="display:flex;align-items:center;gap:0.375rem;">Cascade Layers</a><a class="nav-link" href="es-modules.html" style="display:flex;align-items:center;gap:0.375rem;">ES Modules</a><a class="nav-link" href="native-web-apis.html" style="display:flex;align-items:center;gap:0.375rem;">Native Web APIs</a><a class="nav-link" href="animations.html" style="display:flex;align-items:center;gap:0.375rem;">Animations</a><a class="nav-link" href="sizing.html" style="display:flex;align-items:center;gap:0.375rem;">Sizing</a><a class="nav-link" href="layout.html" style="display:flex;align-items:center;gap:0.375rem;">Layout</a><a class="nav-link" href="accessibility.html" style="display:flex;align-items:center;gap:0.375rem;">Accessibility</a><a class="nav-link" href="component-skills.html" style="display:flex;align-items:center;gap:0.375rem;">Component Skills</a><a class="nav-link" href="changelog.html" style="display:flex;align-items:center;gap:0.375rem;">Changelog</a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Sizing" style="margin-bottom:0.75rem;"><summary class="nav-heading">Sizing<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="width-height.html" style="display:flex;align-items:center;gap:0.375rem;">Width &amp; Height</a><a class="nav-link" href="spacing.html" style="display:flex;align-items:center;gap:0.375rem;">Spacing</a><a class="nav-link" href="density.html" style="display:flex;align-items:center;gap:0.375rem;">Density</a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Layout" style="margin-bottom:0.75rem;"><summary class="nav-heading">Layout<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="container.html" style="display:flex;align-items:center;gap:0.375rem;">Container</a><a class="nav-link" href="flex.html" style="display:flex;align-items:center;gap:0.375rem;">Flex</a><a class="nav-link" href="grid.html" style="display:flex;align-items:center;gap:0.375rem;">Grid</a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Primitives" style="margin-bottom:0.75rem;"><summary class="nav-heading">Primitives<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="typography.html" style="display:flex;align-items:center;gap:0.375rem;">Typography <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="separator.html" style="display:flex;align-items:center;gap:0.375rem;">Separator <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="icon.html" style="display:flex;align-items:center;gap:0.375rem;">Icon <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="heading-anchor.html" style="display:flex;align-items:center;gap:0.375rem;">Heading Anchor <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Actions" style="margin-bottom:0.75rem;"><summary class="nav-heading">Actions<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="button.html" style="display:flex;align-items:center;gap:0.375rem;">Button <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="toggle.html" style="display:flex;align-items:center;gap:0.375rem;">Toggle <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="toggle-group.html" style="display:flex;align-items:center;gap:0.375rem;">Toggle Group <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="button-group.html" style="display:flex;align-items:center;gap:0.375rem;">Button Group <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="toolbar.html" style="display:flex;align-items:center;gap:0.375rem;">Toolbar <span class="type-badge" data-type="ORG" title="ORG">ORG</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Forms &amp; Inputs" style="margin-bottom:0.75rem;"><summary class="nav-heading">Forms &amp; Inputs<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="label.html" style="display:flex;align-items:center;gap:0.375rem;">Label <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="input.html" style="display:flex;align-items:center;gap:0.375rem;">Input <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="textarea.html" style="display:flex;align-items:center;gap:0.375rem;">Textarea <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="checkbox.html" style="display:flex;align-items:center;gap:0.375rem;">Checkbox <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="radio.html" style="display:flex;align-items:center;gap:0.375rem;">Radio Group <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="switch.html" style="display:flex;align-items:center;gap:0.375rem;">Switch <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="slider.html" style="display:flex;align-items:center;gap:0.375rem;">Slider <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="select.html" style="display:flex;align-items:center;gap:0.375rem;">Select <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="number-input.html" style="display:flex;align-items:center;gap:0.375rem;">Number Input <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="file-input.html" style="display:flex;align-items:center;gap:0.375rem;">File Input <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="color-picker.html" style="display:flex;align-items:center;gap:0.375rem;">Color Picker <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="date-picker.html" style="display:flex;align-items:center;gap:0.375rem;">Date Picker <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="combobox.html" style="display:flex;align-items:center;gap:0.375rem;">Combobox <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="form.html" style="display:flex;align-items:center;gap:0.375rem;">Form <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Data Display" style="margin-bottom:0.75rem;"><summary class="nav-heading">Data Display<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="badge.html" style="display:flex;align-items:center;gap:0.375rem;">Badge <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="type-badge.html" style="display:flex;align-items:center;gap:0.375rem;">Type Badge <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="avatar.html" style="display:flex;align-items:center;gap:0.375rem;">Avatar <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="card.html" style="display:flex;align-items:center;gap:0.375rem;">Card <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="image.html" style="display:flex;align-items:center;gap:0.375rem;">Image <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="statistic.html" style="display:flex;align-items:center;gap:0.375rem;">Statistic <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="table.html" style="display:flex;align-items:center;gap:0.375rem;">Table <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="collapsible.html" style="display:flex;align-items:center;gap:0.375rem;">Collapsible <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="timeline.html" style="display:flex;align-items:center;gap:0.375rem;">Timeline <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="tree-view.html" style="display:flex;align-items:center;gap:0.375rem;">Tree View <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="calendar.html" style="display:flex;align-items:center;gap:0.375rem;">Calendar <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="carousel.html" style="display:flex;align-items:center;gap:0.375rem;">Carousel <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="scroll-area.html" style="display:flex;align-items:center;gap:0.375rem;">Scroll Area <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link active" href="sortable.html" style="display:flex;align-items:center;gap:0.375rem;">Sortable <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Feedback &amp; Status" style="margin-bottom:0.75rem;"><summary class="nav-heading">Feedback &amp; Status<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="spinner.html" style="display:flex;align-items:center;gap:0.375rem;">Spinner <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="skeleton.html" style="display:flex;align-items:center;gap:0.375rem;">Skeleton <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="progress.html" style="display:flex;align-items:center;gap:0.375rem;">Progress <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="alert.html" style="display:flex;align-items:center;gap:0.375rem;">Alert <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="alert-dialog.html" style="display:flex;align-items:center;gap:0.375rem;">Alert Dialog <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="toast.html" style="display:flex;align-items:center;gap:0.375rem;">Toast <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Overlays" style="margin-bottom:0.75rem;"><summary class="nav-heading">Overlays<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="popover.html" style="display:flex;align-items:center;gap:0.375rem;">Popover <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="tooltip.html" style="display:flex;align-items:center;gap:0.375rem;">Tooltip <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="context-menu.html" style="display:flex;align-items:center;gap:0.375rem;">Context Menu <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="dialog.html" style="display:flex;align-items:center;gap:0.375rem;">Dialog <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="sheet.html" style="display:flex;align-items:center;gap:0.375rem;">Sheet <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="accordion.html" style="display:flex;align-items:center;gap:0.375rem;">Accordion <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="command.html" style="display:flex;align-items:center;gap:0.375rem;">Command <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Navigation" style="margin-bottom:0.75rem;"><summary class="nav-heading">Navigation<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="breadcrumb.html" style="display:flex;align-items:center;gap:0.375rem;">Breadcrumb <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="toc.html" style="display:flex;align-items:center;gap:0.375rem;">Table of Contents <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="pagination.html" style="display:flex;align-items:center;gap:0.375rem;">Pagination <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="steps.html" style="display:flex;align-items:center;gap:0.375rem;">Steps <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="tabs.html" style="display:flex;align-items:center;gap:0.375rem;">Tabs <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="dropdown.html" style="display:flex;align-items:center;gap:0.375rem;">Dropdown Menu <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="navigation-menu.html" style="display:flex;align-items:center;gap:0.375rem;">Navigation Menu <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Application" style="margin-bottom:0.75rem;"><summary class="nav-heading">Application<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="sidebar.html" style="display:flex;align-items:center;gap:0.375rem;">Sidebar <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Marketing" style="margin-bottom:0.75rem;"><summary class="nav-heading">Marketing<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="site-header.html" style="display:flex;align-items:center;gap:0.375rem;">Site Header <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="hero.html" style="display:flex;align-items:center;gap:0.375rem;">Hero <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="product-showcase.html" style="display:flex;align-items:center;gap:0.375rem;">Product Showcase <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="brand-logos.html" style="display:flex;align-items:center;gap:0.375rem;">Brand Logos <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="feature-details.html" style="display:flex;align-items:center;gap:0.375rem;">Feature Details <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="testimonials.html" style="display:flex;align-items:center;gap:0.375rem;">Testimonials <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="stats.html" style="display:flex;align-items:center;gap:0.375rem;">Stats <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="pricing.html" style="display:flex;align-items:center;gap:0.375rem;">Pricing <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="blog.html" style="display:flex;align-items:center;gap:0.375rem;">Blog <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="faq.html" style="display:flex;align-items:center;gap:0.375rem;">FAQ <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="get-in-touch.html" style="display:flex;align-items:center;gap:0.375rem;">Get In Touch <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="newsletter.html" style="display:flex;align-items:center;gap:0.375rem;">Newsletter <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="site-footer.html" style="display:flex;align-items:center;gap:0.375rem;">Site Footer <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a></nav></details></div></aside><main style="flex: 1; min-width: 0; max-width: 44rem; padding: 2rem 3.5rem 8rem;"><div class="page-header"><div class="flex items-baseline justify-between mb-1"><p class="text-sm text-muted-foreground" style="font-family:var(--font-mono);">defuss-shadcn / sortable</p><div style="display:flex;align-items:baseline;gap:0.375rem;"><span class="text-xs text-muted-foreground" style="font-family:var(--font-mono);white-space:nowrap;">Built with:</span> <a href="#source-css" class="badge built-with-pill" data-variant="outline">CSS</a> <a href="#source-js" class="badge built-with-pill" data-variant="outline">JS</a></div></div><h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">Sortable<span class="type-badge" data-type="ATM" title="Atom">ATM</span></h1><p class="text-muted-foreground leading-relaxed mb-6">Drag-and-drop reorderable list with keyboard support, using the native HTML Drag and Drop API. Supports mouse drag, Alt+Arrow keyboard reordering, and live screen reader announcements.</p></div><details style="margin-bottom:2rem;border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;"><summary style="padding:0.875rem 1.25rem;background:var(--muted);cursor:pointer;font-size:0.8125rem;font-weight:600;font-family:var(--font-mono);color:var(--muted-foreground);list-style:none;display:flex;align-items:center;gap:0.5rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 200ms;"><path d="m9 18 6-6-6-6"/></svg>Component Skill — <span data-spec-href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sortable/component-skill.md" style="text-decoration:underline;text-underline-offset:3px;">components/sortable/component-skill.md</span></summary><div style="padding:1.5rem;font-size:0.875rem;line-height:1.85;"><p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Native basis</p><p class="text-muted-foreground" style="margin:0 0 1.25rem;">HTML Drag and Drop API + keyboard reordering for accessible drag-and-drop lists.</p><p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Web Platform APIs</p><div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;"><a href="https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API" target="_blank" rel="noopener" title="native drag/drop reordering" class="api-pill"><code>Drag and Drop API</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/draggable" target="_blank" rel="noopener" title="makes elements draggable" class="api-pill"><code>draggable</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer" target="_blank" rel="noopener" title="drag operation data" class="api-pill"><code>DataTransfer</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent" target="_blank" rel="noopener" title="sortable-change event on reorder" class="api-pill"><code>CustomEvent</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-live" target="_blank" rel="noopener" title="live region for screen reader announcements" class="api-pill"><code>aria-live</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible" target="_blank" rel="noopener" title="keyboard-only focus ring" class="api-pill"><code>:focus-visible</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" target="_blank" rel="noopener" title="suppresses transitions" class="api-pill"><code>prefers-reduced-motion</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" target="_blank" rel="noopener" title="Windows High Contrast Mode" class="api-pill"><code>forced-colors</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast" target="_blank" rel="noopener" title="enhanced contrast support" class="api-pill"><code>prefers-contrast</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a></div><p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Classes</p><div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;"><code>.sortable</code><code>.sortable-item</code><code>.sortable-handle</code><code>.sortable-live</code></div><p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">State attributes (managed by JS)</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>data-dragging</code> — item being dragged</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>data-over="before|after"</code> — drop indicator position</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>data-active</code> — keyboard-focused item</p><p class="text-muted-foreground" style="margin:0 0 1.25rem;">• <code>aria-disabled="true"</code> — non-interactive item</p><p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Keyboard</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>↑</code> / <code>↓</code> — navigate items (vertical)</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>←</code> / <code>→</code> — navigate items (horizontal)</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>Alt + Arrow</code> — reorder focused item</p><p class="text-muted-foreground" style="margin:0 0 1.25rem;">• <code>Home</code> / <code>End</code> — jump to first/last item</p></div></details><p class="text-sm font-medium mb-2 mt-6" id="toc-default"><a class="heading-anchor" href="#toc-default" aria-label="Link to section: Default">§</a>Default</p><p class="text-muted-foreground text-sm mb-4">Drag items to reorder, or use keyboard: Tab to focus, Arrow keys to navigate, Alt+Arrow to move items.</p><div class="preview"><div style="display:flex;align-items:center;justify-content:center;padding:2.5rem 0;"><ul class="sortable" role="listbox" aria-label="Task priority" data-state-demo="" style="width:20rem;"><li class="sortable-item" draggable="true" role="option" tabindex="0"><span class="sortable-handle"><i data-lucide="grip-vertical"></i></span><span>Build components</span></li><li class="sortable-item" draggable="true" role="option" tabindex="-1"><span class="sortable-handle"><i data-lucide="grip-vertical"></i></span><span>Write documentation</span></li><li class="sortable-item" draggable="true" role="option" tabindex="-1"><span class="sortable-handle"><i data-lucide="grip-vertical"></i></span><span>Deploy to production</span></li><li class="sortable-item" draggable="true" role="option" tabindex="-1"><span class="sortable-handle"><i data-lucide="grip-vertical"></i></span><span>Run tests</span></li></ul></div></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;ul class="sortable" role="listbox" aria-label="Task priority"&gt;
   &lt;li class="sortable-item" draggable="true" role="option" tabindex="0"&gt;
     &lt;span class="sortable-handle"&gt;&lt;i data-lucide="grip-vertical"&gt;&lt;/i&gt;&lt;/span&gt;
     &lt;span&gt;Item 1&lt;/span&gt;
@@ -116,138 +8,24 @@
     &lt;span class="sortable-handle"&gt;&lt;i data-lucide="grip-vertical"&gt;&lt;/i&gt;&lt;/span&gt;
     &lt;span&gt;Item 2&lt;/span&gt;
   &lt;/li&gt;
-&lt;/ul&gt;</code></pre>
-        </div>
-
-        <!-- Horizontal -->
-        <p class="text-sm font-medium mb-2 mt-8">Horizontal</p>
-        <p class="text-muted-foreground text-sm mb-4">Set <code>data-orientation="horizontal"</code> for a row layout. Arrow keys switch to Left/Right.</p>
-        <div class="preview">
-          <div style="display:flex;align-items:center;justify-content:center;padding:2.5rem 0;" >
-            <ul class="sortable" role="listbox" aria-label="Reorder tags" data-orientation="horizontal" style="max-width:28rem;">
-              <li class="sortable-item" draggable="true" role="option" tabindex="0"><span>React</span></li>
-              <li class="sortable-item" draggable="true" role="option" tabindex="-1"><span>TypeScript</span></li>
-              <li class="sortable-item" draggable="true" role="option" tabindex="-1"><span>CSS</span></li>
-              <li class="sortable-item" draggable="true" role="option" tabindex="-1"><span>Vite</span></li>
-            </ul>
-          </div>
-        </div>
-        <div style="position:relative;margin-top:0.5rem;">
-          <button class="copy-btn">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-            Copy
-          </button>
-          <pre><code class="language-markup">&lt;ul class="sortable" role="listbox" aria-label="Reorder tags" data-orientation="horizontal"&gt;
+&lt;/ul&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-8" id="toc-horizontal"><a class="heading-anchor" href="#toc-horizontal" aria-label="Link to section: Horizontal">§</a>Horizontal</p><p class="text-muted-foreground text-sm mb-4">Set <code>data-orientation="horizontal"</code> for a row layout. Arrow keys switch to Left/Right.</p><div class="preview"><div style="display:flex;align-items:center;justify-content:center;padding:2.5rem 0;"><ul class="sortable" role="listbox" aria-label="Reorder tags" data-orientation="horizontal" style="max-width:28rem;"><li class="sortable-item" draggable="true" role="option" tabindex="0"><span>React</span></li><li class="sortable-item" draggable="true" role="option" tabindex="-1"><span>TypeScript</span></li><li class="sortable-item" draggable="true" role="option" tabindex="-1"><span>CSS</span></li><li class="sortable-item" draggable="true" role="option" tabindex="-1"><span>Vite</span></li></ul></div></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;ul class="sortable" role="listbox" aria-label="Reorder tags" data-orientation="horizontal"&gt;
   &lt;li class="sortable-item" draggable="true" role="option" tabindex="0"&gt;
     &lt;span&gt;React&lt;/span&gt;
   &lt;/li&gt;
   &lt;li class="sortable-item" draggable="true" role="option" tabindex="-1"&gt;
     &lt;span&gt;TypeScript&lt;/span&gt;
   &lt;/li&gt;
-&lt;/ul&gt;</code></pre>
-        </div>
-
-        <!-- With Icons & Descriptions -->
-        <p class="text-sm font-medium mb-2 mt-8">With Icons</p>
-        <p class="text-muted-foreground text-sm mb-4">Rich content with icons alongside labels. The handle provides a clear drag affordance.</p>
-        <div class="preview">
-          <div style="display:flex;align-items:center;justify-content:center;padding:2.5rem 0;" >
-            <ul class="sortable" role="listbox" aria-label="Prioritize features" style="width:22rem;">
-              <li class="sortable-item" draggable="true" role="option" tabindex="0">
-                <span class="sortable-handle"><i data-lucide="grip-vertical"></i></span>
-                <i data-lucide="layout-dashboard" style="width:1rem;height:1rem;flex-shrink:0;color:var(--muted-foreground);"></i>
-                <span>Dashboard</span>
-              </li>
-              <li class="sortable-item" draggable="true" role="option" tabindex="-1">
-                <span class="sortable-handle"><i data-lucide="grip-vertical"></i></span>
-                <i data-lucide="settings" style="width:1rem;height:1rem;flex-shrink:0;color:var(--muted-foreground);"></i>
-                <span>Settings</span>
-              </li>
-              <li class="sortable-item" draggable="true" role="option" tabindex="-1">
-                <span class="sortable-handle"><i data-lucide="grip-vertical"></i></span>
-                <i data-lucide="users" style="width:1rem;height:1rem;flex-shrink:0;color:var(--muted-foreground);"></i>
-                <span>Team</span>
-              </li>
-              <li class="sortable-item" draggable="true" role="option" tabindex="-1">
-                <span class="sortable-handle"><i data-lucide="grip-vertical"></i></span>
-                <i data-lucide="bar-chart-3" style="width:1rem;height:1rem;flex-shrink:0;color:var(--muted-foreground);"></i>
-                <span>Analytics</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div style="position:relative;margin-top:0.5rem;">
-          <button class="copy-btn">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-            Copy
-          </button>
-          <pre><code class="language-markup">&lt;ul class="sortable" role="listbox" aria-label="Prioritize features"&gt;
+&lt;/ul&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-8" id="toc-with-icons"><a class="heading-anchor" href="#toc-with-icons" aria-label="Link to section: With Icons">§</a>With Icons</p><p class="text-muted-foreground text-sm mb-4">Rich content with icons alongside labels. The handle provides a clear drag affordance.</p><div class="preview"><div style="display:flex;align-items:center;justify-content:center;padding:2.5rem 0;"><ul class="sortable" role="listbox" aria-label="Prioritize features" style="width:22rem;"><li class="sortable-item" draggable="true" role="option" tabindex="0"><span class="sortable-handle"><i data-lucide="grip-vertical"></i></span><i data-lucide="layout-dashboard" style="width:1rem;height:1rem;flex-shrink:0;color:var(--muted-foreground);"></i><span>Dashboard</span></li><li class="sortable-item" draggable="true" role="option" tabindex="-1"><span class="sortable-handle"><i data-lucide="grip-vertical"></i></span><i data-lucide="settings" style="width:1rem;height:1rem;flex-shrink:0;color:var(--muted-foreground);"></i><span>Settings</span></li><li class="sortable-item" draggable="true" role="option" tabindex="-1"><span class="sortable-handle"><i data-lucide="grip-vertical"></i></span><i data-lucide="users" style="width:1rem;height:1rem;flex-shrink:0;color:var(--muted-foreground);"></i><span>Team</span></li><li class="sortable-item" draggable="true" role="option" tabindex="-1"><span class="sortable-handle"><i data-lucide="grip-vertical"></i></span><i data-lucide="bar-chart-3" style="width:1rem;height:1rem;flex-shrink:0;color:var(--muted-foreground);"></i><span>Analytics</span></li></ul></div></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;ul class="sortable" role="listbox" aria-label="Prioritize features"&gt;
   &lt;li class="sortable-item" draggable="true" role="option" tabindex="0"&gt;
     &lt;span class="sortable-handle"&gt;&lt;i data-lucide="grip-vertical"&gt;&lt;/i&gt;&lt;/span&gt;
     &lt;i data-lucide="layout-dashboard"&gt;&lt;/i&gt;
     &lt;span&gt;Dashboard&lt;/span&gt;
   &lt;/li&gt;
-&lt;/ul&gt;</code></pre>
-        </div>
-
-        <!-- With Disabled Items -->
-        <p class="text-sm font-medium mb-2 mt-8">Disabled Items</p>
-        <p class="text-muted-foreground text-sm mb-4">Set <code>aria-disabled="true"</code> to lock items in place. Disabled items are skipped by keyboard and cannot be dragged.</p>
-        <div class="preview">
-          <div style="display:flex;align-items:center;justify-content:center;padding:2.5rem 0;" >
-            <ul class="sortable" role="listbox" aria-label="Reorder steps" style="width:20rem;">
-              <li class="sortable-item" aria-disabled="true" tabindex="-1">
-                <span class="sortable-handle"><i data-lucide="grip-vertical"></i></span>
-                <i data-lucide="lock" style="width:0.875rem;height:0.875rem;flex-shrink:0;color:var(--muted-foreground);"></i>
-                <span>Authentication (locked)</span>
-              </li>
-              <li class="sortable-item" draggable="true" role="option" tabindex="0">
-                <span class="sortable-handle"><i data-lucide="grip-vertical"></i></span>
-                <span>Configure database</span>
-              </li>
-              <li class="sortable-item" draggable="true" role="option" tabindex="-1">
-                <span class="sortable-handle"><i data-lucide="grip-vertical"></i></span>
-                <span>Set up CI/CD</span>
-              </li>
-              <li class="sortable-item" draggable="true" role="option" tabindex="-1">
-                <span class="sortable-handle"><i data-lucide="grip-vertical"></i></span>
-                <span>Deploy application</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div style="position:relative;margin-top:0.5rem;">
-          <button class="copy-btn">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-            Copy
-          </button>
-          <pre><code class="language-markup">&lt;!-- Disabled: no draggable, aria-disabled="true" --&gt;
+&lt;/ul&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-8" id="toc-disabled-items"><a class="heading-anchor" href="#toc-disabled-items" aria-label="Link to section: Disabled Items">§</a>Disabled Items</p><p class="text-muted-foreground text-sm mb-4">Set <code>aria-disabled="true"</code> to lock items in place. Disabled items are skipped by keyboard and cannot be dragged.</p><div class="preview"><div style="display:flex;align-items:center;justify-content:center;padding:2.5rem 0;"><ul class="sortable" role="listbox" aria-label="Reorder steps" style="width:20rem;"><li class="sortable-item" aria-disabled="true" tabindex="-1"><span class="sortable-handle"><i data-lucide="grip-vertical"></i></span><i data-lucide="lock" style="width:0.875rem;height:0.875rem;flex-shrink:0;color:var(--muted-foreground);"></i><span>Authentication (locked)</span></li><li class="sortable-item" draggable="true" role="option" tabindex="0"><span class="sortable-handle"><i data-lucide="grip-vertical"></i></span><span>Configure database</span></li><li class="sortable-item" draggable="true" role="option" tabindex="-1"><span class="sortable-handle"><i data-lucide="grip-vertical"></i></span><span>Set up CI/CD</span></li><li class="sortable-item" draggable="true" role="option" tabindex="-1"><span class="sortable-handle"><i data-lucide="grip-vertical"></i></span><span>Deploy application</span></li></ul></div></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;!-- Disabled: no draggable, aria-disabled="true" --&gt;
 &lt;li class="sortable-item" aria-disabled="true" tabindex="-1"&gt;
   &lt;span class="sortable-handle"&gt;&lt;i data-lucide="grip-vertical"&gt;&lt;/i&gt;&lt;/span&gt;
   &lt;span&gt;Locked item&lt;/span&gt;
-&lt;/li&gt;</code></pre>
-        </div>
-
-        <!-- Keyboard Reordering -->
-        <p class="text-sm font-medium mb-2 mt-8">Keyboard Reordering</p>
-        <p class="text-muted-foreground text-sm mb-4">Focus the list with <kbd style="padding:0.125rem 0.375rem;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.75rem;font-family:var(--font-mono);background:var(--muted);">Tab</kbd>, navigate with <kbd style="padding:0.125rem 0.375rem;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.75rem;font-family:var(--font-mono);background:var(--muted);">↑</kbd>/<kbd style="padding:0.125rem 0.375rem;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.75rem;font-family:var(--font-mono);background:var(--muted);">↓</kbd>, reorder with <kbd style="padding:0.125rem 0.375rem;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.75rem;font-family:var(--font-mono);background:var(--muted);">Alt+↑</kbd>/<kbd style="padding:0.125rem 0.375rem;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.75rem;font-family:var(--font-mono);background:var(--muted);">Alt+↓</kbd>. A screen reader live region announces each move.</p>
-        <div class="preview">
-          <div style="display:flex;align-items:center;justify-content:center;padding:2.5rem 0;" >
-            <ul class="sortable" role="listbox" aria-label="Rank languages" style="width:20rem;">
-              <li class="sortable-item" draggable="true" role="option" tabindex="0"><span class="sortable-handle"><i data-lucide="grip-vertical"></i></span><span>JavaScript</span></li>
-              <li class="sortable-item" draggable="true" role="option" tabindex="-1"><span class="sortable-handle"><i data-lucide="grip-vertical"></i></span><span>Python</span></li>
-              <li class="sortable-item" draggable="true" role="option" tabindex="-1"><span class="sortable-handle"><i data-lucide="grip-vertical"></i></span><span>Rust</span></li>
-              <li class="sortable-item" draggable="true" role="option" tabindex="-1"><span class="sortable-handle"><i data-lucide="grip-vertical"></i></span><span>Go</span></li>
-              <li class="sortable-item" draggable="true" role="option" tabindex="-1"><span class="sortable-handle"><i data-lucide="grip-vertical"></i></span><span>TypeScript</span></li>
-            </ul>
-          </div>
-        </div>
-        <div style="position:relative;margin-top:0.5rem;">
-          <button class="copy-btn">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-            Copy
-          </button>
-          <pre><code class="language-markup">&lt;!-- Keyboard: Tab to focus, ↑/↓ to navigate, Alt+↑/↓ to reorder --&gt;
+&lt;/li&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-8" id="toc-keyboard-reordering"><a class="heading-anchor" href="#toc-keyboard-reordering" aria-label="Link to section: Keyboard Reordering">§</a>Keyboard Reordering</p><p class="text-muted-foreground text-sm mb-4">Focus the list with <kbd style="padding:0.125rem 0.375rem;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.75rem;font-family:var(--font-mono);background:var(--muted);">Tab</kbd>, navigate with <kbd style="padding:0.125rem 0.375rem;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.75rem;font-family:var(--font-mono);background:var(--muted);">↑</kbd>/<kbd style="padding:0.125rem 0.375rem;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.75rem;font-family:var(--font-mono);background:var(--muted);">↓</kbd>, reorder with <kbd style="padding:0.125rem 0.375rem;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.75rem;font-family:var(--font-mono);background:var(--muted);">Alt+↑</kbd>/<kbd style="padding:0.125rem 0.375rem;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.75rem;font-family:var(--font-mono);background:var(--muted);">Alt+↓</kbd>. A screen reader live region announces each move.</p><div class="preview"><div style="display:flex;align-items:center;justify-content:center;padding:2.5rem 0;"><ul class="sortable" role="listbox" aria-label="Rank languages" style="width:20rem;"><li class="sortable-item" draggable="true" role="option" tabindex="0"><span class="sortable-handle"><i data-lucide="grip-vertical"></i></span><span>JavaScript</span></li><li class="sortable-item" draggable="true" role="option" tabindex="-1"><span class="sortable-handle"><i data-lucide="grip-vertical"></i></span><span>Python</span></li><li class="sortable-item" draggable="true" role="option" tabindex="-1"><span class="sortable-handle"><i data-lucide="grip-vertical"></i></span><span>Rust</span></li><li class="sortable-item" draggable="true" role="option" tabindex="-1"><span class="sortable-handle"><i data-lucide="grip-vertical"></i></span><span>Go</span></li><li class="sortable-item" draggable="true" role="option" tabindex="-1"><span class="sortable-handle"><i data-lucide="grip-vertical"></i></span><span>TypeScript</span></li></ul></div></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;!-- Keyboard: Tab to focus, ↑/↓ to navigate, Alt+↑/↓ to reorder --&gt;
 &lt;!-- Screen readers hear: "JavaScript, moved to position 2 of 5" --&gt;
 &lt;ul class="sortable" role="listbox" aria-label="Rank languages"&gt;
   &lt;li class="sortable-item" draggable="true" role="option" tabindex="0"&gt;
@@ -255,26 +33,7 @@
     &lt;span&gt;JavaScript&lt;/span&gt;
   &lt;/li&gt;
   &lt;!-- more items... --&gt;
-&lt;/ul&gt;</code></pre>
-        </div>
-
-        <!-- -- States ------------------------------------ -->
-        <section style="margin-top:3rem;" id="states">
-          <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;">States</h2>
-          <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
-          <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
-            <li><code>default</code> — authored item order; <code>setState('default')</code> restores that order after any drag/keyboard moves, <code>{ index }</code> activates one item, and <code>getState().config</code> reports the live <code>order</code> + <code>activeIndex</code></li>
-          </ul>
-          <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/{mode}/sortable-{state}.png</code>.</p>
-        </section>
-
-        <!-- -- CSS --------------------------------------- -->
-        <section style="margin-top:3rem;" id="source-css">
-          <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;">CSS <a href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sortable/sortable.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2>
-          <p class="text-muted-foreground text-sm mb-4">Styles for the sortable component. Includes drag states, drop indicators, keyboard focus, disabled state, horizontal orientation, and accessibility media queries.</p>
-          <div style="position:relative;margin-top:0.5rem;">
-            <button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button>
-            <pre><code class="language-scss">@layer components {
+&lt;/ul&gt;</code></pre></div><section style="margin-top:3rem;" id="states"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-states"><a class="heading-anchor" href="#toc-states" aria-label="Link to section: States">§</a>States</h2><p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p><ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;"><li><code>default</code> — authored item order; <code>setState('default')</code> restores that order after any drag/keyboard moves, <code>{ index }</code> activates one item, and <code>getState().config</code> reports the live <code>order</code> + <code>activeIndex</code></li></ul><p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/{mode}/sortable-{state}.png</code>.</p></section><section style="margin-top:3rem;" id="source-css"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-css"><a class="heading-anchor" href="#toc-css" aria-label="Link to section: CSS">§</a>CSS <a href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sortable/sortable.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2><p class="text-muted-foreground text-sm mb-4">Styles for the sortable component. Includes drag states, drop indicators, keyboard focus, disabled state, horizontal orientation, and accessibility media queries.</p><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-scss">@layer components {
   .sortable {
     list-style: none;
     margin: 0;
@@ -284,7 +43,7 @@
     gap: 0.25rem;
 
     /* Horizontal orientation */
-    &amp;[data-orientation=&quot;horizontal&quot;] {
+    &amp;[data-orientation="horizontal"] {
       flex-direction: row;
       flex-wrap: wrap;
     }
@@ -327,25 +86,25 @@
     }
 
     /* Drop target indicator */
-    &amp;[data-over=&quot;before&quot;] {
+    &amp;[data-over="before"] {
       border-top: 2px solid var(--primary);
     }
-    &amp;[data-over=&quot;after&quot;] {
+    &amp;[data-over="after"] {
       border-bottom: 2px solid var(--primary);
     }
 
     /* Horizontal drop indicators */
-    .sortable[data-orientation=&quot;horizontal&quot;] &amp;[data-over=&quot;before&quot;] {
+    .sortable[data-orientation="horizontal"] &amp;[data-over="before"] {
       border-top: 1px solid var(--border);
       border-inline-start: 2px solid var(--primary);
     }
-    .sortable[data-orientation=&quot;horizontal&quot;] &amp;[data-over=&quot;after&quot;] {
+    .sortable[data-orientation="horizontal"] &amp;[data-over="after"] {
       border-bottom: 1px solid var(--border);
       border-inline-end: 2px solid var(--primary);
     }
 
     /* Disabled */
-    &amp;[aria-disabled=&quot;true&quot;] {
+    &amp;[aria-disabled="true"] {
       opacity: 0.5;
       cursor: not-allowed;
       pointer-events: none;
@@ -386,8 +145,8 @@
     .sortable-item {
       border-width: 2px;
       &amp;[data-active] { outline: 2px solid LinkText; }
-      &amp;[data-over=&quot;before&quot;] { border-top-width: 3px; }
-      &amp;[data-over=&quot;after&quot;] { border-bottom-width: 3px; }
+      &amp;[data-over="before"] { border-top-width: 3px; }
+      &amp;[data-over="after"] { border-bottom-width: 3px; }
     }
   }
 
@@ -398,31 +157,22 @@
       background-color: ButtonFace;
       &amp;[data-active] { border-color: Highlight; color: HighlightText; }
       &amp;[data-dragging] { border-color: GrayText; }
-      &amp;[data-over=&quot;before&quot;] { border-top-color: Highlight; }
-      &amp;[data-over=&quot;after&quot;] { border-bottom-color: Highlight; }
-      &amp;[aria-disabled=&quot;true&quot;] { color: GrayText; border-color: GrayText; }
+      &amp;[data-over="before"] { border-top-color: Highlight; }
+      &amp;[data-over="after"] { border-bottom-color: Highlight; }
+      &amp;[aria-disabled="true"] { color: GrayText; border-color: GrayText; }
     }
     .sortable-handle { color: GrayText; }
   }
-}</code></pre>
-          </div>
-        </section>
-
-        <!-- -- JavaScript -------------------------------- -->
-        <section style="margin-top:3rem;" id="source-js">
-          <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;">JavaScript <a href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sortable/sortable.js" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2>
-          <p class="text-muted-foreground text-sm mb-4">Drag-and-drop + keyboard reordering. Arrow keys navigate, Alt+Arrow reorders, live region announces moves to screen readers.</p>
-          <div style="position:relative;margin-top:0.5rem;">
-            <button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button>
-            <pre><code class="language-javascript">// -- Sortable -------------------------------------------------
+}
+</code></pre></div></section><section style="margin-top:3rem;" id="source-js"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-javascript"><a class="heading-anchor" href="#toc-javascript" aria-label="Link to section: JavaScript">§</a>JavaScript <a href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/sortable/sortable.js" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2><p class="text-muted-foreground text-sm mb-4">Drag-and-drop + keyboard reordering. Arrow keys navigate, Alt+Arrow reorders, live region announces moves to screen readers.</p><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-javascript">// -- Sortable -------------------------------------------------
 // Drag-and-drop + keyboard reordering for sortable lists.
 // Keyboard: Arrow keys navigate, Alt+Arrow reorders, Home/End jump.
 // Live region announces position changes to screen readers.
-// Named-state API (AGENTS.md &quot;State API&quot;): the list's observable state is
+// Named-state API (AGENTS.md "State API"): the list's observable state is
 // its item order + active item, so 'default' restores the authored order
 // (optional { index } activates one item) and getState() reports both live.
 
-// Shared preamble (AGENTS.md &quot;State API&quot;); build.ts inlines it into the
+// Shared preamble (AGENTS.md "State API"); build.ts inlines it into the
 // shipped .js, so this import never appears in dist/.
 import { defussGlobals } from '../../shared/state-api.js';
 
@@ -452,7 +202,7 @@ function triggerStateChange(list, stateName, config) {
 export const sortableApi = {
   setState(list, stateName, config = {}) {
     if (!sortableStates.includes(stateName)) {
-      throw new Error(`sortable: unknown state &quot;${stateName}&quot; (supported: ${sortableStates.join(', ')})`);
+      throw new Error(`sortable: unknown state "${stateName}" (supported: ${sortableStates.join(', ')})`);
     }
     triggerStateChange(list, stateName, config);
     // state lives on the ELEMENT, not the module (many lists per page)
@@ -512,7 +262,7 @@ document.querySelectorAll('.sortable:not([data-init])').forEach((list) =&gt; {
   }
 
   function getItems() {
-    return Array.from(list.querySelectorAll('.sortable-item:not([aria-disabled=&quot;true&quot;])'));
+    return Array.from(list.querySelectorAll('.sortable-item:not([aria-disabled="true"])'));
   }
 
   function getAllItems() {
@@ -620,7 +370,7 @@ document.querySelectorAll('.sortable:not([data-init])').forEach((list) =&gt; {
 
   // -- Keyboard navigation --
   list.addEventListener('keydown', (e) =&gt; {
-    const active = getActiveItem() || list.querySelector('.sortable-item[tabindex=&quot;0&quot;]');
+    const active = getActiveItem() || list.querySelector('.sortable-item[tabindex="0"]');
     if (!active) return;
     const items = getItems();
     const idx = items.indexOf(active);
@@ -682,15 +432,12 @@ document.querySelectorAll('.sortable:not([data-init])').forEach((list) =&gt; {
 }
 
 init();
-new MutationObserver(init).observe(document, { childList: true, subtree: true });</code></pre>
-          </div>
-        </section>
-    </main>
-  </div>
-  <script src="js/site.js" defer></script>
-  <script type="module" src="js/shiki-highlight.js"></script>
-  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.js"></script>
-  <script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script>
-  <script>globalThis.lucide?.createIcons();</script>
-</body>
-</html>
+new MutationObserver(init).observe(document, { childList: true, subtree: true });
+</code></pre></div></section><nav class="page-nav"><a class="page-nav-link page-nav-prev" href="scroll-area.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><div><span class="page-nav-label">Previous</span><span class="page-nav-title">Scroll Area</span></div></a><a class="page-nav-link page-nav-next" href="spinner.html"><div><span class="page-nav-label">Next</span><span class="page-nav-title">Spinner</span></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></nav></main><aside class="site-toc"><div class="site-toc-content"><p class="toc-title">On This Page</p><a class="toc-link" href="#toc-default">Default</a><a class="toc-link" href="#toc-horizontal">Horizontal</a><a class="toc-link" href="#toc-with-icons">With Icons</a><a class="toc-link" href="#toc-disabled-items">Disabled Items</a><a class="toc-link" href="#toc-keyboard-reordering">Keyboard Reordering</a><a class="toc-link" href="#toc-states">States</a><a class="toc-link" href="#toc-css">CSS</a><a class="toc-link" href="#toc-javascript">JavaScript</a></div></aside></div><script>try {
+  var c = JSON.parse(localStorage.getItem('defuss-shadcn-nav-collapsed') || '[]');
+  for (var i = 0; i < c.length; i++) {
+    if (c[i] === 'Overview') continue;
+    var d = document.querySelector('details[data-nav-section="' + c[i] + '"]');
+    if (d && !d.querySelector('a.nav-link.active')) d.open = false;
+  }
+} catch (e) {}</script><footer class="site-footer"><p class="site-footer-tagline">Agentically engineered with local Qwen3.8-Flash-Next/vLLM, quality-gated automatically, and human-reviewed before release.</p><p class="site-footer-tagline" style="margin-top:0;">Reworked, enhanced and maintained by <a href="https://aron-homberg.de" target="_blank" rel="noopener">Aron Homberg</a></p><span class="site-footer-dot"> · </span>MIT Licensed<span class="site-footer-dot"> · </span><a href="https://github.com/kyr0/defuss-shadcn" target="_blank" rel="noopener">Source on GitHub</a></footer><script src="js/site.js" defer=""></script><script type="module" src="js/shiki-highlight.js"></script><script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.js"></script><script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script><script>globalThis.lucide?.createIcons();</script></body></html>

@@ -11,14 +11,16 @@
 
 **A UI component system that scales with _local_ AI.** Themeable components built on semantic HTML, modern CSS, and vanilla JavaScript. No framework. No build step for consumers — `dist/` is committed and ready to use as-is. The simplest possible foundation for AI-driven prototyping.
 
-**68 components — 27 with JavaScript, 41 CSS-only — 67.9 KiB minified + compressed — 30.1 KiB as the all.css/all.js bundle.**
-41 of 68 components need no JavaScript — native HTML and modern CSS cover them entirely.
+**71 components — 27 with JavaScript, 44 CSS-only — 69.4 KiB minified + compressed — 30.9 KiB as the all.css/all.js bundle.**
+44 of 71 components need no JavaScript — native HTML and modern CSS cover them entirely.
 The footprint is measured from the shipped `dist/` files on every build and published as
 [`dist/stats.json`](dist/stats.json); `verify` fails the build if this sentence and that file disagree.
 
 The set includes 13 marketing blocks (Site Header, Hero, Pricing, Testimonials, Blog, Footer, …) — full-page sections composed from the same tokens and primitives, all CSS-only.
 
 **[Documentation & Live Demos →](https://kyr0.github.io/defuss-shadcn/)** · [Architecture (ARCH.md)](ARCH.md) · [Agent integration guide (dist/SKILL.md)](dist/SKILL.md)
+
+Why this system exists, from the agents who built it: [MOTIVATION.md](MOTIVATION.md).
 
 ## What this is
 
@@ -162,8 +164,9 @@ bun run dev        # doc site at http://localhost:3000/
 bun run test:run   # run the UI test suite (headless Chromium)
 ```
 
-`src/` is the authoring tree (`.ts` + html/css/md/fonts); `dist/` is its compiled, 1:1
-mirror, committed and the only thing that ships — every build also regenerates the
+`src/` is the authoring tree (component `.ts`/css/md, plus the docs' MDX pages + TSX
+components rendered by [defuss-ssg](https://github.com/kyr0/defuss)); `dist/` is the compiled output — 1:1 build
+of the components/theme, plus `dist/documentation/` rendered solely by defuss-ssg, committed and the only thing that ships — every build also regenerates the
 machine-readable `dist/stats.json` (component counts per type, the JS/CSS-only split, and
 byte sizes raw/minified/gzipped via `make stats`). `docs/` is the generated **documentation
 site** (only `dist/documentation/` + the SEO files + a `404.html` copy of `index.html` so
@@ -175,7 +178,7 @@ copies of the component assets. Refresh with `bun run docs`, never edit it direc
 A `Makefile` wraps the common tasks: `make setup` (install deps + Playwright browsers),
 `make dev`, `make test-run`, `make coverage`, `make e2e`, `make lint` (oxlint),
 `make typecheck`, `make verify`, `make screenshots`, `make stats`, `make docs`. **`make build`** runs
-the whole pipeline — lint → compile → bundle → minify → stats → screenshots → docs-mirror → verify → tests → e2e —
+the whole pipeline — lint → compile → bundle → minify → stats → docs SSG (defuss-ssg) → screenshots → docs-mirror → verify → tests → e2e —
 the same loop CI runs.
 
 `bun run verify` is the static consistency gate (~0.3 s, runs automatically at the end
@@ -206,7 +209,7 @@ are documented in [ARCH.md](ARCH.md).
 
 Tests exist so agents (and humans) can verify the implementation end-to-end instead of trusting it.
 
-UI tests run in a real browser (Chromium via Playwright) with **Vitest browser mode** — no mocking. The suite in [`tests/ui.test.ts`](tests/ui.test.ts) loads the actual documentation pages from `dist/documentation/` in a same-origin iframe and drives them end-to-end: web-component shell rendering, the SPA router, dark-mode toggle, dialog open/close/focus-return, and the single-open accordion.
+UI tests run in a real browser (Chromium via Playwright) with **Vitest browser mode** — no mocking. The suite in [`tests/ui.test.ts`](tests/ui.test.ts) loads the actual documentation pages from `dist/documentation/` in a same-origin iframe and drives them end-to-end: the statically-rendered chrome shell, the SPA router, dark-mode toggle, dialog open/close/focus-return, and the single-open accordion.
 
 ```bash
 bun run test         # watch mode

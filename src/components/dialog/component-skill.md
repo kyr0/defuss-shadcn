@@ -85,6 +85,7 @@ Requires minimal JavaScript — only for trigger wiring and backdrop-click-to-cl
 | `data-size` | Max width  | Use case                         |
 |-------------|------------|----------------------------------|
 | `sm`        | `24rem`    | Confirmations, simple alerts     |
+| `md`        | `28rem`    | Standard forms, content (default)|
 | *(default)* | `28rem`    | Standard forms, content          |
 | `lg`        | `32rem`    | Complex forms, rich content      |
 | `xl`        | `40rem`    | Data-heavy, multi-column layouts |

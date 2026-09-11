@@ -111,7 +111,7 @@ export function auditUtilities(root: string): { docIssues: string[]; compIssues:
   const DOC_DIR = join(root, 'src/documentation');
   const COMP_DIR = join(root, 'src/components');
 
-  const utilCss = readFileSync(join(DOC_DIR, 'css/docs-utilities.css'), 'utf8');
+  const utilCss = readFileSync(join(DOC_DIR, 'public/css/docs-utilities.css'), 'utf8');
   const defined = new Set<string>([
     ...[...utilCss.matchAll(/\n\.([a-z][a-z0-9-]*)\s*\{/g)].map((m) => m[1]),
     ...[...utilCss.matchAll(/^\.([a-z][a-z0-9-]*)\s*\{/gm)].map((m) => m[1]),
@@ -145,7 +145,7 @@ export function auditUtilities(root: string): { docIssues: string[]; compIssues:
     // doc pages load theme/sizing.css + theme/layout.css globally (every page
     // links them) → their utilities are legitimately usable in demos;
     // components ship standalone → they may not depend on the modules.
-    docIssues: scan(walk(DOC_DIR, ['.html']), moduleDefinedClasses(root)),
+    docIssues: scan(walk(DOC_DIR, ['.mdx', '.tsx']), moduleDefinedClasses(root)),
     compIssues: scan(walk(COMP_DIR, ['.html', '.md'])),
   };
 }

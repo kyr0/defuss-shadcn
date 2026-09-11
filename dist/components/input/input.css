@@ -77,8 +77,11 @@
     }
 
     /* -- Sizes ----------------------------------------------- */
+    &[data-size="xs"] { height: 1.75rem; padding: 0 0.5rem;   font-size: 0.75rem; }
     &[data-size="sm"] { height: 2rem;    padding: 0 0.625rem; font-size: 0.8125rem; }
+    &[data-size="md"] { height: 2.25rem; padding: 0 0.75rem;  font-size: 0.875rem; }
     &[data-size="lg"] { height: 2.75rem; padding: 0 1rem;     font-size: 1rem; }
+    &[data-size="xl"] { height: 3.25rem; padding: 0 1.25rem;  font-size: 1.125rem; }
   }
 
   /* -- Auto-growing textarea --------------------------------- */

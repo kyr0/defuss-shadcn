@@ -1,0 +1,56 @@
+---
+title: "Table of Contents"
+description: "Table of Contents component — a section-nav block of heading links with an active-section marker, pure markup."
+slug: "toc"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="toc" title="Table of Contents" component="toc">
+  A section-nav block of heading links — the docs rail you're looking at on the right, packaged as a reusable pattern. Native fragment links do the scrolling; the current section is marked with <code>aria-current</code>. No JavaScript shipped — the host's IntersectionObserver moves the marker.
+</PageHeader>
+
+<SkillPanel component="toc">
+  <SkillField label="Native basis">
+    <SkillText><code>&lt;nav&gt;</code> with a title paragraph and one <code>&lt;a&gt;</code> per section heading. Native fragment links do the scrolling; the active link carries <code>aria-current="location"</code>.</SkillText>
+  </SkillField>
+  <SkillField label="Web Platform APIs">
+    <SkillRow>
+      <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav" title="landmark for major navigation"><code>&lt;nav&gt;</code></ApiPill>
+      <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:target" title="native deep links"><code>:target</code></ApiPill>
+      <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-current" title="marks the link for the section in view"><code>aria-current</code></ApiPill>
+      <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver" title="the host's way to track the visible section"><code>IntersectionObserver</code></ApiPill>
+      <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/position" title="the rail follows the scroll without JS"><code>position: sticky</code></ApiPill>
+    </SkillRow>
+  </SkillField>
+  <SkillField label="Classes">
+    <SkillRow>
+      <code>.toc</code>
+      <code>.toc-title</code>
+      <code>.toc-link</code>
+    </SkillRow>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>A section nav with the current section marked via <code>aria-current="location"</code> — the host moves the marker as the reader scrolls (the docs' own runtime does exactly that). Try the links: they jump between the two mini sections in the card.</ExampleHint>
+  <div class="card" style="padding:1rem;width:16rem;">
+    <nav class="toc" aria-label="On this page">
+      <p class="toc-title">On This Page</p>
+      <a class="toc-link" href="#toc-demo-install">Installation</a>
+      <a class="toc-link" href="#toc-demo-api" aria-current="location">API</a>
+    </nav>
+    <h3 id="toc-demo-install" style="font-size:0.9375rem;margin:0.75rem 0 0.25rem;">Installation</h3>
+    <p class="text-sm text-muted-foreground" style="margin:0;">Drop the stylesheet in, link the sections.</p>
+    <h3 id="toc-demo-api" style="font-size:0.9375rem;margin:0.75rem 0 0.25rem;">API</h3>
+    <p class="text-sm text-muted-foreground" style="margin:0;">Three classes: <code>.toc</code>, <code>.toc-title</code>, <code>.toc-link</code>.</p>
+  </div>
+  <ExampleCode>{"<nav class=\"toc\" aria-label=\"On this page\">\n  <p class=\"toc-title\">On This Page</p>\n  <a class=\"toc-link\" href=\"#installation\">Installation</a>\n  <a class=\"toc-link\" href=\"#usage\">Usage</a>\n  <a class=\"toc-link\" href=\"#api\" aria-current=\"location\">API</a>\n  <a class=\"toc-link\" href=\"#faq\">FAQ</a>\n</nav>"}</ExampleCode>
+</Example>
+
+<SourceFiles component="toc" />
+
+</DocPage>

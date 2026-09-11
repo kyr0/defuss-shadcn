@@ -1,0 +1,86 @@
+---
+title: "Skeleton"
+description: "Skeleton component — placeholder loading states with pulse animation."
+slug: "skeleton"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="skeleton" title="Skeleton" component="skeleton">
+  Placeholder shapes that pulse while content is loading. Pure CSS animation — no JavaScript required.
+</PageHeader>
+
+<SkillPanel component="skeleton">
+  <SkillField label="Native basis">
+<SkillText>CSS <code>@keyframes</code> pulse animation on placeholder <code>&lt;div&gt;</code> elements. No JavaScript required.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@keyframes" title="CSS pulse animation for shimmer effect"><code>@keyframes</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.skeleton</code>
+    <code>.skeleton-round</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• Skeleton elements are decorative — screen readers should skip them</SkillText>
+  <SkillText dense>• Use <code>aria-hidden="true"</code> on skeleton containers if they sit alongside real content</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• Announce the loading state separately with <code>role="status"</code> if needed</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Avatar + Text</ExampleLabel>
+  <ExampleHint>Common pattern for user profile loading states.</ExampleHint>
+  <div style="display:flex;align-items:center;gap:1rem;">
+    <div class="skeleton skeleton-round" style="width:2.5rem;height:2.5rem;" />
+    <div style="display:flex;flex-direction:column;gap:0.5rem;">
+      <div class="skeleton" style="height:0.875rem;width:10rem;" />
+      <div class="skeleton" style="height:0.875rem;width:7rem;" />
+    </div>
+  </div>
+  <ExampleCode>{"<div style=\"display:flex;align-items:center;gap:1rem;\">\n  <div class=\"skeleton skeleton-round\" style=\"width:2.5rem;height:2.5rem;\"></div>\n  <div style=\"display:flex;flex-direction:column;gap:0.5rem;\">\n    <div class=\"skeleton\" style=\"height:0.875rem;width:10rem;\"></div>\n    <div class=\"skeleton\" style=\"height:0.875rem;width:7rem;\"></div>\n  </div>\n</div>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Card</ExampleLabel>
+  <ExampleHint>Skeleton inside a card container.</ExampleHint>
+  <article class="card" style="width:20rem;">
+    <div class="card-header">
+      <div class="skeleton" style="height:1rem;width:60%;" />
+      <div class="skeleton" style="height:0.75rem;width:40%;margin-top:0.5rem;" />
+    </div>
+    <div class="card-content">
+      <div style="display:flex;flex-direction:column;gap:0.5rem;">
+        <div class="skeleton" style="height:0.75rem;width:100%;" />
+        <div class="skeleton" style="height:0.75rem;width:90%;" />
+        <div class="skeleton" style="height:0.75rem;width:70%;" />
+      </div>
+    </div>
+  </article>
+  <ExampleCode>{"<div class=\"skeleton skeleton-round\" style=\"width:2.5rem;height:2.5rem;\"></div>\n<div class=\"skeleton\" style=\"height:0.875rem;width:10rem;\"></div>"}</ExampleCode>
+</Example>
+
+<Example noCode>
+  <ExampleLabel>Text Lines</ExampleLabel>
+  <ExampleHint>Paragraph placeholder.</ExampleHint>
+  <div style="display:flex;flex-direction:column;gap:0.5rem;width:20rem;">
+    <div class="skeleton" style="height:0.875rem;width:100%;" />
+    <div class="skeleton" style="height:0.875rem;width:100%;" />
+    <div class="skeleton" style="height:0.875rem;width:80%;" />
+  </div>
+</Example>
+
+<SourceFiles component="skeleton" section="css">
+  <SourceNote for="css">Styles for the skeleton component. Uses design tokens for colors, spacing, and radius.</SourceNote>
+</SourceFiles>
+
+</DocPage>

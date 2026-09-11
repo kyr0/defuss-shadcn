@@ -1,0 +1,65 @@
+---
+title: "Get In Touch"
+description: "A bordered contact card: overlapping grayscale avatars, centered copy, one CTA."
+slug: "get-in-touch"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="get-in-touch" title="Get In Touch" component="get-in-touch">
+  A bordered contact card: overlapping grayscale avatars, centered copy, one CTA.
+</PageHeader>
+
+<SkillPanel component="get-in-touch">
+  <SkillField label="Native basis">
+<SkillText>A card of \[Avatar\](../avatar/component-skill.md) stack + heading + one \[Button\](../button/component-skill.md). The overlap is <code>margin-inline-start: -0.5rem</code> with an <code>outline</code> ring (outline, not box-shadow, so it survives forced-colors).</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/margin#negative_values" title="avatar fan overlap"><code>Negative margins</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/outline" title="background ring that respects forced-colors"><code>outline</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-contact</code>
+    <code>.mk-contact-avatars</code>
+    <code>.mk-contact-copy</code>
+    <code>.mk-contact-title</code>
+    <code>.mk-contact-desc</code>
+    <code>.mk-contact-cta</code>
+  </SkillRow>
+  </SkillField>
+</SkillPanel>
+
+<Example first previewStyle="align-items:stretch;">
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>Avatar overlap is negative margin + outline ring.</ExampleHint>
+  <section class="mk-contact" style="width:100%">
+    <div class="mk-contact-avatars">
+      <span class="avatar">
+        <span class="avatar-fallback">AM</span>
+      </span>
+      <span class="avatar">
+        <span class="avatar-fallback">ST</span>
+      </span>
+      <span class="avatar">
+        <span class="avatar-fallback">HL</span>
+      </span>
+    </div>
+    <div class="mk-contact-copy">
+      <h2 class="mk-contact-title">Want to know more?</h2>
+      <p class="mk-contact-desc">Our team is here to help you get the answers you need.</p>
+    </div>
+    <button type="button" class="btn mk-contact-cta">Get in touch</button>
+  </section>
+  <ExampleCode>{"<section class=\"mk-contact\" style=\"width:100%\">\n  <div class=\"mk-contact-avatars\"><span class=\"avatar\"><span class=\"avatar-fallback\">AM</span></span><span class=\"avatar\"><span class=\"avatar-fallback\">ST</span></span><span class=\"avatar\"><span class=\"avatar-fallback\">HL</span></span></div>\n  <div class=\"mk-contact-copy\">\n    <h2 class=\"mk-contact-title\">Want to know more?</h2>\n    <p class=\"mk-contact-desc\">Our team is here to help you get the answers you need.</p>\n  </div>\n  <button type=\"button\" class=\"btn mk-contact-cta\">Get in touch</button>\n</section>"}</ExampleCode>
+</Example>
+
+<SourceFiles component="get-in-touch" section="css" />
+
+</DocPage>

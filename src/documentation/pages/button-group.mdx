@@ -1,0 +1,135 @@
+---
+title: "Button Group"
+description: "Button Group component — group related buttons with shared borders and spacing."
+slug: "button-group"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="button-group" title="Button Group" component="button-group">
+  Groups related buttons with connected borders. Built on a <code>&lt;div&gt;</code> container that merges adjacent button edges. CSS only — no JavaScript.
+</PageHeader>
+
+<SkillPanel component="button-group">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;div&gt;</code> container with <code>.btn</code> buttons. Visually merges adjacent buttons with connected borders.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/group_role" title="groups related buttons"><code>role="group"</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-label" title="accessible name for the group"><code>aria-label</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/separator_role" title="visually divides buttons within a group"><code>role="separator"</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="restores radius on buttons adjacent to separators"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_logical_properties_and_values" title="RTL support via logical properties"><code>Logical properties</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" title="maps separator to system ButtonText"><code>forced-colors</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.btn-group</code>
+    <code>.btn</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText>• <code>data-orientation</code> — values: <code>vertical</code></SkillText>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• Button groups work best with the <code>outline</code> variant — the connected borders create a cohesive unit.</SkillText>
+  <SkillText dense>• Adjacent button borders collapse so only one border renders between buttons.</SkillText>
+  <SkillText dense>• The group removes internal border-radii to create seamless joins.</SkillText>
+  <SkillText dense>• Use <code>&lt;hr role="separator"&gt;</code> in Split buttons to divide the primary action from its dropdown trigger.</SkillText>
+  <SkillText dense>• Uses CSS logical properties for automatic RTL support.</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• No JavaScript required — this is purely a CSS layout component.</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Horizontal</ExampleLabel>
+  <ExampleHint>Default horizontal group with connected outline buttons.</ExampleHint>
+  <div class="btn-group" role="group" aria-label="Actions">
+    <button class="btn" data-variant="outline">Save</button>
+    <button class="btn" data-variant="outline">Edit</button>
+    <button class="btn" data-variant="outline">Delete</button>
+  </div>
+  <ExampleCode>{"<div class=\"btn-group\" role=\"group\" aria-label=\"Actions\">\n  <button class=\"btn\" data-variant=\"outline\">Save</button>\n  <button class=\"btn\" data-variant=\"outline\">Edit</button>\n  <button class=\"btn\" data-variant=\"outline\">Delete</button>\n</div>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>With icons</ExampleLabel>
+  <ExampleHint>Icon-only button group for compact toolbars.</ExampleHint>
+  <div class="btn-group" role="group" aria-label="Formatting">
+    <button class="btn" data-variant="outline" data-size="icon" aria-label="Bold">
+      <i data-lucide="bold" />
+    </button>
+    <button class="btn" data-variant="outline" data-size="icon" aria-label="Italic">
+      <i data-lucide="italic" />
+    </button>
+    <button class="btn" data-variant="outline" data-size="icon" aria-label="Underline">
+      <i data-lucide="underline" />
+    </button>
+  </div>
+  <ExampleCode>{"<div class=\"btn-group\" role=\"group\" aria-label=\"Formatting\">\n  <button class=\"btn\" data-variant=\"outline\" data-size=\"icon\" aria-label=\"Bold\">...</button>\n  <button class=\"btn\" data-variant=\"outline\" data-size=\"icon\" aria-label=\"Italic\">...</button>\n  <button class=\"btn\" data-variant=\"outline\" data-size=\"icon\" aria-label=\"Underline\">...</button>\n</div>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Vertical</ExampleLabel>
+  <ExampleHint>Stacked buttons with connected top/bottom borders.</ExampleHint>
+  <div class="btn-group" data-orientation="vertical" role="group" aria-label="Navigation">
+    <button class="btn" data-variant="outline">Top</button>
+    <button class="btn" data-variant="outline">Middle</button>
+    <button class="btn" data-variant="outline">Bottom</button>
+  </div>
+  <ExampleCode>{"<div class=\"btn-group\" data-orientation=\"vertical\" role=\"group\" aria-label=\"Nav\">\n  <button class=\"btn\" data-variant=\"outline\">Top</button>\n  <button class=\"btn\" data-variant=\"outline\">Middle</button>\n  <button class=\"btn\" data-variant=\"outline\">Bottom</button>\n</div>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Sizes</ExampleLabel>
+  <ExampleHint>Control button size with <code>data-size</code> on individual buttons.</ExampleHint>
+  <div style="display:flex;flex-direction:column;gap:1.0rem;align-items:center;">
+    <div class="btn-group" role="group" aria-label="Small actions">
+      <button class="btn" data-variant="outline" data-size="sm">Save</button>
+      <button class="btn" data-variant="outline" data-size="sm">Edit</button>
+      <button class="btn" data-variant="outline" data-size="sm" aria-label="More">
+        <i data-lucide="ellipsis" />
+      </button>
+    </div>
+    <div class="btn-group" role="group" aria-label="Default actions">
+      <button class="btn" data-variant="outline">Save</button>
+      <button class="btn" data-variant="outline">Edit</button>
+      <button class="btn" data-variant="outline" data-size="icon" aria-label="More">
+        <i data-lucide="ellipsis" />
+      </button>
+    </div>
+    <div class="btn-group" role="group" aria-label="Large actions">
+      <button class="btn" data-variant="outline" data-size="lg">Save</button>
+      <button class="btn" data-variant="outline" data-size="lg">Edit</button>
+      <button class="btn" data-variant="outline" data-size="icon-lg" aria-label="More">
+        <i data-lucide="ellipsis" />
+      </button>
+    </div>
+  </div>
+  <ExampleCode>{"<!-- Small -->\n<div class=\"btn-group\" role=\"group\" aria-label=\"Actions\">\n  <button class=\"btn\" data-variant=\"outline\" data-size=\"sm\">Save</button>\n  <button class=\"btn\" data-variant=\"outline\" data-size=\"sm\">Edit</button>\n</div>\n\n<!-- Large -->\n<div class=\"btn-group\" role=\"group\" aria-label=\"Actions\">\n  <button class=\"btn\" data-variant=\"outline\" data-size=\"lg\">Save</button>\n  <button class=\"btn\" data-variant=\"outline\" data-size=\"lg\">Edit</button>\n</div>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Split button</ExampleLabel>
+  <ExampleHint>A primary action button with a dropdown trigger.</ExampleHint>
+  <div class="btn-group" role="group" aria-label="Split action">
+    <button class="btn" data-variant="outline">Save</button>
+    <hr role="separator" />
+    <button class="btn" data-variant="outline" data-size="icon" aria-label="More options">
+      <i data-lucide="chevron-down" />
+    </button>
+  </div>
+  <ExampleCode>{"<div class=\"btn-group\" role=\"group\" aria-label=\"Split action\">\n  <button class=\"btn\" data-variant=\"outline\">Save</button>\n  <hr role=\"separator\">\n  <button class=\"btn\" data-variant=\"outline\" data-size=\"icon\"\n          aria-label=\"More options\">\n    <i data-lucide=\"chevron-down\"></i>\n  </button>\n</div>"}</ExampleCode>
+</Example>
+
+<SourceFiles component="button-group" section="css" />
+
+</DocPage>

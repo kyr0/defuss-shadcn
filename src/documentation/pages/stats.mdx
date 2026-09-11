@@ -1,0 +1,88 @@
+---
+title: "Stats"
+description: "A metric band: rule-led numbers with tabular digits beside a square photo."
+slug: "stats"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="stats" title="Stats" component="stats">
+  A metric band: rule-led numbers with tabular digits beside a square photo.
+</PageHeader>
+
+<SkillPanel component="stats">
+  <SkillField label="Native basis">
+<SkillText>CSS Grid columns plus a <code>border-left</code> rule per metric; numbers set <code>font-variant-numeric: tabular-nums</code> so digits align without monospace fonts. No counters, no animation libraries.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant-numeric#tabular-nums" title="aligned digit columns"><code>font-variant-numeric</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout" title="2-up metric grid beside the photo"><code>CSS Grid</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="side-by-side only when wide"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-stats</code>
+    <code>.mk-stats-layout</code>
+    <code>.mk-stats-copy</code>
+    <code>.mk-stats-head</code>
+    <code>.mk-stats-title</code>
+    <code>.mk-stats-desc</code>
+    <code>.mk-stats-grid</code>
+    <code>.mk-stat</code>
+    <code>.mk-stat-value</code>
+    <code>.mk-stat-label</code>
+    <code>.mk-stats-media</code>
+  </SkillRow>
+  </SkillField>
+</SkillPanel>
+
+<Example first previewStyle="align-items:stretch;">
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>Four metrics + link CTAs, photo right at wide widths.</ExampleHint>
+  <section class="mk-stats" style="width:100%">
+    <div class="mk-stats-layout">
+      <div class="mk-stats-copy">
+        <div class="mk-stats-head">
+          <h2 class="mk-stats-title">Trusted by Teams Everywhere</h2>
+          <p class="mk-stats-desc">Acme is helping thousands of creators and companies move faster, work smarter, and deliver with confidence.</p>
+        </div>
+        <div class="mk-stats-grid">
+          <div class="mk-stat">
+            <span class="mk-stat-value">12,500+</span>
+            <span class="mk-stat-label">Projects completed</span>
+            <a href="#" class="btn mk-stat-link" data-variant="link" data-size="default">Our clients</a>
+          </div>
+          <div class="mk-stat">
+            <span class="mk-stat-value">38% faster</span>
+            <span class="mk-stat-label">Delivery across teams</span>
+            <a href="#" class="btn mk-stat-link" data-variant="link" data-size="default">Learn more</a>
+          </div>
+          <div class="mk-stat">
+            <span class="mk-stat-value">94%</span>
+            <span class="mk-stat-label">User satisfaction</span>
+            <a href="#" class="btn mk-stat-link" data-variant="link" data-size="default">See feedback</a>
+          </div>
+          <div class="mk-stat">
+            <span class="mk-stat-value">8 zones</span>
+            <span class="mk-stat-label">With active customers</span>
+            <a href="#" class="btn mk-stat-link" data-variant="link" data-size="default">Our users</a>
+          </div>
+        </div>
+      </div>
+      <figure class="mk-stats-media">
+        <img alt="Team at work" src="images/mk-wide.png" />
+      </figure>
+    </div>
+  </section>
+  <ExampleCode>{"<section class=\"mk-stats\" style=\"width:100%\">\n  <div class=\"mk-stats-layout\">\n  <div class=\"mk-stats-copy\">\n    <div class=\"mk-stats-head\">\n      <h2 class=\"mk-stats-title\">Trusted by Teams Everywhere</h2>\n      <p class=\"mk-stats-desc\">Acme is helping thousands of creators and companies move faster, work smarter, and deliver with confidence.</p>\n    </div>\n    <div class=\"mk-stats-grid\">\n      <div class=\"mk-stat\">\n        <span class=\"mk-stat-value\">12,500+</span>\n        <span class=\"mk-stat-label\">Projects completed</span>\n        <a href=\"#\" class=\"btn mk-stat-link\" data-variant=\"link\" data-size=\"default\">Our clients</a>\n      </div>\n      <div class=\"mk-stat\">\n        <span class=\"mk-stat-value\">38% faster</span>\n        <span class=\"mk-stat-label\">Delivery across teams</span>\n        <a href=\"#\" class=\"btn mk-stat-link\" data-variant=\"link\" data-size=\"default\">Learn more</a>\n      </div>\n      <div class=\"mk-stat\">\n        <span class=\"mk-stat-value\">94%</span>\n        <span class=\"mk-stat-label\">User satisfaction</span>\n        <a href=\"#\" class=\"btn mk-stat-link\" data-variant=\"link\" data-size=\"default\">See feedback</a>\n      </div>\n      <div class=\"mk-stat\">\n        <span class=\"mk-stat-value\">8 zones</span>\n        <span class=\"mk-stat-label\">With active customers</span>\n        <a href=\"#\" class=\"btn mk-stat-link\" data-variant=\"link\" data-size=\"default\">Our users</a>\n      </div>\n    </div>\n  </div>\n  <figure class=\"mk-stats-media\"><img alt=\"Team at work\" src=\"images/mk-wide.png\" /></figure>\n  </div>\n</section>"}</ExampleCode>
+</Example>
+
+<SourceFiles component="stats" section="css" />
+
+</DocPage>

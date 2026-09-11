@@ -110,12 +110,13 @@ try {
     assert.deepEqual(await radii('#group-spaced .toggle:nth-child(2)'), [R, R, R, R]);
   });
 
-  await check('outline variant + sizes render differently (css)', async () => {
-    const [sm, lg] = await page.evaluate(() => [
-      document.querySelector('#group-outline-sm .toggle')!.getBoundingClientRect().height,
-      document.querySelector('#group-outline-lg .toggle')!.getBoundingClientRect().height,
-    ]);
-    assert.ok(lg > sm, `lg (${lg}) taller than sm (${sm})`);
+  await check('outline variant + full size scale propagate to children (css)', async () => {
+    const heights = await page.evaluate(() =>
+      ['xs', 'sm', 'md', 'lg', 'xl'].map(
+        (s) => document.querySelector(`#group-outline-${s} .toggle`)!.getBoundingClientRect().height,
+      ),
+    );
+    assert.deepEqual(heights, [28, 32, 36, 40, 48], 'group data-size drives every child .toggle');
     const border = await page.$eval('#group-outline-sm .toggle', (el) =>
       getComputedStyle(el).borderTopWidth,
     );

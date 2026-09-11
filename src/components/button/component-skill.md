@@ -66,12 +66,14 @@ supportedStates: default
 |-------------|-----------|---------------|--------------|---------------------|
 | `xs`        | `1.75rem` | `0 0.5rem`    | `0.75rem`    | `var(--radius-sm)`  |
 | `sm`        | `2rem`    | `0 0.75rem`   | `0.8125rem`  | `var(--radius-md)`  |
-| *(default)* | `2.25rem` | `0 1rem`      | `0.875rem`   | `var(--radius-md)`  |
+| `md`        | `2.25rem` | `0 1rem`      | `0.875rem`   | `var(--radius-md)`  |
 | `lg`        | `2.75rem` | `0 2rem`      | `1rem`       | `var(--radius-md)`  |
+| `xl`        | `3.25rem` | `0 2.5rem`    | `1.125rem`   | `var(--radius-md)`  |
 | `icon`      | `2.25rem` | `0` (square)  | —            | `var(--radius-md)`  |
 | `icon-xs`   | `1.75rem` | `0` (square)  | —            | `var(--radius-sm)`  |
 | `icon-sm`   | `2rem`    | `0` (square)  | —            | `var(--radius-md)`  |
 | `icon-lg`   | `2.75rem` | `0` (square)  | —            | `var(--radius-md)`  |
+| `icon-xl`   | `3.25rem` | `0` (square)  | —            | `var(--radius-md)`  |
 
 ---
 

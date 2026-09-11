@@ -1,0 +1,68 @@
+---
+title: "Product Showcase"
+description: "A 5:3 poster frame with a circular play button; clicking it swaps to the native <video>, which then carries its own controls."
+slug: "product-showcase"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="product-showcase" title="Product Showcase" component="product-showcase">
+  A 5:3 poster frame with a circular play button; clicking it swaps to the native &lt;video&gt;, which then carries its own controls.
+</PageHeader>
+
+<SkillPanel component="product-showcase">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;figure&gt;</code> wrapper with three stacked layers — poster <code>&lt;img&gt;</code>, <code>&lt;video controls&gt;</code>, and a circular play <code>&lt;button&gt;</code>. Clicking the button (or pressing Enter on it — it's a real button) flips <code>data-state</code> to <code>playing</code>: CSS hides the poster and button, reveals the video, and JS starts muted playback. From then on the UA renders play/pause, scrubber, volume, and fullscreen. Native pause flips the state back so the poster returns.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video" title="native playback UI + `controls`"><code>(\`&lt;video&gt;\`)</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source" title="codec fallback (webm → mp4)"><code>(\`&lt;source type&gt;\`)</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video#preload" title="cheap first paint once revealed"><code>preload="metadata"</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio" title="stable 5:3 box, zero layout shift on the swap"><code>aspect-ratio</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button" title="a real `<button>` gets keyboard + AT support for free"><code>(\`popovertarget\`-free first click)</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track" title="captions for real videos"><code>(\`&lt;track&gt;\`)</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/pause_event" title="native pause reflects back to the `default` state"><code>Media pause event</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-showcase</code>
+    <code>.mk-showcase-play</code>
+  </SkillRow>
+  </SkillField>
+</SkillPanel>
+
+<Example first previewStyle="align-items:stretch;">
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>The play button is a real <code>&lt;button&gt;</code>; one click reveals <code>&lt;video controls&gt;</code>.</ExampleHint>
+  <figure class="mk-showcase" data-state-demo style="width:100%">
+    <img class="mk-showcase-poster" alt="Product showcase" src="images/mk-wide2.png" />
+    <video controls preload="metadata" playsinline><source src="videos/demo.webm" type="video/webm" /><source src="videos/demo.mp4" type="video/mp4" /> Your browser does not support embedded video. </video>
+    <button type="button" class="mk-showcase-play" aria-label="Play video">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polygon points="6 3 20 12 6 21 6 3" />
+      </svg>
+    </button>
+  </figure>
+  <ExampleCode>{"<figure class=\"mk-showcase\" data-state-demo style=\"width:100%\">\n  <img class=\"mk-showcase-poster\" alt=\"Product showcase\" src=\"images/mk-wide2.png\" />\n  <video controls preload=\"metadata\" playsinline>\n    <source src=\"videos/demo.webm\" type=\"video/webm\" />\n    <source src=\"videos/demo.mp4\" type=\"video/mp4\" />\n    Your browser does not support embedded video.\n  </video>\n  <button type=\"button\" class=\"mk-showcase-play\" aria-label=\"Play video\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><polygon points=\"6 3 20 12 6 21 6 3\"/></svg></button>\n</figure>"}</ExampleCode>
+</Example>
+
+<SourceFiles component="product-showcase" section="css" />
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
+    <li><code>default</code> — poster + play button (the authored state)</li>
+    <li><code>playing</code> — the poster and button hide (CSS via <code>data-state</code>), the video plays muted; pausing returns to the poster</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/product-showcase-\{state\}.png</code>.</p>
+</StatesSection>
+
+<SourceFiles component="product-showcase" section="js" />
+
+</DocPage>

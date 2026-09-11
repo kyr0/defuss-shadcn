@@ -67,4 +67,3 @@ if (docs.onPageReady) {
         highlightAll();
     });
 }
-//# sourceMappingURL=shiki-highlight.js.map

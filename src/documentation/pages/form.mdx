@@ -1,0 +1,290 @@
+---
+title: "Form"
+description: "Form component — form layouts with validation, error messages, and accessibility."
+slug: "form"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="form" title="Form" component="form">
+  Consistent field layout for forms. Built on native <code>&lt;form&gt;</code> with <code>.form-field</code> spacing, <code>.form-field-inline</code> for checkbox/switch rows, <code>.form-field-row</code> for notification-style items, and <code>.form-fieldset</code> for grouped fields.
+</PageHeader>
+
+<SkillPanel component="form">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;form&gt;</code> element with consistent field layout using Label, Input, and description/error helpers. Composes with all form control components.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form" title="native form with submission, validation, and reset"><code>&lt;form&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset" title="groups related fields"><code>&lt;fieldset&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Constraint_validation" title="native browser validation"><code>Constraint Validation API</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:user-invalid" title="post-interaction validation styling"><code>:user-valid / :user-invalid</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-describedby" title="connects descriptions and errors to inputs"><code>aria-describedby</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/FormData" title="native form serialization"><code>FormData</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.form</code>
+    <code>.form-field</code>
+    <code>.form-field-inline</code>
+    <code>.form-field-row</code>
+    <code>.form-actions</code>
+    <code>.form-fieldset</code>
+    <code>.form-group</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillGrid>
+    <code>data-orientation="horizontal"</code>
+    <span class="text-muted-foreground">On <code>.form-field</code> — places label beside control</span>
+    <code>data-invalid</code>
+    <span class="text-muted-foreground">On <code>.form-field</code> — marks field as invalid, description turns destructive</span>
+    <code>data-disabled</code>
+    <span class="text-muted-foreground">On <code>.form-field-row</code> — reduces row opacity</span>
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• <code>.form-field</code> provides consistent vertical spacing between fields.</SkillText>
+  <SkillText dense>• <code>.form-field-inline</code> aligns checkbox/switch/radio horizontally with their label.</SkillText>
+  <SkillText dense>• <code>.form-field-row</code> creates a card-like row for notification-style switch items.</SkillText>
+  <SkillText dense>• <code>.form-fieldset</code> styles native <code>&lt;fieldset&gt;</code> with legend and description.</SkillText>
+  <SkillText dense>• No JavaScript needed for basic forms — use native Constraint Validation.</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• Compose with Label, Input, Textarea, Select, Checkbox, Radio, Switch, Slider, etc.</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first previewStyle="justify-content:start;padding:2rem;">
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>Simple form with labeled fields and descriptions.</ExampleHint>
+  <form class="form" style="width:100%;max-width:24rem;" onsubmit="return false;">
+    <div class="form-field">
+      <label class="label" for="f-name">Username</label>
+      <input class="input" type="text" id="f-name" placeholder="kyr0" required aria-describedby="f-name-desc" />
+      <p class="field-description" id="f-name-desc">This is your public display name.</p>
+    </div>
+    <div class="form-field">
+      <label class="label" for="f-email">Email</label>
+      <input class="input" type="email" id="f-email" placeholder="you@example.com" required aria-describedby="f-email-desc" />
+      <p class="field-description" id="f-email-desc">You can manage email addresses in your settings.</p>
+    </div>
+    <div class="form-field">
+      <label class="label" for="f-bio">Bio</label>
+      <textarea class="textarea" id="f-bio" placeholder="Tell us about yourself..." aria-describedby="f-bio-desc">{""}</textarea>
+      <p class="field-description" id="f-bio-desc">You can @mention other users and organizations.</p>
+    </div>
+    <div class="form-actions">
+      <button class="btn" type="submit" data-variant="default">Submit</button>
+      <button class="btn" type="reset" data-variant="outline">Reset</button>
+    </div>
+  </form>
+  <ExampleCode>{"<form class=\"form\">\n  <div class=\"form-field\">\n    <label class=\"label\" for=\"name\">Username</label>\n    <input class=\"input\" type=\"text\" id=\"name\" required aria-describedby=\"name-desc\">\n    <p class=\"field-description\" id=\"name-desc\">This is your public display name.</p>\n  </div>\n  <div class=\"form-field\">\n    <label class=\"label\" for=\"email\">Email</label>\n    <input class=\"input\" type=\"email\" id=\"email\" required aria-describedby=\"email-desc\">\n    <p class=\"field-description\" id=\"email-desc\">You can manage email addresses in your settings.</p>\n  </div>\n  <div class=\"form-field\">\n    <label class=\"label\" for=\"bio\">Bio</label>\n    <textarea class=\"textarea\" id=\"bio\" aria-describedby=\"bio-desc\"></textarea>\n    <p class=\"field-description\" id=\"bio-desc\">You can @mention other users and organizations.</p>\n  </div>\n  <div class=\"form-actions\">\n    <button class=\"btn\" type=\"submit\" data-variant=\"default\">Submit</button>\n    <button class=\"btn\" type=\"reset\" data-variant=\"outline\">Reset</button>\n  </div>\n</form>"}</ExampleCode>
+</Example>
+
+<Example previewStyle="justify-content:start;padding:2rem;">
+  <ExampleLabel>Inline fields</ExampleLabel>
+  <ExampleHint>Checkbox and switch aligned with labels.</ExampleHint>
+  <form class="form" style="width:100%;max-width:24rem;" onsubmit="return false;">
+    <div class="form-field">
+      <label class="label" for="f2-user">Username</label>
+      <input class="input" type="text" id="f2-user" placeholder="kyr0" />
+    </div>
+    <div class="form-field-inline">
+      <input class="checkbox" type="checkbox" id="f2-terms" />
+      <label for="f2-terms" style="font-size:0.875rem;">Accept terms and conditions</label>
+    </div>
+    <div class="form-field-inline">
+      <input class="switch" type="checkbox" role="switch" id="f2-news" />
+      <label for="f2-news" style="font-size:0.875rem;">Subscribe to newsletter</label>
+    </div>
+    <div class="form-actions">
+      <button class="btn" type="submit" data-variant="default">Create account</button>
+    </div>
+  </form>
+  <ExampleCode>{"<div class=\"form-field-inline\">\n  <input class=\"checkbox\" type=\"checkbox\" id=\"terms\">\n  <label for=\"terms\">Accept terms and conditions</label>\n</div>\n<div class=\"form-field-inline\">\n  <input class=\"switch\" type=\"checkbox\" role=\"switch\" id=\"news\">\n  <label for=\"news\">Subscribe to newsletter</label>\n</div>"}</ExampleCode>
+</Example>
+
+<Example previewStyle="justify-content:start;padding:2rem;">
+  <ExampleLabel>Switch rows (notifications)</ExampleLabel>
+  <ExampleHint>Notification-style rows with label, description, and switch.</ExampleHint>
+  <form class="form" style="width:100%;max-width:28rem;" onsubmit="return false;">
+    <div class="form-field-row">
+      <div>
+        <label class="label" for="f3-marketing">Marketing emails</label>
+        <p class="field-description" id="f3-marketing-desc">Receive emails about new products, features, and more.</p>
+      </div>
+      <input class="switch" type="checkbox" role="switch" id="f3-marketing" aria-describedby="f3-marketing-desc" />
+    </div>
+    <div class="form-field-row">
+      <div>
+        <label class="label" for="f3-security">Security emails</label>
+        <p class="field-description" id="f3-security-desc">Receive emails about your account security.</p>
+      </div>
+      <input class="switch" type="checkbox" role="switch" id="f3-security" checked disabled aria-describedby="f3-security-desc" />
+    </div>
+    <div class="form-actions">
+      <button class="btn" type="submit" data-variant="default">Submit</button>
+    </div>
+  </form>
+  <ExampleCode>{"<div class=\"form-field-row\">\n  <div>\n    <label class=\"label\" for=\"marketing\">Marketing emails</label>\n    <p class=\"field-description\" id=\"marketing-desc\">Receive emails about new products, features, and more.</p>\n  </div>\n  <input class=\"switch\" type=\"checkbox\" role=\"switch\" id=\"marketing\" aria-describedby=\"marketing-desc\">\n</div>\n<div class=\"form-field-row\">\n  <div>\n    <label class=\"label\" for=\"security\">Security emails</label>\n    <p class=\"field-description\" id=\"security-desc\">Receive emails about your account security.</p>\n  </div>\n  <input class=\"switch\" type=\"checkbox\" role=\"switch\" id=\"security\" checked disabled aria-describedby=\"security-desc\">\n</div>"}</ExampleCode>
+</Example>
+
+<Example previewStyle="justify-content:start;padding:2rem;">
+  <ExampleLabel>Fieldset grouping</ExampleLabel>
+  <ExampleHint>Group related fields with <code>&lt;fieldset&gt;</code> and <code>&lt;legend&gt;</code>.</ExampleHint>
+  <form class="form" style="width:100%;max-width:24rem;" onsubmit="return false;">
+    <div class="form-field">
+      <label class="label" for="f4-name">Full name</label>
+      <input class="input" type="text" id="f4-name" placeholder="Jane Doe" required />
+    </div>
+    <fieldset class="form-fieldset">
+      <legend>Notify me about...</legend>
+      <div class="form-group">
+        <div class="form-field-inline">
+          <input class="radio" type="radio" name="f4-notify" id="f4-all" checked />
+          <label for="f4-all" style="font-size:0.875rem;">All new messages</label>
+        </div>
+        <div class="form-field-inline">
+          <input class="radio" type="radio" name="f4-notify" id="f4-direct" />
+          <label for="f4-direct" style="font-size:0.875rem;">Direct messages and mentions</label>
+        </div>
+        <div class="form-field-inline">
+          <input class="radio" type="radio" name="f4-notify" id="f4-none" />
+          <label for="f4-none" style="font-size:0.875rem;">Nothing</label>
+        </div>
+      </div>
+    </fieldset>
+    <div class="form-actions">
+      <button class="btn" type="submit" data-variant="default">Save preferences</button>
+    </div>
+  </form>
+  <ExampleCode>{"<fieldset class=\"form-fieldset\">\n  <legend>Notify me about...</legend>\n  <div class=\"form-group\">\n    <div class=\"form-field-inline\">\n      <input class=\"radio\" type=\"radio\" name=\"notify\" id=\"all\" checked>\n      <label for=\"all\">All new messages</label>\n    </div>\n    <div class=\"form-field-inline\">\n      <input class=\"radio\" type=\"radio\" name=\"notify\" id=\"direct\">\n      <label for=\"direct\">Direct messages and mentions</label>\n    </div>\n    <div class=\"form-field-inline\">\n      <input class=\"radio\" type=\"radio\" name=\"notify\" id=\"none\">\n      <label for=\"none\">Nothing</label>\n    </div>\n  </div>\n</fieldset>"}</ExampleCode>
+</Example>
+
+<Example previewStyle="justify-content:start;padding:2rem;">
+  <ExampleLabel>Horizontal layout</ExampleLabel>
+  <ExampleHint>Label placed beside the control with <code>data-orientation="horizontal"</code>.</ExampleHint>
+  <form class="form" style="width:100%;max-width:32rem;" onsubmit="return false;">
+    <div class="form-field" data-orientation="horizontal">
+      <label class="label" for="f5-name">Name</label>
+      <div>
+        <input class="input" type="text" id="f5-name" placeholder="Jane Doe" aria-describedby="f5-name-desc" />
+        <p class="field-description" id="f5-name-desc">Your full name for identification.</p>
+      </div>
+    </div>
+    <div class="form-field" data-orientation="horizontal">
+      <label class="label" for="f5-email">Email</label>
+      <div>
+        <input class="input" type="email" id="f5-email" placeholder="you@example.com" />
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn" type="submit" data-variant="default">Save</button>
+      <button class="btn" type="reset" data-variant="outline">Cancel</button>
+    </div>
+  </form>
+  <ExampleCode>{"<div class=\"form-field\" data-orientation=\"horizontal\">\n  <label class=\"label\" for=\"name\">Name</label>\n  <div>\n    <input class=\"input\" type=\"text\" id=\"name\" aria-describedby=\"name-desc\">\n    <p class=\"field-description\" id=\"name-desc\">Your full name for identification.</p>\n  </div>\n</div>"}</ExampleCode>
+</Example>
+
+<Example previewStyle="justify-content:start;padding:2rem;">
+  <ExampleLabel>Validation with errors</ExampleLabel>
+  <ExampleHint>Fields with <code>data-invalid</code> and <code>aria-invalid</code> for error states.</ExampleHint>
+  <form class="form" style="width:100%;max-width:24rem;" onsubmit="return false;" novalidate>
+    <div class="form-field" data-invalid>
+      <label class="label" for="f6-user">Username</label>
+      <input class="input" type="text" id="f6-user" aria-invalid="true" aria-describedby="f6-user-err" value="ab" />
+      <p class="field-error" id="f6-user-err" role="alert">Username must be at least 3 characters.</p>
+    </div>
+    <div class="form-field" data-invalid>
+      <label class="label" for="f6-email">Email</label>
+      <input class="input" type="email" id="f6-email" aria-invalid="true" aria-describedby="f6-email-err" value="not-an-email" />
+      <p class="field-error" id="f6-email-err" role="alert">Please enter a valid email address.</p>
+    </div>
+    <div class="form-field">
+      <label class="label" for="f6-msg">Message</label>
+      <textarea class="textarea" id="f6-msg" placeholder="Your message..." aria-describedby="f6-msg-desc">{""}</textarea>
+      <p class="field-description" id="f6-msg-desc">Optional message.</p>
+    </div>
+    <div class="form-actions">
+      <button class="btn" type="submit" data-variant="default">Submit</button>
+    </div>
+  </form>
+  <ExampleCode>{"<div class=\"form-field\" data-invalid>\n  <label class=\"label\" for=\"user\">Username</label>\n  <input class=\"input\" type=\"text\" id=\"user\"\n    aria-invalid=\"true\" aria-describedby=\"user-err\">\n  <p class=\"field-error\" id=\"user-err\" role=\"alert\">\n    Username must be at least 3 characters.\n  </p>\n</div>"}</ExampleCode>
+</Example>
+
+<Example previewStyle="justify-content:start;padding:2rem;">
+  <ExampleLabel>Full composition</ExampleLabel>
+  <ExampleHint>Comprehensive form composing multiple field types.</ExampleHint>
+  <form class="form" style="width:100%;max-width:28rem;" onsubmit="return false;">
+    <div class="form-field">
+      <label class="label" for="f7-name">Username</label>
+      <input class="input" type="text" id="f7-name" placeholder="kyr0" required aria-describedby="f7-name-desc" />
+      <p class="field-description" id="f7-name-desc">This is your public display name.</p>
+    </div>
+    <div class="form-field">
+      <label class="label" for="f7-email">Email</label>
+      <select class="select" id="f7-email" aria-describedby="f7-email-desc">
+        <option value="m@example.com">m@example.com</option>
+        <option value="m@google.com">m@google.com</option>
+        <option value="m@support.com">m@support.com</option>
+      </select>
+      <p class="field-description" id="f7-email-desc">You can manage email addresses in your settings.</p>
+    </div>
+    <div class="form-field">
+      <label class="label" for="f7-bio">Bio</label>
+      <textarea class="textarea" id="f7-bio" placeholder="I like to..." aria-describedby="f7-bio-desc">{""}</textarea>
+      <p class="field-description" id="f7-bio-desc">You can @mention other users and organizations.</p>
+    </div>
+    <div class="form-field">
+      <label class="label" for="f7-dob">Date of birth</label>
+      <input class="input" type="date" id="f7-dob" aria-describedby="f7-dob-desc" />
+      <p class="field-description" id="f7-dob-desc">Your date of birth is used to calculate your age.</p>
+    </div>
+    <fieldset class="form-fieldset">
+      <legend>Notify me about...</legend>
+      <div class="form-group">
+        <div class="form-field-inline">
+          <input class="radio" type="radio" name="f7-notify" id="f7-all" checked />
+          <label for="f7-all" style="font-size:0.875rem;">All new messages</label>
+        </div>
+        <div class="form-field-inline">
+          <input class="radio" type="radio" name="f7-notify" id="f7-direct" />
+          <label for="f7-direct" style="font-size:0.875rem;">Direct messages and mentions</label>
+        </div>
+        <div class="form-field-inline">
+          <input class="radio" type="radio" name="f7-notify" id="f7-nothing" />
+          <label for="f7-nothing" style="font-size:0.875rem;">Nothing</label>
+        </div>
+      </div>
+    </fieldset>
+    <div class="form-field-row">
+      <div>
+        <label class="label" for="f7-marketing">Marketing emails</label>
+        <p class="field-description" id="f7-marketing-desc">Receive emails about new products, features, and more.</p>
+      </div>
+      <input class="switch" type="checkbox" role="switch" id="f7-marketing" aria-describedby="f7-marketing-desc" />
+    </div>
+    <div class="form-field-row" data-disabled>
+      <div>
+        <label class="label" for="f7-security">Security emails</label>
+        <p class="field-description" id="f7-security-desc">Receive emails about your account security.</p>
+      </div>
+      <input class="switch" type="checkbox" role="switch" id="f7-security" checked disabled aria-describedby="f7-security-desc" />
+    </div>
+    <div class="form-actions">
+      <button class="btn" type="submit" data-variant="default">Submit</button>
+    </div>
+  </form>
+  <ExampleCode>{"<form class=\"form\">\n  <div class=\"form-field\">\n    <label class=\"label\" for=\"name\">Username</label>\n    <input class=\"input\" type=\"text\" id=\"name\" required aria-describedby=\"name-desc\">\n    <p class=\"field-description\" id=\"name-desc\">This is your public display name.</p>\n  </div>\n  <div class=\"form-field\">\n    <label class=\"label\" for=\"email\">Email</label>\n    <select class=\"select\" id=\"email\">\n      <option>m@example.com</option>\n    </select>\n  </div>\n  <fieldset class=\"form-fieldset\">\n    <legend>Notify me about...</legend>\n    <div class=\"form-group\">\n      <div class=\"form-field-inline\">\n        <input class=\"radio\" type=\"radio\" name=\"notify\" id=\"all\" checked>\n        <label for=\"all\">All new messages</label>\n      </div>\n    </div>\n  </fieldset>\n  <div class=\"form-field-row\">\n    <div>\n      <label class=\"label\" for=\"marketing\">Marketing emails</label>\n      <p class=\"field-description\" id=\"marketing-desc\">Receive emails about new products.</p>\n    </div>\n    <input class=\"switch\" type=\"checkbox\" role=\"switch\" id=\"marketing\" aria-describedby=\"marketing-desc\">\n  </div>\n  <div class=\"form-actions\">\n    <button class=\"btn\" type=\"submit\">Submit</button>\n  </div>\n</form>"}</ExampleCode>
+</Example>
+
+<SourceFiles component="form" section="css" />
+
+</DocPage>

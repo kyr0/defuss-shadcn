@@ -1,0 +1,312 @@
+---
+title: "Spacing"
+description: "One arithmetic spacing scale for gaps, padding and margins, with optional density and direction-aware helpers."
+slug: "spacing"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="spacing" title="Spacing" crumb="sizing / spacing" introStyle="max-width:38rem;">
+  One arithmetic spacing scale for gaps, padding and margins, with optional density and direction-aware helpers.
+</PageHeader>
+
+<h2 id="spacing-scale" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Spacing on the same base</h2>
+
+<DocText>Gaps, padding and margins use <code>n × --size-base × --layout-density</code>. Density is 1 by default. <code>gap-4</code> therefore matches <code>1rem</code> at the default base; <code>w-4</code> remains geometric when density changes. The <code>px</code> suffix always means one CSS pixel and is not density-scaled. Below, the three everyday jobs of spacing: <code>gap-2</code> between related actions, <code>gap-6</code> between independent cards, <code>p-6</code> inside a card.</DocText>
+
+<Demo>
+  <div class="stack gap-8" data-demo="spacing">
+    <div>
+      <p class="demo-label">gap-2 — actions that belong together stay close</p>
+      <div class="flex flex-wrap gap-2">
+        <button class="btn" type="button" data-size="sm">Publish</button>
+        <button class="btn" type="button" data-variant="outline" data-size="sm">Preview</button>
+        <button class="btn" type="button" data-variant="ghost" data-size="sm">Discard</button>
+      </div>
+    </div>
+    <div>
+      <p class="demo-label">gap-6 — independent cards get room to breathe</p>
+      <div class="flex flex-wrap gap-6">
+        <div class="card" style="width:9rem;">
+          <div class="card-header">
+            <p class="card-title" style="font-size:0.875rem;">Research</p>
+          </div>
+          <div style="padding:0 1rem 1rem;">
+            <p class="text-muted-foreground" style="margin:0;font-size:0.75rem;">12 open</p>
+          </div>
+        </div>
+        <div class="card" style="width:9rem;">
+          <div class="card-header">
+            <p class="card-title" style="font-size:0.875rem;">Design</p>
+          </div>
+          <div style="padding:0 1rem 1rem;">
+            <p class="text-muted-foreground" style="margin:0;font-size:0.75rem;">4 open</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <p class="demo-label">p-6 — padding keeps content off the card's edge</p>
+      <div class="card p-6" style="max-width:20rem;">
+        <p style="margin:0;font-size:0.875rem;font-weight:500;">Weekly digest</p>
+        <p class="text-muted-foreground" style="margin:0.25rem 0 0;font-size:0.8125rem;">The same p-6 on every side — no measuring, no magic numbers.</p>
+      </div>
+    </div>
+  </div>
+  <DemoCode>{"<div class=\"flex flex-wrap gap-2\">\n  <button class=\"btn\" data-size=\"sm\">Publish</button>\n  <button class=\"btn\" data-variant=\"outline\" data-size=\"sm\">Preview</button>\n  <button class=\"btn\" data-variant=\"ghost\" data-size=\"sm\">Discard</button>\n</div>\n\n<div class=\"flex flex-wrap gap-6\">\n  <div class=\"card\">…</div>\n  <div class=\"card\">…</div>\n</div>\n\n<div class=\"card p-6\">\n  <p>Weekly digest</p>\n  <p>The same p-6 on every side.</p>\n</div>"}</DemoCode>
+</Demo>
+
+<div class="sep" />
+
+<h2 id="box-model" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">The box model, labeled</h2>
+
+<DocText>Every spacing utility addresses one zone of the box model: <code>m-\*</code> works outside the border (against siblings), <code>p-\*</code> inside it (against content). The physical sides (<code>t/r/b/l</code>) never move; the logical sides (<code>s/e</code>) follow the writing direction. The diagram uses <em>ordinary CSS colors</em> to make the zones visible — the classes label what each zone is.</DocText>
+
+<Demo>
+  <div class="flex justify-center">
+    <div class="demo-tile p-6" data-variant="outline" style="display:block;">
+      <p class="demo-label" style="text-align:center;">m-6 — margin pushes siblings away (outside the border)</p>
+      <div class="demo-tile p-6" data-variant="secondary" style="display:block;border-style:solid;">
+        <p class="demo-label" style="text-align:center;color:var(--muted-foreground);">p-6 — padding pushes content inward (inside the border)</p>
+        <div class="demo-tile h-16">content</div>
+      </div>
+      <div class="flex justify-between" style="margin-top:0.5rem;">
+        <span class="demo-label" style="margin:0;">ms/me-\* — start/end</span>
+        <span class="demo-label" style="margin:0;">mt/mr/mb/ml-\* — physical</span>
+      </div>
+    </div>
+  </div>
+  <DemoCode>{"<div class=\"m-6\">          <!-- space against siblings -->\n  <div class=\"p-6\">        <!-- space against content -->\n    content\n  </div>\n</div>\n\n<!-- side families: x/y = inline/block, t/r/b/l = physical, s/e = logical -->\n<div class=\"mt-4 pe-2\">…</div>"}</DemoCode>
+</Demo>
+
+<div class="sep" />
+
+<h2 id="gap-axes" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Gap axes</h2>
+
+<DocText><code>gap-x-\*</code> sets <code>column-gap</code>, <code>gap-y-\*</code> sets <code>row-gap</code> — the two axes are independent. A calendar makes that tangible: days of a week sit <code>gap-x-3</code> apart while the weeks stack tightly at <code>gap-y-1</code>.</DocText>
+
+<Demo>
+  <div style="max-width:22rem;">
+    <div class="flex flex-wrap gap-x-3 gap-y-1">
+      <div class="demo-tile w-10 h-8" data-variant="muted">Mon</div>
+      <div class="demo-tile w-10 h-8" data-variant="muted">Tue</div>
+      <div class="demo-tile w-10 h-8" data-variant="muted">Wed</div>
+      <div class="demo-tile w-10 h-8" data-variant="muted">Thu</div>
+      <div class="demo-tile w-10 h-8" data-variant="muted">Fri</div>
+      <div class="demo-tile w-10 h-8" data-variant="muted">Sat</div>
+      <div class="demo-tile w-10 h-8" data-variant="muted">Sun</div>
+      <div class="demo-tile w-10 h-8">1</div>
+      <div class="demo-tile w-10 h-8">2</div>
+      <div class="demo-tile w-10 h-8">3</div>
+      <div class="demo-tile w-10 h-8">4</div>
+      <div class="demo-tile w-10 h-8">5</div>
+      <div class="demo-tile w-10 h-8">6</div>
+      <div class="demo-tile w-10 h-8">7</div>
+      <div class="demo-tile w-10 h-8">8</div>
+      <div class="demo-tile w-10 h-8">9</div>
+      <div class="demo-tile w-10 h-8">10</div>
+      <div class="demo-tile w-10 h-8">11</div>
+      <div class="demo-tile w-10 h-8">12</div>
+      <div class="demo-tile w-10 h-8">13</div>
+      <div class="demo-tile w-10 h-8">14</div>
+    </div>
+  </div>
+  <DemoCode>{"<div class=\"flex flex-wrap gap-x-3 gap-y-1\" style=\"max-width:22rem;\">\n  <div class=\"w-10 h-8\">Mon</div>\n  <div class=\"w-10 h-8\">Tue</div>\n  <!-- … -->\n  <div class=\"w-10 h-8\">1</div>\n  <div class=\"w-10 h-8\">2</div>\n  <!-- … -->\n</div>"}</DemoCode>
+</Demo>
+
+<DocText>The same split works for masonry-like walls and tag clouds: keep rows tight (<code>gap-y-2</code>) so they read as one group, and let columns spread (<code>gap-x-6</code>) so entries don't collide.</DocText>
+
+<div class="sep" />
+
+<h2 id="padding" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Padding families</h2>
+
+<DocText>Padding shares the numeric scale with gap. <code>p-\*</code> pads all four sides; <code>px-\*</code> and <code>py-\*</code> pad the inline and block axes independently — the recipe for chips, badges and inputs; a single-side helper like <code>pt-\*</code> adds space in one direction, useful for optical alignment against a divider or media edge. The dashed outline marks the box edge: the band between it and the filled content is the padding.</DocText>
+
+<Demo>
+  <div class="flex flex-wrap gap-6">
+    <div>
+      <p class="demo-label">p-4</p>
+      <div class="demo-tile p-4" data-variant="outline">
+        <div class="demo-tile h-8 px-2" data-variant="muted">content</div>
+      </div>
+    </div>
+    <div>
+      <p class="demo-label">px-6 py-2</p>
+      <div class="demo-tile px-6 py-2" data-variant="outline">
+        <div class="demo-tile h-8 px-2" data-variant="muted">content</div>
+      </div>
+    </div>
+    <div>
+      <p class="demo-label">pt-8</p>
+      <div class="demo-tile pt-8" data-variant="outline">
+        <div class="demo-tile h-8 px-2" data-variant="muted">content</div>
+      </div>
+    </div>
+  </div>
+  <DemoCode>{"<div class=\"flex flex-wrap gap-6\">\n  <div class=\"p-4\"><div>content</div></div>\n  <div class=\"px-6 py-2\"><div>content</div></div>\n  <div class=\"pt-8\"><div>content</div></div>\n</div>"}</DemoCode>
+</Demo>
+
+<div class="sep" />
+
+<h2 id="margins" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Centering and pushing with margins</h2>
+
+<DocText>Automatic margins absorb spare space. <code>mx-auto</code> on a fixed-width box centers it in its container — the classic content column. <code>ms-auto</code> on one flex item pushes it, and everything after it, to the inline end — the standard right-aligned toolbar action. Negative margins and margin-based <code>space-x/y</code> shortcuts are intentionally omitted.</DocText>
+
+<Demo>
+  <div class="stack gap-4">
+    <div class="demo-outline p-2">
+      <div class="demo-tile w-32 h-8 mx-auto">w-32 mx-auto</div>
+    </div>
+    <div class="flex items-center gap-2 demo-outline p-2">
+      <span class="badge" data-variant="outline">Draft</span>
+      <button class="btn ms-auto" type="button">Publish</button>
+    </div>
+  </div>
+  <DemoCode>{"<div class=\"stack gap-4\">\n  <div class=\"w-32 mx-auto\">w-32 mx-auto</div>\n  <div class=\"flex items-center gap-2\">\n    <span class=\"badge\" data-variant=\"outline\">Draft</span>\n    <button class=\"btn ms-auto\" type=\"button\">Publish</button>\n  </div>\n</div>"}</DemoCode>
+</Demo>
+
+<div class="sep" />
+
+<h2 id="logical" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Physical vs logical sides</h2>
+
+<DocText>The axis families already follow the writing mode — <code>px-\*</code> is <code>padding-inline</code>, <code>py-\*</code> is <code>padding-block</code>. For single sides there are two families: physical <code>pt/pr/pb/pl-\*</code> always hit the same physical edge, while logical <code>ps/pe-\*</code> follow inline-start and inline-end. The same classes render below in <code>dir="ltr"</code> and in <code>dir="rtl"</code>: the logical box mirrors with the direction, the physical box does not move. The filled band is the content box; the empty bands are the padding.</DocText>
+
+<Demo>
+  <div class="stack gap-4">
+    <div>
+      <p class="demo-label">dir="ltr"</p>
+      <div class="stack gap-3">
+        <div class="demo-tile ps-4 pe-8" data-variant="outline">
+          <div class="demo-tile h-8" data-variant="muted" style="flex:1;">ps-4 pe-8 — logical</div>
+        </div>
+        <div class="demo-tile pl-4 pr-8" data-variant="outline">
+          <div class="demo-tile h-8" data-variant="muted" style="flex:1;">pl-4 pr-8 — physical</div>
+        </div>
+      </div>
+    </div>
+    <div dir="rtl">
+      <p class="demo-label">dir="rtl" — same classes</p>
+      <div class="stack gap-3">
+        <div class="demo-tile ps-4 pe-8" data-variant="outline">
+          <div class="demo-tile h-8" data-variant="muted" style="flex:1;">ps-4 pe-8 — logical</div>
+        </div>
+        <div class="demo-tile pl-4 pr-8" data-variant="outline">
+          <div class="demo-tile h-8" data-variant="muted" style="flex:1;">pl-4 pr-8 — physical</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <DemoCode>{"<div dir=\"ltr\">\n  <div class=\"ps-4 pe-8\">ps-4 pe-8 — logical</div>\n  <div class=\"pl-4 pr-8\">pl-4 pr-8 — physical</div>\n</div>\n<div dir=\"rtl\">\n  <div class=\"ps-4 pe-8\">ps-4 pe-8 — logical, mirrored</div>\n  <div class=\"pl-4 pr-8\">pl-4 pr-8 — physical, unchanged</div>\n</div>"}</DemoCode>
+</Demo>
+
+<div class="sep" />
+
+<h2 id="families" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Spacing families</h2>
+
+<DocText>Every family in this table is demonstrated in the sections before it.</DocText>
+
+<div style="overflow-x:auto;margin-bottom:1.5rem;">
+  <table class="table" data-variant="simple">
+    <thead>
+      <tr>
+        <th scope="col">Classes</th>
+        <th scope="col">CSS property</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <code>gap-\*, gap-x-\*, gap-y-\*</code>
+        </td>
+        <td>gap, column-gap, row-gap</td>
+      </tr>
+      <tr>
+        <td>
+          <code>p-\*, m-\*</code>
+        </td>
+        <td>padding, margin</td>
+      </tr>
+      <tr>
+        <td>
+          <code>px-\*, mx-\*</code>
+        </td>
+        <td>padding-inline, margin-inline</td>
+      </tr>
+      <tr>
+        <td>
+          <code>py-\*, my-\*</code>
+        </td>
+        <td>padding-block, margin-block</td>
+      </tr>
+      <tr>
+        <td>
+          <code>pt/pr/pb/pl-\*, mt/mr/mb/ml-\*</code>
+        </td>
+        <td>Physical top/right/bottom/left.</td>
+      </tr>
+      <tr>
+        <td>
+          <code>ps/pe-\*, ms/me-\*</code>
+        </td>
+        <td>Logical inline-start/inline-end.</td>
+      </tr>
+      <tr>
+        <td>
+          <code>m/mx/my/mt/mr/mb/ml/ms/me-auto</code>
+        </td>
+        <td>Automatic margins.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<DocText>Every family shares the numeric scale — rendered bar by bar on <DocLink href="width-height.html#available">Width &amp; Height</DocLink> — plus <code>px</code>. Negative margins and margin-based <code>space-x/y</code> shortcuts are intentionally omitted. Gap does not create outer margins and works with wrapping layouts.</DocText>
+
+<div class="sep" />
+
+<h2 id="real-world" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Real world: a receipt</h2>
+
+<DocText>A whole component on one rhythm: <code>p-6</code> around the card, <code>stack gap-3</code> between line items, <code>ms-auto</code> to push amounts right, and <code>mt-4 pt-4</code> with a top border to separate the total. No custom CSS anywhere.</DocText>
+
+<Demo>
+  <div class="card p-6 stack gap-3" style="max-width:22rem;margin-inline:auto;">
+    <p style="margin:0;font-size:0.9375rem;font-weight:600;">Order #1042</p>
+    <div class="flex items-baseline gap-2">
+      <span style="font-size:0.875rem;">Pro plan, monthly</span>
+      <span class="demo-label ms-auto" style="margin:0;">$24.00</span>
+    </div>
+    <div class="flex items-baseline gap-2">
+      <span style="font-size:0.875rem;">Extra seats × 2</span>
+      <span class="demo-label ms-auto" style="margin:0;">$12.00</span>
+    </div>
+    <div class="flex items-baseline gap-2">
+      <span style="font-size:0.875rem;">Priority support</span>
+      <span class="demo-label ms-auto" style="margin:0;">$8.00</span>
+    </div>
+    <div class="flex items-baseline gap-2 mt-4 pt-4" style="border-top:1px solid var(--border);">
+      <span style="font-size:0.875rem;font-weight:600;">Total</span>
+      <span class="ms-auto" style="font-size:0.875rem;font-weight:600;">$44.00</span>
+    </div>
+  </div>
+  <DemoCode>{"<div class=\"card p-6 stack gap-3\" style=\"max-width:22rem;\">\n  <p>Order #1042</p>\n  <div class=\"flex items-baseline gap-2\">\n    <span>Pro plan, monthly</span>\n    <span class=\"ms-auto\">$24.00</span>\n  </div>\n  <div class=\"flex items-baseline gap-2\">\n    <span>Extra seats × 2</span>\n    <span class=\"ms-auto\">$12.00</span>\n  </div>\n  <div class=\"flex items-baseline gap-2\">\n    <span>Priority support</span>\n    <span class=\"ms-auto\">$8.00</span>\n  </div>\n  <div class=\"flex items-baseline gap-2 mt-4 pt-4\" style=\"border-top:1px solid var(--border);\">\n    <span>Total</span>\n    <span class=\"ms-auto\">$44.00</span>\n  </div>\n</div>"}</DemoCode>
+</Demo>
+
+<div class="sep" />
+
+<h2 id="overrides" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Custom gaps and cascade</h2>
+
+<Demo>
+  <DemoCode>{"<div class=\"stack\" style=\"--layout-gap:clamp(1rem, 2vw, 2rem);\">\n  <p>First block</p>\n  <p>Second block</p>\n</div>"}</DemoCode>
+</Demo>
+
+<DocText>A <code>--layout-gap</code> override configures a layout primitive. An explicit <code>gap-\*</code> helper overrides that primitive default. To override a helper, use normal unlayered application CSS. Avoid conflicting helpers; class-attribute order does not determine CSS precedence. Existing documentation helpers are unlayered and will win unless removed or isolated.</DocText>
+
+<div class="sep" />
+
+<h2 id="references" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Platform references</h2>
+
+<DocText><a href="https://www.w3.org/TR/css-cascade-5/" target="_blank" rel="noopener">CSS cascade layers</a> · <a href="https://www.w3.org/TR/css-logical-1/" target="_blank" rel="noopener">CSS logical properties</a></DocText>
+
+</DocPage>

@@ -1,0 +1,127 @@
+---
+title: "Statistic"
+description: "Statistic component — display numbers with labels, trends, and formatting."
+slug: "statistic"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="statistic" title="Statistic" component="statistic">
+  A numeric display for key metrics. Supports title, value, description, and trend indicators.
+</PageHeader>
+
+<SkillPanel component="statistic">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;div&gt;</code> containers displaying a numeric value with a label and optional trend indicator.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div" title="generic container"><code>&lt;div&gt;</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.statistic</code>
+    <code>.statistic-title</code>
+    <code>.statistic-value</code>
+    <code>.statistic-description</code>
+    <code>.statistic-trend</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText>• <code>data-trend</code> — values: <code>up</code>, <code>down</code></SkillText>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• Use semantic text content — values are read inline</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• Trends are conveyed by text, not color alone ("+12.5%")</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Basic</ExampleLabel>
+  <ExampleHint>Simple statistic with title, value, and description.</ExampleHint>
+  <div style="display:flex;gap:3.0rem;flex-wrap:wrap;">
+    <div class="statistic">
+      <p class="statistic-title">Total Revenue</p>
+      <p class="statistic-value">$45,231.89</p>
+      <p class="statistic-description">+20.1% from last month</p>
+    </div>
+    <div class="statistic">
+      <p class="statistic-title">Subscriptions</p>
+      <p class="statistic-value">+2,350</p>
+      <p class="statistic-description">+180.1% from last month</p>
+    </div>
+  </div>
+  <ExampleCode>{"<div class=\"statistic\">\n  <p class=\"statistic-title\">Total Revenue</p>\n  <p class=\"statistic-value\">$45,231.89</p>\n  <p class=\"statistic-description\">+20.1% from last month</p>\n</div>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>With Trend Indicator</ExampleLabel>
+  <ExampleHint>Colored trend arrows showing positive/negative movement.</ExampleHint>
+  <div style="display:flex;gap:3.0rem;flex-wrap:wrap;">
+    <div class="statistic">
+      <p class="statistic-title">Revenue</p>
+      <p class="statistic-value">$45,231.89</p>
+      <p class="statistic-description"><span class="statistic-trend" data-trend="up"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6" /></svg> +20.1% </span> from last month </p>
+    </div>
+    <div class="statistic">
+      <p class="statistic-title">Bounce Rate</p>
+      <p class="statistic-value">12.3%</p>
+      <p class="statistic-description"><span class="statistic-trend" data-trend="down"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg> -4.5% </span> from last month </p>
+    </div>
+  </div>
+  <ExampleCode>{"<div class=\"statistic\">\n  <p class=\"statistic-title\">Revenue</p>\n  <p class=\"statistic-value\">$45,231.89</p>\n  <p class=\"statistic-description\">\n    <span class=\"statistic-trend\" data-trend=\"up\">\n      <svg>...</svg>\n      +20.1%\n    </span>\n    from last month\n  </p>\n</div>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>In Cards</ExampleLabel>
+  <ExampleHint>Statistics composed inside card components for dashboard layouts.</ExampleHint>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(12rem, 1fr));gap:1rem;max-width:42rem;">
+    <article class="card">
+      <div class="card-content" style="padding:1.5rem;">
+        <div class="statistic">
+          <p class="statistic-title">Total Users</p>
+          <p class="statistic-value">12,489</p>
+          <p class="statistic-description">
+            <span class="statistic-trend" data-trend="up"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6" /></svg> +8.2% </span>
+          </p>
+        </div>
+      </div>
+    </article>
+    <article class="card">
+      <div class="card-content" style="padding:1.5rem;">
+        <div class="statistic">
+          <p class="statistic-title">Active Now</p>
+          <p class="statistic-value">573</p>
+          <p class="statistic-description">
+            <span class="statistic-trend" data-trend="up"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6" /></svg> +12.3% </span>
+          </p>
+        </div>
+      </div>
+    </article>
+    <article class="card">
+      <div class="card-content" style="padding:1.5rem;">
+        <div class="statistic">
+          <p class="statistic-title">Churn Rate</p>
+          <p class="statistic-value">2.4%</p>
+          <p class="statistic-description">
+            <span class="statistic-trend" data-trend="down"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg> -1.1% </span>
+          </p>
+        </div>
+      </div>
+    </article>
+  </div>
+  <ExampleCode>{"<article class=\"card\">\n  <div class=\"card-content\" style=\"padding:1.5rem;\">\n    <div class=\"statistic\">\n      <p class=\"statistic-title\">Total Users</p>\n      <p class=\"statistic-value\">12,489</p>\n      <p class=\"statistic-description\">\n        <span class=\"statistic-trend\" data-trend=\"up\">+8.2%</span>\n      </p>\n    </div>\n  </div>\n</article>"}</ExampleCode>
+</Example>
+
+<SourceFiles component="statistic" section="css">
+  <SourceNote for="css">Styles for the statistic component. Uses design tokens for colors, spacing, and radius.</SourceNote>
+</SourceFiles>
+
+</DocPage>

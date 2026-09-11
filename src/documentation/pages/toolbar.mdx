@@ -1,0 +1,119 @@
+---
+title: "Toolbar"
+description: "Toolbar component — a container for grouping action buttons, toggles, and separators."
+slug: "toolbar"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="toolbar" title="Toolbar" component="toolbar">
+  Groups related controls into a single keyboard-navigable bar. Composes Toggle Groups, Buttons, and Separators with roving tabindex navigation.
+</PageHeader>
+
+<SkillPanel component="toolbar">
+  <SkillField label="Native basis">
+<SkillText><code>role="toolbar"</code> container. Groups related controls (buttons, toggles, separators) into a single keyboard-navigable bar.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/toolbar_role" title="a container for grouped controls"><code>role="toolbar"</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-orientation" title="declares layout direction"><code>aria-orientation</code></ApiPill>
+    <ApiPill href="https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/" title="keyboard navigation specification"><code>WAI-ARIA Toolbar Pattern</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" title="maps toolbar border to system ButtonText"><code>forced-colors</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.toolbar</code>
+    <code>.separator</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText>• <code>data-orientation</code> — values: <code>vertical</code></SkillText>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• Toolbars compose Toggle Groups, Button Groups, Buttons, and Separators.</SkillText>
+  <SkillText dense>• The toolbar handles roving tabindex — only one item is in the tab order at a time.</SkillText>
+  <SkillText dense>• Use vertical separators between logical groups of controls.</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• The toolbar does not enforce selection logic — that's handled by the child components.</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Text formatting toolbar</ExampleLabel>
+  <ExampleHint>Combines toggle groups with separators and a link button.</ExampleHint>
+  <div class="toolbar" role="toolbar" aria-label="Formatting" aria-orientation="horizontal" data-state-demo>
+    <div class="toggle-group" role="group" aria-label="Text style" data-type="multiple">
+      <button class="toggle" aria-pressed="false">
+        <i data-lucide="bold" />
+      </button>
+      <button class="toggle" aria-pressed="false">
+        <i data-lucide="italic" />
+      </button>
+      <button class="toggle" aria-pressed="false">
+        <i data-lucide="underline" />
+      </button>
+    </div>
+    <div class="separator" data-orientation="vertical" role="separator" />
+    <div class="toggle-group" role="group" aria-label="Alignment" data-type="single">
+      <button class="toggle" aria-pressed="true">
+        <i data-lucide="align-left" />
+      </button>
+      <button class="toggle" aria-pressed="false">
+        <i data-lucide="align-center" />
+      </button>
+      <button class="toggle" aria-pressed="false">
+        <i data-lucide="align-right" />
+      </button>
+    </div>
+    <div class="separator" data-orientation="vertical" role="separator" />
+    <button class="btn" data-variant="ghost" data-size="sm"><i data-lucide="link-2" /> Link </button>
+  </div>
+  <ExampleCode>{"<div class=\"toolbar\" role=\"toolbar\" aria-label=\"Formatting\">\n  <div class=\"toggle-group\" data-type=\"multiple\" ...>\n    <button class=\"toggle\" aria-pressed=\"false\">...</button>\n    ...\n  </div>\n  <div class=\"separator\" data-orientation=\"vertical\" role=\"separator\"></div>\n  <div class=\"toggle-group\" data-type=\"single\" ...>...</div>\n  <div class=\"separator\" data-orientation=\"vertical\" role=\"separator\"></div>\n  <button class=\"btn\" data-variant=\"ghost\">Link</button>\n</div>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Simple toolbar</ExampleLabel>
+  <ExampleHint>Quick actions with icon buttons.</ExampleHint>
+  <div class="toolbar" role="toolbar" aria-label="Actions" aria-orientation="horizontal">
+    <button class="btn" data-variant="ghost" data-size="icon" aria-label="Undo">
+      <i data-lucide="undo-2" />
+    </button>
+    <button class="btn" data-variant="ghost" data-size="icon" aria-label="Redo">
+      <i data-lucide="redo-2" />
+    </button>
+    <div class="separator" data-orientation="vertical" role="separator" />
+    <button class="btn" data-variant="ghost" data-size="icon" aria-label="Copy">
+      <i data-lucide="copy" />
+    </button>
+    <button class="btn" data-variant="ghost" data-size="icon" aria-label="Cut">
+      <i data-lucide="scissors" />
+    </button>
+    <button class="btn" data-variant="ghost" data-size="icon" aria-label="Paste">
+      <i data-lucide="clipboard-paste" />
+    </button>
+  </div>
+  <ExampleCode>{"<div class=\"toolbar\" role=\"toolbar\" aria-label=\"Actions\">\n  <button class=\"btn\" data-variant=\"ghost\" data-size=\"icon\" aria-label=\"Undo\">\n    <i data-lucide=\"undo-2\"></i>\n  </button>\n  <button class=\"btn\" data-variant=\"ghost\" data-size=\"icon\" aria-label=\"Redo\">\n    <i data-lucide=\"redo-2\"></i>\n  </button>\n  <div class=\"separator\" data-orientation=\"vertical\" role=\"separator\"></div>\n  <button class=\"btn\" data-variant=\"ghost\" data-size=\"icon\" aria-label=\"Copy\">...</button>\n  <button class=\"btn\" data-variant=\"ghost\" data-size=\"icon\" aria-label=\"Cut\">...</button>\n  <button class=\"btn\" data-variant=\"ghost\" data-size=\"icon\" aria-label=\"Paste\">...</button>\n</div>"}</ExampleCode>
+</Example>
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
+    <li><code>default</code> — roving tabindex at the authored position (first item); <code>setState('default', \{ focus: n \})</code> parks the roving stop on item <em>n</em> instead, and <code>getState().config.rovingIndex</code> reports where it currently is</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/toolbar-\{state\}.png</code>.</p>
+</StatesSection>
+
+<SourceFiles component="toolbar" section="css" />
+
+<SourceFiles component="toolbar" section="js">
+  <SourceNote for="js">Roving tabindex for <code>role="toolbar"</code> containers. Arrow keys move focus between focusable children.</SourceNote>
+</SourceFiles>
+
+</DocPage>

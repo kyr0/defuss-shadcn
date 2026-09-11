@@ -1,0 +1,215 @@
+---
+title: "Input"
+description: "Input component — text inputs with variants, sizes, icons, and validation states."
+slug: "input"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="input" title="Input" component="input">
+  A styled text input built on the native <code>&lt;input&gt;</code> element. Includes label, description, error, sizes, file input, textarea auto-grow, and focus ring. Zero JavaScript.
+</PageHeader>
+
+<SkillPanel component="input">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;input&gt;</code> element. Browser provides built-in validation, autofill, and accessibility.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input" title="native form control with built-in validation and autofill"><code>&lt;input&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea" title="multi-line text input"><code>&lt;textarea&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/field-sizing" title="auto-growing textarea without JavaScript"><code>field-sizing: content</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:user-invalid" title="native validation styling after user interaction"><code>:user-invalid</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible" title="keyboard-only focus ring styling"><code>:focus-visible</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.input</code>
+    <code>.label</code>
+    <code>.field-description</code>
+    <code>.field-error</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Sizes (data-size)">
+<SkillGrid>
+    <Variant name="xs" description="Height: 1.75rem" />
+    <Variant name="sm" description="Height: 2rem" />
+    <Variant name="md" description="Height: 2.25rem" />
+    <Variant name="lg" description="Height: 2.75rem" />
+    <Variant name="xl" description="Height: 3.25rem" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• Always pair inputs with <code>&lt;label&gt;</code> using matching <code>for</code>/<code>id</code></SkillText>
+  <SkillText dense>• Use <code>type="file"</code> for file inputs — styled via the <code>.input</code> class</SkillText>
+  <SkillText dense>• Textarea auto-grows via <code>field-sizing: content</code> — zero JavaScript</SkillText>
+  <SkillText dense>• Use <code>readonly</code> for non-editable values the user can still select/copy</SkillText>
+  <SkillText dense>• For hidden labels, use <code>sr-only</code> class on the label element</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• Use semantic <code>type</code> values (<code>email</code>, <code>tel</code>, <code>url</code>, <code>search</code>, <code>password</code>, <code>number</code>) for mobile keyboards and validation</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>Standard text input with label.</ExampleHint>
+  <div style="max-width:24rem;">
+    <label class="label" for="demo-email">Email</label>
+    <input class="input" type="email" id="demo-email" placeholder="you@example.com" />
+  </div>
+  <ExampleCode>{"<label class=\"label\" for=\"email\">Email</label>\n<input class=\"input\" type=\"email\" id=\"email\"\n       placeholder=\"you@example.com\">"}</ExampleCode>
+</Example>
+
+<Example first>
+  <ExampleLabel>With description</ExampleLabel>
+  <ExampleHint>Use <code>.field-description</code> below the input for help text.</ExampleHint>
+  <div style="max-width:24rem;">
+    <label class="label" for="demo-username">Username</label>
+    <input class="input" type="text" id="demo-username" placeholder="kyr0" aria-describedby="demo-username-desc" />
+    <p class="field-description" id="demo-username-desc">Choose a unique username for your account.</p>
+  </div>
+  <ExampleCode>{"<label class=\"label\" for=\"username\">Username</label>\n<input class=\"input\" type=\"text\" id=\"username\"\n       placeholder=\"kyr0\"\n       aria-describedby=\"username-desc\">\n<p class=\"field-description\" id=\"username-desc\">\n  Choose a unique username for your account.\n</p>"}</ExampleCode>
+</Example>
+
+<Example first>
+  <ExampleLabel>Sizes</ExampleLabel>
+  <ExampleHint>The full five-step scale via <code>data-size</code> — the unlabeled default is <code>2.5rem</code>, between <code>md</code> and <code>lg</code>.</ExampleHint>
+  <div style="display:flex;flex-direction:column;gap:0.75rem;max-width:24rem;">
+    <input class="input" data-size="xs" type="text" placeholder="Extra small" />
+    <input class="input" data-size="sm" type="text" placeholder="Small" />
+    <input class="input" data-size="md" type="text" placeholder="Medium" />
+    <input class="input" data-size="lg" type="text" placeholder="Large" />
+    <input class="input" data-size="xl" type="text" placeholder="Extra large" />
+  </div>
+  <ExampleCode>{"<input class=\"input\" data-size=\"xs\" type=\"text\" placeholder=\"Extra small\">\n<input class=\"input\" data-size=\"sm\" type=\"text\" placeholder=\"Small\">\n<input class=\"input\" data-size=\"md\" type=\"text\" placeholder=\"Medium\">\n<input class=\"input\" data-size=\"lg\" type=\"text\" placeholder=\"Large\">\n<input class=\"input\" data-size=\"xl\" type=\"text\" placeholder=\"Extra large\">"}</ExampleCode>
+</Example>
+
+<Example first>
+  <ExampleLabel>Disabled</ExampleLabel>
+  <ExampleHint>Non-interactive at 50% opacity.</ExampleHint>
+  <div style="max-width:24rem;">
+    <label class="label" for="demo-disabled">Email</label>
+    <input class="input" type="text" id="demo-disabled" disabled placeholder="Disabled" aria-describedby="demo-disabled-desc" />
+    <p class="field-description" id="demo-disabled-desc">This field is currently disabled.</p>
+  </div>
+  <ExampleCode>{"<input class=\"input\" type=\"text\" disabled placeholder=\"Disabled\">"}</ExampleCode>
+</Example>
+
+<Example first>
+  <ExampleLabel>Invalid</ExampleLabel>
+  <ExampleHint>Use <code>aria-invalid="true"</code> with a <code>.field-error</code> message.</ExampleHint>
+  <div style="max-width:24rem;">
+    <label class="label" for="demo-invalid">Email</label>
+    <input class="input" type="email" id="demo-invalid" aria-invalid="true" value="not-an-email" aria-describedby="demo-invalid-err" />
+    <p class="field-error" id="demo-invalid-err">Please enter a valid email address.</p>
+  </div>
+  <ExampleCode>{"<label class=\"label\" for=\"email\">Email</label>\n<input class=\"input\" type=\"email\" id=\"email\"\n       aria-invalid=\"true\" value=\"not-an-email\"\n       aria-describedby=\"email-err\">\n<p class=\"field-error\" id=\"email-err\">\n  Please enter a valid email address.\n</p>"}</ExampleCode>
+</Example>
+
+<Example first>
+  <ExampleLabel>Required</ExampleLabel>
+  <ExampleHint>Add <code>required</code> attribute and a visual indicator in the label.</ExampleHint>
+  <div style="max-width:24rem;">
+    <label class="label" for="demo-required">Name <span class="text-destructive">\*</span></label>
+    <input class="input" type="text" id="demo-required" required placeholder="Jane Doe" aria-describedby="demo-required-desc" />
+    <p class="field-description" id="demo-required-desc">This field is required.</p>
+  </div>
+  <ExampleCode>{"<label class=\"label\" for=\"name\">\n  Name <span class=\"text-destructive\">*</span>\n</label>\n<input class=\"input\" type=\"text\" id=\"name\"\n       required placeholder=\"Jane Doe\">"}</ExampleCode>
+</Example>
+
+<Example first>
+  <ExampleLabel>With icon</ExampleLabel>
+  <ExampleHint>Wrap in a relative container and position the Lucide icon absolutely.</ExampleHint>
+  <div style="position:relative;max-width:24rem;">
+    <i data-lucide="search" class="text-muted-foreground" style="position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);width:1rem;height:1rem;" />
+    <input class="input" style="padding-left:2.25rem;" type="search" placeholder="Search..." />
+  </div>
+  <ExampleCode>{"<div style=\"position:relative;\">\n  <i data-lucide=\"search\"\n     class=\"text-muted-foreground\"\n     style=\"position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);width:1rem;height:1rem;\"></i>\n  <input class=\"input\" style=\"padding-left:2.25rem;\" type=\"search\"\n         placeholder=\"Search...\">\n</div>"}</ExampleCode>
+</Example>
+
+<Example first>
+  <ExampleLabel>File</ExampleLabel>
+  <ExampleHint>Use <code>type="file"</code> — the file selector button is styled automatically.</ExampleHint>
+  <div style="max-width:24rem;">
+    <label class="label" for="demo-file">Picture</label>
+    <input class="input" type="file" id="demo-file" aria-describedby="demo-file-desc" />
+    <p class="field-description" id="demo-file-desc">Select a picture to upload.</p>
+  </div>
+  <ExampleCode>{"<label class=\"label\" for=\"avatar\">Picture</label>\n<input class=\"input\" type=\"file\" id=\"avatar\" aria-describedby=\"avatar-desc\">\n<p class=\"field-description\" id=\"avatar-desc\">Select a picture to upload.</p>"}</ExampleCode>
+</Example>
+
+<Example first>
+  <ExampleLabel>Textarea</ExampleLabel>
+  <ExampleHint>Use <code>&lt;textarea&gt;</code> with the <code>.input</code> class. Auto-grows with content via <code>field-sizing: content</code> — zero JS.</ExampleHint>
+  <div style="max-width:24rem;">
+    <label class="label" for="demo-message">Message</label>
+    <textarea class="input" id="demo-message" placeholder="Your message...">{""}</textarea>
+  </div>
+  <ExampleCode>{"<label class=\"label\" for=\"message\">Message</label>\n<textarea class=\"input\" id=\"message\"\n          placeholder=\"Your message...\"></textarea>"}</ExampleCode>
+</Example>
+
+<Example first>
+  <ExampleLabel>Readonly</ExampleLabel>
+  <ExampleHint>Non-editable value the user can still select and copy.</ExampleHint>
+  <div style="max-width:24rem;">
+    <label class="label" for="demo-readonly">API Key</label>
+    <input class="input" type="text" id="demo-readonly" readonly value="sk-1234567890abcdef" aria-describedby="demo-readonly-desc" />
+    <p class="field-description" id="demo-readonly-desc">Your API key is read-only.</p>
+  </div>
+  <ExampleCode>{"<label class=\"label\" for=\"api-key\">API Key</label>\n<input class=\"input\" type=\"text\" id=\"api-key\"\n       readonly value=\"sk-1234567890abcdef\">"}</ExampleCode>
+</Example>
+
+<Example first>
+  <ExampleLabel>Password</ExampleLabel>
+  <ExampleHint>Use <code>type="password"</code> for secure text entry.</ExampleHint>
+  <div style="max-width:24rem;">
+    <label class="label" for="demo-password">Password</label>
+    <input class="input" type="password" id="demo-password" placeholder="Enter your password" />
+  </div>
+  <ExampleCode>{"<label class=\"label\" for=\"password\">Password</label>\n<input class=\"input\" type=\"password\" id=\"password\"\n       placeholder=\"Enter your password\">"}</ExampleCode>
+</Example>
+
+<Example first>
+  <ExampleLabel>With button</ExampleLabel>
+  <ExampleHint>Pair an input with a button for inline actions like search.</ExampleHint>
+  <div style="max-width:24rem;display:flex;gap:0.5rem;">
+    <input class="input" type="search" placeholder="Search..." />
+    <button class="btn" data-variant="default">Search</button>
+  </div>
+  <ExampleCode>{"<div style=\"display:flex;gap:0.5rem;\">\n  <input class=\"input\" type=\"search\"\n         placeholder=\"Search...\">\n  <button class=\"btn\" data-variant=\"default\">Search</button>\n</div>"}</ExampleCode>
+</Example>
+
+<Example first>
+  <ExampleLabel>Form composition</ExampleLabel>
+  <ExampleHint>Multiple inputs with labels, descriptions, and a submit button.</ExampleHint>
+  <form style="max-width:24rem;display:flex;flex-direction:column;gap:1.25rem;" onsubmit="return false;">
+    <div>
+      <label class="label" for="demo-name">Name <span class="text-destructive">\*</span></label>
+      <input class="input" type="text" id="demo-name" required placeholder="Jane Doe" />
+    </div>
+    <div>
+      <label class="label" for="demo-email2">Email <span class="text-destructive">\*</span></label>
+      <input class="input" type="email" id="demo-email2" required placeholder="jane@example.com" aria-describedby="demo-email2-desc" />
+      <p class="field-description" id="demo-email2-desc">We'll never share your email with anyone.</p>
+    </div>
+    <div>
+      <label class="label" for="demo-bio">Bio</label>
+      <textarea class="input" id="demo-bio" placeholder="Tell us about yourself...">{""}</textarea>
+    </div>
+    <div style="display:flex;gap:0.5rem;justify-content:flex-end;">
+      <button class="btn" data-variant="outline" type="reset">Cancel</button>
+      <button class="btn" data-variant="default" type="submit">Submit</button>
+    </div>
+  </form>
+  <ExampleCode>{"<form>\n  <div>\n    <label class=\"label\" for=\"name\">\n      Name <span class=\"text-destructive\">*</span>\n    </label>\n    <input class=\"input\" type=\"text\" id=\"name\"\n           required placeholder=\"Jane Doe\">\n  </div>\n  <div>\n    <label class=\"label\" for=\"email\">\n      Email <span class=\"text-destructive\">*</span>\n    </label>\n    <input class=\"input\" type=\"email\" id=\"email\"\n           required placeholder=\"jane@example.com\"\n           aria-describedby=\"email-desc\">\n    <p class=\"field-description\" id=\"email-desc\">\n      We'll never share your email with anyone.\n    </p>\n  </div>\n  <div>\n    <label class=\"label\" for=\"bio\">Bio</label>\n    <textarea class=\"input\" id=\"bio\"\n              placeholder=\"Tell us about yourself...\"></textarea>\n  </div>\n  <button class=\"btn\" data-variant=\"default\" type=\"submit\">Submit</button>\n</form>"}</ExampleCode>
+</Example>
+
+<SourceFiles component="input" section="css" />
+
+</DocPage>

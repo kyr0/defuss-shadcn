@@ -1,0 +1,123 @@
+---
+title: "Breadcrumb"
+description: "Breadcrumb component — navigation trail with separator customization."
+slug: "breadcrumb"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="breadcrumb" title="Breadcrumb" component="breadcrumb">
+  Displays the path to the current page. Built on <code>&lt;nav&gt;</code> + <code>&lt;ol&gt;</code>.
+</PageHeader>
+
+<SkillPanel component="breadcrumb">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;nav&gt;</code> + <code>&lt;ol&gt;</code> for hierarchical path display.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav" title="navigation landmark"><code>&lt;nav&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol" title="ordered list"><code>&lt;ol&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current" title="identifies the current page"><code>aria-current="page"</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible" title="keyboard-only focus ring"><code>:focus-visible</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="suppresses hover transitions"><code>prefers-reduced-motion</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast" title="underlines links for high-contrast"><code>prefers-contrast</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" title="maps to system colors"><code>forced-colors</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.breadcrumb-list</code>
+    <code>.breadcrumb-item</code>
+    <code>.breadcrumb-link</code>
+    <code>.breadcrumb-separator</code>
+    <code>.breadcrumb-page</code>
+    <code>.breadcrumb-ellipsis</code>
+  </SkillRow>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>Slash-separated navigation trail with links and a current page.</ExampleHint>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <ol class="breadcrumb-list">
+      <li class="breadcrumb-item">
+        <a class="breadcrumb-link" href="#">Home</a>
+      </li>
+      <li class="breadcrumb-separator" aria-hidden="true">/</li>
+      <li class="breadcrumb-item">
+        <a class="breadcrumb-link" href="#">Components</a>
+      </li>
+      <li class="breadcrumb-separator" aria-hidden="true">/</li>
+      <li class="breadcrumb-item">
+        <span class="breadcrumb-page" aria-current="page">Breadcrumb</span>
+      </li>
+    </ol>
+  </nav>
+  <ExampleCode>{"<nav class=\"breadcrumb\" aria-label=\"Breadcrumb\">\n  <ol class=\"breadcrumb-list\">\n    <li class=\"breadcrumb-item\"><a class=\"breadcrumb-link\" href=\"#\">Home</a></li>\n    <li class=\"breadcrumb-separator\" aria-hidden=\"true\">/</li>\n    <li class=\"breadcrumb-item\"><span class=\"breadcrumb-page\" aria-current=\"page\">Current</span></li>\n  </ol>\n</nav>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Custom separator</ExampleLabel>
+  <ExampleHint>Chevron icon separators instead of slashes.</ExampleHint>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <ol class="breadcrumb-list">
+      <li class="breadcrumb-item">
+        <a class="breadcrumb-link" href="#" onclick="event.preventDefault()">Home</a>
+      </li>
+      <li class="breadcrumb-separator" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m9 18 6-6-6-6" />
+        </svg>
+      </li>
+      <li class="breadcrumb-item">
+        <a class="breadcrumb-link" href="#" onclick="event.preventDefault()">Components</a>
+      </li>
+      <li class="breadcrumb-separator" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m9 18 6-6-6-6" />
+        </svg>
+      </li>
+      <li class="breadcrumb-item">
+        <span class="breadcrumb-page" aria-current="page">Breadcrumb</span>
+      </li>
+    </ol>
+  </nav>
+  <ExampleCode>{"<li class=\"breadcrumb-separator\" aria-hidden=\"true\">\n  <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\"\n       stroke=\"currentColor\" stroke-width=\"2\"\n       stroke-linecap=\"round\" stroke-linejoin=\"round\">\n    <path d=\"m9 18 6-6-6-6\"/>\n  </svg>\n</li>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Collapsed</ExampleLabel>
+  <ExampleHint>Long trails can collapse middle items into an ellipsis.</ExampleHint>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <ol class="breadcrumb-list">
+      <li class="breadcrumb-item">
+        <a class="breadcrumb-link" href="#" onclick="event.preventDefault()">Home</a>
+      </li>
+      <li class="breadcrumb-separator" aria-hidden="true">/</li>
+      <li class="breadcrumb-item">
+        <span class="breadcrumb-ellipsis" aria-hidden="true">⋯</span>
+      </li>
+      <li class="breadcrumb-separator" aria-hidden="true">/</li>
+      <li class="breadcrumb-item">
+        <a class="breadcrumb-link" href="#" onclick="event.preventDefault()">Components</a>
+      </li>
+      <li class="breadcrumb-separator" aria-hidden="true">/</li>
+      <li class="breadcrumb-item">
+        <span class="breadcrumb-page" aria-current="page">Breadcrumb</span>
+      </li>
+    </ol>
+  </nav>
+  <ExampleCode>{"<nav class=\"breadcrumb\" aria-label=\"Breadcrumb\">\n  <ol class=\"breadcrumb-list\">\n    <li class=\"breadcrumb-item\"><a class=\"breadcrumb-link\" href=\"#\">Home</a></li>\n    <li class=\"breadcrumb-separator\" aria-hidden=\"true\">/</li>\n    <li class=\"breadcrumb-item\">\n      <span class=\"breadcrumb-ellipsis\" aria-hidden=\"true\">&#x22EF;</span>\n    </li>\n    <li class=\"breadcrumb-separator\" aria-hidden=\"true\">/</li>\n    <li class=\"breadcrumb-item\"><a class=\"breadcrumb-link\" href=\"#\">Components</a></li>\n    <li class=\"breadcrumb-separator\" aria-hidden=\"true\">/</li>\n    <li class=\"breadcrumb-item\"><span class=\"breadcrumb-page\" aria-current=\"page\">Breadcrumb</span></li>\n  </ol>\n</nav>"}</ExampleCode>
+</Example>
+
+<SourceFiles component="breadcrumb" section="css">
+  <SourceNote for="css">Styles for the breadcrumb component. Uses design tokens for colors, spacing, and radius.</SourceNote>
+</SourceFiles>
+
+</DocPage>

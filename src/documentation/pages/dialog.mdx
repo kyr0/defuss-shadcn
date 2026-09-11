@@ -1,0 +1,137 @@
+---
+title: "Dialog"
+description: "Dialog component — modal dialogs using native <dialog> with showModal()."
+slug: "dialog"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="dialog" title="Dialog" component="dialog">
+  Modal window built on native <code>&lt;dialog&gt;</code> + <code>showModal()</code>. Focus trap, Escape key, and backdrop are all browser-native. Animated with <code>@starting-style</code>.
+</PageHeader>
+
+<SkillPanel component="dialog">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;dialog&gt;</code> element + <code>showModal()</code>. The browser provides:</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog" title="native modal element with built-in focus trap and Escape-to-close"><code>&lt;dialog&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal" title="opens dialog as modal in the top layer with backdrop"><code>HTMLDialogElement.showModal()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/::backdrop" title="pseudo-element for the overlay behind the modal"><code>::backdrop</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style" title="defines entry animation starting values"><code>@starting-style</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.dialog</code>
+    <code>.dialog-content</code>
+    <code>.dialog-header</code>
+    <code>.dialog-title</code>
+    <code>.dialog-description</code>
+    <code>.dialog-body</code>
+    <code>.dialog-footer</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Sizes (data-size)">
+<SkillGrid>
+    <Variant name="sm" description="max-width: 24rem" />
+    <Variant name="md" description="max-width: 28rem (default)" />
+    <Variant name="lg" description="max-width: 32rem" />
+    <Variant name="xl" description="max-width: 40rem" />
+    <Variant name="full" description="max-width: calc(100vw - 2rem)" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText dense>• <code>data-dialog-trigger</code></SkillText>
+  <SkillText>• <code>data-dialog-close</code></SkillText>
+  </SkillField>
+
+  <SkillField label="Wiring conventions">
+<SkillText dense>• <code>data-dialog-trigger="\[id\]"</code> on any element → opens that dialog</SkillText>
+  <SkillText dense>• <code>data-dialog-close</code> on any element inside → closes the dialog</SkillText>
+  <SkillText dense>• Click on backdrop → closes (click lands on <code>&lt;dialog&gt;</code> itself)</SkillText>
+  <SkillText>• Place <code>&lt;dialog&gt;</code> elements as direct children of <code>&lt;body&gt;</code></SkillText>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• Animation uses CSS-only enter via <code>@starting-style</code> and exit via <code>transition</code> + <code>allow-discrete</code>.</SkillText>
+  <SkillText dense>• While the dialog is modal, <code>html:has(dialog.dialog:modal)</code> sets <code>overflow: hidden</code> + <code>scrollbar-gutter: stable</code> — the page behind cannot scroll and its position is preserved for when the dialog closes (no JS scroll-lock).</SkillText>
+  <SkillText dense>• The selector is <code>dialog.dialog</code> (element + class) to avoid styling native <code>&lt;dialog&gt;</code> elements used elsewhere.</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• For forms inside dialogs, use the <code>dialog-body</code> wrapper for the form content.</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Form Dialog</ExampleLabel>
+  <ExampleHint>Dialog with form inputs. Click "Edit Profile" to open.</ExampleHint>
+  <button class="btn" data-variant="default" data-dialog-trigger="demo-dialog" aria-haspopup="dialog">Edit Profile</button>
+  <ExampleCode>{"<button class=\"btn\" data-variant=\"default\"\n        data-dialog-trigger=\"edit-dialog\"\n        aria-haspopup=\"dialog\">\n  Edit Profile\n</button>\n\n<dialog id=\"edit-dialog\" class=\"dialog\"\n        role=\"dialog\" aria-modal=\"true\"\n        aria-labelledby=\"edit-title\">\n  <div class=\"dialog-content\">\n    <div class=\"dialog-header\">\n      <h2 class=\"dialog-title\" id=\"edit-title\">Edit Profile</h2>\n      <p class=\"dialog-description\">Make changes to your profile here.</p>\n    </div>\n    <div class=\"dialog-body\">\n      <div style=\"display:flex;flex-direction:column;gap:1rem;\">\n        <div>\n          <label class=\"label\" for=\"name\">Name</label>\n          <input class=\"input\" id=\"name\" type=\"text\" value=\"Cody Lindley\">\n        </div>\n        <div>\n          <label class=\"label\" for=\"username\">Username</label>\n          <input class=\"input\" id=\"username\" type=\"text\" value=\"@kyr0\">\n        </div>\n      </div>\n    </div>\n    <div class=\"dialog-footer\">\n      <button class=\"btn\" data-variant=\"outline\" data-dialog-close>Cancel</button>\n      <button class=\"btn\" data-variant=\"default\" data-dialog-close>Save changes</button>\n    </div>\n  </div>\n</dialog>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Confirmation</ExampleLabel>
+  <ExampleHint>Destructive action confirmation. Click "Confirm Delete" to open.</ExampleHint>
+  <button class="btn" data-variant="outline" data-dialog-trigger="confirm-dialog" aria-haspopup="dialog">Confirm Delete</button>
+  <ExampleCode>{"<button class=\"btn\" data-variant=\"outline\"\n        data-dialog-trigger=\"confirm-dialog\"\n        aria-haspopup=\"dialog\">\n  Confirm Delete\n</button>\n\n<dialog id=\"confirm-dialog\" class=\"dialog\"\n        role=\"dialog\" aria-modal=\"true\"\n        aria-labelledby=\"confirm-title\">\n  <div class=\"dialog-content\">\n    <div class=\"dialog-header\">\n      <h2 class=\"dialog-title\" id=\"confirm-title\">Delete account?</h2>\n      <p class=\"dialog-description\">This action cannot be undone.\n        This will permanently delete your account.</p>\n    </div>\n    <div class=\"dialog-footer\">\n      <button class=\"btn\" data-variant=\"outline\"\n              data-dialog-close>Cancel</button>\n      <button class=\"btn\" data-variant=\"destructive\"\n              data-dialog-close>Delete account</button>\n    </div>\n  </div>\n</dialog>"}</ExampleCode>
+</Example>
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
+    <li><code>default</code> — closed (the authored state)</li>
+    <li><code>open</code> — shown modally via <code>showModal()</code></li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The demo dialog carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/dialog-\{state\}.png</code>.</p>
+</StatesSection>
+
+<SourceFiles component="dialog" section="css" />
+
+<SourceFiles component="dialog" section="js">
+  <SourceNote for="js">Wire triggers via <code>data-dialog-trigger</code>, close buttons via <code>data-dialog-close</code>, and backdrop click. Focus returns to trigger on close.</SourceNote>
+</SourceFiles>
+
+<PageOverlay>
+  <dialog id="demo-dialog" class="dialog" data-state-demo role="dialog" aria-modal="true" aria-labelledby="demo-title">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h2 class="dialog-title" id="demo-title">Edit Profile</h2>
+        <p class="dialog-description">Make changes to your profile here. Click save when done.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1rem;margin-top:1.25rem;">
+        <div>
+          <label class="label" for="demo-name">Name</label>
+          <input id="demo-name" class="input" type="text" value="Cody Lindley" />
+        </div>
+        <div>
+          <label class="label" for="demo-username">Username</label>
+          <input id="demo-username" class="input" type="text" value="@kyr0" />
+        </div>
+      </div>
+      <div class="dialog-footer">
+        <button class="btn" data-variant="outline" data-dialog-close>Cancel</button>
+        <button class="btn" data-variant="default" data-dialog-close>Save changes</button>
+      </div>
+    </div>
+  </dialog>
+  <dialog id="confirm-dialog" class="dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h2 class="dialog-title" id="confirm-title">Delete account?</h2>
+        <p class="dialog-description">This action cannot be undone. This will permanently delete your account and remove all associated data from our servers.</p>
+      </div>
+      <div class="dialog-footer">
+        <button class="btn" data-variant="outline" data-dialog-close>Cancel</button>
+        <button class="btn" data-variant="destructive" data-dialog-close>Delete account</button>
+      </div>
+    </div>
+  </dialog>
+</PageOverlay>
+
+</DocPage>

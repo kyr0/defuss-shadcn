@@ -102,11 +102,14 @@ Inherits variants from `.toggle`:
 
 ## Sizes
 
-| `data-size` (on group) | Height | Icon size |
-|------------------------|--------|-----------|
-| `sm`                   | 2rem   | 0.875rem  |
-| *(default)*            | 2.25rem| 1rem      |
-| `lg`                   | 2.5rem | 1.125rem  |
+| `data-size` (on group) | Height  | Icon size |
+|------------------------|---------|-----------|
+| `xs`                   | 1.75rem | 1rem      |
+| `sm`                   | 2rem    | 0.875rem  |
+| `md`                   | 2.25rem | 1rem      |
+| *(default)*            | 2.25rem | 1rem      |
+| `lg`                   | 2.5rem  | 1.125rem  |
+| `xl`                   | 3rem    | 1rem      |
 
 ---
 
@@ -116,7 +119,7 @@ Inherits variants from `.toggle`:
 |-----------|---------|--------|---------|
 | `data-type` | Group | `single` (default), `multiple` | Selection mode |
 | `data-variant` | Group | `outline` | Visual variant, propagated to children |
-| `data-size` | Group | `sm`, `lg` | Size, propagated to children |
+| `data-size` | Group | `xs`, `sm`, `md`, `lg`, `xl` | Size, propagated to children |
 | `data-orientation` | Group | `vertical` | Layout direction (default: horizontal) |
 | `data-spacing` | Group | (boolean) | Adds gap between items, restores individual radii |
 | `data-disabled` | Group | (boolean) | Disables all items in the group |

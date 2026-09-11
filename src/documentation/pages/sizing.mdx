@@ -1,0 +1,203 @@
+---
+title: "Sizing"
+description: "A single geometric scale, explicit density, and independent interaction targets. Familiar classes, native CSS, no Tailwind dependency."
+slug: "sizing"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="sizing" title="Sizing" introStyle="max-width:38rem;">
+  A single geometric scale, explicit density, and independent interaction targets. Familiar classes, native CSS, no Tailwind dependency. Every code block shows exactly the classes that render the demo above it — only the demo's decorative colors are omitted.
+</PageHeader>
+
+<h2 id="one-scale" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">One scale, two vocabularies</h2>
+
+<DocText>A numeric size is a quantity, not an index: <code>w-4</code> means four base units. Named properties select useful points on the same scale. The default <code>--size-base</code> reads the existing <code>--spacing</code> token, with <code>0.25rem</code> as its fallback. These are predictable design defaults, not a claim of universally optimal dimensions.</DocText>
+
+<div style="overflow-x:auto;margin-bottom:1.5rem;">
+  <table class="table" data-variant="simple">
+    <thead>
+      <tr>
+        <th scope="col">Property</th>
+        <th scope="col">Base units</th>
+        <th scope="col">At a 16px root</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <code>--size-base</code>
+        </td>
+        <td>1</td>
+        <td>4px</td>
+      </tr>
+      <tr>
+        <td>
+          <code>--size-xs</code>
+        </td>
+        <td>2</td>
+        <td>8px</td>
+      </tr>
+      <tr>
+        <td>
+          <code>--size-sm</code>
+        </td>
+        <td>3</td>
+        <td>12px</td>
+      </tr>
+      <tr>
+        <td>
+          <code>--size-md</code>
+        </td>
+        <td>4</td>
+        <td>16px</td>
+      </tr>
+      <tr>
+        <td>
+          <code>--size-lg</code>
+        </td>
+        <td>6</td>
+        <td>24px</td>
+      </tr>
+      <tr>
+        <td>
+          <code>--size-xl</code>
+        </td>
+        <td>8</td>
+        <td>32px</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<Demo>
+  <div class="flex items-end gap-8" data-demo="sizing-scale">
+    <div class="flex flex-col items-center gap-2">
+      <div class="demo-tile" style="inline-size:var(--size-xs);block-size:var(--size-xs);" />
+      <span class="demo-label" style="margin:0;">xs</span>
+    </div>
+    <div class="flex flex-col items-center gap-2">
+      <div class="demo-tile" style="inline-size:var(--size-sm);block-size:var(--size-sm);" />
+      <span class="demo-label" style="margin:0;">sm</span>
+    </div>
+    <div class="flex flex-col items-center gap-2">
+      <div class="demo-tile" style="inline-size:var(--size-md);block-size:var(--size-md);" />
+      <span class="demo-label" style="margin:0;">md</span>
+    </div>
+    <div class="flex flex-col items-center gap-2">
+      <div class="demo-tile" style="inline-size:var(--size-lg);block-size:var(--size-lg);" />
+      <span class="demo-label" style="margin:0;">lg</span>
+    </div>
+    <div class="flex flex-col items-center gap-2">
+      <div class="demo-tile" style="inline-size:var(--size-xl);block-size:var(--size-xl);" />
+      <span class="demo-label" style="margin:0;">xl</span>
+    </div>
+  </div>
+  <DemoCode>{"<div class=\"flex items-end gap-8\">\n  <div class=\"flex flex-col items-center gap-2\">\n    <div style=\"inline-size:var(--size-xs);block-size:var(--size-xs);\"></div>\n    <span>xs</span>\n  </div>\n  <!-- sm · md · lg: same pattern with var(--size-sm/md/lg) -->\n  <div class=\"flex flex-col items-center gap-2\">\n    <div style=\"inline-size:var(--size-xl);block-size:var(--size-xl);\"></div>\n    <span>xl</span>\n  </div>\n</div>"}</DemoCode>
+</Demo>
+
+<div class="sep" />
+
+<h2 id="density-is-not-resolution" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Density is not display resolution</h2>
+
+<DocText>CSS pixels already abstract device pixels; <code>rem</code> follows the root font size. No device-pixel-ratio multiplier and no root-font reset are added. Layout density changes opted-in gaps, margins, padding and container gutters—not numeric widths, heights, icons or typography. <a href="https://www.w3.org/TR/css-values-4/" target="_blank" rel="noopener">CSS Values and Units</a></DocText>
+
+<div class="sep" />
+
+<h2 id="toolbox" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">The sizing toolbox</h2>
+
+<DocText>Real UI mixes fixed and flexible sizes on one row: a <code>size-10 shrink-0</code> avatar square, a <code>flex-1 min-w-0</code> text column that absorbs the remaining width without widening the page, and a <code>shrink-0</code> action that keeps its own size. The same scale sizes icon boxes inside buttons — a <code>size-4</code> SVG lines up with the label's line height.</DocText>
+
+<Demo>
+  <div class="stack gap-6" data-demo="sizing-toolbox">
+    <div class="flex items-center gap-3">
+      <div class="size-10 shrink-0" style="border-radius:9999px;background:var(--primary);color:var(--primary-foreground);display:flex;align-items:center;justify-content:center;font-size:0.8125rem;">AL</div>
+      <div class="flex-1 min-w-0" style="overflow-wrap:anywhere;">
+        <p style="margin:0;font-size:0.875rem;font-weight:500;">Ada Lovelace</p>
+        <p class="text-sm text-muted-foreground" style="margin:0;">ada.lovelace@analytical-engines.example</p>
+      </div>
+      <button class="btn shrink-0" type="button" data-variant="outline" data-size="sm">Follow</button>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <button class="btn" type="button"><svg class="size-4" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M8 2v12M2 8h12" /></svg> New project </button>
+      <button class="btn" type="button" data-variant="outline"><svg class="size-4" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="4.5" /><path d="m10.5 10.5 3.5 3.5" /></svg> Search </button>
+    </div>
+  </div>
+  <DemoCode>{"<div class=\"flex items-center gap-3\">\n  <div class=\"size-10 shrink-0\">AL</div>\n  <div class=\"flex-1 min-w-0\" style=\"overflow-wrap:anywhere;\">\n    <p>Ada Lovelace</p>\n    <p>ada.lovelace@analytical-engines.example</p>\n  </div>\n  <button class=\"btn shrink-0\" type=\"button\" data-variant=\"outline\" data-size=\"sm\">Follow</button>\n</div>\n\n<div class=\"flex flex-wrap gap-2\">\n  <button class=\"btn\" type=\"button\">\n    <svg class=\"size-4\" viewBox=\"0 0 16 16\" aria-hidden=\"true\">…</svg>\n    New project\n  </button>\n  <button class=\"btn\" type=\"button\" data-variant=\"outline\">\n    <svg class=\"size-4\" viewBox=\"0 0 16 16\" aria-hidden=\"true\">…</svg>\n    Search\n  </button>\n</div>"}</DemoCode>
+</Demo>
+
+<div class="sep" />
+
+<h2 id="guides" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Guides</h2>
+
+<DocText>The scale has three faces, each with its own page:</DocText>
+
+<div class="grid grid-cols-auto gap-4" style="--layout-min:11rem;margin-bottom:1.5rem;">
+  <a href="width-height.html" class="card" style="display:block;text-decoration:none;color:inherit;">
+    <div class="card-header">
+      <h3 class="card-title" style="font-size:0.9375rem;">Width &amp; Height</h3>
+      <p class="card-description" style="font-size:0.8125rem;">Arithmetic dimensions, fractions, content and viewport sizing, and explicit constraints.</p>
+    </div>
+    <div style="height:1.25rem;" />
+  </a>
+  <a href="spacing.html" class="card" style="display:block;text-decoration:none;color:inherit;">
+    <div class="card-header">
+      <h3 class="card-title" style="font-size:0.9375rem;">Spacing</h3>
+      <p class="card-description" style="font-size:0.8125rem;">One arithmetic spacing scale for gaps, padding and margins, with optional density.</p>
+    </div>
+    <div style="height:1.25rem;" />
+  </a>
+  <a href="density.html" class="card" style="display:block;text-decoration:none;color:inherit;">
+    <div class="card-header">
+      <h3 class="card-title" style="font-size:0.9375rem;">Density</h3>
+      <p class="card-description" style="font-size:0.8125rem;">Compactness as an explicit whitespace policy — not a global zoom factor.</p>
+    </div>
+    <div style="height:1.25rem;" />
+  </a>
+</div>
+
+<div class="sep" />
+
+<h2 id="targets" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Size the target, not only the icon</h2>
+
+<DocText>WCAG 2.2 AA uses a <strong>24 × 24 CSS-pixel</strong> target-size criterion, with exceptions including sufficient spacing. The enhanced AAA criterion uses <strong>44 × 44 CSS pixels</strong>, also with exceptions. These concern the interactive target, not the visible icon. <a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html" target="_blank" rel="noopener">WCAG 2.2: Target Size (Minimum), AA</a> · <a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-enhanced.html" target="_blank" rel="noopener">WCAG 2.2: Target Size (Enhanced), AAA</a></DocText>
+
+<DocText>Use 44px minimum dimensions as a starting point for touch-oriented controls; assess the actual clickable shape and surrounding targets. A minimum-size declaration alone does not certify WCAG conformance. Existing buttons are not silently resized by this module.</DocText>
+
+<Demo>
+  <DemoCode>{"<button class=\"btn\" type=\"button\" aria-label=\"Add project\"\n  style=\"min-inline-size:44px;min-block-size:44px;\">\n  <svg class=\"size-4\" viewBox=\"0 0 16 16\" aria-hidden=\"true\">\n    <path d=\"M8 2v12M2 8h12\" fill=\"none\" stroke=\"currentColor\"/>\n  </svg>\n</button>"}</DemoCode>
+</Demo>
+
+<div class="sep" />
+
+<h2 id="install" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Install only what you use</h2>
+
+<Demo>
+  <DemoCode>{"<link rel=\"stylesheet\" href=\"../theme/default-semantic-tokens.css\">\n<link rel=\"stylesheet\" href=\"../theme/sizing.css\">\n<link rel=\"stylesheet\" href=\"../theme/layout.css\">\n<!-- Load the component stylesheets you actually use next. -->\n<link rel=\"stylesheet\" href=\"../components/button/button.css\">"}</DemoCode>
+</Demo>
+
+<DocText>The optional modules live beside the theme assets so the existing copy build and CDN mirror work unchanged. They are not part of the replaceable semantic-token export. Both files declare <code>@layer components, utilities</code>; load them before component CSS so that order is established first. A later layer declaration cannot reorder layers that already exist. Normal unlayered application CSS overrides both.</DocText>
+
+<div class="sep" />
+
+<h2 id="customize" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Override properties, not generated classes</h2>
+
+<Demo>
+  <DemoCode header="CSS" lang="css">{"/* Global application CSS; do not edit a tweakcn export. */\n:root {\n  --size-base: 0.3rem;\n  --layout-density: 1;\n}\n\n/* Local scale: redeclare aliases at this explicit boundary. */\n.compact-panel {\n  --size-base: 0.2rem;\n}"}</DemoCode>
+</Demo>
+
+<Demo>
+  <DemoCode>{"<section class=\"compact-panel\" data-size-scope>\n  <div class=\"w-16 h-8\">Local scale</div>\n  <div style=\"padding:var(--size-sm);\">Named local size</div>\n</section>"}</DemoCode>
+</Demo>
+
+<DocText>Custom-property formulas resolve before inheritance. When a local <code>--size-base</code> changes, add <code>data-size-scope</code> on that element to recompute its named aliases. Numeric utilities use the base directly. Prefer custom properties or a small semantic rule to inventing unsupported class names.</DocText>
+
+<div class="sep" />
+
+<h2 id="references" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Platform references</h2>
+
+<DocText><a href="https://www.w3.org/TR/css-variables-1/" target="_blank" rel="noopener">CSS custom-property inheritance</a> · <a href="https://www.w3.org/TR/css-cascade-5/" target="_blank" rel="noopener">CSS cascade layers</a></DocText>
+
+</DocPage>

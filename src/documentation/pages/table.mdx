@@ -1,0 +1,159 @@
+---
+title: "Table"
+description: "Table component — data tables with sorting, striping, and responsive scroll."
+slug: "table"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="table" title="Table" component="table">
+  A responsive table component for displaying tabular data. Built on native <code>&lt;table&gt;</code> with styled headers, rows, and cells.
+</PageHeader>
+
+<SkillPanel component="table">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;table&gt;</code> element with semantic <code>&lt;thead&gt;</code>, <code>&lt;tbody&gt;</code>, <code>&lt;tfoot&gt;</code>, and <code>&lt;caption&gt;</code>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table" title="tabular data container"><code>&lt;table&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/thead" title="table header group"><code>&lt;thead&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tbody" title="table body group"><code>&lt;tbody&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tfoot" title="table footer group"><code>&lt;tfoot&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/caption" title="table caption"><code>&lt;caption&gt;</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.table-container</code>
+    <code>.table</code>
+    <code>.table-caption</code>
+    <code>.table-head</code>
+    <code>.table-row</code>
+    <code>.table-cell</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• Use <code>&lt;th&gt;</code> with appropriate <code>scope</code> for column/row headers</SkillText>
+  <SkillText dense>• <code>&lt;caption&gt;</code> provides an accessible name for the table</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• Screen readers announce table structure (rows, columns, headers)</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Basic Table</ExampleLabel>
+  <ExampleHint>Standard table with header and body rows. Uses <code>.badge</code> for status and <code>.avatar</code> for user display.</ExampleHint>
+  <div class="table-container" style="max-width:42rem;">
+    <table class="table">
+      <thead>
+        <tr class="table-row">
+          <th class="table-head">User</th>
+          <th class="table-head">Status</th>
+          <th class="table-head">Role</th>
+          <th class="table-head" style="text-align:right">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="table-row">
+          <td class="table-cell" style="font-weight:500;">
+            <div style="display:flex;align-items:center;gap:0.5rem;">
+              <span class="avatar" data-size="sm">
+                <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn" />
+                <span class="avatar-fallback">CN</span>
+              </span>
+              <span>Cody Lindley</span>
+            </div>
+          </td>
+          <td class="table-cell">
+            <span class="badge" data-variant="default">Paid</span>
+          </td>
+          <td class="table-cell">Admin</td>
+          <td class="table-cell" style="text-align:right">$250.00</td>
+        </tr>
+        <tr class="table-row">
+          <td class="table-cell" style="font-weight:500;">
+            <div style="display:flex;align-items:center;gap:0.5rem;">
+              <span class="avatar" data-size="sm">
+                <span class="avatar-fallback">JD</span>
+              </span>
+              <span>Jordan Davis</span>
+            </div>
+          </td>
+          <td class="table-cell">
+            <span class="badge" data-variant="outline">Pending</span>
+          </td>
+          <td class="table-cell">Editor</td>
+          <td class="table-cell" style="text-align:right">$150.00</td>
+        </tr>
+        <tr class="table-row">
+          <td class="table-cell" style="font-weight:500;">
+            <div style="display:flex;align-items:center;gap:0.5rem;">
+              <span class="avatar" data-size="sm">
+                <span class="avatar-fallback">AS</span>
+              </span>
+              <span>Alex Smith</span>
+            </div>
+          </td>
+          <td class="table-cell">
+            <span class="badge" data-variant="secondary">Unpaid</span>
+          </td>
+          <td class="table-cell">Viewer</td>
+          <td class="table-cell" style="text-align:right">$350.00</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <ExampleCode>{"<tr class=\"table-row\">\n  <td class=\"table-cell\">\n    <div style=\"display:flex;align-items:center;gap:0.5rem;\">\n      <span class=\"avatar\" data-size=\"sm\">\n        <img class=\"avatar-image\" src=\"...\" alt=\"...\" />\n        <span class=\"avatar-fallback\">CN</span>\n      </span>\n      <span>Cody Lindley</span>\n    </div>\n  </td>\n  <td class=\"table-cell\">\n    <span class=\"badge\" data-variant=\"default\">Paid</span>\n  </td>\n</tr>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>With Footer</ExampleLabel>
+  <ExampleHint>Table with a summary footer row.</ExampleHint>
+  <div class="table-container" style="max-width:36rem;">
+    <table class="table">
+      <caption class="table-caption">A list of your recent invoices.</caption>
+      <thead>
+        <tr class="table-row">
+          <th class="table-head">Invoice</th>
+          <th class="table-head">Status</th>
+          <th class="table-head" style="text-align:right">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="table-row">
+          <td class="table-cell" style="font-weight:500">INV001</td>
+          <td class="table-cell">Paid</td>
+          <td class="table-cell" style="text-align:right">$250.00</td>
+        </tr>
+        <tr class="table-row">
+          <td class="table-cell" style="font-weight:500">INV002</td>
+          <td class="table-cell">Pending</td>
+          <td class="table-cell" style="text-align:right">$150.00</td>
+        </tr>
+        <tr class="table-row">
+          <td class="table-cell" style="font-weight:500">INV003</td>
+          <td class="table-cell">Unpaid</td>
+          <td class="table-cell" style="text-align:right">$350.00</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr class="table-row">
+          <td class="table-cell" colspan="2">Total</td>
+          <td class="table-cell" style="text-align:right;font-weight:600">$750.00</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+  <ExampleCode>{"<table class=\"table\">\n  <caption class=\"table-caption\">Recent invoices</caption>\n  <thead>...</thead>\n  <tbody>...</tbody>\n  <tfoot>\n    <tr class=\"table-row\">\n      <td class=\"table-cell\" colspan=\"2\">Total</td>\n      <td class=\"table-cell\" style=\"text-align:right\">$750.00</td>\n    </tr>\n  </tfoot>\n</table>"}</ExampleCode>
+</Example>
+
+<SourceFiles component="table" section="css">
+  <SourceNote for="css">Styles for the table component. Uses design tokens for colors, spacing, and radius.</SourceNote>
+</SourceFiles>
+
+</DocPage>

@@ -1,0 +1,180 @@
+---
+title: "Avatar"
+description: "Avatar component — circular user images with fallback initials."
+slug: "avatar"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="avatar" title="Avatar" component="avatar">
+  An image element with a fallback for representing the user. Supports sizes, status badges, and avatar groups.
+</PageHeader>
+
+<SkillPanel component="avatar">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;img&gt;</code> element wrapped in a container <code>&lt;span&gt;</code> with a text fallback for when the image fails to load.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img" title="image element with `onerror` fallback"><code>&lt;img&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="toggle fallback visibility based on image state"><code>:has() selector</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.avatar</code>
+    <code>.avatar-image</code>
+    <code>.avatar-fallback</code>
+    <code>.avatar-badge</code>
+    <code>.avatar-group</code>
+    <code>.avatar-group-count</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Sizes (data-size)">
+<SkillGrid>
+    <Variant name="xs" description="Size: 1.5rem" />
+    <Variant name="sm" description="Size: 2rem" />
+    <Variant name="md" description="Size: 2.5rem (default)" />
+    <Variant name="lg" description="Size: 3rem" />
+    <Variant name="xl" description="Size: 4rem" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText>• <code>data-error</code></SkillText>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• <code>&lt;img&gt;</code> must have an <code>alt</code> attribute describing the user</SkillText>
+  <SkillText dense>• Fallback text should be initials or a meaningful abbreviation</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• Avatar badge should use <code>aria-label</code> to convey status when meaningful</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Basic</ExampleLabel>
+  <ExampleHint>Avatar with image and fallback.</ExampleHint>
+  <div style="display:flex;gap:1.0rem;align-items:center;">
+    <span class="avatar" data-state-demo>
+      <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn" />
+      <span class="avatar-fallback">CN</span>
+    </span>
+    <span class="avatar">
+      <span class="avatar-fallback">JD</span>
+    </span>
+  </div>
+  <ExampleCode>{"<span class=\"avatar\">\n  <img class=\"avatar-image\" src=\"...\" alt=\"@shadcn\" />\n  <span class=\"avatar-fallback\">CN</span>\n</span>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Sizes</ExampleLabel>
+  <ExampleHint>The full five-step scale via <code>data-size</code> — the default equals <code>md</code>.</ExampleHint>
+  <div style="display:flex;gap:1.0rem;align-items:center;">
+    <span class="avatar" data-size="xs">
+      <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn" />
+      <span class="avatar-fallback">CN</span>
+    </span>
+    <span class="avatar" data-size="sm">
+      <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn" />
+      <span class="avatar-fallback">CN</span>
+    </span>
+    <span class="avatar" data-size="md">
+      <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn" />
+      <span class="avatar-fallback">CN</span>
+    </span>
+    <span class="avatar" data-size="lg">
+      <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn" />
+      <span class="avatar-fallback">CN</span>
+    </span>
+    <span class="avatar" data-size="xl">
+      <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn" />
+      <span class="avatar-fallback">CN</span>
+    </span>
+  </div>
+  <ExampleCode>{"<span class=\"avatar\" data-size=\"xs\">...</span>\n<span class=\"avatar\" data-size=\"sm\">...</span>\n<span class=\"avatar\" data-size=\"md\">...</span>\n<span class=\"avatar\" data-size=\"lg\">...</span>\n<span class=\"avatar\" data-size=\"xl\">...</span>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>With Badge</ExampleLabel>
+  <ExampleHint>Status indicator badge positioned at the bottom-right.</ExampleHint>
+  <div style="display:flex;gap:1.0rem;align-items:center;">
+    <span class="avatar">
+      <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn" />
+      <span class="avatar-fallback">CN</span>
+      <span class="avatar-badge" />
+    </span>
+    <span class="avatar">
+      <span class="avatar-fallback">JD</span>
+      <span class="avatar-badge" />
+    </span>
+  </div>
+  <ExampleCode>{"<span class=\"avatar\">\n  <img class=\"avatar-image\" src=\"...\" alt=\"@shadcn\" />\n  <span class=\"avatar-fallback\">CN</span>\n  <span class=\"avatar-badge\"></span>\n</span>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Avatar Group</ExampleLabel>
+  <ExampleHint>Overlapping avatars with an optional count.</ExampleHint>
+  <div class="avatar-group">
+    <span class="avatar">
+      <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn" />
+      <span class="avatar-fallback">CN</span>
+    </span>
+    <span class="avatar">
+      <img class="avatar-image" src="https://github.com/maxleiter.png" alt="@maxleiter" />
+      <span class="avatar-fallback">ML</span>
+    </span>
+    <span class="avatar">
+      <img class="avatar-image" src="https://github.com/evilrabbit.png" alt="@evilrabbit" />
+      <span class="avatar-fallback">ER</span>
+    </span>
+    <span class="avatar-group-count">+3</span>
+  </div>
+  <ExampleCode>{"<div class=\"avatar-group\">\n  <span class=\"avatar\">\n    <img class=\"avatar-image\" src=\"...\" alt=\"...\" />\n    <span class=\"avatar-fallback\">CN</span>\n  </span>\n  <span class=\"avatar\">...</span>\n  <span class=\"avatar\">...</span>\n  <span class=\"avatar-group-count\">+3</span>\n</div>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>In a Card</ExampleLabel>
+  <ExampleHint>Avatar composed with <code>.card</code>, <code>.badge</code>, and <code>.btn</code> for a user profile pattern.</ExampleHint>
+  <article class="card" style="width:18rem;">
+    <div class="card-header" style="display:flex;flex-direction:row;align-items:center;gap:0.75rem;">
+      <span class="avatar">
+        <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn" />
+        <span class="avatar-fallback">CN</span>
+        <span class="avatar-badge" />
+      </span>
+      <div style="flex:1;min-width:0;">
+        <p style="margin:0;font-weight:500;font-size:0.875rem;">Cody Lindley</p>
+        <p style="margin:0;font-size:0.75rem;color:var(--muted-foreground);">cody@example.com</p>
+      </div>
+      <span class="badge" data-variant="secondary">Admin</span>
+    </div>
+    <div class="card-footer mt-1">
+      <button class="btn" data-variant="outline" data-size="sm" style="width:100%;">View Profile</button>
+    </div>
+  </article>
+  <ExampleCode>{"<article class=\"card\">\n  <div class=\"card-header\">\n    <span class=\"avatar\">...</span>\n    <div>Name / Email</div>\n    <span class=\"badge\" data-variant=\"secondary\">Admin</span>\n  </div>\n  <div class=\"card-footer\">\n    <button class=\"btn\" data-variant=\"outline\">View Profile</button>\n  </div>\n</article>"}</ExampleCode>
+</Example>
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
+    <li><code>default</code> — image shown (or fallback when there is no image)</li>
+    <li><code>error</code> — the broken-image look, forced without a network failure (same DOM changes a real <code>error</code> event makes)</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/avatar-\{state\}.png</code>.</p>
+</StatesSection>
+
+<SourceFiles component="avatar" section="css">
+  <SourceNote for="css">Hide fallback when image is loaded</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="avatar" section="js">
+  <SourceNote for="js">Interaction logic for the avatar component. Uses data attributes for wiring.</SourceNote>
+</SourceFiles>
+
+</DocPage>

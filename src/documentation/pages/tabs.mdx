@@ -1,0 +1,213 @@
+---
+title: "Tabs"
+description: "Tabs component — tabbed content panels with keyboard navigation."
+slug: "tabs"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="tabs" title="Tabs" component="tabs">
+  Organize content into switchable panels. Uses WAI-ARIA Tabs pattern with roving <code>tabindex</code> and arrow key navigation. Available in pill and line variants.
+</PageHeader>
+
+<SkillPanel component="tabs">
+  <SkillField label="Native basis">
+<SkillText><code>role="tablist"</code> + <code>role="tab"</code> + <code>role="tabpanel"</code>. No native HTML element</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://www.w3.org/WAI/ARIA/apg/patterns/tabs/" title="role contract (`tablist`, `tab`, `tabpanel`) and roving tabindex keyboard navigation"><code>WAI-ARIA Tabs pattern</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="auto-detects vertical orientation for layout switching"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible" title="keyboard-only focus ring"><code>:focus-visible</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="suppresses tab transitions"><code>prefers-reduced-motion</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" title="maps active tab to system Highlight"><code>forced-colors</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.tab-list</code>
+    <code>.tab-trigger</code>
+    <code>.tabs</code>
+    <code>.tab-content</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Variants (data-variant)">
+<SkillGrid>
+    <Variant name="line" description="Underline indicator, transparent background" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Keyboard">
+<SkillGrid>
+    <Variant name="Key" description="Behavior" />
+    <Variant name="Tab" description="Move focus to active tab, then into the active panel" />
+    <Variant name="ArrowRight" description="Move to next tab (horizontal) and activate" />
+    <Variant name="ArrowLeft" description="Move to previous tab (horizontal) and activate" />
+    <Variant name="ArrowDown" description="Move to next tab (vertical) and activate" />
+    <Variant name="ArrowUp" description="Move to previous tab (vertical) and activate" />
+    <Variant name="Home" description="Move to first tab and activate" />
+    <Variant name="End" description="Move to last tab and activate" />
+    <Variant name="Space/Enter" description="Activate focused tab (manual activation mode)" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• Only the active tab is in the tab order (<code>tabindex="0"</code>) — inactive tabs use <code>tabindex="-1"</code></SkillText>
+  <SkillText dense>• Arrow keys cycle through tabs (wrap around) — this is the roving tabindex pattern</SkillText>
+  <SkillText dense>• The active panel uses <code>tabindex="0"</code> so it can receive focus from the tab trigger</SkillText>
+  <SkillText dense>• Use <code>hidden</code> attribute on inactive panels for accessibility (screen readers skip them)</SkillText>
+  <SkillText dense>• Disabled tabs should have <code>disabled</code> attribute and be skipped by keyboard navigation</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• For lazy-loaded content, panels can be rendered empty and populated on activation</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first previewStyle="flex-direction:column;align-items:stretch;padding:2rem 2.5rem;">
+  <ExampleLabel>Pill Variant (Default)</ExampleLabel>
+  <ExampleHint>Default style with <code>--muted</code> background. Active tab gets <code>--background</code> fill and shadow.</ExampleHint>
+  <div class="tabs">
+    <div class="tab-list" role="tablist" aria-label="Account settings" id="demo-tablist-pill">
+      <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="pill-panel-account" id="pill-tab-account">Account</button>
+      <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="pill-panel-password" id="pill-tab-password" tabindex="-1" data-state-demo>Password</button>
+    </div>
+    <div class="tab-content" role="tabpanel" id="pill-panel-account" aria-labelledby="pill-tab-account" tabindex="0">
+      <div class="card" style="max-width:24rem;">
+        <div class="card-header">
+          <h3 class="card-title" style="font-size:1rem;">Account</h3>
+          <p class="card-description">Make changes to your account here.</p>
+        </div>
+        <div class="card-content" style="display:flex;flex-direction:column;gap:0.75rem;">
+          <div>
+            <label class="label" for="demo-tab-name">Name</label>
+            <input class="input" id="demo-tab-name" type="text" value="Cody Lindley" />
+          </div>
+          <div>
+            <label class="label" for="demo-tab-user">Username</label>
+            <input class="input" id="demo-tab-user" type="text" value="@kyr0" />
+          </div>
+        </div>
+        <div class="card-footer">
+          <button class="btn" data-variant="default">Save changes</button>
+        </div>
+      </div>
+    </div>
+    <div class="tab-content" role="tabpanel" id="pill-panel-password" aria-labelledby="pill-tab-password" tabindex="0" hidden>
+      <div class="card" style="max-width:24rem;">
+        <div class="card-header">
+          <h3 class="card-title" style="font-size:1rem;">Password</h3>
+          <p class="card-description">Change your password here.</p>
+        </div>
+        <div class="card-content" style="display:flex;flex-direction:column;gap:0.75rem;">
+          <div>
+            <label class="label" for="demo-tab-current">Current password</label>
+            <input class="input" id="demo-tab-current" type="password" />
+          </div>
+          <div>
+            <label class="label" for="demo-tab-new">New password</label>
+            <input class="input" id="demo-tab-new" type="password" />
+          </div>
+        </div>
+        <div class="card-footer">
+          <button class="btn" data-variant="default">Save password</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ExampleCode>{"<div class=\"tabs\">\n  <div class=\"tab-list\" role=\"tablist\" aria-label=\"Account settings\">\n    <button class=\"tab-trigger\" role=\"tab\"\n            aria-selected=\"true\"\n            aria-controls=\"pill-panel-account\"\n            id=\"pill-tab-account\">Account</button>\n    <button class=\"tab-trigger\" role=\"tab\"\n            aria-selected=\"false\"\n            aria-controls=\"pill-panel-password\"\n            id=\"pill-tab-password\"\n            tabindex=\"-1\">Password</button>\n  </div>\n\n  <div class=\"tab-content\" role=\"tabpanel\"\n       id=\"pill-panel-account\"\n       aria-labelledby=\"pill-tab-account\"\n       tabindex=\"0\">\n    <div class=\"card\" style=\"max-width:24rem;\">\n      <div class=\"card-header\">\n        <h3 class=\"card-title\" style=\"font-size:1rem;\">Account</h3>\n        <p class=\"card-description\">Make changes to your account here.</p>\n      </div>\n      <div class=\"card-content\" style=\"display:flex;flex-direction:column;gap:0.75rem;\">\n        <div>\n          <label class=\"label\" for=\"demo-tab-name\">Name</label>\n          <input class=\"input\" id=\"demo-tab-name\" type=\"text\" value=\"Cody Lindley\">\n        </div>\n        <div>\n          <label class=\"label\" for=\"demo-tab-user\">Username</label>\n          <input class=\"input\" id=\"demo-tab-user\" type=\"text\" value=\"@kyr0\">\n        </div>\n      </div>\n      <div class=\"card-footer\">\n        <button class=\"btn\" data-variant=\"default\">Save changes</button>\n      </div>\n    </div>\n  </div>\n\n  <div class=\"tab-content\" role=\"tabpanel\"\n       id=\"pill-panel-password\"\n       aria-labelledby=\"pill-tab-password\"\n       tabindex=\"0\" hidden>\n    <div class=\"card\" style=\"max-width:24rem;\">\n      <div class=\"card-header\">\n        <h3 class=\"card-title\" style=\"font-size:1rem;\">Password</h3>\n        <p class=\"card-description\">Change your password here.</p>\n      </div>\n      <div class=\"card-content\" style=\"display:flex;flex-direction:column;gap:0.75rem;\">\n        <div>\n          <label class=\"label\" for=\"demo-tab-current\">Current password</label>\n          <input class=\"input\" id=\"demo-tab-current\" type=\"password\">\n        </div>\n        <div>\n          <label class=\"label\" for=\"demo-tab-new\">New password</label>\n          <input class=\"input\" id=\"demo-tab-new\" type=\"password\">\n        </div>\n      </div>\n      <div class=\"card-footer\">\n        <button class=\"btn\" data-variant=\"default\">Save password</button>\n      </div>\n    </div>\n  </div>\n</div>"}</ExampleCode>
+</Example>
+
+<Example previewStyle="flex-direction:column;align-items:stretch;padding:2rem 2.5rem;">
+  <ExampleLabel>Line Variant with Disabled Tab</ExampleLabel>
+  <ExampleHint>Add <code>data-variant="line"</code> to the <code>.tab-list</code> for an underline style. Disabled tabs use the native <code>disabled</code> attribute.</ExampleHint>
+  <div class="tabs">
+    <div class="tab-list" role="tablist" aria-label="Dashboard" data-variant="line" id="demo-tablist-line">
+      <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="line-panel-overview" id="line-tab-overview">Overview</button>
+      <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="line-panel-analytics" id="line-tab-analytics" tabindex="-1">Analytics</button>
+      <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="line-panel-reports" id="line-tab-reports" tabindex="-1" disabled>Reports</button>
+    </div>
+    <div class="tab-content" role="tabpanel" id="line-panel-overview" aria-labelledby="line-tab-overview" tabindex="0">
+      <p class="text-muted-foreground" style="font-size:0.875rem;padding:1rem 0;">Overview dashboard content goes here. This is the default active panel.</p>
+    </div>
+    <div class="tab-content" role="tabpanel" id="line-panel-analytics" aria-labelledby="line-tab-analytics" tabindex="0" hidden>
+      <p class="text-muted-foreground" style="font-size:0.875rem;padding:1rem 0;">Analytics panel with charts and metrics.</p>
+    </div>
+    <div class="tab-content" role="tabpanel" id="line-panel-reports" aria-labelledby="line-tab-reports" tabindex="0" hidden>
+      <p class="text-muted-foreground" style="font-size:0.875rem;padding:1rem 0;">Reports panel with exportable data tables.</p>
+    </div>
+  </div>
+  <ExampleCode>{"<div class=\"tabs\">\n  <div class=\"tab-list\" role=\"tablist\" aria-label=\"Dashboard\"\n       data-variant=\"line\">\n    <button class=\"tab-trigger\" role=\"tab\"\n            aria-selected=\"true\"\n            aria-controls=\"line-panel-overview\"\n            id=\"line-tab-overview\">Overview</button>\n    <button class=\"tab-trigger\" role=\"tab\"\n            aria-selected=\"false\"\n            aria-controls=\"line-panel-analytics\"\n            id=\"line-tab-analytics\"\n            tabindex=\"-1\">Analytics</button>\n    <button class=\"tab-trigger\" role=\"tab\"\n            aria-selected=\"false\"\n            aria-controls=\"line-panel-reports\"\n            id=\"line-tab-reports\"\n            tabindex=\"-1\"\n            disabled>Reports</button>\n  </div>\n\n  <div class=\"tab-content\" role=\"tabpanel\"\n       id=\"line-panel-overview\"\n       aria-labelledby=\"line-tab-overview\"\n       tabindex=\"0\">\n    <p class=\"text-muted-foreground\" style=\"font-size:0.875rem;\" style=\"padding:1rem 0;\">\n      Overview dashboard content goes here.\n    </p>\n  </div>\n  <div class=\"tab-content\" role=\"tabpanel\"\n       id=\"line-panel-analytics\"\n       aria-labelledby=\"line-tab-analytics\"\n       tabindex=\"0\" hidden>\n    <p class=\"text-muted-foreground\" style=\"font-size:0.875rem;\" style=\"padding:1rem 0;\">\n      Analytics panel with charts and metrics.\n    </p>\n  </div>\n  <div class=\"tab-content\" role=\"tabpanel\"\n       id=\"line-panel-reports\"\n       aria-labelledby=\"line-tab-reports\"\n       tabindex=\"0\" hidden>\n    <p class=\"text-muted-foreground\" style=\"font-size:0.875rem;\" style=\"padding:1rem 0;\">\n      Reports panel with exportable data tables.\n    </p>\n  </div>\n</div>"}</ExampleCode>
+</Example>
+
+<Example previewStyle="flex-direction:column;align-items:stretch;padding:2rem 2.5rem;">
+  <ExampleLabel>Vertical Orientation</ExampleLabel>
+  <ExampleHint>Set <code>aria-orientation="vertical"</code> on the tablist. CSS uses <code>:has()</code> to switch to a side-by-side layout automatically.</ExampleHint>
+  <div class="tabs">
+    <div class="tab-list" role="tablist" aria-label="Settings" aria-orientation="vertical" id="demo-tablist-vert">
+      <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="vert-panel-general" id="vert-tab-general">General</button>
+      <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="vert-panel-security" id="vert-tab-security" tabindex="-1">Security</button>
+      <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="vert-panel-notif" id="vert-tab-notif" tabindex="-1">Notifications</button>
+    </div>
+    <div class="tab-content" role="tabpanel" id="vert-panel-general" aria-labelledby="vert-tab-general" tabindex="0">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title" style="font-size:1rem;">General Settings</h3>
+          <p class="card-description">Manage your general account preferences.</p>
+        </div>
+        <div class="card-content" style="display:flex;flex-direction:column;gap:0.75rem;">
+          <div>
+            <label class="label" for="vert-display">Display name</label>
+            <input class="input" id="vert-display" type="text" value="Cody Lindley" />
+          </div>
+          <div>
+            <label class="label" for="vert-email">Email</label>
+            <input class="input" id="vert-email" type="email" value="cody@example.com" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-content" role="tabpanel" id="vert-panel-security" aria-labelledby="vert-tab-security" tabindex="0" hidden>
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title" style="font-size:1rem;">Security</h3>
+          <p class="card-description">Configure your security settings.</p>
+        </div>
+        <div class="card-content">
+          <p class="text-muted-foreground" style="font-size:0.875rem;">Two-factor authentication, session management, and login history.</p>
+        </div>
+      </div>
+    </div>
+    <div class="tab-content" role="tabpanel" id="vert-panel-notif" aria-labelledby="vert-tab-notif" tabindex="0" hidden>
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title" style="font-size:1rem;">Notifications</h3>
+          <p class="card-description">Choose what you want to be notified about.</p>
+        </div>
+        <div class="card-content">
+          <p class="text-muted-foreground" style="font-size:0.875rem;">Email notifications, push alerts, and digest preferences.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ExampleCode>{"<div class=\"tabs\">\n  <div class=\"tab-list\" role=\"tablist\"\n       aria-label=\"Settings\"\n       aria-orientation=\"vertical\">\n    <button class=\"tab-trigger\" role=\"tab\"\n            aria-selected=\"true\"\n            aria-controls=\"vert-panel-general\"\n            id=\"vert-tab-general\">General</button>\n    <button class=\"tab-trigger\" role=\"tab\"\n            aria-selected=\"false\"\n            aria-controls=\"vert-panel-security\"\n            id=\"vert-tab-security\"\n            tabindex=\"-1\">Security</button>\n    <button class=\"tab-trigger\" role=\"tab\"\n            aria-selected=\"false\"\n            aria-controls=\"vert-panel-notif\"\n            id=\"vert-tab-notif\"\n            tabindex=\"-1\">Notifications</button>\n  </div>\n\n  <div class=\"tab-content\" role=\"tabpanel\"\n       id=\"vert-panel-general\"\n       aria-labelledby=\"vert-tab-general\"\n       tabindex=\"0\">\n    <div class=\"card\">\n      <div class=\"card-header\">\n        <h3 class=\"card-title\" style=\"font-size:1rem;\">General Settings</h3>\n        <p class=\"card-description\">Manage your general account preferences.</p>\n      </div>\n      <div class=\"card-content\" style=\"display:flex;flex-direction:column;gap:0.75rem;\">\n        <div>\n          <label class=\"label\" for=\"vert-display\">Display name</label>\n          <input class=\"input\" id=\"vert-display\" type=\"text\" value=\"Cody Lindley\">\n        </div>\n        <div>\n          <label class=\"label\" for=\"vert-email\">Email</label>\n          <input class=\"input\" id=\"vert-email\" type=\"email\" value=\"cody@example.com\">\n        </div>\n      </div>\n    </div>\n  </div>\n\n  <div class=\"tab-content\" role=\"tabpanel\"\n       id=\"vert-panel-security\"\n       aria-labelledby=\"vert-tab-security\"\n       tabindex=\"0\" hidden>\n    <div class=\"card\">\n      <div class=\"card-header\">\n        <h3 class=\"card-title\" style=\"font-size:1rem;\">Security</h3>\n        <p class=\"card-description\">Configure your security settings.</p>\n      </div>\n      <div class=\"card-content\">\n        <p class=\"text-muted-foreground\" style=\"font-size:0.875rem;\">Two-factor authentication, session management, and login history.</p>\n      </div>\n    </div>\n  </div>\n\n  <div class=\"tab-content\" role=\"tabpanel\"\n       id=\"vert-panel-notif\"\n       aria-labelledby=\"vert-tab-notif\"\n       tabindex=\"0\" hidden>\n    <div class=\"card\">\n      <div class=\"card-header\">\n        <h3 class=\"card-title\" style=\"font-size:1rem;\">Notifications</h3>\n        <p class=\"card-description\">Choose what you want to be notified about.</p>\n      </div>\n      <div class=\"card-content\">\n        <p class=\"text-muted-foreground\" style=\"font-size:0.875rem;\">Email notifications, push alerts, and digest preferences.</p>\n      </div>\n    </div>\n  </div>\n</div>"}</ExampleCode>
+</Example>
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
+    <li><code>default</code> — this tab's authored selection (setState restores the snapshot taken at init)</li>
+    <li><code>active</code> — this tab is selected and its panel visible (per-tab API; selection stays exclusive)</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/tabs-\{state\}.png</code>.</p>
+</StatesSection>
+
+<SourceFiles component="tabs" section="css" />
+
+<SourceFiles component="tabs" section="js">
+  <SourceNote for="js">Panel switching + WAI-ARIA keyboard navigation. Arrow keys cycle tabs, Home/End jump to first/last, disabled tabs are skipped automatically.</SourceNote>
+</SourceFiles>
+
+</DocPage>

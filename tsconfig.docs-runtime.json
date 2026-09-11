@@ -1,0 +1,19 @@
+{
+  // Compiles the docs client runtime (src/documentation/runtime/*.ts) to
+  // plain JS in src/documentation/public/js/ — the SSG build copies public/
+  // verbatim into dist/documentation/. Same strip-types pipeline as the root
+  // tsconfig, separate rootDir/outDir so paths stay flat.
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "lib": ["esnext", "dom", "dom.iterable"],
+    "rootDir": "src/documentation/runtime",
+    "outDir": "src/documentation/public/js",
+    "noCheck": true,
+    "removeComments": false,
+    "skipLibCheck": true,
+    "sourceMap": false
+  },
+  "include": ["src/documentation/runtime/**/*.ts"]
+}

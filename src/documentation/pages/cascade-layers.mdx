@@ -1,0 +1,176 @@
+---
+title: "Cascade Layers"
+description: "How defuss-shadcn uses CSS @layer to keep component styles predictable and easy to override."
+slug: "cascade-layers"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="cascade-layers" title="Cascade Layers" introStyle="max-width:38rem;">
+  Every component stylesheet wraps its rules in <code>@layer components</code>. This is a single architectural decision that gives you guaranteed override power — your own unlayered CSS takes precedence over layered component defaults, without <code>!important</code>.
+</PageHeader>
+
+<H2>What is <code>@layer</code>?</H2>
+
+<p class="text-sm text-muted-foreground mb-5"><DocLink href="https://developer.mozilla.org/en-US/docs/Web/CSS/@layer" target="_blank">CSS Cascade Layers</DocLink> are a native browser feature that lets stylesheets declare <em>which bucket</em> their rules belong to. When two selectors have the same specificity, the browser uses layer order to decide which one wins. The key insight: <strong>for normal rules, unlayered styles beat layered styles</strong>, regardless of selector specificity. </p>
+
+<CodeCard title="the rule in one sentence" lang="css" mb="2.5rem"><Dim>{"/* Layered — from a component stylesheet */"}</Dim>{"\n@layer components {\n  .btn { background: var(--primary); }\n}\n\n"}<Dim>{"/* Unlayered — your CSS */"}</Dim>{"\n.btn { background: tomato; }\n\n"}<Dim>{"/* Result: tomato wins. Always. No !important needed. */"}</Dim></CodeCard>
+
+<div class="sep" />
+
+<H2>How defuss-shadcn uses it</H2>
+
+<p class="text-sm text-muted-foreground mb-5">Every component CSS file — button, card, dialog, all of them — wraps all of its rules inside a single layer declaration:</p>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(16rem, 1fr));gap:1rem;margin-bottom:1.5rem;">
+  <CodeCard title="components/button/button.css" lang="css" column>{"@layer components {\n  .btn {\n    display: inline-flex;\n    align-items: center;\n    justify-content: center;\n    background: var(--primary);\n    color: var(--primary-foreground);\n    border-radius: var(--radius-md);\n    /* ... all button rules ... */\n  }\n\n  .btn[data-variant=\"outline\"] {\n    background: transparent;\n    border: 1px solid var(--border);\n  }\n}"}</CodeCard>
+  <CodeCard title="components/card/card.css" lang="css" column>{"@layer components {\n  .card {\n    background-color: var(--card);\n    color: var(--card-foreground);\n    border: 1px solid var(--border);\n    border-radius: var(--radius-xl);\n    /* ... all card rules ... */\n  }\n\n  .card-header {\n    padding: 1.5rem;\n  }\n}"}</CodeCard>
+</div>
+
+<p class="text-sm text-muted-foreground mb-8">The design tokens file (<code>default-semantic-tokens.css</code>) is intentionally <strong>not</strong> layered — token values sit at the top of the cascade so they're always available to both component and user styles.</p>
+
+<div class="sep" />
+
+<H2>The cascade order</H2>
+
+<p class="text-sm text-muted-foreground mb-5">Here's what the browser sees, from lowest to highest priority:</p>
+
+<div style="display:flex;flex-direction:column;gap:0;margin-bottom:2.5rem;">
+  <div style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;border:1px solid var(--border);border-radius:var(--radius-xl) var(--radius-xl) 0 0;background:var(--muted);">
+    <span style="width:1.625rem;height:1.625rem;border-radius:50%;background:var(--muted-foreground);color:var(--background);font-size:0.6875rem;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</span>
+    <div>
+      <code style="font-size:0.8125rem;font-weight:600;">@layer components</code>
+      <span class="text-sm text-muted-foreground" style="display:block;margin-top:0.125rem;">All component CSS — button, card, dialog, etc. Lowest priority.</span>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;border:1px solid var(--border);border-top:0;">
+    <span style="width:1.625rem;height:1.625rem;border-radius:50%;background:var(--muted-foreground);color:var(--background);font-size:0.6875rem;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</span>
+    <div>
+      <code style="font-size:0.8125rem;font-weight:600;">default-semantic-tokens.css</code>
+      <span class="text-sm text-muted-foreground" style="display:block;margin-top:0.125rem;">Design tokens (<code>:root</code> custom properties). Unlayered — always available.</span>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;border:1px solid var(--primary);border-top:0;border-radius:0 0 var(--radius-xl) var(--radius-xl);background:var(--primary);color:var(--primary-foreground);">
+    <span style="width:1.625rem;height:1.625rem;border-radius:50%;background:var(--primary-foreground);color:var(--primary);font-size:0.6875rem;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</span>
+    <div>
+      <span style="font-size:0.8125rem;font-weight:600;">Your styles</span>
+      <span style="display:block;margin-top:0.125rem;font-size:0.8125rem;opacity:0.85;">Any unlayered CSS you write. Higher priority than the component layer.</span>
+    </div>
+  </div>
+</div>
+
+<p class="text-sm text-muted-foreground mb-5"> Because component rules live inside <code>@layer components</code> and your CSS is unlayered, the browser gives your styles higher cascade priority automatically. You never need to out-specify a component selector or reach for <code>!important</code> just to beat a default component rule. </p>
+
+<p class="text-sm text-muted-foreground mb-8"><strong>Note:</strong> Tokens and your styles are <em>both</em> unlayered — between them, normal specificity and source order apply. Tokens don't compete with your component overrides because they only define <code>:root</code> custom properties, not component selectors. </p>
+
+<div class="sep" />
+
+<H2>Overriding component styles</H2>
+
+<p class="text-sm text-muted-foreground mb-5">Write your overrides in a regular, unlayered stylesheet. They'll always take precedence.</p>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(16rem, 1fr));gap:1rem;margin-bottom:1.5rem;">
+  <CodeCard title="components/button/button.css (layered)" lang="css" column>{"@layer components {\n  .btn {\n    border-radius: var(--radius-md);\n    font-weight: 500;\n    height: 2.25rem;\n  }\n}"}</CodeCard>
+  <CodeCard title="my-overrides.css (unlayered — wins)" lang="css" column><Dim>{"/* Make buttons fully rounded */"}</Dim>{"\n.btn {\n  border-radius: 9999px;\n}\n\n"}<Dim>{"/* Make outline buttons thicker */"}</Dim>{"\n.btn[data-variant=\"outline\"] {\n  border-width: 2px;\n}"}</CodeCard>
+</div>
+
+<p class="text-sm text-muted-foreground mb-3">Include your override file <strong>after</strong> the component stylesheets:</p>
+
+<CodeCard title="HTML — load order" lang="markup" mb="2.5rem">{"<"}{"link rel=\"stylesheet\" href=\"theme/default-semantic-tokens.css\""}{">"}{"<"}{"link rel=\"stylesheet\" href=\"components/button/button.css\""}{">"}{"<"}{"link rel=\"stylesheet\" href=\"components/card/card.css\""}{">"}<Dim>{"<!-- Your overrides — unlayered, beats the component layer -->"}</Dim>{"<"}{"link rel=\"stylesheet\" href=\"my-overrides.css\""}{">"}</CodeCard>
+
+<div class="sep" />
+
+<H2>Using with other CSS frameworks</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> If you're mixing defuss-shadcn components with another CSS framework that uses its own <code>@layer</code> declarations, you can declare an explicit layer order at the top of your main stylesheet to control priority: </p>
+
+<CodeCard title="main.css — explicit layer order" lang="css" mb="1.5rem"><Dim>{"/* Declare layer order: first listed = lowest priority */"}</Dim>{"\n@layer components, utilities;\n\n"}<Dim>{"/* Now framework utilities beat defuss-shadcn component styles,\n   and your unlayered CSS beats everything. */"}</Dim></CodeCard>
+
+<p class="text-sm text-muted-foreground mb-8"> Without an explicit order declaration, layers are ordered by first appearance in the stylesheet. The explicit declaration gives you full control regardless of import order. </p>
+
+<div class="sep" />
+
+<H2>Why not just write unlayered CSS?</H2>
+
+<p class="text-sm text-muted-foreground mb-5">Traditional CSS libraries (Bootstrap, Bulma) ship unlayered styles. That creates problems when you try to customize them.</p>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(16rem, 1fr));gap:1rem;margin-bottom:2.5rem;">
+  <CodeCard title="Without @layer" lang="css" column><Dim>{"/* Library: high specificity */"}</Dim>{"\n.btn.btn-primary { background: blue; }\n\n"}<Dim>{"/* Your override: loses */"}</Dim>{"\n.btn { background: tomato; }  "}<Dim>{"/* ✗ */"}</Dim><Dim>{"/* Forced to escalate */"}</Dim>{"\n.btn { background: tomato !important; }"}</CodeCard>
+  <CodeCard title="With @layer (defuss-shadcn)" lang="css" column><Dim>{"/* Library: layered */"}</Dim>{"\n@layer components {\n  .btn { background: var(--primary); }\n}\n\n"}<Dim>{"/* Your override: unlayered */"}</Dim>{"\n.btn { background: tomato; }  "}<Dim>{"/* ✓ wins */"}</Dim><Dim>{"/* No !important needed. */"}</Dim></CodeCard>
+</div>
+
+<div style="display:grid;grid-template-columns:auto 1fr;gap:0.5rem 1rem;margin-bottom:2.5rem;align-items:baseline;">
+  <span style="font-weight:600;font-size:0.8125rem;">Clean overrides</span>
+  <span class="text-sm text-muted-foreground">Your CSS beats layered component defaults without <code>!important</code> or specificity hacks.</span>
+  <span style="font-weight:600;font-size:0.8125rem;">Predictable cascade</span>
+  <span class="text-sm text-muted-foreground">Component internals can use any selector complexity — it won't leak into your layer.</span>
+  <span style="font-weight:600;font-size:0.8125rem;">Composable layers</span>
+  <span class="text-sm text-muted-foreground">Works cleanly alongside other libraries or your own <code>@layer</code> declarations.</span>
+  <span style="font-weight:600;font-size:0.8125rem;">Future-proof</span>
+  <span class="text-sm text-muted-foreground"><code>@layer</code> is a W3C standard, built into every modern browser. Not a framework convention.</span>
+</div>
+
+<p class="text-sm text-muted-foreground mb-8"><strong>A note on <code>!important</code>:</strong> Cascade layers reverse priority for <code>!important</code> rules — an <code>!important</code> declaration inside <code>@layer components</code> actually <em>beats</em> an unlayered <code>!important</code>. This system never uses <code>!important</code>, but be aware of this if you're mixing in third-party CSS that does. </p>
+
+<div class="sep" />
+
+<H2>Why not <code>@scope</code> or Web Components?</H2>
+
+<p class="text-sm text-muted-foreground mb-5">Shadow DOM creates a styling boundary that makes theming painful — external CSS can't reach inside, so every component needs its own token-plumbing or <code>::part()</code> surface. SSR is complex, framework interop suffers, and devtools show an extra layer of indirection. <code>@scope</code> strips context from class names, making selectors ambiguous outside their block. Both add abstraction that makes the system harder to read, generate, and modify — for humans and AI alike — so we use neither.</p>
+
+<div style="display:grid;grid-template-columns:auto 1fr;gap:0.5rem 1rem;margin-bottom:1.5rem;align-items:baseline;">
+  <span style="font-weight:600;font-size:0.8125rem;">Plain HTML is the simplest target</span>
+  <span class="text-sm text-muted-foreground">A <code>&lt;button class="btn" data-variant="outline"&gt;</code> is just HTML. No custom element registration, no shadow root, no template cloning. Nothing to misunderstand, nothing to get wrong.</span>
+  <span style="font-weight:600;font-size:0.8125rem;">Theming without boundaries</span>
+  <span class="text-sm text-muted-foreground">Shadow DOM blocks external stylesheets from reaching component internals. With plain HTML, your CSS custom properties and overrides apply everywhere — no <code>::part()</code> or adopted stylesheets required.</span>
+  <span style="font-weight:600;font-size:0.8125rem;">Flat, visible DOM</span>
+  <span class="text-sm text-muted-foreground">Shadow DOM hides structure behind custom elements and adds another inspection boundary. DevTools can still reveal open shadow roots, but plain HTML keeps every component directly visible in the main DOM tree and easier for tools to reason about.</span>
+  <span style="font-weight:600;font-size:0.8125rem;">Self-documenting class names</span>
+  <span class="text-sm text-muted-foreground">A class like <code>.card-header</code> carries its meaning in the name — it can be generated without knowing the surrounding markup. With <code>@scope</code>, a generic <code>.header</code> is ambiguous outside its block.</span>
+  <span style="font-weight:600;font-size:0.8125rem;">The cascade delivers context for free</span>
+  <span class="text-sm text-muted-foreground"><code>.card-title</code> inherits font and color tokens from its parent <code>.card</code> automatically. This inheritance <em>is</em> the context — the more of it embedded in the structure, the more reliably tools and AI produce correct output.</span>
+</div>
+
+<p class="text-sm text-muted-foreground mb-8">Simplicity isn't a limitation — it's a deliberate design choice. Every pattern in this system was chosen not just to avoid complexity, but to maximize theming flexibility, tooling compatibility, and the context available to AI.</p>
+
+<div class="sep" />
+
+<H2>Browser support</H2>
+
+<p class="text-sm text-muted-foreground mb-5"><code>@layer</code> is supported in all modern browsers. No polyfill needed. </p>
+
+<div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:1.5rem;">
+  <div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);">
+    <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">browser support</span>
+  </div>
+  <div style="padding:1rem 1.25rem;font-size:0.8125rem;">
+    <table class="table" data-variant="simple" style="margin:0;">
+      <thead>
+        <tr>
+          <th>Browser</th>
+          <th>Supported since</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Chrome / Edge</td>
+          <td>99 (March 2022)</td>
+        </tr>
+        <tr>
+          <td>Firefox</td>
+          <td>97 (February 2022)</td>
+        </tr>
+        <tr>
+          <td>Safari</td>
+          <td>15.4 (March 2022)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<p class="text-sm text-muted-foreground mb-3"> See <DocLink href="https://caniuse.com/css-cascade-layers" target="_blank">caniuse.com/css-cascade-layers</DocLink> and the <DocLink href="https://developer.mozilla.org/en-US/docs/Web/CSS/@layer" target="_blank">MDN @layer reference</DocLink> for full details. </p>
+
+</DocPage>

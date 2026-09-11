@@ -1,166 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="color-scheme" content="light dark">
-  <link rel="icon" href="images/favicon.webp" type="image/webp">
-  <meta name="description" content="Tabs component — tabbed content panels with keyboard navigation.">
-  <meta property="og:title" content="Tabs — defuss-shadcn">
-  <meta property="og:description" content="Tabs component — tabbed content panels with keyboard navigation.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://kyr0.github.io/defuss-shadcn/documentation/tabs.html">
-  <meta property="og:site_name" content="defuss-shadcn">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Tabs — defuss-shadcn">
-  <meta name="twitter:description" content="Tabs component — tabbed content panels with keyboard navigation.">
-  <title>Tabs — defuss-shadcn</title>
-  <script src="js/themes.js"></script>
-  <script src="js/theme-switcher.js"></script>
-  <script src="js/layout.js"></script>
-  <script src="js/search-index.js"></script>
-  <link rel="stylesheet" href="../theme/default-semantic-tokens.css">
-  <link rel="stylesheet" href="../theme/sizing.css">
-  <link rel="stylesheet" href="../theme/layout.css">
-  <link rel="stylesheet" href="css/docs-theme.css">
-  <link rel="stylesheet" href="css/docs-utilities.css">
-  <link rel="stylesheet" href="css/layout.css">
-  <link rel="stylesheet" href="../components/all.css">
-</head>
-<body>
-  <site-header></site-header>
-
-  <div class="flex" style="margin-top: 3.5rem; min-height: calc(100vh - 3.5rem);">
-    <site-nav></site-nav>
-
-    <main style="flex: 1; min-width: 0; max-width: 44rem; padding: 2rem 3.5rem 8rem;">
-      <div class="page-header">
-        <div class="flex items-baseline justify-between mb-1">
-          <p class="text-sm text-muted-foreground" style="font-family:var(--font-mono);">defuss-shadcn / tabs</p>
-          <div style="display:flex;align-items:baseline;gap:0.375rem;"><span class="text-xs text-muted-foreground" style="font-family:var(--font-mono);white-space:nowrap;">Built with:</span> <a href="#source-css" class="badge built-with-pill" data-variant="outline">CSS</a> <a href="#source-js" class="badge built-with-pill" data-variant="outline">JS</a></div>
-        </div>
-        <h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">Tabs<span class="type-badge" data-type="ATM" title="Atom">ATM</span></h1>
-        <p class="text-muted-foreground leading-relaxed mb-6">
-          Organize content into switchable panels. Uses WAI-ARIA Tabs pattern with
-          roving <code>tabindex</code> and arrow key navigation. Available in pill and line variants.
-        </p>
-        <!-- Component Skill -->
-        <details style="margin-bottom:2rem;border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;">
-          <summary style="padding:0.875rem 1.25rem;background:var(--muted);cursor:pointer;font-size:0.8125rem;font-weight:600;font-family:var(--font-mono);color:var(--muted-foreground);list-style:none;display:flex;align-items:center;gap:0.5rem;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 200ms;"><path d="m9 18 6-6-6-6"/></svg>
-            Component Skill — <span data-spec-href="../components/tabs/component-skill.md" style="text-decoration:underline;text-underline-offset:3px;">components/tabs/component-skill.md</span>
-          </summary>
-          <div style="padding:1.5rem;font-size:0.875rem;line-height:1.85;">
-            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Native basis</p>
-            <p class="text-muted-foreground" style="margin:0 0 1.25rem;"><code>role=&quot;tablist&quot;</code> + <code>role=&quot;tab&quot;</code> + <code>role=&quot;tabpanel&quot;</code>. No native HTML element</p>
-
-            <p style="margin:0 0 0.625rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Web Platform APIs</p>
-            <div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;">
-              <a href="https://www.w3.org/WAI/ARIA/apg/patterns/tabs/" target="_blank" rel="noopener" title="role contract (`tablist`, `tab`, `tabpanel`) and roving tabindex keyboard navigation" class="api-pill"><code>WAI-ARIA Tabs pattern</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" target="_blank" rel="noopener" title="auto-detects vertical orientation for layout switching" class="api-pill"><code>:has()</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible" target="_blank" rel="noopener" title="keyboard-only focus ring" class="api-pill"><code>:focus-visible</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" target="_blank" rel="noopener" title="suppresses tab transitions" class="api-pill"><code>prefers-reduced-motion</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" target="_blank" rel="noopener" title="maps active tab to system Highlight" class="api-pill"><code>forced-colors</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-            </div>
-
-            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Classes</p>
-            <div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;">
-              <code>.tab-list</code>
-              <code>.tab-trigger</code>
-              <code>.tabs</code>
-              <code>.tab-content</code>
-            </div>
-
-            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Variants (data-variant)</p>
-            <div style="display:grid;grid-template-columns:auto 1fr;gap:0.25rem 1rem;margin-bottom:1.25rem;">
-              <code>line</code><span class="text-muted-foreground">Underline indicator, transparent background</span>
-            </div>
-
-
-            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Keyboard</p>
-            <div style="display:grid;grid-template-columns:auto 1fr;gap:0.25rem 1rem;margin-bottom:1.25rem;">
-              <code>Key</code><span class="text-muted-foreground">Behavior</span>
-              <code>Tab</code><span class="text-muted-foreground">Move focus to active tab, then into the active panel</span>
-              <code>ArrowRight</code><span class="text-muted-foreground">Move to next tab (horizontal) and activate</span>
-              <code>ArrowLeft</code><span class="text-muted-foreground">Move to previous tab (horizontal) and activate</span>
-              <code>ArrowDown</code><span class="text-muted-foreground">Move to next tab (vertical) and activate</span>
-              <code>ArrowUp</code><span class="text-muted-foreground">Move to previous tab (vertical) and activate</span>
-              <code>Home</code><span class="text-muted-foreground">Move to first tab and activate</span>
-              <code>End</code><span class="text-muted-foreground">Move to last tab and activate</span>
-              <code>Space/Enter</code><span class="text-muted-foreground">Activate focused tab (manual activation mode)</span>
-            </div>
-
-
-            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Notes</p>
-            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Only the active tab is in the tab order (<code>tabindex=&quot;0&quot;</code>) — inactive tabs use <code>tabindex=&quot;-1&quot;</code></p>
-            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Arrow keys cycle through tabs (wrap around) — this is the roving tabindex pattern</p>
-            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• The active panel uses <code>tabindex=&quot;0&quot;</code> so it can receive focus from the tab trigger</p>
-            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Use <code>hidden</code> attribute on inactive panels for accessibility (screen readers skip them)</p>
-            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Disabled tabs should have <code>disabled</code> attribute and be skipped by keyboard navigation</p>
-            <p class="text-muted-foreground" style="margin:0 0 0;">• For lazy-loaded content, panels can be rendered empty and populated on activation</p>
-          </div>
-        </details>
-      </div>
-
-        <!-- Pill variant (default) -->
-        <p class="text-sm font-medium mb-2 mt-6">Pill Variant (Default)</p>
-        <p class="text-xs text-muted-foreground mb-3">Default style with <code>--muted</code> background. Active tab gets <code>--background</code> fill and shadow.</p>
-        <div class="preview" style="flex-direction:column;align-items:stretch;padding:2rem 2.5rem;">
-          <div class="tabs">
-            <div class="tab-list" role="tablist" aria-label="Account settings" id="demo-tablist-pill">
-              <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="pill-panel-account" id="pill-tab-account">Account</button>
-              <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="pill-panel-password" id="pill-tab-password" tabindex="-1" data-state-demo>Password</button>
-            </div>
-            <div class="tab-content" role="tabpanel" id="pill-panel-account" aria-labelledby="pill-tab-account" tabindex="0">
-              <div class="card" style="max-width:24rem;">
-                <div class="card-header">
-                  <h3 class="card-title" style="font-size:1rem;">Account</h3>
-                  <p class="card-description">Make changes to your account here.</p>
-                </div>
-                <div class="card-content" style="display:flex;flex-direction:column;gap:0.75rem;">
-                  <div>
-                    <label class="label" for="demo-tab-name">Name</label>
-                    <input class="input" id="demo-tab-name" type="text" value="Cody Lindley">
-                  </div>
-                  <div>
-                    <label class="label" for="demo-tab-user">Username</label>
-                    <input class="input" id="demo-tab-user" type="text" value="@kyr0">
-                  </div>
-                </div>
-                <div class="card-footer">
-                  <button class="btn" data-variant="default">Save changes</button>
-                </div>
-              </div>
-            </div>
-            <div class="tab-content" role="tabpanel" id="pill-panel-password" aria-labelledby="pill-tab-password" tabindex="0" hidden>
-              <div class="card" style="max-width:24rem;">
-                <div class="card-header">
-                  <h3 class="card-title" style="font-size:1rem;">Password</h3>
-                  <p class="card-description">Change your password here.</p>
-                </div>
-                <div class="card-content" style="display:flex;flex-direction:column;gap:0.75rem;">
-                  <div>
-                    <label class="label" for="demo-tab-current">Current password</label>
-                    <input class="input" id="demo-tab-current" type="password">
-                  </div>
-                  <div>
-                    <label class="label" for="demo-tab-new">New password</label>
-                    <input class="input" id="demo-tab-new" type="password">
-                  </div>
-                </div>
-                <div class="card-footer">
-                  <button class="btn" data-variant="default">Save password</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div style="position:relative;margin-top:0.5rem;">
-          <button class="copy-btn">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-            Copy
-          </button>
-          <pre><code class="language-markup">&lt;div class="tabs"&gt;
+<html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="color-scheme" content="light dark" /><link rel="icon" href="images/favicon.webp" type="image/webp" /><meta name="description" content="Tabs component — tabbed content panels with keyboard navigation." /><meta property="og:title" content="Tabs — defuss-shadcn" /><meta property="og:description" content="Tabs component — tabbed content panels with keyboard navigation." /><meta property="og:type" content="website" /><meta property="og:url" content="https://kyr0.github.io/defuss-shadcn/documentation/tabs.html" /><meta property="og:site_name" content="defuss-shadcn" /><meta name="twitter:card" content="summary" /><meta name="twitter:title" content="Tabs — defuss-shadcn" /><meta name="twitter:description" content="Tabs component — tabbed content panels with keyboard navigation." /><title>Tabs — defuss-shadcn</title><script src="js/themes.js"></script><script src="js/theme-switcher.js"></script><script src="js/layout.js"></script><script src="js/search-index.js"></script><link rel="stylesheet" href="../theme/default-semantic-tokens.css" /><link rel="stylesheet" href="../theme/sizing.css" /><link rel="stylesheet" href="../theme/layout.css" /><link rel="stylesheet" href="css/docs-theme.css" /><link rel="stylesheet" href="css/docs-utilities.css" /><link rel="stylesheet" href="css/layout.css" /><link rel="stylesheet" href="../components/all.css" /></head><body><header class="site-header"><button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle navigation menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><a href="index.html" class="header-brand"><img src="images/favicon.webp" alt="defuss-shadcn logo" class="header-brand-logo" /><span class="header-brand-name">defuss<em>-shadcn</em></span><span class="badge header-brand-version" data-variant="outline" style="font-family:var(--font-mono);">v0.8.3</span></a><div class="header-search" role="search"><input type="text" class="header-search-input" placeholder="Search docs… (⌘K)" aria-label="Search documentation" autocomplete="off" readonly="" /></div><div style="flex:1;"></div><nav style="display:flex;align-items:center;gap:0.25rem;"><a href="https://github.com/kyr0/defuss-shadcn" target="_blank" rel="noopener" class="header-action"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg><span class="github-label">GitHub</span><span class="github-stars"></span></a><button id="wide-toggle" class="header-action theme-toggle-btn" aria-label="Toggle wide layout" aria-pressed="false"><svg id="icon-wide-expand" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg><svg id="icon-wide-collapse" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/><path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/></svg></button><button id="theme-toggle" class="header-action theme-toggle-btn" aria-label="Toggle dark mode"><svg id="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg><svg id="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button><button id="theme-selector-btn" class="header-action theme-toggle-btn" aria-label="Change color theme" popovertarget="theme-popover"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="0.5" fill="currentColor"/><circle cx="17.5" cy="10.5" r="0.5" fill="currentColor"/><circle cx="8.5" cy="7.5" r="0.5" fill="currentColor"/><circle cx="6.5" cy="12" r="0.5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></button></nav></header><div id="theme-popover" popover="" class="theme-popover"><div class="theme-popover-header"><span class="theme-popover-title">Theme</span><button class="theme-reset-btn" id="theme-reset-btn">Reset</button></div><div class="theme-grid" id="theme-grid"></div></div><dialog id="docs-palette" class="command" aria-label="Search documentation"><div class="command-content"><div class="command-input-wrapper"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input class="command-input" type="text" placeholder="Search documentation…" autocomplete="off" autocorrect="off" spellcheck="false" /></div><div class="command-list" id="docs-palette-list"></div><div class="command-empty" hidden="">No results found.</div></div></dialog><div class="flex" style="margin-top: 3.5rem; min-height: calc(100vh - 3.5rem);"><aside class="site-sidebar"><div class="sidebar-scroll"><details class="nav-section sidebar-group" open="" data-nav-section="Overview" style="margin-bottom:0.75rem;"><summary class="nav-heading">Overview<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="index.html" style="display:flex;align-items:center;gap:0.375rem;">Introduction</a><a class="nav-link" href="installation.html" style="display:flex;align-items:center;gap:0.375rem;">Installation</a><a class="nav-link" href="theming.html" style="display:flex;align-items:center;gap:0.375rem;">Theming</a><a class="nav-link" href="dark-mode.html" style="display:flex;align-items:center;gap:0.375rem;">Dark Mode</a><a class="nav-link" href="data-attribute-api.html" style="display:flex;align-items:center;gap:0.375rem;">Data Attribute API</a><a class="nav-link" href="architecture.html" style="display:flex;align-items:center;gap:0.375rem;">Architecture</a><a class="nav-link" href="cascade-layers.html" style="display:flex;align-items:center;gap:0.375rem;">Cascade Layers</a><a class="nav-link" href="es-modules.html" style="display:flex;align-items:center;gap:0.375rem;">ES Modules</a><a class="nav-link" href="native-web-apis.html" style="display:flex;align-items:center;gap:0.375rem;">Native Web APIs</a><a class="nav-link" href="animations.html" style="display:flex;align-items:center;gap:0.375rem;">Animations</a><a class="nav-link" href="sizing.html" style="display:flex;align-items:center;gap:0.375rem;">Sizing</a><a class="nav-link" href="layout.html" style="display:flex;align-items:center;gap:0.375rem;">Layout</a><a class="nav-link" href="accessibility.html" style="display:flex;align-items:center;gap:0.375rem;">Accessibility</a><a class="nav-link" href="component-skills.html" style="display:flex;align-items:center;gap:0.375rem;">Component Skills</a><a class="nav-link" href="changelog.html" style="display:flex;align-items:center;gap:0.375rem;">Changelog</a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Sizing" style="margin-bottom:0.75rem;"><summary class="nav-heading">Sizing<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="width-height.html" style="display:flex;align-items:center;gap:0.375rem;">Width &amp; Height</a><a class="nav-link" href="spacing.html" style="display:flex;align-items:center;gap:0.375rem;">Spacing</a><a class="nav-link" href="density.html" style="display:flex;align-items:center;gap:0.375rem;">Density</a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Layout" style="margin-bottom:0.75rem;"><summary class="nav-heading">Layout<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="container.html" style="display:flex;align-items:center;gap:0.375rem;">Container</a><a class="nav-link" href="flex.html" style="display:flex;align-items:center;gap:0.375rem;">Flex</a><a class="nav-link" href="grid.html" style="display:flex;align-items:center;gap:0.375rem;">Grid</a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Primitives" style="margin-bottom:0.75rem;"><summary class="nav-heading">Primitives<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="typography.html" style="display:flex;align-items:center;gap:0.375rem;">Typography <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="separator.html" style="display:flex;align-items:center;gap:0.375rem;">Separator <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="icon.html" style="display:flex;align-items:center;gap:0.375rem;">Icon <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="heading-anchor.html" style="display:flex;align-items:center;gap:0.375rem;">Heading Anchor <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Actions" style="margin-bottom:0.75rem;"><summary class="nav-heading">Actions<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="button.html" style="display:flex;align-items:center;gap:0.375rem;">Button <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="toggle.html" style="display:flex;align-items:center;gap:0.375rem;">Toggle <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="toggle-group.html" style="display:flex;align-items:center;gap:0.375rem;">Toggle Group <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="button-group.html" style="display:flex;align-items:center;gap:0.375rem;">Button Group <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="toolbar.html" style="display:flex;align-items:center;gap:0.375rem;">Toolbar <span class="type-badge" data-type="ORG" title="ORG">ORG</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Forms &amp; Inputs" style="margin-bottom:0.75rem;"><summary class="nav-heading">Forms &amp; Inputs<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="label.html" style="display:flex;align-items:center;gap:0.375rem;">Label <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="input.html" style="display:flex;align-items:center;gap:0.375rem;">Input <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="textarea.html" style="display:flex;align-items:center;gap:0.375rem;">Textarea <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="checkbox.html" style="display:flex;align-items:center;gap:0.375rem;">Checkbox <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="radio.html" style="display:flex;align-items:center;gap:0.375rem;">Radio Group <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="switch.html" style="display:flex;align-items:center;gap:0.375rem;">Switch <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="slider.html" style="display:flex;align-items:center;gap:0.375rem;">Slider <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="select.html" style="display:flex;align-items:center;gap:0.375rem;">Select <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="number-input.html" style="display:flex;align-items:center;gap:0.375rem;">Number Input <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="file-input.html" style="display:flex;align-items:center;gap:0.375rem;">File Input <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="color-picker.html" style="display:flex;align-items:center;gap:0.375rem;">Color Picker <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="date-picker.html" style="display:flex;align-items:center;gap:0.375rem;">Date Picker <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="combobox.html" style="display:flex;align-items:center;gap:0.375rem;">Combobox <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="form.html" style="display:flex;align-items:center;gap:0.375rem;">Form <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Data Display" style="margin-bottom:0.75rem;"><summary class="nav-heading">Data Display<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="badge.html" style="display:flex;align-items:center;gap:0.375rem;">Badge <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="type-badge.html" style="display:flex;align-items:center;gap:0.375rem;">Type Badge <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="avatar.html" style="display:flex;align-items:center;gap:0.375rem;">Avatar <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="card.html" style="display:flex;align-items:center;gap:0.375rem;">Card <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="image.html" style="display:flex;align-items:center;gap:0.375rem;">Image <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="statistic.html" style="display:flex;align-items:center;gap:0.375rem;">Statistic <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="table.html" style="display:flex;align-items:center;gap:0.375rem;">Table <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="collapsible.html" style="display:flex;align-items:center;gap:0.375rem;">Collapsible <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="timeline.html" style="display:flex;align-items:center;gap:0.375rem;">Timeline <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="tree-view.html" style="display:flex;align-items:center;gap:0.375rem;">Tree View <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="calendar.html" style="display:flex;align-items:center;gap:0.375rem;">Calendar <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="carousel.html" style="display:flex;align-items:center;gap:0.375rem;">Carousel <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="scroll-area.html" style="display:flex;align-items:center;gap:0.375rem;">Scroll Area <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="sortable.html" style="display:flex;align-items:center;gap:0.375rem;">Sortable <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Feedback &amp; Status" style="margin-bottom:0.75rem;"><summary class="nav-heading">Feedback &amp; Status<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="spinner.html" style="display:flex;align-items:center;gap:0.375rem;">Spinner <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="skeleton.html" style="display:flex;align-items:center;gap:0.375rem;">Skeleton <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="progress.html" style="display:flex;align-items:center;gap:0.375rem;">Progress <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="alert.html" style="display:flex;align-items:center;gap:0.375rem;">Alert <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="alert-dialog.html" style="display:flex;align-items:center;gap:0.375rem;">Alert Dialog <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="toast.html" style="display:flex;align-items:center;gap:0.375rem;">Toast <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Overlays" style="margin-bottom:0.75rem;"><summary class="nav-heading">Overlays<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="popover.html" style="display:flex;align-items:center;gap:0.375rem;">Popover <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="tooltip.html" style="display:flex;align-items:center;gap:0.375rem;">Tooltip <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="context-menu.html" style="display:flex;align-items:center;gap:0.375rem;">Context Menu <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="dialog.html" style="display:flex;align-items:center;gap:0.375rem;">Dialog <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="sheet.html" style="display:flex;align-items:center;gap:0.375rem;">Sheet <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="accordion.html" style="display:flex;align-items:center;gap:0.375rem;">Accordion <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="command.html" style="display:flex;align-items:center;gap:0.375rem;">Command <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Navigation" style="margin-bottom:0.75rem;"><summary class="nav-heading">Navigation<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="breadcrumb.html" style="display:flex;align-items:center;gap:0.375rem;">Breadcrumb <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="toc.html" style="display:flex;align-items:center;gap:0.375rem;">Table of Contents <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="pagination.html" style="display:flex;align-items:center;gap:0.375rem;">Pagination <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="steps.html" style="display:flex;align-items:center;gap:0.375rem;">Steps <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link active" href="tabs.html" style="display:flex;align-items:center;gap:0.375rem;">Tabs <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="dropdown.html" style="display:flex;align-items:center;gap:0.375rem;">Dropdown Menu <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="navigation-menu.html" style="display:flex;align-items:center;gap:0.375rem;">Navigation Menu <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Application" style="margin-bottom:0.75rem;"><summary class="nav-heading">Application<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="sidebar.html" style="display:flex;align-items:center;gap:0.375rem;">Sidebar <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Marketing" style="margin-bottom:0.75rem;"><summary class="nav-heading">Marketing<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="site-header.html" style="display:flex;align-items:center;gap:0.375rem;">Site Header <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="hero.html" style="display:flex;align-items:center;gap:0.375rem;">Hero <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="product-showcase.html" style="display:flex;align-items:center;gap:0.375rem;">Product Showcase <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="brand-logos.html" style="display:flex;align-items:center;gap:0.375rem;">Brand Logos <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="feature-details.html" style="display:flex;align-items:center;gap:0.375rem;">Feature Details <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="testimonials.html" style="display:flex;align-items:center;gap:0.375rem;">Testimonials <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="stats.html" style="display:flex;align-items:center;gap:0.375rem;">Stats <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="pricing.html" style="display:flex;align-items:center;gap:0.375rem;">Pricing <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="blog.html" style="display:flex;align-items:center;gap:0.375rem;">Blog <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="faq.html" style="display:flex;align-items:center;gap:0.375rem;">FAQ <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="get-in-touch.html" style="display:flex;align-items:center;gap:0.375rem;">Get In Touch <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="newsletter.html" style="display:flex;align-items:center;gap:0.375rem;">Newsletter <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="site-footer.html" style="display:flex;align-items:center;gap:0.375rem;">Site Footer <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a></nav></details></div></aside><main style="flex: 1; min-width: 0; max-width: 44rem; padding: 2rem 3.5rem 8rem;"><div class="page-header"><div class="flex items-baseline justify-between mb-1"><p class="text-sm text-muted-foreground" style="font-family:var(--font-mono);">defuss-shadcn / tabs</p><div style="display:flex;align-items:baseline;gap:0.375rem;"><span class="text-xs text-muted-foreground" style="font-family:var(--font-mono);white-space:nowrap;">Built with:</span> <a href="#source-css" class="badge built-with-pill" data-variant="outline">CSS</a> <a href="#source-js" class="badge built-with-pill" data-variant="outline">JS</a></div></div><h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">Tabs<span class="type-badge" data-type="ATM" title="Atom">ATM</span></h1><p class="text-muted-foreground leading-relaxed mb-6">Organize content into switchable panels. Uses WAI-ARIA Tabs pattern with roving <code>tabindex</code> and arrow key navigation. Available in pill and line variants.</p></div><details style="margin-bottom:2rem;border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;"><summary style="padding:0.875rem 1.25rem;background:var(--muted);cursor:pointer;font-size:0.8125rem;font-weight:600;font-family:var(--font-mono);color:var(--muted-foreground);list-style:none;display:flex;align-items:center;gap:0.5rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 200ms;"><path d="m9 18 6-6-6-6"/></svg>Component Skill — <span data-spec-href="../components/tabs/component-skill.md" style="text-decoration:underline;text-underline-offset:3px;">components/tabs/component-skill.md</span></summary><div style="padding:1.5rem;font-size:0.875rem;line-height:1.85;"><p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Native basis</p><p class="text-muted-foreground" style="margin:0 0 1.25rem;"><code>role="tablist"</code> + <code>role="tab"</code> + <code>role="tabpanel"</code>. No native HTML element</p><p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Web Platform APIs</p><div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;"><a href="https://www.w3.org/WAI/ARIA/apg/patterns/tabs/" target="_blank" rel="noopener" title="role contract (`tablist`, `tab`, `tabpanel`) and roving tabindex keyboard navigation" class="api-pill"><code>WAI-ARIA Tabs pattern</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" target="_blank" rel="noopener" title="auto-detects vertical orientation for layout switching" class="api-pill"><code>:has()</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible" target="_blank" rel="noopener" title="keyboard-only focus ring" class="api-pill"><code>:focus-visible</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" target="_blank" rel="noopener" title="suppresses tab transitions" class="api-pill"><code>prefers-reduced-motion</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" target="_blank" rel="noopener" title="maps active tab to system Highlight" class="api-pill"><code>forced-colors</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a></div><p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Classes</p><div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;"><code>.tab-list</code><code>.tab-trigger</code><code>.tabs</code><code>.tab-content</code></div><p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Variants (data-variant)</p><div style="display:grid;grid-template-columns:auto 1fr;gap:0.25rem 1rem;margin-bottom:1.25rem;"><code>line</code><span class="text-muted-foreground">Underline indicator, transparent background</span></div><p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Keyboard</p><div style="display:grid;grid-template-columns:auto 1fr;gap:0.25rem 1rem;margin-bottom:1.25rem;"><code>Key</code><span class="text-muted-foreground">Behavior</span><code>Tab</code><span class="text-muted-foreground">Move focus to active tab, then into the active panel</span><code>ArrowRight</code><span class="text-muted-foreground">Move to next tab (horizontal) and activate</span><code>ArrowLeft</code><span class="text-muted-foreground">Move to previous tab (horizontal) and activate</span><code>ArrowDown</code><span class="text-muted-foreground">Move to next tab (vertical) and activate</span><code>ArrowUp</code><span class="text-muted-foreground">Move to previous tab (vertical) and activate</span><code>Home</code><span class="text-muted-foreground">Move to first tab and activate</span><code>End</code><span class="text-muted-foreground">Move to last tab and activate</span><code>Space/Enter</code><span class="text-muted-foreground">Activate focused tab (manual activation mode)</span></div><p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Notes</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Only the active tab is in the tab order (<code>tabindex="0"</code>) — inactive tabs use <code>tabindex="-1"</code></p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Arrow keys cycle through tabs (wrap around) — this is the roving tabindex pattern</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• The active panel uses <code>tabindex="0"</code> so it can receive focus from the tab trigger</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Use <code>hidden</code> attribute on inactive panels for accessibility (screen readers skip them)</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Disabled tabs should have <code>disabled</code> attribute and be skipped by keyboard navigation</p><p class="text-muted-foreground" style="margin:0 0 0;">• For lazy-loaded content, panels can be rendered empty and populated on activation</p></div></details><p class="text-sm font-medium mb-2 mt-6" id="toc-pill-variant-default"><a class="heading-anchor" href="#toc-pill-variant-default" aria-label="Link to section: Pill Variant (Default)">§</a>Pill Variant (Default)</p><p class="text-xs text-muted-foreground mb-3">Default style with <code>--muted</code> background. Active tab gets <code>--background</code> fill and shadow.</p><div class="preview" style="flex-direction:column;align-items:stretch;padding:2rem 2.5rem;"><div class="tabs"><div class="tab-list" role="tablist" aria-label="Account settings" id="demo-tablist-pill"><button class="tab-trigger" role="tab" aria-selected="true" aria-controls="pill-panel-account" id="pill-tab-account">Account</button><button class="tab-trigger" role="tab" aria-selected="false" aria-controls="pill-panel-password" id="pill-tab-password" tabindex="-1" data-state-demo="">Password</button></div><div class="tab-content" role="tabpanel" id="pill-panel-account" aria-labelledby="pill-tab-account" tabindex="0"><div class="card" style="max-width:24rem;"><div class="card-header"><h3 class="card-title" style="font-size:1rem;">Account</h3><p class="card-description">Make changes to your account here.</p></div><div class="card-content" style="display:flex;flex-direction:column;gap:0.75rem;"><div><label class="label" for="demo-tab-name">Name</label><input class="input" id="demo-tab-name" type="text" value="Cody Lindley" /></div><div><label class="label" for="demo-tab-user">Username</label><input class="input" id="demo-tab-user" type="text" value="@kyr0" /></div></div><div class="card-footer"><button class="btn" data-variant="default">Save changes</button></div></div></div><div class="tab-content" role="tabpanel" id="pill-panel-password" aria-labelledby="pill-tab-password" tabindex="0" hidden=""><div class="card" style="max-width:24rem;"><div class="card-header"><h3 class="card-title" style="font-size:1rem;">Password</h3><p class="card-description">Change your password here.</p></div><div class="card-content" style="display:flex;flex-direction:column;gap:0.75rem;"><div><label class="label" for="demo-tab-current">Current password</label><input class="input" id="demo-tab-current" type="password" /></div><div><label class="label" for="demo-tab-new">New password</label><input class="input" id="demo-tab-new" type="password" /></div></div><div class="card-footer"><button class="btn" data-variant="default">Save password</button></div></div></div></div></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;div class="tabs"&gt;
   &lt;div class="tab-list" role="tablist" aria-label="Account settings"&gt;
     &lt;button class="tab-trigger" role="tab"
             aria-selected="true"
@@ -222,36 +61,7 @@
       &lt;/div&gt;
     &lt;/div&gt;
   &lt;/div&gt;
-&lt;/div&gt;</code></pre>
-        </div>
-
-        <!-- Line variant -->
-        <p class="text-sm font-medium mb-2 mt-8">Line Variant with Disabled Tab</p>
-        <p class="text-xs text-muted-foreground mb-3">Add <code>data-variant="line"</code> to the <code>.tab-list</code> for an underline style. Disabled tabs use the native <code>disabled</code> attribute.</p>
-        <div class="preview" style="flex-direction:column;align-items:stretch;padding:2rem 2.5rem;">
-          <div class="tabs">
-            <div class="tab-list" role="tablist" aria-label="Dashboard" data-variant="line" id="demo-tablist-line">
-              <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="line-panel-overview" id="line-tab-overview">Overview</button>
-              <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="line-panel-analytics" id="line-tab-analytics" tabindex="-1">Analytics</button>
-              <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="line-panel-reports" id="line-tab-reports" tabindex="-1" disabled>Reports</button>
-            </div>
-            <div class="tab-content" role="tabpanel" id="line-panel-overview" aria-labelledby="line-tab-overview" tabindex="0">
-              <p class="text-muted-foreground" style="font-size:0.875rem;padding:1rem 0;" >Overview dashboard content goes here. This is the default active panel.</p>
-            </div>
-            <div class="tab-content" role="tabpanel" id="line-panel-analytics" aria-labelledby="line-tab-analytics" tabindex="0" hidden>
-              <p class="text-muted-foreground" style="font-size:0.875rem;padding:1rem 0;" >Analytics panel with charts and metrics.</p>
-            </div>
-            <div class="tab-content" role="tabpanel" id="line-panel-reports" aria-labelledby="line-tab-reports" tabindex="0" hidden>
-              <p class="text-muted-foreground" style="font-size:0.875rem;padding:1rem 0;" >Reports panel with exportable data tables.</p>
-            </div>
-          </div>
-        </div>
-        <div style="position:relative;margin-top:0.5rem;">
-          <button class="copy-btn">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-            Copy
-          </button>
-          <pre><code class="language-markup">&lt;div class="tabs"&gt;
+&lt;/div&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-8" id="toc-line-variant-with-disabled-tab"><a class="heading-anchor" href="#toc-line-variant-with-disabled-tab" aria-label="Link to section: Line Variant with Disabled Tab">§</a>Line Variant with Disabled Tab</p><p class="text-xs text-muted-foreground mb-3">Add <code>data-variant="line"</code> to the <code>.tab-list</code> for an underline style. Disabled tabs use the native <code>disabled</code> attribute.</p><div class="preview" style="flex-direction:column;align-items:stretch;padding:2rem 2.5rem;"><div class="tabs"><div class="tab-list" role="tablist" aria-label="Dashboard" data-variant="line" id="demo-tablist-line"><button class="tab-trigger" role="tab" aria-selected="true" aria-controls="line-panel-overview" id="line-tab-overview">Overview</button><button class="tab-trigger" role="tab" aria-selected="false" aria-controls="line-panel-analytics" id="line-tab-analytics" tabindex="-1">Analytics</button><button class="tab-trigger" role="tab" aria-selected="false" aria-controls="line-panel-reports" id="line-tab-reports" tabindex="-1" disabled="">Reports</button></div><div class="tab-content" role="tabpanel" id="line-panel-overview" aria-labelledby="line-tab-overview" tabindex="0"><p class="text-muted-foreground" style="font-size:0.875rem;padding:1rem 0;">Overview dashboard content goes here. This is the default active panel.</p></div><div class="tab-content" role="tabpanel" id="line-panel-analytics" aria-labelledby="line-tab-analytics" tabindex="0" hidden=""><p class="text-muted-foreground" style="font-size:0.875rem;padding:1rem 0;">Analytics panel with charts and metrics.</p></div><div class="tab-content" role="tabpanel" id="line-panel-reports" aria-labelledby="line-tab-reports" tabindex="0" hidden=""><p class="text-muted-foreground" style="font-size:0.875rem;padding:1rem 0;">Reports panel with exportable data tables.</p></div></div></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;div class="tabs"&gt;
   &lt;div class="tab-list" role="tablist" aria-label="Dashboard"
        data-variant="line"&gt;
     &lt;button class="tab-trigger" role="tab"
@@ -295,67 +105,7 @@
       Reports panel with exportable data tables.
     &lt;/p&gt;
   &lt;/div&gt;
-&lt;/div&gt;</code></pre>
-        </div>
-
-        <!-- Vertical orientation -->
-        <p class="text-sm font-medium mb-2 mt-8">Vertical Orientation</p>
-        <p class="text-xs text-muted-foreground mb-3">Set <code>aria-orientation="vertical"</code> on the tablist. CSS uses <code>:has()</code> to switch to a side-by-side layout automatically.</p>
-        <div class="preview" style="flex-direction:column;align-items:stretch;padding:2rem 2.5rem;">
-          <div class="tabs">
-            <div class="tab-list" role="tablist" aria-label="Settings" aria-orientation="vertical" id="demo-tablist-vert">
-              <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="vert-panel-general" id="vert-tab-general">General</button>
-              <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="vert-panel-security" id="vert-tab-security" tabindex="-1">Security</button>
-              <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="vert-panel-notif" id="vert-tab-notif" tabindex="-1">Notifications</button>
-            </div>
-            <div class="tab-content" role="tabpanel" id="vert-panel-general" aria-labelledby="vert-tab-general" tabindex="0">
-              <div class="card">
-                <div class="card-header">
-                  <h3 class="card-title" style="font-size:1rem;">General Settings</h3>
-                  <p class="card-description">Manage your general account preferences.</p>
-                </div>
-                <div class="card-content" style="display:flex;flex-direction:column;gap:0.75rem;">
-                  <div>
-                    <label class="label" for="vert-display">Display name</label>
-                    <input class="input" id="vert-display" type="text" value="Cody Lindley">
-                  </div>
-                  <div>
-                    <label class="label" for="vert-email">Email</label>
-                    <input class="input" id="vert-email" type="email" value="cody@example.com">
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="tab-content" role="tabpanel" id="vert-panel-security" aria-labelledby="vert-tab-security" tabindex="0" hidden>
-              <div class="card">
-                <div class="card-header">
-                  <h3 class="card-title" style="font-size:1rem;">Security</h3>
-                  <p class="card-description">Configure your security settings.</p>
-                </div>
-                <div class="card-content">
-                  <p class="text-muted-foreground" style="font-size:0.875rem;">Two-factor authentication, session management, and login history.</p>
-                </div>
-              </div>
-            </div>
-            <div class="tab-content" role="tabpanel" id="vert-panel-notif" aria-labelledby="vert-tab-notif" tabindex="0" hidden>
-              <div class="card">
-                <div class="card-header">
-                  <h3 class="card-title" style="font-size:1rem;">Notifications</h3>
-                  <p class="card-description">Choose what you want to be notified about.</p>
-                </div>
-                <div class="card-content">
-                  <p class="text-muted-foreground" style="font-size:0.875rem;">Email notifications, push alerts, and digest preferences.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div style="position:relative;margin-top:0.5rem;">
-          <button class="copy-btn">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-            Copy
-          </button>
-          <pre><code class="language-markup">&lt;div class="tabs"&gt;
+&lt;/div&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-8" id="toc-vertical-orientation"><a class="heading-anchor" href="#toc-vertical-orientation" aria-label="Link to section: Vertical Orientation">§</a>Vertical Orientation</p><p class="text-xs text-muted-foreground mb-3">Set <code>aria-orientation="vertical"</code> on the tablist. CSS uses <code>:has()</code> to switch to a side-by-side layout automatically.</p><div class="preview" style="flex-direction:column;align-items:stretch;padding:2rem 2.5rem;"><div class="tabs"><div class="tab-list" role="tablist" aria-label="Settings" aria-orientation="vertical" id="demo-tablist-vert"><button class="tab-trigger" role="tab" aria-selected="true" aria-controls="vert-panel-general" id="vert-tab-general">General</button><button class="tab-trigger" role="tab" aria-selected="false" aria-controls="vert-panel-security" id="vert-tab-security" tabindex="-1">Security</button><button class="tab-trigger" role="tab" aria-selected="false" aria-controls="vert-panel-notif" id="vert-tab-notif" tabindex="-1">Notifications</button></div><div class="tab-content" role="tabpanel" id="vert-panel-general" aria-labelledby="vert-tab-general" tabindex="0"><div class="card"><div class="card-header"><h3 class="card-title" style="font-size:1rem;">General Settings</h3><p class="card-description">Manage your general account preferences.</p></div><div class="card-content" style="display:flex;flex-direction:column;gap:0.75rem;"><div><label class="label" for="vert-display">Display name</label><input class="input" id="vert-display" type="text" value="Cody Lindley" /></div><div><label class="label" for="vert-email">Email</label><input class="input" id="vert-email" type="email" value="cody@example.com" /></div></div></div></div><div class="tab-content" role="tabpanel" id="vert-panel-security" aria-labelledby="vert-tab-security" tabindex="0" hidden=""><div class="card"><div class="card-header"><h3 class="card-title" style="font-size:1rem;">Security</h3><p class="card-description">Configure your security settings.</p></div><div class="card-content"><p class="text-muted-foreground" style="font-size:0.875rem;">Two-factor authentication, session management, and login history.</p></div></div></div><div class="tab-content" role="tabpanel" id="vert-panel-notif" aria-labelledby="vert-tab-notif" tabindex="0" hidden=""><div class="card"><div class="card-header"><h3 class="card-title" style="font-size:1rem;">Notifications</h3><p class="card-description">Choose what you want to be notified about.</p></div><div class="card-content"><p class="text-muted-foreground" style="font-size:0.875rem;">Email notifications, push alerts, and digest preferences.</p></div></div></div></div></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;div class="tabs"&gt;
   &lt;div class="tab-list" role="tablist"
        aria-label="Settings"
        aria-orientation="vertical"&gt;
@@ -426,25 +176,7 @@
       &lt;/div&gt;
     &lt;/div&gt;
   &lt;/div&gt;
-&lt;/div&gt;</code></pre>
-        </div>
-        <!-- -- States ------------------------------------ -->
-        <section style="margin-top:3rem;" id="states">
-          <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;">States</h2>
-          <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
-          <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
-            <li><code>default</code> — this tab's authored selection (setState restores the snapshot taken at init)</li>
-            <li><code>active</code> — this tab is selected and its panel visible (per-tab API; selection stays exclusive)</li>
-          </ul>
-          <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/{mode}/tabs-{state}.png</code>.</p>
-        </section>
-
-        <!-- -- CSS --------------------------------------- -->
-        <section style="margin-top:3rem;" id="source-css">
-          <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;">CSS <a href="../components/tabs/tabs.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2>
-          <div style="position:relative;margin-top:0.5rem;">
-            <button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button>
-            <pre><code class="language-scss">/* -- Tabs component -------------------------------------------- */
+&lt;/div&gt;</code></pre></div><section style="margin-top:3rem;" id="states"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-states"><a class="heading-anchor" href="#toc-states" aria-label="Link to section: States">§</a>States</h2><p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p><ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;"><li><code>default</code> — this tab's authored selection (setState restores the snapshot taken at init)</li><li><code>active</code> — this tab is selected and its panel visible (per-tab API; selection stays exclusive)</li></ul><p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/{mode}/tabs-{state}.png</code>.</p></section><section style="margin-top:3rem;" id="source-css"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-css"><a class="heading-anchor" href="#toc-css" aria-label="Link to section: CSS">§</a>CSS <a href="../components/tabs/tabs.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-scss">/* -- Tabs component -------------------------------------------- */
 
 @layer components {
   /* -- Default (pill) variant ----------------------------------- */
@@ -457,7 +189,7 @@
     gap: 0.125rem;
 
     /* -- Line variant --------------------------------------------- */
-    &amp;[data-variant=&quot;line&quot;] {
+    &amp;[data-variant="line"] {
       background: transparent;
       border-radius: 0;
       padding: 0;
@@ -470,7 +202,7 @@
         border-bottom: 2px solid transparent;
         margin-bottom: -1px;
 
-        &amp;[aria-selected=&quot;true&quot;] {
+        &amp;[aria-selected="true"] {
           background: transparent;
           color: var(--foreground);
           border-bottom-color: var(--primary);
@@ -480,7 +212,7 @@
     }
 
     /* -- Vertical orientation ------------------------------------ */
-    &amp;[aria-orientation=&quot;vertical&quot;] {
+    &amp;[aria-orientation="vertical"] {
       flex-direction: column;
       width: auto;
 
@@ -508,7 +240,7 @@
     white-space: nowrap;
     outline: none;
 
-    &amp;[aria-selected=&quot;true&quot;] {
+    &amp;[aria-selected="true"] {
       background: var(--background);
       color: var(--foreground);
       box-shadow: 0 1px 3px oklch(0 0 0 / 0.08), 0 0 0 1px var(--border);
@@ -526,7 +258,7 @@
   }
 
   /* -- Vertical layout container ----------------------------- */
-  .tabs:has(.tab-list[aria-orientation=&quot;vertical&quot;]) {
+  .tabs:has(.tab-list[aria-orientation="vertical"]) {
     display: flex;
     gap: 1rem;
     align-items: flex-start;
@@ -556,35 +288,23 @@
   }
 
   @media (forced-colors: active) {
-    .tab-trigger[aria-selected=&quot;true&quot;] {
+    .tab-trigger[aria-selected="true"] {
       border: 2px solid Highlight;
       box-shadow: none;
     }
 
-    .tab-list[data-variant=&quot;line&quot;] .tab-trigger[aria-selected=&quot;true&quot;] {
+    .tab-list[data-variant="line"] .tab-trigger[aria-selected="true"] {
       border: none;
       border-bottom: 2px solid Highlight;
     }
   }
-}</code></pre>
-          </div>
-        </section>
-
-        <!-- -- JavaScript -------------------------------- -->
-        <section style="margin-top:3rem;" id="source-js">
-          <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;">JavaScript <a href="../components/tabs/tabs.js" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2>
-          <p class="text-muted-foreground text-sm mb-4">Panel switching + WAI-ARIA keyboard navigation. Arrow keys cycle tabs, Home/End jump to first/last, disabled tabs are skipped automatically.</p>
-          <div style="position:relative;margin-top:0.5rem;">
-            <button class="copy-btn">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-              Copy
-            </button>
-            <pre><code class="language-javascript">// -- Tabs -----------------------------------------------------
-// ARIA-compliant keyboard navigation for [role=&quot;tablist&quot;] elements, plus the
+}
+</code></pre></div></section><section style="margin-top:3rem;" id="source-js"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-javascript"><a class="heading-anchor" href="#toc-javascript" aria-label="Link to section: JavaScript">§</a>JavaScript <a href="../components/tabs/tabs.js" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2><p class="text-muted-foreground text-sm mb-4">Panel switching + WAI-ARIA keyboard navigation. Arrow keys cycle tabs, Home/End jump to first/last, disabled tabs are skipped automatically.</p><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-javascript">// -- Tabs -----------------------------------------------------
+// ARIA-compliant keyboard navigation for [role="tablist"] elements, plus the
 // named-state API bound per tab trigger, so agents/tests can activate a
-// specific tab by name (AGENTS.md &quot;State API&quot;).
+// specific tab by name (AGENTS.md "State API").
 
-// Shared preamble (AGENTS.md &quot;State API&quot;); build.ts inlines it into the
+// Shared preamble (AGENTS.md "State API"); build.ts inlines it into the
 // shipped .js, so this import never appears in dist/.
 import { defussGlobals } from '../../shared/state-api.js';
 
@@ -630,10 +350,10 @@ function triggerStateChange(tab, triggers, stateName, _config) {
 export const tabsApi = {
   setState(tab, stateName, config = {}) {
     if (!tabsStates.includes(stateName)) {
-      throw new Error(`tabs: unknown state &quot;${stateName}&quot; (supported: ${tabsStates.join(', ')})`);
+      throw new Error(`tabs: unknown state "${stateName}" (supported: ${tabsStates.join(', ')})`);
     }
     const triggers = Array.from(
-      tab.closest('[role=&quot;tablist&quot;]').querySelectorAll('[role=&quot;tab&quot;]'),
+      tab.closest('[role="tablist"]').querySelectorAll('[role="tab"]'),
     );
     triggerStateChange(tab, triggers, stateName, config);
     // state lives on the ELEMENT, not the module (many tabs per page)
@@ -652,10 +372,10 @@ _defussShadcn.tabsApi = tabsApi;
 _defussShadcn.tabsStates = tabsStates;
 
 function init() {
-document.querySelectorAll('[role=&quot;tablist&quot;]:not([data-init])').forEach((tablist) =&gt; {
+document.querySelectorAll('[role="tablist"]:not([data-init])').forEach((tablist) =&gt; {
     tablist.dataset.init = '';
     if (!tablist.querySelector('.tab-trigger')) return;
-    const triggers = Array.from(tablist.querySelectorAll('[role=&quot;tab&quot;]'));
+    const triggers = Array.from(tablist.querySelectorAll('[role="tab"]'));
     // remember the authored selection so setState('default') restores it
     triggers.forEach((t) =&gt; {
       t._defaultSelected = t.getAttribute('aria-selected') === 'true';
@@ -707,16 +427,11 @@ document.querySelectorAll('[role=&quot;tablist&quot;]:not([data-init])').forEach
 });}
 
 init();
-new MutationObserver(init).observe(document, { childList: true, subtree: true });</code></pre>
-          </div>
-        </section>
-    </main>
-  </div>
-
-  <script src="js/site.js" defer></script>
-  <script type="module" src="js/shiki-highlight.js"></script>
-  <script type="module" src="../components/all.js"></script>
-  <script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script>
-  <script>globalThis.lucide?.createIcons();</script>
-</body>
-</html>
+new MutationObserver(init).observe(document, { childList: true, subtree: true });</code></pre></div></section><nav class="page-nav"><a class="page-nav-link page-nav-prev" href="steps.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><div><span class="page-nav-label">Previous</span><span class="page-nav-title">Steps</span></div></a><a class="page-nav-link page-nav-next" href="dropdown.html"><div><span class="page-nav-label">Next</span><span class="page-nav-title">Dropdown Menu</span></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></nav></main><aside class="site-toc"><div class="site-toc-content"><p class="toc-title">On This Page</p><a class="toc-link" href="#toc-pill-variant-default">Pill Variant (Default)</a><a class="toc-link" href="#toc-line-variant-with-disabled-tab">Line Variant with Disabled Tab</a><a class="toc-link" href="#toc-vertical-orientation">Vertical Orientation</a><a class="toc-link" href="#toc-states">States</a><a class="toc-link" href="#toc-css">CSS</a><a class="toc-link" href="#toc-javascript">JavaScript</a></div></aside></div><script>try {
+  var c = JSON.parse(localStorage.getItem('defuss-shadcn-nav-collapsed') || '[]');
+  for (var i = 0; i < c.length; i++) {
+    if (c[i] === 'Overview') continue;
+    var d = document.querySelector('details[data-nav-section="' + c[i] + '"]');
+    if (d && !d.querySelector('a.nav-link.active')) d.open = false;
+  }
+} catch (e) {}</script><footer class="site-footer"><p class="site-footer-tagline">Agentically engineered with local Qwen3.8-Flash-Next/vLLM, quality-gated automatically, and human-reviewed before release.</p><p class="site-footer-tagline" style="margin-top:0;">Reworked, enhanced and maintained by <a href="https://aron-homberg.de" target="_blank" rel="noopener">Aron Homberg</a></p><span class="site-footer-dot"> · </span>MIT Licensed<span class="site-footer-dot"> · </span><a href="https://github.com/kyr0/defuss-shadcn" target="_blank" rel="noopener">Source on GitHub</a></footer><script src="js/site.js" defer=""></script><script type="module" src="js/shiki-highlight.js"></script><script type="module" src="../components/all.js"></script><script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script><script>globalThis.lucide?.createIcons();</script></body></html>

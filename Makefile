@@ -38,17 +38,18 @@ docs: ## Build, then mirror dist/ → docs/ for GitHub Pages
 purge-cdn: ## Purge jsDelivr @latest cache for all dist assets (run after deploy)
 	bun run purge-cdn
 
-# Full pipeline: fast checks first, compile + bundle + minify, refresh
-# screenshots (the verify gate requires them fresh vs. the new dist/, and min
-# files are part of each component's fingerprint — hence minify BEFORE
-# screenshots), then gate + tests. Calls scripts/build.ts directly because
-# `bun run build` would run verify BEFORE the screenshots could be refreshed.
-build: ## Full pipeline: lint → compile → bundle → minify → stats → screenshots → docs → verify → tests → e2e
+# Full pipeline: fast checks first, compile + bundle + minify, then the docs
+# SSG build (defuss-ssg renders dist/documentation — before screenshots: the
+# docs pages are part of every component's fingerprint), screenshots, docs
+# mirror, gate + tests. Calls scripts/build.ts directly because `bun run build`
+# would run verify BEFORE the screenshots could be refreshed.
+build: ## Full pipeline: lint → compile → bundle → minify → stats → docs SSG → screenshots → docs → verify → tests → e2e
 	bun run lint
 	bun scripts/build.ts
 	bun scripts/bundle.ts
 	bun run minify
 	bun run stats
+	bun run build:docs
 	bun run screenshots
 	bun run docs
 	bun run verify

@@ -1,0 +1,155 @@
+---
+title: "Site Footer"
+description: "Link columns, a semantic separator, and a brand/social/copyright row in a contentinfo landmark."
+slug: "site-footer"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="site-footer" title="Site Footer" component="site-footer">
+  Link columns, a semantic separator, and a brand/social/copyright row in a contentinfo landmark.
+</PageHeader>
+
+<SkillPanel component="site-footer">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;footer&gt;</code> content-info landmark; link columns are <code>&lt;ul&gt;</code>s in a grid; the social icons are labeled links. Everything wraps with container queries.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/footer" title="content-info landmark"><code>&lt;footer&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav" title="named footer navigation region"><code>&lt;nav aria-label&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout" title="1 → 2 → 4 link columns"><code>CSS Grid</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-footer</code>
+    <code>.mk-footer-inner</code>
+    <code>.mk-footer-nav</code>
+    <code>.mk-footer-col</code>
+    <code>.mk-footer-heading</code>
+    <code>.mk-footer-list</code>
+    <code>.mk-footer-rule</code>
+    <code>.mk-footer-bottom</code>
+    <code>.mk-footer-brand</code>
+    <code>.mk-footer-brand-name</code>
+    <code>.mk-footer-meta</code>
+    <code>.mk-footer-social</code>
+    <code>.mk-footer-copy</code>
+  </SkillRow>
+  </SkillField>
+</SkillPanel>
+
+<Example first previewStyle="align-items:stretch;">
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>Four columns at wide widths; the rule is <code>&lt;hr class="separator"&gt;</code>.</ExampleHint>
+  <footer class="mk-footer" style="width:100%">
+    <div class="mk-footer-inner">
+      <nav class="mk-footer-nav" aria-label="Footer">
+        <div class="mk-footer-col">
+          <h3 class="mk-footer-heading">Product</h3>
+          <ul class="mk-footer-list">
+            <li>
+              <a href="#">Features</a>
+            </li>
+            <li>
+              <a href="#">Pricing</a>
+            </li>
+            <li>
+              <a href="#">Integrations <span class="badge" data-variant="outline">New</span></a>
+            </li>
+            <li>
+              <a href="#">Demo</a>
+            </li>
+          </ul>
+        </div>
+        <div class="mk-footer-col">
+          <h3 class="mk-footer-heading">Company</h3>
+          <ul class="mk-footer-list">
+            <li>
+              <a href="#">About Us</a>
+            </li>
+            <li>
+              <a href="#">Careers</a>
+            </li>
+            <li>
+              <a href="#">Blog</a>
+            </li>
+            <li>
+              <a href="#">Press</a>
+            </li>
+          </ul>
+        </div>
+        <div class="mk-footer-col">
+          <h3 class="mk-footer-heading">Resources</h3>
+          <ul class="mk-footer-list">
+            <li>
+              <a href="#">Help Center</a>
+            </li>
+            <li>
+              <a href="#">FAQs</a>
+            </li>
+            <li>
+              <a href="#">Guides</a>
+            </li>
+            <li>
+              <a href="#">Community</a>
+            </li>
+          </ul>
+        </div>
+        <div class="mk-footer-col">
+          <h3 class="mk-footer-heading">Legal</h3>
+          <ul class="mk-footer-list">
+            <li>
+              <a href="#">Privacy Policy</a>
+            </li>
+            <li>
+              <a href="#">Terms of Service</a>
+            </li>
+            <li>
+              <a href="#">Security</a>
+            </li>
+            <li>
+              <a href="#">Cookie Settings</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <hr class="separator mk-footer-rule" />
+      <div class="mk-footer-bottom">
+        <a href="#" class="mk-footer-brand" aria-label="Go to home page">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+          </svg>
+          <span class="mk-footer-brand-name">Acme Inc.</span>
+        </a>
+        <div class="mk-footer-meta">
+          <div class="mk-footer-social">
+            <a href="#" aria-label="LinkedIn">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                <rect width="4" height="12" x="2" y="9" />
+                <circle cx="4" cy="4" r="2" />
+              </svg>
+            </a>
+            <a href="#" aria-label="Twitter">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
+              </svg>
+            </a>
+          </div>
+          <p class="mk-footer-copy">© Copyright Acme Inc. 2025. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <ExampleCode>{"<footer class=\"mk-footer\" style=\"width:100%\">\n  <div class=\"mk-footer-inner\">\n    <nav class=\"mk-footer-nav\" aria-label=\"Footer\">\n      <div class=\"mk-footer-col\">\n        <h3 class=\"mk-footer-heading\">Product</h3>\n        <ul class=\"mk-footer-list\">\n          <li><a href=\"#\">Features</a></li>\n          <li><a href=\"#\">Pricing</a></li>\n          <li><a href=\"#\">Integrations <span class=\"badge\" data-variant=\"outline\">New</span></a></li>\n          <li><a href=\"#\">Demo</a></li>\n        </ul>\n      </div>\n      <div class=\"mk-footer-col\">\n        <h3 class=\"mk-footer-heading\">Company</h3>\n        <ul class=\"mk-footer-list\">\n          <li><a href=\"#\">About Us</a></li>\n          <li><a href=\"#\">Careers</a></li>\n          <li><a href=\"#\">Blog</a></li>\n          <li><a href=\"#\">Press</a></li>\n        </ul>\n      </div>\n      <div class=\"mk-footer-col\">\n        <h3 class=\"mk-footer-heading\">Resources</h3>\n        <ul class=\"mk-footer-list\">\n          <li><a href=\"#\">Help Center</a></li>\n          <li><a href=\"#\">FAQs</a></li>\n          <li><a href=\"#\">Guides</a></li>\n          <li><a href=\"#\">Community</a></li>\n        </ul>\n      </div>\n      <div class=\"mk-footer-col\">\n        <h3 class=\"mk-footer-heading\">Legal</h3>\n        <ul class=\"mk-footer-list\">\n          <li><a href=\"#\">Privacy Policy</a></li>\n          <li><a href=\"#\">Terms of Service</a></li>\n          <li><a href=\"#\">Security</a></li>\n          <li><a href=\"#\">Cookie Settings</a></li>\n        </ul>\n      </div>\n    </nav>\n    <hr class=\"separator mk-footer-rule\" />\n    <div class=\"mk-footer-bottom\">\n      <a href=\"#\" class=\"mk-footer-brand\" aria-label=\"Go to home page\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><polygon points=\"13 2 3 14 12 14 11 22 21 10 12 10 13 2\"/></svg><span class=\"mk-footer-brand-name\">Acme Inc.</span></a>\n      <div class=\"mk-footer-meta\">\n        <div class=\"mk-footer-social\">\n          <a href=\"#\" aria-label=\"LinkedIn\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z\"/><rect width=\"4\" height=\"12\" x=\"2\" y=\"9\"/><circle cx=\"4\" cy=\"4\" r=\"2\"/></svg></a>\n          <a href=\"#\" aria-label=\"Twitter\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z\"/></svg></a>\n        </div>\n        <p class=\"mk-footer-copy\">© Copyright Acme Inc. 2025. All rights reserved.</p>\n      </div>\n    </div>\n  </div>\n</footer>"}</ExampleCode>
+</Example>
+
+<SourceFiles component="site-footer" section="css" />
+
+</DocPage>

@@ -56,6 +56,20 @@
     }
 
     /* -- Sizes ----------------------------------------------- */
+    &[data-size="xs"] {
+      width: 1.5rem;
+      height: 0.875rem;
+
+      &::after {
+        width: calc(0.875rem - 4px);
+        height: calc(0.875rem - 4px);
+      }
+
+      &:checked::after {
+        transform: translateX(0.625rem);
+      }
+    }
+
     &[data-size="sm"] {
       width: 1.75rem;
       height: 1rem;
@@ -67,6 +81,38 @@
 
       &:checked::after {
         transform: translateX(0.75rem);
+      }
+    }
+
+    &[data-size="md"] {
+      /* same as the default — explicit member of the scale */
+    }
+
+    &[data-size="lg"] {
+      width: 2.75rem;
+      height: 1.5rem;
+
+      &::after {
+        width: calc(1.5rem - 4px);
+        height: calc(1.5rem - 4px);
+      }
+
+      &:checked::after {
+        transform: translateX(1.25rem);
+      }
+    }
+
+    &[data-size="xl"] {
+      width: 3.25rem;
+      height: 1.75rem;
+
+      &::after {
+        width: calc(1.75rem - 4px);
+        height: calc(1.75rem - 4px);
+      }
+
+      &:checked::after {
+        transform: translateX(1.5rem);
       }
     }
   }

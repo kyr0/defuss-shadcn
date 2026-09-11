@@ -63,12 +63,13 @@ try {
     assert.notEqual(style.bg, 'rgba(0, 0, 0, 0)', 'pressed outline variant is painted');
   });
 
-  await check('sizes differ (sm vs lg height)', async () => {
-    const [sm, lg] = await page.evaluate(() => [
-      document.querySelector('#tg-sm')!.getBoundingClientRect().height,
-      document.querySelector('#tg-lg')!.getBoundingClientRect().height,
-    ]);
-    assert.ok(lg > sm, `lg (${lg}) should be taller than sm (${sm})`);
+  await check('full size scale heights xs/sm/md/lg/xl = 28/32/36/40/48', async () => {
+    const [xs, sm, md, lg, xl] = await page.evaluate(() =>
+      ['xs', 'sm', 'md', 'lg', 'xl'].map(
+        (s) => document.querySelector(`#tg-${s}`)!.getBoundingClientRect().height,
+      ),
+    );
+    assert.deepEqual([xs, sm, md, lg, xl], [28, 32, 36, 40, 48]);
   });
 
   await check('disabled toggle ignores clicks', async () => {

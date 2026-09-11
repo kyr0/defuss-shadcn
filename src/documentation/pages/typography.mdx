@@ -1,0 +1,182 @@
+---
+title: "Typography"
+description: "Typography utilities — headings, paragraphs, lists, and inline styles with shadcn design tokens."
+slug: "typography"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="typography" title="Typography" component="typography">
+  Styles for headings, paragraphs, lists, blockquotes, and inline code. Built on native HTML text elements with utility classes. No JavaScript required.
+</PageHeader>
+
+<SkillPanel component="typography">
+  <SkillField label="Native basis">
+<SkillText>Native HTML text elements: <code>&lt;h1&gt;</code>–<code>&lt;h4&gt;</code>, <code>&lt;p&gt;</code>, <code>&lt;blockquote&gt;</code>, <code>&lt;code&gt;</code>, <code>&lt;small&gt;</code>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements" title="semantic heading hierarchy"><code>&lt;h1&gt;–&lt;h6&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote" title="quoted block content"><code>&lt;blockquote&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/code" title="inline code fragment"><code>&lt;code&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/small" title="side comments and small print"><code>&lt;small&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/text-wrap" title="balanced line wrapping for headings"><code>text-wrap: balance</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/text-wrap" title="orphan prevention for body text"><code>text-wrap: pretty</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/hanging-punctuation" title="optical quote alignment for blockquotes"><code>hanging-punctuation</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_logical_properties_and_values" title="border-inline-start, padding-inline-start for RTL support"><code>Logical properties</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast" title="enhanced contrast for high-contrast preference"><code>prefers-contrast</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" title="Windows High Contrast Mode with system colors"><code>forced-colors</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.h1</code>
+    <code>.h2</code>
+    <code>.h3</code>
+    <code>.h4</code>
+    <code>.p</code>
+    <code>.lead</code>
+    <code>.large</code>
+    <code>.small</code>
+    <code>.muted</code>
+    <code>.blockquote</code>
+    <code>.inline-code</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• Use heading levels in order (<code>h1</code> → <code>h2</code> → <code>h3</code>). Do not skip levels.</SkillText>
+  <SkillText dense>• Headings create the document outline used by screen readers for navigation.</SkillText>
+  <SkillText dense>• <code>&lt;blockquote&gt;</code> is announced as a quote by assistive technology — no extra ARIA needed.</SkillText>
+  <SkillText dense>• <code>&lt;code&gt;</code> is announced as code — no extra ARIA needed.</SkillText>
+  <SkillText dense>• <code>prefers-contrast: more</code> — removes tight letter-spacing, adds outline to inline code, thickens blockquote border, promotes muted text to foreground color.</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• <code>forced-colors: active</code> — blockquote border and inline code adapt to system colors.</p>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• These are utility classes for prose content — not a component with variants/sizes.</SkillText>
+  <SkillText dense>• The <code>.h1</code>–<code>.h4</code> classes allow applying heading styles to non-heading elements when semantic headings aren't appropriate.</SkillText>
+  <SkillText dense>• Typography classes compose freely with other components (Card content, Dialog body, Alert description).</SkillText>
+  <SkillText dense>• <code>text-wrap: balance</code> is used on all headings (h1–h4) for better visual line distribution.</SkillText>
+  <SkillText dense>• <code>text-wrap: pretty</code> is used on paragraphs and lead text for orphan prevention.</SkillText>
+  <SkillText dense>• <code>hanging-punctuation</code> is used on blockquotes for optical quote alignment.</SkillText>
+  <SkillText dense>• Blockquote uses logical properties (<code>border-inline-start</code>, <code>padding-inline-start</code>) for automatic RTL support.</SkillText>
+  <SkillText dense>• For lists, use the List component (<code>list.css</code>) — typography does not ship its own list styles.</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• For prose tables, use the Table component (<code>table.css</code>) — typography does not ship its own table styles.</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first previewStyle="text-align:left;padding:2.5rem;">
+  <ExampleLabel>Headings</ExampleLabel>
+  <ExampleHint>Four heading levels — h1 is extrabold, h2 includes a bottom border, h3 and h4 are semibold.</ExampleHint>
+  <div style="max-width:32rem;margin:0 auto;display:flex;flex-direction:column;gap:1.5rem;">
+    <h1 class="h1">h1 — Taxing Laughter</h1>
+    <h2 class="h2" style="margin:0;">h2 — The People of the Kingdom</h2>
+    <h3 class="h3">h3 — The Joke Tax</h3>
+    <h4 class="h4">h4 — People stopped telling jokes</h4>
+  </div>
+  <ExampleCode>{"<h1 class=\"h1\">Taxing Laughter</h1>\n<h2 class=\"h2\">The People of the Kingdom</h2>\n<h3 class=\"h3\">The Joke Tax</h3>\n<h4 class=\"h4\">People stopped telling jokes</h4>"}</ExampleCode>
+</Example>
+
+<Example previewStyle="text-align:left;padding:2.5rem;">
+  <ExampleLabel>Paragraph</ExampleLabel>
+  <ExampleHint>Standard body text with generous line height.</ExampleHint>
+  <p class="p" style="max-width:32rem;margin:0 auto;">The king, seeing how much happier his subjects were, realized the error of his ways and repealed the joke tax.</p>
+  <ExampleCode>{"<p class=\"p\">The king, seeing how much happier his subjects were, realized the error of his ways and repealed the joke tax.</p>"}</ExampleCode>
+</Example>
+
+<Example previewStyle="text-align:left;padding:2.5rem;">
+  <ExampleLabel>Lead</ExampleLabel>
+  <ExampleHint>Larger, muted intro paragraph.</ExampleHint>
+  <p class="lead" style="max-width:32rem;margin:0 auto;">A modal dialog that interrupts the user with important content and expects a response.</p>
+  <ExampleCode>{"<p class=\"lead\">A modal dialog that interrupts the user...</p>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Large / Small / Muted</ExampleLabel>
+  <ExampleHint>Text size variations.</ExampleHint>
+  <div style="display:flex;flex-direction:column;gap:0.75rem;align-items:center;">
+    <div class="large">Are you absolutely sure?</div>
+    <small class="small">Email address</small>
+    <p class="muted" style="margin:0;">Enter your email address.</p>
+  </div>
+  <ExampleCode>{"<div class=\"large\">Are you absolutely sure?</div>\n<small class=\"small\">Email address</small>\n<p class=\"muted\">Enter your email address.</p>"}</ExampleCode>
+</Example>
+
+<Example previewStyle="text-align:left;padding:2.5rem;">
+  <ExampleLabel>Blockquote</ExampleLabel>
+  <ExampleHint>Quoted block with left border and italic style.</ExampleHint>
+  <blockquote class="blockquote" style="max-width:32rem;margin:0 auto;">
+    <p>"After all," he said, "everyone enjoys a good joke, so it's only fair that they should pay for the privilege."</p>
+  </blockquote>
+  <ExampleCode>{"<blockquote class=\"blockquote\">\n  <p>\"After all,\" he said, \"everyone enjoys a good joke...\"</p>\n</blockquote>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Inline code</ExampleLabel>
+  <ExampleHint>Monospace code snippet within text.</ExampleHint>
+  <p>Edit the <code class="inline-code">default-semantic-tokens.css</code> file to customize your theme.</p>
+  <ExampleCode>{"<code class=\"inline-code\">default-semantic-tokens.css</code>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Font stacks</ExampleLabel>
+  <ExampleHint>Three token-driven stacks — components reference the tokens, never a hardcoded family.</ExampleHint>
+  <div style="display:flex;flex-direction:column;gap:0.5rem;">
+    <p style="font-family:var(--font-sans);margin:0;">var(--font-sans) — UI and body text</p>
+    <p style="font-family:var(--font-serif);margin:0;">var(--font-serif) — display headings</p>
+    <p style="font-family:var(--font-mono);margin:0;">var(--font-mono) — code and chips</p>
+  </div>
+  <ExampleCode>{"<p style=\"font-family:var(--font-serif)\">Display headings</p>"}</ExampleCode>
+</Example>
+
+<Example previewStyle="text-align:left;padding:2.5rem;">
+  <ExampleLabel>Prose Composition</ExampleLabel>
+  <ExampleHint>All typography classes combined in a full prose layout — matching the shadcn/ui demo.</ExampleHint>
+  <div style="max-width:38rem;margin:0 auto;">
+    <h1 class="h1" style="text-align:center;">Taxing Laughter: The Joke Tax Chronicles</h1>
+    <p class="p">Once upon a time, in a far-off land, there was a very lazy king who spent all day lounging on his throne. One day, his advisors came to him with a problem: the kingdom was running out of money.</p>
+    <h2 class="h2">The King's Plan</h2>
+    <p class="p">The king thought long and hard, and finally came up with <a href="#" style="text-decoration:underline;text-underline-offset:4px;">a brilliant plan</a>: he would tax the jokes in the kingdom.</p>
+    <blockquote class="blockquote">
+      <p>"After all," he said, "everyone enjoys a good joke, so it's only fair that they should pay for the privilege."</p>
+    </blockquote>
+    <h3 class="h3">The Joke Tax</h3>
+    <p class="p">The king's subjects were not amused. They grumbled and complained, but the king was firm:</p>
+    <ul class="list" style="margin:1.5rem 0 1.5rem 1.5rem;list-style:disc;">
+      <li style="margin-top:0.5rem;">1st level of puns: 5 gold coins</li>
+      <li style="margin-top:0.5rem;">2nd level of jokes: 10 gold coins</li>
+      <li style="margin-top:0.5rem;">3rd level of one-liners: 20 gold coins</li>
+    </ul>
+    <p class="p">As a result, people stopped telling jokes, and the kingdom fell into a gloom. But there was one person who refused to let the king's foolishness get him down: a court jester named Jokester.</p>
+    <h3 class="h3">Jokester's Revolt</h3>
+    <p class="p">Jokester began sneaking into the castle in the middle of the night and leaving jokes all over the place: under the king's pillow, in his soup, even in the royal toilet. The king was furious, but he couldn't seem to stop Jokester.</p>
+    <p class="p">And then, one day, the people of the kingdom discovered that the jokes left by Jokester were so funny that they couldn't help but laugh. And once they started laughing, they couldn't stop.</p>
+    <h3 class="h3">The People's Rebellion</h3>
+    <p class="p">The people of the kingdom, feeling uplifted by the laughter, started to tell jokes and puns again, and soon the entire kingdom was in on the joke.</p>
+    <p class="p">The king, seeing how much happier his subjects were, realized the error of his ways and repealed the joke tax. Jokester was declared a hero, and the kingdom lived happily ever after.</p>
+    <p class="p">The moral of the story is: never underestimate the power of a good laugh and always be careful of bad ideas.</p>
+  </div>
+  <ExampleCode>{"<h1 class=\"h1\" style=\"text-align:center;\">Taxing Laughter</h1>\n<p class=\"p\">Once upon a time...</p>\n<h2 class=\"h2\">The King's Plan</h2>\n<p class=\"p\">The king thought long and hard...</p>\n<blockquote class=\"blockquote\">\n  <p>\"After all,\" he said...</p>\n</blockquote>\n<h3 class=\"h3\">The Joke Tax</h3>\n<ul class=\"list\">\n  <li>1st level of puns: 5 gold coins</li>\n  <li>2nd level of jokes: 10 gold coins</li>\n</ul>"}</ExampleCode>
+</Example>
+
+<Example previewStyle="text-align:left;padding:2.5rem;">
+  <ExampleLabel>RTL support</ExampleLabel>
+  <ExampleHint>Blockquotes use logical properties (<code>border-inline-start</code>, <code>padding-inline-start</code>) — they flip automatically in RTL contexts.</ExampleHint>
+  <div dir="rtl" style="max-width:32rem;margin:0 auto;">
+    <h3 class="h3" style="margin-bottom:0.75rem;">ضريبة النكتة</h3>
+    <p class="p" style="margin-top:0;">فكر الملك طويلاً وبجد، وأخيراً توصل إلى خطة عبقرية: سيفرض ضريبة على النكات في المملكة.</p>
+    <blockquote class="blockquote">
+      <p>"في النهاية،" قال، "الجميع يستمتع بنكتة جيدة، لذا من العدل أن يدفعوا مقابل هذا الامتياز."</p>
+    </blockquote>
+  </div>
+  <ExampleCode>{"<div dir=\"rtl\">\n  <h3 class=\"h3\">ضريبة النكتة</h3>\n  <p class=\"p\">فكر الملك طويلاً وبجد...</p>\n  <blockquote class=\"blockquote\">\n    <p>\"في النهاية،\" قال...</p>\n  </blockquote>\n</div>"}</ExampleCode>
+</Example>
+
+<SourceFiles component="typography" section="css" />
+
+</DocPage>

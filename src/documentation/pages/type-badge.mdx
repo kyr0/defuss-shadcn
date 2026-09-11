@@ -1,0 +1,80 @@
+---
+title: "Type Badge"
+description: "Type Badge component — a mono chip marking a component's atomic-design type, one color identity per type."
+slug: "type-badge"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="type-badge" title="Type Badge" component="type-badge">
+  A mono chip marking a component's atomic-design type — one color identity per type (ATM · MOL · ORG · BLK · TPL), identical in light and dark schemes. Pure visual marker, no JavaScript required.
+</PageHeader>
+
+<SkillPanel component="type-badge">
+  <SkillField label="Native basis">
+    <SkillText><code>&lt;span&gt;</code> element with <code>data-type</code> driving the color and <code>title</code> carrying the full type name as the native tooltip. No interactivity.</SkillText>
+  </SkillField>
+  <SkillField label="Web Platform APIs">
+    <SkillRow>
+      <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span" title="inline phrasing container"><code>&lt;span&gt;</code></ApiPill>
+      <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/title" title="native tooltip"><code>title</code></ApiPill>
+      <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix" title="border tints derived from each type color"><code>color-mix()</code></ApiPill>
+      <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" title="High Contrast Mode falls back to system ink"><code>forced-colors</code></ApiPill>
+    </SkillRow>
+  </SkillField>
+  <SkillField label="Classes">
+    <SkillRow>
+      <code>.type-badge</code>
+    </SkillRow>
+  </SkillField>
+  <SkillField label="Types (data-type)">
+    <SkillGrid>
+      <Variant name="ATM" description="Atom — cyan" />
+      <Variant name="MOL" description="Molecule — blue" />
+      <Variant name="ORG" description="Organism — violet" />
+      <Variant name="BLK" description="Block — amber" />
+      <Variant name="TPL" description="Template — slate" />
+    </SkillGrid>
+  </SkillField>
+  <SkillField label="Sizes (data-size)">
+    <SkillGrid>
+      <Variant name="xs" description="0.5625rem — the default" />
+      <Variant name="sm" description="0.6875rem" />
+      <Variant name="md" description="0.8125rem" />
+      <Variant name="lg" description="0.9375rem" />
+      <Variant name="xl" description="1.0625rem" />
+    </SkillGrid>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>All types</ExampleLabel>
+  <ExampleHint>The code is the type; the <code>title</code> tooltip spells it out. Colors are hardcoded per taxonomy identity — a type looks the same under every theme.</ExampleHint>
+  <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
+    <span class="type-badge" data-type="ATM" title="Atom">ATM</span>
+    <span class="type-badge" data-type="MOL" title="Molecule">MOL</span>
+    <span class="type-badge" data-type="ORG" title="Organism">ORG</span>
+    <span class="type-badge" data-type="BLK" title="Block">BLK</span>
+    <span class="type-badge" data-type="TPL" title="Template">TPL</span>
+  </div>
+  <ExampleCode>{"<span class=\"type-badge\" data-type=\"ATM\" title=\"Atom\">ATM</span>\n<span class=\"type-badge\" data-type=\"MOL\" title=\"Molecule\">MOL</span>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Sizes</ExampleLabel>
+  <ExampleHint><code>data-size</code> scales the chip from the xs default up to xl.</ExampleHint>
+  <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
+    <span class="type-badge" data-type="MOL" data-size="xs" title="Molecule">MOL</span>
+    <span class="type-badge" data-type="MOL" data-size="sm" title="Molecule">MOL</span>
+    <span class="type-badge" data-type="MOL" data-size="md" title="Molecule">MOL</span>
+    <span class="type-badge" data-type="MOL" data-size="lg" title="Molecule">MOL</span>
+    <span class="type-badge" data-type="MOL" data-size="xl" title="Molecule">MOL</span>
+  </div>
+  <ExampleCode>{"<span class=\"type-badge\" data-type=\"MOL\" data-size=\"lg\" title=\"Molecule\">MOL</span>"}</ExampleCode>
+</Example>
+
+<SourceFiles component="type-badge" />
+
+</DocPage>

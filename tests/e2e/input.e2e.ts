@@ -18,9 +18,24 @@ await cssSmoke('input', [
     css: { height: '32px', padding: '0px 10px', 'font-size': '13px' },
   },
   {
+    label: 'data-size="xs" shrinks to 28px/8px/12px',
+    selector: '#in-xs',
+    css: { height: '28px', padding: '0px 8px', 'font-size': '12px' },
+  },
+  {
+    label: 'data-size="md" is the explicit 36px step',
+    selector: '#in-md',
+    css: { height: '36px', padding: '0px 12px', 'font-size': '14px' },
+  },
+  {
     label: 'data-size="lg" grows to 44px/16px/16px',
     selector: '#in-lg',
     css: { height: '44px', padding: '0px 16px', 'font-size': '16px' },
+  },
+  {
+    label: 'data-size="xl" grows to 52px/20px/18px',
+    selector: '#in-xl',
+    css: { height: '52px', padding: '0px 20px', 'font-size': '18px' },
   },
   {
     label: ':disabled dims to 0.5 / not-allowed',

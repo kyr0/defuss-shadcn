@@ -1,0 +1,145 @@
+---
+title: "Toggle"
+description: "Toggle component — a two-state button using native checkbox or button elements."
+slug: "toggle"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="toggle" title="Toggle" component="toggle">
+  A two-state button that can be either on or off. Uses <code>&lt;button&gt;</code> with <code>aria-pressed</code>. Common for toolbar formatting buttons (bold, italic) or feature toggles.
+</PageHeader>
+
+<SkillPanel component="toggle">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;button&gt;</code> element with <code>aria-pressed</code>. The browser provides click and keyboard</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button" title="native clickable element with built-in keyboard handling"><code>&lt;button&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-pressed" title="communicates toggle on/off state"><code>aria-pressed</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix" title="derived hover color for pressed state"><code>color-mix()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="suppresses transitions"><code>prefers-reduced-motion</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast" title="adds visible borders in high-contrast mode"><code>prefers-contrast</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" title="maps pressed state to system Highlight"><code>forced-colors</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.toggle</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Variants (data-variant)">
+<SkillGrid>
+    <Variant name="outline" description="Border + shadow, transparent fill" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Sizes (data-size)">
+<SkillGrid>
+    <Variant name="xs" description="Height: 1.75rem" />
+    <Variant name="sm" description="Height: 2rem" />
+    <Variant name="md" description="Height: 2.25rem (default)" />
+    <Variant name="lg" description="Height: 2.5rem" />
+    <Variant name="xl" description="Height: 3rem" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• The toggle is just a button with <code>aria-pressed</code> — no custom elements needed.</SkillText>
+  <SkillText dense>• Icon-only toggles must have <code>aria-label</code> for screen readers.</SkillText>
+  <SkillText dense>• For toggle groups (e.g., text alignment), wrap in a container with <code>role="group"</code> and <code>aria-label</code>.</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• The pressed state uses <code>--accent</code> / <code>--accent-foreground</code> to match shadcn conventions.</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>Transparent at rest. Background appears on hover and when pressed.</ExampleHint>
+  <div style="display:flex;gap:0.75rem;align-items:center;">
+    <button class="toggle" aria-pressed="false" aria-label="Bookmark (unpressed)" data-state-demo>
+      <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+      </svg>
+    </button>
+    <button class="toggle" aria-pressed="true" aria-label="Bookmark (pressed)">
+      <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+      </svg>
+    </button>
+    <span class="text-muted-foreground" style="font-size:0.75rem;margin-left:0.5rem;">← unpressed vs pressed</span>
+  </div>
+  <ExampleCode>{"<button class=\"toggle\" aria-pressed=\"false\"\n        aria-label=\"Bookmark\">\n  <svg aria-hidden=\"true\" width=\"16\" height=\"16\"\n       viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\"\n       stroke-width=\"2\" stroke-linecap=\"round\"\n       stroke-linejoin=\"round\">\n    <path d=\"m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z\"/>\n  </svg>\n</button>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Outline</ExampleLabel>
+  <ExampleHint>Visible border and subtle shadow at rest.</ExampleHint>
+  <div style="display:flex;gap:0.5rem;">
+    <button class="toggle" data-variant="outline" aria-pressed="true" aria-label="Toggle italic">
+      <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" x2="10" y1="4" y2="4" />
+        <line x1="14" x2="5" y1="20" y2="20" />
+        <line x1="15" x2="9" y1="4" y2="20" />
+      </svg>
+    </button>
+    <button class="toggle" data-variant="outline" aria-pressed="false" aria-label="Toggle bold">
+      <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8" />
+      </svg>
+    </button>
+  </div>
+  <ExampleCode>{"<button class=\"toggle\" data-variant=\"outline\"\n        aria-pressed=\"true\" aria-label=\"Toggle italic\">\n  <svg aria-hidden=\"true\" width=\"16\" height=\"16\" ...>...</svg>\n</button>\n\n<button class=\"toggle\" data-variant=\"outline\"\n        aria-pressed=\"false\" aria-label=\"Toggle bold\">\n  <svg aria-hidden=\"true\" width=\"16\" height=\"16\" ...>...</svg>\n</button>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>With Text</ExampleLabel>
+  <ExampleHint>Icon and label together.</ExampleHint>
+  <button class="toggle" aria-pressed="false"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" x2="10" y1="4" y2="4" /><line x1="14" x2="5" y1="20" y2="20" /><line x1="15" x2="9" y1="4" y2="20" /></svg> Italic </button>
+  <ExampleCode>{"<button class=\"toggle\" aria-pressed=\"false\">\n  <svg aria-hidden=\"true\" width=\"16\" height=\"16\" ...>...</svg>\n  Italic\n</button>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Size</ExampleLabel>
+  <ExampleHint>The full five-step scale via <code>data-size</code> — the default equals <code>md</code>.</ExampleHint>
+  <div style="display:flex;gap:0.75rem;align-items:center;">
+    <button class="toggle" data-variant="outline" data-size="xs" aria-pressed="false">Extra Small</button>
+    <button class="toggle" data-variant="outline" data-size="sm" aria-pressed="false">Small</button>
+    <button class="toggle" data-variant="outline" data-size="md" aria-pressed="false">Medium</button>
+    <button class="toggle" data-variant="outline" data-size="lg" aria-pressed="false">Large</button>
+    <button class="toggle" data-variant="outline" data-size="xl" aria-pressed="false">Extra Large</button>
+  </div>
+  <ExampleCode>{"<button class=\"toggle\" data-variant=\"outline\" data-size=\"xs\"\n        aria-pressed=\"false\">Extra Small</button>\n\n<button class=\"toggle\" data-variant=\"outline\" data-size=\"sm\"\n        aria-pressed=\"false\">Small</button>\n\n<button class=\"toggle\" data-variant=\"outline\" data-size=\"md\"\n        aria-pressed=\"false\">Medium</button>\n\n<button class=\"toggle\" data-variant=\"outline\" data-size=\"lg\"\n        aria-pressed=\"false\">Large</button>\n\n<button class=\"toggle\" data-variant=\"outline\" data-size=\"xl\"\n        aria-pressed=\"false\">Extra Large</button>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Disabled</ExampleLabel>
+  <ExampleHint>Non-interactive at 50% opacity.</ExampleHint>
+  <div style="display:flex;gap:0.75rem;align-items:center;">
+    <button class="toggle" data-variant="outline" aria-pressed="false" disabled>Disabled</button>
+    <button class="toggle" data-variant="outline" aria-pressed="true" disabled>Disabled</button>
+  </div>
+  <ExampleCode>{"<button class=\"toggle\" data-variant=\"outline\"\n        aria-pressed=\"false\" disabled>Disabled</button>\n\n<button class=\"toggle\" data-variant=\"outline\"\n        aria-pressed=\"true\" disabled>Disabled</button>"}</ExampleCode>
+</Example>
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
+    <li><code>default</code> — unpressed (the authored <code>aria-pressed</code> value is restored by <code>setState('default')</code>)</li>
+    <li><code>pressed</code> — <code>aria-pressed="true"</code>, accent background</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/toggle-\{state\}.png</code>.</p>
+</StatesSection>
+
+<SourceFiles component="toggle" section="css" />
+
+<SourceFiles component="toggle" section="js">
+  <SourceNote for="js">Single click handler toggles <code>aria-pressed</code> between <code>"true"</code> and <code>"false"</code>.</SourceNote>
+</SourceFiles>
+
+</DocPage>

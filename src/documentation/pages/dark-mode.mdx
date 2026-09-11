@@ -1,0 +1,188 @@
+---
+title: "Dark Mode"
+description: "How dark mode works in defuss-shadcn: token pairs, system preference detection, persistence, and implementation."
+slug: "dark-mode"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="dark-mode" title="Dark Mode" introStyle="max-width:38rem;">
+  Dark mode is built into the token layer. Add <code>class="dark"</code> to <code>&lt;html&gt;</code> and every component switches automatically — no per-component overrides needed.
+</PageHeader>
+
+<H2>How it works</H2>
+
+<p class="text-sm text-muted-foreground mb-5">The token file (<code>default-semantic-tokens.css</code>) defines two complete sets of color values. The <code>:root</code> block provides light mode values. The <code>.dark</code> selector overrides every color token with its dark mode counterpart.</p>
+
+<CodeCard title="default-semantic-tokens.css — simplified" lang="css" mb="1.5rem"><Dim>{"/* Light mode (default) */"}</Dim>{"\n:root {\n  color-scheme: light;\n  --background: oklch(1 0 0);        "}<Dim>{"/* white */"}</Dim>{"\n  --foreground: oklch(0.145 0 0);    "}<Dim>{"/* near-black */"}</Dim>{"\n  --primary: oklch(0.205 0 0);\n  --primary-foreground: oklch(0.985 0 0);\n  "}<Dim>{"/* ... all other tokens ... */"}</Dim>{"\n}\n\n"}<Dim>{"/* Dark mode — every token flips */"}</Dim>{"\n.dark {\n  color-scheme: dark;\n  --background: oklch(0.145 0 0);    "}<Dim>{"/* near-black */"}</Dim>{"\n  --foreground: oklch(0.985 0 0);    "}<Dim>{"/* near-white */"}</Dim>{"\n  --primary: oklch(0.922 0 0);\n  --primary-foreground: oklch(0.205 0 0);\n  "}<Dim>{"/* ... all other tokens ... */"}</Dim>{"\n}"}</CodeCard>
+
+<p class="text-sm text-muted-foreground mb-5">Components reference tokens with <code>var(--background)</code>, <code>var(--foreground)</code>, etc. When the <code>.dark</code> class is present on <code>&lt;html&gt;</code>, the CSS cascade replaces every value. No component CSS needs to change.</p>
+
+<CodeCard title="toggling dark mode" lang="markup" mb="2.5rem"><Dim>{"<!-- Light mode -->"}</Dim>{"<"}{"html lang=\"en\""}{">"}<Dim>{"<!-- Dark mode — just add the class -->"}</Dim>{"<"}{"html lang=\"en\" class=\"dark\""}{">"}</CodeCard>
+
+<div class="sep" />
+
+<H2>Token pairs</H2>
+
+<p class="text-sm text-muted-foreground mb-5">Every surface token has a matching foreground token. When the surface color shifts for dark mode, the foreground shifts to maintain contrast.</p>
+
+<TableCard title="light vs dark token values (OKLCH)" mb="2.5rem"><table class="table" data-variant="simple" style="margin:0;">
+      <thead>
+        <tr>
+          <th style="white-space:nowrap;">Token</th>
+          <th>Light</th>
+          <th>Dark</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <code>--background</code>
+          </td>
+          <td>
+            <code>oklch(1 0 0)</code>
+          </td>
+          <td>
+            <code>oklch(0.145 0 0)</code>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <code>--foreground</code>
+          </td>
+          <td>
+            <code>oklch(0.145 0 0)</code>
+          </td>
+          <td>
+            <code>oklch(0.985 0 0)</code>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <code>--primary</code>
+          </td>
+          <td>
+            <code>oklch(0.205 0 0)</code>
+          </td>
+          <td>
+            <code>oklch(0.922 0 0)</code>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <code>--primary-foreground</code>
+          </td>
+          <td>
+            <code>oklch(0.985 0 0)</code>
+          </td>
+          <td>
+            <code>oklch(0.205 0 0)</code>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <code>--card</code>
+          </td>
+          <td>
+            <code>oklch(1 0 0)</code>
+          </td>
+          <td>
+            <code>oklch(0.205 0 0)</code>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <code>--muted</code>
+          </td>
+          <td>
+            <code>oklch(0.970 0 0)</code>
+          </td>
+          <td>
+            <code>oklch(0.269 0 0)</code>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <code>--muted-foreground</code>
+          </td>
+          <td>
+            <code>oklch(0.556 0 0)</code>
+          </td>
+          <td>
+            <code>oklch(0.708 0 0)</code>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <code>--border</code>
+          </td>
+          <td>
+            <code>oklch(0.922 0 0)</code>
+          </td>
+          <td>
+            <code>oklch(0.275 0 0)</code>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <code>--destructive</code>
+          </td>
+          <td>
+            <code>oklch(0.577 0.245 27.325)</code>
+          </td>
+          <td>
+            <code>oklch(0.704 0.191 22.216)</code>
+          </td>
+        </tr>
+      </tbody>
+    </table></TableCard>
+
+<div class="sep" />
+
+<H2>Color scheme declaration</H2>
+
+<p class="text-sm text-muted-foreground mb-5">The <code>&lt;meta name="color-scheme"&gt;</code> tag and the <code>color-scheme</code> CSS property tell the browser which color schemes your page supports. This affects native UI elements like scrollbars, form controls, and the default background.</p>
+
+<CodeCard title="HTML meta tag" lang="markup" mb="1.5rem"><Dim>{"<!-- In <head> — tells browser both schemes are supported -->"}</Dim>{"<"}{"meta name=\"color-scheme\" content=\"light dark\""}{">"}</CodeCard>
+
+<CodeCard title="CSS color-scheme property in tokens" lang="css" mb="2.5rem">{":root  { color-scheme: light; }\n.dark  { color-scheme: dark; }"}</CodeCard>
+
+<div class="sep" />
+
+<H2>System preference detection</H2>
+
+<p class="text-sm text-muted-foreground mb-5">Use <code>prefers-color-scheme</code> to detect the user's OS-level dark mode preference. The JavaScript <code>matchMedia</code> API provides both initial detection and a live listener for real-time changes.</p>
+
+<CodeCard title="detect and react to OS theme" lang="javascript" mb="2.5rem"><Dim>{"// Check OS preference at page load"}</Dim>{"\nconst darkMQ = window.matchMedia('(prefers-color-scheme: dark)');\n\nif (darkMQ.matches) {\n  document.documentElement.classList.add('dark');\n}\n\n"}<Dim>{"// React to OS changes in real time\n// Skip if user has set a manual preference"}</Dim>{"\ndarkMQ.addEventListener('change', (e) => {\n  if (localStorage.getItem('defuss-shadcn-theme')) return;\n  document.documentElement.classList.toggle('dark', e.matches);\n  document.documentElement.style.colorScheme =\n    e.matches ? 'dark' : 'light';\n});"}</CodeCard>
+
+<div class="sep" />
+
+<H2>Persistence</H2>
+
+<p class="text-sm text-muted-foreground mb-5">When a user explicitly toggles dark mode, save their choice to <code>localStorage</code>. On page load, check localStorage first — if no preference is saved, fall back to the OS setting.</p>
+
+<CodeCard title="persistence logic — runs before first paint" lang="javascript" mb="1.5rem"><Dim>{"// This script must be in <head> (synchronous, no defer)\n// to prevent flash of wrong theme"}</Dim>{"\nconst saved = localStorage.getItem('defuss-shadcn-theme');\nconst prefersDark = window.matchMedia(\n  '(prefers-color-scheme: dark)'\n).matches;\n\nif (saved === 'dark' || (!saved "}{"&"}{"&"}{" prefersDark)) {\n  document.documentElement.classList.add('dark');\n  document.documentElement.style.colorScheme = 'dark';\n}"}</CodeCard>
+
+<p class="text-sm text-muted-foreground mb-5"><strong>Key detail:</strong> This script runs synchronously in <code>&lt;head&gt;</code> (no <code>defer</code> or <code>type="module"</code>) so the dark class is applied before the browser paints. This prevents a flash of light theme on page load.</p>
+
+<div class="sep" />
+
+<H2>Adding a toggle button</H2>
+
+<p class="text-sm text-muted-foreground mb-5">A minimal dark mode toggle in three parts: the initialization script in <code>&lt;head&gt;</code>, the toggle button, and the click handler.</p>
+
+<CodeCard title="step 1 — initialization script (in &lt;head&gt;)" lang="markup" mb="1.5rem">{"<"}{"script"}{">"}<Dim>{"// Apply saved preference or OS default before paint"}</Dim>{"\n  const saved = localStorage.getItem('defuss-shadcn-theme');\n  const prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;\n  if (saved === 'dark' || (!saved "}{"&"}{"&"}{" prefersDark)) {\n    document.documentElement.classList.add('dark');\n    document.documentElement.style.colorScheme = 'dark';\n  }\n"}{"<"}{"/script"}{">"}</CodeCard>
+
+<CodeCard title="step 2 — toggle button markup" lang="markup" mb="1.5rem">{"<"}{"button id=\"theme-toggle\" class=\"btn\"\n  data-size=\"icon\" aria-label=\"Toggle dark mode\""}{">"}<Dim>{"<!-- Sun icon (visible in dark mode) -->"}</Dim>{"<"}{"svg id=\"icon-sun\""}{">"}{"..."}{"<"}{"/svg"}{">"}<Dim>{"<!-- Moon icon (visible in light mode) -->"}</Dim>{"<"}{"svg id=\"icon-moon\" style=\"display:none\""}{">"}{"..."}{"<"}{"/svg"}{">"}{"<"}{"/button"}{">"}</CodeCard>
+
+<CodeCard title="step 3 — click handler" lang="javascript" mb="2.5rem">{"document.getElementById('theme-toggle')\n  .addEventListener('click', () => {\n    const isDark = document.documentElement\n      .classList.toggle('dark');\n\n    document.documentElement.style.colorScheme =\n      isDark ? 'dark' : 'light';\n\n    localStorage.setItem('defuss-shadcn-theme',\n      isDark ? 'dark' : 'light');\n  });"}</CodeCard>
+
+<div class="sep" />
+
+<H2>Custom themes</H2>
+
+<p class="text-sm text-muted-foreground mb-8">Dark mode is just one dimension of theming. The full token system supports drop-in color themes from <a href="https://tweakcn.com" target="_blank" rel="noopener" class="btn" data-variant="link">tweakcn.com</a> — each theme includes both light and dark values. See the <a href="theming.html" class="btn" data-variant="link">Theming</a> page for details on custom themes, token structure, and the OKLCH color space.</p>
+
+</DocPage>

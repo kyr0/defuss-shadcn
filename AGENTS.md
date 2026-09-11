@@ -1,5 +1,7 @@
 # defuss-shadcn — Maintainer Instructions
 
+Why this system exists (written by agents, for agents): [MOTIVATION.md](MOTIVATION.md).
+
 Scratch space: throwaway scripts, probes and scaffolds go in the repo-local
 `tmp/` (gitignored) — never `/tmp` or other machine-specific locations. This
 keeps everything relative to the repo root (see the `portable paths` verify
@@ -15,10 +17,14 @@ must surface as a failure with output, never as an agent hanging forever.
 
 You are working on the **defuss-shadcn** design system repo.
 The consumer-facing system lives in `dist/` — **it is generated**: edit sources in
-`src/` (`bun run build` compiles `.ts` → `.js` and copies everything else 1:1).
-`docs/` is also generated: **only the documentation site** (`dist/documentation/*` +
-`robots.txt`/`sitemap.xml` + a `404.html` copy of `index.html` so GitHub Pages never
-serves an empty page for dead links) published by GitHub Pages — its pages' `../components/…` and
+`src/` (`bun run build` compiles the components/theme `.ts` → `.js` and copies
+everything else 1:1, then renders the documentation site with
+[defuss-ssg](https://github.com/kyr0/defuss) from the MDX pages + TSX components in
+`src/documentation/` — `bun run build:docs`, invoked under **node**, never bun).
+`docs/` is also generated: **only the documentation site** (`dist/documentation/*`
+— defuss-ssg output — + `robots.txt`/`sitemap.xml` + a `404.html` copy of
+`index.html` so GitHub Pages never serves an empty page for dead links) published by
+GitHub Pages — its pages' `../components/…` and
 `../theme/…` references are rewritten to the jsDelivr GitHub CDN (shared transform in
 `scripts/lib/mirror.ts`), so the mirror carries no copies of the component assets.
 Refresh it with `bun run docs` (`make build` does this automatically and `verify`
@@ -50,16 +56,28 @@ defuss-shadcn/
 │   │       ├── component-skill.md      ← component skill (frontmatter + HTML structure & ARIA reference)
 │   │       ├── {name}.css             ← component stylesheet (edit directly)
 │   │       └── {name}.js              ← interaction JS (only for interactive components)
-│   └── documentation/                 ← reference implementations + public website
-│       ├── *.html                     ← one page per component + overview pages
-│       ├── css/docs-utilities.css    ← hand-written utility classes for doc pages
-│       ├── css/docs-theme.css         ← doc-site font overrides (not part of the system)
-│       ├── css/layout.css             ← doc-site layout (not part of the system)
-│       ├── js/layout.js               ← SPA router, <site-header>/<site-nav> web components
-│       ├── js/site.js                 ← doc-site-only JS (tabs, copy buttons, code collapse)
-│       ├── js/shiki-highlight.js      ← Shiki-based syntax highlighting (ES module, CDN)
-│       ├── js/themes.js               ← tweakcn color theme presets (global THEMES array)
-│       └── js/theme-switcher.js       ← applies theme overrides to CSS custom properties
+│   └── documentation/                 ← defuss-ssg OUTPUT (never edit): the public website
+│       ├── *.html                     ← one page per component + overview pages (rendered from src/documentation/pages/*.mdx)
+│       ├── css/ fonts/ images/ videos/  ← copied verbatim from src/documentation/public/
+│       └── js/                        ← compiled docs runtime + generated search index
+│
+├── src/documentation/                 ← the defuss-ssg project (docs authoring)
+│   ├── config.ts                      ← SSG config: pages → ../../dist/documentation, plugins, no-math remark set
+│   ├── pages/*.mdx                    ← one page per component + overview pages (frontmatter + <DocPage> shell)
+│   ├── lib/
+│   │   ├── nav.ts                     ← the sidebar NAV data (single source for nav, prev/next, search index)
+│   │   ├── arch-md.ts                 ← ARCH.md → .arch-prose renderer (shared by component + verify gate)
+│   │   ├── plugins.ts                 ← SSG plugins: doctype, static TOC injection, search-index generation
+│   │   └── components/*.tsx           ← the docs design system: DocPage, SiteHeader, SiteNav, PageHeader,
+│   │                                     SkillPanel, Example(+Label/Hint/Code), Demo(+DemoCode), SourceFiles
+│   │                                     (+SourceNote), StatesSection, ChangelogEntries, StatsClaim/Cards,
+│   │                                     PrevNext, SiteFooter, ArchBody, PageOverlay — static, no hydration
+│   ├── runtime/*.ts                   ← client JS (tsc → public/js): layout.ts (pre-paint dark/wide, SPA router,
+│   │                                     palette, nav persistence, TOC tracking), site.ts (copy, code collapse,
+│   │                                     viewport toolbar, tabs, swatches), themes.ts, theme-switcher.ts,
+│   │                                     shiki-highlight.ts
+│   ├── data/changelog.json            ← release entries (deploy.sh writes via scripts/changelog-entry.ts)
+│   └── public/                        ← copied verbatim to dist/documentation/: css/ fonts/ images/ videos/
 │
 ├── .github/
 │   ├── instructions/                  ← auto-attached instruction files for Copilot
@@ -71,7 +89,8 @@ defuss-shadcn/
 │
 ├── screenshots/                       ← generated PNGs per component AND per declared state, light/ + dark/ (`bun run screenshots`, gitignored) — SKILL.md maps state names to these files
 ├── scripts/                           ← build & maintenance scripts (no one-shot migrations)
-│   ├── build.ts                       ← src/ → dist/ (tsc type-strip + sourceMap + copy everything else 1:1)
+│   ├── build.ts                       ← src/ → dist/ components+theme (tsc type-strip + sourceMap + copy 1:1; the docs tree is NOT copied — defuss-ssg renders it)
+│   ├── build-docs.ts                  ← dist/documentation producer: compiles runtime → public/js, then defuss-ssg build (runs under node)
 │   ├── bundle.ts                      ← dist/components/all.css (concat) + all.js (Bun.build from src .ts) single-file bundle
 │   ├── minify.ts                      ← post-pass: per-component *.min.css (lightningcss) + *.min.js + *.min.js.map (oxc-minify; `make minify`)
 │   ├── stats.ts                       ← post-minify pass: measures dist/components/ → dist/stats.json (`make stats`)
@@ -79,16 +98,13 @@ defuss-shadcn/
 │   ├── lib/stats-files.ts             ← dist/components/ byte+gzip measurement (writer + verify gate share it)
 │   ├── verify.ts                      ← static consistency gate (runs at end of build; `bun run verify`)
 │   ├── sync-docs.ts                   ← mirror dist/documentation → docs/ (CDN-rewritten; `bun run docs`)
+│   ├── changelog-entry.ts             ← changelog data surgery for deploy.sh (add entry / stamp hash — the two-commit rule)
 │   ├── lib/mirror.ts                  ← shared docs/ mirror transform (sync-docs + verify compare against it)
-│   ├── lib/search-index.ts            ← docs search index generator (build.ts regenerates it every build)
 │   ├── lib/skill.ts                   ← SKILL.md generation core: frontmatter parser + index renderer (pure)
 │   ├── lib/skill-files.ts             ← dist/SKILL.md index generator from src/SKILL_tpl.md + skill frontmatter (build.ts regenerates every build)
 │   ├── create-screenshots.ts          ← parallel default-state screenshots for agent inspection
 │   ├── lib/audit.ts                   ← undefined-utility audit (used by verify)
 │   ├── lib/minify.ts                  ← derived-artifact recognition (verify 1:1 allow-list + min-twin gate; pure)
-│   ├── lib/snippets.ts                ← shared snippet drift/replace logic (syncers + verify)
-│   ├── sync-css-snippets.ts           ← re-embed component CSS into doc pages after edits
-│   ├── sync-js-snippets.ts            ← re-embed component JS into doc pages after edits
 │   ├── push.sh                        ← commit + push dev → main (non-release)
 │   ├── deploy.sh                      ← release: version bump, changelog, tag, GitHub release
 │   └── purge-cdn.ts                   ← purge jsDelivr @latest cache for all dist assets (run after deploy)
@@ -133,15 +149,16 @@ the exclusion list for the three dialog owners (alert-dialog, sheet, command);
 extend the list in both places when a fourth appears.
 
 The docs header search is the shipped command component itself: clicking the
-input (or ⌘/Ctrl+K) opens `<dialog class="command" id="docs-palette">`, fed by
-the build-time index (`scripts/lib/search-index.ts` → `js/search-index.js`,
-NAV entries + every page `<h2>` with TOC-compatible ids). The trigger is
-click/Enter only — never `focus`: `dialog.close()` restores focus to the
-opener synchronously, which would bounce the palette open again.
+input (or ⌘/Ctrl+K) opens `<dialog class="command" id="docs-palette">` (static
+markup from `lib/components/site-header.tsx`), fed by the build-time index
+(`lib/plugins.ts` post hook → `dist/documentation/js/search-index.js`, built
+from NAV + every rendered page's `<h2>`). The trigger is click/Enter only —
+never `focus`: `dialog.close()` restores focus to the opener synchronously,
+which would bounce the palette open again.
 
 ### README ↔ index parity
 
-`README.md` and `src/documentation/index.html` describe the same system to
+`README.md` and `src/documentation/pages/index.mdx` describe the same system to
 humans and to browser users — **when you update either, update the other in
 the same commit.** They share two claims that drift independently if you
 forget:
@@ -157,32 +174,35 @@ forget:
   it renders, the CDN install works" note, which must stay true if the CDN
   strategy in [`scripts/lib/mirror.ts`](scripts/lib/mirror.ts) ever changes.
 - **CSS-only count** — the "**N of M components need no JavaScript**" line
-  appears in both README.md and the index; `verify`'s
+  appears in both README.md and the index (rendered by the `CssOnlyStat`
+  component from the actual tree); `verify`'s
   `README CSS-only stat` / `index CSS-only stat` gates compare it against
   the actual `src/components/` tree (a component `.ts` = ships a `.js`).
-  Update both files together whenever a component gains or loses behavior.
 - **Stats claim** — the measured footprint sentence (total / withJs /
   withoutJs + KiB-formatted gzip sizes) appears in both files, generated
-  from `dist/stats.json` by `statsClaimText()`; `verify`'s `stats claim`
+  from `dist/stats.json` by `statsClaimText()`; the index renders it via the
+  `StatsClaim`/`StatsCards` components; `verify`'s `stats claim`
   gate fails when either file's sentence no longer matches the measurement.
 
 `verify` enforces the pillar set (`README ↔ index parity`, hard gate) and the
 **`README ↔ index commit window`** gate: if the two files' last-touch commits
-are neither identical nor within **15 minutes** of each other, the build fails
-as "un-synced edit" — forcing you to land them together. Wording parity itself
-is yours to maintain (no automated text diff; the window is the backstop).
+(README.md and `src/documentation/pages/index.mdx`) are neither identical nor
+within **15 minutes** of each other, the build fails as "un-synced edit" —
+forcing you to land them together. Wording parity itself is yours to maintain
+(no automated text diff; the window is the backstop).
 
 ### Changelog (two-commit rule)
 
 Every version in `package.json` needs an entry in
-[`src/documentation/changelog.html`](src/documentation/changelog.html) listing
-**all commit messages** of that release (deploy.sh generates them since the
-last tag; v0.7.14 was the first release after the fork from
+[`src/documentation/data/changelog.json`](src/documentation/data/changelog.json)
+(rendered by `lib/components/changelog-entries.tsx`) listing
+**all commit messages** of that release (deploy.sh adds them via
+`scripts/changelog-entry.ts`; v0.7.14 was the first release after the fork from
 codylindley/shadcn-html, so its entry documents the fork). Each entry shows
 either the release date badge or — once the version is actually **committed** —
-the short git hash of the commit that added the entry, embedded as
-`<code class="changelog-hash">abc1234</code>`. The hash is unknowable before
-that commit exists, so authoring an entry is inherently **two commits**:
+the short git hash of the commit that added the entry (the entry's `hash`
+field). The hash is unknowable before that commit exists, so authoring an
+entry is inherently **two commits**:
 
 1. commit the entry (with date badge),
 2. commit that commit's short hash into the entry.
@@ -197,18 +217,17 @@ date-only badges — the hash requirement applies from this rule onward.
 
 [`ARCH.md`](ARCH.md) is the repo's design manifesto (why the verifier is the
 authority, how the proof loop works, where the human review sits). The docs
-site publishes it as an Overview page,
-[`src/documentation/architecture.html`](src/documentation/architecture.html) —
-a **generated** render of ARCH.md via `src/architecture_tpl.html`
-(`scripts/lib/arch-page.ts`, regenerated by `build.ts`, mirrored to the docs
-site like every other page).
+site publishes it as an Overview page: `pages/architecture.mdx` renders
+`<ArchBody/>`, which converts ARCH.md to the `.arch-prose` body at SSG build
+time via [`src/documentation/lib/arch-md.ts`](src/documentation/lib/arch-md.ts)
+(the same renderer the gate uses).
 
 - **When you edit ARCH.md, run `bun run build` in the same commit** — the page
-  is rebuilt from it. `verify`'s `architecture ↔ ARCH.md` gate fails when the
-  two diverge, exactly like the SKILL.md index.
-- **Never hand-edit `architecture.html`** (or its `dist/` / `docs/` copies):
-  like all generated files it is deleted and rebuilt; the generator would
-  silently revert your edit, and the gate would fail anyway.
+  is re-rendered from it. `verify`'s `architecture ↔ ARCH.md` gate compares
+  the built page's body against a fresh ARCH.md render and fails on drift,
+  exactly like the SKILL.md index.
+- **Never hand-edit the page body** (or its `dist/` / `docs/` copies): it is
+  regenerated on every docs build; the gate would fail anyway.
 
 ### Native web platform first
 
@@ -442,7 +461,7 @@ document.querySelector('#x').api.getState(); // → { name: 'open', config: { �
    `## States` section): state names, meaning, and one `api.setState(...)` example.
 7. **Every state must be visually verifiable** — four artifacts cover each
    declared state (verify.ts parses `{name}States = [...]` and checks all four):
-   - **Doc page**: `src/documentation/{name}.html` has a `States` section with
+   - **Doc page**: `pages/{name}.mdx` has a `<StatesSection>` listing
      `<code>{state}</code>` per state, AND the state-bearing demo element
      carries `data-state-demo` (the anchor `create-screenshots.ts` drives via
      `api.setState()` to capture `screenshots/{mode}/{name}-{state}.png`)
@@ -470,7 +489,7 @@ pill-round in dark, light is pill-round too. A theme that only declares
 toggling dark mode "changes the theme's shape" — reported (Doom64, Retro
 Arcade) and now gated.
 
-- In `src/documentation/js/themes.ts`, declare `radius` in **both** the
+- In `src/documentation/runtime/themes.ts`, declare `radius` in **both** the
   `light` and `dark` block of every theme, with the same value.
 - `verify`'s `theme radius consistency` gate fails the build otherwise.
 - Same principle for **contrast**: every theme's sidebar text pairs must
@@ -571,22 +590,35 @@ These exist as real CSS custom properties because component CSS uses `var(--radi
 
 ### Documentation site architecture
 
-The doc site dev server runs on `http://localhost:3000/` via `bun run dev` (Vite).
+The docs are a **statically rendered multi-page app**: every page is a full HTML
+document produced by defuss-ssg from `pages/*.mdx` + the shared TSX components in
+`lib/components/` (DocPage shell, SiteHeader, SiteNav, PrevNext, SiteFooter —
+**no custom elements, no runtime chrome injection**; the TOC and § anchors are
+injected at build time by `lib/plugins.ts`'s toc plugin). The doc site dev
+server runs on `http://localhost:3000/` via `bun run dev` (Vite, serves `dist/`).
 When testing, use the existing dev server — don't start a new one.
 
-The doc site is a **SPA-style multi-page app**. `layout.js` loads synchronously in
-`<head>` and provides:
+The client runtime (`runtime/*.ts`, compiled to `public/js/` before the SSG
+build) adds the interactive behavior on top of the static markup:
 
-- `<site-header>` — renders the fixed header (logo, GitHub link, dark mode toggle)
-- `<site-nav>` — renders the sidebar from a centralized `NAV` array, auto-detecting the active page
-- **SPA router** — intercepts nav clicks, fetches HTML, swaps `<main>` content
-  without full-page reloads (uses View Transitions API for smooth crossfade)
+- **pre-paint init** (layout.ts, synchronous in `<head>`) — dark mode + wide mode
+  from localStorage/OS preference, no FOUC
+- **SPA router** (layout.ts) — intercepts nav clicks, fetches the sibling page,
+  swaps `<main>` innerHTML + the `.site-toc` aside, migrates page-level
+  dialogs/popovers, updates title/history/active link (View Transitions
+  crossfade). Chrome is never swapped, so palette/header state survives.
+- **site.ts** — copy buttons, code collapse toolbar, viewport-width toolbars on
+  `.demo[data-viewport]`, doc tabs, token swatches, lucide re-run, hash-link
+  realign
+- **themes.ts / theme-switcher.ts** — tweakcn presets + live token overrides
+- **shiki-highlight.ts** — Shiki syntax highlighting (ES module, CDN)
 
-**Sidebar nav is centralized in `layout.js`.** To add or reorder nav links, edit
-the `NAV` array and the `BUILT` set in that one file — individual HTML pages
-do not contain nav markup.
+**Sidebar nav data is centralized in `lib/nav.ts`** (NAV sections + items; the
+SiteNav component renders it statically per page, prev/next and the search
+index derive from the same data). To add or reorder nav links, edit that one
+file — the verify `sidebar coverage` gate keeps it in sync with `pages/`.
 
-Each HTML page loads the component bundle — one `<link rel="stylesheet" href="../components/all.css">`
+Each rendered page loads the component bundle — one `<link rel="stylesheet" href="../components/all.css">`
 in `<head>` and one `<script type="module" src="../components/all.js"></script>` at end of `<body>`
 (generated by `scripts/bundle.ts`, so it always covers every component). Adding a new
 component needs **no per-page import changes** — rebuilding regenerates the bundle.
@@ -635,22 +667,20 @@ support status of newer APIs (`popover`, anchor positioning, `@starting-style`, 
    - This auto-initializes new elements after SPA navigation or dynamic DOM changes
    - No `export`, no `window.onPageReady` — just the init function + MutationObserver
 
-5. **Create the doc page** → `dist/documentation/{name}.html`
-   - Copy an existing component page as template (e.g., badge.html) — it already loads the
-     `all.css` / `all.js` bundle, no import edits needed
-   - Replace demo content with working examples
+5. **Create the doc page** → `src/documentation/pages/{name}.mdx`
+   - Copy an existing component page as template (e.g., badge.mdx) — the
+     `<DocPage>` shell, `<PageHeader>`, `<SkillPanel>`, `<Example>` demos,
+     `<StatesSection>` and `<SourceFiles component="{name}">` compose the page;
+     no bundle imports needed (all.css / all.js come from DocPage)
 
-6. **Update layout.js** → add the component to the `NAV` array and `BUILT` set
-   in `dist/documentation/js/layout.js` (this is the single source of truth for sidebar nav)
+6. **Update lib/nav.ts** → add the page to the `NAV` array in
+   `src/documentation/lib/nav.ts` (single source for sidebar nav, prev/next,
+   and the search index — the `sidebar coverage` verify gate enforces it)
 
-7. **Rebuild the bundle** → doc pages load the single `../components/all.css` + `../components/all.js`
-   bundle generated by `scripts/bundle.ts` (runs inside `bun run build`), so the new component is
-   picked up automatically — no per-page import edits.
-
-8. **Sync inline source snippets** → run `bun run sync-snippets` to replace the inline
-    `<pre><code>` blocks in every doc page with the actual contents of each component's
-    `.css` and `.ts` files. This must be done after any change to a component's CSS or
-    JS — not just for new components.
+7. **Rebuild** → `bun run build` regenerates the bundle AND the docs site
+   (defuss-ssg renders every page; the search index post-hook picks the new
+   page up automatically). The component's source listings are embedded by
+   `<SourceFiles>` at build time — nothing else to sync.
 
 
 # Component Skill Editing
@@ -700,11 +730,11 @@ is an atom → `MOL`; some direct child is a molecule → `ORG`; otherwise → `
   metadata only.
 - The type is declared in the skill `type:` frontmatter (source of truth; parser in
   `scripts/lib/skill.ts`, shared contract in `scripts/lib/taxonomy.ts`) and surfaces as the
-  badge in the docs **sidebar** and on the **doc page** header (the old generic `PREVIEW`
-  marker is gone). `verify`'s `component type badges` gate fails if any of the three disagree
-  or a PREVIEW marker resurfaces. Badge markup is generated — copy it from an existing doc
-  page or use `injectTypeBadge()`; recolor via `.type-badge[data-type]` rules in
-  `documentation/css/layout.css`.
+  badge in the docs **sidebar** (SiteNav reads the frontmatter at build time) and on the
+  **doc page** header (PageHeader renders the same badge). `verify`'s `component type badges`
+  gate fails if any of the three disagree. Badge markup is generated by the
+  `TypeBadge`/`NavTypeBadge` components — never hand-write it; recolor via
+  `.type-badge[data-type]` rules in `documentation/public/css/layout.css`.
 
 ## Component skill template
 
@@ -827,12 +857,10 @@ element styles inside the base selector:
 
 ### After editing component CSS or JS
 
-Doc pages display each component's CSS and JS in inline `<pre><code>` blocks.
-After changing any `.css` or `.js` file, run the sync scripts to keep doc pages accurate:
-
-```
-bun run sync-snippets
-```
+Doc pages display each component's CSS and JS in the `#source-css` / `#source-js`
+sections — embedded from the actual files by `<SourceFiles>` at docs build time.
+Just rerun the docs build (`bun run build:docs` or a full `bun run build`); there is
+nothing to sync (the old sync-snippets scripts are retired).
 
 ## Accuracy requirements
 
@@ -990,43 +1018,45 @@ surface, so a green pipeline means "documented == tested == shipped":
   (scripts/bundle.ts) regenerates it — never edit the bundle files by hand.
 - **SPA re-initialization**: Component JS modules use `MutationObserver` to
   auto-initialize new elements when the DOM changes — no manual re-import needed.
-  Doc-site-only scripts (site.js) use `window.onPageReady(fn)` for their own re-init.
+  Doc-site-only scripts (runtime/site.ts) re-run via `docs.onPageReady(fn)` after
+  each SPA navigation.
 - **Font stacks**: The system tokens use generic font stacks. The doc site overrides
-  them in `css/docs-theme.css`. Don't put custom fonts in `default-semantic-tokens.css`.
-- **Inline source snippet drift**: Doc pages show the component's CSS and JS in
-  `<pre><code>` blocks. These must always match the actual files. After editing any
-  component `.css` or `.ts`, run `bun run sync-snippets` to update all doc pages
-  automatically (the syncers edit `src/`, never `dist/`).
+  them in `public/css/docs-theme.css`. Don't put custom fonts in `default-semantic-tokens.css`.
+- **Source listing drift is impossible by construction**: the `#source-css` /
+  `#source-js` sections are embedded from the actual component files by
+  `<SourceFiles>` at docs build time. Editing a component `.css`/`.ts` means the
+  next docs build shows it — nothing to sync (verify's `snippet sync` gate
+  compares the rendered listing against the file anyway).
 
 # Documentation Pages
 
-## Shared layout (Web Components)
+## Shared layout (defuss-ssg components)
 
-The header and sidebar navigation are centralized in `dist/documentation/js/layout.js`
-using two custom elements:
+The docs chrome is statically rendered per page by the TSX components in
+`src/documentation/lib/components/`:
 
-- `<site-header>` — renders the fixed header (logo, GitHub link, dark mode toggle)
-- `<site-nav>` — renders the sidebar with navigation links, auto-detecting the active page
+- `<DocPage>` — the whole page shell: `<html>`/`<head>` (meta/og tags from the
+  page's frontmatter, the 4 synchronous head scripts, the stylesheet chain) and
+  `<body>` (header, sidebar, TOC shell, footer, end-of-body scripts)
+- `<SiteHeader>` / `<SiteNav>` — the fixed header and sidebar (static markup —
+  the old `<site-header>`/`<site-nav>` custom elements are gone)
+- `<PrevNext>` / `<SiteFooter>` — pager + footer (was runtime injection)
+- The TOC aside, § heading anchors and `toc-*` ids are injected by the toc
+  plugin in `lib/plugins.ts` at build time; the runtime only does the
+  IntersectionObserver active tracking
 
-**To add/remove/reorder nav links or change the header, edit `layout.js` only.**
-No need to touch individual HTML files for navigation changes.
-
-`layout.js` is loaded **synchronously** in `<head>` (no `defer`) so the custom
-elements render without FOUC when the parser encounters them in `<body>`.
-
-### layout.js data structures
-
-- `NAV` — array of `{ heading, items: [{ label, href }] }` defining the sidebar sections
-- `BUILT` — `Set` of page filenames that have real doc pages (non-built pages render as disabled links)
+**To add/remove/reorder nav links, edit `src/documentation/lib/nav.ts`.** The
+`sidebar coverage` verify gate fails when a `pages/*.mdx` file isn't listed.
 
 ## Adding a component page
 
-1. Copy an existing component page (e.g., `badge.html`) as the template — it already loads the
-   `all.css` / `all.js` bundle, no import edits needed
-2. Change the `<title>`, `<h1>`, breadcrumb, and main content
-3. In `layout.js`: add the page to the `NAV` array and the `BUILT` set
+1. Copy an existing component page (e.g., `pages/badge.mdx`) as the template
+2. Adjust the frontmatter (`title`, `description`, `slug`), the `<PageHeader>`
+   intro, and the demos
+3. Add the page to `lib/nav.ts`
 
-No need to update sidebar nav links in other files — `<site-nav>` handles it globally.
+Rebuilding (`bun run build`) re-renders every page — sidebar, prev/next, search
+index, and TOC pick the page up automatically.
 
 ## Sidebar nav order
 
@@ -1043,7 +1073,7 @@ The sidebar is ordered by dependency (primitives first):
 10. Application (Sidebar)
 11. Marketing (Site Header, Hero, Product Showcase, Brand Logos, Feature Details, Testimonials, Stats, Pricing, Blog, FAQ, Get In Touch, Newsletter, Site Footer) — CSS-only page sections composed from the same tokens + primitives
 
-To reorder, edit the `NAV` array in `layout.js`.
+To reorder, edit the `NAV` array in `src/documentation/lib/nav.ts`.
 
 ## CSS and JS imports
 
@@ -1066,8 +1096,13 @@ tabulated. When you change a demo, change its code block in the same commit.
 
 ### The demo design system (guide pages)
 
-Demos and their code blocks use the shared `.demo-*` classes in
-`documentation/css/layout.css` — never re-invent them with inline styles:
+Guide-page demos are authored as `<Demo>` / `<DemoCode>` components (see
+`pages/container.mdx`); component-page demos as `<Example>` / `<ExampleLabel>` /
+`<ExampleHint>` / `<ExampleCode>`. Without an `<ExampleCode>`/`<DemoCode>` child
+the code sample is **auto-serialized from the demo children** — demo ↔ code
+parity by construction. The rendered markup uses the shared `.demo-*` / `.preview`
+classes in `documentation/public/css/layout.css` — never re-invent them with
+inline styles:
 
 - `.demo` — the card wrapping one example. Add `data-viewport` when resizing is
   instructive (site.js injects the Mobile/Tablet/Desktop/Full width toolbar).
@@ -1097,24 +1132,20 @@ Demos and their code blocks use the shared `.demo-*` classes in
 
 ## Inline source code snippets
 
-Each component doc page displays the component's CSS and JS in `<pre><code>` blocks.
-These inline snippets must always match the actual files in `dist/components/`.
-After editing any component `.css` or `.js` file, run:
-
-```
-bun run sync-snippets
-```
-
-These scripts replace every inline snippet with the current file content.
-Do NOT manually edit the `<pre><code>` blocks — they will be overwritten by the sync scripts.
+Each component doc page displays the component's CSS and JS in the `#source-css`
+/ `#source-js` sections — `<SourceFiles component="{name}">` reads the actual
+files at docs build time and embeds them (escaped) with copy buttons. There is
+**no sync step**: rebuild the docs and the listings are current. Optional
+`<SourceNote for="css|js">` children add prose above a listing. verify's
+`snippet sync` gate compares the rendered listing against the file.
 
 ## Doc-site utility classes
 
 The doc site uses a small, hand-written set of utility classes for layout and
-spacing inside doc pages (`css/docs-utilities.css`). The utilities are plain
+spacing inside doc pages (`public/css/docs-utilities.css`). The utilities are plain
 class rules — they only affect elements that explicitly opt in by using the
 class name, so they cannot leak into component styles.
 
 If you need a new utility (e.g. `mt-4`, `gap-5`), add it directly to
-`css/docs-utilities.css`. Keep the utility set minimal — prefer inline `style`
+`public/css/docs-utilities.css`. Keep the utility set minimal — prefer inline `style`
 attributes for one-off layout tweaks in demo wrappers.

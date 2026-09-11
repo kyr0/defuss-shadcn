@@ -1,0 +1,76 @@
+---
+title: "Brand Logos"
+description: "A \"trusted by\" band of real linked brand marks. Each logo links to its site; the SVGs use currentColor so they recolor with the theme."
+slug: "brand-logos"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="brand-logos" title="Brand Logos" component="brand-logos">
+  A "trusted by" band of real linked brand marks. Each logo links to its site; the SVGs use currentColor so they recolor with the theme.
+</PageHeader>
+
+<SkillPanel component="brand-logos">
+  <SkillField label="Native basis">
+<SkillText>A flex-wrap row of inline SVGs. <code>currentColor</code> makes every mark follow <code>--foreground</code> — black in light mode, white in dark (the tokens flip) — so logos read at full theme ink; the row is softened with <code>opacity</code> instead of a muted color, and the name text stays <code>--muted-foreground</code>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/SVG/Element/svg" title="vector marks that inherit text color"><code>Inline \`&lt;svg&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/currentcolor" title="one color source for all logos"><code>currentColor</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap" title="graceful wrapping without breakpoints"><code>flex-wrap</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-logos</code>
+    <code>.mk-logos-row</code>
+    <code>.mk-logo</code>
+    <code>.mk-logo-name</code>
+    <code>.mk-logos-caption</code>
+  </SkillRow>
+  </SkillField>
+</SkillPanel>
+
+<Example first previewStyle="align-items:stretch;">
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>Four real marks (simple-icons) wrapped in links; wraps freely in narrow containers.</ExampleHint>
+  <section class="mk-logos" style="width:100%">
+    <div class="mk-logos-row">
+      <a class="mk-logo" href="https://vercel.com" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="#000000" aria-hidden="true">
+          <path d="m12 1.608 12 20.784H0Z" />
+        </svg>
+        <span class="mk-logo-name">Vercel</span>
+      </a>
+      <a class="mk-logo" href="https://stripe.com" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="#000000" aria-hidden="true">
+          <path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.594-7.305h.003z" />
+        </svg>
+        <span class="mk-logo-name">Stripe</span>
+      </a>
+      <a class="mk-logo" href="https://figma.com" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="#000000" aria-hidden="true">
+          <path d="M15.852 8.981h-4.588V0h4.588c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.491-4.49 4.491zM12.735 7.51h3.117c1.665 0 3.019-1.355 3.019-3.019s-1.355-3.019-3.019-3.019h-3.117V7.51zm0 1.471H8.148c-2.476 0-4.49-2.014-4.49-4.49S5.672 0 8.148 0h4.588v8.981zm-4.587-7.51c-1.665 0-3.019 1.355-3.019 3.019s1.354 3.02 3.019 3.02h3.117V1.471H8.148zm4.587 15.019H8.148c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h4.588v8.98zM8.148 8.981c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h3.117V8.981H8.148zM8.172 24c-2.489 0-4.515-2.014-4.515-4.49s2.014-4.49 4.49-4.49h4.588v4.441c0 2.503-2.047 4.539-4.563 4.539zm-.024-7.51a3.023 3.023 0 0 0-3.019 3.019c0 1.665 1.365 3.019 3.044 3.019 1.705 0 3.093-1.376 3.093-3.068v-2.97H8.148zm7.704 0h-.098c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h.098c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.49-4.49 4.49zm-.097-7.509c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h.098c1.665 0 3.019-1.355 3.019-3.019s-1.355-3.019-3.019-3.019h-.098z" />
+        </svg>
+        <span class="mk-logo-name">Figma</span>
+      </a>
+      <a class="mk-logo" href="https://supabase.com" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="#000000" aria-hidden="true">
+          <path d="M11.9 1.036c-.015-.986-1.26-1.41-1.874-.637L.764 12.05C-.33 13.427.65 15.455 2.409 15.455h9.579l.113 7.51c.014.985 1.259 1.408 1.873.636l9.262-11.653c1.093-1.375.113-3.403-1.645-3.403h-9.642z" />
+        </svg>
+        <span class="mk-logo-name">Supabase</span>
+      </a>
+    </div>
+    <p class="mk-logos-caption">Trusted by leading companies</p>
+  </section>
+  <ExampleCode>{"<section class=\"mk-logos\" style=\"width:100%\">\n  <div class=\"mk-logos-row\">\n    <a class=\"mk-logo\" href=\"https://vercel.com\" target=\"_blank\" rel=\"noopener noreferrer\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"#000000\" aria-hidden=\"true\"><path d=\"m12 1.608 12 20.784H0Z\"/></svg><!-- Vercel is a trademark of its owner; shown as a placeholder --><span class=\"mk-logo-name\">Vercel</span></a>\n    <a class=\"mk-logo\" href=\"https://stripe.com\" target=\"_blank\" rel=\"noopener noreferrer\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"#000000\" aria-hidden=\"true\"><path d=\"M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.594-7.305h.003z\"/></svg><!-- Stripe is a trademark of its owner; shown as a placeholder --><span class=\"mk-logo-name\">Stripe</span></a>\n    <a class=\"mk-logo\" href=\"https://figma.com\" target=\"_blank\" rel=\"noopener noreferrer\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"#000000\" aria-hidden=\"true\"><path d=\"M15.852 8.981h-4.588V0h4.588c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.491-4.49 4.491zM12.735 7.51h3.117c1.665 0 3.019-1.355 3.019-3.019s-1.355-3.019-3.019-3.019h-3.117V7.51zm0 1.471H8.148c-2.476 0-4.49-2.014-4.49-4.49S5.672 0 8.148 0h4.588v8.981zm-4.587-7.51c-1.665 0-3.019 1.355-3.019 3.019s1.354 3.02 3.019 3.02h3.117V1.471H8.148zm4.587 15.019H8.148c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h4.588v8.98zM8.148 8.981c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h3.117V8.981H8.148zM8.172 24c-2.489 0-4.515-2.014-4.515-4.49s2.014-4.49 4.49-4.49h4.588v4.441c0 2.503-2.047 4.539-4.563 4.539zm-.024-7.51a3.023 3.023 0 0 0-3.019 3.019c0 1.665 1.365 3.019 3.044 3.019 1.705 0 3.093-1.376 3.093-3.068v-2.97H8.148zm7.704 0h-.098c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h.098c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.49-4.49 4.49zm-.097-7.509c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h.098c1.665 0 3.019-1.355 3.019-3.019s-1.355-3.019-3.019-3.019h-.098z\"/></svg><!-- Figma is a trademark of its owner; shown as a placeholder --><span class=\"mk-logo-name\">Figma</span></a>\n    <a class=\"mk-logo\" href=\"https://supabase.com\" target=\"_blank\" rel=\"noopener noreferrer\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"#000000\" aria-hidden=\"true\"><path d=\"M11.9 1.036c-.015-.986-1.26-1.41-1.874-.637L.764 12.05C-.33 13.427.65 15.455 2.409 15.455h9.579l.113 7.51c.014.985 1.259 1.408 1.873.636l9.262-11.653c1.093-1.375.113-3.403-1.645-3.403h-9.642z\"/></svg><!-- Supabase is a trademark of its owner; shown as a placeholder --><span class=\"mk-logo-name\">Supabase</span></a>\n  </div>\n  <p class=\"mk-logos-caption\">Trusted by leading companies</p>\n</section>"}</ExampleCode>
+</Example>
+
+<SourceFiles component="brand-logos" section="css" />
+
+</DocPage>

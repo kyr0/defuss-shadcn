@@ -1,0 +1,85 @@
+---
+title: "Number Input"
+description: "Number Input component — increment/decrement controls with native input[type=number]."
+slug: "number-input"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="number-input" title="Number Input" component="number-input">
+  A numeric input with increment/decrement buttons. Built on <code>&lt;input type="number"&gt;</code> with custom stepper controls.
+</PageHeader>
+
+<SkillPanel component="number-input">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;input type="number"&gt;</code> with custom increment/decrement buttons.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/number" title="native number input with built-in validation and step increment"><code>&lt;input type="number"&gt;</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.number-input</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText>• <code>data-action</code></SkillText>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• Reuses the <code>.input</code> class for consistent styling.</SkillText>
+  <SkillText dense>• Native spinner buttons are hidden with <code>::-webkit-inner-spin-button</code>.</SkillText>
+  <SkillText dense>• Use <code>min</code>, <code>max</code>, and <code>step</code> for range constraints.</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• Keyboard: arrow keys increment/decrement by step value.</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>Number input with +/- buttons.</ExampleHint>
+  <div>
+    <label class="label" for="d-qty">Quantity</label>
+    <div class="number-input" data-state-demo>
+      <button data-action="decrement" aria-label="Decrease">−</button>
+      <input type="number" id="d-qty" value="1" min="0" max="99" step="1" />
+      <button data-action="increment" aria-label="Increase">+</button>
+    </div>
+  </div>
+  <ExampleCode>{"<div class=\"number-input\">\n  <button data-action=\"decrement\">−</button>\n  <input type=\"number\" value=\"1\" min=\"0\" max=\"99\" step=\"1\">\n  <button data-action=\"increment\">+</button>\n</div>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>With step</ExampleLabel>
+  <div>
+    <label class="label" for="d-temp">Temperature</label>
+    <div class="number-input">
+      <button data-action="decrement" aria-label="Decrease">−</button>
+      <input type="number" id="d-temp" value="20.0" min="-40" max="60" step="0.5" />
+      <button data-action="increment" aria-label="Increase">+</button>
+    </div>
+  </div>
+  <ExampleCode>{"<input type=\"number\" value=\"20.0\" min=\"-40\" max=\"60\" step=\"0.5\">"}</ExampleCode>
+</Example>
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
+    <li><code>default</code> — enabled; <code>setState('default', \{ value \})</code> presets the number through the native input (events fire), and <code>getState().config.value</code> reports the live value</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/number-input-\{state\}.png</code>.</p>
+</StatesSection>
+
+<SourceFiles component="number-input" section="css" />
+
+<SourceFiles component="number-input" section="js">
+  <SourceNote for="js">Number Input</SourceNote>
+</SourceFiles>
+
+</DocPage>

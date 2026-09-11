@@ -67,9 +67,12 @@ buttons (bold, italic, underline) or feature toggles.
 
 | `data-size`  | Height    | Padding        | Min-width   |
 |-------------|-----------|----------------|-------------|
+| `xs`        | `1.75rem` | `0 0.25rem`    | `1.75rem`   |
 | `sm`        | `2rem`    | `0 0.375rem`   | `2rem`      |
+| `md`        | `2.25rem` | `0 0.5rem`     | `2.25rem`   |
 | *(default)* | `2.25rem` | `0 0.5rem`     | `2.25rem`   |
 | `lg`        | `2.5rem`  | `0 0.625rem`   | `2.5rem`    |
+| `xl`        | `3rem`    | `0 0.75rem`    | `3rem`      |
 
 ```html
 <button class="toggle" data-size="sm" aria-pressed="false" aria-label="Bold">

@@ -1,0 +1,105 @@
+---
+title: "Feature Details"
+description: "Benefits section: two image features split by a vertical rule, plus a row of icon-led cards."
+slug: "feature-details"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="feature-details" title="Feature Details" component="feature-details">
+  Benefits section: two image features split by a vertical rule, plus a row of icon-led cards.
+</PageHeader>
+
+<SkillPanel component="feature-details">
+  <SkillField label="Native basis">
+<SkillText>CSS Grid (<code>1fr auto 1fr</code>) with a stretch divider column that only appears at container width ≥ 48rem — below it the stack provides the break, so the markup never swaps separators.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout" title="`grid-template-columns: 1fr auto 1fr` split"><code>CSS Grid</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio" title="square feature images"><code>aspect-ratio</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="column counts follow the block"><code>Container queries</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/text-wrap" title="balance headings, pretty body"><code>text-wrap</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-features</code>
+    <code>.mk-features-head</code>
+    <code>.mk-features-eyebrow</code>
+    <code>.mk-features-title</code>
+    <code>.mk-features-desc</code>
+    <code>.mk-features-grid</code>
+    <code>.mk-feature</code>
+    <code>.mk-feature-copy</code>
+    <code>.mk-feature-title</code>
+    <code>.mk-feature-desc</code>
+    <code>.mk-feature-media</code>
+    <code>.mk-feature-sep</code>
+    <code>.mk-feature-cards</code>
+    <code>.mk-feature-card</code>
+    <code>.mk-feature-card-title</code>
+    <code>.mk-feature-card-desc</code>
+  </SkillRow>
+  </SkillField>
+</SkillPanel>
+
+<Example first previewStyle="align-items:stretch;">
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>Two large features + four benefit cards.</ExampleHint>
+  <section class="mk-features" style="width:100%">
+    <div class="mk-features-head">
+      <span class="mk-features-eyebrow">Benefits</span>
+      <h2 class="mk-features-title">AI That Works Your Way</h2>
+      <p class="mk-features-desc">Acme eliminates the work and gives you a clear picture of what matters.</p>
+    </div>
+    <div class="mk-features-grid">
+      <article class="mk-feature">
+        <div class="mk-feature-copy">
+          <h3 class="mk-feature-title">Intelligent Prioritization</h3>
+          <p class="mk-feature-desc">Know exactly what to work on next with AI that understands your goals.</p>
+        </div>
+        <figure class="mk-feature-media">
+          <img alt="Intelligent Prioritization" src="images/mk-square.png" />
+        </figure>
+      </article>
+      <div class="mk-feature-sep" aria-hidden="true" />
+      <article class="mk-feature">
+        <div class="mk-feature-copy">
+          <h3 class="mk-feature-title">Effortless Integration</h3>
+          <p class="mk-feature-desc">Connects with the tools your team already uses — no steep learning curve.</p>
+        </div>
+        <figure class="mk-feature-media">
+          <img alt="Effortless Integration" src="images/mk-wide3.png" />
+        </figure>
+      </article>
+    </div>
+    <div class="mk-feature-cards">
+      <div class="mk-feature-card">
+        <h3 class="mk-feature-card-title"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2" /></svg>Smarter Analytics</h3>
+        <p class="mk-feature-card-desc">Turn data into clarity with AI-powered insights.</p>
+      </div>
+      <div class="mk-feature-card">
+        <h3 class="mk-feature-card-title"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="8" x="3" y="3" rx="2" /><path d="M7 11v4a2 2 0 0 0 2 2h4" /><rect width="8" height="8" x="13" y="13" rx="2" /></svg>Seamless Workflow</h3>
+        <p class="mk-feature-card-desc">Stay in the zone without context switching.</p>
+      </div>
+      <div class="mk-feature-card">
+        <h3 class="mk-feature-card-title"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>Team Alignment</h3>
+        <p class="mk-feature-card-desc">A single source of truth for projects and decisions.</p>
+      </div>
+      <div class="mk-feature-card">
+        <h3 class="mk-feature-card-title"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3" /><path d="M3 5V19A9 3 0 0 0 21 19V5" /><path d="M3 12A9 3 0 0 0 21 12" /></svg>Clear Decision Support</h3>
+        <p class="mk-feature-card-desc">AI-driven insights when projects stall.</p>
+      </div>
+    </div>
+  </section>
+  <ExampleCode>{"<section class=\"mk-features\" style=\"width:100%\">\n  <div class=\"mk-features-head\">\n    <span class=\"mk-features-eyebrow\">Benefits</span>\n    <h2 class=\"mk-features-title\">AI That Works Your Way</h2>\n    <p class=\"mk-features-desc\">Acme eliminates the work and gives you a clear picture of what matters.</p>\n  </div>\n  <div class=\"mk-features-grid\">\n    <article class=\"mk-feature\">\n      <div class=\"mk-feature-copy\">\n        <h3 class=\"mk-feature-title\">Intelligent Prioritization</h3>\n        <p class=\"mk-feature-desc\">Know exactly what to work on next with AI that understands your goals.</p>\n      </div>\n      <figure class=\"mk-feature-media\"><img alt=\"Intelligent Prioritization\" src=\"images/mk-square.png\" /></figure>\n    </article>\n    <div class=\"mk-feature-sep\" aria-hidden=\"true\"></div>\n    <article class=\"mk-feature\">\n      <div class=\"mk-feature-copy\">\n        <h3 class=\"mk-feature-title\">Effortless Integration</h3>\n        <p class=\"mk-feature-desc\">Connects with the tools your team already uses — no steep learning curve.</p>\n      </div>\n      <figure class=\"mk-feature-media\"><img alt=\"Effortless Integration\" src=\"images/mk-wide3.png\" /></figure>\n    </article>\n  </div>\n  <div class=\"mk-feature-cards\">\n    <div class=\"mk-feature-card\">\n      <h3 class=\"mk-feature-card-title\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2\"/></svg>Smarter Analytics</h3>\n      <p class=\"mk-feature-card-desc\">Turn data into clarity with AI-powered insights.</p>\n    </div>\n    <div class=\"mk-feature-card\">\n      <h3 class=\"mk-feature-card-title\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect width=\"8\" height=\"8\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M7 11v4a2 2 0 0 0 2 2h4\"/><rect width=\"8\" height=\"8\" x=\"13\" y=\"13\" rx=\"2\"/></svg>Seamless Workflow</h3>\n      <p class=\"mk-feature-card-desc\">Stay in the zone without context switching.</p>\n    </div>\n    <div class=\"mk-feature-card\">\n      <h3 class=\"mk-feature-card-title\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><path d=\"M22 21v-2a4 4 0 0 0-3-3.87\"/><path d=\"M16 3.13a4 4 0 0 1 0 7.75\"/></svg>Team Alignment</h3>\n      <p class=\"mk-feature-card-desc\">A single source of truth for projects and decisions.</p>\n    </div>\n    <div class=\"mk-feature-card\">\n      <h3 class=\"mk-feature-card-title\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><ellipse cx=\"12\" cy=\"5\" rx=\"9\" ry=\"3\"/><path d=\"M3 5V19A9 3 0 0 0 21 19V5\"/><path d=\"M3 12A9 3 0 0 0 21 12\"/></svg>Clear Decision Support</h3>\n      <p class=\"mk-feature-card-desc\">AI-driven insights when projects stall.</p>\n    </div>\n  </div>\n</section>"}</ExampleCode>
+</Example>
+
+<SourceFiles component="feature-details" section="css" />
+
+</DocPage>

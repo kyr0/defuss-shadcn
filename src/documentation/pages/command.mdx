@@ -1,0 +1,114 @@
+---
+title: "Command"
+description: "Command component — searchable command palette with keyboard navigation."
+slug: "command"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="command" title="Command" component="command">
+  A searchable command palette for quick actions. Built on native <code>&lt;dialog&gt;</code> with search filtering. Open with <kbd>Cmd+K</kbd>.
+</PageHeader>
+
+<SkillPanel component="command">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;dialog&gt;</code> + search input for a command palette.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog" title="modal with focus trap"><code>&lt;dialog&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style" title="entry animation"><code>@starting-style</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/::backdrop" title="scrim overlay"><code>::backdrop</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible" title="keyboard-only focus ring"><code>:focus-visible</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="suppresses animations"><code>prefers-reduced-motion</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" title="maps to system colors"><code>forced-colors</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.command</code>
+    <code>.command-input-wrapper</code>
+    <code>.command-input</code>
+    <code>.command-list</code>
+    <code>.command-group</code>
+    <code>.command-group-heading</code>
+    <code>.command-item</code>
+    <code>.command-separator</code>
+    <code>.command-shortcut</code>
+    <code>.command-empty</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText>• <code>data-command-trigger</code></SkillText>
+  </SkillField>
+
+  <SkillField label="State attributes (managed by JS)">
+<SkillText>• <code>data-highlighted</code></SkillText>
+  </SkillField>
+
+  <SkillField label="Wiring conventions">
+<SkillText dense>• <code>data-command-trigger</code> on any element — opens the component</SkillText>
+  </SkillField>
+
+  <SkillField label="Notes">
+<p class="text-muted-foreground" style="margin:0 0 0;">• While the palette is modal, <code>html:has(dialog.command:modal)</code> sets <code>overflow: hidden</code> + <code>scrollbar-gutter: stable</code> — the page behind cannot scroll and its position is preserved for when the palette closes (no JS scroll-lock).</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>Click the button or press <kbd>⌘K</kbd> to open. Use Arrow keys to navigate, Enter to select, Escape to close.</ExampleHint>
+  <button class="btn" data-variant="outline" data-command-trigger="demo-cmd">Open Command Menu</button>
+  <dialog id="demo-cmd" class="command" data-state-demo role="dialog" aria-modal="true" aria-label="Command menu">
+    <div class="command-content">
+      <div class="command-input-wrapper">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.3-4.3" />
+        </svg>
+        <input class="command-input" type="text" placeholder="Type a command or search..." autocomplete="off" autocorrect="off" spellcheck="false" />
+      </div>
+      <div class="command-list">
+        <div class="command-group">
+          <p class="command-group-heading">Suggestions</p>
+          <button class="command-item">Calendar</button>
+          <button class="command-item">Search Emoji</button>
+          <button class="command-item">Calculator</button>
+        </div>
+        <div class="command-separator" />
+        <div class="command-group">
+          <p class="command-group-heading">Settings</p>
+          <button class="command-item">Profile <span class="command-shortcut">⌘P</span></button>
+          <button class="command-item">Billing <span class="command-shortcut">⌘B</span></button>
+          <button class="command-item">Settings <span class="command-shortcut">⌘S</span></button>
+        </div>
+      </div>
+      <div class="command-empty" hidden>No results found.</div>
+    </div>
+  </dialog>
+  <ExampleCode>{"<button class=\"btn\" data-command-trigger=\"cmd\">Open</button>\n<dialog id=\"cmd\" class=\"command\" role=\"dialog\" aria-modal=\"true\">\n  <div class=\"command-content\">\n    <div class=\"command-input-wrapper\">\n      <svg>...search...</svg>\n      <input class=\"command-input\" type=\"text\" placeholder=\"Type a command...\">\n    </div>\n    <div class=\"command-list\">\n      <div class=\"command-group\">\n        <p class=\"command-group-heading\">Suggestions</p>\n        <button class=\"command-item\">Calendar</button>\n      </div>\n    </div>\n  </div>\n</dialog>"}</ExampleCode>
+</Example>
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
+    <li><code>default</code> — closed (the authored state; trigger or <code>Cmd/Ctrl+K</code> opens it)</li>
+    <li><code>open</code> — shown modally with the search input focused</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/command-\{state\}.png</code>.</p>
+</StatesSection>
+
+<SourceFiles component="command" section="css">
+  <SourceNote for="css">Styles for the command component. Uses design tokens for colors, spacing, and radius.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="command" section="js">
+  <SourceNote for="js">Interaction logic for the command component. Uses data attributes for wiring.</SourceNote>
+</SourceFiles>
+
+</DocPage>

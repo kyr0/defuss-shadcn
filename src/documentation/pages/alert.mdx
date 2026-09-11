@@ -1,0 +1,101 @@
+---
+title: "Alert"
+description: "Alert component — contextual messages for success, warning, error, and info."
+slug: "alert"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="alert" title="Alert" component="alert">
+  A callout for important messages. Supports default and destructive variants with optional icons and actions.
+</PageHeader>
+
+<SkillPanel component="alert">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;div&gt;</code> with <code>role="alert"</code> for important callout messages.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/alert_role" title="ARIA alert role for assertive announcements"><code>role="alert"</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.alert</code>
+    <code>.alert-title</code>
+    <code>.alert-description</code>
+    <code>.alert-icon</code>
+    <code>.alert-content</code>
+    <code>.alert-action</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Variants (data-variant)">
+<SkillGrid>
+    <Variant name="destructive" description="Color variation" />
+  </SkillGrid>
+  </SkillField>
+</SkillPanel>
+
+<Example first previewStyle="flex-direction:column;align-items:stretch;">
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>Informational alert with icon, title, and description.</ExampleHint>
+  <div class="alert" role="alert" style="max-width:32rem;">
+    <svg class="alert-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" />
+      <path d="m9 12 2 2 4-4" />
+    </svg>
+    <div class="alert-content">
+      <h5 class="alert-title">Account updated successfully</h5>
+      <p class="alert-description">Your profile information has been saved. Changes will be reflected immediately.</p>
+    </div>
+  </div>
+  <ExampleCode>{"<div class=\"alert\" role=\"alert\">\n  <svg class=\"alert-icon\" aria-hidden=\"true\">...</svg>\n  <div class=\"alert-content\">\n    <h5 class=\"alert-title\">Account updated</h5>\n    <p class=\"alert-description\">Your profile has been saved.</p>\n  </div>\n</div>"}</ExampleCode>
+</Example>
+
+<Example previewStyle="flex-direction:column;align-items:stretch;">
+  <ExampleLabel>Destructive</ExampleLabel>
+  <ExampleHint>Error or warning variant.</ExampleHint>
+  <div class="alert" data-variant="destructive" role="alert" style="max-width:32rem;">
+    <svg class="alert-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" />
+      <path d="m15 9-6 6" />
+      <path d="m9 9 6 6" />
+    </svg>
+    <div class="alert-content">
+      <h5 class="alert-title">Payment failed</h5>
+      <p class="alert-description">Your payment could not be processed. Please check your payment method and try again.</p>
+    </div>
+  </div>
+  <ExampleCode>{"<div class=\"alert\" data-variant=\"destructive\" role=\"alert\">\n  <svg class=\"alert-icon\" aria-hidden=\"true\">...</svg>\n  <div class=\"alert-content\">\n    <h5 class=\"alert-title\">Payment failed</h5>\n    <p class=\"alert-description\">Please try again.</p>\n  </div>\n</div>"}</ExampleCode>
+</Example>
+
+<Example previewStyle="flex-direction:column;align-items:stretch;">
+  <ExampleLabel>With Action</ExampleLabel>
+  <ExampleHint>Alert with an action button.</ExampleHint>
+  <div class="alert" role="alert" style="max-width:32rem;">
+    <svg class="alert-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 16v-4" />
+      <path d="M12 8h.01" />
+    </svg>
+    <div class="alert-content">
+      <h5 class="alert-title">Dark mode is now available</h5>
+      <p class="alert-description">Enable it under your profile settings to get started.</p>
+    </div>
+    <div class="alert-action">
+      <button class="btn" data-variant="outline" data-size="sm">Enable</button>
+    </div>
+  </div>
+  <ExampleCode>{"<div class=\"alert\" role=\"alert\">\n  <svg class=\"alert-icon\" aria-hidden=\"true\">...</svg>\n  <div class=\"alert-content\">\n    <h5 class=\"alert-title\">New feature</h5>\n    <p class=\"alert-description\">Enable it in settings.</p>\n  </div>\n  <div class=\"alert-action\">\n    <button class=\"btn\" data-variant=\"outline\" data-size=\"sm\">Enable</button>\n  </div>\n</div>"}</ExampleCode>
+</Example>
+
+<SourceFiles component="alert" section="css">
+  <SourceNote for="css">Styles for the alert component. Uses design tokens for colors, spacing, and radius.</SourceNote>
+</SourceFiles>
+
+</DocPage>

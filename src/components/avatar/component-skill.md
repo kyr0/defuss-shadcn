@@ -57,9 +57,12 @@ supportedStates: default, error
 
 | Value     | Dimensions |
 |-----------|------------|
+| `xs`      | 1.5rem     |
 | `sm`      | 2rem       |
+| `md`      | 2.5rem     |
 | `default` | 2.5rem     |
 | `lg`      | 3rem       |
+| `xl`      | 4rem       |
 
 ## States
 

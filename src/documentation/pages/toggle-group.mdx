@@ -1,0 +1,299 @@
+---
+title: "Toggle Group"
+description: "Toggle Group component — a set of toggles that work together with single or multi-select."
+slug: "toggle-group"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="toggle-group" title="Toggle Group" component="toggle-group">
+  A set of two-state buttons that can be toggled on or off. Supports single (radio-like) and multiple (checkbox-like) selection modes with roving tabindex keyboard navigation.
+</PageHeader>
+
+<SkillPanel component="toggle-group">
+  <SkillField label="Native basis">
+<SkillText><code>role="group"</code> container with <code>&lt;button class="toggle"&gt;</code> items using <code>aria-pressed</code> for state. Supports single and multiple selection with roving tabindex.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/group_role" title="groups related interactive elements semantically"><code>role="group"</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-pressed" title="toggle pressed state on each button"><code>aria-pressed</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-label" title="accessible name for the group"><code>aria-label</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible" title="keyboard-only focus rings"><code>:focus-visible</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix" title="derived hover states from token colors"><code>color-mix()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="suppresses transitions for motion-sensitive users"><code>prefers-reduced-motion</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" title="Windows High Contrast Mode support"><code>forced-colors</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.toggle-group</code>
+    <code>.toggle</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Variants (data-variant)">
+<SkillGrid>
+    <Variant name="(default)" description="Transparent background, no border" />
+    <Variant name="outline" description="1px border + shadow on each item" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Sizes (data-size)">
+<SkillGrid>
+    <Variant name="xs" description="1.75rem height" />
+    <Variant name="sm" description="2rem height, 0.875rem icons" />
+    <Variant name="md" description="2.25rem height, 1rem icons" />
+    <Variant name="(default)" description="2.25rem height, 1rem icons" />
+    <Variant name="lg" description="2.5rem height, 1.125rem icons" />
+    <Variant name="xl" description="3rem height" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText dense>• <code>data-type</code> — <code>single</code> (default) or <code>multiple</code></SkillText>
+  <SkillText dense>• <code>data-orientation</code> — <code>vertical</code> for vertical layout</SkillText>
+  <SkillText dense>• <code>data-spacing</code> — adds gap, restores individual radii</SkillText>
+  <SkillText>• <code>data-disabled</code> — disables all items in the group</SkillText>
+  </SkillField>
+
+  <SkillField label="Keyboard">
+<SkillGrid>
+    <Variant name="Tab" description="Move into/out of the group (single tab stop)" />
+    <Variant name="←/→" description="Move focus between items (horizontal)" />
+    <Variant name="↑/↓" description="Move focus between items (vertical)" />
+    <Variant name="Home/End" description="Move to first/last item" />
+    <Variant name="Space/Enter" description="Toggle the focused item" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• Uses <strong>roving tabindex</strong>: only one item has <code>tabindex="0"</code>; others have <code>tabindex="-1"</code>.</SkillText>
+  <SkillText dense>• <code>data-type="single"</code> enforces one-at-a-time selection (radio-like). Pressing the active item deselects it.</SkillText>
+  <SkillText dense>• <code>data-type="multiple"</code> allows any combination of pressed states (checkbox-like).</SkillText>
+  <SkillText dense>• CSS uses logical properties for RTL support.</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• Connected mode collapses adjacent radii; outline variant collapses double borders via negative margin.</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Single selection</ExampleLabel>
+  <ExampleHint>Only one item can be active at a time. Use <code>data-type="single"</code>.</ExampleHint>
+  <div style="display:flex;align-items:center;justify-content:center;padding:2.5rem 0;">
+    <div class="toggle-group" role="group" aria-label="Text alignment" data-type="single" data-state-demo>
+      <button class="toggle" aria-pressed="true">
+        <i data-lucide="align-left" />
+      </button>
+      <button class="toggle" aria-pressed="false">
+        <i data-lucide="align-center" />
+      </button>
+      <button class="toggle" aria-pressed="false">
+        <i data-lucide="align-right" />
+      </button>
+    </div>
+  </div>
+  <ExampleCode>{"<div class=\"toggle-group\" role=\"group\" aria-label=\"Alignment\" data-type=\"single\">\n  <button class=\"toggle\" aria-pressed=\"true\"><i data-lucide=\"align-left\"></i></button>\n  <button class=\"toggle\" aria-pressed=\"false\"><i data-lucide=\"align-center\"></i></button>\n  <button class=\"toggle\" aria-pressed=\"false\"><i data-lucide=\"align-right\"></i></button>\n</div>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Multiple selection</ExampleLabel>
+  <ExampleHint>Any combination of items can be active. Use <code>data-type="multiple"</code>.</ExampleHint>
+  <div style="display:flex;align-items:center;justify-content:center;padding:2.5rem 0;">
+    <div class="toggle-group" role="group" aria-label="Text formatting" data-type="multiple">
+      <button class="toggle" aria-pressed="true">
+        <i data-lucide="bold" />
+      </button>
+      <button class="toggle" aria-pressed="false">
+        <i data-lucide="italic" />
+      </button>
+      <button class="toggle" aria-pressed="false">
+        <i data-lucide="underline" />
+      </button>
+    </div>
+  </div>
+  <ExampleCode>{"<div class=\"toggle-group\" role=\"group\" aria-label=\"Formatting\" data-type=\"multiple\">\n  <button class=\"toggle\" aria-pressed=\"true\"><i data-lucide=\"bold\"></i></button>\n  <button class=\"toggle\" aria-pressed=\"false\"><i data-lucide=\"italic\"></i></button>\n  <button class=\"toggle\" aria-pressed=\"false\"><i data-lucide=\"underline\"></i></button>\n</div>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Outline variant</ExampleLabel>
+  <ExampleHint>Use <code>data-variant="outline"</code> for bordered toggles with shadow.</ExampleHint>
+  <div style="display:flex;align-items:center;justify-content:center;padding:2.5rem 0;">
+    <div class="toggle-group" role="group" aria-label="View" data-type="single" data-variant="outline">
+      <button class="toggle" aria-pressed="true">
+        <i data-lucide="list" />
+      </button>
+      <button class="toggle" aria-pressed="false">
+        <i data-lucide="grid-2x2" />
+      </button>
+      <button class="toggle" aria-pressed="false">
+        <i data-lucide="kanban" />
+      </button>
+    </div>
+  </div>
+  <ExampleCode>{"<div class=\"toggle-group\" role=\"group\" aria-label=\"View\" data-type=\"single\" data-variant=\"outline\">\n  <button class=\"toggle\" aria-pressed=\"true\"><i data-lucide=\"list\"></i></button>\n  <button class=\"toggle\" aria-pressed=\"false\"><i data-lucide=\"grid-2x2\"></i></button>\n  <button class=\"toggle\" aria-pressed=\"false\"><i data-lucide=\"kanban\"></i></button>\n</div>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Sizes</ExampleLabel>
+  <ExampleHint>The full five-step scale — set <code>data-size</code> on the group and every child <code>.toggle</code> follows.</ExampleHint>
+  <div style="display:flex;flex-direction:column;gap:1.0rem;align-items:center;padding:2.5rem 0;">
+    <div class="toggle-group" role="group" aria-label="Size xs" data-type="single" data-size="xs">
+      <button class="toggle" aria-pressed="true">
+        <i data-lucide="align-left" />
+      </button>
+      <button class="toggle" aria-pressed="false">
+        <i data-lucide="align-center" />
+      </button>
+      <button class="toggle" aria-pressed="false">
+        <i data-lucide="align-right" />
+      </button>
+    </div>
+    <div class="toggle-group" role="group" aria-label="Size sm" data-type="single" data-size="sm">
+      <button class="toggle" aria-pressed="true">
+        <i data-lucide="align-left" />
+      </button>
+      <button class="toggle" aria-pressed="false">
+        <i data-lucide="align-center" />
+      </button>
+      <button class="toggle" aria-pressed="false">
+        <i data-lucide="align-right" />
+      </button>
+    </div>
+    <div class="toggle-group" role="group" aria-label="Size md" data-type="single" data-size="md">
+      <button class="toggle" aria-pressed="true">
+        <i data-lucide="align-left" />
+      </button>
+      <button class="toggle" aria-pressed="false">
+        <i data-lucide="align-center" />
+      </button>
+      <button class="toggle" aria-pressed="false">
+        <i data-lucide="align-right" />
+      </button>
+    </div>
+    <div class="toggle-group" role="group" aria-label="Size lg" data-type="single" data-size="lg">
+      <button class="toggle" aria-pressed="true">
+        <i data-lucide="align-left" />
+      </button>
+      <button class="toggle" aria-pressed="false">
+        <i data-lucide="align-center" />
+      </button>
+      <button class="toggle" aria-pressed="false">
+        <i data-lucide="align-right" />
+      </button>
+    </div>
+    <div class="toggle-group" role="group" aria-label="Size xl" data-type="single" data-size="xl">
+      <button class="toggle" aria-pressed="true">
+        <i data-lucide="align-left" />
+      </button>
+      <button class="toggle" aria-pressed="false">
+        <i data-lucide="align-center" />
+      </button>
+      <button class="toggle" aria-pressed="false">
+        <i data-lucide="align-right" />
+      </button>
+    </div>
+  </div>
+  <ExampleCode>{"<div class=\"toggle-group\" data-size=\"xs\" data-type=\"single\" ...>...</div>\n<div class=\"toggle-group\" data-size=\"sm\" data-type=\"single\" ...>...</div>\n<div class=\"toggle-group\" data-size=\"md\" data-type=\"single\" ...>...</div>\n<div class=\"toggle-group\" data-size=\"lg\" data-type=\"single\" ...>...</div>\n<div class=\"toggle-group\" data-size=\"xl\" data-type=\"single\" ...>...</div>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>With spacing</ExampleLabel>
+  <ExampleHint>Add <code>data-spacing</code> for gaps between items with individual border-radius.</ExampleHint>
+  <div style="display:flex;align-items:center;justify-content:center;padding:2.5rem 0;">
+    <div class="toggle-group" role="group" aria-label="Spaced" data-type="single" data-variant="outline" data-spacing>
+      <button class="toggle" aria-pressed="true">
+        <i data-lucide="align-left" />
+      </button>
+      <button class="toggle" aria-pressed="false">
+        <i data-lucide="align-center" />
+      </button>
+      <button class="toggle" aria-pressed="false">
+        <i data-lucide="align-right" />
+      </button>
+    </div>
+  </div>
+  <ExampleCode>{"<div class=\"toggle-group\" data-variant=\"outline\" data-spacing data-type=\"single\" ...>\n  <button class=\"toggle\" aria-pressed=\"true\">...</button>\n  <button class=\"toggle\" aria-pressed=\"false\">...</button>\n  <button class=\"toggle\" aria-pressed=\"false\">...</button>\n</div>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Vertical</ExampleLabel>
+  <ExampleHint>Use <code>data-orientation="vertical"</code> for a vertical layout. Arrow Up/Down navigate.</ExampleHint>
+  <div style="display:flex;align-items:center;justify-content:center;gap:2.0rem;padding:2.5rem 0;">
+    <div class="toggle-group" role="group" aria-label="Alignment vertical" data-type="single" data-orientation="vertical">
+      <button class="toggle" aria-pressed="true">
+        <i data-lucide="align-left" />
+      </button>
+      <button class="toggle" aria-pressed="false">
+        <i data-lucide="align-center" />
+      </button>
+      <button class="toggle" aria-pressed="false">
+        <i data-lucide="align-right" />
+      </button>
+    </div>
+    <div class="toggle-group" role="group" aria-label="Alignment vertical outline" data-type="single" data-variant="outline" data-orientation="vertical">
+      <button class="toggle" aria-pressed="true">
+        <i data-lucide="align-left" />
+      </button>
+      <button class="toggle" aria-pressed="false">
+        <i data-lucide="align-center" />
+      </button>
+      <button class="toggle" aria-pressed="false">
+        <i data-lucide="align-right" />
+      </button>
+    </div>
+  </div>
+  <ExampleCode>{"<div class=\"toggle-group\" role=\"group\" aria-label=\"Alignment\" data-type=\"single\" data-orientation=\"vertical\">\n  <button class=\"toggle\" aria-pressed=\"true\">...</button>\n  <button class=\"toggle\" aria-pressed=\"false\">...</button>\n  <button class=\"toggle\" aria-pressed=\"false\">...</button>\n</div>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>With text</ExampleLabel>
+  <ExampleHint>Toggle items can include text alongside icons.</ExampleHint>
+  <div style="display:flex;align-items:center;justify-content:center;padding:2.5rem 0;">
+    <div class="toggle-group" role="group" aria-label="View mode" data-type="single" data-variant="outline">
+      <button class="toggle" aria-pressed="true"><i data-lucide="list" /> List</button>
+      <button class="toggle" aria-pressed="false"><i data-lucide="grid-2x2" /> Grid</button>
+      <button class="toggle" aria-pressed="false"><i data-lucide="columns-3" /> Board</button>
+    </div>
+  </div>
+  <ExampleCode>{"<div class=\"toggle-group\" role=\"group\" aria-label=\"View mode\" data-type=\"single\" data-variant=\"outline\">\n  <button class=\"toggle\" aria-pressed=\"true\"><i data-lucide=\"list\"></i> List</button>\n  <button class=\"toggle\" aria-pressed=\"false\"><i data-lucide=\"grid-2x2\"></i> Grid</button>\n  <button class=\"toggle\" aria-pressed=\"false\"><i data-lucide=\"columns-3\"></i> Board</button>\n</div>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Disabled</ExampleLabel>
+  <ExampleHint>Add <code>data-disabled</code> to the group and <code>disabled</code> on each button.</ExampleHint>
+  <div style="display:flex;align-items:center;justify-content:center;padding:2.5rem 0;">
+    <div class="toggle-group" role="group" aria-label="Formatting disabled" data-type="multiple" data-disabled>
+      <button class="toggle" aria-pressed="true" disabled>
+        <i data-lucide="bold" />
+      </button>
+      <button class="toggle" aria-pressed="false" disabled>
+        <i data-lucide="italic" />
+      </button>
+      <button class="toggle" aria-pressed="false" disabled>
+        <i data-lucide="underline" />
+      </button>
+    </div>
+  </div>
+  <ExampleCode>{"<div class=\"toggle-group\" role=\"group\" aria-label=\"Formatting\" data-type=\"multiple\" data-disabled>\n  <button class=\"toggle\" aria-pressed=\"true\" disabled>...</button>\n  <button class=\"toggle\" aria-pressed=\"false\" disabled>...</button>\n  <button class=\"toggle\" aria-pressed=\"false\" disabled>...</button>\n</div>"}</ExampleCode>
+</Example>
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
+    <li><code>default</code> — enabled (items clickable and focusable)</li>
+    <li><code>disabled</code> — sets the documented <code>data-disabled</code> attribute (CSS dims items, <code>pointer-events: none</code>)</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/toggle-group-\{state\}.png</code>.</p>
+</StatesSection>
+
+<SourceFiles component="toggle-group" section="css" />
+
+<SourceFiles component="toggle-group" section="js">
+  <SourceNote for="js">Manages single/multiple selection and roving tabindex keyboard navigation.</SourceNote>
+</SourceFiles>
+
+</DocPage>

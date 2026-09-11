@@ -1,0 +1,257 @@
+---
+title: "Pricing"
+description: "Three plan cards with a billing-period toggle — native radios plus :has() flip every plan price, zero JavaScript."
+slug: "pricing"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="pricing" title="Pricing" component="pricing">
+  Three plan cards with a billing-period toggle — native radios plus :has() flip every plan price, zero JavaScript.
+</PageHeader>
+
+<SkillPanel component="pricing">
+  <SkillField label="Native basis">
+<SkillText><code>display: grid; align-items: stretch</code> keeps plan cards equal height across content differences. The billing toggle is a radio group — <code>&lt;input type="radio"&gt;</code> in <code>&lt;label&gt;</code>s — and <code>:has(input:checked)</code> swaps every plan's yearly/monthly price rows. Keyboard, screen readers, and form semantics are browser-provided.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio" title="exclusive choice with free keyboard support"><code>&lt;input type="radio"&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="checked radio flips every price panel from CSS"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/align-items" title="equal-height plan cards"><code>align-items: stretch</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant-numeric#tabular-nums" title="tabular price digits"><code>font-variant-numeric</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-pricing</code>
+    <code>.mk-pricing-head</code>
+    <code>.mk-pricing-eyebrow</code>
+    <code>.mk-pricing-title</code>
+    <code>.mk-pricing-desc</code>
+    <code>.mk-pricing-billing</code>
+    <code>.mk-plan-price</code>
+    <code>.mk-plans</code>
+    <code>.mk-plan</code>
+    <code>.mk-plan-header</code>
+    <code>.mk-plan-icon</code>
+    <code>.mk-plan-body</code>
+    <code>.mk-plan-title</code>
+    <code>.mk-plan-desc</code>
+    <code>.mk-plan-amount</code>
+    <code>.mk-plan-unit</code>
+    <code>.mk-plan-unit-label</code>
+    <code>.mk-plan-unit-note</code>
+    <code>.mk-plan-cta</code>
+    <code>.mk-plan-features</code>
+    <code>.mk-plan-feature</code>
+  </SkillRow>
+  </SkillField>
+</SkillPanel>
+
+<Example first previewStyle="align-items:stretch;">
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>Pro is <code>data-featured</code>; the radio toggle flips all plans via <code>:has()</code>.</ExampleHint>
+  <section class="mk-pricing" style="width:100%">
+    <div class="mk-pricing-head">
+      <span class="mk-pricing-eyebrow">Pricing</span>
+      <h2 class="mk-pricing-title">Simple Pricing, Smarter Work</h2>
+      <p class="mk-pricing-desc">Acme has a plan designed to help you move faster.</p>
+      <div class="mk-pricing-billing" role="radiogroup" aria-label="Billing period">
+        <label><input class="mk-bill-yearly" type="radio" name="mk-billing" checked />Billed yearly</label>
+        <label><input class="mk-bill-monthly" type="radio" name="mk-billing" />Billed monthly</label>
+      </div>
+    </div>
+    <div class="mk-plans">
+      <article class="mk-plan">
+        <header class="mk-plan-header">
+          <span class="mk-plan-icon">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          </span>
+        </header>
+        <div class="mk-plan-body">
+          <h3 class="mk-plan-title">Starter</h3>
+          <p class="mk-plan-desc">For individuals who want AI assistance in their daily workflow.</p>
+        </div>
+        <div class="mk-plan-price mk-price-yearly">
+          <span class="mk-plan-amount">$10</span>
+          <div class="mk-plan-unit">
+            <span class="mk-plan-unit-label">Per month</span>
+            <span class="mk-plan-unit-note">Billed yearly</span>
+          </div>
+        </div>
+        <div class="mk-plan-price mk-price-monthly">
+          <span class="mk-plan-amount">$12</span>
+          <div class="mk-plan-unit">
+            <span class="mk-plan-unit-label">Per month</span>
+            <span class="mk-plan-unit-note">Plus local taxes</span>
+          </div>
+        </div>
+        <div class="mk-plan-cta">
+          <button type="button" class="btn" data-variant="outline" data-size="lg">Get started</button>
+        </div>
+        <ul class="mk-plan-features">
+          <li class="mk-plan-feature">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+            <span>Unlimited projects</span>
+          </li>
+          <li class="mk-plan-feature">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+            <span>AI-powered insights</span>
+          </li>
+          <li class="mk-plan-feature">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+            <span>Seamless integrations</span>
+          </li>
+          <li class="mk-plan-feature">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+            <span>Community support</span>
+          </li>
+        </ul>
+      </article>
+      <article class="mk-plan" data-featured>
+        <header class="mk-plan-header">
+          <span class="mk-plan-icon">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+            </svg>
+          </span>
+          <span class="badge">Most Popular</span>
+        </header>
+        <div class="mk-plan-body">
+          <h3 class="mk-plan-title">Pro</h3>
+          <p class="mk-plan-desc">For fast-moving teams that want to collaborate in real time.</p>
+        </div>
+        <div class="mk-plan-price mk-price-yearly">
+          <span class="mk-plan-amount">$24</span>
+          <div class="mk-plan-unit">
+            <span class="mk-plan-unit-label">Per month</span>
+            <span class="mk-plan-unit-note">Billed yearly</span>
+          </div>
+        </div>
+        <div class="mk-plan-price mk-price-monthly">
+          <span class="mk-plan-amount">$29</span>
+          <div class="mk-plan-unit">
+            <span class="mk-plan-unit-label">Per month</span>
+            <span class="mk-plan-unit-note">Plus local taxes</span>
+          </div>
+        </div>
+        <div class="mk-plan-cta">
+          <button type="button" class="btn" data-size="lg">Get started</button>
+        </div>
+        <ul class="mk-plan-features">
+          <li class="mk-plan-feature">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+            <span>Everything in Starter</span>
+          </li>
+          <li class="mk-plan-feature">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+            <span>Real-time collaboration</span>
+          </li>
+          <li class="mk-plan-feature">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+            <span>Advanced reporting</span>
+          </li>
+          <li class="mk-plan-feature">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+            <span>Priority support</span>
+          </li>
+        </ul>
+      </article>
+      <article class="mk-plan">
+        <header class="mk-plan-header">
+          <span class="mk-plan-icon">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect width="16" height="20" x="4" y="2" rx="2" ry="2" />
+              <path d="M9 22v-4h6v4" />
+              <path d="M8 6h.01" />
+              <path d="M16 6h.01" />
+              <path d="M12 6h.01" />
+              <path d="M12 10h.01" />
+              <path d="M12 14h.01" />
+              <path d="M16 10h.01" />
+              <path d="M16 14h.01" />
+              <path d="M8 10h.01" />
+              <path d="M8 14h.01" />
+            </svg>
+          </span>
+        </header>
+        <div class="mk-plan-body">
+          <h3 class="mk-plan-title">Enterprise</h3>
+          <p class="mk-plan-desc">For organizations that need security, control, and support at scale.</p>
+        </div>
+        <div class="mk-plan-price mk-price-yearly">
+          <span class="mk-plan-amount">$48</span>
+          <div class="mk-plan-unit">
+            <span class="mk-plan-unit-label">Per month</span>
+            <span class="mk-plan-unit-note">Billed yearly</span>
+          </div>
+        </div>
+        <div class="mk-plan-price mk-price-monthly">
+          <span class="mk-plan-amount">$59</span>
+          <div class="mk-plan-unit">
+            <span class="mk-plan-unit-label">Per month</span>
+            <span class="mk-plan-unit-note">Plus local taxes</span>
+          </div>
+        </div>
+        <div class="mk-plan-cta">
+          <button type="button" class="btn" data-variant="outline" data-size="lg">Get started</button>
+        </div>
+        <ul class="mk-plan-features">
+          <li class="mk-plan-feature">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+            <span>Everything in Pro</span>
+          </li>
+          <li class="mk-plan-feature">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+            <span>SSO &amp; audit logs</span>
+          </li>
+          <li class="mk-plan-feature">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+            <span>Dedicated success manager</span>
+          </li>
+          <li class="mk-plan-feature">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+            <span>Custom integrations</span>
+          </li>
+        </ul>
+      </article>
+    </div>
+  </section>
+  <ExampleCode>{"<section class=\"mk-pricing\" style=\"width:100%\">\n  <div class=\"mk-pricing-head\">\n    <span class=\"mk-pricing-eyebrow\">Pricing</span>\n    <h2 class=\"mk-pricing-title\">Simple Pricing, Smarter Work</h2>\n    <p class=\"mk-pricing-desc\">Acme has a plan designed to help you move faster.</p>\n    <div class=\"mk-pricing-billing\" role=\"radiogroup\" aria-label=\"Billing period\">\n      <label><input class=\"mk-bill-yearly\" type=\"radio\" name=\"mk-billing\" checked />Billed yearly</label>\n      <label><input class=\"mk-bill-monthly\" type=\"radio\" name=\"mk-billing\" />Billed monthly</label>\n    </div>\n  </div>\n  <div class=\"mk-plans\">\n    <article class=\"mk-plan\">\n      <header class=\"mk-plan-header\"><span class=\"mk-plan-icon\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2\"/><circle cx=\"12\" cy=\"7\" r=\"4\"/></svg></span></header>\n      <div class=\"mk-plan-body\">\n        <h3 class=\"mk-plan-title\">Starter</h3>\n        <p class=\"mk-plan-desc\">For individuals who want AI assistance in their daily workflow.</p>\n      </div>\n      <div class=\"mk-plan-price mk-price-yearly\">\n        <span class=\"mk-plan-amount\">$10</span>\n        <div class=\"mk-plan-unit\"><span class=\"mk-plan-unit-label\">Per month</span><span class=\"mk-plan-unit-note\">Billed yearly</span></div>\n      </div>\n      <div class=\"mk-plan-price mk-price-monthly\">\n        <span class=\"mk-plan-amount\">$12</span>\n        <div class=\"mk-plan-unit\"><span class=\"mk-plan-unit-label\">Per month</span><span class=\"mk-plan-unit-note\">Plus local taxes</span></div>\n      </div>\n      <div class=\"mk-plan-cta\"><button type=\"button\" class=\"btn\" data-variant=\"outline\" data-size=\"lg\">Get started</button></div>\n      <ul class=\"mk-plan-features\">\n        <li class=\"mk-plan-feature\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg><span>Unlimited projects</span></li>\n        <li class=\"mk-plan-feature\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg><span>AI-powered insights</span></li>\n        <li class=\"mk-plan-feature\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg><span>Seamless integrations</span></li>\n        <li class=\"mk-plan-feature\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg><span>Community support</span></li>\n      </ul>\n    </article>\n    <article class=\"mk-plan\" data-featured>\n      <header class=\"mk-plan-header\"><span class=\"mk-plan-icon\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><polygon points=\"13 2 3 14 12 14 11 22 21 10 12 10 13 2\"/></svg></span><span class=\"badge\">Most Popular</span></header>\n      <div class=\"mk-plan-body\">\n        <h3 class=\"mk-plan-title\">Pro</h3>\n        <p class=\"mk-plan-desc\">For fast-moving teams that want to collaborate in real time.</p>\n      </div>\n      <div class=\"mk-plan-price mk-price-yearly\">\n        <span class=\"mk-plan-amount\">$24</span>\n        <div class=\"mk-plan-unit\"><span class=\"mk-plan-unit-label\">Per month</span><span class=\"mk-plan-unit-note\">Billed yearly</span></div>\n      </div>\n      <div class=\"mk-plan-price mk-price-monthly\">\n        <span class=\"mk-plan-amount\">$29</span>\n        <div class=\"mk-plan-unit\"><span class=\"mk-plan-unit-label\">Per month</span><span class=\"mk-plan-unit-note\">Plus local taxes</span></div>\n      </div>\n      <div class=\"mk-plan-cta\"><button type=\"button\" class=\"btn\" data-size=\"lg\">Get started</button></div>\n      <ul class=\"mk-plan-features\">\n        <li class=\"mk-plan-feature\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg><span>Everything in Starter</span></li>\n        <li class=\"mk-plan-feature\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg><span>Real-time collaboration</span></li>\n        <li class=\"mk-plan-feature\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg><span>Advanced reporting</span></li>\n        <li class=\"mk-plan-feature\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg><span>Priority support</span></li>\n      </ul>\n    </article>\n    <article class=\"mk-plan\">\n      <header class=\"mk-plan-header\"><span class=\"mk-plan-icon\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect width=\"16\" height=\"20\" x=\"4\" y=\"2\" rx=\"2\" ry=\"2\"/><path d=\"M9 22v-4h6v4\"/><path d=\"M8 6h.01\"/><path d=\"M16 6h.01\"/><path d=\"M12 6h.01\"/><path d=\"M12 10h.01\"/><path d=\"M12 14h.01\"/><path d=\"M16 10h.01\"/><path d=\"M16 14h.01\"/><path d=\"M8 10h.01\"/><path d=\"M8 14h.01\"/></svg></span></header>\n      <div class=\"mk-plan-body\">\n        <h3 class=\"mk-plan-title\">Enterprise</h3>\n        <p class=\"mk-plan-desc\">For organizations that need security, control, and support at scale.</p>\n      </div>\n      <div class=\"mk-plan-price mk-price-yearly\">\n        <span class=\"mk-plan-amount\">$48</span>\n        <div class=\"mk-plan-unit\"><span class=\"mk-plan-unit-label\">Per month</span><span class=\"mk-plan-unit-note\">Billed yearly</span></div>\n      </div>\n      <div class=\"mk-plan-price mk-price-monthly\">\n        <span class=\"mk-plan-amount\">$59</span>\n        <div class=\"mk-plan-unit\"><span class=\"mk-plan-unit-label\">Per month</span><span class=\"mk-plan-unit-note\">Plus local taxes</span></div>\n      </div>\n      <div class=\"mk-plan-cta\"><button type=\"button\" class=\"btn\" data-variant=\"outline\" data-size=\"lg\">Get started</button></div>\n      <ul class=\"mk-plan-features\">\n        <li class=\"mk-plan-feature\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg><span>Everything in Pro</span></li>\n        <li class=\"mk-plan-feature\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg><span>SSO & audit logs</span></li>\n        <li class=\"mk-plan-feature\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg><span>Dedicated success manager</span></li>\n        <li class=\"mk-plan-feature\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg><span>Custom integrations</span></li>\n      </ul>\n    </article>\n  </div>\n</section>"}</ExampleCode>
+</Example>
+
+<SourceFiles component="pricing" section="css" />
+
+</DocPage>

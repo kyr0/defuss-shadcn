@@ -1,0 +1,126 @@
+---
+title: "Label"
+description: "Label component — accessible form labels styled with shadcn tokens."
+slug: "label"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="label" title="Label" component="label">
+  Renders an accessible label associated with form controls. Built on the native <code>&lt;label&gt;</code> element with <code>:has()</code> for focus-reactive styling. No JavaScript required. The label’s <code>for</code> and the control’s <code>id</code> must carry the <strong>exact same value</strong> — that pairing <em>is</em> the association: it is what makes clicking the label focus the field and lets a screen reader announce the control’s name. Change one side and leave the other, and the label keeps looking right while quietly stopping working.
+</PageHeader>
+
+<SkillPanel component="label">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;label&gt;</code> element. Browser provides built-in click-to-focus association with form controls.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label" title="associates text with a form control via for/id"><code>&lt;label&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="auto-detects disabled state from adjacent control"><code>:has() selector</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" title="Windows High Contrast Mode support"><code>forced-colors</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.label</code>
+    <code>.input</code>
+    <code>\[data-disabled\]</code>
+    <code>.label-hint</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• <strong>One value, written twice:</strong> the label’s <code>for</code> and the control’s <code>id</code> must be the exact same string. A mismatch fails silently — the label renders and styles normally but no longer focuses the field or names it for assistive technology.</SkillText>
+  <SkillText dense>• Clicking the label focuses the associated input — this is native <code>&lt;label&gt;</code> behavior.</SkillText>
+  <SkillText dense>• The required indicator <code>\*</code> uses <code>aria-hidden="true"</code> since the <code>required</code> attribute on the input already conveys the requirement to assistive technology.</SkillText>
+  <SkillText dense>• Do not use <code>&lt;label&gt;</code> without a <code>for</code> attribute or a nested input.</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• In <code>forced-colors</code> mode, label text maps to system <code>LinkText</code> color.</p>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• The <code>.label</code> class is intentionally minimal — it styles the label text with appropriate font size, weight, and color.</SkillText>
+  <SkillText dense>• Labels auto-detect disabled state from adjacent controls via <code>:has(+ :disabled)</code> — the explicit <code>data-disabled</code> attribute is also supported.</SkillText>
+  <SkillText dense>• For inline use with checkboxes, switches, or radios, add <code>style="margin:0;"</code> to remove the default bottom margin.</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• Labels compose with Input, Textarea, Select, Checkbox, Radio, Switch, and all other form controls.</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>Basic label paired with an input. Click the label to focus the input — <code>for="demo-email"</code> and <code>id="demo-email"</code> must always match; changing one without the other breaks the link.</ExampleHint>
+  <div style="width:100%;max-width:20rem;">
+    <label class="label" for="demo-email">Email</label>
+    <input class="input" type="email" id="demo-email" placeholder="you@example.com" />
+  </div>
+  <ExampleCode>{"<! for and id are one value in two places — keep them identical -->\n<label class=\"label\" for=\"email\">Email</label>\n<input class=\"input\" type=\"email\" id=\"email\" placeholder=\"you@example.com\">"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Required</ExampleLabel>
+  <ExampleHint>Required indicator using a red asterisk.</ExampleHint>
+  <div style="width:100%;max-width:20rem;">
+    <label class="label" for="demo-name"> Name <span aria-hidden="true" class="text-destructive">\*</span></label>
+    <input class="input" type="text" id="demo-name" required placeholder="Jane Doe" />
+  </div>
+  <ExampleCode>{"<label class=\"label\" for=\"name\">\n  Name <span aria-hidden=\"true\" class=\"text-destructive\">*</span>\n</label>\n<input class=\"input\" type=\"text\" id=\"name\" required>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Optional hint</ExampleLabel>
+  <ExampleHint>Hint text indicating the field is optional.</ExampleHint>
+  <div style="width:100%;max-width:20rem;">
+    <label class="label" for="demo-bio"> Bio <span class="label-hint">(optional)</span></label>
+    <input class="input" type="text" id="demo-bio" placeholder="Tell us about yourself" />
+  </div>
+  <ExampleCode>{"<label class=\"label\" for=\"bio\">\n  Bio <span class=\"label-hint\">(optional)</span>\n</label>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Disabled</ExampleLabel>
+  <ExampleHint>Dimmed label for disabled fields. The label auto-detects the disabled input via <code>:has()</code> — no <code>data-disabled</code> attribute needed.</ExampleHint>
+  <div style="width:100%;max-width:20rem;">
+    <label class="label" for="demo-disabled">Disabled field</label>
+    <input class="input" type="text" id="demo-disabled" disabled placeholder="Cannot edit" />
+  </div>
+  <ExampleCode>{"<label class=\"label\" for=\"disabled\">Disabled field</label>\n<input class=\"input\" type=\"text\" id=\"disabled\" disabled>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>With Checkbox</ExampleLabel>
+  <ExampleHint>Inline label paired with a checkbox control.</ExampleHint>
+  <div class="checkbox-item">
+    <input class="checkbox" type="checkbox" id="demo-terms" />
+    <label class="label" for="demo-terms" style="margin:0;">Accept terms and conditions</label>
+  </div>
+  <ExampleCode>{"<div class=\"checkbox-item\">\n  <input class=\"checkbox\" type=\"checkbox\" id=\"terms\">\n  <label class=\"label\" for=\"terms\" style=\"margin:0;\">Accept terms and conditions</label>\n</div>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>With Switch</ExampleLabel>
+  <ExampleHint>Inline label paired with a switch control.</ExampleHint>
+  <div class="switch-item">
+    <input class="switch" type="checkbox" role="switch" id="demo-airplane" />
+    <label class="label" for="demo-airplane" style="margin:0;">Airplane Mode</label>
+  </div>
+  <ExampleCode>{"<div class=\"switch-item\">\n  <input class=\"switch\" type=\"checkbox\" role=\"switch\" id=\"airplane\">\n  <label class=\"label\" for=\"airplane\" style=\"margin:0;\">Airplane Mode</label>\n</div>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Form Field</ExampleLabel>
+  <ExampleHint>Label composed with an input and description text, as used in forms.</ExampleHint>
+  <div style="width:100%;max-width:20rem;">
+    <label class="label" for="demo-username">Username</label>
+    <input class="input" type="text" id="demo-username" placeholder="shadcn" aria-describedby="demo-username-desc" />
+    <p class="field-description" id="demo-username-desc">This is your public display name.</p>
+  </div>
+  <ExampleCode>{"<div>\n  <label class=\"label\" for=\"username\">Username</label>\n  <input class=\"input\" type=\"text\" id=\"username\" placeholder=\"shadcn\" aria-describedby=\"username-desc\">\n  <p class=\"field-description\" id=\"username-desc\">This is your public display name.</p>\n</div>"}</ExampleCode>
+</Example>
+
+<SourceFiles component="label" section="css" />
+
+</DocPage>

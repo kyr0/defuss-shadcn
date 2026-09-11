@@ -1,0 +1,169 @@
+---
+title: "Animations"
+description: "CSS-only enter and exit animations using @starting-style, allow-discrete transitions, and ::details-content."
+slug: "animations"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="animations" title="Animations &amp; Transitions" introStyle="max-width:38rem;">
+  All enter and exit animations are CSS-only. No JavaScript class toggling, no animation libraries — just <code>@starting-style</code>, <code>allow-discrete</code> transitions, and native CSS features.
+</PageHeader>
+
+<H2>The challenge</H2>
+
+<p class="text-sm text-muted-foreground mb-5">Animating elements that go from <code>display: none</code> to visible (popovers, dialogs, accordions) has historically been impossible in CSS. The element either exists or doesn't — there was no in-between state to transition through. Libraries solved this with JS class toggling and <code>requestAnimationFrame</code> hacks.</p>
+
+<p class="text-sm text-muted-foreground mb-5">Modern CSS solves this with two new features: <code>@starting-style</code> (defines the initial state before an element appears) and <code>allow-discrete</code> (lets <code>display</code> participate in transitions).</p>
+
+<div class="sep" />
+
+<H2>@starting-style</H2>
+
+<p class="text-sm text-muted-foreground mb-3">The <code>@starting-style</code> at-rule defines the values a property should start from when the element first appears (enters the top layer, gains <code>display</code>, gets inserted into the DOM). The browser applies these values first, then transitions to the element's actual computed styles.</p>
+
+<p class="text-sm text-muted-foreground mb-5">
+  <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style" target="_blank" rel="noopener" class="btn" data-variant="link">MDN: @starting-style</a>
+</p>
+
+<CodeCard title="how @starting-style works" lang="css" mb="1.5rem"><Dim>{"/* 1. The element's normal (visible) state */"}</Dim>{"\n.popover:popover-open {\n  opacity: 1;\n  transform: translateY(0);\n}\n\n"}<Dim>{"/* 2. The starting state — before the transition begins */"}</Dim>{"\n@starting-style {\n  .popover:popover-open {\n    opacity: 0;\n    transform: translateY(-4px);\n  }\n}\n\n"}<Dim>{"/* Flow: @starting-style values → transition → :popover-open values\n   Result: a smooth fade-in + slide-up animation */"}</Dim></CodeCard>
+
+<div class="sep" />
+
+<H2>allow-discrete transitions</H2>
+
+<p class="text-sm text-muted-foreground mb-3">The <code>display</code> property was historically not animatable — it snaps between <code>none</code> and <code>block</code> instantly. The <code>allow-discrete</code> keyword in the <code>transition</code> shorthand tells the browser to keep the element visible during the exit transition before hiding it.</p>
+
+<p class="text-sm text-muted-foreground mb-5">
+  <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/transition-behavior" target="_blank" rel="noopener" class="btn" data-variant="link">MDN: transition-behavior</a>
+</p>
+
+<CodeCard title="transition with allow-discrete" lang="css" mb="1.5rem">{".popover {\n  "}<Dim>{"/* Animate opacity, transform, AND display */"}</Dim>{"\n  transition:\n    opacity 150ms ease,\n    transform 150ms ease,\n    display 150ms allow-discrete;\n\n  "}<Dim>{"/* Exit state: invisible */"}</Dim>{"\n  opacity: 0;\n  transform: translateY(-4px);\n}\n\n"}<Dim>{"/* Without allow-discrete: element disappears instantly on close\n   With allow-discrete: element fades out, THEN display changes to none */"}</Dim></CodeCard>
+
+<div class="sep" />
+
+<H2>Popover &amp; dialog animation pattern</H2>
+
+<p class="text-sm text-muted-foreground mb-5">Most overlay components (popover, dropdown, tooltip, dialog, sheet, toast) follow the same three-part animation recipe. Here's the complete pattern used by the Popover component:</p>
+
+<CodeCard title="complete popover animation — CSS only" lang="css" mb="1.5rem">{"@layer components {\n  .popover {\n    "}<Dim>{"/* 1. Base state (also the exit target) */"}</Dim>{"\n    opacity: 0;\n    transform: translateY(-4px);\n    transition:\n      opacity 150ms ease,\n      transform 150ms ease,\n      display 150ms allow-discrete;\n\n    "}<Dim>{"/* 2. Open state — what it transitions TO */"}</Dim>{"&"}{":popover-open {\n      opacity: 1;\n      transform: translateY(0);\n    }\n  }\n\n  "}<Dim>{"/* 3. Starting style — what it transitions FROM */"}</Dim>{"\n  @starting-style {\n    .popover:popover-open {\n      opacity: 0;\n      transform: translateY(-4px);\n    }\n  }\n}"}</CodeCard>
+
+<div style="display:grid;grid-template-columns:auto 1fr;gap:0.5rem 1rem;margin-bottom:2.5rem;align-items:baseline;">
+  <span style="font-weight:600;font-size:0.8125rem;">Enter</span>
+  <span class="text-sm text-muted-foreground"><code>@starting-style</code> values → transition → <code>:popover-open</code> values. The popover fades in and slides up.</span>
+  <span style="font-weight:600;font-size:0.8125rem;">Exit</span>
+  <span class="text-sm text-muted-foreground"><code>:popover-open</code> values → transition → base state values. The <code>allow-discrete</code> on <code>display</code> keeps the element visible during the fade-out.</span>
+</div>
+
+<div class="sep" />
+
+<H2>Dialog &amp; sheet animations</H2>
+
+<p class="text-sm text-muted-foreground mb-5">Dialogs and sheets use the same pattern but with <code>dialog\[open\]</code> instead of <code>:popover-open</code>, and they also animate the <code>::backdrop</code> pseudo-element.</p>
+
+<CodeCard title="dialog with backdrop animation" lang="css" mb="1.5rem">{"dialog.dialog {\n  opacity: 0;\n  transform: translateY(-0.5rem) scale(0.98);\n  transition:\n    opacity 200ms ease,\n    transform 200ms ease,\n    display 200ms allow-discrete;\n\n  "}{"&"}{"[open] {\n    opacity: 1;\n    transform: translateY(0) scale(1);\n  }\n\n  "}<Dim>{"/* Backdrop fades in/out too */"}</Dim>{"&"}{"::backdrop {\n    background: oklch(0 0 0 / 0);\n    backdrop-filter: blur(0px);\n    transition: all 200ms ease,\n      display 200ms allow-discrete;\n  }\n\n  "}{"&"}{"[open]::backdrop {\n    background: oklch(0 0 0 / 0.45);\n    backdrop-filter: blur(3px);\n  }\n}\n\n@starting-style {\n  dialog.dialog[open] {\n    opacity: 0;\n    transform: translateY(-0.5rem) scale(0.98);\n  }\n  dialog.dialog[open]::backdrop {\n    background: oklch(0 0 0 / 0);\n    backdrop-filter: blur(0px);\n  }\n}"}</CodeCard>
+
+<p class="text-sm text-muted-foreground mb-5"><strong>Sheets</strong> use <code>translate</code> instead of <code>scale</code> — a sheet with <code>data-side="right"</code> slides in from <code>translateX(100%)</code>.</p>
+
+<div class="sep" />
+
+<H2>Accordion animations</H2>
+
+<p class="text-sm text-muted-foreground mb-3">Accordions animate their height using the <code>::details-content</code> pseudo-element and the <code>block-size</code> property. This is one of the most-requested CSS features — animating <code>height: 0</code> to <code>height: auto</code> — now possible natively.</p>
+
+<p class="text-sm text-muted-foreground mb-5">
+  <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/::details-content" target="_blank" rel="noopener" class="btn" data-variant="link">MDN: ::details-content</a>
+</p>
+
+<CodeCard title="accordion height animation — CSS only" lang="css" mb="1.5rem">{".accordion-item {\n  "}<Dim>{"/* Target the collapsible content area */"}</Dim>{"&"}{" ::details-content {\n    block-size: 0;\n    overflow-y: clip;\n    transition:\n      block-size 200ms ease,\n      content-visibility 200ms allow-discrete;\n  }\n\n  "}<Dim>{"/* When open, expand to natural height */"}</Dim>{"&"}{"[open] ::details-content {\n    block-size: auto;\n  }\n}\n\n"}<Dim>{"/* Start from 0 when opening */"}</Dim>{"\n@starting-style {\n  .accordion-item[open] ::details-content {\n    block-size: 0;\n  }\n}"}</CodeCard>
+
+<div style="display:grid;grid-template-columns:auto 1fr;gap:0.5rem 1rem;margin-bottom:2.5rem;align-items:baseline;">
+  <span style="font-weight:600;font-size:0.8125rem;">block-size: auto</span>
+  <span class="text-sm text-muted-foreground">The browser calculates the natural height and smoothly transitions from <code>0</code> to that value. No JavaScript height measurement needed.</span>
+  <span style="font-weight:600;font-size:0.8125rem;">content-visibility</span>
+  <span class="text-sm text-muted-foreground">The <code>allow-discrete</code> on <code>content-visibility</code> prevents the content from disappearing before the close animation finishes.</span>
+</div>
+
+<div class="sep" />
+
+<H2>Programmatic exit animations</H2>
+
+<p class="text-sm text-muted-foreground mb-5">Most components handle exit purely through CSS transitions. For cases where you need to run logic <em>after</em> the exit animation completes (like removing a toast element from the DOM), the Web Animations API provides a promise-based approach.</p>
+
+<CodeCard title="web animations API — await exit before removal" lang="javascript" mb="1.5rem"><Dim>{"// Animate out, then remove from DOM"}</Dim>{"\nel.animate(\n  [\n    { opacity: 1, transform: 'translateY(0)' },\n    { opacity: 0, transform: 'translateY(0.5rem)' }\n  ],\n  { duration: 200, easing: 'ease', fill: 'forwards' }\n).finished.then(() => {\n  el.hidePopover();\n  el.remove();\n});"}</CodeCard>
+
+<p class="text-sm text-muted-foreground mb-5"><strong>Used by:</strong> Toast (dismiss animation before removing the element from the DOM)</p>
+
+<div class="sep" />
+
+<H2>Animation summary</H2>
+
+<p class="text-sm text-muted-foreground mb-5">Which components use animations and what type of animation they use.</p>
+
+<TableCard title="animation patterns by component" mb="2.5rem"><table class="table" data-variant="simple" style="margin:0;">
+      <thead>
+        <tr>
+          <th style="white-space:nowrap;">Component</th>
+          <th>Animation</th>
+          <th>Technique</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Popover</td>
+          <td>Fade + slide up</td>
+          <td><code>@starting-style</code> + <code>:popover-open</code></td>
+        </tr>
+        <tr>
+          <td>Dropdown</td>
+          <td>Fade + slide up</td>
+          <td><code>@starting-style</code> + <code>:popover-open</code></td>
+        </tr>
+        <tr>
+          <td>Tooltip</td>
+          <td>Fade in</td>
+          <td><code>@starting-style</code> + <code>:popover-open</code></td>
+        </tr>
+        <tr>
+          <td>Dialog</td>
+          <td>Fade + slide + scale</td>
+          <td><code>@starting-style</code> + <code>dialog\[open\]</code> + <code>::backdrop</code></td>
+        </tr>
+        <tr>
+          <td>Alert Dialog</td>
+          <td>Fade + slide + scale</td>
+          <td><code>@starting-style</code> + <code>dialog\[open\]</code> + <code>::backdrop</code></td>
+        </tr>
+        <tr>
+          <td>Sheet</td>
+          <td>Slide from edge</td>
+          <td><code>@starting-style</code> + <code>dialog\[open\]</code> + <code>::backdrop</code></td>
+        </tr>
+        <tr>
+          <td>Toast</td>
+          <td>Slide in, slide out</td>
+          <td><code>@starting-style</code> + Web Animations API for exit</td>
+        </tr>
+        <tr>
+          <td>Accordion</td>
+          <td>Height expand/collapse</td>
+          <td><code>@starting-style</code> + <code>::details-content</code> + <code>block-size</code></td>
+        </tr>
+        <tr>
+          <td>Collapsible</td>
+          <td>Height expand/collapse</td>
+          <td><code>@starting-style</code> + <code>::details-content</code> + <code>block-size</code></td>
+        </tr>
+        <tr>
+          <td>Command</td>
+          <td>Fade + scale up</td>
+          <td><code>@starting-style</code> + <code>dialog\[open\]</code></td>
+        </tr>
+      </tbody>
+    </table></TableCard>
+
+<p class="text-sm text-muted-foreground mb-8"> All of these techniques are pure CSS (except toast exit). No animation libraries, no <code>requestAnimationFrame</code> hacks, no JS class toggling. See the <a href="native-web-apis.html" class="btn" data-variant="link">Native Web APIs</a> page for the broader set of platform APIs used across the system. </p>
+
+</DocPage>

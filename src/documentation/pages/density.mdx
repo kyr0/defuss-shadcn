@@ -1,0 +1,253 @@
+---
+title: "Density"
+description: "Compactness is an explicit whitespace policy—not a global zoom factor. Keep typography, geometry and target sizes independent."
+slug: "density"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="density" title="Density" crumb="sizing / density" introStyle="max-width:38rem;">
+  Compactness is an explicit whitespace policy—not a global zoom factor. Keep typography, geometry and target sizes independent.
+</PageHeader>
+
+<h2 id="presets" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Opt in to interface density</h2>
+
+<DocText>Density changes whitespace, not display resolution. The presets are adjustable design choices: compact <code>0.75</code>, comfortable <code>1</code>, spacious <code>1.25</code>. They inherit into descendants; an inner density attribute starts a new density context. Every code block on this page shows exactly the classes that render the demo above it — only the demo's decorative colors are omitted.</DocText>
+
+<Demo>
+  <div class="flex flex-wrap gap-4" data-demo="density">
+    <div data-density="compact" class="stack demo-outline p-3" style="flex:1;min-width:10rem;">
+      <p class="demo-label" style="margin:0;">compact — 0.75×</p>
+      <div class="demo-tile p-4" data-variant="muted">p-4</div>
+      <div class="demo-tile p-4" data-variant="muted">p-4</div>
+    </div>
+    <div class="stack demo-outline p-3" style="flex:1;min-width:10rem;">
+      <p class="demo-label" style="margin:0;">comfortable — 1×</p>
+      <div class="demo-tile p-4" data-variant="muted">p-4</div>
+      <div class="demo-tile p-4" data-variant="muted">p-4</div>
+    </div>
+    <div data-density="spacious" class="stack demo-outline p-3" style="flex:1;min-width:10rem;">
+      <p class="demo-label" style="margin:0;">spacious — 1.25×</p>
+      <div class="demo-tile p-4" data-variant="muted">p-4</div>
+      <div class="demo-tile p-4" data-variant="muted">p-4</div>
+    </div>
+  </div>
+  <DemoCode>{"<div class=\"flex flex-wrap gap-4\">\n  <div data-density=\"compact\" class=\"stack p-3\" style=\"flex:1;min-width:10rem;\">\n    <p>compact — 0.75×</p>\n    <div class=\"p-4\">p-4</div>\n    <div class=\"p-4\">p-4</div>\n  </div>\n  <div class=\"stack p-3\" style=\"flex:1;min-width:10rem;\">\n    <p>comfortable — 1×</p>\n    <div class=\"p-4\">p-4</div>\n    <div class=\"p-4\">p-4</div>\n  </div>\n  <div data-density=\"spacious\" class=\"stack p-3\" style=\"flex:1;min-width:10rem;\">\n    <p>spacious — 1.25×</p>\n    <div class=\"p-4\">p-4</div>\n    <div class=\"p-4\">p-4</div>\n  </div>\n</div>"}</DemoCode>
+</Demo>
+
+<div class="sep" />
+
+<h2 id="what-changes" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">What changes—and what does not</h2>
+
+<div style="overflow-x:auto;margin-bottom:1.5rem;">
+  <table class="table" data-variant="simple">
+    <thead>
+      <tr>
+        <th scope="col">Quantity</th>
+        <th scope="col">Density behavior</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Numeric gaps, padding, margins; stack gap; default container gutters</td>
+        <td>Scaled.</td>
+      </tr>
+      <tr>
+        <td>Numeric widths, heights, square sizes, icon dimensions</td>
+        <td>Unchanged.</td>
+      </tr>
+      <tr>
+        <td>Fonts and line heights</td>
+        <td>Unchanged.</td>
+      </tr>
+      <tr>
+        <td>Literal px spacing, automatic margins, percentage sizes</td>
+        <td>Unchanged.</td>
+      </tr>
+      <tr>
+        <td>Existing button/input recipes and their fixed dimensions</td>
+        <td>Unchanged until explicitly migrated.</td>
+      </tr>
+      <tr>
+        <td>Interaction target minima</td>
+        <td>Independent CSS-pixel constraints.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="sep" />
+
+<h2 id="real-world" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">A realistic compact surface</h2>
+
+<DocText>The same settings panel under two density contexts. In <code>compact</code> the <code>p-4</code> panel padding and the <code>stack</code>'s default gap scale to 0.75×, in <code>spacious</code> to 1.25× — typography, button heights and border radii stay identical. That is the density contract on real UI: a whitespace policy, not a zoom.</DocText>
+
+<Demo>
+  <div class="flex flex-wrap gap-4">
+    <div style="flex:1;min-width:14rem;">
+      <p class="demo-label">data-density="compact"</p>
+      <div data-density="compact" class="card stack p-4">
+        <div class="flex items-center gap-3">
+          <div>
+            <p class="text-sm" style="margin:0;">Wi-Fi</p>
+            <p class="text-xs text-muted-foreground" style="margin:0;">Connected to HomeNet</p>
+          </div>
+          <button class="btn ms-auto" type="button" data-variant="outline" data-size="sm">Edit</button>
+        </div>
+        <div class="flex items-center gap-3">
+          <div>
+            <p class="text-sm" style="margin:0;">Bluetooth</p>
+            <p class="text-xs text-muted-foreground" style="margin:0;">2 devices paired</p>
+          </div>
+          <button class="btn ms-auto" type="button" data-variant="outline" data-size="sm">Edit</button>
+        </div>
+        <div class="flex items-center gap-3">
+          <div>
+            <p class="text-sm" style="margin:0;">Notifications</p>
+            <p class="text-xs text-muted-foreground" style="margin:0;">Allowed for 12 apps</p>
+          </div>
+          <button class="btn ms-auto" type="button" data-variant="outline" data-size="sm">Edit</button>
+        </div>
+      </div>
+    </div>
+    <div style="flex:1;min-width:14rem;">
+      <p class="demo-label">data-density="spacious"</p>
+      <div data-density="spacious" class="card stack p-4">
+        <div class="flex items-center gap-3">
+          <div>
+            <p class="text-sm" style="margin:0;">Wi-Fi</p>
+            <p class="text-xs text-muted-foreground" style="margin:0;">Connected to HomeNet</p>
+          </div>
+          <button class="btn ms-auto" type="button" data-variant="outline" data-size="sm">Edit</button>
+        </div>
+        <div class="flex items-center gap-3">
+          <div>
+            <p class="text-sm" style="margin:0;">Bluetooth</p>
+            <p class="text-xs text-muted-foreground" style="margin:0;">2 devices paired</p>
+          </div>
+          <button class="btn ms-auto" type="button" data-variant="outline" data-size="sm">Edit</button>
+        </div>
+        <div class="flex items-center gap-3">
+          <div>
+            <p class="text-sm" style="margin:0;">Notifications</p>
+            <p class="text-xs text-muted-foreground" style="margin:0;">Allowed for 12 apps</p>
+          </div>
+          <button class="btn ms-auto" type="button" data-variant="outline" data-size="sm">Edit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <DemoCode>{"<div data-density=\"compact\">\n  <div class=\"card stack p-4\">\n    <div class=\"flex items-center gap-3\">\n      <div>\n        <p class=\"text-sm\" style=\"margin:0;\">Wi-Fi</p>\n        <p class=\"text-xs text-muted-foreground\" style=\"margin:0;\">Connected to HomeNet</p>\n      </div>\n      <button class=\"btn ms-auto\" type=\"button\" data-variant=\"outline\" data-size=\"sm\">Edit</button>\n    </div>\n    <div class=\"flex items-center gap-3\">…</div>\n    <div class=\"flex items-center gap-3\">…</div>\n  </div>\n</div>\n\n<div data-density=\"spacious\">\n  <div class=\"card stack p-4\">…</div>\n</div>"}</DemoCode>
+</Demo>
+
+<div class="sep" />
+
+<h2 id="advanced" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Real world: a dense data table</h2>
+
+<DocText>The same four records — name, role, last modified — rendered twice with identical markup; only the density attribute changes. In <code>compact</code> the panel's <code>p-4</code> padding, the <code>stack</code> gap and each row's <code>gap-2</code> shrink to 0.75×; in <code>spacious</code> they grow to 1.25×. The avatars (<code>size-8</code>), the font sizes and the <code>ms-auto</code> date alignment do not move: density scales the whitespace between and around the rows, never the type or the geometry. That is what makes a compact mode safe to offer on data-heavy screens — rows pack tighter without shrinking text below readability.</DocText>
+
+<Demo>
+  <div class="flex flex-wrap gap-4">
+    <div style="flex:1;min-width:14rem;">
+      <p class="demo-label">data-density="compact"</p>
+      <div data-density="compact" class="card stack p-4">
+        <div class="flex items-center gap-2">
+          <div class="demo-tile size-8 shrink-0" data-variant="secondary">AL</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm" style="margin:0;">Ada Lovelace</p>
+            <p class="text-xs text-muted-foreground" style="margin:0;">Engineer</p>
+          </div>
+          <span class="text-xs text-muted-foreground ms-auto shrink-0">Mar 4</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="demo-tile size-8 shrink-0" data-variant="secondary">GH</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm" style="margin:0;">Grace Hopper</p>
+            <p class="text-xs text-muted-foreground" style="margin:0;">Admiral</p>
+          </div>
+          <span class="text-xs text-muted-foreground ms-auto shrink-0">Mar 3</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="demo-tile size-8 shrink-0" data-variant="secondary">AT</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm" style="margin:0;">Alan Turing</p>
+            <p class="text-xs text-muted-foreground" style="margin:0;">Mathematician</p>
+          </div>
+          <span class="text-xs text-muted-foreground ms-auto shrink-0">Feb 27</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="demo-tile size-8 shrink-0" data-variant="secondary">ED</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm" style="margin:0;">Edsger Dijkstra</p>
+            <p class="text-xs text-muted-foreground" style="margin:0;">Scientist</p>
+          </div>
+          <span class="text-xs text-muted-foreground ms-auto shrink-0">Feb 19</span>
+        </div>
+      </div>
+    </div>
+    <div style="flex:1;min-width:14rem;">
+      <p class="demo-label">data-density="spacious"</p>
+      <div data-density="spacious" class="card stack p-4">
+        <div class="flex items-center gap-2">
+          <div class="demo-tile size-8 shrink-0" data-variant="secondary">AL</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm" style="margin:0;">Ada Lovelace</p>
+            <p class="text-xs text-muted-foreground" style="margin:0;">Engineer</p>
+          </div>
+          <span class="text-xs text-muted-foreground ms-auto shrink-0">Mar 4</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="demo-tile size-8 shrink-0" data-variant="secondary">GH</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm" style="margin:0;">Grace Hopper</p>
+            <p class="text-xs text-muted-foreground" style="margin:0;">Admiral</p>
+          </div>
+          <span class="text-xs text-muted-foreground ms-auto shrink-0">Mar 3</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="demo-tile size-8 shrink-0" data-variant="secondary">AT</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm" style="margin:0;">Alan Turing</p>
+            <p class="text-xs text-muted-foreground" style="margin:0;">Mathematician</p>
+          </div>
+          <span class="text-xs text-muted-foreground ms-auto shrink-0">Feb 27</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="demo-tile size-8 shrink-0" data-variant="secondary">ED</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm" style="margin:0;">Edsger Dijkstra</p>
+            <p class="text-xs text-muted-foreground" style="margin:0;">Scientist</p>
+          </div>
+          <span class="text-xs text-muted-foreground ms-auto shrink-0">Feb 19</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <DemoCode>{"<div class=\"flex flex-wrap gap-4\">\n  <div style=\"flex:1;min-width:14rem;\">\n    <div data-density=\"compact\" class=\"card stack p-4\">\n      <div class=\"flex items-center gap-2\">\n        <div class=\"size-8 shrink-0\">AL</div>\n        <div class=\"flex-1 min-w-0\">\n          <p class=\"text-sm\" style=\"margin:0;\">Ada Lovelace</p>\n          <p class=\"text-xs text-muted-foreground\" style=\"margin:0;\">Engineer</p>\n        </div>\n        <span class=\"text-xs text-muted-foreground ms-auto shrink-0\">Mar 4</span>\n      </div>\n      <div class=\"flex items-center gap-2\">…</div>\n      <div class=\"flex items-center gap-2\">…</div>\n      <div class=\"flex items-center gap-2\">…</div>\n    </div>\n  </div>\n  <div style=\"flex:1;min-width:14rem;\">\n    <div data-density=\"spacious\" class=\"card stack p-4\">\n      …same four rows…\n    </div>\n  </div>\n</div>"}</DemoCode>
+</Demo>
+
+<div class="sep" />
+
+<h2 id="custom-density" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Customize a context</h2>
+
+<Demo>
+  <DemoCode header="CSS" lang="css">{".dense-inspector { --layout-density: 0.9; }\n\n/* Component-owned opt-in recipe. No changes to existing .btn rules. */\n.inspector-action {\n  min-inline-size: 44px;\n  min-block-size: 44px;\n  padding-inline: calc(var(--size-base) * 3 * var(--layout-density));\n}"}</DemoCode>
+</Demo>
+
+<DocText>Use a valid nonnegative number. Numeric spacing clamps negative density to zero; invalid CSS token types are not runtime-validated. Named size aliases stay geometric. Do not express density by changing the root font size or devicePixelRatio.</DocText>
+
+<div class="sep" />
+
+<h2 id="input-policy" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Pointer capability is a separate policy</h2>
+
+<Demo>
+  <DemoCode header="CSS" lang="css">{".inspector-action {\n  min-inline-size: 44px;\n  min-block-size: 44px;\n}\n\n@media (any-pointer: coarse) {\n  .inspector-action { padding-inline: 1rem; }\n}"}</DemoCode>
+</Demo>
+
+<DocText>The example already keeps a 44px target baseline; the media query only adds breathing room. <code>any-pointer: coarse</code> can detect an available coarse pointer on a hybrid device, but it is not a complete description of a user’s access needs. Keep controls usable without that signal. <a href="https://www.w3.org/TR/mediaqueries-4/#any-input" target="_blank" rel="noopener">Media Queries: available pointer capabilities</a></DocText>
+
+<DocText>The AA target-size criterion is 24 × 24 CSS pixels with exceptions; the enhanced AAA criterion uses 44 × 44 with exceptions. Check actual target geometry, not just icon dimensions. <a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html" target="_blank" rel="noopener">WCAG 2.2: Target Size (Minimum), AA</a> · <a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-enhanced.html" target="_blank" rel="noopener">WCAG 2.2: Target Size (Enhanced), AAA</a></DocText>
+
+</DocPage>

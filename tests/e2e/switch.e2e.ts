@@ -54,6 +54,25 @@ await cssSmoke('switch', [
     },
   },
   {
+    // thumb = height − 4px, checked translate = width − height (switch.css rule)
+    label: 'full scale tracks xs 24x14 … xl 52x28, xl thumb travels 24px',
+    run: async (page) => {
+      const boxes = await page.evaluate(() =>
+        ['xs', 'sm', 'md', 'lg', 'xl'].map((s) => {
+          const el = document.querySelector(`#sw-${s}`)!;
+          const r = el.getBoundingClientRect();
+          return `${Math.round(r.width)}x${Math.round(r.height)}`;
+        }),
+      );
+      assert.deepEqual(boxes, ['24x14', '28x16', '36x20', '44x24', '52x28']);
+      const xlThumb = await page.$eval('#sw-xl-on', (el) =>
+        getComputedStyle(el, '::after').transform,
+      );
+      // translateX(1.5rem) computes to matrix(1, 0, 0, 1, 24, 0) — e is the 5th value
+      assert.equal(xlThumb, 'matrix(1, 0, 0, 1, 24, 0)', 'checked xl thumb offset = width − height');
+    },
+  },
+  {
     label: 'disabled dims to 0.5 / not-allowed',
     selector: '#sw-disabled',
     css: { opacity: '0.5', cursor: 'not-allowed' },

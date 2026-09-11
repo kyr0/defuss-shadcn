@@ -1,0 +1,203 @@
+---
+title: "Combobox"
+description: "Combobox component — searchable dropdown with keyboard navigation."
+slug: "combobox"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="combobox" title="Combobox" component="combobox">
+  A searchable select triggered by an outline button. Opens a popover with a search input and a scrollable list of options. Keyboard navigable via <code>aria-activedescendant</code>. Uses the <code>popover</code> API for top-layer rendering.
+</PageHeader>
+
+<SkillPanel component="combobox">
+  <SkillField label="Native basis">
+<SkillText>Button trigger + <code>popover</code> popup containing a search input and <code>role="listbox"</code>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Popover_API" title="top-layer rendering and light-dismiss for the dropdown list"><code>Popover API</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning" title="positions the popover relative to the trigger without JS"><code>CSS Anchor Positioning</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style" title="entry animation starting values for popover appearance"><code>@starting-style</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior" title="prevents scroll chaining from the listbox to the page"><code>overscroll-behavior</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="reveals the injected clear button exactly while a selection exists"><code>:has()</code></ApiPill>
+    <ApiPill href="https://www.w3.org/WAI/ARIA/apg/patterns/combobox/" title="keyboard navigation and screen reader contract"><code>WAI-ARIA Combobox pattern</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.combobox</code>
+    <code>.combobox-trigger</code>
+    <code>.combobox-value</code>
+    <code>.combobox-chevron</code>
+    <code>.combobox-clear</code>
+    <code>.combobox-content</code>
+    <code>.combobox-search</code>
+    <code>.combobox-search-icon</code>
+    <code>.combobox-search-input</code>
+    <code>.combobox-listbox</code>
+    <code>.combobox-item</code>
+    <code>.combobox-empty</code>
+    <code>.combobox-group-label</code>
+    <code>.combobox-separator</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText dense>• <code>data-placeholder</code> — on <code>.combobox-value</code>; present when showing placeholder text, removed on selection</SkillText>
+  <SkillText dense>• <code>data-highlighted</code> — on <code>.combobox-item</code>; JS-managed, set on the currently keyboard-highlighted option</SkillText>
+  <SkillText>• <code>data-value</code> — on <code>.combobox-item</code>; the programmatic value of the option (used by JS, not CSS)</SkillText>
+  </SkillField>
+
+  <SkillField label="Keyboard">
+<SkillGrid>
+    <Variant name="Key" description="Behavior" />
+    <Variant name="ArrowDown" description="Highlight next item" />
+    <Variant name="ArrowUp" description="Highlight previous item" />
+    <Variant name="Home" description="Highlight first visible item" />
+    <Variant name="End" description="Highlight last visible item" />
+    <Variant name="Enter" description="Select highlighted item, close popup" />
+    <Variant name="Escape" description="Close popup, return focus to trigger" />
+    <Variant name="Tab" description="Close popup, move focus to next element" />
+    <Variant name="Typing" description="Filter items, auto-highlight first match" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• The trigger is a <code>.btn\[data-variant="outline"\]</code> — styled by the button system</SkillText>
+  <SkillText dense>• When the popover opens, focus moves to the search input inside</SkillText>
+  <SkillText dense>• When the popover closes, focus returns to the trigger button</SkillText>
+  <SkillText dense>• Use <code>aria-activedescendant</code> to communicate the highlighted item to screen readers</SkillText>
+  <SkillText dense>• The <code>popover</code> attribute enables top-layer rendering and light-dismiss</SkillText>
+  <SkillText dense>• CSS anchor positioning places the popover below the trigger; no JS positioning needed</SkillText>
+  <SkillText dense>• The popover animates in via <code>@starting-style</code> + <code>transition-behavior: allow-discrete</code></SkillText>
+  <SkillText dense>• The check icon for selected items uses a CSS <code>::before</code> pseudo-element</SkillText>
+  <SkillText dense>• Filter matching is case-insensitive and supports substring matching</SkillText>
+  <SkillText dense>• A clear (✕) button is injected on the trigger once a value is selected, replacing the chevron; clicking it restores the placeholder</SkillText>
+  <SkillText dense>• Group labels and separators auto-hide when their group has no visible items</SkillText>
+  <SkillText dense>• <code>overscroll-behavior: contain</code> prevents scroll chaining from the listbox</SkillText>
+  <SkillText dense>• <code>prefers-reduced-motion: reduce</code> disables all transitions</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• <code>forced-colors: active</code> supports Windows High Contrast Mode</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first previewStyle="min-height:20rem;align-items:flex-start;padding-top:2rem;">
+  <ExampleLabel>Basic Combobox</ExampleLabel>
+  <ExampleHint>An outline button opens a popover with a search field and selectable options. Click the trigger or use keyboard to interact.</ExampleHint>
+  <div class="combobox" style="width:14rem;">
+    <label class="label" id="cb-framework-label">Framework</label>
+    <button class="btn combobox-trigger" data-variant="outline" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="cb-framework-label" aria-controls="cb-framework-popover">
+      <span class="combobox-value" data-placeholder="Select framework...">Select framework...</span>
+      <svg class="combobox-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="m7 15 5 5 5-5" />
+        <path d="m7 9 5-5 5 5" />
+      </svg>
+    </button>
+    <div id="cb-framework-popover" class="combobox-content" popover data-state-demo>
+      <div class="combobox-search">
+        <svg class="combobox-search-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.3-4.3" />
+        </svg>
+        <input class="combobox-search-input" type="text" role="combobox" autocomplete="off" aria-expanded="true" aria-controls="cb-framework-listbox" aria-activedescendant aria-autocomplete="list" placeholder="Search..." />
+      </div>
+      <div id="cb-framework-listbox" role="listbox" class="combobox-listbox" aria-label="Frameworks">
+        <div class="combobox-empty" hidden>No results found.</div>
+        <div role="option" id="cb-opt-next" class="combobox-item" data-value="nextjs" aria-selected="false">Next.js</div>
+        <div role="option" id="cb-opt-svelte" class="combobox-item" data-value="sveltekit" aria-selected="false">SvelteKit</div>
+        <div role="option" id="cb-opt-nuxt" class="combobox-item" data-value="nuxt" aria-selected="false">Nuxt</div>
+        <div role="option" id="cb-opt-remix" class="combobox-item" data-value="remix" aria-selected="false">Remix</div>
+        <div role="option" id="cb-opt-astro" class="combobox-item" data-value="astro" aria-selected="false">Astro</div>
+      </div>
+    </div>
+  </div>
+  <ExampleCode>{"<div class=\"combobox\" style=\"width:14rem;\">\n  <label class=\"label\" id=\"framework-label\">Framework</label>\n  <button class=\"btn combobox-trigger\" data-variant=\"outline\"\n          aria-haspopup=\"listbox\"\n          aria-expanded=\"false\"\n          aria-labelledby=\"framework-label\"\n          aria-controls=\"framework-popover\">\n    <span class=\"combobox-value\"\n          data-placeholder=\"Select framework...\">\n      Select framework...\n    </span>\n    <svg class=\"combobox-chevron\" aria-hidden=\"true\"\n         width=\"16\" height=\"16\" viewBox=\"0 0 24 24\"\n         fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">\n      <path d=\"m7 15 5 5 5-5\"/>\n      <path d=\"m7 9 5-5 5 5\"/>\n    </svg>\n  </button>\n  <div id=\"framework-popover\"\n       class=\"combobox-content\" popover>\n    <div class=\"combobox-search\">\n      <svg class=\"combobox-search-icon\" ...>...</svg>\n      <input class=\"combobox-search-input\"\n             type=\"text\" role=\"combobox\"\n             autocomplete=\"off\"\n             aria-controls=\"framework-listbox\"\n             aria-autocomplete=\"list\"\n             placeholder=\"Search...\">\n    </div>\n    <div id=\"framework-listbox\"\n         role=\"listbox\" class=\"combobox-listbox\">\n      <div class=\"combobox-empty\" hidden>\n        No results found.\n      </div>\n      <div role=\"option\" class=\"combobox-item\"\n           data-value=\"nextjs\">Next.js</div>\n      <!-- more options... -->\n    </div>\n  </div>\n</div>"}</ExampleCode>
+</Example>
+
+<Example first previewStyle="min-height:22rem;align-items:flex-start;padding-top:2rem;">
+  <ExampleLabel>Grouped with Disabled Items</ExampleLabel>
+  <ExampleHint>Combobox with option groups, visual separators, and a disabled option. Use <code>.combobox-group-label</code> for headings and <code>aria-disabled="true"</code> to disable individual items.</ExampleHint>
+  <div class="combobox" style="width:14rem;">
+    <label class="label" id="cb-timezone-label">Timezone</label>
+    <button class="btn combobox-trigger" data-variant="outline" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="cb-timezone-label" aria-controls="cb-timezone-popover">
+      <span class="combobox-value" data-placeholder="Select timezone...">Select timezone...</span>
+      <svg class="combobox-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="m7 15 5 5 5-5" />
+        <path d="m7 9 5-5 5 5" />
+      </svg>
+    </button>
+    <div id="cb-timezone-popover" class="combobox-content" popover>
+      <div class="combobox-search">
+        <svg class="combobox-search-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.3-4.3" />
+        </svg>
+        <input class="combobox-search-input" type="text" role="combobox" autocomplete="off" aria-expanded="true" aria-controls="cb-timezone-listbox" aria-activedescendant aria-autocomplete="list" placeholder="Search..." />
+      </div>
+      <div id="cb-timezone-listbox" role="listbox" class="combobox-listbox" aria-label="Timezones">
+        <div class="combobox-empty" hidden>No results found.</div>
+        <div class="combobox-group-label">North America</div>
+        <div role="option" id="cb-tz-est" class="combobox-item" data-value="est" aria-selected="false">Eastern (EST)</div>
+        <div role="option" id="cb-tz-cst" class="combobox-item" data-value="cst" aria-selected="false">Central (CST)</div>
+        <div role="option" id="cb-tz-pst" class="combobox-item" data-value="pst" aria-selected="false">Pacific (PST)</div>
+        <div class="combobox-separator" />
+        <div class="combobox-group-label">Europe</div>
+        <div role="option" id="cb-tz-gmt" class="combobox-item" data-value="gmt" aria-selected="false">GMT (London)</div>
+        <div role="option" id="cb-tz-cet" class="combobox-item" data-value="cet" aria-selected="false">CET (Berlin)</div>
+        <div role="option" id="cb-tz-eet" class="combobox-item" data-value="eet" aria-selected="false" aria-disabled="true">EET (Bucharest)</div>
+      </div>
+    </div>
+  </div>
+  <ExampleCode>{"<!-- Groups use .combobox-group-label and .combobox-separator -->\n<div class=\"combobox-group-label\">North America</div>\n<div role=\"option\" class=\"combobox-item\"\n     data-value=\"est\">Eastern (EST)</div>\n<div class=\"combobox-separator\"></div>\n<div class=\"combobox-group-label\">Europe</div>\n<div role=\"option\" class=\"combobox-item\"\n     data-value=\"gmt\">GMT (London)</div>\n\n<!-- Disabled option -->\n<div role=\"option\" class=\"combobox-item\"\n     aria-disabled=\"true\">EET (Bucharest)</div>"}</ExampleCode>
+</Example>
+
+<Example first previewStyle="min-height:6rem;align-items:flex-start;padding-top:2rem;">
+  <ExampleLabel>Disabled</ExampleLabel>
+  <ExampleHint>Disable the trigger button to prevent interaction.</ExampleHint>
+  <div class="combobox" style="width:14rem;">
+    <label class="label" id="cb-disabled-label">Framework</label>
+    <button class="btn combobox-trigger" data-variant="outline" disabled aria-haspopup="listbox" aria-expanded="false" aria-labelledby="cb-disabled-label" aria-controls="cb-disabled-popover">
+      <span class="combobox-value" data-placeholder="Select framework...">Select framework...</span>
+      <svg class="combobox-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="m7 15 5 5 5-5" />
+        <path d="m7 9 5-5 5 5" />
+      </svg>
+    </button>
+    <div id="cb-disabled-popover" class="combobox-content" popover>
+      <div class="combobox-search">
+        <svg class="combobox-search-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.3-4.3" />
+        </svg>
+        <input class="combobox-search-input" type="text" role="combobox" autocomplete="off" aria-expanded="true" aria-controls="cb-disabled-listbox" aria-activedescendant aria-autocomplete="list" placeholder="Search..." />
+      </div>
+      <div id="cb-disabled-listbox" role="listbox" class="combobox-listbox" aria-label="Frameworks">
+        <div class="combobox-empty" hidden>No results found.</div>
+        <div role="option" id="cb-dis-next" class="combobox-item" data-value="nextjs" aria-selected="false">Next.js</div>
+        <div role="option" id="cb-dis-svelte" class="combobox-item" data-value="sveltekit" aria-selected="false">SvelteKit</div>
+      </div>
+    </div>
+  </div>
+  <ExampleCode>{"<!-- Add disabled to the trigger button -->\n<button class=\"btn combobox-trigger\"\n        data-variant=\"outline\" disabled\n        aria-haspopup=\"listbox\"\n        aria-expanded=\"false\">\n  ...\n</button>"}</ExampleCode>
+</Example>
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
+    <li><code>default</code> — closed (the authored state; the trigger toggles it)</li>
+    <li><code>open</code> — listbox shown via <code>showPopover()</code> with the search input focused; <code>getState().config.value</code> reports the selected option</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/combobox-\{state\}.png</code>.</p>
+</StatesSection>
+
+<SourceFiles component="combobox" section="css" />
+
+<SourceFiles component="combobox" section="js">
+  <SourceNote for="js">Trigger opens/closes the popover. Search input filters the list. Arrow keys navigate, Enter selects, Escape closes. Focus moves to search input on open and back to trigger on close.</SourceNote>
+</SourceFiles>
+
+</DocPage>

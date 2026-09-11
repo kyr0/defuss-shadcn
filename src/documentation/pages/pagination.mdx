@@ -1,0 +1,178 @@
+---
+title: "Pagination"
+description: "Pagination component — page navigation controls with prev/next and page numbers."
+slug: "pagination"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="pagination" title="Pagination" component="pagination">
+  Page navigation with previous/next links and page numbers.
+</PageHeader>
+
+<SkillPanel component="pagination">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;nav&gt;</code> + links for page navigation.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav" title="navigation landmark"><code>&lt;nav&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current" title="identifies the active page"><code>aria-current="page"</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible" title="keyboard-only focus ring"><code>:focus-visible</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="suppresses hover transitions"><code>prefers-reduced-motion</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast" title="thickens borders for high-contrast"><code>prefers-contrast</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" title="maps to system colors"><code>forced-colors</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.pagination</code>
+    <code>.pagination-list</code>
+    <code>.pagination-link</code>
+    <code>.pagination-prev</code>
+    <code>.pagination-next</code>
+    <code>.pagination-active</code>
+    <code>.pagination-ellipsis</code>
+  </SkillRow>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>Previous/next with chevron icons, page numbers, ellipsis, and an active page.</ExampleHint>
+  <nav class="pagination" aria-label="Pagination">
+    <ul class="pagination-list">
+      <li>
+        <a class="pagination-prev" href="#" onclick="event.preventDefault()" aria-label="Go to previous page"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6" /></svg> Previous </a>
+      </li>
+      <li>
+        <a class="pagination-link" href="#" onclick="event.preventDefault()">1</a>
+      </li>
+      <li>
+        <a class="pagination-link pagination-active" href="#" aria-current="page" onclick="event.preventDefault()">2</a>
+      </li>
+      <li>
+        <a class="pagination-link" href="#" onclick="event.preventDefault()">3</a>
+      </li>
+      <li>
+        <span class="pagination-ellipsis">…</span>
+      </li>
+      <li>
+        <a class="pagination-next" href="#" onclick="event.preventDefault()" aria-label="Go to next page"> Next <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></svg></a>
+      </li>
+    </ul>
+  </nav>
+  <ExampleCode>{"<nav class=\"pagination\" aria-label=\"Pagination\">\n  <ul class=\"pagination-list\">\n    <li><a class=\"pagination-prev\" href=\"#\" aria-label=\"Go to previous page\">\n      <svg aria-hidden=\"true\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\"\n           fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">\n        <path d=\"m15 18-6-6 6-6\"/>\n      </svg>\n      Previous\n    </a></li>\n    <li><a class=\"pagination-link\" href=\"#\">1</a></li>\n    <li><a class=\"pagination-link pagination-active\" href=\"#\"\n            aria-current=\"page\">2</a></li>\n    <li><a class=\"pagination-link\" href=\"#\">3</a></li>\n    <li><span class=\"pagination-ellipsis\">&hellip;</span></li>\n    <li><a class=\"pagination-next\" href=\"#\" aria-label=\"Go to next page\">\n      Next\n      <svg aria-hidden=\"true\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\"\n           fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">\n        <path d=\"m9 18 6-6-6-6\"/>\n      </svg>\n    </a></li>\n  </ul>\n</nav>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Icons only</ExampleLabel>
+  <ExampleHint>Compact pagination with just chevron arrows — useful alongside a "rows per page" selector.</ExampleHint>
+  <nav class="pagination" aria-label="Pagination">
+    <ul class="pagination-list">
+      <li>
+        <a class="pagination-prev" href="#" onclick="event.preventDefault()" aria-label="Go to previous page" aria-disabled="true" style="pointer-events:none;opacity:0.5;">
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+        </a>
+      </li>
+      <li>
+        <span style="font-size:0.875rem;color:var(--muted-foreground);padding:0 0.5rem;">Page 1 of 10</span>
+      </li>
+      <li>
+        <a class="pagination-next" href="#" onclick="event.preventDefault()" aria-label="Go to next page">
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <ExampleCode>{"<!-- Disabled previous (first page) -->\n<a class=\"pagination-prev\" href=\"#\"\n   aria-label=\"Go to previous page\"\n   aria-disabled=\"true\">\n  <svg aria-hidden=\"true\" ...><path d=\"m15 18-6-6 6-6\"/></svg>\n</a>\n\n<span>Page 1 of 10</span>\n\n<a class=\"pagination-next\" href=\"#\"\n   aria-label=\"Go to next page\">\n  <svg aria-hidden=\"true\" ...><path d=\"m9 18 6-6-6-6\"/></svg>\n</a>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Simple</ExampleLabel>
+  <ExampleHint>Page numbers only — no previous/next text labels.</ExampleHint>
+  <nav class="pagination" aria-label="Pagination">
+    <ul class="pagination-list">
+      <li>
+        <a class="pagination-link" href="#" onclick="event.preventDefault()">1</a>
+      </li>
+      <li>
+        <a class="pagination-link pagination-active" href="#" aria-current="page" onclick="event.preventDefault()">2</a>
+      </li>
+      <li>
+        <a class="pagination-link" href="#" onclick="event.preventDefault()">3</a>
+      </li>
+      <li>
+        <a class="pagination-link" href="#" onclick="event.preventDefault()">4</a>
+      </li>
+      <li>
+        <a class="pagination-link" href="#" onclick="event.preventDefault()">5</a>
+      </li>
+    </ul>
+  </nav>
+  <ExampleCode>{"<nav class=\"pagination\" aria-label=\"Pagination\">\n  <ul class=\"pagination-list\">\n    <li><a class=\"pagination-link\" href=\"#\">1</a></li>\n    <li><a class=\"pagination-link pagination-active\" href=\"#\"\n            aria-current=\"page\">2</a></li>\n    <li><a class=\"pagination-link\" href=\"#\">3</a></li>\n    <li><a class=\"pagination-link\" href=\"#\">4</a></li>\n    <li><a class=\"pagination-link\" href=\"#\">5</a></li>\n  </ul>\n</nav>"}</ExampleCode>
+</Example>
+
+<Example previewStyle="display: flex; flex-direction: column; gap: 1.5rem;">
+  <ExampleLabel>Disabled at boundaries</ExampleLabel>
+  <ExampleHint>Previous is disabled on the first page; next is disabled on the last page.</ExampleHint>
+  <nav class="pagination" aria-label="Pagination — first page">
+    <ul class="pagination-list">
+      <li>
+        <a class="pagination-prev" href="#" onclick="event.preventDefault()" aria-label="Go to previous page" aria-disabled="true"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6" /></svg> Previous </a>
+      </li>
+      <li>
+        <a class="pagination-link pagination-active" href="#" aria-current="page" onclick="event.preventDefault()">1</a>
+      </li>
+      <li>
+        <a class="pagination-link" href="#" onclick="event.preventDefault()">2</a>
+      </li>
+      <li>
+        <a class="pagination-link" href="#" onclick="event.preventDefault()">3</a>
+      </li>
+      <li>
+        <span class="pagination-ellipsis" aria-hidden="true">…</span>
+      </li>
+      <li>
+        <a class="pagination-next" href="#" onclick="event.preventDefault()" aria-label="Go to next page"> Next <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></svg></a>
+      </li>
+    </ul>
+  </nav>
+  <nav class="pagination" aria-label="Pagination — last page">
+    <ul class="pagination-list">
+      <li>
+        <a class="pagination-prev" href="#" onclick="event.preventDefault()" aria-label="Go to previous page"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6" /></svg> Previous </a>
+      </li>
+      <li>
+        <span class="pagination-ellipsis" aria-hidden="true">…</span>
+      </li>
+      <li>
+        <a class="pagination-link" href="#" onclick="event.preventDefault()">8</a>
+      </li>
+      <li>
+        <a class="pagination-link" href="#" onclick="event.preventDefault()">9</a>
+      </li>
+      <li>
+        <a class="pagination-link pagination-active" href="#" aria-current="page" onclick="event.preventDefault()">10</a>
+      </li>
+      <li>
+        <a class="pagination-next" href="#" onclick="event.preventDefault()" aria-label="Go to next page" aria-disabled="true"> Next <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></svg></a>
+      </li>
+    </ul>
+  </nav>
+  <ExampleCode>{"<!-- First page: previous disabled -->\n<a class=\"pagination-prev\" href=\"#\"\n   aria-label=\"Go to previous page\"\n   aria-disabled=\"true\">…</a>\n\n<!-- Last page: next disabled -->\n<a class=\"pagination-next\" href=\"#\"\n   aria-label=\"Go to next page\"\n   aria-disabled=\"true\">…</a>"}</ExampleCode>
+</Example>
+
+<SourceFiles component="pagination" section="css">
+  <SourceNote for="css">Styles for the pagination component. Uses design tokens for colors, spacing, and radius.</SourceNote>
+</SourceFiles>
+
+</DocPage>

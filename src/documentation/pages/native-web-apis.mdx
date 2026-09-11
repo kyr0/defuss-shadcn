@@ -1,0 +1,523 @@
+---
+title: "Native Web APIs"
+description: "defuss-shadcn uses 50+ native browser APIs — Popover, Anchor Positioning, Dialog, Invoker Commands, oklch(), View Transitions, Scroll-Driven Animations, @starting-style — instead of JavaScript libraries."
+slug: "native-web-apis"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="native-web-apis" title="Native Web APIs" introStyle="max-width:38rem;">
+  If the browser can do it, we don't write JavaScript for it. defuss-shadcn builds on modern browser APIs instead of third-party libraries.
+</PageHeader>
+
+<H2>The native-first principle</H2>
+
+<p class="text-sm text-muted-foreground mb-5">Traditional component libraries ship thousands of lines of JavaScript to implement behaviors that browsers now provide natively — dropdown positioning, modal focus trapping, popover light-dismiss, auto-growing textareas. defuss-shadcn eliminates that JavaScript entirely by building on the platform.</p>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(16rem, 1fr));gap:1rem;margin-bottom:2.5rem;">
+  <CodeCard title="Traditional approach" lang="markup" column><Dim>{"<!-- Dropdown: Floating UI + JS toggle\n     + click-outside + focus trap\n     + scroll lock + virtual positioning -->"}</Dim>{"<"}{"div class=\"dropdown-trigger\" onclick=\"...\""}{">"}{"\n  Open Menu\n"}{"<"}{"/div"}{">"}{"<"}{"div class=\"dropdown-panel\"\n  style=\"position:absolute;top:...;left:...\""}{">"}{"\n  ...\n"}{"<"}{"/div"}{">"}</CodeCard>
+  <CodeCard title="defuss-shadcn approach" lang="markup" column><Dim>{"<!-- Popover API + CSS Anchor Positioning\n     Browser handles: positioning, light-dismiss,\n     top-layer, and auto-flip -->"}</Dim>{"<"}{"button popovertarget=\"menu\""}{">"}{"\n  Open Menu\n"}{"<"}{"/button"}{">"}{"<"}{"div id=\"menu\" popover\n  class=\"dropdown-content\""}{">"}{"\n  ...\n"}{"<"}{"/div"}{">"}</CodeCard>
+</div>
+
+<div class="sep" />
+
+<H2>API reference</H2>
+
+<p class="text-sm text-muted-foreground mb-5">Every native API available for the component library, what it replaces, and where it applies.</p>
+
+<TableCard title="native APIs vs. traditional JS libraries" mb="2.5rem"><table class="table" data-variant="simple" style="margin:0;">
+      <thead>
+        <tr>
+          <th style="white-space:nowrap;">Native API</th>
+          <th>Replaces</th>
+          <th>Components</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td colspan="3" style="font-weight:600;padding-top:1rem;color:var(--foreground);">HTML Elements &amp; Attributes</td>
+        </tr>
+        <tr>
+          <td>
+            <code>&lt;dialog&gt;</code>
+          </td>
+          <td>JS modal + overlay + focus trap</td>
+          <td>Dialog, Alert Dialog, Sheet, Command</td>
+        </tr>
+        <tr>
+          <td><code>&lt;details&gt;</code>/<code>&lt;summary&gt;</code></td>
+          <td>JS toggle + height animation</td>
+          <td>Accordion, Collapsible</td>
+        </tr>
+        <tr>
+          <td><code>&lt;details name&gt;</code> (exclusive)</td>
+          <td>JS single-expand accordion logic</td>
+          <td>Accordion (single mode)</td>
+        </tr>
+        <tr>
+          <td>
+            <code>&lt;progress&gt;</code>
+          </td>
+          <td>Custom div-based progress bars</td>
+          <td>Progress</td>
+        </tr>
+        <tr>
+          <td>
+            <code>&lt;meter&gt;</code>
+          </td>
+          <td>Custom gauge components</td>
+          <td>Password strength, storage indicators</td>
+        </tr>
+        <tr>
+          <td>
+            <code>&lt;output&gt;</code>
+          </td>
+          <td>Manual <code>aria-live</code> regions</td>
+          <td>Slider displays, form totals, live results</td>
+        </tr>
+        <tr>
+          <td>
+            <code>inert</code>
+          </td>
+          <td>JS focus trap + <code>aria-hidden</code> toggling</td>
+          <td>Overlays, collapsed sidebars, loading states</td>
+        </tr>
+        <tr>
+          <td>Popover API</td>
+          <td>JS show/hide, z-index management, click-outside</td>
+          <td>Popover, Dropdown, Tooltip, Toast, Combobox, Context Menu, Nav Menu</td>
+        </tr>
+        <tr>
+          <td>
+            <code>popover="hint"</code>
+          </td>
+          <td>Custom tooltip z-index management</td>
+          <td>Tooltip, descriptive hovers</td>
+        </tr>
+        <tr>
+          <td>Invoker Commands (<code>commandfor</code>/<code>command</code>)</td>
+          <td>JS click handlers calling <code>showModal()</code>/<code>togglePopover()</code></td>
+          <td>Dialog, Alert Dialog, Sheet, Popover</td>
+        </tr>
+        <tr>
+          <td colspan="3" style="font-weight:600;padding-top:1rem;color:var(--foreground);">CSS Layout &amp; Positioning</td>
+        </tr>
+        <tr>
+          <td>CSS Anchor Positioning</td>
+          <td>Floating UI, Popper.js</td>
+          <td>Dropdown, Popover, Tooltip, Combobox, Nav Menu</td>
+        </tr>
+        <tr>
+          <td>Container Queries</td>
+          <td>Viewport media queries</td>
+          <td>Card, Table</td>
+        </tr>
+        <tr>
+          <td>Subgrid</td>
+          <td>Manually synchronized column widths</td>
+          <td>Form layouts, settings pages, description lists</td>
+        </tr>
+        <tr>
+          <td>Logical properties</td>
+          <td>Separate LTR/RTL stylesheets</td>
+          <td>All components (RTL support)</td>
+        </tr>
+        <tr>
+          <td>Dynamic viewport units (<code>dvh</code>/<code>svh</code>/<code>lvh</code>)</td>
+          <td>JS <code>innerHeight</code> hacks for mobile chrome</td>
+          <td>Full-screen overlays, mobile layout</td>
+        </tr>
+        <tr>
+          <td colspan="3" style="font-weight:600;padding-top:1rem;color:var(--foreground);">CSS Animations &amp; Transitions</td>
+        </tr>
+        <tr>
+          <td><code>@starting-style</code> + <code>allow-discrete</code></td>
+          <td>JS class toggling for enter/exit animations</td>
+          <td>All overlays (Dialog, Sheet, Dropdown, Tooltip, Command, Accordion)</td>
+        </tr>
+        <tr>
+          <td>Individual transforms</td>
+          <td>Compound <code>transform</code> strings</td>
+          <td>Accordion, composable animations</td>
+        </tr>
+        <tr>
+          <td>
+            <code>interpolate-size: allow-keywords</code>
+          </td>
+          <td>JS height measurement + <code>max-height</code> hacks</td>
+          <td>Accordion, Collapsible, expanding UI</td>
+        </tr>
+        <tr>
+          <td>Scroll-driven animations</td>
+          <td>Scroll listeners + <code>IntersectionObserver</code> for effects</td>
+          <td>Progress indicators, scroll reveals, parallax</td>
+        </tr>
+        <tr>
+          <td>View Transitions API</td>
+          <td>JS DOM-diffing + class-toggled crossfades</td>
+          <td>SPA navigation, tab switches, list reordering</td>
+        </tr>
+        <tr>
+          <td>
+            <code>@property</code>
+          </td>
+          <td>JS-animated values, non-animatable custom properties</td>
+          <td>Progress rings, gradient transitions</td>
+        </tr>
+        <tr>
+          <td colspan="3" style="font-weight:600;padding-top:1rem;color:var(--foreground);">CSS Colors &amp; Theming</td>
+        </tr>
+        <tr>
+          <td><code>oklch()</code> + relative color syntax</td>
+          <td>Hardcoded hex/hsl, manual color derivation</td>
+          <td>All tokens, all focus/hover states</td>
+        </tr>
+        <tr>
+          <td>
+            <code>color-mix()</code>
+          </td>
+          <td>Sass darken()/lighten(), hardcoded variants</td>
+          <td>Hover/disabled states, tinted backgrounds</td>
+        </tr>
+        <tr>
+          <td>
+            <code>light-dark()</code>
+          </td>
+          <td>Media queries or class toggles for dark mode values</td>
+          <td>Inline light/dark switching</td>
+        </tr>
+        <tr>
+          <td>
+            <code>color-scheme</code>
+          </td>
+          <td>Manual dark overrides on native controls</td>
+          <td>Design tokens (global)</td>
+        </tr>
+        <tr>
+          <td>
+            <code>accent-color</code>
+          </td>
+          <td>Custom-styled replacement form controls</td>
+          <td>Slider, Checkbox, Radio, Progress</td>
+        </tr>
+        <tr>
+          <td colspan="3" style="font-weight:600;padding-top:1rem;color:var(--foreground);">CSS Selectors &amp; Pseudo-classes</td>
+        </tr>
+        <tr>
+          <td>
+            <code>:has()</code>
+          </td>
+          <td>JS class propagation</td>
+          <td>Label, Tabs, Avatar, Form</td>
+        </tr>
+        <tr>
+          <td>
+            <code>:focus-visible</code>
+          </td>
+          <td>JS focus-ring detection</td>
+          <td>All interactive components</td>
+        </tr>
+        <tr>
+          <td><code>:user-valid</code> / <code>:user-invalid</code></td>
+          <td>JS blur + class toggling for validation</td>
+          <td>Input, Textarea, Select, Checkbox</td>
+        </tr>
+        <tr>
+          <td><code>:is()</code> / <code>:where()</code></td>
+          <td>Repeated selectors, specificity hacks</td>
+          <td>Component resets, grouped selectors</td>
+        </tr>
+        <tr>
+          <td><code>::backdrop</code> + <code>backdrop-filter</code></td>
+          <td>JS-managed overlay divs, canvas blur</td>
+          <td>Dialog, Alert Dialog, Sheet, Command</td>
+        </tr>
+        <tr>
+          <td>
+            <code>::details-content</code>
+          </td>
+          <td>JS measured height + animation</td>
+          <td>Accordion, Collapsible</td>
+        </tr>
+        <tr>
+          <td>
+            <code>:popover-open</code>
+          </td>
+          <td>JS class toggling for open state</td>
+          <td>All popover components</td>
+        </tr>
+        <tr>
+          <td>
+            <code>:indeterminate</code>
+          </td>
+          <td>JS class for indeterminate state</td>
+          <td>Progress, Checkbox</td>
+        </tr>
+        <tr>
+          <td colspan="3" style="font-weight:600;padding-top:1rem;color:var(--foreground);">CSS Typography &amp; Form</td>
+        </tr>
+        <tr>
+          <td>
+            <code>text-wrap: balance</code>
+          </td>
+          <td>JS text-balancing libraries</td>
+          <td>Typography (headings)</td>
+        </tr>
+        <tr>
+          <td>
+            <code>text-wrap: pretty</code>
+          </td>
+          <td>Manual <code>&amp;nbsp;</code> for orphan prevention</td>
+          <td>Typography (body text)</td>
+        </tr>
+        <tr>
+          <td>
+            <code>field-sizing: content</code>
+          </td>
+          <td>JS auto-resize scripts</td>
+          <td>Textarea, Input</td>
+        </tr>
+        <tr>
+          <td>
+            <code>hanging-punctuation</code>
+          </td>
+          <td>Negative text-indent hacks</td>
+          <td>Blockquotes, pull quotes</td>
+        </tr>
+        <tr>
+          <td colspan="3" style="font-weight:600;padding-top:1rem;color:var(--foreground);">CSS Scrolling</td>
+        </tr>
+        <tr>
+          <td>
+            <code>scroll-snap</code>
+          </td>
+          <td>JS snap-to-slide calculations</td>
+          <td>Carousel</td>
+        </tr>
+        <tr>
+          <td>
+            <code>overscroll-behavior: contain</code>
+          </td>
+          <td>JS scroll-lock libraries</td>
+          <td>Command, Dropdown, Sheet, Scroll Area</td>
+        </tr>
+        <tr>
+          <td>
+            <code>scrollbar-gutter: stable</code>
+          </td>
+          <td>Padding hacks for scrollbar width</td>
+          <td>Command, Scroll Area</td>
+        </tr>
+        <tr>
+          <td colspan="3" style="font-weight:600;padding-top:1rem;color:var(--foreground);">CSS Architecture</td>
+        </tr>
+        <tr>
+          <td>CSS nesting / <code>@layer</code></td>
+          <td>Sass, Less, PostCSS</td>
+          <td>All components</td>
+        </tr>
+        <tr>
+          <td>
+            <code>@scope</code>
+          </td>
+          <td>BEM naming, Shadow DOM, CSS modules</td>
+          <td>Scoped component styles</td>
+        </tr>
+        <tr>
+          <td>
+            <code>@supports</code>
+          </td>
+          <td>Modernizr, JS feature detection</td>
+          <td>Progressive enhancement</td>
+        </tr>
+        <tr>
+          <td>
+            <code>@media (scripting)</code>
+          </td>
+          <td><code>&lt;noscript&gt;</code> only</td>
+          <td>No-JS fallbacks</td>
+        </tr>
+        <tr>
+          <td>CSS math (<code>clamp</code>/<code>min</code>/<code>max</code>/<code>round</code>)</td>
+          <td>JS responsive calculations</td>
+          <td>Fluid typography, responsive spacing</td>
+        </tr>
+        <tr>
+          <td>
+            <code>content-visibility</code>
+          </td>
+          <td>JS lazy rendering</td>
+          <td>Accordion, Collapsible, Tree View</td>
+        </tr>
+        <tr>
+          <td colspan="3" style="font-weight:600;padding-top:1rem;color:var(--foreground);">CSS Accessibility</td>
+        </tr>
+        <tr>
+          <td>
+            <code>prefers-reduced-motion</code>
+          </td>
+          <td>No motion accommodation</td>
+          <td>All animated components (critical for a11y)</td>
+        </tr>
+        <tr>
+          <td>
+            <code>prefers-color-scheme</code>
+          </td>
+          <td>JS-only dark mode detection</td>
+          <td>Auto dark mode</td>
+        </tr>
+        <tr>
+          <td>
+            <code>prefers-contrast</code>
+          </td>
+          <td>No contrast accommodation</td>
+          <td>All components (high contrast support)</td>
+        </tr>
+        <tr>
+          <td>
+            <code>forced-colors</code>
+          </td>
+          <td>Broken styles in Windows High Contrast</td>
+          <td>All components (system color fallbacks)</td>
+        </tr>
+        <tr>
+          <td colspan="3" style="font-weight:600;padding-top:1rem;color:var(--foreground);">JavaScript APIs</td>
+        </tr>
+        <tr>
+          <td>Web Animations API</td>
+          <td>CSS class toggling for sequenced animations</td>
+          <td>Toast</td>
+        </tr>
+        <tr>
+          <td>
+            <code>Intl.DateTimeFormat</code>
+          </td>
+          <td>moment.js, date-fns</td>
+          <td>Calendar</td>
+        </tr>
+        <tr>
+          <td>
+            <code>Intl.NumberFormat</code>
+          </td>
+          <td>numeral.js, manual formatting</td>
+          <td>Statistic, Number Input</td>
+        </tr>
+        <tr>
+          <td>
+            <code>Intl.RelativeTimeFormat</code>
+          </td>
+          <td>timeago.js, moment <code>.fromNow()</code></td>
+          <td>Timeline, activity feeds</td>
+        </tr>
+        <tr>
+          <td>
+            <code>Intl.ListFormat</code>
+          </td>
+          <td>Manual join/comma logic</td>
+          <td>Tag lists, multi-select displays</td>
+        </tr>
+        <tr>
+          <td>Drag and Drop API</td>
+          <td>SortableJS, drag libraries</td>
+          <td>Sortable</td>
+        </tr>
+        <tr>
+          <td>
+            <code>CustomEvent</code>
+          </td>
+          <td>Framework event buses</td>
+          <td>Calendar, inter-component communication</td>
+        </tr>
+        <tr>
+          <td>
+            <code>checkVisibility()</code>
+          </td>
+          <td>Manual offset/dimension calculations</td>
+          <td>Tree View</td>
+        </tr>
+        <tr>
+          <td>
+            <code>IntersectionObserver</code>
+          </td>
+          <td>Scroll listeners + <code>getBoundingClientRect()</code></td>
+          <td>Lazy loading, infinite scroll, reveal effects</td>
+        </tr>
+        <tr>
+          <td>
+            <code>ResizeObserver</code>
+          </td>
+          <td>Window resize listeners + polling</td>
+          <td>Responsive components, Carousel</td>
+        </tr>
+        <tr>
+          <td>
+            <code>MutationObserver</code>
+          </td>
+          <td>Polling loops, framework lifecycle</td>
+          <td>Auto-init for dynamically added components</td>
+        </tr>
+        <tr>
+          <td>Clipboard API</td>
+          <td>
+            <code>execCommand('copy')</code>
+          </td>
+          <td>Copy buttons, share links, code blocks</td>
+        </tr>
+        <tr>
+          <td>
+            <code>CloseWatcher</code>
+          </td>
+          <td>Manual Escape key listeners</td>
+          <td>Custom overlays, full-screen views</td>
+        </tr>
+        <tr>
+          <td>
+            <code>ElementInternals</code>
+          </td>
+          <td>Hidden <code>&lt;input&gt;</code> proxy patterns</td>
+          <td>Custom form controls (Web Components)</td>
+        </tr>
+        <tr>
+          <td>
+            <code>FormData</code>
+          </td>
+          <td>Manual value collection loops</td>
+          <td>Form, search, filters</td>
+        </tr>
+        <tr>
+          <td>
+            <code>AbortController</code>
+          </td>
+          <td>Boolean flags, manual cleanup</td>
+          <td>Search-as-you-type, debounced fetches</td>
+        </tr>
+        <tr>
+          <td>
+            <code>structuredClone()</code>
+          </td>
+          <td>lodash <code>cloneDeep</code>, JSON round-trip</td>
+          <td>State management, undo/redo</td>
+        </tr>
+        <tr>
+          <td>Navigation API</td>
+          <td>History API hacks, router libraries</td>
+          <td>SPA router, pagination</td>
+        </tr>
+        <tr>
+          <td>Selection API</td>
+          <td>Range/offset calculations</td>
+          <td>Text editors, annotation features</td>
+        </tr>
+        <tr>
+          <td>View Transitions API (JS)</td>
+          <td>DOM-diffing + class-toggled crossfades</td>
+          <td>SPA navigation, content swaps</td>
+        </tr>
+      </tbody>
+    </table></TableCard>
+
+<p class="text-sm text-muted-foreground mb-8"> These APIs are supported in the latest versions of Chrome, Edge, Firefox, and Safari. Some newer features (Invoker Commands, CSS Anchor Positioning, <code>::details-content</code>, <code>field-sizing</code>, <code>interpolate-size</code>, View Transitions, Scroll-Driven Animations) may have varying cross-browser support — check <a href="https://web.dev/baseline" target="_blank" rel="noopener" class="btn" data-variant="link">Baseline</a> for current compatibility status and each component's <code>component-skill.md</code> for the specific APIs used. </p>
+
+</DocPage>

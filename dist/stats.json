@@ -1,25 +1,25 @@
 {
-  "total": 68,
+  "total": 71,
   "byType": {
-    "ATM": 43,
+    "ATM": 45,
     "MOL": 11,
     "ORG": 1,
-    "BLK": 13,
+    "BLK": 14,
     "TPL": 0
   },
   "withJs": 27,
-  "withoutJs": 41,
-  "totalSize": 407047,
-  "totalSizeMinified": 183306,
-  "totalSizeGz": 136621,
-  "totalSizeGzMinified": 69569,
+  "withoutJs": 44,
+  "totalSize": 413417,
+  "totalSizeMinified": 187615,
+  "totalSizeGz": 138332,
+  "totalSizeGzMinified": 71072,
   "bundle": {
     "jsSize": 100891,
     "jsSizeMinified": 55452,
-    "cssSize": 203510,
-    "cssSizeMinified": 115982,
-    "totalSizeGz": 52327,
-    "totalSizeGzMinified": 30793
+    "cssSize": 210048,
+    "cssSizeMinified": 120234,
+    "totalSizeGz": 53309,
+    "totalSizeGzMinified": 31624
   },
   "components": {
     "accordion": {
@@ -67,12 +67,12 @@
       "withJs": true,
       "jsSize": 5390,
       "jsSizeMinified": 1324,
-      "cssSize": 2129,
-      "cssSizeMinified": 1278,
-      "totalSizeGz": 2861,
-      "totalSizeGzMinified": 1096,
-      "totalSize": 7519,
-      "totalSizeMinified": 2602
+      "cssSize": 2424,
+      "cssSizeMinified": 1454,
+      "totalSizeGz": 2902,
+      "totalSizeGzMinified": 1128,
+      "totalSize": 7814,
+      "totalSizeMinified": 2778
     },
     "badge": {
       "name": "badge",
@@ -132,12 +132,12 @@
       "withJs": false,
       "jsSize": 0,
       "jsSizeMinified": 0,
-      "cssSize": 4076,
-      "cssSizeMinified": 2498,
-      "totalSizeGz": 1136,
-      "totalSizeGzMinified": 804,
-      "totalSize": 4076,
-      "totalSizeMinified": 2498
+      "cssSize": 4331,
+      "cssSizeMinified": 2689,
+      "totalSizeGz": 1176,
+      "totalSizeGzMinified": 841,
+      "totalSize": 4331,
+      "totalSizeMinified": 2689
     },
     "button-group": {
       "name": "button-group",
@@ -288,12 +288,12 @@
       "withJs": true,
       "jsSize": 5926,
       "jsSizeMinified": 1445,
-      "cssSize": 2899,
-      "cssSizeMinified": 1536,
-      "totalSizeGz": 3417,
-      "totalSizeGzMinified": 1330,
-      "totalSize": 8825,
-      "totalSizeMinified": 2981
+      "cssSize": 2945,
+      "cssSizeMinified": 1568,
+      "totalSizeGz": 3424,
+      "totalSizeGzMinified": 1336,
+      "totalSize": 8871,
+      "totalSizeMinified": 3013
     },
     "dropdown": {
       "name": "dropdown",
@@ -373,6 +373,19 @@
       "totalSize": 2106,
       "totalSizeMinified": 1199
     },
+    "heading-anchor": {
+      "name": "heading-anchor",
+      "type": "ATM",
+      "withJs": false,
+      "jsSize": 0,
+      "jsSizeMinified": 0,
+      "cssSize": 813,
+      "cssSizeMinified": 539,
+      "totalSizeGz": 343,
+      "totalSizeGzMinified": 275,
+      "totalSize": 813,
+      "totalSizeMinified": 539
+    },
     "hero": {
       "name": "hero",
       "type": "BLK",
@@ -418,12 +431,12 @@
       "withJs": false,
       "jsSize": 0,
       "jsSizeMinified": 0,
-      "cssSize": 3842,
-      "cssSizeMinified": 2067,
-      "totalSizeGz": 1136,
-      "totalSizeGzMinified": 738,
-      "totalSize": 3842,
-      "totalSizeMinified": 2067
+      "cssSize": 4096,
+      "cssSizeMinified": 2265,
+      "totalSizeGz": 1180,
+      "totalSizeGzMinified": 775,
+      "totalSize": 4096,
+      "totalSizeMinified": 2265
     },
     "label": {
       "name": "label",
@@ -574,12 +587,12 @@
       "withJs": false,
       "jsSize": 0,
       "jsSizeMinified": 0,
-      "cssSize": 2752,
-      "cssSizeMinified": 1472,
-      "totalSizeGz": 1208,
-      "totalSizeGzMinified": 707,
-      "totalSize": 2752,
-      "totalSizeMinified": 1472
+      "cssSize": 3015,
+      "cssSizeMinified": 1679,
+      "totalSizeGz": 1253,
+      "totalSizeGzMinified": 746,
+      "totalSize": 3015,
+      "totalSizeMinified": 1679
     },
     "separator": {
       "name": "separator",
@@ -691,12 +704,12 @@
       "withJs": false,
       "jsSize": 0,
       "jsSizeMinified": 0,
-      "cssSize": 1134,
-      "cssSizeMinified": 599,
-      "totalSizeGz": 532,
-      "totalSizeGzMinified": 301,
-      "totalSize": 1134,
-      "totalSizeMinified": 599
+      "cssSize": 1282,
+      "cssSizeMinified": 683,
+      "totalSizeGz": 554,
+      "totalSizeGzMinified": 320,
+      "totalSize": 1282,
+      "totalSizeMinified": 683
     },
     "statistic": {
       "name": "statistic",
@@ -743,12 +756,12 @@
       "withJs": false,
       "jsSize": 0,
       "jsSizeMinified": 0,
-      "cssSize": 3014,
-      "cssSizeMinified": 1692,
-      "totalSizeGz": 990,
-      "totalSizeGzMinified": 716,
-      "totalSize": 3014,
-      "totalSizeMinified": 1692
+      "cssSize": 3856,
+      "cssSizeMinified": 2143,
+      "totalSizeGz": 1113,
+      "totalSizeGzMinified": 780,
+      "totalSize": 3856,
+      "totalSizeMinified": 2143
     },
     "table": {
       "name": "table",
@@ -828,18 +841,31 @@
       "totalSize": 18617,
       "totalSizeMinified": 9110
     },
+    "toc": {
+      "name": "toc",
+      "type": "BLK",
+      "withJs": false,
+      "jsSize": 0,
+      "jsSizeMinified": 0,
+      "cssSize": 979,
+      "cssSizeMinified": 658,
+      "totalSizeGz": 419,
+      "totalSizeGzMinified": 340,
+      "totalSize": 979,
+      "totalSizeMinified": 658
+    },
     "toggle": {
       "name": "toggle",
       "type": "ATM",
       "withJs": true,
       "jsSize": 5074,
       "jsSizeMinified": 1283,
-      "cssSize": 2711,
-      "cssSizeMinified": 1743,
-      "totalSizeGz": 2824,
-      "totalSizeGzMinified": 1256,
-      "totalSize": 7785,
-      "totalSizeMinified": 3026
+      "cssSize": 2998,
+      "cssSizeMinified": 1966,
+      "totalSizeGz": 2873,
+      "totalSizeGzMinified": 1299,
+      "totalSize": 8072,
+      "totalSizeMinified": 3249
     },
     "toggle-group": {
       "name": "toggle-group",
@@ -847,12 +873,12 @@
       "withJs": true,
       "jsSize": 7188,
       "jsSizeMinified": 2241,
-      "cssSize": 3586,
-      "cssSizeMinified": 1695,
-      "totalSizeGz": 3577,
-      "totalSizeGzMinified": 1537,
-      "totalSize": 10774,
-      "totalSizeMinified": 3936
+      "cssSize": 3976,
+      "cssSizeMinified": 1942,
+      "totalSizeGz": 3634,
+      "totalSizeGzMinified": 1585,
+      "totalSize": 11164,
+      "totalSizeMinified": 4183
     },
     "toolbar": {
       "name": "toolbar",
@@ -892,6 +918,19 @@
       "totalSizeGzMinified": 1581,
       "totalSize": 10979,
       "totalSizeMinified": 4101
+    },
+    "type-badge": {
+      "name": "type-badge",
+      "type": "ATM",
+      "withJs": false,
+      "jsSize": 0,
+      "jsSizeMinified": 0,
+      "cssSize": 1798,
+      "cssSizeMinified": 1303,
+      "totalSizeGz": 521,
+      "totalSizeGzMinified": 563,
+      "totalSize": 1798,
+      "totalSizeMinified": 1303
     },
     "typography": {
       "name": "typography",

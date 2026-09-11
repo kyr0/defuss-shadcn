@@ -63,7 +63,7 @@ await cssSmoke('brand-logos', [
         const links = [...document.querySelectorAll('a.mk-logo')] as HTMLAnchorElement[];
         return {
           count: links.length,
-          allHttp: links.every((a) => /^https:\/\//.test(a.href)),
+          allHttp: links.every((a) => a.href.startsWith('https://')),
           noUnderline: links.every((a) => getComputedStyle(a).textDecorationLine === 'none'),
           svgFilled: links.every((a) => getComputedStyle(a.querySelector('svg')!).fill !== 'none'),
         };

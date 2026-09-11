@@ -26,14 +26,14 @@ await cssSmoke('select', [
     },
   },
   {
-    label: 'data-size sm/lg heights 32 / 44',
+    label: 'data-size xs/sm/md/lg/xl heights 28 / 32 / 36 / 44 / 52',
     run: async (page) => {
-      const [sm, lg] = await page.evaluate(() => [
-        document.querySelector('#se-sm')!.getBoundingClientRect().height,
-        document.querySelector('#se-lg')!.getBoundingClientRect().height,
-      ]);
-      assert.equal(sm, 32);
-      assert.equal(lg, 44);
+      const [xs, sm, md, lg, xl] = await page.evaluate(() =>
+        ['xs', 'sm', 'md', 'lg', 'xl'].map(
+          (s) => document.querySelector(`#se-${s}`)!.getBoundingClientRect().height,
+        ),
+      );
+      assert.deepEqual([xs, sm, md, lg, xl], [28, 32, 36, 44, 52]);
     },
   },
   {

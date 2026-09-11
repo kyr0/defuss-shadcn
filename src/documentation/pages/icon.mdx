@@ -1,0 +1,175 @@
+---
+title: "Icon"
+description: "Icon component — Lucide icons sized and colored with CSS custom properties."
+slug: "icon"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="icon" title="Icon" component="icon">
+  ~1,500 <DocLink href="https://lucide.dev/icons/" target="_blank">Lucide</DocLink> icons via CDN. Write <code>&lt;i data-lucide="name"&gt;</code> — the Lucide CDN script replaces it with an inline SVG at page load. Requires the Lucide <code>&lt;script&gt;</code> tag (see <DocLink href="installation.html">Installation</DocLink>).
+</PageHeader>
+
+<SkillPanel component="icon">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;i&gt;</code> element with <code>data-lucide</code> attribute. Icons are provided by the \[Lucide\](https://lucide.dev) icon library via CDN. Lucide replaces each <code>&lt;i data-lucide="name"&gt;</code> with an inline SVG on page load.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/SVG/Element/svg" title="inline scalable vector graphics (injected by Lucide)"><code>&lt;svg&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-hidden" title="hides decorative icons from screen readers"><code>aria-hidden</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#currentcolor_keyword" title="icons inherit stroke color from the parent's color property"><code>currentColor</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="suppresses icon animations when user prefers reduced motion"><code>prefers-reduced-motion</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" title="maps icon color to system CanvasText in Windows High Contrast Mode"><code>forced-colors</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast" title="increases stroke width when user requests more contrast"><code>prefers-contrast</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText dense>• <code>data-lucide</code> — icon name (required)</SkillText>
+  <SkillText dense>• <code>data-size</code> — <code>xs</code> | <code>sm</code> | <code>md</code> | <code>lg</code> | <code>xl</code></SkillText>
+  <SkillText>• <code>data-animate</code> — <code>spin</code></SkillText>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• Icons inherit <code>currentColor</code> for stroke — they automatically match the parent's text color</SkillText>
+  <SkillText dense>• Browse all available icons at <DocLink href="https://lucide.dev/icons/" target="_blank">lucide.dev/icons</DocLink></SkillText>
+  <SkillText dense>• Lucide provides ~1,500 icons covering every common web app need</SkillText>
+  <SkillText dense>• The CDN script replaces <code>&lt;i data-lucide="name"&gt;</code> elements with inline SVGs on page load</SkillText>
+  <SkillText dense>• Use <code>stroke-width</code> attribute to adjust line thickness (default: <code>2</code>)</SkillText>
+  <SkillText dense>• Prefer visually-hidden text (<code>.sr-only</code>) over <code>aria-label</code> for accessible standalone icons</SkillText>
+  <SkillText dense>• Animations (e.g., <code>data-animate="spin"</code>) are suppressed when the user has <code>prefers-reduced-motion</code> enabled</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• <code>prefers-contrast: more</code> increases stroke width to 2.5 for better visibility</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first previewStyle="gap:1.5rem;">
+  <ExampleLabel>Basic usage</ExampleLabel>
+  <ExampleHint>Use <code>data-lucide</code> with any icon name from <DocLink href="https://lucide.dev/icons/" target="_blank">lucide.dev/icons</DocLink>.</ExampleHint>
+  <i data-lucide="home" />
+  <i data-lucide="settings" />
+  <i data-lucide="user" />
+  <i data-lucide="search" />
+  <i data-lucide="bell" />
+  <i data-lucide="mail" />
+  <i data-lucide="heart" />
+  <i data-lucide="star" />
+  <ExampleCode>{"<i data-lucide=\"home\"></i>\n<i data-lucide=\"settings\"></i>\n<i data-lucide=\"user\"></i>\n<i data-lucide=\"search\"></i>"}</ExampleCode>
+</Example>
+
+<Example first previewStyle="gap:2rem;align-items:center;">
+  <ExampleLabel>Sizes</ExampleLabel>
+  <ExampleHint>Use <code>data-size</code> to control icon size.</ExampleHint>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;">
+    <i data-lucide="star" data-size="xs" />
+    <span style="font-size:0.75rem;color:var(--muted-foreground);font-family:var(--font-mono);">xs (12px)</span>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;">
+    <i data-lucide="star" data-size="sm" />
+    <span style="font-size:0.75rem;color:var(--muted-foreground);font-family:var(--font-mono);">sm (14px)</span>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;">
+    <i data-lucide="star" />
+    <span style="font-size:0.75rem;color:var(--muted-foreground);font-family:var(--font-mono);">default (16px)</span>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;">
+    <i data-lucide="star" data-size="md" />
+    <span style="font-size:0.75rem;color:var(--muted-foreground);font-family:var(--font-mono);">md (20px)</span>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;">
+    <i data-lucide="star" data-size="lg" />
+    <span style="font-size:0.75rem;color:var(--muted-foreground);font-family:var(--font-mono);">lg (24px)</span>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;">
+    <i data-lucide="star" data-size="xl" />
+    <span style="font-size:0.75rem;color:var(--muted-foreground);font-family:var(--font-mono);">xl (32px)</span>
+  </div>
+  <ExampleCode>{"<i data-lucide=\"star\" data-size=\"xs\"></i>\n<i data-lucide=\"star\" data-size=\"sm\"></i>\n<i data-lucide=\"star\"></i>\n<i data-lucide=\"star\" data-size=\"md\"></i>\n<i data-lucide=\"star\" data-size=\"lg\"></i>\n<i data-lucide=\"star\" data-size=\"xl\"></i>"}</ExampleCode>
+</Example>
+
+<Example first>
+  <ExampleLabel>With buttons</ExampleLabel>
+  <ExampleHint>Icons inside buttons inherit the button's color.</ExampleHint>
+  <button class="btn" data-variant="default"><i data-lucide="save" /> Save </button>
+  <button class="btn" data-variant="outline"><i data-lucide="download" /> Download </button>
+  <button class="btn" data-variant="destructive"><i data-lucide="trash" /> Delete </button>
+  <button class="btn" data-variant="outline" data-size="icon" aria-label="Settings">
+    <i data-lucide="settings" />
+  </button>
+  <ExampleCode>{"<button class=\"btn\" data-variant=\"default\">\n  <i data-lucide=\"save\"></i>\n  Save\n</button>\n\n<button class=\"btn\" data-variant=\"outline\" data-size=\"icon\" aria-label=\"Settings\">\n  <i data-lucide=\"settings\"></i>\n</button>"}</ExampleCode>
+</Example>
+
+<Example first previewStyle="gap:1.5rem;">
+  <ExampleLabel>Color</ExampleLabel>
+  <ExampleHint>Icons inherit <code>currentColor</code>. Change color with text color utilities.</ExampleHint>
+  <i data-lucide="circle-check" data-size="lg" style="color:oklch(0.72 0.19 142);" />
+  <i data-lucide="alert-triangle" data-size="lg" style="color:oklch(0.77 0.17 75);" />
+  <i data-lucide="x-circle" data-size="lg" style="color:var(--destructive);" />
+  <i data-lucide="info" data-size="lg" style="color:oklch(0.62 0.21 255);" />
+  <ExampleCode>{"<i data-lucide=\"circle-check\" data-size=\"lg\" style=\"color:oklch(0.72 0.19 142);\"></i>\n<i data-lucide=\"alert-triangle\" data-size=\"lg\" style=\"color:oklch(0.77 0.17 75);\"></i>\n<i data-lucide=\"x-circle\" data-size=\"lg\" style=\"color:var(--destructive);\"></i>\n<i data-lucide=\"info\" data-size=\"lg\" style=\"color:oklch(0.62 0.21 255);\"></i>"}</ExampleCode>
+</Example>
+
+<Example first previewStyle="gap:2rem;align-items:center;">
+  <ExampleLabel>Stroke width</ExampleLabel>
+  <ExampleHint>Adjust line thickness with the <code>stroke-width</code> attribute. Default is <code>2</code>.</ExampleHint>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;">
+    <i data-lucide="heart" data-size="lg" stroke-width="1" />
+    <span style="font-size:0.75rem;color:var(--muted-foreground);font-family:var(--font-mono);">1</span>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;">
+    <i data-lucide="heart" data-size="lg" stroke-width="1.5" />
+    <span style="font-size:0.75rem;color:var(--muted-foreground);font-family:var(--font-mono);">1.5</span>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;">
+    <i data-lucide="heart" data-size="lg" stroke-width="2" />
+    <span style="font-size:0.75rem;color:var(--muted-foreground);font-family:var(--font-mono);">2</span>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;">
+    <i data-lucide="heart" data-size="lg" stroke-width="3" />
+    <span style="font-size:0.75rem;color:var(--muted-foreground);font-family:var(--font-mono);">3</span>
+  </div>
+  <ExampleCode>{"<i data-lucide=\"heart\" data-size=\"lg\" stroke-width=\"1\"></i>\n<i data-lucide=\"heart\" data-size=\"lg\" stroke-width=\"1.5\"></i>\n<i data-lucide=\"heart\" data-size=\"lg\" stroke-width=\"2\"></i>\n<i data-lucide=\"heart\" data-size=\"lg\" stroke-width=\"3\"></i>"}</ExampleCode>
+</Example>
+
+<Example first previewStyle="gap:2rem;align-items:center;">
+  <ExampleLabel>Accessible icon</ExampleLabel>
+  <ExampleHint>For standalone icons that convey meaning, use visually-hidden text or <code>aria-label</code>.</ExampleHint>
+  <span style="display:inline-flex;align-items:center;">
+    <i data-lucide="phone" data-size="md" aria-hidden="true" />
+    <span class="sr-only">Phone number</span>
+  </span>
+  <i data-lucide="alert-triangle" data-size="md" aria-label="Warning" role="img" />
+  <ExampleCode>{"<!-- Preferred: visually-hidden text -->\n<span style=\"display:inline-flex;align-items:center;\">\n  <i data-lucide=\"phone\" aria-hidden=\"true\"></i>\n  <span class=\"sr-only\">Phone number</span>\n</span>\n\n<!-- Alternative: aria-label -->\n<i data-lucide=\"alert-triangle\" aria-label=\"Warning\" role=\"img\"></i>"}</ExampleCode>
+</Example>
+
+<Example first previewStyle="gap:2rem;align-items:center;">
+  <ExampleLabel>Animated (spinner)</ExampleLabel>
+  <ExampleHint>Add <code>data-animate="spin"</code> for loading indicators. Animation is suppressed when the user has <code>prefers-reduced-motion</code> enabled.</ExampleHint>
+  <i data-lucide="loader-circle" data-size="md" data-animate="spin" />
+  <button class="btn" data-variant="outline" disabled><i data-lucide="loader-circle" data-animate="spin" /> Loading… </button>
+  <ExampleCode>{"<i data-lucide=\"loader-circle\" data-size=\"md\" data-animate=\"spin\"></i>\n\n<button class=\"btn\" data-variant=\"outline\" disabled>\n  <i data-lucide=\"loader-circle\" data-animate=\"spin\"></i>\n  Loading…\n</button>"}</ExampleCode>
+</Example>
+
+<Example first previewStyle="gap:1.5rem;align-items:center;">
+  <ExampleLabel>Filled icons</ExampleLabel>
+  <ExampleHint>Use the <code>fill</code> and <code>stroke-width</code> attributes for filled icon variants. Works well with simple shapes.</ExampleHint>
+  <i data-lucide="star" data-size="lg" fill="currentColor" stroke-width="0" />
+  <i data-lucide="heart" data-size="lg" fill="currentColor" stroke-width="0" />
+  <i data-lucide="circle" data-size="lg" fill="currentColor" stroke-width="0" />
+  <i data-lucide="bookmark" data-size="lg" fill="currentColor" stroke-width="0" />
+  <i data-lucide="star" data-size="lg" fill="currentColor" stroke-width="1" style="color:oklch(0.77 0.17 75);" />
+  <ExampleCode>{"<i data-lucide=\"star\" data-size=\"lg\" fill=\"currentColor\" stroke-width=\"0\"></i>\n<i data-lucide=\"heart\" data-size=\"lg\" fill=\"currentColor\" stroke-width=\"0\"></i>\n\n<!-- Filled with stroke outline -->\n<i data-lucide=\"star\" data-size=\"lg\" fill=\"currentColor\" stroke-width=\"1\"></i>"}</ExampleCode>
+</Example>
+
+<p class="text-sm font-medium mb-2 mt-6">Browse all icons</p>
+
+<p class="text-xs text-muted-foreground mb-3">Lucide provides ~1,500 icons. Browse and search the full set at:</p>
+
+<a href="https://lucide.dev/icons/" target="_blank" class="btn" data-variant="outline" style="text-decoration:none;"><i data-lucide="external-link" /> lucide.dev/icons </a>
+
+<SourceFiles component="icon" section="css" />
+
+</DocPage>

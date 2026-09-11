@@ -1,0 +1,137 @@
+---
+title: "FAQ"
+description: "Frequently asked questions as icon cards — every answer visible, indexable, and screen-reader friendly."
+slug: "faq"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="faq" title="FAQ" component="faq">
+  Frequently asked questions as icon cards — every answer visible, indexable, and screen-reader friendly.
+</PageHeader>
+
+<SkillPanel component="faq">
+  <SkillField label="Native basis">
+<SkillText>Sectioning <code>&lt;article&gt;</code>s in a grid — headings + paragraphs, nothing interactive. If you need collapsing answers, that's the \[Accordion\](../accordion/component-skill.md) (<code>&lt;details name&gt;</code> exclusive), not this block.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article" title="self-contained Q&amp;A unit"><code>&lt;article&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout" title="1 → 2 → 3 columns by container width"><code>CSS Grid</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/text-wrap" title="question headings balance"><code>text-wrap: balance</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-faq</code>
+    <code>.mk-faq-head</code>
+    <code>.mk-faq-eyebrow</code>
+    <code>.mk-faq-title</code>
+    <code>.mk-faq-grid</code>
+    <code>.mk-faq-item</code>
+    <code>.mk-faq-icon</code>
+    <code>.mk-faq-text</code>
+    <code>.mk-faq-question</code>
+    <code>.mk-faq-answer</code>
+  </SkillRow>
+  </SkillField>
+</SkillPanel>
+
+<Example first previewStyle="align-items:stretch;">
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>Six items; 1 → 2 → 3 columns by container width.</ExampleHint>
+  <section class="mk-faq" style="width:100%">
+    <div class="mk-faq-head">
+      <span class="mk-faq-eyebrow">Support</span>
+      <h2 class="mk-faq-title">Frequently Asked Questions</h2>
+    </div>
+    <div class="mk-faq-grid">
+      <article class="mk-faq-item">
+        <span class="mk-faq-icon">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
+            <path d="M20 3v4" />
+            <path d="M22 5h-4" />
+            <path d="M4 17v2" />
+            <path d="M5 18H3" />
+          </svg>
+        </span>
+        <div class="mk-faq-text">
+          <h3 class="mk-faq-question">What is Acme AI?</h3>
+          <p class="mk-faq-answer">A personal AI workspace that helps teams cut context switching and finish faster.</p>
+        </div>
+      </article>
+      <article class="mk-faq-item">
+        <span class="mk-faq-icon">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+        </span>
+        <div class="mk-faq-text">
+          <h3 class="mk-faq-question">Who is Acme AI for?</h3>
+          <p class="mk-faq-answer">Creators, teams, and businesses of all sizes.</p>
+        </div>
+      </article>
+      <article class="mk-faq-item">
+        <span class="mk-faq-icon">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="12" x2="12" y1="2" y2="22" />
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+          </svg>
+        </span>
+        <div class="mk-faq-text">
+          <h3 class="mk-faq-question">How much does it cost?</h3>
+          <p class="mk-faq-answer">Flexible plans starting at 199 USD — see the pricing section.</p>
+        </div>
+      </article>
+      <article class="mk-faq-item">
+        <span class="mk-faq-icon">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="16 18 22 12 16 6" />
+            <polyline points="8 6 2 12 8 18" />
+          </svg>
+        </span>
+        <div class="mk-faq-text">
+          <h3 class="mk-faq-question">Do I need technical skills?</h3>
+          <p class="mk-faq-answer">No. It works out of the box with minimal setup.</p>
+        </div>
+      </article>
+      <article class="mk-faq-item">
+        <span class="mk-faq-icon">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 11V6a2 2 0 0 0-4 0v5" />
+            <path d="M14 10V4a2 2 0 0 0-4 0v2" />
+            <path d="M10 10.5V6a2 2 0 0 0-4 0v8" />
+            <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" />
+          </svg>
+        </span>
+        <div class="mk-faq-text">
+          <h3 class="mk-faq-question">Can I try it before I buy?</h3>
+          <p class="mk-faq-answer">Yes — we offer a demo so you can see how it fits your workflow.</p>
+        </div>
+      </article>
+      <article class="mk-faq-item">
+        <span class="mk-faq-icon">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+        </span>
+        <div class="mk-faq-text">
+          <h3 class="mk-faq-question">How does Acme handle my data?</h3>
+          <p class="mk-faq-answer">All data is encrypted and never shared with third parties.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+  <ExampleCode>{"<section class=\"mk-faq\" style=\"width:100%\">\n  <div class=\"mk-faq-head\">\n    <span class=\"mk-faq-eyebrow\">Support</span>\n    <h2 class=\"mk-faq-title\">Frequently Asked Questions</h2>\n  </div>\n  <div class=\"mk-faq-grid\">\n    <article class=\"mk-faq-item\">\n      <span class=\"mk-faq-icon\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z\"/><path d=\"M20 3v4\"/><path d=\"M22 5h-4\"/><path d=\"M4 17v2\"/><path d=\"M5 18H3\"/></svg></span>\n      <div class=\"mk-faq-text\"><h3 class=\"mk-faq-question\">What is Acme AI?</h3><p class=\"mk-faq-answer\">A personal AI workspace that helps teams cut context switching and finish faster.</p></div>\n    </article>\n    <article class=\"mk-faq-item\">\n      <span class=\"mk-faq-icon\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2\"/><circle cx=\"12\" cy=\"7\" r=\"4\"/></svg></span>\n      <div class=\"mk-faq-text\"><h3 class=\"mk-faq-question\">Who is Acme AI for?</h3><p class=\"mk-faq-answer\">Creators, teams, and businesses of all sizes.</p></div>\n    </article>\n    <article class=\"mk-faq-item\">\n      <span class=\"mk-faq-icon\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><line x1=\"12\" x2=\"12\" y1=\"2\" y2=\"22\"/><path d=\"M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6\"/></svg></span>\n      <div class=\"mk-faq-text\"><h3 class=\"mk-faq-question\">How much does it cost?</h3><p class=\"mk-faq-answer\">Flexible plans starting at 199 USD — see the pricing section.</p></div>\n    </article>\n    <article class=\"mk-faq-item\">\n      <span class=\"mk-faq-icon\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><polyline points=\"16 18 22 12 16 6\"/><polyline points=\"8 6 2 12 8 18\"/></svg></span>\n      <div class=\"mk-faq-text\"><h3 class=\"mk-faq-question\">Do I need technical skills?</h3><p class=\"mk-faq-answer\">No. It works out of the box with minimal setup.</p></div>\n    </article>\n    <article class=\"mk-faq-item\">\n      <span class=\"mk-faq-icon\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M18 11V6a2 2 0 0 0-4 0v5\"/><path d=\"M14 10V4a2 2 0 0 0-4 0v2\"/><path d=\"M10 10.5V6a2 2 0 0 0-4 0v8\"/><path d=\"M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15\"/></svg></span>\n      <div class=\"mk-faq-text\"><h3 class=\"mk-faq-question\">Can I try it before I buy?</h3><p class=\"mk-faq-answer\">Yes — we offer a demo so you can see how it fits your workflow.</p></div>\n    </article>\n    <article class=\"mk-faq-item\">\n      <span class=\"mk-faq-icon\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect width=\"18\" height=\"11\" x=\"3\" y=\"11\" rx=\"2\" ry=\"2\"/><path d=\"M7 11V7a5 5 0 0 1 10 0v4\"/></svg></span>\n      <div class=\"mk-faq-text\"><h3 class=\"mk-faq-question\">How does Acme handle my data?</h3><p class=\"mk-faq-answer\">All data is encrypted and never shared with third parties.</p></div>\n    </article>\n  </div>\n</section>"}</ExampleCode>
+</Example>
+
+<SourceFiles component="faq" section="css" />
+
+</DocPage>

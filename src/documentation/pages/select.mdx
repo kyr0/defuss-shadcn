@@ -1,0 +1,118 @@
+---
+title: "Select"
+description: "Select component — native <select> dropdowns with custom styling."
+slug: "select"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="select" title="Select" component="select">
+  A native dropdown for choosing from a list of options. Built on <code>&lt;select&gt;</code> with <code>appearance: none</code> and a custom chevron. The empty-value placeholder option stays selectable, so it doubles as the clear/reset entry: re-choosing it empties the box again (add <code>required</code> for mandatory fields).
+</PageHeader>
+
+<SkillPanel component="select">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;select&gt;</code> element with custom styling via <code>appearance: none</code>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select" title="native dropdown with keyboard navigation and form integration"><code>&lt;select&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/optgroup" title="groups options with a label"><code>&lt;optgroup&gt;</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.select</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Sizes (data-size)">
+<SkillGrid>
+    <Variant name="xs" description="Height: 1.75rem" />
+    <Variant name="sm" description="Height: 2rem" />
+    <Variant name="md" description="Height: 2.25rem" />
+    <Variant name="lg" description="Height: 2.75rem" />
+    <Variant name="xl" description="Height: 3.25rem" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• Native <code>&lt;select&gt;</code> provides full keyboard navigation (arrow keys, type-ahead).</SkillText>
+  <SkillText dense>• Use <code>&lt;label&gt;</code> with <code>for</code> for description.</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• The placeholder is a <code>&lt;option value="" selected&gt;</code><strong>without</strong><code>disabled</code> — a disabled placeholder cannot be re-selected, so a made selection could never be cleared (issue #32). Keep it selectable and mark the field <code>required</code> if empty must not submit; the control reads as a placeholder while the empty option is selected (muted text via <code>:has(option:checked)</code>).</p>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• Uses <code>appearance: none</code> with a custom chevron via <code>background-image</code> SVG.</SkillText>
+  <SkillText dense>• The dropdown list is rendered by the browser — it cannot be styled.</SkillText>
+  <SkillText dense>• For a fully custom dropdown, use the Combobox component instead.</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• While the empty option is selected the closed control renders muted (<code>:has(&gt; option\[value=""\]:checked)</code>); choosing a value restores the foreground color.</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>Native select with a clearable placeholder — re-choose "Select a fruit" to empty it again.</ExampleHint>
+  <div style="width:100%;max-width:16rem;">
+    <label class="label" for="d-fruit">Fruit</label>
+    <select class="select" id="d-fruit">
+      <option value selected>Select a fruit</option>
+      <option value="apple">Apple</option>
+      <option value="banana">Banana</option>
+      <option value="cherry">Cherry</option>
+      <option value="grape">Grape</option>
+    </select>
+  </div>
+  <ExampleCode>{"<select class=\"select\">\n  <option value=\"\" selected>Select a fruit</option>\n  <option value=\"apple\">Apple</option>\n  ...\n</select>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>With groups</ExampleLabel>
+  <div style="width:100%;max-width:16rem;">
+    <select class="select">
+      <option value selected>Select timezone</option>
+      <optgroup label="Americas">
+        <option>New York</option>
+        <option>Los Angeles</option>
+        <option>Chicago</option>
+      </optgroup>
+      <optgroup label="Europe">
+        <option>London</option>
+        <option>Paris</option>
+        <option>Berlin</option>
+      </optgroup>
+    </select>
+  </div>
+  <ExampleCode>{"<select class=\"select\">\n  <optgroup label=\"Americas\">\n    <option>New York</option>\n    ...\n  </optgroup>\n</select>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Disabled</ExampleLabel>
+  <div style="width:100%;max-width:16rem;">
+    <select class="select" disabled>
+      <option>Cannot change</option>
+    </select>
+  </div>
+  <ExampleCode>{"<select class=\"select\" disabled>...</select>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Sizes</ExampleLabel>
+  <ExampleHint>The full five-step scale via <code>data-size</code> — the unlabeled default is <code>2.5rem</code>, between <code>md</code> and <code>lg</code>.</ExampleHint>
+  <div style="display:flex;flex-direction:column;gap:0.75rem;width:100%;max-width:16rem;">
+    <select class="select" data-size="xs"><option>Extra small</option></select>
+    <select class="select" data-size="sm"><option>Small</option></select>
+    <select class="select" data-size="md"><option>Medium</option></select>
+    <select class="select" data-size="lg"><option>Large</option></select>
+    <select class="select" data-size="xl"><option>Extra large</option></select>
+  </div>
+  <ExampleCode>{"<select class=\"select\" data-size=\"xs\">\n  <option>Extra small</option>\n</select>\n\n<select class=\"select\" data-size=\"sm\">\n  <option>Small</option>\n</select>\n\n<select class=\"select\" data-size=\"md\">\n  <option>Medium</option>\n</select>\n\n<select class=\"select\" data-size=\"lg\">\n  <option>Large</option>\n</select>\n\n<select class=\"select\" data-size=\"xl\">\n  <option>Extra large</option>\n</select>"}</ExampleCode>
+</Example>
+
+<SourceFiles component="select" section="css" />
+
+</DocPage>

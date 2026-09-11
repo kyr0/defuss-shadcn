@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
-  changelogMarkupProblems,
+  changelogDataMarkupProblems,
   changelogProblems,
-  parseChangelogEntries,
+  parseChangelogData,
   type ChangelogEntry,
   type CommitInfo,
 } from '../scripts/lib/changelog.ts';
@@ -14,46 +14,27 @@ import {
  * commit, date before commit) without touching git or the filesystem.
  */
 
-/** Minimal entry block in exactly the shape deploy.sh emits. */
-function entryHtml(opts: {
-  version: string;
-  date?: string;
-  hash?: string;
-  message?: string;
-}): string {
-  const badge = opts.date
-    ? `<span class="badge" data-variant="outline" style="font-family:var(--font-mono);">${opts.date}</span>`
-    : '';
-  const hash = opts.hash ? ` <code class="changelog-hash">${opts.hash}</code>` : '';
-  return `  <div style="margin-bottom:2.5rem;">
-    <div class="flex items-center gap-3 mb-2">
-      <h2 style="font-family:var(--font-display);">v${opts.version}</h2>
-      ${badge}${hash}
-    </div>
-    <ul>
-      <li>${opts.message ?? DEFAULT_MESSAGE}</li>
-    </ul>
-  </div>`;
+/** Minimal changelog.json in exactly the shape deploy.sh writes. */
+function doc(entries: Array<{ version: string; date?: string; hash?: string; commits?: string[] }>): string {
+  return JSON.stringify({ entries });
 }
 
 /**
- * Entities are written as \u0026 escapes (like scripts/lib/search-index.ts):
+ * Entities are written as & escapes (see scripts/lib/changelog.ts):
  * literal "&" in this file would be entity-normalized by editors/tools
  * before it reaches the parser, silently defeating the decode test.
  */
-const DEFAULT_MESSAGE = 'some change \u0026amp; escape \u0026lt;check\u0026gt;';
+const DEFAULT_MESSAGE = 'some change &amp; escape &lt;check&gt;';
 const DECODED_MESSAGE = 'some change & escape <check>';
-
-function page(...entries: string[]): string {
-  return `<!DOCTYPE html><html><body><main><!-- CHANGELOG_ENTRIES -->\n\n${entries.join('\n\n')}\n</main></body></html>`;
-}
 
 const okCommit = (hash: string): CommitInfo => ({ exists: true, touchesChangelog: hash.startsWith('a') });
 const resolve: (hash: string) => CommitInfo = (hash) => okCommit(hash);
 
-describe('parseChangelogEntries', () => {
-  it('extracts version, date, hash and decoded messages per entry', () => {
-    const [e] = parseChangelogEntries(page(entryHtml({ version: '1.2.3', date: 'April 19, 2026', hash: 'abc1234' })));
+describe('parseChangelogData', () => {
+  it('extracts version (v-prefix stripped), date, hash and decoded messages per entry', () => {
+    const [e] = parseChangelogData(
+      doc([{ version: 'v1.2.3', date: 'April 19, 2026', hash: 'abc1234', commits: [DEFAULT_MESSAGE] }]),
+    );
     expect(e).toEqual({
       version: '1.2.3',
       date: 'April 19, 2026',
@@ -62,16 +43,13 @@ describe('parseChangelogEntries', () => {
     });
   });
 
-  it('returns an empty list when no entries exist below the marker', () => {
-    expect(parseChangelogEntries(page())).toEqual([]);
-    expect(parseChangelogEntries('<html><body>no marker here</body></html>')).toEqual([]);
+  it('returns an empty list when no entries exist', () => {
+    expect(parseChangelogData(doc([]))).toEqual([]);
   });
 
   it('keeps entries in document order', () => {
-    const entries = parseChangelogEntries(
-      page(entryHtml({ version: '2.0.0', date: 'd' }), entryHtml({ version: '1.9.0', date: 'd' })),
-    );
-    expect(entries.map((e) => e.version)).toEqual(['2.0.0', '1.9.0']);
+    const entries = parseChangelogData(doc([{ version: 'v2.0.0' }, { version: 'v1.9.0' }]));
+    expect(entries.map((e: ChangelogEntry) => e.version)).toEqual(['2.0.0', '1.9.0']);
   });
 });
 
@@ -79,8 +57,8 @@ describe('changelogProblems', () => {
   const base = { resolveCommit: resolve, worktreeVersion: '1.0.0' };
 
   it('passes when the committed version has a hashed entry touching the changelog', () => {
-    const entries: ChangelogEntry[] = parseChangelogEntries(
-      page(entryHtml({ version: '1.0.0', date: 'd', hash: 'aaaaaaa' })),
+    const entries: ChangelogEntry[] = parseChangelogData(
+      doc([{ version: 'v1.0.0', date: 'd', hash: 'aaaaaaa', commits: ['x'] }]),
     );
     const { problems, warnings } = changelogProblems({ ...base, entries, committedVersion: '1.0.0' });
     expect(problems).toEqual([]);
@@ -90,7 +68,7 @@ describe('changelogProblems', () => {
   it('fails when the committed version has no changelog entry', () => {
     const { problems } = changelogProblems({
       ...base,
-      entries: parseChangelogEntries(page(entryHtml({ version: '0.9.0', date: 'd', hash: 'aaaaaaa' }))),
+      entries: parseChangelogData(doc([{ version: 'v0.9.0', date: 'd', hash: 'aaaaaaa', commits: ['x'] }])),
       committedVersion: '1.0.0',
     });
     expect(problems.join('\n')).toMatch(/v1\.0\.0.*no v1\.0\.0 entry/);
@@ -103,13 +81,13 @@ describe('changelogProblems', () => {
   });
 
   it('fails when the committed version\'s entry is date-only (hash available after commit)', () => {
-    const entries = parseChangelogEntries(page(entryHtml({ version: '1.0.0', date: 'd' })));
+    const entries = parseChangelogData(doc([{ version: 'v1.0.0', date: 'd', commits: ['x'] }]));
     const { problems } = changelogProblems({ ...base, entries, committedVersion: '1.0.0' });
     expect(problems.join('\n')).toMatch(/date but no commit hash/);
   });
 
   it('fails when the embedded hash does not resolve to a commit', () => {
-    const entries = parseChangelogEntries(page(entryHtml({ version: '1.0.0', date: 'd', hash: 'deadbee' })));
+    const entries = parseChangelogData(doc([{ version: 'v1.0.0', date: 'd', hash: 'deadbee', commits: ['x'] }]));
     const { problems } = changelogProblems({
       ...base,
       entries,
@@ -120,7 +98,7 @@ describe('changelogProblems', () => {
   });
 
   it('fails when the embedded hash points to a commit that did not touch the changelog', () => {
-    const entries = parseChangelogEntries(page(entryHtml({ version: '1.0.0', date: 'd', hash: 'bbbbbbb' })));
+    const entries = parseChangelogData(doc([{ version: 'v1.0.0', date: 'd', hash: 'bbbbbbb', commits: ['x'] }]));
     const { problems } = changelogProblems({ ...base, entries, committedVersion: '1.0.0' });
     expect(problems.join('\n')).toMatch(/bbbbbbb.*does not touch changelog/);
   });
@@ -132,7 +110,7 @@ describe('changelogProblems', () => {
   });
 
   it('warns (not fails) when the worktree version is bumped ahead of the changelog', () => {
-    const entries = parseChangelogEntries(page(entryHtml({ version: '1.0.0', date: 'd', hash: 'aaaaaaa' })));
+    const entries = parseChangelogData(doc([{ version: 'v1.0.0', date: 'd', hash: 'aaaaaaa', commits: ['x'] }]));
     const { problems, warnings } = changelogProblems({
       ...base,
       entries,
@@ -150,35 +128,38 @@ describe('changelogProblems', () => {
   });
 });
 
-describe('changelogMarkupProblems', () => {
-  // entity text written with \u0026 escapes (see DEFAULT_MESSAGE) so the
-  // gate sees literal "<video>" the way the real changelog.html stores it
+describe('changelogDataMarkupProblems', () => {
   it('accepts prose with code/strong/link/span and entity-escaped element names', () => {
-    const html = page(
-      entryHtml({
-        version: '2.0.0',
+    const json = doc([
+      {
+        version: 'v2.0.0',
         date: 'd',
-        message:
-          'a <strong>fix</strong> to <code>video</code> — see <a href="#">the docs</a> & <code>\u0026lt;video\u0026gt;</code> handling',
-      }),
-    );
-    expect(changelogMarkupProblems(html)).toEqual([]);
+        commits: ['a <strong>fix</strong> to <code>video</code> — see <a href="#">the docs</a> & <code>&lt;video&gt;</code> handling'],
+      },
+    ]);
+    expect(changelogDataMarkupProblems(json)).toEqual([]);
   });
 
   it('flags raw element markup inside an entry (it would render live)', () => {
-    const html = page(entryHtml({ version: '2.0.0', date: 'd', message: 'now a native <video controls> element' }));
-    const problems = changelogMarkupProblems(html);
+    const problems = changelogDataMarkupProblems(
+      doc([{ version: 'v2.0.0', date: 'd', commits: ['now a native <video controls> element'] }]),
+    );
     expect(problems).toHaveLength(1);
     expect(problems[0]).toMatch(/v2\.0\.0/);
     expect(problems[0]).toMatch(/<video>/);
   });
 
   it('flags the historic offenders (hr, main) individually', () => {
-    const html = page(
-      entryHtml({ version: '2.0.0', date: 'd', message: 'a raw <hr> and the <main> width' }),
+    const problems = changelogDataMarkupProblems(
+      doc([{ version: 'v2.0.0', date: 'd', commits: ['a raw <hr> and the <main> width'] }]),
     );
-    const problems = changelogMarkupProblems(html);
-    expect(problems.some((p) => p.includes('<hr>'))).toBe(true);
-    expect(problems.some((p) => p.includes('<main>'))).toBe(true);
+    expect(problems.some((p: string) => p.includes('<hr>'))).toBe(true);
+    expect(problems.some((p: string) => p.includes('<main>'))).toBe(true);
+  });
+
+  it('reports invalid JSON as one clear problem', () => {
+    const problems = changelogDataMarkupProblems('{not json');
+    expect(problems).toHaveLength(1);
+    expect(problems[0]).toMatch(/not valid JSON/);
   });
 });

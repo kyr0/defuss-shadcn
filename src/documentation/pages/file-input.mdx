@@ -1,0 +1,70 @@
+---
+title: "File Input"
+description: "File Input component — styled file upload inputs with drag-and-drop zones."
+slug: "file-input"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="file-input" title="File Input" component="file-input">
+  A styled file picker. Built on native <code>&lt;input type="file"&gt;</code> with custom <code>::file-selector-button</code> styling.
+</PageHeader>
+
+<SkillPanel component="file-input">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;input type="file"&gt;</code> element with custom <code>::file-selector-button</code> styling.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file" title="native file picker with drag-and-drop support"><code>&lt;input type="file"&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/::file-selector-button" title="styles the native Choose File button"><code>::file-selector-button</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.file-input</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• Reuses the <code>.input</code> styling pattern for consistency.</SkillText>
+  <SkillText dense>• The <code>::file-selector-button</code> is styled as a muted button with hover effect.</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• The existing <code>.input\[type="file"\]</code> already covers this — the file-input component provides a standalone class.</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>Single file selection.</ExampleHint>
+  <div style="width:100%;max-width:20rem;">
+    <label class="label" for="d-avatar">Picture</label>
+    <input class="file-input" type="file" id="d-avatar" />
+  </div>
+  <ExampleCode>{"<input class=\"file-input\" type=\"file\" id=\"avatar\">"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Multiple files</ExampleLabel>
+  <div style="width:100%;max-width:20rem;">
+    <label class="label" for="d-docs">Documents</label>
+    <input class="file-input" type="file" id="d-docs" multiple />
+  </div>
+  <ExampleCode>{"<input class=\"file-input\" type=\"file\" multiple>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Accept filter</ExampleLabel>
+  <div style="width:100%;max-width:20rem;">
+    <label class="label" for="d-img">Image only</label>
+    <input class="file-input" type="file" id="d-img" accept="image/*" />
+  </div>
+  <ExampleCode>{"<input class=\"file-input\" type=\"file\" accept=\"image/*\">"}</ExampleCode>
+</Example>
+
+<SourceFiles component="file-input" section="css" />
+
+</DocPage>

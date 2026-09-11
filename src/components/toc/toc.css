@@ -1,0 +1,49 @@
+/* -- Table of Contents component ------------------------------ */
+
+@layer components {
+  .toc {
+    display: block;
+  }
+
+  .toc-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--foreground);
+    margin: 0 0 0.5rem;
+    padding: 0 0.5rem;
+  }
+
+  .toc-link {
+    display: block;
+    padding: 0.1875rem 0.5rem;
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    transition: color 150ms, border-color 150ms;
+    line-height: 1.6;
+
+    &:hover {
+      color: var(--foreground);
+    }
+
+    &[aria-current="location"] {
+      color: var(--foreground);
+      border-left-color: var(--primary);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .toc-link {
+      transition: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .toc-link[aria-current="location"] {
+      border-left-color: LinkText;
+    }
+  }
+}

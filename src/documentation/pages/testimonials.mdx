@@ -1,0 +1,186 @@
+---
+title: "Testimonials"
+description: "A pull quote with a linked brand lockup, plus review cards whose overlay floats over the photo with backdrop blur."
+slug: "testimonials"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="testimonials" title="Testimonials" component="testimonials">
+  A pull quote with a linked brand lockup, plus review cards whose overlay floats over the photo with backdrop blur.
+</PageHeader>
+
+<SkillPanel component="testimonials">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;blockquote&gt;</code>/<code>&lt;figcaption&gt;</code> semantics; the review card floats over its photo with <code>position</code> + <code>z-index</code> + <code>color-mix(... transparent)</code> + <code>backdrop-filter: blur()</code> — the browser composites it, no libraries.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote" title="quoted-content semantics"><code>&lt;blockquote&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter" title="translucent readable overlay"><code>backdrop-filter</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix" title="80% background tint"><code>color-mix()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/isolation" title="contained stacking context"><code>isolation</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-transparency" title="solid overlay fallback"><code>prefers-reduced-transparency</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-testimonials</code>
+    <code>.mk-testimonial-quote-block</code>
+    <code>.mk-testimonial-context</code>
+    <code>.mk-testimonial-layout</code>
+    <code>.mk-testimonial-quote</code>
+    <code>.mk-testimonial-brand</code>
+    <code>.mk-testimonial-brand-name</code>
+    <code>.mk-testimonial-date</code>
+    <code>.mk-testimonial-cards</code>
+    <code>.mk-testimonial-card</code>
+    <code>.mk-testimonial-card-body</code>
+    <code>.mk-testimonial-card-info</code>
+    <code>.mk-stars</code>
+    <code>.mk-testimonial-card-name</code>
+    <code>.mk-testimonial-card-role</code>
+  </SkillRow>
+  </SkillField>
+</SkillPanel>
+
+<Example first previewStyle="align-items:stretch;">
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>Quote block + four photo cards.</ExampleHint>
+  <section class="mk-testimonials" style="width:100%">
+    <div class="mk-testimonial-quote-block">
+      <div class="mk-testimonial-context">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a1 1 0 0 1-1 1 1 1 0 0 0-1 1 1 1 0 0 1-1 1h-1a1 1 0 0 0-1 1 1 1 0 0 1-1 1 1 1 0 0 0-1 1 1 1 0 0 1-1 1H9a1 1 0 0 0-1 1 1 1 0 0 1-1 1 1 1 0 0 0-1 1 1 1 0 0 1-1 1H4a2 2 0 0 1-2-2V7.5A4.5 4.5 0 0 1 6.5 3Z" />
+          <path d="M15 3a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2 1 1 0 0 0-1 1v1a1 1 0 0 0 1 1 1 1 0 0 1 1 1 1 1 0 0 0 1 1 1 1 0 0 1 1 1h1a1 1 0 0 0 1 1 1 1 0 0 1 1 1 1 1 0 0 0 1 1 1 1 0 0 1 1 1h3a2 2 0 0 0 2-2V7.5A4.5 4.5 0 0 0 19.5 3Z" />
+        </svg>
+        <span>Loved by talented teams...</span>
+      </div>
+      <div class="mk-testimonial-layout">
+        <blockquote class="mk-testimonial-quote">Our team has seen a huge boost in productivity since adopting Acme. Designers, developers, and PMs work more seamlessly together.</blockquote>
+        <a class="mk-testimonial-brand" href="https://stripe.com" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="#000000" aria-hidden="true">
+            <path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.594-7.305h.003z" />
+          </svg>
+          <span class="mk-testimonial-brand-name">Stripe</span>
+        </a>
+      </div>
+      <span class="mk-testimonial-date">June, 2025</span>
+    </div>
+    <div class="mk-testimonial-cards">
+      <figure class="mk-testimonial-card">
+        <img alt="Alex Morgan" src="images/mk-portrait.png" />
+        <figcaption class="mk-testimonial-card-body">
+          <div class="mk-testimonial-card-info">
+            <div class="mk-stars" aria-label="5 out of 5 stars">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+            </div>
+            <span class="mk-testimonial-card-name">Alex Morgan</span>
+            <span class="mk-testimonial-card-role">Product Manager</span>
+          </div>
+        </figcaption>
+      </figure>
+      <figure class="mk-testimonial-card">
+        <img alt="Sophie Tan" src="images/mk-portrait2.png" />
+        <figcaption class="mk-testimonial-card-body">
+          <div class="mk-testimonial-card-info">
+            <div class="mk-stars" aria-label="5 out of 5 stars">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+            </div>
+            <span class="mk-testimonial-card-name">Sophie Tan</span>
+            <span class="mk-testimonial-card-role">UX Researcher</span>
+          </div>
+        </figcaption>
+      </figure>
+      <figure class="mk-testimonial-card">
+        <img alt="Emily Carter" src="images/mk-portrait.png" />
+        <figcaption class="mk-testimonial-card-body">
+          <div class="mk-testimonial-card-info">
+            <div class="mk-stars" aria-label="5 out of 5 stars">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+            </div>
+            <span class="mk-testimonial-card-name">Emily Carter</span>
+            <span class="mk-testimonial-card-role">Product Manager</span>
+          </div>
+        </figcaption>
+      </figure>
+      <figure class="mk-testimonial-card">
+        <img alt="Hannah Lee" src="images/mk-portrait2.png" />
+        <figcaption class="mk-testimonial-card-body">
+          <div class="mk-testimonial-card-info">
+            <div class="mk-stars" aria-label="5 out of 5 stars">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+            </div>
+            <span class="mk-testimonial-card-name">Hannah Lee</span>
+            <span class="mk-testimonial-card-role">Software Engineer</span>
+          </div>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+  <ExampleCode>{"<section class=\"mk-testimonials\" style=\"width:100%\">\n  <div class=\"mk-testimonial-quote-block\">\n    <div class=\"mk-testimonial-context\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a1 1 0 0 1-1 1 1 1 0 0 0-1 1 1 1 0 0 1-1 1h-1a1 1 0 0 0-1 1 1 1 0 0 1-1 1 1 1 0 0 0-1 1 1 1 0 0 1-1 1H9a1 1 0 0 0-1 1 1 1 0 0 1-1 1 1 1 0 0 0-1 1 1 1 0 0 1-1 1H4a2 2 0 0 1-2-2V7.5A4.5 4.5 0 0 1 6.5 3Z\"/><path d=\"M15 3a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2 1 1 0 0 0-1 1v1a1 1 0 0 0 1 1 1 1 0 0 1 1 1 1 1 0 0 0 1 1 1 1 0 0 1 1 1h1a1 1 0 0 0 1 1 1 1 0 0 1 1 1 1 1 0 0 0 1 1 1 1 0 0 1 1 1h3a2 2 0 0 0 2-2V7.5A4.5 4.5 0 0 0 19.5 3Z\"/></svg><span>Loved by talented teams...</span></div>\n    <div class=\"mk-testimonial-layout\">\n      <blockquote class=\"mk-testimonial-quote\">Our team has seen a huge boost in productivity since adopting Acme. Designers, developers, and PMs work more seamlessly together.</blockquote>\n      <a class=\"mk-testimonial-brand\" href=\"https://stripe.com\" target=\"_blank\" rel=\"noopener noreferrer\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"#000000\" aria-hidden=\"true\"><path d=\"M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.594-7.305h.003z\"/></svg><!-- Stripe is a trademark of its owner; shown as a placeholder --><span class=\"mk-testimonial-brand-name\">Stripe</span></a>\n    </div>\n    <span class=\"mk-testimonial-date\">June, 2025</span>\n  </div>\n  <div class=\"mk-testimonial-cards\">\n    <figure class=\"mk-testimonial-card\">\n      <img alt=\"Alex Morgan\" src=\"images/mk-portrait.png\" />\n      <figcaption class=\"mk-testimonial-card-body\">\n        <div class=\"mk-testimonial-card-info\"><div class=\"mk-stars\" aria-label=\"5 out of 5 stars\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"currentColor\" aria-hidden=\"true\"><polygon points=\"12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2\"/></svg><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"currentColor\" aria-hidden=\"true\"><polygon points=\"12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2\"/></svg><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"currentColor\" aria-hidden=\"true\"><polygon points=\"12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2\"/></svg><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"currentColor\" aria-hidden=\"true\"><polygon points=\"12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2\"/></svg><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"currentColor\" aria-hidden=\"true\"><polygon points=\"12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2\"/></svg></div><span class=\"mk-testimonial-card-name\">Alex Morgan</span><span class=\"mk-testimonial-card-role\">Product Manager</span></div>\n      </figcaption>\n    </figure>\n    <figure class=\"mk-testimonial-card\">\n      <img alt=\"Sophie Tan\" src=\"images/mk-portrait2.png\" />\n      <figcaption class=\"mk-testimonial-card-body\">\n        <div class=\"mk-testimonial-card-info\"><div class=\"mk-stars\" aria-label=\"5 out of 5 stars\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"currentColor\" aria-hidden=\"true\"><polygon points=\"12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2\"/></svg><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"currentColor\" aria-hidden=\"true\"><polygon points=\"12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2\"/></svg><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"currentColor\" aria-hidden=\"true\"><polygon points=\"12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2\"/></svg><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"currentColor\" aria-hidden=\"true\"><polygon points=\"12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2\"/></svg><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"currentColor\" aria-hidden=\"true\"><polygon points=\"12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2\"/></svg></div><span class=\"mk-testimonial-card-name\">Sophie Tan</span><span class=\"mk-testimonial-card-role\">UX Researcher</span></div>\n      </figcaption>\n    </figure>\n    <figure class=\"mk-testimonial-card\">\n      <img alt=\"Emily Carter\" src=\"images/mk-portrait.png\" />\n      <figcaption class=\"mk-testimonial-card-body\">\n        <div class=\"mk-testimonial-card-info\"><div class=\"mk-stars\" aria-label=\"5 out of 5 stars\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"currentColor\" aria-hidden=\"true\"><polygon points=\"12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2\"/></svg><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"currentColor\" aria-hidden=\"true\"><polygon points=\"12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2\"/></svg><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"currentColor\" aria-hidden=\"true\"><polygon points=\"12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2\"/></svg><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"currentColor\" aria-hidden=\"true\"><polygon points=\"12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2\"/></svg><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"currentColor\" aria-hidden=\"true\"><polygon points=\"12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2\"/></svg></div><span class=\"mk-testimonial-card-name\">Emily Carter</span><span class=\"mk-testimonial-card-role\">Product Manager</span></div>\n      </figcaption>\n    </figure>\n    <figure class=\"mk-testimonial-card\">\n      <img alt=\"Hannah Lee\" src=\"images/mk-portrait2.png\" />\n      <figcaption class=\"mk-testimonial-card-body\">\n        <div class=\"mk-testimonial-card-info\"><div class=\"mk-stars\" aria-label=\"5 out of 5 stars\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"currentColor\" aria-hidden=\"true\"><polygon points=\"12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2\"/></svg><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"currentColor\" aria-hidden=\"true\"><polygon points=\"12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2\"/></svg><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"currentColor\" aria-hidden=\"true\"><polygon points=\"12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2\"/></svg><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"currentColor\" aria-hidden=\"true\"><polygon points=\"12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2\"/></svg><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"currentColor\" aria-hidden=\"true\"><polygon points=\"12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2\"/></svg></div><span class=\"mk-testimonial-card-name\">Hannah Lee</span><span class=\"mk-testimonial-card-role\">Software Engineer</span></div>\n      </figcaption>\n    </figure>\n  </div>\n</section>"}</ExampleCode>
+</Example>
+
+<SourceFiles component="testimonials" section="css" />
+
+</DocPage>

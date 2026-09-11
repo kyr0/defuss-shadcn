@@ -1,333 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="color-scheme" content="light dark">
-  <link rel="icon" href="images/favicon.webp" type="image/webp">
-  <meta name="description" content="Input component — text inputs with variants, sizes, icons, and validation states.">
-  <meta property="og:title" content="Input — defuss-shadcn">
-  <meta property="og:description" content="Input component — text inputs with variants, sizes, icons, and validation states.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://kyr0.github.io/defuss-shadcn/input.html">
-  <meta property="og:site_name" content="defuss-shadcn">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Input — defuss-shadcn">
-  <meta name="twitter:description" content="Input component — text inputs with variants, sizes, icons, and validation states.">
-  <title>Input — defuss-shadcn</title>
-  <script src="js/themes.js"></script>
-  <script src="js/theme-switcher.js"></script>
-  <script src="js/layout.js"></script>
-  <script src="js/search-index.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/default-semantic-tokens.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/sizing.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/layout.css">
-  <link rel="stylesheet" href="css/docs-theme.css">
-  <link rel="stylesheet" href="css/docs-utilities.css">
-  <link rel="stylesheet" href="css/layout.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.css">
-</head>
-<body>
-  <site-header></site-header>
-
-  <div class="flex" style="margin-top: 3.5rem; min-height: calc(100vh - 3.5rem);">
-    <site-nav></site-nav>
-
-    <main style="flex: 1; min-width: 0; max-width: 44rem; padding: 2rem 3.5rem 8rem;">
-      <div class="page-header">
-        <div class="flex items-baseline justify-between mb-1">
-          <p class="text-sm text-muted-foreground" style="font-family:var(--font-mono);">defuss-shadcn / input</p>
-          <div style="display:flex;align-items:baseline;gap:0.375rem;"><span class="text-xs text-muted-foreground" style="font-family:var(--font-mono);white-space:nowrap;">Built with:</span> <a href="#source-css" class="badge built-with-pill" data-variant="outline">CSS</a></div>
-        </div>
-        <h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">Input<span class="type-badge" data-type="ATM" title="Atom">ATM</span></h1>
-        <p class="text-muted-foreground leading-relaxed mb-6">
-          A styled text input built on the native <code>&lt;input&gt;</code> element. Includes label, description, error, sizes, file input, textarea auto-grow, and focus ring. Zero JavaScript.
-        </p>
-        <!-- Component Skill -->
-        <details style="margin-bottom:2rem;border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;">
-          <summary style="padding:0.875rem 1.25rem;background:var(--muted);cursor:pointer;font-size:0.8125rem;font-weight:600;font-family:var(--font-mono);color:var(--muted-foreground);list-style:none;display:flex;align-items:center;gap:0.5rem;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 200ms;"><path d="m9 18 6-6-6-6"/></svg>
-            Component Skill — <span data-spec-href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/input/component-skill.md" style="text-decoration:underline;text-underline-offset:3px;">components/input/component-skill.md</span>
-          </summary>
-          <div style="padding:1.5rem;font-size:0.875rem;line-height:1.85;">
-            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Native basis</p>
-            <p class="text-muted-foreground" style="margin:0 0 1.25rem;"><code>&lt;input&gt;</code> element. Browser provides built-in validation, autofill, and accessibility.</p>
-
-            <p style="margin:0 0 0.625rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Web Platform APIs</p>
-            <div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;">
-              <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input" target="_blank" rel="noopener" title="native form control with built-in validation and autofill" class="api-pill"><code>&lt;input&gt;</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-              <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea" target="_blank" rel="noopener" title="multi-line text input" class="api-pill"><code>&lt;textarea&gt;</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/field-sizing" target="_blank" rel="noopener" title="auto-growing textarea without JavaScript" class="api-pill"><code>field-sizing: content</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:user-invalid" target="_blank" rel="noopener" title="native validation styling after user interaction" class="api-pill"><code>:user-invalid</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible" target="_blank" rel="noopener" title="keyboard-only focus ring styling" class="api-pill"><code>:focus-visible</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-            </div>
-
-            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Classes</p>
-            <div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;">
-              <code>.input</code>
-              <code>.label</code>
-              <code>.field-description</code>
-              <code>.field-error</code>
-            </div>
-
-            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Sizes (data-size)</p>
-            <div style="display:grid;grid-template-columns:auto 1fr;gap:0.25rem 1rem;margin-bottom:1.25rem;">
-              <code>sm</code><span class="text-muted-foreground">Height: 2rem</span>
-              <code>lg</code><span class="text-muted-foreground">Height: 2.75rem</span>
-            </div>
-
-
-            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Notes</p>
-            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Always pair inputs with <code>&lt;label&gt;</code> using matching <code>for</code>/<code>id</code></p>
-            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Use <code>type=&quot;file&quot;</code> for file inputs — styled via the <code>.input</code> class</p>
-            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Textarea auto-grows via <code>field-sizing: content</code> — zero JavaScript</p>
-            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Use <code>readonly</code> for non-editable values the user can still select/copy</p>
-            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• For hidden labels, use <code>sr-only</code> class on the label element</p>
-            <p class="text-muted-foreground" style="margin:0 0 0;">• Use semantic <code>type</code> values (<code>email</code>, <code>tel</code>, <code>url</code>, <code>search</code>, <code>password</code>, <code>number</code>) for mobile keyboards and validation</p>
-          </div>
-        </details>
-      </div>
-
-        <!-- Default -->
-          <p class="text-sm font-medium mb-2 mt-6">Default</p>
-          <p class="text-xs text-muted-foreground mb-3">Standard text input with label.</p>
-          <div class="preview">
-            <div style="max-width:24rem;">
-              <label class="label" for="demo-email">Email</label>
-              <input class="input" type="email" id="demo-email" placeholder="you@example.com">
-            </div>
-          </div>
-          <div style="position:relative;margin-top:0.5rem;">
-            <button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg> Copy</button>
-            <pre><code class="language-markup">&lt;label class="label" for="email"&gt;Email&lt;/label&gt;
+<html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="color-scheme" content="light dark" /><link rel="icon" href="images/favicon.webp" type="image/webp" /><meta name="description" content="Input component — text inputs with variants, sizes, icons, and validation states." /><meta property="og:title" content="Input — defuss-shadcn" /><meta property="og:description" content="Input component — text inputs with variants, sizes, icons, and validation states." /><meta property="og:type" content="website" /><meta property="og:url" content="https://kyr0.github.io/defuss-shadcn/input.html" /><meta property="og:site_name" content="defuss-shadcn" /><meta name="twitter:card" content="summary" /><meta name="twitter:title" content="Input — defuss-shadcn" /><meta name="twitter:description" content="Input component — text inputs with variants, sizes, icons, and validation states." /><title>Input — defuss-shadcn</title><script src="js/themes.js"></script><script src="js/theme-switcher.js"></script><script src="js/layout.js"></script><script src="js/search-index.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/default-semantic-tokens.css" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/sizing.css" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/layout.css" /><link rel="stylesheet" href="css/docs-theme.css" /><link rel="stylesheet" href="css/docs-utilities.css" /><link rel="stylesheet" href="css/layout.css" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.css" /></head><body><header class="site-header"><button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle navigation menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><a href="index.html" class="header-brand"><img src="images/favicon.webp" alt="defuss-shadcn logo" class="header-brand-logo" /><span class="header-brand-name">defuss<em>-shadcn</em></span><span class="badge header-brand-version" data-variant="outline" style="font-family:var(--font-mono);">v0.8.3</span></a><div class="header-search" role="search"><input type="text" class="header-search-input" placeholder="Search docs… (⌘K)" aria-label="Search documentation" autocomplete="off" readonly="" /></div><div style="flex:1;"></div><nav style="display:flex;align-items:center;gap:0.25rem;"><a href="https://github.com/kyr0/defuss-shadcn" target="_blank" rel="noopener" class="header-action"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg><span class="github-label">GitHub</span><span class="github-stars"></span></a><button id="wide-toggle" class="header-action theme-toggle-btn" aria-label="Toggle wide layout" aria-pressed="false"><svg id="icon-wide-expand" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg><svg id="icon-wide-collapse" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/><path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/></svg></button><button id="theme-toggle" class="header-action theme-toggle-btn" aria-label="Toggle dark mode"><svg id="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg><svg id="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button><button id="theme-selector-btn" class="header-action theme-toggle-btn" aria-label="Change color theme" popovertarget="theme-popover"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="0.5" fill="currentColor"/><circle cx="17.5" cy="10.5" r="0.5" fill="currentColor"/><circle cx="8.5" cy="7.5" r="0.5" fill="currentColor"/><circle cx="6.5" cy="12" r="0.5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></button></nav></header><div id="theme-popover" popover="" class="theme-popover"><div class="theme-popover-header"><span class="theme-popover-title">Theme</span><button class="theme-reset-btn" id="theme-reset-btn">Reset</button></div><div class="theme-grid" id="theme-grid"></div></div><dialog id="docs-palette" class="command" aria-label="Search documentation"><div class="command-content"><div class="command-input-wrapper"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input class="command-input" type="text" placeholder="Search documentation…" autocomplete="off" autocorrect="off" spellcheck="false" /></div><div class="command-list" id="docs-palette-list"></div><div class="command-empty" hidden="">No results found.</div></div></dialog><div class="flex" style="margin-top: 3.5rem; min-height: calc(100vh - 3.5rem);"><aside class="site-sidebar"><div class="sidebar-scroll"><details class="nav-section sidebar-group" open="" data-nav-section="Overview" style="margin-bottom:0.75rem;"><summary class="nav-heading">Overview<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="index.html" style="display:flex;align-items:center;gap:0.375rem;">Introduction</a><a class="nav-link" href="installation.html" style="display:flex;align-items:center;gap:0.375rem;">Installation</a><a class="nav-link" href="theming.html" style="display:flex;align-items:center;gap:0.375rem;">Theming</a><a class="nav-link" href="dark-mode.html" style="display:flex;align-items:center;gap:0.375rem;">Dark Mode</a><a class="nav-link" href="data-attribute-api.html" style="display:flex;align-items:center;gap:0.375rem;">Data Attribute API</a><a class="nav-link" href="architecture.html" style="display:flex;align-items:center;gap:0.375rem;">Architecture</a><a class="nav-link" href="cascade-layers.html" style="display:flex;align-items:center;gap:0.375rem;">Cascade Layers</a><a class="nav-link" href="es-modules.html" style="display:flex;align-items:center;gap:0.375rem;">ES Modules</a><a class="nav-link" href="native-web-apis.html" style="display:flex;align-items:center;gap:0.375rem;">Native Web APIs</a><a class="nav-link" href="animations.html" style="display:flex;align-items:center;gap:0.375rem;">Animations</a><a class="nav-link" href="sizing.html" style="display:flex;align-items:center;gap:0.375rem;">Sizing</a><a class="nav-link" href="layout.html" style="display:flex;align-items:center;gap:0.375rem;">Layout</a><a class="nav-link" href="accessibility.html" style="display:flex;align-items:center;gap:0.375rem;">Accessibility</a><a class="nav-link" href="component-skills.html" style="display:flex;align-items:center;gap:0.375rem;">Component Skills</a><a class="nav-link" href="changelog.html" style="display:flex;align-items:center;gap:0.375rem;">Changelog</a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Sizing" style="margin-bottom:0.75rem;"><summary class="nav-heading">Sizing<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="width-height.html" style="display:flex;align-items:center;gap:0.375rem;">Width &amp; Height</a><a class="nav-link" href="spacing.html" style="display:flex;align-items:center;gap:0.375rem;">Spacing</a><a class="nav-link" href="density.html" style="display:flex;align-items:center;gap:0.375rem;">Density</a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Layout" style="margin-bottom:0.75rem;"><summary class="nav-heading">Layout<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="container.html" style="display:flex;align-items:center;gap:0.375rem;">Container</a><a class="nav-link" href="flex.html" style="display:flex;align-items:center;gap:0.375rem;">Flex</a><a class="nav-link" href="grid.html" style="display:flex;align-items:center;gap:0.375rem;">Grid</a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Primitives" style="margin-bottom:0.75rem;"><summary class="nav-heading">Primitives<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="typography.html" style="display:flex;align-items:center;gap:0.375rem;">Typography <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="separator.html" style="display:flex;align-items:center;gap:0.375rem;">Separator <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="icon.html" style="display:flex;align-items:center;gap:0.375rem;">Icon <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="heading-anchor.html" style="display:flex;align-items:center;gap:0.375rem;">Heading Anchor <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Actions" style="margin-bottom:0.75rem;"><summary class="nav-heading">Actions<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="button.html" style="display:flex;align-items:center;gap:0.375rem;">Button <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="toggle.html" style="display:flex;align-items:center;gap:0.375rem;">Toggle <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="toggle-group.html" style="display:flex;align-items:center;gap:0.375rem;">Toggle Group <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="button-group.html" style="display:flex;align-items:center;gap:0.375rem;">Button Group <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="toolbar.html" style="display:flex;align-items:center;gap:0.375rem;">Toolbar <span class="type-badge" data-type="ORG" title="ORG">ORG</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Forms &amp; Inputs" style="margin-bottom:0.75rem;"><summary class="nav-heading">Forms &amp; Inputs<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="label.html" style="display:flex;align-items:center;gap:0.375rem;">Label <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link active" href="input.html" style="display:flex;align-items:center;gap:0.375rem;">Input <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="textarea.html" style="display:flex;align-items:center;gap:0.375rem;">Textarea <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="checkbox.html" style="display:flex;align-items:center;gap:0.375rem;">Checkbox <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="radio.html" style="display:flex;align-items:center;gap:0.375rem;">Radio Group <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="switch.html" style="display:flex;align-items:center;gap:0.375rem;">Switch <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="slider.html" style="display:flex;align-items:center;gap:0.375rem;">Slider <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="select.html" style="display:flex;align-items:center;gap:0.375rem;">Select <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="number-input.html" style="display:flex;align-items:center;gap:0.375rem;">Number Input <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="file-input.html" style="display:flex;align-items:center;gap:0.375rem;">File Input <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="color-picker.html" style="display:flex;align-items:center;gap:0.375rem;">Color Picker <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="date-picker.html" style="display:flex;align-items:center;gap:0.375rem;">Date Picker <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="combobox.html" style="display:flex;align-items:center;gap:0.375rem;">Combobox <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="form.html" style="display:flex;align-items:center;gap:0.375rem;">Form <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Data Display" style="margin-bottom:0.75rem;"><summary class="nav-heading">Data Display<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="badge.html" style="display:flex;align-items:center;gap:0.375rem;">Badge <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="type-badge.html" style="display:flex;align-items:center;gap:0.375rem;">Type Badge <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="avatar.html" style="display:flex;align-items:center;gap:0.375rem;">Avatar <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="card.html" style="display:flex;align-items:center;gap:0.375rem;">Card <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="image.html" style="display:flex;align-items:center;gap:0.375rem;">Image <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="statistic.html" style="display:flex;align-items:center;gap:0.375rem;">Statistic <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="table.html" style="display:flex;align-items:center;gap:0.375rem;">Table <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="collapsible.html" style="display:flex;align-items:center;gap:0.375rem;">Collapsible <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="timeline.html" style="display:flex;align-items:center;gap:0.375rem;">Timeline <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="tree-view.html" style="display:flex;align-items:center;gap:0.375rem;">Tree View <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="calendar.html" style="display:flex;align-items:center;gap:0.375rem;">Calendar <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="carousel.html" style="display:flex;align-items:center;gap:0.375rem;">Carousel <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="scroll-area.html" style="display:flex;align-items:center;gap:0.375rem;">Scroll Area <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="sortable.html" style="display:flex;align-items:center;gap:0.375rem;">Sortable <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Feedback &amp; Status" style="margin-bottom:0.75rem;"><summary class="nav-heading">Feedback &amp; Status<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="spinner.html" style="display:flex;align-items:center;gap:0.375rem;">Spinner <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="skeleton.html" style="display:flex;align-items:center;gap:0.375rem;">Skeleton <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="progress.html" style="display:flex;align-items:center;gap:0.375rem;">Progress <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="alert.html" style="display:flex;align-items:center;gap:0.375rem;">Alert <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="alert-dialog.html" style="display:flex;align-items:center;gap:0.375rem;">Alert Dialog <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="toast.html" style="display:flex;align-items:center;gap:0.375rem;">Toast <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Overlays" style="margin-bottom:0.75rem;"><summary class="nav-heading">Overlays<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="popover.html" style="display:flex;align-items:center;gap:0.375rem;">Popover <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="tooltip.html" style="display:flex;align-items:center;gap:0.375rem;">Tooltip <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="context-menu.html" style="display:flex;align-items:center;gap:0.375rem;">Context Menu <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="dialog.html" style="display:flex;align-items:center;gap:0.375rem;">Dialog <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="sheet.html" style="display:flex;align-items:center;gap:0.375rem;">Sheet <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="accordion.html" style="display:flex;align-items:center;gap:0.375rem;">Accordion <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="command.html" style="display:flex;align-items:center;gap:0.375rem;">Command <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Navigation" style="margin-bottom:0.75rem;"><summary class="nav-heading">Navigation<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="breadcrumb.html" style="display:flex;align-items:center;gap:0.375rem;">Breadcrumb <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="toc.html" style="display:flex;align-items:center;gap:0.375rem;">Table of Contents <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="pagination.html" style="display:flex;align-items:center;gap:0.375rem;">Pagination <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="steps.html" style="display:flex;align-items:center;gap:0.375rem;">Steps <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="tabs.html" style="display:flex;align-items:center;gap:0.375rem;">Tabs <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="dropdown.html" style="display:flex;align-items:center;gap:0.375rem;">Dropdown Menu <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="navigation-menu.html" style="display:flex;align-items:center;gap:0.375rem;">Navigation Menu <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Application" style="margin-bottom:0.75rem;"><summary class="nav-heading">Application<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="sidebar.html" style="display:flex;align-items:center;gap:0.375rem;">Sidebar <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Marketing" style="margin-bottom:0.75rem;"><summary class="nav-heading">Marketing<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="site-header.html" style="display:flex;align-items:center;gap:0.375rem;">Site Header <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="hero.html" style="display:flex;align-items:center;gap:0.375rem;">Hero <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="product-showcase.html" style="display:flex;align-items:center;gap:0.375rem;">Product Showcase <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="brand-logos.html" style="display:flex;align-items:center;gap:0.375rem;">Brand Logos <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="feature-details.html" style="display:flex;align-items:center;gap:0.375rem;">Feature Details <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="testimonials.html" style="display:flex;align-items:center;gap:0.375rem;">Testimonials <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="stats.html" style="display:flex;align-items:center;gap:0.375rem;">Stats <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="pricing.html" style="display:flex;align-items:center;gap:0.375rem;">Pricing <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="blog.html" style="display:flex;align-items:center;gap:0.375rem;">Blog <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="faq.html" style="display:flex;align-items:center;gap:0.375rem;">FAQ <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="get-in-touch.html" style="display:flex;align-items:center;gap:0.375rem;">Get In Touch <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="newsletter.html" style="display:flex;align-items:center;gap:0.375rem;">Newsletter <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="site-footer.html" style="display:flex;align-items:center;gap:0.375rem;">Site Footer <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a></nav></details></div></aside><main style="flex: 1; min-width: 0; max-width: 44rem; padding: 2rem 3.5rem 8rem;"><div class="page-header"><div class="flex items-baseline justify-between mb-1"><p class="text-sm text-muted-foreground" style="font-family:var(--font-mono);">defuss-shadcn / input</p><div style="display:flex;align-items:baseline;gap:0.375rem;"><span class="text-xs text-muted-foreground" style="font-family:var(--font-mono);white-space:nowrap;">Built with:</span> <a href="#source-css" class="badge built-with-pill" data-variant="outline">CSS</a></div></div><h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">Input<span class="type-badge" data-type="ATM" title="Atom">ATM</span></h1><p class="text-muted-foreground leading-relaxed mb-6">A styled text input built on the native <code>&lt;input&gt;</code> element. Includes label, description, error, sizes, file input, textarea auto-grow, and focus ring. Zero JavaScript.</p></div><details style="margin-bottom:2rem;border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;"><summary style="padding:0.875rem 1.25rem;background:var(--muted);cursor:pointer;font-size:0.8125rem;font-weight:600;font-family:var(--font-mono);color:var(--muted-foreground);list-style:none;display:flex;align-items:center;gap:0.5rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 200ms;"><path d="m9 18 6-6-6-6"/></svg>Component Skill — <span data-spec-href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/input/component-skill.md" style="text-decoration:underline;text-underline-offset:3px;">components/input/component-skill.md</span></summary><div style="padding:1.5rem;font-size:0.875rem;line-height:1.85;"><p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Native basis</p><p class="text-muted-foreground" style="margin:0 0 1.25rem;"><code>&lt;input&gt;</code> element. Browser provides built-in validation, autofill, and accessibility.</p><p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Web Platform APIs</p><div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;"><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input" target="_blank" rel="noopener" title="native form control with built-in validation and autofill" class="api-pill"><code>&lt;input&gt;</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea" target="_blank" rel="noopener" title="multi-line text input" class="api-pill"><code>&lt;textarea&gt;</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/field-sizing" target="_blank" rel="noopener" title="auto-growing textarea without JavaScript" class="api-pill"><code>field-sizing: content</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:user-invalid" target="_blank" rel="noopener" title="native validation styling after user interaction" class="api-pill"><code>:user-invalid</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible" target="_blank" rel="noopener" title="keyboard-only focus ring styling" class="api-pill"><code>:focus-visible</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a></div><p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Classes</p><div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;"><code>.input</code><code>.label</code><code>.field-description</code><code>.field-error</code></div><p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Sizes (data-size)</p><div style="display:grid;grid-template-columns:auto 1fr;gap:0.25rem 1rem;margin-bottom:1.25rem;"><code>xs</code><span class="text-muted-foreground">Height: 1.75rem</span><code>sm</code><span class="text-muted-foreground">Height: 2rem</span><code>md</code><span class="text-muted-foreground">Height: 2.25rem</span><code>lg</code><span class="text-muted-foreground">Height: 2.75rem</span><code>xl</code><span class="text-muted-foreground">Height: 3.25rem</span></div><p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Notes</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Always pair inputs with <code>&lt;label&gt;</code> using matching <code>for</code>/<code>id</code></p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Use <code>type="file"</code> for file inputs — styled via the <code>.input</code> class</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Textarea auto-grows via <code>field-sizing: content</code> — zero JavaScript</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Use <code>readonly</code> for non-editable values the user can still select/copy</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• For hidden labels, use <code>sr-only</code> class on the label element</p><p class="text-muted-foreground" style="margin:0 0 0;">• Use semantic <code>type</code> values (<code>email</code>, <code>tel</code>, <code>url</code>, <code>search</code>, <code>password</code>, <code>number</code>) for mobile keyboards and validation</p></div></details><p class="text-sm font-medium mb-2 mt-6" id="toc-default"><a class="heading-anchor" href="#toc-default" aria-label="Link to section: Default">§</a>Default</p><p class="text-xs text-muted-foreground mb-3">Standard text input with label.</p><div class="preview"><div style="max-width:24rem;"><label class="label" for="demo-email">Email</label><input class="input" type="email" id="demo-email" placeholder="you@example.com" /></div></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;label class="label" for="email"&gt;Email&lt;/label&gt;
 &lt;input class="input" type="email" id="email"
-       placeholder="you@example.com"&gt;</code></pre>
-          </div>
-
-        <!-- With Description -->
-          <p class="text-sm font-medium mb-2 mt-6">With description</p>
-          <p class="text-xs text-muted-foreground mb-3">Use <code>.field-description</code> below the input for help text.</p>
-          <div class="preview">
-            <div style="max-width:24rem;">
-              <label class="label" for="demo-username">Username</label>
-              <input class="input" type="text" id="demo-username" placeholder="kyr0" aria-describedby="demo-username-desc">
-              <p class="field-description" id="demo-username-desc">Choose a unique username for your account.</p>
-            </div>
-          </div>
-          <div style="position:relative;margin-top:0.5rem;">
-            <button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg> Copy</button>
-            <pre><code class="language-markup">&lt;label class="label" for="username"&gt;Username&lt;/label&gt;
+       placeholder="you@example.com"&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-6" id="toc-with-description"><a class="heading-anchor" href="#toc-with-description" aria-label="Link to section: With description">§</a>With description</p><p class="text-xs text-muted-foreground mb-3">Use <code>.field-description</code> below the input for help text.</p><div class="preview"><div style="max-width:24rem;"><label class="label" for="demo-username">Username</label><input class="input" type="text" id="demo-username" placeholder="kyr0" aria-describedby="demo-username-desc" /><p class="field-description" id="demo-username-desc">Choose a unique username for your account.</p></div></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;label class="label" for="username"&gt;Username&lt;/label&gt;
 &lt;input class="input" type="text" id="username"
        placeholder="kyr0"
        aria-describedby="username-desc"&gt;
 &lt;p class="field-description" id="username-desc"&gt;
   Choose a unique username for your account.
-&lt;/p&gt;</code></pre>
-          </div>
-
-        <!-- Sizes -->
-          <p class="text-sm font-medium mb-2 mt-6">Sizes</p>
-          <p class="text-xs text-muted-foreground mb-3">Small, default, and large via <code>data-size</code>.</p>
-          <div class="preview">
-            <div style="display:flex;flex-direction:column;gap:0.75rem;max-width:24rem;" >
-              <input class="input" data-size="sm" type="text" placeholder="Small">
-              <input class="input" type="text" placeholder="Default">
-              <input class="input" data-size="lg" type="text" placeholder="Large">
-            </div>
-          </div>
-          <div style="position:relative;margin-top:0.5rem;">
-            <button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg> Copy</button>
-            <pre><code class="language-markup">&lt;input class="input" data-size="sm" type="text" placeholder="Small"&gt;
-&lt;input class="input" type="text" placeholder="Default"&gt;
-&lt;input class="input" data-size="lg" type="text" placeholder="Large"&gt;</code></pre>
-          </div>
-
-        <!-- Disabled -->
-          <p class="text-sm font-medium mb-2 mt-6">Disabled</p>
-          <p class="text-xs text-muted-foreground mb-3">Non-interactive at 50% opacity.</p>
-          <div class="preview">
-            <div style="max-width:24rem;">
-              <label class="label" for="demo-disabled">Email</label>
-              <input class="input" type="text" id="demo-disabled" disabled placeholder="Disabled" aria-describedby="demo-disabled-desc">
-              <p class="field-description" id="demo-disabled-desc">This field is currently disabled.</p>
-            </div>
-          </div>
-          <div style="position:relative;margin-top:0.5rem;">
-            <button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg> Copy</button>
-            <pre><code class="language-markup">&lt;input class="input" type="text" disabled placeholder="Disabled"&gt;</code></pre>
-          </div>
-
-        <!-- Invalid -->
-          <p class="text-sm font-medium mb-2 mt-6">Invalid</p>
-          <p class="text-xs text-muted-foreground mb-3">Use <code>aria-invalid="true"</code> with a <code>.field-error</code> message.</p>
-          <div class="preview">
-            <div style="max-width:24rem;">
-              <label class="label" for="demo-invalid">Email</label>
-              <input class="input" type="email" id="demo-invalid" aria-invalid="true" value="not-an-email" aria-describedby="demo-invalid-err">
-              <p class="field-error" id="demo-invalid-err">Please enter a valid email address.</p>
-            </div>
-          </div>
-          <div style="position:relative;margin-top:0.5rem;">
-            <button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg> Copy</button>
-            <pre><code class="language-markup">&lt;label class="label" for="email"&gt;Email&lt;/label&gt;
+&lt;/p&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-6" id="toc-sizes"><a class="heading-anchor" href="#toc-sizes" aria-label="Link to section: Sizes">§</a>Sizes</p><p class="text-xs text-muted-foreground mb-3">The full five-step scale via <code>data-size</code> — the unlabeled default is <code>2.5rem</code>, between <code>md</code> and <code>lg</code>.</p><div class="preview"><div style="display:flex;flex-direction:column;gap:0.75rem;max-width:24rem;"><input class="input" data-size="xs" type="text" placeholder="Extra small" /><input class="input" data-size="sm" type="text" placeholder="Small" /><input class="input" data-size="md" type="text" placeholder="Medium" /><input class="input" data-size="lg" type="text" placeholder="Large" /><input class="input" data-size="xl" type="text" placeholder="Extra large" /></div></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;input class="input" data-size="xs" type="text" placeholder="Extra small"&gt;
+&lt;input class="input" data-size="sm" type="text" placeholder="Small"&gt;
+&lt;input class="input" data-size="md" type="text" placeholder="Medium"&gt;
+&lt;input class="input" data-size="lg" type="text" placeholder="Large"&gt;
+&lt;input class="input" data-size="xl" type="text" placeholder="Extra large"&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-6" id="toc-disabled"><a class="heading-anchor" href="#toc-disabled" aria-label="Link to section: Disabled">§</a>Disabled</p><p class="text-xs text-muted-foreground mb-3">Non-interactive at 50% opacity.</p><div class="preview"><div style="max-width:24rem;"><label class="label" for="demo-disabled">Email</label><input class="input" type="text" id="demo-disabled" disabled="" placeholder="Disabled" aria-describedby="demo-disabled-desc" /><p class="field-description" id="demo-disabled-desc">This field is currently disabled.</p></div></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;input class="input" type="text" disabled placeholder="Disabled"&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-6" id="toc-invalid"><a class="heading-anchor" href="#toc-invalid" aria-label="Link to section: Invalid">§</a>Invalid</p><p class="text-xs text-muted-foreground mb-3">Use <code>aria-invalid="true"</code> with a <code>.field-error</code> message.</p><div class="preview"><div style="max-width:24rem;"><label class="label" for="demo-invalid">Email</label><input class="input" type="email" id="demo-invalid" aria-invalid="true" value="not-an-email" aria-describedby="demo-invalid-err" /><p class="field-error" id="demo-invalid-err">Please enter a valid email address.</p></div></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;label class="label" for="email"&gt;Email&lt;/label&gt;
 &lt;input class="input" type="email" id="email"
        aria-invalid="true" value="not-an-email"
        aria-describedby="email-err"&gt;
 &lt;p class="field-error" id="email-err"&gt;
   Please enter a valid email address.
-&lt;/p&gt;</code></pre>
-          </div>
-
-        <!-- Required -->
-          <p class="text-sm font-medium mb-2 mt-6">Required</p>
-          <p class="text-xs text-muted-foreground mb-3">Add <code>required</code> attribute and a visual indicator in the label.</p>
-          <div class="preview">
-            <div style="max-width:24rem;">
-              <label class="label" for="demo-required">Name <span class="text-destructive">*</span></label>
-              <input class="input" type="text" id="demo-required" required placeholder="Jane Doe" aria-describedby="demo-required-desc">
-              <p class="field-description" id="demo-required-desc">This field is required.</p>
-            </div>
-          </div>
-          <div style="position:relative;margin-top:0.5rem;">
-            <button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg> Copy</button>
-            <pre><code class="language-markup">&lt;label class="label" for="name"&gt;
+&lt;/p&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-6" id="toc-required"><a class="heading-anchor" href="#toc-required" aria-label="Link to section: Required">§</a>Required</p><p class="text-xs text-muted-foreground mb-3">Add <code>required</code> attribute and a visual indicator in the label.</p><div class="preview"><div style="max-width:24rem;"><label class="label" for="demo-required">Name <span class="text-destructive">*</span></label><input class="input" type="text" id="demo-required" required="" placeholder="Jane Doe" aria-describedby="demo-required-desc" /><p class="field-description" id="demo-required-desc">This field is required.</p></div></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;label class="label" for="name"&gt;
   Name &lt;span class="text-destructive"&gt;*&lt;/span&gt;
 &lt;/label&gt;
 &lt;input class="input" type="text" id="name"
-       required placeholder="Jane Doe"&gt;</code></pre>
-          </div>
-
-        <!-- With Icon -->
-          <p class="text-sm font-medium mb-2 mt-6">With icon</p>
-          <p class="text-xs text-muted-foreground mb-3">Wrap in a relative container and position the Lucide icon absolutely.</p>
-          <div class="preview">
-            <div style="position:relative;max-width:24rem;" >
-              <i data-lucide="search" class="text-muted-foreground" style="position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);width:1rem;height:1rem;"></i>
-              <input class="input" style="padding-left:2.25rem;" type="search" placeholder="Search...">
-            </div>
-          </div>
-          <div style="position:relative;margin-top:0.5rem;">
-            <button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg> Copy</button>
-            <pre><code class="language-markup">&lt;div style="position:relative;"&gt;
+       required placeholder="Jane Doe"&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-6" id="toc-with-icon"><a class="heading-anchor" href="#toc-with-icon" aria-label="Link to section: With icon">§</a>With icon</p><p class="text-xs text-muted-foreground mb-3">Wrap in a relative container and position the Lucide icon absolutely.</p><div class="preview"><div style="position:relative;max-width:24rem;"><i data-lucide="search" class="text-muted-foreground" style="position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);width:1rem;height:1rem;"></i><input class="input" style="padding-left:2.25rem;" type="search" placeholder="Search..." /></div></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;div style="position:relative;"&gt;
   &lt;i data-lucide="search"
      class="text-muted-foreground"
      style="position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);width:1rem;height:1rem;"&gt;&lt;/i&gt;
   &lt;input class="input" style="padding-left:2.25rem;" type="search"
          placeholder="Search..."&gt;
-&lt;/div&gt;</code></pre>
-          </div>
-
-        <!-- File -->
-          <p class="text-sm font-medium mb-2 mt-6">File</p>
-          <p class="text-xs text-muted-foreground mb-3">Use <code>type="file"</code> — the file selector button is styled automatically.</p>
-          <div class="preview">
-            <div style="max-width:24rem;">
-              <label class="label" for="demo-file">Picture</label>
-              <input class="input" type="file" id="demo-file" aria-describedby="demo-file-desc">
-              <p class="field-description" id="demo-file-desc">Select a picture to upload.</p>
-            </div>
-          </div>
-          <div style="position:relative;margin-top:0.5rem;">
-            <button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg> Copy</button>
-            <pre><code class="language-markup">&lt;label class="label" for="avatar"&gt;Picture&lt;/label&gt;
+&lt;/div&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-6" id="toc-file"><a class="heading-anchor" href="#toc-file" aria-label="Link to section: File">§</a>File</p><p class="text-xs text-muted-foreground mb-3">Use <code>type="file"</code> — the file selector button is styled automatically.</p><div class="preview"><div style="max-width:24rem;"><label class="label" for="demo-file">Picture</label><input class="input" type="file" id="demo-file" aria-describedby="demo-file-desc" /><p class="field-description" id="demo-file-desc">Select a picture to upload.</p></div></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;label class="label" for="avatar"&gt;Picture&lt;/label&gt;
 &lt;input class="input" type="file" id="avatar" aria-describedby="avatar-desc"&gt;
-&lt;p class="field-description" id="avatar-desc"&gt;Select a picture to upload.&lt;/p&gt;</code></pre>
-          </div>
-
-        <!-- Textarea -->
-          <p class="text-sm font-medium mb-2 mt-6">Textarea</p>
-          <p class="text-xs text-muted-foreground mb-3">Use <code>&lt;textarea&gt;</code> with the <code>.input</code> class. Auto-grows with content via <code>field-sizing: content</code> — zero JS.</p>
-          <div class="preview">
-            <div style="max-width:24rem;">
-              <label class="label" for="demo-message">Message</label>
-              <textarea class="input" id="demo-message" placeholder="Your message..."></textarea>
-            </div>
-          </div>
-          <div style="position:relative;margin-top:0.5rem;">
-            <button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg> Copy</button>
-            <pre><code class="language-markup">&lt;label class="label" for="message"&gt;Message&lt;/label&gt;
+&lt;p class="field-description" id="avatar-desc"&gt;Select a picture to upload.&lt;/p&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-6" id="toc-textarea"><a class="heading-anchor" href="#toc-textarea" aria-label="Link to section: Textarea">§</a>Textarea</p><p class="text-xs text-muted-foreground mb-3">Use <code>&lt;textarea&gt;</code> with the <code>.input</code> class. Auto-grows with content via <code>field-sizing: content</code> — zero JS.</p><div class="preview"><div style="max-width:24rem;"><label class="label" for="demo-message">Message</label><textarea class="input" id="demo-message" placeholder="Your message..."></textarea></div></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;label class="label" for="message"&gt;Message&lt;/label&gt;
 &lt;textarea class="input" id="message"
-          placeholder="Your message..."&gt;&lt;/textarea&gt;</code></pre>
-          </div>
-
-        <!-- Readonly -->
-          <p class="text-sm font-medium mb-2 mt-6">Readonly</p>
-          <p class="text-xs text-muted-foreground mb-3">Non-editable value the user can still select and copy.</p>
-          <div class="preview">
-            <div style="max-width:24rem;">
-              <label class="label" for="demo-readonly">API Key</label>
-              <input class="input" type="text" id="demo-readonly" readonly value="sk-1234567890abcdef" aria-describedby="demo-readonly-desc">
-              <p class="field-description" id="demo-readonly-desc">Your API key is read-only.</p>
-            </div>
-          </div>
-          <div style="position:relative;margin-top:0.5rem;">
-            <button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg> Copy</button>
-            <pre><code class="language-markup">&lt;label class="label" for="api-key"&gt;API Key&lt;/label&gt;
+          placeholder="Your message..."&gt;&lt;/textarea&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-6" id="toc-readonly"><a class="heading-anchor" href="#toc-readonly" aria-label="Link to section: Readonly">§</a>Readonly</p><p class="text-xs text-muted-foreground mb-3">Non-editable value the user can still select and copy.</p><div class="preview"><div style="max-width:24rem;"><label class="label" for="demo-readonly">API Key</label><input class="input" type="text" id="demo-readonly" readonly="" value="sk-1234567890abcdef" aria-describedby="demo-readonly-desc" /><p class="field-description" id="demo-readonly-desc">Your API key is read-only.</p></div></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;label class="label" for="api-key"&gt;API Key&lt;/label&gt;
 &lt;input class="input" type="text" id="api-key"
-       readonly value="sk-1234567890abcdef"&gt;</code></pre>
-          </div>
-
-        <!-- Password -->
-          <p class="text-sm font-medium mb-2 mt-6">Password</p>
-          <p class="text-xs text-muted-foreground mb-3">Use <code>type="password"</code> for secure text entry.</p>
-          <div class="preview">
-            <div style="max-width:24rem;">
-              <label class="label" for="demo-password">Password</label>
-              <input class="input" type="password" id="demo-password" placeholder="Enter your password">
-            </div>
-          </div>
-          <div style="position:relative;margin-top:0.5rem;">
-            <button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg> Copy</button>
-            <pre><code class="language-markup">&lt;label class="label" for="password"&gt;Password&lt;/label&gt;
+       readonly value="sk-1234567890abcdef"&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-6" id="toc-password"><a class="heading-anchor" href="#toc-password" aria-label="Link to section: Password">§</a>Password</p><p class="text-xs text-muted-foreground mb-3">Use <code>type="password"</code> for secure text entry.</p><div class="preview"><div style="max-width:24rem;"><label class="label" for="demo-password">Password</label><input class="input" type="password" id="demo-password" placeholder="Enter your password" /></div></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;label class="label" for="password"&gt;Password&lt;/label&gt;
 &lt;input class="input" type="password" id="password"
-       placeholder="Enter your password"&gt;</code></pre>
-          </div>
-
-        <!-- With Button -->
-          <p class="text-sm font-medium mb-2 mt-6">With button</p>
-          <p class="text-xs text-muted-foreground mb-3">Pair an input with a button for inline actions like search.</p>
-          <div class="preview">
-            <div style="max-width:24rem;display:flex;gap:0.5rem;">
-              <input class="input" type="search" placeholder="Search...">
-              <button class="btn" data-variant="default">Search</button>
-            </div>
-          </div>
-          <div style="position:relative;margin-top:0.5rem;">
-            <button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg> Copy</button>
-            <pre><code class="language-markup">&lt;div style="display:flex;gap:0.5rem;"&gt;
+       placeholder="Enter your password"&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-6" id="toc-with-button"><a class="heading-anchor" href="#toc-with-button" aria-label="Link to section: With button">§</a>With button</p><p class="text-xs text-muted-foreground mb-3">Pair an input with a button for inline actions like search.</p><div class="preview"><div style="max-width:24rem;display:flex;gap:0.5rem;"><input class="input" type="search" placeholder="Search..." /><button class="btn" data-variant="default">Search</button></div></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;div style="display:flex;gap:0.5rem;"&gt;
   &lt;input class="input" type="search"
          placeholder="Search..."&gt;
   &lt;button class="btn" data-variant="default"&gt;Search&lt;/button&gt;
-&lt;/div&gt;</code></pre>
-          </div>
-
-        <!-- Form Example -->
-          <p class="text-sm font-medium mb-2 mt-6">Form composition</p>
-          <p class="text-xs text-muted-foreground mb-3">Multiple inputs with labels, descriptions, and a submit button.</p>
-          <div class="preview">
-            <form style="max-width:24rem;display:flex;flex-direction:column;gap:1.25rem;" onsubmit="return false;">
-              <div>
-                <label class="label" for="demo-name">Name <span class="text-destructive">*</span></label>
-                <input class="input" type="text" id="demo-name" required placeholder="Jane Doe">
-              </div>
-              <div>
-                <label class="label" for="demo-email2">Email <span class="text-destructive">*</span></label>
-                <input class="input" type="email" id="demo-email2" required placeholder="jane@example.com" aria-describedby="demo-email2-desc">
-                <p class="field-description" id="demo-email2-desc">We'll never share your email with anyone.</p>
-              </div>
-              <div>
-                <label class="label" for="demo-bio">Bio</label>
-                <textarea class="input" id="demo-bio" placeholder="Tell us about yourself..."></textarea>
-              </div>
-              <div style="display:flex;gap:0.5rem;justify-content:flex-end;">
-                <button class="btn" data-variant="outline" type="reset">Cancel</button>
-                <button class="btn" data-variant="default" type="submit">Submit</button>
-              </div>
-            </form>
-          </div>
-          <div style="position:relative;margin-top:0.5rem;">
-            <button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg> Copy</button>
-            <pre><code class="language-markup">&lt;form&gt;
+&lt;/div&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-6" id="toc-form-composition"><a class="heading-anchor" href="#toc-form-composition" aria-label="Link to section: Form composition">§</a>Form composition</p><p class="text-xs text-muted-foreground mb-3">Multiple inputs with labels, descriptions, and a submit button.</p><div class="preview"><form style="max-width:24rem;display:flex;flex-direction:column;gap:1.25rem;" onsubmit="return false;"><div><label class="label" for="demo-name">Name <span class="text-destructive">*</span></label><input class="input" type="text" id="demo-name" required="" placeholder="Jane Doe" /></div><div><label class="label" for="demo-email2">Email <span class="text-destructive">*</span></label><input class="input" type="email" id="demo-email2" required="" placeholder="jane@example.com" aria-describedby="demo-email2-desc" /><p class="field-description" id="demo-email2-desc">We'll never share your email with anyone.</p></div><div><label class="label" for="demo-bio">Bio</label><textarea class="input" id="demo-bio" placeholder="Tell us about yourself..."></textarea></div><div style="display:flex;gap:0.5rem;justify-content:flex-end;"><button class="btn" data-variant="outline" type="reset">Cancel</button><button class="btn" data-variant="default" type="submit">Submit</button></div></form></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;form&gt;
   &lt;div&gt;
     &lt;label class="label" for="name"&gt;
       Name &lt;span class="text-destructive"&gt;*&lt;/span&gt;
@@ -352,15 +64,7 @@
               placeholder="Tell us about yourself..."&gt;&lt;/textarea&gt;
   &lt;/div&gt;
   &lt;button class="btn" data-variant="default" type="submit"&gt;Submit&lt;/button&gt;
-&lt;/form&gt;</code></pre>
-          </div>
-
-        <!-- -- CSS --------------------------------------- -->
-        <section style="margin-top:3rem;" id="source-css">
-          <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;">CSS <a href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/input/input.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2>
-          <div style="position:relative;margin-top:0.5rem;">
-            <button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button>
-            <pre><code class="language-scss">/* -- Input component ------------------------------------------- */
+&lt;/form&gt;</code></pre></div><section style="margin-top:3rem;" id="source-css"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-css"><a class="heading-anchor" href="#toc-css" aria-label="Link to section: CSS">§</a>CSS <a href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/input/input.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-scss">/* -- Input component ------------------------------------------- */
 
 @layer components {
   .input {
@@ -389,7 +93,7 @@
        :read-only, and this rule's specificity (class + pseudo + :not attr)
        outranks the plain :disabled below — without the exclusion, disabled
        controls would render with the readonly look (0.7/default). */
-    &amp;:read-only:not([type=&quot;file&quot;], :disabled) {
+    &amp;:read-only:not([type="file"], :disabled) {
       background: var(--muted);
       cursor: default;
       opacity: 0.7;
@@ -406,7 +110,7 @@
     }
 
     /* -- Invalid state --------------------------------------- */
-    &amp;:is([aria-invalid=&quot;true&quot;], :user-invalid) {
+    &amp;:is([aria-invalid="true"], :user-invalid) {
       border-color: var(--destructive);
 
       &amp;:focus {
@@ -416,7 +120,7 @@
     }
 
     /* -- File input ------------------------------------------ */
-    &amp;[type=&quot;file&quot;] {
+    &amp;[type="file"] {
       padding: 0;
       font-size: 0.875rem;
 
@@ -439,8 +143,11 @@
     }
 
     /* -- Sizes ----------------------------------------------- */
-    &amp;[data-size=&quot;sm&quot;] { height: 2rem;    padding: 0 0.625rem; font-size: 0.8125rem; }
-    &amp;[data-size=&quot;lg&quot;] { height: 2.75rem; padding: 0 1rem;     font-size: 1rem; }
+    &amp;[data-size="xs"] { height: 1.75rem; padding: 0 0.5rem;   font-size: 0.75rem; }
+    &amp;[data-size="sm"] { height: 2rem;    padding: 0 0.625rem; font-size: 0.8125rem; }
+    &amp;[data-size="md"] { height: 2.25rem; padding: 0 0.75rem;  font-size: 0.875rem; }
+    &amp;[data-size="lg"] { height: 2.75rem; padding: 0 1rem;     font-size: 1rem; }
+    &amp;[data-size="xl"] { height: 3.25rem; padding: 0 1.25rem;  font-size: 1.125rem; }
   }
 
   /* -- Auto-growing textarea --------------------------------- */
@@ -471,7 +178,7 @@
       transition: none;
     }
 
-    .input[type=&quot;file&quot;]::file-selector-button {
+    .input[type="file"]::file-selector-button {
       transition: none;
     }
   }
@@ -504,7 +211,7 @@
       border-color: GrayText;
     }
 
-    .input:is([aria-invalid=&quot;true&quot;], :user-invalid) {
+    .input:is([aria-invalid="true"], :user-invalid) {
       border-color: LinkText;
     }
 
@@ -512,17 +219,12 @@
       color: LinkText;
     }
   }
-}</code></pre>
-          </div>
-        </section>
-
-    </main>
-  </div>
-
-  <script src="js/site.js" defer></script>
-  <script type="module" src="js/shiki-highlight.js"></script>
-  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.js"></script>
-  <script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script>
-  <script>globalThis.lucide?.createIcons();</script>
-</body>
-</html>
+}
+</code></pre></div></section><nav class="page-nav"><a class="page-nav-link page-nav-prev" href="label.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><div><span class="page-nav-label">Previous</span><span class="page-nav-title">Label</span></div></a><a class="page-nav-link page-nav-next" href="textarea.html"><div><span class="page-nav-label">Next</span><span class="page-nav-title">Textarea</span></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></nav></main><aside class="site-toc"><div class="site-toc-content"><p class="toc-title">On This Page</p><a class="toc-link" href="#toc-default">Default</a><a class="toc-link" href="#toc-with-description">With description</a><a class="toc-link" href="#toc-sizes">Sizes</a><a class="toc-link" href="#toc-disabled">Disabled</a><a class="toc-link" href="#toc-invalid">Invalid</a><a class="toc-link" href="#toc-required">Required</a><a class="toc-link" href="#toc-with-icon">With icon</a><a class="toc-link" href="#toc-file">File</a><a class="toc-link" href="#toc-textarea">Textarea</a><a class="toc-link" href="#toc-readonly">Readonly</a><a class="toc-link" href="#toc-password">Password</a><a class="toc-link" href="#toc-with-button">With button</a><a class="toc-link" href="#toc-form-composition">Form composition</a><a class="toc-link" href="#toc-css">CSS</a></div></aside></div><script>try {
+  var c = JSON.parse(localStorage.getItem('defuss-shadcn-nav-collapsed') || '[]');
+  for (var i = 0; i < c.length; i++) {
+    if (c[i] === 'Overview') continue;
+    var d = document.querySelector('details[data-nav-section="' + c[i] + '"]');
+    if (d && !d.querySelector('a.nav-link.active')) d.open = false;
+  }
+} catch (e) {}</script><footer class="site-footer"><p class="site-footer-tagline">Agentically engineered with local Qwen3.8-Flash-Next/vLLM, quality-gated automatically, and human-reviewed before release.</p><p class="site-footer-tagline" style="margin-top:0;">Reworked, enhanced and maintained by <a href="https://aron-homberg.de" target="_blank" rel="noopener">Aron Homberg</a></p><span class="site-footer-dot"> · </span>MIT Licensed<span class="site-footer-dot"> · </span><a href="https://github.com/kyr0/defuss-shadcn" target="_blank" rel="noopener">Source on GitHub</a></footer><script src="js/site.js" defer=""></script><script type="module" src="js/shiki-highlight.js"></script><script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.js"></script><script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script><script>globalThis.lucide?.createIcons();</script></body></html>

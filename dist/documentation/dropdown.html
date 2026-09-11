@@ -1,161 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="color-scheme" content="light dark">
-  <link rel="icon" href="images/favicon.webp" type="image/webp">
-  <meta name="description" content="Dropdown Menu component — action menus using native popover API.">
-  <meta property="og:title" content="Dropdown Menu — defuss-shadcn">
-  <meta property="og:description" content="Dropdown Menu component — action menus using native popover API.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://kyr0.github.io/defuss-shadcn/documentation/dropdown.html">
-  <meta property="og:site_name" content="defuss-shadcn">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Dropdown Menu — defuss-shadcn">
-  <meta name="twitter:description" content="Dropdown Menu component — action menus using native popover API.">
-  <title>Dropdown Menu — defuss-shadcn</title>
-  <script src="js/themes.js"></script>
-  <script src="js/theme-switcher.js"></script>
-  <script src="js/layout.js"></script>
-  <script src="js/search-index.js"></script>
-  <link rel="stylesheet" href="../theme/default-semantic-tokens.css">
-  <link rel="stylesheet" href="../theme/sizing.css">
-  <link rel="stylesheet" href="../theme/layout.css">
-  <link rel="stylesheet" href="css/docs-theme.css">
-  <link rel="stylesheet" href="css/docs-utilities.css">
-  <link rel="stylesheet" href="css/layout.css">
-  <link rel="stylesheet" href="../components/all.css">
-</head>
-<body>
-  <site-header></site-header>
-
-  <div class="flex" style="margin-top: 3.5rem; min-height: calc(100vh - 3.5rem);">
-    <site-nav></site-nav>
-
-    <main style="flex: 1; min-width: 0; max-width: 44rem; padding: 2rem 3.5rem 8rem;">
-      <div class="page-header">
-        <div class="flex items-baseline justify-between mb-1">
-          <p class="text-sm text-muted-foreground" style="font-family:var(--font-mono);">defuss-shadcn / dropdown-menu</p>
-          <div style="display:flex;align-items:baseline;gap:0.375rem;"><span class="text-xs text-muted-foreground" style="font-family:var(--font-mono);white-space:nowrap;">Built with:</span> <a href="#source-css" class="badge built-with-pill" data-variant="outline">CSS</a> <a href="#source-js" class="badge built-with-pill" data-variant="outline">JS</a></div>
-        </div>
-        <h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">Dropdown Menu<span class="type-badge" data-type="ATM" title="Atom">ATM</span></h1>
-        <p class="text-muted-foreground leading-relaxed mb-6">
-          Context menu built on the <code>popover</code> API. Light-dismiss is automatic.
-          Supports groups, shortcuts, separators, and destructive items. Animated with <code>@starting-style</code>.
-        </p>
-        <!-- Component Skill -->
-        <details style="margin-bottom:2rem;border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;">
-          <summary style="padding:0.875rem 1.25rem;background:var(--muted);cursor:pointer;font-size:0.8125rem;font-weight:600;font-family:var(--font-mono);color:var(--muted-foreground);list-style:none;display:flex;align-items:center;gap:0.5rem;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 200ms;"><path d="m9 18 6-6-6-6"/></svg>
-            Component Skill — <span data-spec-href="../components/dropdown/component-skill.md" style="text-decoration:underline;text-underline-offset:3px;">components/dropdown/component-skill.md</span>
-          </summary>
-          <div style="padding:1.5rem;font-size:0.875rem;line-height:1.85;">
-            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Native basis</p>
-            <p class="text-muted-foreground" style="margin:0 0 1.25rem;"><code>popover</code> API + <code>&lt;button&gt;</code> trigger. The browser provides light-dismiss</p>
-
-            <p style="margin:0 0 0.625rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Web Platform APIs</p>
-            <div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;">
-              <a href="https://developer.mozilla.org/en-US/docs/Web/API/Popover_API" target="_blank" rel="noopener" title="top-layer rendering and light-dismiss (click outside to close)" class="api-pill"><code>Popover API</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning" target="_blank" rel="noopener" title="positions dropdown relative to trigger without JavaScript" class="api-pill"><code>CSS Anchor Positioning</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-              <a href="https://www.w3.org/WAI/ARIA/apg/patterns/menubar/" target="_blank" rel="noopener" title="keyboard navigation and role contract for menu items" class="api-pill"><code>WAI-ARIA Menu pattern</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style" target="_blank" rel="noopener" title="entry animation for popover" class="api-pill"><code>@starting-style</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" target="_blank" rel="noopener" title="suppresses open/close animation" class="api-pill"><code>prefers-reduced-motion</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" target="_blank" rel="noopener" title="maps to system colors" class="api-pill"><code>forced-colors</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
-            </div>
-
-            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Classes</p>
-            <div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;">
-              <code>.dropdown-content</code>
-              <code>.dropdown-item</code>
-              <code>.dropdown-separator</code>
-              <code>.dropdown-label</code>
-              <code>.dropdown-shortcut</code>
-            </div>
-
-            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Variants (data-variant)</p>
-            <div style="display:grid;grid-template-columns:auto 1fr;gap:0.25rem 1rem;margin-bottom:1.25rem;">
-              <code>destructive</code><span class="text-muted-foreground">Alternate background styling</span>
-            </div>
-
-            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Data attributes</p>
-            <p class="text-muted-foreground" style="margin:0 0 1.25rem;">• <code>data-dropdown-trigger</code></p>
-
-            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">State attributes (managed by JS)</p>
-            <p class="text-muted-foreground" style="margin:0 0 1.25rem;">• <code>data-highlighted</code></p>
-
-            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Wiring conventions</p>
-            <p class="text-muted-foreground" style="margin:0 0 1.25rem;">• <code>data-dropdown-trigger</code> on a <code><button></code> — opens the component (JS adds the native <code>popovertarget</code> command)</p>
-
-
-            <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Notes</p>
-            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Always use <code>popover</code> attribute for the menu — it renders in the top layer and avoids overflow clipping</p>
-            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• CSS anchor positioning (<code>position-anchor</code>, <code>anchor()</code>) handles placement — no JS positioning needed</p>
-            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>position-try: flip-block</code> automatically flips the menu above the trigger if there's no room below</p>
-            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• The <code>popover</code> API handles light-dismiss (click outside) automatically</p>
-            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• For submenus, nest another <code>[popover]</code> element triggered by a <code>menuitem</code> with <code>aria-haspopup=&quot;menu&quot;</code></p>
-            <p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Escape closes the menu and returns focus to the trigger</p>
-            <p class="text-muted-foreground" style="margin:0 0 0;">• Menu items use <code>tabindex=&quot;-1&quot;</code> — only arrow keys move focus (roving focus pattern)</p>
-          </div>
-        </details>
-      </div>
-
-        <!-- ═══════════════════════════════════════════
-             1. Standard Menu
-             ═══════════════════════════════════════════ -->
-        <p class="text-sm font-medium mb-2 mt-6">Standard Menu</p>
-        <p class="text-xs text-muted-foreground mb-3">Full-featured menu with icons, keyboard shortcuts, groups, separators, a disabled item, and a destructive action.</p>
-
-        <div class="preview" style="gap:0.75rem;min-height:14rem;align-items:flex-start;padding-top:2.5rem;">
-          <button class="btn" data-variant="default"
-                  aria-haspopup="menu" aria-expanded="false"
-                  aria-controls="demo-dropdown"
-                  data-dropdown-trigger="demo-dropdown">
-            Options
-            <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-          </button>
-
-          <div id="demo-dropdown" role="menu" popover class="dropdown-content" data-state-demo aria-label="Options menu" style="min-width:12rem;">
-            <div class="dropdown-label">My Account</div>
-            <div role="group" aria-label="Navigation">
-              <button role="menuitem" class="dropdown-item" tabindex="-1">
-                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-                Profile
-                <span class="dropdown-shortcut">⇧⌘P</span>
-              </button>
-              <button role="menuitem" class="dropdown-item" tabindex="-1">
-                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-                Settings
-                <span class="dropdown-shortcut">⌘S</span>
-              </button>
-              <button role="menuitem" class="dropdown-item" tabindex="-1" disabled>
-                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
-                Upload
-                <span class="dropdown-shortcut">⌘U</span>
-              </button>
-            </div>
-            <div class="dropdown-separator" role="separator"></div>
-            <div role="group" aria-label="Actions">
-              <button role="menuitem" class="dropdown-item" tabindex="-1">
-                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
-                Export
-                <span class="dropdown-shortcut">⌘E</span>
-              </button>
-              <button role="menuitem" class="dropdown-item" data-variant="destructive" tabindex="-1">
-                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                Delete
-                <span class="dropdown-shortcut">⌘⌫</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div style="position:relative;margin-top:0.5rem;">
-          <button class="copy-btn">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-            Copy
-          </button>
-          <pre><code class="language-markup">&lt;!-- Trigger --&gt;
+<html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="color-scheme" content="light dark" /><link rel="icon" href="images/favicon.webp" type="image/webp" /><meta name="description" content="Dropdown Menu component — action menus using native popover API." /><meta property="og:title" content="Dropdown Menu — defuss-shadcn" /><meta property="og:description" content="Dropdown Menu component — action menus using native popover API." /><meta property="og:type" content="website" /><meta property="og:url" content="https://kyr0.github.io/defuss-shadcn/documentation/dropdown.html" /><meta property="og:site_name" content="defuss-shadcn" /><meta name="twitter:card" content="summary" /><meta name="twitter:title" content="Dropdown Menu — defuss-shadcn" /><meta name="twitter:description" content="Dropdown Menu component — action menus using native popover API." /><title>Dropdown Menu — defuss-shadcn</title><script src="js/themes.js"></script><script src="js/theme-switcher.js"></script><script src="js/layout.js"></script><script src="js/search-index.js"></script><link rel="stylesheet" href="../theme/default-semantic-tokens.css" /><link rel="stylesheet" href="../theme/sizing.css" /><link rel="stylesheet" href="../theme/layout.css" /><link rel="stylesheet" href="css/docs-theme.css" /><link rel="stylesheet" href="css/docs-utilities.css" /><link rel="stylesheet" href="css/layout.css" /><link rel="stylesheet" href="../components/all.css" /></head><body><header class="site-header"><button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle navigation menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><a href="index.html" class="header-brand"><img src="images/favicon.webp" alt="defuss-shadcn logo" class="header-brand-logo" /><span class="header-brand-name">defuss<em>-shadcn</em></span><span class="badge header-brand-version" data-variant="outline" style="font-family:var(--font-mono);">v0.8.3</span></a><div class="header-search" role="search"><input type="text" class="header-search-input" placeholder="Search docs… (⌘K)" aria-label="Search documentation" autocomplete="off" readonly="" /></div><div style="flex:1;"></div><nav style="display:flex;align-items:center;gap:0.25rem;"><a href="https://github.com/kyr0/defuss-shadcn" target="_blank" rel="noopener" class="header-action"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg><span class="github-label">GitHub</span><span class="github-stars"></span></a><button id="wide-toggle" class="header-action theme-toggle-btn" aria-label="Toggle wide layout" aria-pressed="false"><svg id="icon-wide-expand" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg><svg id="icon-wide-collapse" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/><path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/></svg></button><button id="theme-toggle" class="header-action theme-toggle-btn" aria-label="Toggle dark mode"><svg id="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg><svg id="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button><button id="theme-selector-btn" class="header-action theme-toggle-btn" aria-label="Change color theme" popovertarget="theme-popover"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="0.5" fill="currentColor"/><circle cx="17.5" cy="10.5" r="0.5" fill="currentColor"/><circle cx="8.5" cy="7.5" r="0.5" fill="currentColor"/><circle cx="6.5" cy="12" r="0.5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></button></nav></header><div id="theme-popover" popover="" class="theme-popover"><div class="theme-popover-header"><span class="theme-popover-title">Theme</span><button class="theme-reset-btn" id="theme-reset-btn">Reset</button></div><div class="theme-grid" id="theme-grid"></div></div><dialog id="docs-palette" class="command" aria-label="Search documentation"><div class="command-content"><div class="command-input-wrapper"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input class="command-input" type="text" placeholder="Search documentation…" autocomplete="off" autocorrect="off" spellcheck="false" /></div><div class="command-list" id="docs-palette-list"></div><div class="command-empty" hidden="">No results found.</div></div></dialog><div class="flex" style="margin-top: 3.5rem; min-height: calc(100vh - 3.5rem);"><aside class="site-sidebar"><div class="sidebar-scroll"><details class="nav-section sidebar-group" open="" data-nav-section="Overview" style="margin-bottom:0.75rem;"><summary class="nav-heading">Overview<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="index.html" style="display:flex;align-items:center;gap:0.375rem;">Introduction</a><a class="nav-link" href="installation.html" style="display:flex;align-items:center;gap:0.375rem;">Installation</a><a class="nav-link" href="theming.html" style="display:flex;align-items:center;gap:0.375rem;">Theming</a><a class="nav-link" href="dark-mode.html" style="display:flex;align-items:center;gap:0.375rem;">Dark Mode</a><a class="nav-link" href="data-attribute-api.html" style="display:flex;align-items:center;gap:0.375rem;">Data Attribute API</a><a class="nav-link" href="architecture.html" style="display:flex;align-items:center;gap:0.375rem;">Architecture</a><a class="nav-link" href="cascade-layers.html" style="display:flex;align-items:center;gap:0.375rem;">Cascade Layers</a><a class="nav-link" href="es-modules.html" style="display:flex;align-items:center;gap:0.375rem;">ES Modules</a><a class="nav-link" href="native-web-apis.html" style="display:flex;align-items:center;gap:0.375rem;">Native Web APIs</a><a class="nav-link" href="animations.html" style="display:flex;align-items:center;gap:0.375rem;">Animations</a><a class="nav-link" href="sizing.html" style="display:flex;align-items:center;gap:0.375rem;">Sizing</a><a class="nav-link" href="layout.html" style="display:flex;align-items:center;gap:0.375rem;">Layout</a><a class="nav-link" href="accessibility.html" style="display:flex;align-items:center;gap:0.375rem;">Accessibility</a><a class="nav-link" href="component-skills.html" style="display:flex;align-items:center;gap:0.375rem;">Component Skills</a><a class="nav-link" href="changelog.html" style="display:flex;align-items:center;gap:0.375rem;">Changelog</a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Sizing" style="margin-bottom:0.75rem;"><summary class="nav-heading">Sizing<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="width-height.html" style="display:flex;align-items:center;gap:0.375rem;">Width &amp; Height</a><a class="nav-link" href="spacing.html" style="display:flex;align-items:center;gap:0.375rem;">Spacing</a><a class="nav-link" href="density.html" style="display:flex;align-items:center;gap:0.375rem;">Density</a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Layout" style="margin-bottom:0.75rem;"><summary class="nav-heading">Layout<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="container.html" style="display:flex;align-items:center;gap:0.375rem;">Container</a><a class="nav-link" href="flex.html" style="display:flex;align-items:center;gap:0.375rem;">Flex</a><a class="nav-link" href="grid.html" style="display:flex;align-items:center;gap:0.375rem;">Grid</a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Primitives" style="margin-bottom:0.75rem;"><summary class="nav-heading">Primitives<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="typography.html" style="display:flex;align-items:center;gap:0.375rem;">Typography <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="separator.html" style="display:flex;align-items:center;gap:0.375rem;">Separator <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="icon.html" style="display:flex;align-items:center;gap:0.375rem;">Icon <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="heading-anchor.html" style="display:flex;align-items:center;gap:0.375rem;">Heading Anchor <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Actions" style="margin-bottom:0.75rem;"><summary class="nav-heading">Actions<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="button.html" style="display:flex;align-items:center;gap:0.375rem;">Button <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="toggle.html" style="display:flex;align-items:center;gap:0.375rem;">Toggle <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="toggle-group.html" style="display:flex;align-items:center;gap:0.375rem;">Toggle Group <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="button-group.html" style="display:flex;align-items:center;gap:0.375rem;">Button Group <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="toolbar.html" style="display:flex;align-items:center;gap:0.375rem;">Toolbar <span class="type-badge" data-type="ORG" title="ORG">ORG</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Forms &amp; Inputs" style="margin-bottom:0.75rem;"><summary class="nav-heading">Forms &amp; Inputs<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="label.html" style="display:flex;align-items:center;gap:0.375rem;">Label <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="input.html" style="display:flex;align-items:center;gap:0.375rem;">Input <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="textarea.html" style="display:flex;align-items:center;gap:0.375rem;">Textarea <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="checkbox.html" style="display:flex;align-items:center;gap:0.375rem;">Checkbox <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="radio.html" style="display:flex;align-items:center;gap:0.375rem;">Radio Group <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="switch.html" style="display:flex;align-items:center;gap:0.375rem;">Switch <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="slider.html" style="display:flex;align-items:center;gap:0.375rem;">Slider <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="select.html" style="display:flex;align-items:center;gap:0.375rem;">Select <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="number-input.html" style="display:flex;align-items:center;gap:0.375rem;">Number Input <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="file-input.html" style="display:flex;align-items:center;gap:0.375rem;">File Input <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="color-picker.html" style="display:flex;align-items:center;gap:0.375rem;">Color Picker <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="date-picker.html" style="display:flex;align-items:center;gap:0.375rem;">Date Picker <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="combobox.html" style="display:flex;align-items:center;gap:0.375rem;">Combobox <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="form.html" style="display:flex;align-items:center;gap:0.375rem;">Form <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Data Display" style="margin-bottom:0.75rem;"><summary class="nav-heading">Data Display<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="badge.html" style="display:flex;align-items:center;gap:0.375rem;">Badge <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="type-badge.html" style="display:flex;align-items:center;gap:0.375rem;">Type Badge <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="avatar.html" style="display:flex;align-items:center;gap:0.375rem;">Avatar <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="card.html" style="display:flex;align-items:center;gap:0.375rem;">Card <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="image.html" style="display:flex;align-items:center;gap:0.375rem;">Image <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="statistic.html" style="display:flex;align-items:center;gap:0.375rem;">Statistic <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="table.html" style="display:flex;align-items:center;gap:0.375rem;">Table <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="collapsible.html" style="display:flex;align-items:center;gap:0.375rem;">Collapsible <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="timeline.html" style="display:flex;align-items:center;gap:0.375rem;">Timeline <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="tree-view.html" style="display:flex;align-items:center;gap:0.375rem;">Tree View <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="calendar.html" style="display:flex;align-items:center;gap:0.375rem;">Calendar <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="carousel.html" style="display:flex;align-items:center;gap:0.375rem;">Carousel <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="scroll-area.html" style="display:flex;align-items:center;gap:0.375rem;">Scroll Area <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="sortable.html" style="display:flex;align-items:center;gap:0.375rem;">Sortable <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Feedback &amp; Status" style="margin-bottom:0.75rem;"><summary class="nav-heading">Feedback &amp; Status<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="spinner.html" style="display:flex;align-items:center;gap:0.375rem;">Spinner <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="skeleton.html" style="display:flex;align-items:center;gap:0.375rem;">Skeleton <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="progress.html" style="display:flex;align-items:center;gap:0.375rem;">Progress <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="alert.html" style="display:flex;align-items:center;gap:0.375rem;">Alert <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="alert-dialog.html" style="display:flex;align-items:center;gap:0.375rem;">Alert Dialog <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="toast.html" style="display:flex;align-items:center;gap:0.375rem;">Toast <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Overlays" style="margin-bottom:0.75rem;"><summary class="nav-heading">Overlays<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="popover.html" style="display:flex;align-items:center;gap:0.375rem;">Popover <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="tooltip.html" style="display:flex;align-items:center;gap:0.375rem;">Tooltip <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="context-menu.html" style="display:flex;align-items:center;gap:0.375rem;">Context Menu <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="dialog.html" style="display:flex;align-items:center;gap:0.375rem;">Dialog <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="sheet.html" style="display:flex;align-items:center;gap:0.375rem;">Sheet <span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link" href="accordion.html" style="display:flex;align-items:center;gap:0.375rem;">Accordion <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="command.html" style="display:flex;align-items:center;gap:0.375rem;">Command <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Navigation" style="margin-bottom:0.75rem;"><summary class="nav-heading">Navigation<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="breadcrumb.html" style="display:flex;align-items:center;gap:0.375rem;">Breadcrumb <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="toc.html" style="display:flex;align-items:center;gap:0.375rem;">Table of Contents <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="pagination.html" style="display:flex;align-items:center;gap:0.375rem;">Pagination <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="steps.html" style="display:flex;align-items:center;gap:0.375rem;">Steps <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="tabs.html" style="display:flex;align-items:center;gap:0.375rem;">Tabs <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link active" href="dropdown.html" style="display:flex;align-items:center;gap:0.375rem;">Dropdown Menu <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link" href="navigation-menu.html" style="display:flex;align-items:center;gap:0.375rem;">Navigation Menu <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Application" style="margin-bottom:0.75rem;"><summary class="nav-heading">Application<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="sidebar.html" style="display:flex;align-items:center;gap:0.375rem;">Sidebar <span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="nav-section sidebar-group" open="" data-nav-section="Marketing" style="margin-bottom:0.75rem;"><summary class="nav-heading">Marketing<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link" href="site-header.html" style="display:flex;align-items:center;gap:0.375rem;">Site Header <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="hero.html" style="display:flex;align-items:center;gap:0.375rem;">Hero <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="product-showcase.html" style="display:flex;align-items:center;gap:0.375rem;">Product Showcase <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="brand-logos.html" style="display:flex;align-items:center;gap:0.375rem;">Brand Logos <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="feature-details.html" style="display:flex;align-items:center;gap:0.375rem;">Feature Details <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="testimonials.html" style="display:flex;align-items:center;gap:0.375rem;">Testimonials <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="stats.html" style="display:flex;align-items:center;gap:0.375rem;">Stats <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="pricing.html" style="display:flex;align-items:center;gap:0.375rem;">Pricing <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="blog.html" style="display:flex;align-items:center;gap:0.375rem;">Blog <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="faq.html" style="display:flex;align-items:center;gap:0.375rem;">FAQ <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="get-in-touch.html" style="display:flex;align-items:center;gap:0.375rem;">Get In Touch <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="newsletter.html" style="display:flex;align-items:center;gap:0.375rem;">Newsletter <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link" href="site-footer.html" style="display:flex;align-items:center;gap:0.375rem;">Site Footer <span class="type-badge" data-type="BLK" title="BLK">BLK</span></a></nav></details></div></aside><main style="flex: 1; min-width: 0; max-width: 44rem; padding: 2rem 3.5rem 8rem;"><div class="page-header"><div class="flex items-baseline justify-between mb-1"><p class="text-sm text-muted-foreground" style="font-family:var(--font-mono);">defuss-shadcn / dropdown-menu</p><div style="display:flex;align-items:baseline;gap:0.375rem;"><span class="text-xs text-muted-foreground" style="font-family:var(--font-mono);white-space:nowrap;">Built with:</span> <a href="#source-css" class="badge built-with-pill" data-variant="outline">CSS</a> <a href="#source-js" class="badge built-with-pill" data-variant="outline">JS</a></div></div><h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">Dropdown Menu<span class="type-badge" data-type="ATM" title="Atom">ATM</span></h1><p class="text-muted-foreground leading-relaxed mb-6">Context menu built on the <code>popover</code> API. Light-dismiss is automatic. Supports groups, shortcuts, separators, and destructive items. Animated with <code>@starting-style</code>.</p></div><details style="margin-bottom:2rem;border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;"><summary style="padding:0.875rem 1.25rem;background:var(--muted);cursor:pointer;font-size:0.8125rem;font-weight:600;font-family:var(--font-mono);color:var(--muted-foreground);list-style:none;display:flex;align-items:center;gap:0.5rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 200ms;"><path d="m9 18 6-6-6-6"/></svg>Component Skill — <span data-spec-href="../components/dropdown/component-skill.md" style="text-decoration:underline;text-underline-offset:3px;">components/dropdown/component-skill.md</span></summary><div style="padding:1.5rem;font-size:0.875rem;line-height:1.85;"><p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Native basis</p><p class="text-muted-foreground" style="margin:0 0 1.25rem;"><code>popover</code> API + <code>&lt;button&gt;</code> trigger. The browser provides light-dismiss</p><p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Web Platform APIs</p><div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Popover_API" target="_blank" rel="noopener" title="top-layer rendering and light-dismiss (click outside to close)" class="api-pill"><code>Popover API</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning" target="_blank" rel="noopener" title="positions dropdown relative to trigger without JavaScript" class="api-pill"><code>CSS Anchor Positioning</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://www.w3.org/WAI/ARIA/apg/patterns/menubar/" target="_blank" rel="noopener" title="keyboard navigation and role contract for menu items" class="api-pill"><code>WAI-ARIA Menu pattern</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style" target="_blank" rel="noopener" title="entry animation for popover" class="api-pill"><code>@starting-style</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" target="_blank" rel="noopener" title="suppresses open/close animation" class="api-pill"><code>prefers-reduced-motion</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" target="_blank" rel="noopener" title="maps to system colors" class="api-pill"><code>forced-colors</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a></div><p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Classes</p><div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;"><code>.dropdown-content</code><code>.dropdown-item</code><code>.dropdown-separator</code><code>.dropdown-label</code><code>.dropdown-shortcut</code></div><p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Variants (data-variant)</p><div style="display:grid;grid-template-columns:auto 1fr;gap:0.25rem 1rem;margin-bottom:1.25rem;"><code>destructive</code><span class="text-muted-foreground">Alternate background styling</span></div><p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Data attributes</p><p class="text-muted-foreground" style="margin:0 0 1.25rem;">• <code>data-dropdown-trigger</code></p><p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">State attributes (managed by JS)</p><p class="text-muted-foreground" style="margin:0 0 1.25rem;">• <code>data-highlighted</code></p><p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Wiring conventions</p><p class="text-muted-foreground" style="margin:0 0 1.25rem;">• <code>data-dropdown-trigger</code> on a <code>&lt;button&gt;</code> — opens the component (JS adds the native <code>popovertarget</code> command)</p><p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">Notes</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Always use <code>popover</code> attribute for the menu — it renders in the top layer and avoids overflow clipping</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• CSS anchor positioning (<code>position-anchor</code>, <code>anchor()</code>) handles placement — no JS positioning needed</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>position-try: flip-block</code> automatically flips the menu above the trigger if there's no room below</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• The <code>popover</code> API handles light-dismiss (click outside) automatically</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• For submenus, nest another <code>[popover]</code> element triggered by a <code>menuitem</code> with <code>aria-haspopup="menu"</code></p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Escape closes the menu and returns focus to the trigger</p><p class="text-muted-foreground" style="margin:0 0 0;">• Menu items use <code>tabindex="-1"</code> — only arrow keys move focus (roving focus pattern)</p></div></details><p class="text-sm font-medium mb-2 mt-6" id="toc-standard-menu"><a class="heading-anchor" href="#toc-standard-menu" aria-label="Link to section: Standard Menu">§</a>Standard Menu</p><p class="text-xs text-muted-foreground mb-3">Full-featured menu with icons, keyboard shortcuts, groups, separators, a disabled item, and a destructive action.</p><div class="preview" style="gap:0.75rem;min-height:14rem;align-items:flex-start;padding-top:2.5rem;"><button class="btn" data-variant="default" aria-haspopup="menu" aria-expanded="false" aria-controls="demo-dropdown" data-dropdown-trigger="demo-dropdown"> Options <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button><div id="demo-dropdown" role="menu" popover="" class="dropdown-content" data-state-demo="" aria-label="Options menu" style="min-width:12rem;"><div class="dropdown-label">My Account</div><div role="group" aria-label="Navigation"><button role="menuitem" class="dropdown-item" tabindex="-1"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg> Profile <span class="dropdown-shortcut">⇧⌘P</span></button><button role="menuitem" class="dropdown-item" tabindex="-1"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg> Settings <span class="dropdown-shortcut">⌘S</span></button><button role="menuitem" class="dropdown-item" tabindex="-1" disabled=""><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg> Upload <span class="dropdown-shortcut">⌘U</span></button></div><div class="dropdown-separator" role="separator"></div><div role="group" aria-label="Actions"><button role="menuitem" class="dropdown-item" tabindex="-1"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg> Export <span class="dropdown-shortcut">⌘E</span></button><button role="menuitem" class="dropdown-item" data-variant="destructive" tabindex="-1"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg> Delete <span class="dropdown-shortcut">⌘⌫</span></button></div></div></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;!-- Trigger --&gt;
 &lt;button class="btn" data-variant="default"
         aria-haspopup="menu" aria-expanded="false"
         aria-controls="demo-dropdown"
@@ -204,46 +48,7 @@
       &lt;span class="dropdown-shortcut"&gt;⌘⌫&lt;/span&gt;
     &lt;/button&gt;
   &lt;/div&gt;
-&lt;/div&gt;</code></pre>
-        </div>
-
-        <!-- ═══════════════════════════════════════════
-             2. Checkbox & Radio
-             ═══════════════════════════════════════════ -->
-        <p class="text-sm font-medium mb-2 mt-6">Checkbox &amp; Radio</p>
-        <p class="text-xs text-muted-foreground mb-3">Use <code>menuitemcheckbox</code> for toggleable options and <code>menuitemradio</code> inside a <code>role="group"</code> for exclusive choices.</p>
-
-        <div class="preview" style="gap:0.75rem;min-height:14rem;align-items:flex-start;padding-top:2.5rem;">
-          <button class="btn" data-variant="outline"
-                  aria-haspopup="menu" aria-expanded="false"
-                  aria-controls="demo-dropdown-checks"
-                  data-dropdown-trigger="demo-dropdown-checks">
-            View
-            <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-          </button>
-
-          <div id="demo-dropdown-checks" role="menu" popover class="dropdown-content" aria-label="View options" style="min-width:11rem;">
-            <div class="dropdown-label">Appearance</div>
-            <div role="group" aria-label="Toggle columns">
-              <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="true" tabindex="-1">Status Bar</button>
-              <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="false" tabindex="-1">Activity Bar</button>
-              <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="true" tabindex="-1">Panel</button>
-            </div>
-            <div class="dropdown-separator" role="separator"></div>
-            <div class="dropdown-label">Layout</div>
-            <div role="group" aria-label="Layout style">
-              <button role="menuitemradio" class="dropdown-item dropdown-radio" aria-checked="true" tabindex="-1">Sidebar Left</button>
-              <button role="menuitemradio" class="dropdown-item dropdown-radio" aria-checked="false" tabindex="-1">Sidebar Right</button>
-            </div>
-          </div>
-        </div>
-
-        <div style="position:relative;margin-top:0.5rem;">
-          <button class="copy-btn">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-            Copy
-          </button>
-          <pre><code class="language-markup">&lt;!-- Trigger --&gt;
+&lt;/div&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-6" id="toc-checkbox-radio"><a class="heading-anchor" href="#toc-checkbox-radio" aria-label="Link to section: Checkbox &amp; Radio">§</a>Checkbox &amp; Radio</p><p class="text-xs text-muted-foreground mb-3">Use <code>menuitemcheckbox</code> for toggleable options and <code>menuitemradio</code> inside a <code>role="group"</code> for exclusive choices.</p><div class="preview" style="gap:0.75rem;min-height:14rem;align-items:flex-start;padding-top:2.5rem;"><button class="btn" data-variant="outline" aria-haspopup="menu" aria-expanded="false" aria-controls="demo-dropdown-checks" data-dropdown-trigger="demo-dropdown-checks"> View <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button><div id="demo-dropdown-checks" role="menu" popover="" class="dropdown-content" aria-label="View options" style="min-width:11rem;"><div class="dropdown-label">Appearance</div><div role="group" aria-label="Toggle columns"><button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="true" tabindex="-1">Status Bar</button><button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="false" tabindex="-1">Activity Bar</button><button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="true" tabindex="-1">Panel</button></div><div class="dropdown-separator" role="separator"></div><div class="dropdown-label">Layout</div><div role="group" aria-label="Layout style"><button role="menuitemradio" class="dropdown-item dropdown-radio" aria-checked="true" tabindex="-1">Sidebar Left</button><button role="menuitemradio" class="dropdown-item dropdown-radio" aria-checked="false" tabindex="-1">Sidebar Right</button></div></div></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;!-- Trigger --&gt;
 &lt;button class="btn" data-variant="outline"
         aria-haspopup="menu" aria-expanded="false"
         aria-controls="demo-dropdown-checks"
@@ -281,57 +86,7 @@
             class="dropdown-item dropdown-radio"
             aria-checked="false" tabindex="-1"&gt;Sidebar Right&lt;/button&gt;
   &lt;/div&gt;
-&lt;/div&gt;</code></pre>
-        </div>
-
-        <!-- ═══════════════════════════════════════════
-             3. Trigger Variants
-             ═══════════════════════════════════════════ -->
-        <p class="text-sm font-medium mb-2 mt-6">Trigger Variants</p>
-        <p class="text-xs text-muted-foreground mb-3">Any button variant can serve as a dropdown trigger. Here a <code>secondary</code> button and a <code>ghost</code> icon-only button open simple menus.</p>
-
-        <div class="preview" style="gap:0.75rem;min-height:14rem;align-items:flex-start;padding-top:2.5rem;">
-          <!-- Secondary trigger -->
-          <button class="btn" data-variant="secondary"
-                  aria-haspopup="menu" aria-expanded="false"
-                  aria-controls="demo-dropdown-3"
-                  data-dropdown-trigger="demo-dropdown-3">
-            More
-            <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-          </button>
-
-          <!-- Ghost icon trigger -->
-          <button class="btn" data-variant="ghost" data-size="icon"
-                  aria-haspopup="menu" aria-expanded="false"
-                  aria-controls="demo-dropdown-4"
-                  data-dropdown-trigger="demo-dropdown-4"
-                  aria-label="More options">
-            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
-          </button>
-
-          <!-- Simple menu for "More" (secondary trigger) -->
-          <div id="demo-dropdown-3" role="menu" popover class="dropdown-content" aria-label="More options" style="min-width:10rem;">
-            <button role="menuitem" class="dropdown-item" tabindex="-1">Copy</button>
-            <button role="menuitem" class="dropdown-item" tabindex="-1">Paste</button>
-            <div class="dropdown-separator" role="separator"></div>
-            <button role="menuitem" class="dropdown-item" tabindex="-1">Select All</button>
-          </div>
-
-          <!-- Simple menu for icon trigger -->
-          <div id="demo-dropdown-4" role="menu" popover class="dropdown-content" aria-label="Actions" style="min-width:10rem;">
-            <button role="menuitem" class="dropdown-item" tabindex="-1">Edit</button>
-            <button role="menuitem" class="dropdown-item" tabindex="-1">Duplicate</button>
-            <div class="dropdown-separator" role="separator"></div>
-            <button role="menuitem" class="dropdown-item" data-variant="destructive" tabindex="-1">Delete</button>
-          </div>
-        </div>
-
-        <div style="position:relative;margin-top:0.5rem;">
-          <button class="copy-btn">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-            Copy
-          </button>
-          <pre><code class="language-markup">&lt;!-- Secondary trigger --&gt;
+&lt;/div&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-6" id="toc-trigger-variants"><a class="heading-anchor" href="#toc-trigger-variants" aria-label="Link to section: Trigger Variants">§</a>Trigger Variants</p><p class="text-xs text-muted-foreground mb-3">Any button variant can serve as a dropdown trigger. Here a <code>secondary</code> button and a <code>ghost</code> icon-only button open simple menus.</p><div class="preview" style="gap:0.75rem;min-height:14rem;align-items:flex-start;padding-top:2.5rem;"><button class="btn" data-variant="secondary" aria-haspopup="menu" aria-expanded="false" aria-controls="demo-dropdown-3" data-dropdown-trigger="demo-dropdown-3"> More <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button><button class="btn" data-variant="ghost" data-size="icon" aria-haspopup="menu" aria-expanded="false" aria-controls="demo-dropdown-4" data-dropdown-trigger="demo-dropdown-4" aria-label="More options"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button><div id="demo-dropdown-3" role="menu" popover="" class="dropdown-content" aria-label="More options" style="min-width:10rem;"><button role="menuitem" class="dropdown-item" tabindex="-1">Copy</button><button role="menuitem" class="dropdown-item" tabindex="-1">Paste</button><div class="dropdown-separator" role="separator"></div><button role="menuitem" class="dropdown-item" tabindex="-1">Select All</button></div><div id="demo-dropdown-4" role="menu" popover="" class="dropdown-content" aria-label="Actions" style="min-width:10rem;"><button role="menuitem" class="dropdown-item" tabindex="-1">Edit</button><button role="menuitem" class="dropdown-item" tabindex="-1">Duplicate</button><div class="dropdown-separator" role="separator"></div><button role="menuitem" class="dropdown-item" data-variant="destructive" tabindex="-1">Delete</button></div></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;!-- Secondary trigger --&gt;
 &lt;button class="btn" data-variant="secondary"
         aria-haspopup="menu" aria-expanded="false"
         aria-controls="demo-dropdown-3"
@@ -375,25 +130,7 @@
   &lt;div class="dropdown-separator" role="separator"&gt;&lt;/div&gt;
   &lt;button role="menuitem" class="dropdown-item"
           data-variant="destructive" tabindex="-1"&gt;Delete&lt;/button&gt;
-&lt;/div&gt;</code></pre>
-        </div>
-        <!-- -- States ------------------------------------ -->
-        <section style="margin-top:3rem;" id="states">
-          <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;">States</h2>
-          <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per menu through the bound <code>api</code>:</p>
-          <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
-            <li><code>default</code> — closed (the authored state; the trigger toggles it)</li>
-            <li><code>open</code> — shown via the native <code>showPopover()</code>, first item highlighted</li>
-          </ul>
-          <p class="text-sm text-muted-foreground">The first demo carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/{mode}/dropdown-{state}.png</code>.</p>
-        </section>
-
-        <!-- -- CSS --------------------------------------- -->
-        <section style="margin-top:3rem;" id="source-css">
-          <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;">CSS <a href="../components/dropdown/dropdown.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2>
-          <div style="position:relative;margin-top:0.5rem;">
-            <button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button>
-            <pre><code class="language-scss">/* -- Dropdown component ---------------------------------------- */
+&lt;/div&gt;</code></pre></div><section style="margin-top:3rem;" id="states"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-states"><a class="heading-anchor" href="#toc-states" aria-label="Link to section: States">§</a>States</h2><p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per menu through the bound <code>api</code>:</p><ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;"><li><code>default</code> — closed (the authored state; the trigger toggles it)</li><li><code>open</code> — shown via the native <code>showPopover()</code>, first item highlighted</li></ul><p class="text-sm text-muted-foreground">The first demo carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/{mode}/dropdown-{state}.png</code>.</p></section><section style="margin-top:3rem;" id="source-css"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-css"><a class="heading-anchor" href="#toc-css" aria-label="Link to section: CSS">§</a>CSS <a href="../components/dropdown/dropdown.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-scss">/* -- Dropdown component ---------------------------------------- */
 
 @layer components {
   .dropdown-content {
@@ -453,7 +190,7 @@
       color: var(--accent-foreground);
     }
 
-    &amp;[data-variant=&quot;destructive&quot;] {
+    &amp;[data-variant="destructive"] {
       &amp;:hover, &amp;[data-highlighted] {
         background-color: var(--destructive);
         color: var(--destructive-foreground);
@@ -486,21 +223,21 @@
   /* Mask (not background-image): a data: URI SVG resolves currentColor to
      BLACK when used as an image, making the checks invisible in dark mode.
      Masking paints them with background-color: currentColor instead. */
-  .dropdown-check[aria-checked=&quot;true&quot;]::before,
-  .dropdown-radio[aria-checked=&quot;true&quot;]::before {
+  .dropdown-check[aria-checked="true"]::before,
+  .dropdown-radio[aria-checked="true"]::before {
     background-color: currentColor;
   }
 
-  .dropdown-check[aria-checked=&quot;true&quot;]::before {
-    mask-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E&quot;);
+  .dropdown-check[aria-checked="true"]::before {
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
   }
 
-  .dropdown-radio[aria-checked=&quot;true&quot;]::before {
-    mask-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='5'/%3E%3C/svg%3E&quot;);
+  .dropdown-radio[aria-checked="true"]::before {
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='5'/%3E%3C/svg%3E");
   }
 
-  .dropdown-check[aria-checked=&quot;true&quot;]::before,
-  .dropdown-radio[aria-checked=&quot;true&quot;]::before {
+  .dropdown-check[aria-checked="true"]::before,
+  .dropdown-radio[aria-checked="true"]::before {
     mask-size: contain;
     mask-repeat: no-repeat;
   }
@@ -548,25 +285,13 @@
       }
     }
   }
-}</code></pre>
-          </div>
-        </section>
-
-        <!-- -- JavaScript -------------------------------- -->
-        <section style="margin-top:3rem;" id="source-js">
-          <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;">JavaScript <a href="../components/dropdown/dropdown.js" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2>
-          <p class="text-muted-foreground text-sm mb-4">Wires triggers to popover menus. CSS anchor positioning handles placement. Keyboard navigation (Arrow keys, Home/End, Escape, Enter/Space), typeahead, and checkbox/radio state management.</p>
-          <div style="position:relative;margin-top:0.5rem;">
-            <button class="copy-btn">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-              Copy
-            </button>
-            <pre><code class="language-javascript">// -- Dropdown Menu --------------------------------------------
+}
+</code></pre></div></section><section style="margin-top:3rem;" id="source-js"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-javascript"><a class="heading-anchor" href="#toc-javascript" aria-label="Link to section: JavaScript">§</a>JavaScript <a href="../components/dropdown/dropdown.js" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2><p class="text-muted-foreground text-sm mb-4">Wires triggers to popover menus. CSS anchor positioning handles placement. Keyboard navigation (Arrow keys, Home/End, Escape, Enter/Space), typeahead, and checkbox/radio state management.</p><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-javascript">// -- Dropdown Menu --------------------------------------------
 // Wires [data-dropdown-trigger] buttons to popover menus with
 // full keyboard navigation and ARIA support, plus the named-state API
-// so agents/tests can drive open/closed by name (AGENTS.md &quot;State API&quot;).
+// so agents/tests can drive open/closed by name (AGENTS.md "State API").
 
-// Shared preamble (AGENTS.md &quot;State API&quot;); build.ts inlines it into the
+// Shared preamble (AGENTS.md "State API"); build.ts inlines it into the
 // shipped .js, so this import never appears in dist/.
 import { defussGlobals, safeShowPopover } from '../../shared/state-api.js';
 
@@ -596,7 +321,7 @@ function triggerStateChange(menu, stateName, _config) {
 export const dropdownApi = {
   setState(menu, stateName, config = {}) {
     if (!dropdownStates.includes(stateName)) {
-      throw new Error(`dropdown: unknown state &quot;${stateName}&quot; (supported: ${dropdownStates.join(', ')})`);
+      throw new Error(`dropdown: unknown state "${stateName}" (supported: ${dropdownStates.join(', ')})`);
     }
     triggerStateChange(menu, stateName, config);
     // state lives on the ELEMENT, not the module (multiple menus per page)
@@ -623,14 +348,14 @@ function init() {
     menu.style.positionAnchor = anchorId;
 
     const getItems = () =&gt; {
-      return Array.from(menu.querySelectorAll('[role=&quot;menuitem&quot;]:not(:disabled), [role=&quot;menuitemcheckbox&quot;]:not(:disabled), [role=&quot;menuitemradio&quot;]:not(:disabled)'));
+      return Array.from(menu.querySelectorAll('[role="menuitem"]:not(:disabled), [role="menuitemcheckbox"]:not(:disabled), [role="menuitemradio"]:not(:disabled)'));
     };
     const highlight = (item) =&gt; {
       getItems().forEach((i) =&gt; { i.removeAttribute('data-highlighted'); });
       if (item) { item.setAttribute('data-highlighted', ''); item.focus(); }
     };
     // Native declarative toggle. A JS `togglePopover()` click handler is
-    // buggy for popover=&quot;auto&quot;: light dismiss closes the menu *before* the
+    // buggy for popover="auto": light dismiss closes the menu *before* the
     // click handler runs, so togglePopover re-opens it and the menu can
     // never be closed by clicking the trigger again. The popovertarget
     // command is dismiss-aware — the trigger button must be a &lt;button&gt;
@@ -643,7 +368,7 @@ function init() {
       else { getItems().forEach((i) =&gt; { i.removeAttribute('data-highlighted'); }); trigger.focus(); }
     });
     menu.addEventListener('mousemove', (e) =&gt; {
-      const item = e.target.closest('[role=&quot;menuitem&quot;], [role=&quot;menuitemcheckbox&quot;], [role=&quot;menuitemradio&quot;]');
+      const item = e.target.closest('[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]');
       if (item &amp;&amp; !item.disabled) highlight(item);
     });
     menu.addEventListener('mouseleave', () =&gt; {
@@ -666,8 +391,8 @@ function init() {
               const checked = document.activeElement.getAttribute('aria-checked') === 'true';
               document.activeElement.setAttribute('aria-checked', !checked);
             } else if (role === 'menuitemradio') {
-              const group = document.activeElement.closest('[role=&quot;group&quot;]');
-              if (group) group.querySelectorAll('[role=&quot;menuitemradio&quot;]').forEach((r) =&gt; { r.setAttribute('aria-checked', 'false'); });
+              const group = document.activeElement.closest('[role="group"]');
+              if (group) group.querySelectorAll('[role="menuitemradio"]').forEach((r) =&gt; { r.setAttribute('aria-checked', 'false'); });
               document.activeElement.setAttribute('aria-checked', 'true');
             } else { document.activeElement.click(); menu.hidePopover(); }
           }
@@ -692,16 +417,12 @@ function init() {
 }
 
 init();
-new MutationObserver(init).observe(document, { childList: true, subtree: true });</code></pre>
-          </div>
-        </section>
-    </main>
-  </div>
-
-  <script src="js/site.js" defer></script>
-  <script type="module" src="js/shiki-highlight.js"></script>
-  <script type="module" src="../components/all.js"></script>
-  <script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script>
-  <script>globalThis.lucide?.createIcons();</script>
-</body>
-</html>
+new MutationObserver(init).observe(document, { childList: true, subtree: true });
+</code></pre></div></section><nav class="page-nav"><a class="page-nav-link page-nav-prev" href="tabs.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><div><span class="page-nav-label">Previous</span><span class="page-nav-title">Tabs</span></div></a><a class="page-nav-link page-nav-next" href="navigation-menu.html"><div><span class="page-nav-label">Next</span><span class="page-nav-title">Navigation Menu</span></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></nav></main><aside class="site-toc"><div class="site-toc-content"><p class="toc-title">On This Page</p><a class="toc-link" href="#toc-standard-menu">Standard Menu</a><a class="toc-link" href="#toc-checkbox-radio">Checkbox &amp; Radio</a><a class="toc-link" href="#toc-trigger-variants">Trigger Variants</a><a class="toc-link" href="#toc-states">States</a><a class="toc-link" href="#toc-css">CSS</a><a class="toc-link" href="#toc-javascript">JavaScript</a></div></aside></div><script>try {
+  var c = JSON.parse(localStorage.getItem('defuss-shadcn-nav-collapsed') || '[]');
+  for (var i = 0; i < c.length; i++) {
+    if (c[i] === 'Overview') continue;
+    var d = document.querySelector('details[data-nav-section="' + c[i] + '"]');
+    if (d && !d.querySelector('a.nav-link.active')) d.open = false;
+  }
+} catch (e) {}</script><footer class="site-footer"><p class="site-footer-tagline">Agentically engineered with local Qwen3.8-Flash-Next/vLLM, quality-gated automatically, and human-reviewed before release.</p><p class="site-footer-tagline" style="margin-top:0;">Reworked, enhanced and maintained by <a href="https://aron-homberg.de" target="_blank" rel="noopener">Aron Homberg</a></p><span class="site-footer-dot"> · </span>MIT Licensed<span class="site-footer-dot"> · </span><a href="https://github.com/kyr0/defuss-shadcn" target="_blank" rel="noopener">Source on GitHub</a></footer><script src="js/site.js" defer=""></script><script type="module" src="js/shiki-highlight.js"></script><script type="module" src="../components/all.js"></script><script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script><script>globalThis.lucide?.createIcons();</script></body></html>

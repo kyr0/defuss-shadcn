@@ -1,0 +1,77 @@
+---
+title: "Heading Anchor"
+description: "Heading Anchor component — a quiet § permalink before or after any heading, no JavaScript."
+slug: "heading-anchor"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="heading-anchor" title="Heading Anchor" component="heading-anchor">
+  A quiet § permalink on any heading — visible on hover, copyable as a deep link. Placed before or after the heading text. No JavaScript required.
+</PageHeader>
+
+<SkillPanel component="heading-anchor">
+  <SkillField label="Native basis">
+    <SkillText><code>&lt;a&gt;</code> element containing the section glyph §, placed as the first or last child of the heading it links to. The browser's native fragment navigation does the work.</SkillText>
+  </SkillField>
+  <SkillField label="Web Platform APIs">
+    <SkillRow>
+      <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a" title="native anchor with href"><code>&lt;a&gt;</code></ApiPill>
+      <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:target" title="native deep links, no JS scroll logic"><code>:target</code></ApiPill>
+      <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-label" title="the glyph alone is not a name"><code>aria-label</code></ApiPill>
+    </SkillRow>
+  </SkillField>
+  <SkillField label="Classes">
+    <SkillRow>
+      <code>.heading-anchor</code>
+    </SkillRow>
+  </SkillField>
+  <SkillField label="Placements (data-placement)">
+    <SkillGrid>
+      <Variant name="before" description="margin-right — the default slot" />
+      <Variant name="after" description="margin-left — trailing the text" />
+    </SkillGrid>
+  </SkillField>
+  <SkillField label="Sizes (data-size)">
+    <SkillGrid>
+      <Variant name="xs" description="0.75rem — fine print, captions" />
+      <Variant name="sm" description="0.875rem — small headings" />
+      <Variant name="md" description="1rem — default heading size" />
+      <Variant name="lg" description="1.125rem — section headings" />
+      <Variant name="xl" description="1.25rem — page titles" />
+    </SkillGrid>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Before the heading (default)</ExampleLabel>
+  <ExampleHint>The anchor rides the heading's baseline, quiet until hovered.</ExampleHint>
+  <h3 id="ha-demo-before" style="font-family:var(--font-display);font-size:1.25rem;margin:0;"><a class="heading-anchor" href="#ha-demo-before" aria-label="Link to section: Deep-linkable heading">§</a> Deep-linkable heading</h3>
+  <ExampleCode>{"<h3 id=\"tokens\">\n  <a class=\"heading-anchor\" href=\"#tokens\" aria-label=\"Link to section: Tokens\">§</a>\n  Tokens\n</h3>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>After the heading</ExampleLabel>
+  <ExampleHint><code>data-placement="after"</code> swaps the margin side.</ExampleHint>
+  <h3 id="ha-demo-after" style="font-family:var(--font-display);font-size:1.25rem;margin:0;">Deep-linkable heading <a class="heading-anchor" href="#ha-demo-after" data-placement="after" aria-label="Link to section: Deep-linkable heading">§</a></h3>
+  <ExampleCode>{"<h3 id=\"tokens\">\n  Tokens\n  <a class=\"heading-anchor\" href=\"#tokens\" data-placement=\"after\" aria-label=\"Link to section: Tokens\">§</a>\n</h3>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Sizes</ExampleLabel>
+  <ExampleHint><code>data-size</code> pins the glyph size explicitly; without it the glyph inherits the heading's own font size (recommended — it then tracks the heading automatically). The glyph always inherits the heading's font family — <code>var(--font-sans)</code>, <code>var(--font-serif)</code> and <code>var(--font-mono)</code> all work.</ExampleHint>
+  <div style="display:flex;flex-direction:column;gap:0.5rem;">
+    <p style="font-size:0.75rem;margin:0;"><a class="heading-anchor" data-size="xs" href="#ha-size-xs" id="ha-size-xs" aria-label="Link to section: xs">§</a> xs — caption heading</p>
+    <p style="font-size:0.875rem;margin:0;"><a class="heading-anchor" data-size="sm" href="#ha-size-sm" id="ha-size-sm" aria-label="Link to section: sm">§</a> sm — small heading</p>
+    <p style="font-size:1rem;margin:0;"><a class="heading-anchor" data-size="md" href="#ha-size-md" id="ha-size-md" aria-label="Link to section: md">§</a> md — default heading</p>
+    <p style="font-size:1.125rem;margin:0;"><a class="heading-anchor" data-size="lg" href="#ha-size-lg" id="ha-size-lg" aria-label="Link to section: lg">§</a> lg — section heading</p>
+    <p style="font-size:1.25rem;margin:0;"><a class="heading-anchor" data-size="xl" href="#ha-size-xl" id="ha-size-xl" aria-label="Link to section: xl">§</a> xl — page title</p>
+  </div>
+  <ExampleCode>{"<a class=\"heading-anchor\" data-size=\"sm\" href=\"#intro\" aria-label=\"Link to section: Intro\">§</a>"}</ExampleCode>
+</Example>
+
+<SourceFiles component="heading-anchor" />
+
+</DocPage>

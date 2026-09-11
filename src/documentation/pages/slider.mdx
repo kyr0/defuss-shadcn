@@ -1,0 +1,139 @@
+---
+title: "Slider"
+description: "Slider component — range inputs with custom track and thumb styling."
+slug: "slider"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="slider" title="Slider" component="slider">
+  An input for selecting a value from a range. Built on native <code>&lt;input type="range"&gt;</code> with custom track and thumb styling, filled track indicator, and full keyboard support.
+</PageHeader>
+
+<SkillPanel component="slider">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;input type="range"&gt;</code> — native range input with built-in keyboard, touch, and assistive technology support.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/range" title="native range control with keyboard and touch support"><code>&lt;input type="range"&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/::-webkit-slider-thumb" title="custom thumb styling (WebKit/Blink)"><code>::-webkit-slider-thumb</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/::-webkit-slider-runnable-track" title="custom track styling (WebKit/Blink)"><code>::-webkit-slider-runnable-track</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/::-moz-range-progress" title="filled portion of track (Firefox)"><code>::-moz-range-progress</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output" title="displays computed/live result value"><code>&lt;output&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix" title="hover state color derivation"><code>color-mix()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="suppresses animations for motion-sensitive users"><code>prefers-reduced-motion</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" title="Windows High Contrast Mode support"><code>forced-colors</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.slider</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-orientation="vertical"</code> — renders as a vertical slider.</SkillText>
+  </SkillField>
+
+  <SkillField label="Keyboard">
+<SkillText dense>• <kbd>Right Arrow</kbd> / <kbd>Up Arrow</kbd> — increase value by one step</SkillText>
+  <SkillText dense>• <kbd>Left Arrow</kbd> / <kbd>Down Arrow</kbd> — decrease value by one step</SkillText>
+  <SkillText dense>• <kbd>Home</kbd> — set to minimum value</SkillText>
+  <SkillText dense>• <kbd>End</kbd> — set to maximum value</SkillText>
+  <SkillText>• <kbd>Page Up</kbd> / <kbd>Page Down</kbd> — increase/decrease by larger step</SkillText>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• Native <code>&lt;input type="range"&gt;</code> provides implicit <code>role="slider"</code>, <code>aria-valuenow</code>, <code>aria-valuemin</code>, <code>aria-valuemax</code>.</SkillText>
+  <SkillText dense>• Use <code>&lt;label for&gt;</code> to associate a visible label.</SkillText>
+  <SkillText dense>• Use <code>aria-valuetext</code> for human-readable value descriptions (e.g., "50%", "Medium").</SkillText>
+  <SkillText dense>• Use <code>aria-label</code> when no visible <code>&lt;label&gt;</code> is present.</SkillText>
+  <SkillText>• Use <code>&lt;output for&gt;</code> to display the current value accessibly.</SkillText>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• Firefox uses <code>::-moz-range-progress</code> for the filled track. WebKit/Blink uses a <code>linear-gradient</code> on the track with <code>--slider-value</code> set by JS.</SkillText>
+  <SkillText dense>• Vertical sliders use <code>writing-mode: vertical-lr; direction: rtl</code> for cross-browser support.</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• <code>accent-color</code> set as fallback for browsers that don't support custom pseudo-element styling.</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>Range slider with default value.</ExampleHint>
+  <div style="width:100%;max-width:20rem;">
+    <input class="slider" type="range" min="0" max="100" value="50" data-state-demo />
+  </div>
+  <ExampleCode>{"<input class=\"slider\" type=\"range\" min=\"0\" max=\"100\" value=\"50\">"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>With label</ExampleLabel>
+  <div style="width:100%;max-width:20rem;">
+    <label class="label" for="d-vol">Volume</label>
+    <input class="slider" type="range" id="d-vol" min="0" max="100" value="75" />
+  </div>
+  <ExampleCode>{"<label class=\"label\" for=\"vol\">Volume</label>\n<input class=\"slider\" type=\"range\" id=\"vol\" min=\"0\" max=\"100\" value=\"75\">"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>With value display</ExampleLabel>
+  <ExampleHint>Shows current value using a native <code>&lt;output&gt;</code> element.</ExampleHint>
+  <div style="width:100%;max-width:20rem;">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;">
+      <label class="label" for="d-temp" style="margin:0;">Temperature</label>
+      <output id="d-temp-output" class="text-muted-foreground" for="d-temp" style="font-size:0.875rem;font-family:var(--font-mono);">0.5</output>
+    </div>
+    <input class="slider" type="range" id="d-temp" min="0" max="1" step="0.1" value="0.5" oninput="document.getElementById('d-temp-output').value = this.value" />
+  </div>
+  <ExampleCode>{"<div style=\"display:flex;justify-content:space-between;align-items:center;gap:1rem;\">\n  <label class=\"label\" for=\"temp\" style=\"margin:0;\">Temperature</label>\n  <output id=\"temp-output\" class=\"text-muted-foreground\" style=\"font-size:0.875rem;font-family:var(--font-mono);\" for=\"temp\">0.5</output>\n</div>\n<input class=\"slider\" type=\"range\" id=\"temp\" min=\"0\" max=\"1\" step=\"0.1\" value=\"0.5\"\n  oninput=\"document.getElementById('temp-output').value = this.value\">"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>With steps</ExampleLabel>
+  <ExampleHint>Slider with discrete step increments.</ExampleHint>
+  <div style="width:100%;max-width:20rem;">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;">
+      <label class="label" for="d-step" style="margin:0;">Step: 25</label>
+      <output id="d-step-output" class="text-muted-foreground" for="d-step" style="font-size:0.875rem;font-family:var(--font-mono);">50</output>
+    </div>
+    <input class="slider" type="range" id="d-step" min="0" max="100" step="25" value="50" oninput="document.getElementById('d-step-output').value = this.value" />
+  </div>
+  <ExampleCode>{"<input class=\"slider\" type=\"range\" min=\"0\" max=\"100\" step=\"25\" value=\"50\">"}</ExampleCode>
+</Example>
+
+<Example previewStyle="min-height:14rem;">
+  <ExampleLabel>Vertical</ExampleLabel>
+  <ExampleHint>Vertical orientation using <code>data-orientation="vertical"</code>.</ExampleHint>
+  <input class="slider" type="range" data-orientation="vertical" min="0" max="100" value="60" />
+  <ExampleCode>{"<input class=\"slider\" type=\"range\" data-orientation=\"vertical\" min=\"0\" max=\"100\" value=\"60\">"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Disabled</ExampleLabel>
+  <ExampleHint>Slider in disabled state.</ExampleHint>
+  <div style="width:100%;max-width:20rem;">
+    <input class="slider" type="range" min="0" max="100" value="30" disabled />
+  </div>
+  <ExampleCode>{"<input class=\"slider\" type=\"range\" min=\"0\" max=\"100\" value=\"30\" disabled>"}</ExampleCode>
+</Example>
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
+    <li><code>default</code> — enabled (authored <code>disabled</code> attribute restored; optional <code>\{ value \}</code> config presets the position)</li>
+    <li><code>disabled</code> — native <code>disabled</code> attribute: greyed track/thumb, no pointer or keyboard input</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/slider-\{state\}.png</code>.</p>
+</StatesSection>
+
+<SourceFiles component="slider" section="css" />
+
+<SourceFiles component="slider" section="js" jsTitle="JS" />
+
+</DocPage>

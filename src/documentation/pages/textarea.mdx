@@ -1,0 +1,72 @@
+---
+title: "Textarea"
+description: "Textarea component — multi-line text input with auto-growing via field-sizing."
+slug: "textarea"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="textarea" title="Textarea" component="textarea">
+  Auto-growing multi-line text input. Built on native <code>&lt;textarea&gt;</code> with <code>field-sizing: content</code> for zero-JS auto-grow.
+</PageHeader>
+
+<SkillPanel component="textarea">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;textarea&gt;</code> element with <code>field-sizing: content</code> for auto-growing.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea" title="multi-line text input"><code>&lt;textarea&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/field-sizing" title="auto-growing textarea without JavaScript"><code>field-sizing: content</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.textarea</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• Uses <code>field-sizing: content</code> for auto-growing — no JavaScript needed.</SkillText>
+  <SkillText dense>• Shares the same border, focus, disabled, and invalid styles as <code>.input</code>.</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• The textarea has a minimum height of 5rem (about 4 lines).</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>Auto-growing textarea with placeholder.</ExampleHint>
+  <div style="width:100%;max-width:24rem;">
+    <label class="label" for="d-msg">Message</label>
+    <textarea class="textarea" id="d-msg" placeholder="Type your message here...">{""}</textarea>
+  </div>
+  <ExampleCode>{"<textarea class=\"textarea\" placeholder=\"Type your message...\"></textarea>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Disabled</ExampleLabel>
+  <ExampleHint>Non-interactive textarea.</ExampleHint>
+  <div style="width:100%;max-width:24rem;">
+    <textarea class="textarea" disabled placeholder="Disabled textarea">{""}</textarea>
+  </div>
+  <ExampleCode>{"<textarea class=\"textarea\" disabled></textarea>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>With description</ExampleLabel>
+  <ExampleHint>Textarea with label and helper text.</ExampleHint>
+  <div style="width:100%;max-width:24rem;">
+    <label class="label" for="d-bio">Bio</label>
+    <textarea class="textarea" id="d-bio" placeholder="Tell us about yourself..." aria-describedby="d-bio-desc">{""}</textarea>
+    <p class="field-description" id="d-bio-desc">You can use markdown in your bio.</p>
+  </div>
+  <ExampleCode>{"<label class=\"label\" for=\"bio\">Bio</label>\n<textarea class=\"textarea\" id=\"bio\" placeholder=\"Tell us...\" aria-describedby=\"bio-desc\"></textarea>\n<p class=\"field-description\" id=\"bio-desc\">You can use markdown.</p>"}</ExampleCode>
+</Example>
+
+<SourceFiles component="textarea" section="css" />
+
+</DocPage>

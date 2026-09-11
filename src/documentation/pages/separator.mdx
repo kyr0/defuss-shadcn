@@ -1,0 +1,173 @@
+---
+title: "Separator"
+description: "Separator component — horizontal and vertical dividers using native <hr> elements."
+slug: "separator"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="separator" title="Separator" component="separator">
+  Visually or semantically separates content. Built on the native <code>&lt;hr&gt;</code> element with support for vertical orientation and labeled separators. No JavaScript required.
+</PageHeader>
+
+<SkillPanel component="separator">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;hr&gt;</code> element (horizontal rule) and <code>&lt;div role="separator"&gt;</code> for vertical orientation.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hr" title="thematic break / horizontal rule with implicit role=&quot;separator&quot;"><code>&lt;hr&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/separator_role" title="ARIA separator role for non-<hr> elements (vertical orientation)"><code>role="separator"</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" title="Windows High Contrast Mode support with system colors"><code>forced-colors</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast" title="increased contrast when requested by the user"><code>prefers-contrast</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.separator</code>
+    <code>.separator-label</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText>• <code>data-orientation</code> — values: <code>vertical</code></SkillText>
+  </SkillField>
+
+  <SkillField label="Variants">
+<SkillGrid>
+    <Variant name="data-orientation" description="Direction — Element" />
+    <Variant name="*(default)*" description="Horizontal — &lt;hr&gt;" />
+    <Variant name="vertical" description="Vertical — &lt;div role=&quot;separator&quot;&gt;" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="ARIA">
+<div style="display:grid;grid-template-columns:auto auto 1fr;gap:0.25rem 1rem;margin-bottom:1.25rem;">
+    <code>role="separator"</code>
+    <span class="text-muted-foreground">&lt;div&gt;</span>
+    <span class="text-muted-foreground">Required on vertical separators</span>
+    <code>role="none"</code>
+    <span class="text-muted-foreground">&lt;hr&gt;</span>
+    <span class="text-muted-foreground">Marks decorative separators — hidden from AT</span>
+    <code>aria-hidden="true"</code>
+    <span class="text-muted-foreground">&lt;hr&gt;</span>
+    <span class="text-muted-foreground">Alternative for decorative separators</span>
+  </div>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• The vertical separator requires the parent to be a flex container.</SkillText>
+  <SkillText dense>• The labeled separator uses a flex layout with two <code>&lt;hr&gt;</code> elements flanking the label text.</SkillText>
+  <SkillText dense>• Decorative separators should use <code>role="none"</code> or <code>aria-hidden="true"</code>.</SkillText>
+  <SkillText dense>• In <code>forced-colors</code> mode, the separator uses <code>CanvasText</code> system color.</SkillText>
+  <SkillText dense>• In <code>prefers-contrast: more</code> mode, thickness doubles to 2px.</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• Separators are purely visual — no JavaScript required.</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Horizontal</ExampleLabel>
+  <ExampleHint>Default horizontal separator.</ExampleHint>
+  <div style="width:100%;max-width:24rem;text-align:left;">
+    <div>
+      <p style="font-weight:600;margin:0;">defuss-shadcn</p>
+      <p class="text-muted-foreground" style="font-size:0.875rem;margin:0.25rem 0 0;">Semantic HTML. Shadcn tokens. Plain CSS.</p>
+    </div>
+    <hr class="separator" style="margin:1rem 0;" />
+    <div style="display:flex;gap:1.0rem;font-size:0.875rem;">
+      <span>Blog</span>
+      <span>Docs</span>
+      <span>Source</span>
+    </div>
+  </div>
+  <ExampleCode>{"<hr class=\"separator\">"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Vertical</ExampleLabel>
+  <ExampleHint>Vertical separator between inline items. Parent must be flex.</ExampleHint>
+  <div style="display:flex;align-items:center;gap:1.0rem;font-size:0.875rem;height:1.25rem;">
+    <span>Blog</span>
+    <div class="separator" data-orientation="vertical" role="separator" />
+    <span>Docs</span>
+    <div class="separator" data-orientation="vertical" role="separator" />
+    <span>Source</span>
+  </div>
+  <ExampleCode>{"<div class=\"separator\" data-orientation=\"vertical\" role=\"separator\"></div>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>With Label</ExampleLabel>
+  <ExampleHint>A separator with centered text label.</ExampleHint>
+  <div style="width:100%;max-width:20rem;">
+    <div class="separator-label">
+      <hr class="separator" />
+      <span>or continue with</span>
+      <hr class="separator" />
+    </div>
+  </div>
+  <ExampleCode>{"<div class=\"separator-label\">\n  <hr class=\"separator\">\n  <span>or continue with</span>\n  <hr class=\"separator\">\n</div>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Menu</ExampleLabel>
+  <ExampleHint>Vertical separators between menu items with descriptions.</ExampleHint>
+  <div style="display:flex;align-items:stretch;gap:0;width:100%;max-width:32rem;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;">
+    <div style="flex:1;padding:1rem;">
+      <p style="font-weight:600;font-size:0.875rem;margin:0;">Settings</p>
+      <p class="text-muted-foreground" style="font-size:0.75rem;margin:0.25rem 0 0;">Manage preferences</p>
+    </div>
+    <div class="separator" data-orientation="vertical" role="separator" />
+    <div style="flex:1;padding:1rem;">
+      <p style="font-weight:600;font-size:0.875rem;margin:0;">Account</p>
+      <p class="text-muted-foreground" style="font-size:0.75rem;margin:0.25rem 0 0;">Profile &amp; security</p>
+    </div>
+    <div class="separator" data-orientation="vertical" role="separator" />
+    <div style="flex:1;padding:1rem;">
+      <p style="font-weight:600;font-size:0.875rem;margin:0;">Help</p>
+      <p class="text-muted-foreground" style="font-size:0.75rem;margin:0.25rem 0 0;">Support &amp; docs</p>
+    </div>
+  </div>
+  <ExampleCode>{"<div style=\"display:flex;align-items:stretch;\">\n  <div style=\"flex:1;padding:1rem;\">\n    <p>Settings</p>\n    <p>Manage preferences</p>\n  </div>\n  <div class=\"separator\" data-orientation=\"vertical\" role=\"separator\"></div>\n  <div style=\"flex:1;padding:1rem;\">\n    <p>Account</p>\n    <p>Profile &amp; security</p>\n  </div>\n  <div class=\"separator\" data-orientation=\"vertical\" role=\"separator\"></div>\n  <div style=\"flex:1;padding:1rem;\">\n    <p>Help</p>\n    <p>Support &amp; docs</p>\n  </div>\n</div>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>List</ExampleLabel>
+  <ExampleHint>Horizontal separators between list items.</ExampleHint>
+  <div style="width:100%;max-width:20rem;text-align:left;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:0.75rem 0;">
+      <span style="font-weight:600;font-size:0.875rem;">Item 1</span>
+      <span class="text-muted-foreground" style="font-size:0.875rem;">Value 1</span>
+    </div>
+    <hr class="separator" />
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:0.75rem 0;">
+      <span style="font-weight:600;font-size:0.875rem;">Item 2</span>
+      <span class="text-muted-foreground" style="font-size:0.875rem;">Value 2</span>
+    </div>
+    <hr class="separator" />
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:0.75rem 0;">
+      <span style="font-weight:600;font-size:0.875rem;">Item 3</span>
+      <span class="text-muted-foreground" style="font-size:0.875rem;">Value 3</span>
+    </div>
+  </div>
+  <ExampleCode>{"<div>\n  <div>Item 1 — Value 1</div>\n  <hr class=\"separator\">\n  <div>Item 2 — Value 2</div>\n  <hr class=\"separator\">\n  <div>Item 3 — Value 3</div>\n</div>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Decorative</ExampleLabel>
+  <ExampleHint>A purely visual divider hidden from assistive technology using <code>role="none"</code>.</ExampleHint>
+  <div style="width:100%;max-width:24rem;text-align:left;">
+    <p style="font-size:0.875rem;margin:0;">Content above</p>
+    <hr class="separator" role="none" style="margin:1rem 0;" />
+    <p style="font-size:0.875rem;margin:0;">Content below</p>
+  </div>
+  <ExampleCode>{"<hr class=\"separator\" role=\"none\">"}</ExampleCode>
+</Example>
+
+<SourceFiles component="separator" section="css" />
+
+</DocPage>

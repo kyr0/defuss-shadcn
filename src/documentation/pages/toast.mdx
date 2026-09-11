@@ -1,0 +1,117 @@
+---
+title: "Toast"
+description: "Toast component — ephemeral notifications using popover API."
+slug: "toast"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="toast" title="Toast" component="toast">
+  Transient notification using <code>popover="manual"</code>. Imperative <code>\_defussShadcn.toast.show()</code> API with auto-dismiss, stacking, destructive variant, and action buttons.
+</PageHeader>
+
+<SkillPanel component="toast">
+  <SkillField label="Native basis">
+<SkillText><code>popover</code> API for top-layer rendering and non-modal behavior.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Popover_API" title="top-layer rendering without light-dismiss for persistent notifications"><code>Popover API (popover="manual")</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-live" title="announces toast content changes to screen readers"><code>aria-live regions</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.toast-container</code>
+    <code>.toast</code>
+    <code>.toast-description</code>
+    <code>.toast-icon</code>
+    <code>.toast-content</code>
+    <code>.toast-text</code>
+    <code>.toast-title</code>
+    <code>.toast-close</code>
+    <code>.toast-actions</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Variants (data-variant)">
+<SkillGrid>
+    <Variant name="destructive" description="Alternate background styling" />
+    <Variant name="success" description="Color variation" />
+    <Variant name="warning" description="Color variation" />
+    <Variant name="info" description="Color variation" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText dense>• <code>data-position</code> — values: <code>bottom-right</code>, <code>bottom-left</code>, <code>top-right</code>, <code>top-left</code>, <code>top-center</code>, <code>bottom-center</code></SkillText>
+  <SkillText dense>• <code>data-toast-close</code></SkillText>
+  <SkillText>• <code>data-toast-action</code></SkillText>
+  </SkillField>
+
+  <SkillField label="Wiring conventions">
+<SkillText dense>• <code>data-toast-close</code> on any element inside — closes the component</SkillText>
+  <SkillText>• <code>data-toast-action</code> identifies an interactive action element</SkillText>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• The toast container should be a direct child of <code>&lt;body&gt;</code></SkillText>
+  <SkillText dense>• Toasts use <code>popover="manual"</code> so they don't auto-dismiss on outside click</SkillText>
+  <SkillText dense>• The stacking order is newest on top (CSS <code>flex-direction: column-reverse</code> for bottom positions)</SkillText>
+  <SkillText dense>• Maximum visible toasts defaults to 3 — older toasts are dismissed</SkillText>
+  <SkillText dense>• Swipe-to-dismiss can be added with touch event handling but is not required for MVP</SkillText>
+  <SkillText dense>• For forms, show success/error toasts after submission rather than inline messages</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• The <code>toast()</code> API is imperative — call it from any event handler</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first previewStyle="gap:0.75rem;">
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>Basic toast with title and description via <code>\_defussShadcn.toast.show()</code>.</ExampleHint>
+  <button class="btn" data-variant="default" onclick="_defussShadcn.toast.show({ title: 'Event created', description: 'Monday, January 3rd at 6:00pm' })"> Show Toast </button>
+  <ExampleCode>{"<button class=\"btn\" data-variant=\"default\"\n        onclick=\"_defussShadcn.toast.show({ title: 'Event created', description: 'Monday, January 3rd at 6:00pm' })\">\n  Show Toast\n</button>\n\n<script>\n_defussShadcn.toast.show({\n  title: 'Event created',\n  description: 'Monday, January 3rd at 6:00pm'\n});\n</script>"}</ExampleCode>
+</Example>
+
+<Example first previewStyle="gap:0.75rem;flex-wrap:wrap;">
+  <ExampleLabel>Variants</ExampleLabel>
+  <ExampleHint>Semantic variants add a colored border and icon. Use <code>\_defussShadcn.toast.success()</code>, <code>\_defussShadcn.toast.warning()</code>, <code>\_defussShadcn.toast.info()</code>, or <code>\_defussShadcn.toast.error()</code>.</ExampleHint>
+  <button class="btn" data-variant="outline" onclick="_defussShadcn.toast.success({ title: 'Success', description: 'Your changes have been saved.' })"> Success </button>
+  <button class="btn" data-variant="outline" onclick="_defussShadcn.toast.warning({ title: 'Warning', description: 'Your session will expire in 5 minutes.' })"> Warning </button>
+  <button class="btn" data-variant="outline" onclick="_defussShadcn.toast.info({ title: 'Info', description: 'A new version is available for download.' })"> Info </button>
+  <button class="btn" data-variant="destructive" onclick="_defussShadcn.toast.error({ title: 'Error', description: 'Something went wrong. Please try again.' })"> Error </button>
+  <ExampleCode>{"<button class=\"btn\" data-variant=\"outline\"\n        onclick=\"_defussShadcn.toast.success({ title: 'Success', description: 'Your changes have been saved.' })\">\n  Success\n</button>\n\n<button class=\"btn\" data-variant=\"outline\"\n        onclick=\"_defussShadcn.toast.warning({ title: 'Warning', description: 'Your session will expire in 5 minutes.' })\">\n  Warning\n</button>\n\n<button class=\"btn\" data-variant=\"outline\"\n        onclick=\"_defussShadcn.toast.info({ title: 'Info', description: 'A new version is available for download.' })\">\n  Info\n</button>\n\n<button class=\"btn\" data-variant=\"destructive\"\n        onclick=\"_defussShadcn.toast.error({ title: 'Error', description: 'Something went wrong.' })\">\n  Error\n</button>\n\n<script>\n_defussShadcn.toast.success({ title: 'Success', description: 'Your changes have been saved.' });\n_defussShadcn.toast.warning({ title: 'Warning', description: 'Your session will expire in 5 minutes.' });\n_defussShadcn.toast.info({ title: 'Info', description: 'A new version is available for download.' });\n_defussShadcn.toast.error({ title: 'Error', description: 'Something went wrong.' });\n</script>"}</ExampleCode>
+</Example>
+
+<Example first previewStyle="gap:0.75rem;">
+  <ExampleLabel>With Description</ExampleLabel>
+  <ExampleHint>Pass a <code>description</code> for a secondary line of detail below the title.</ExampleHint>
+  <button class="btn" data-variant="outline" onclick="_defussShadcn.toast.show({ title: 'Scheduled', description: 'Your report will be generated at 9:00 AM tomorrow.' })"> Show Toast </button>
+  <ExampleCode>{"<button class=\"btn\" data-variant=\"outline\"\n        onclick=\"_defussShadcn.toast.show({ title: 'Scheduled', description: 'Your report will be generated at 9:00 AM tomorrow.' })\">\n  Show Toast\n</button>\n\n<script>\n_defussShadcn.toast.show({\n  title: 'Scheduled',\n  description: 'Your report will be generated at 9:00 AM tomorrow.'\n});\n</script>"}</ExampleCode>
+</Example>
+
+<Example first previewStyle="gap:0.75rem;">
+  <ExampleLabel>With Action</ExampleLabel>
+  <ExampleHint>Add an <code>action</code> object with <code>label</code> and <code>onClick</code> to render an action button inside the toast.</ExampleHint>
+  <button class="btn" data-variant="outline" onclick="_defussShadcn.toast.show({ title: 'Changes saved', description: 'Your profile has been updated.', action: { label: 'Undo', onClick: () => _defussShadcn.toast.show('Undone!') } })"> Show Toast </button>
+  <ExampleCode>{"<button class=\"btn\" data-variant=\"outline\"\n        onclick=\"_defussShadcn.toast.show({ title: 'Changes saved', description: 'Your profile has been updated.', action: { label: 'Undo', onClick: () => _defussShadcn.toast.show('Undone!') } })\">\n  Show Toast\n</button>\n\n<script>\n_defussShadcn.toast.show({\n  title: 'Changes saved',\n  description: 'Your profile has been updated.',\n  action: {\n    label: 'Undo',\n    onClick: () => _defussShadcn.toast.show('Undone!')\n  }\n});\n</script>"}</ExampleCode>
+</Example>
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">The named-state API is bound to the region container (<code>#toast-container</code>):</p>
+  <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
+    <li><code>default</code> — no visible toasts: <code>setState('default')</code> dismisses everything (the same path as <code>window.\_defussShadcn.toast.dismiss()</code>); <code>getState().config.count</code> reports the live number of visible toasts</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The region element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code>.</p>
+</StatesSection>
+
+<SourceFiles component="toast" section="css" />
+
+<SourceFiles component="toast" section="js">
+  <SourceNote for="js">Imperative <code>\_defussShadcn.toast.show()</code> API with auto-dismiss, stacking (max 3 visible), variant icons, and action buttons. Container is auto-created if not present in the DOM.</SourceNote>
+</SourceFiles>
+
+</DocPage>

@@ -85,14 +85,15 @@ try {
     assert.ok(badge.onEdge, 'dot anchored at the circle edge');
   });
 
-  await check('sizes differ (sm < default < lg)', async () => {
-    const [sm, def, lg] = await page.evaluate(() => [
-      document.querySelector('#av-sm')!.getBoundingClientRect().width,
-      document.querySelector('#av-img')!.getBoundingClientRect().width,
-      document.querySelector('#av-lg')!.getBoundingClientRect().width,
-    ]);
-    assert.ok(sm < def, `sm (${sm}) smaller than default (${def})`);
-    assert.ok(lg > def, `lg (${lg}) larger than default (${def})`);
+  await check('full size scale squares xs/sm/md/lg/xl = 24/32/40/48/64', async () => {
+    const widths = await page.evaluate(() =>
+      ['xs', 'sm', 'md', 'lg', 'xl'].map(
+        (s) => document.querySelector(`#av-${s}`)!.getBoundingClientRect().width,
+      ),
+    );
+    assert.deepEqual(widths, [24, 32, 40, 48, 64]);
+    const xl = await page.$eval('#av-xl', (el) => el.getBoundingClientRect());
+    assert.equal(xl.width, xl.height, 'xl avatar stays square');
   });
 
   // -- State API (AGENTS.md "State API"), bound per wrapper ------------------

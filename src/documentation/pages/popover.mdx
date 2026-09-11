@@ -1,0 +1,180 @@
+---
+title: "Popover"
+description: "Popover component — floating content panels using native popover API."
+slug: "popover"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="popover" title="Popover" component="popover">
+  Rich content in a floating panel, triggered by a button. Uses the native Popover API.
+</PageHeader>
+
+<SkillPanel component="popover">
+  <SkillField label="Native basis">
+<SkillText><code>popover</code> attribute — native Popover API with CSS anchor positioning for placement.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/popover" title="native popover API"><code>popover attribute</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#popovertarget" title="declarative trigger wiring"><code>popovertarget</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/position-area" title="grid-based anchor positioning"><code>position-area</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/position-try-fallbacks" title="automatic flip on overflow"><code>position-try-fallbacks</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style" title="entry animation"><code>@starting-style</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.popover</code>
+    <code>.popover-header</code>
+    <code>.popover-title</code>
+    <code>.popover-description</code>
+    <code>.popover-content</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Attributes">
+<div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:0;">
+    <code>data-side="top|right|bottom|left"</code>
+    <code>data-align="start|center|end"</code>
+  </div>
+  </SkillField>
+</SkillPanel>
+
+<p class="text-sm font-medium mb-2 mt-6">Default</p>
+
+<p class="text-muted-foreground text-sm mb-4">Click the trigger to open a popover below (default side). Uses native Popover API — no JS for open/close.</p>
+
+<Example>
+  <button class="btn" data-variant="outline" popovertarget="demo-popover">Open Popover</button>
+  <div class="popover" id="demo-popover" popover data-state-demo>
+    <div class="popover-header">
+      <p class="popover-title">Dimensions</p>
+      <p class="popover-description">Set the dimensions for the layer.</p>
+    </div>
+    <div class="popover-content">
+      <p style="margin:0;font-size:0.8125rem;color:var(--muted-foreground);">Width: 100% • Height: auto</p>
+    </div>
+  </div>
+  <ExampleCode>{"<button class=\"btn\" data-variant=\"outline\" popovertarget=\"my-popover\">Open Popover</button>\n\n<div class=\"popover\" id=\"my-popover\" popover>\n  <div class=\"popover-header\">\n    <p class=\"popover-title\">Dimensions</p>\n    <p class=\"popover-description\">Set the dimensions for the layer.</p>\n  </div>\n  <div class=\"popover-content\">...</div>\n</div>"}</ExampleCode>
+</Example>
+
+<p class="text-sm font-medium mb-2 mt-8">With Form</p>
+
+<p class="text-muted-foreground text-sm mb-4">Popover containing form fields — the canonical shadcn popover pattern.</p>
+
+<Example noCode>
+  <button class="btn" data-variant="outline" popovertarget="demo-popover-form">Open Popover</button>
+  <div class="popover" id="demo-popover-form" popover style="width:20rem;">
+    <div class="popover-header">
+      <p class="popover-title">Dimensions</p>
+      <p class="popover-description">Set the dimensions for the layer.</p>
+    </div>
+    <div class="popover-content">
+      <div style="display:grid;gap:0.5rem;">
+        <div style="display:grid;grid-template-columns:1fr 2fr;align-items:center;gap:1rem;">
+          <label class="label" for="pop-width" style="text-align:right;">Width</label>
+          <input class="input" id="pop-width" type="text" value="100%" style="height:2rem;font-size:0.8125rem;" />
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 2fr;align-items:center;gap:1rem;">
+          <label class="label" for="pop-max-width" style="text-align:right;">Max. width</label>
+          <input class="input" id="pop-max-width" type="text" value="300px" style="height:2rem;font-size:0.8125rem;" />
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 2fr;align-items:center;gap:1rem;">
+          <label class="label" for="pop-height" style="text-align:right;">Height</label>
+          <input class="input" id="pop-height" type="text" value="25px" style="height:2rem;font-size:0.8125rem;" />
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 2fr;align-items:center;gap:1rem;">
+          <label class="label" for="pop-max-height" style="text-align:right;">Max. height</label>
+          <input class="input" id="pop-max-height" type="text" value="none" style="height:2rem;font-size:0.8125rem;" />
+        </div>
+      </div>
+    </div>
+  </div>
+</Example>
+
+<p class="text-sm font-medium mb-2 mt-8">Align</p>
+
+<p class="text-muted-foreground text-sm mb-4">Use <code>data-align</code> on the popover to control horizontal alignment: <code>start</code>, <code>center</code> (default), or <code>end</code>.</p>
+
+<Example noCode previewStyle="display:flex;gap:0.5rem;justify-content:center;">
+  <button class="btn" data-variant="outline" popovertarget="demo-pop-start">Start</button>
+  <div class="popover" id="demo-pop-start" popover data-align="start">
+    <div class="popover-header">
+      <p class="popover-title">Start aligned</p>
+      <p class="popover-description">Popover aligned to the start edge.</p>
+    </div>
+  </div>
+  <button class="btn" data-variant="outline" popovertarget="demo-pop-center">Center</button>
+  <div class="popover" id="demo-pop-center" popover>
+    <div class="popover-header">
+      <p class="popover-title">Center aligned</p>
+      <p class="popover-description">Default center alignment.</p>
+    </div>
+  </div>
+  <button class="btn" data-variant="outline" popovertarget="demo-pop-end">End</button>
+  <div class="popover" id="demo-pop-end" popover data-align="end">
+    <div class="popover-header">
+      <p class="popover-title">End aligned</p>
+      <p class="popover-description">Popover aligned to the end edge.</p>
+    </div>
+  </div>
+</Example>
+
+<p class="text-sm font-medium mb-2 mt-8">Side</p>
+
+<p class="text-muted-foreground text-sm mb-4">Use <code>data-side</code> to position the popover on a specific side of the trigger: <code>top</code>, <code>right</code>, <code>bottom</code> (default), or <code>left</code>.</p>
+
+<Example noCode previewStyle="display:flex;gap:0.5rem;flex-wrap:wrap;justify-content:center;">
+  <button class="btn" data-variant="outline" popovertarget="demo-pop-top">Top</button>
+  <div class="popover" id="demo-pop-top" popover data-side="top">
+    <div class="popover-header">
+      <p class="popover-title">Top side</p>
+      <p class="popover-description">Positioned above the trigger.</p>
+    </div>
+  </div>
+  <button class="btn" data-variant="outline" popovertarget="demo-pop-right">Right</button>
+  <div class="popover" id="demo-pop-right" popover data-side="right">
+    <div class="popover-header">
+      <p class="popover-title">Right side</p>
+      <p class="popover-description">Positioned to the right.</p>
+    </div>
+  </div>
+  <button class="btn" data-variant="outline" popovertarget="demo-pop-bottom">Bottom</button>
+  <div class="popover" id="demo-pop-bottom" popover>
+    <div class="popover-header">
+      <p class="popover-title">Bottom side</p>
+      <p class="popover-description">Default bottom positioning.</p>
+    </div>
+  </div>
+  <button class="btn" data-variant="outline" popovertarget="demo-pop-left">Left</button>
+  <div class="popover" id="demo-pop-left" popover data-side="left">
+    <div class="popover-header">
+      <p class="popover-title">Left side</p>
+      <p class="popover-description">Positioned to the left.</p>
+    </div>
+  </div>
+</Example>
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per popover through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
+    <li><code>default</code> — hidden (the authored state; toggled by <code>popovertarget</code>)</li>
+    <li><code>open</code> — shown via the native <code>showPopover()</code></li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first demo carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/popover-\{state\}.png</code>.</p>
+</StatesSection>
+
+<SourceFiles component="popover" section="css">
+  <SourceNote for="css">Uses <code>position-area</code> for anchor positioning, <code>@starting-style</code> for enter animations, and <code>position-try-fallbacks</code> for automatic viewport-overflow flipping. Supports <code>data-side</code> and <code>data-align</code> attributes.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="popover" section="js">
+  <SourceNote for="js">Assigns unique CSS anchor names per trigger–popover pair. Opening, closing, and light-dismiss are handled entirely by the native <code>popovertarget</code> attribute.</SourceNote>
+</SourceFiles>
+
+</DocPage>

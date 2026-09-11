@@ -1,0 +1,134 @@
+---
+title: "Switch"
+description: "Switch component — toggle switches built on native checkboxes."
+slug: "switch"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="switch" title="Switch" component="switch">
+  A toggle control for on/off states. Built on native <code>&lt;input type="checkbox" role="switch"&gt;</code> with CSS-only thumb animation.
+</PageHeader>
+
+<SkillPanel component="switch">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;input type="checkbox" role="switch"&gt;</code> element styled as a toggle switch.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox" title="native toggle control"><code>&lt;input type="checkbox"&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/switch_role" title="communicates on/off semantics"><code>role="switch"</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:checked" title="matches the on state"><code>:checked</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible" title="keyboard-only focus ring"><code>:focus-visible</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent-state styling for disabled label"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="suppress transitions for motion-sensitive users"><code>prefers-reduced-motion</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" title="Windows High Contrast Mode support"><code>forced-colors</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.switch</code>
+    <code>.switch-item</code>
+    <code>.switch-item-block</code>
+    <code>.switch-description</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Sizes (data-size)">
+<SkillGrid>
+    <Variant name="xs" description="Track: 1.5rem × 0.875rem" />
+    <Variant name="sm" description="Track: 1.75rem × 1rem" />
+    <Variant name="md" description="Track: 2.25rem × 1.25rem (default)" />
+    <Variant name="lg" description="Track: 2.75rem × 1.5rem" />
+    <Variant name="xl" description="Track: 3.25rem × 1.75rem" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• <code>role="switch"</code> tells screen readers this is an on/off toggle, not a checkbox.</SkillText>
+  <SkillText dense>• <code>aria-checked</code> is automatically set by the browser for <code>type="checkbox"</code>.</SkillText>
+  <SkillText dense>• <code>:focus-visible</code> provides keyboard-only focus ring.</SkillText>
+  <SkillText dense>• <code>prefers-reduced-motion</code> disables all transitions.</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• <code>forced-colors</code> provides Windows High Contrast Mode support.</p>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• Pure CSS — no JavaScript needed.</SkillText>
+  <SkillText dense>• The thumb slides via <code>:checked</code> and <code>translateX()</code>.</SkillText>
+  <SkillText dense>• Uses <code>appearance: none</code> with <code>::after</code> for the thumb.</SkillText>
+  <SkillText dense>• Wrap in <code>.switch-item</code> for auto disabled label styling via <code>:has()</code>.</SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• <code>aria-invalid="true"</code> shows the track in the destructive color.</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>Toggle switch with label.</ExampleHint>
+  <div class="switch-item">
+    <input class="switch" type="checkbox" role="switch" id="d-airplane" />
+    <label for="d-airplane">Airplane Mode</label>
+  </div>
+  <ExampleCode>{"<div class=\"switch-item\">\n  <input class=\"switch\" type=\"checkbox\" role=\"switch\" id=\"airplane\">\n  <label for=\"airplane\">Airplane Mode</label>\n</div>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>With Description</ExampleLabel>
+  <ExampleHint>Switch with label and description text using <code>.switch-item-block</code>.</ExampleHint>
+  <div class="switch-item-block" style="max-width:22rem;">
+    <label for="d-share">Share across devices</label>
+    <input class="switch" type="checkbox" role="switch" id="d-share" checked />
+    <span class="switch-description">Focus is shared across devices, and turns off when you leave the app.</span>
+  </div>
+  <ExampleCode>{"<div class=\"switch-item-block\">\n  <label for=\"share\">Share across devices</label>\n  <input class=\"switch\" type=\"checkbox\" role=\"switch\" id=\"share\" checked>\n  <span class=\"switch-description\">Focus is shared across devices.</span>\n</div>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Sizes</ExampleLabel>
+  <ExampleHint>The full five-step scale via <code>data-size</code> — the default equals <code>md</code>.</ExampleHint>
+  <div style="display:flex;flex-direction:column;gap:0.75rem;align-items:flex-start;">
+    <div class="switch-item"><input class="switch" type="checkbox" role="switch" id="d-xs-sw" data-size="xs" /><label for="d-xs-sw" style="font-size:0.75rem;">Extra small</label></div>
+    <div class="switch-item"><input class="switch" type="checkbox" role="switch" id="d-sm-sw" data-size="sm" /><label for="d-sm-sw" style="font-size:0.8125rem;">Small</label></div>
+    <div class="switch-item"><input class="switch" type="checkbox" role="switch" id="d-md-sw" data-size="md" checked /><label for="d-md-sw" style="font-size:0.875rem;">Medium (default)</label></div>
+    <div class="switch-item"><input class="switch" type="checkbox" role="switch" id="d-lg-sw" data-size="lg" /><label for="d-lg-sw" style="font-size:1rem;">Large</label></div>
+    <div class="switch-item"><input class="switch" type="checkbox" role="switch" id="d-xl-sw" data-size="xl" /><label for="d-xl-sw" style="font-size:1.125rem;">Extra large</label></div>
+  </div>
+  <ExampleCode>{"<input class=\"switch\" data-size=\"xs\" type=\"checkbox\" role=\"switch\">\n<input class=\"switch\" data-size=\"sm\" type=\"checkbox\" role=\"switch\">\n<input class=\"switch\" data-size=\"md\" type=\"checkbox\" role=\"switch\">\n<input class=\"switch\" data-size=\"lg\" type=\"checkbox\" role=\"switch\">\n<input class=\"switch\" data-size=\"xl\" type=\"checkbox\" role=\"switch\">"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Checked by default</ExampleLabel>
+  <div class="switch-item">
+    <input class="switch" type="checkbox" role="switch" id="d-notif" checked />
+    <label for="d-notif">Notifications</label>
+  </div>
+  <ExampleCode>{"<div class=\"switch-item\">\n  <input class=\"switch\" type=\"checkbox\" role=\"switch\" checked>\n  <label>Notifications</label>\n</div>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Disabled</ExampleLabel>
+  <ExampleHint>Disabled state — <code>.switch-item</code> auto-dims the label via <code>:has()</code>.</ExampleHint>
+  <div class="switch-item">
+    <input class="switch" type="checkbox" role="switch" id="d-dis-sw" disabled />
+    <label for="d-dis-sw">Disabled</label>
+  </div>
+  <ExampleCode>{"<div class=\"switch-item\">\n  <input class=\"switch\" type=\"checkbox\" role=\"switch\" disabled>\n  <label>Disabled</label>\n</div>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Invalid</ExampleLabel>
+  <ExampleHint>Validation error state with <code>aria-invalid="true"</code>.</ExampleHint>
+  <div class="switch-item-block" style="max-width:22rem;">
+    <label for="d-terms">Accept terms and conditions</label>
+    <input class="switch" type="checkbox" role="switch" id="d-terms" aria-invalid="true" />
+    <span class="switch-description" style="color:var(--destructive);">You must accept the terms and conditions to continue.</span>
+  </div>
+  <ExampleCode>{"<div class=\"switch-item-block\">\n  <label for=\"terms\">Accept terms and conditions</label>\n  <input class=\"switch\" type=\"checkbox\" role=\"switch\" id=\"terms\" aria-invalid=\"true\">\n  <span class=\"switch-description\" style=\"color:var(--destructive);\">You must accept the terms.</span>\n</div>"}</ExampleCode>
+</Example>
+
+<SourceFiles component="switch" section="css" />
+
+</DocPage>

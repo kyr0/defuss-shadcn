@@ -1,0 +1,115 @@
+---
+title: "Alert Dialog"
+description: "Alert Dialog component — confirmation dialogs using native <dialog> element."
+slug: "alert-dialog"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="alert-dialog" title="Alert Dialog" component="alert-dialog">
+  A modal dialog that interrupts the user and requires a response. Unlike a standard dialog, users cannot dismiss it by clicking the backdrop or pressing Escape — they must choose an action. Built on native <code>&lt;dialog&gt;</code>.
+</PageHeader>
+
+<SkillPanel component="alert-dialog">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;dialog&gt;</code> element used as a modal that requires user response. Unlike a standard dialog, it has no backdrop-close and no close button — the user must choose an action.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog" title="native modal with focus trap and Escape-to-close"><code>&lt;dialog&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal" title="opens as modal with backdrop"><code>showModal()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/::backdrop" title="native backdrop pseudo-element"><code>::backdrop</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style" title="entry animation starting values"><code>@starting-style</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.alert-dialog</code>
+    <code>.alert-dialog-content</code>
+    <code>.alert-dialog-header</code>
+    <code>.alert-dialog-title</code>
+    <code>.alert-dialog-description</code>
+    <code>.alert-dialog-footer</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText dense>• <code>data-alert-dialog-trigger</code></SkillText>
+  <SkillText>• <code>data-alert-dialog-close</code></SkillText>
+  </SkillField>
+
+  <SkillField label="Wiring conventions">
+<SkillText dense>• <code>data-alert-dialog-trigger</code> on any element — opens the component</SkillText>
+  <SkillText>• <code>data-alert-dialog-close</code> on any element inside — closes the component</SkillText>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• Uses <code>role="alertdialog"</code> instead of <code>role="dialog"</code> — signals interruption</SkillText>
+  <SkillText dense>• <code>aria-labelledby</code> and <code>aria-describedby</code> link to title and description</SkillText>
+  <SkillText dense>• No backdrop click dismiss — user must make an explicit choice</SkillText>
+  <SkillText dense>• Escape key is disabled — user must use the action buttons</SkillText>
+  <SkillText dense>• Focus is trapped inside the dialog via native <code>showModal()</code></SkillText>
+  <p class="text-muted-foreground" style="margin:0 0 0;">• While the alert is modal, <code>html:has(dialog.alert-dialog:modal)</code> sets <code>overflow: hidden</code> + <code>scrollbar-gutter: stable</code> — the page behind cannot scroll and its position is preserved for when the alert closes (no JS scroll-lock)</p>
+  </SkillField>
+</SkillPanel>
+
+<Example first>
+  <ExampleLabel>Basic</ExampleLabel>
+  <ExampleHint>Confirm/cancel pattern with title and description.</ExampleHint>
+  <button class="btn" data-variant="outline" data-alert-dialog-trigger="demo-alert-dialog-1">Delete Account</button>
+  <dialog id="demo-alert-dialog-1" class="alert-dialog" data-state-demo role="alertdialog" aria-modal="true" aria-labelledby="ad1-title" aria-describedby="ad1-desc">
+    <div class="alert-dialog-content">
+      <div class="alert-dialog-header">
+        <h2 class="alert-dialog-title" id="ad1-title">Are you absolutely sure?</h2>
+        <p class="alert-dialog-description" id="ad1-desc">This action cannot be undone. This will permanently delete your account and remove your data from our servers.</p>
+      </div>
+      <div class="alert-dialog-footer">
+        <button class="btn" data-variant="outline" data-alert-dialog-close>Cancel</button>
+        <button class="btn" data-variant="destructive" data-alert-dialog-close>Delete</button>
+      </div>
+    </div>
+  </dialog>
+  <ExampleCode>{"<button class=\"btn\" data-variant=\"outline\"\n        data-alert-dialog-trigger=\"my-alert\">\n  Delete Account\n</button>\n\n<dialog id=\"my-alert\" class=\"alert-dialog\"\n        role=\"alertdialog\" aria-modal=\"true\"\n        aria-labelledby=\"ad-title\" aria-describedby=\"ad-desc\">\n  <div class=\"alert-dialog-content\">\n    <div class=\"alert-dialog-header\">\n      <h2 class=\"alert-dialog-title\" id=\"ad-title\">\n        Are you absolutely sure?\n      </h2>\n      <p class=\"alert-dialog-description\" id=\"ad-desc\">\n        This action cannot be undone.\n      </p>\n    </div>\n    <div class=\"alert-dialog-footer\">\n      <button class=\"btn\" data-variant=\"outline\"\n              data-alert-dialog-close>Cancel</button>\n      <button class=\"btn\" data-variant=\"destructive\"\n              data-alert-dialog-close>Delete</button>\n    </div>\n  </div>\n</dialog>"}</ExampleCode>
+</Example>
+
+<Example>
+  <ExampleLabel>Confirmation</ExampleLabel>
+  <ExampleHint>Non-destructive confirmation with standard action button.</ExampleHint>
+  <button class="btn" data-variant="default" data-alert-dialog-trigger="demo-alert-dialog-2">Publish Post</button>
+  <dialog id="demo-alert-dialog-2" class="alert-dialog" role="alertdialog" aria-modal="true" aria-labelledby="ad2-title" aria-describedby="ad2-desc">
+    <div class="alert-dialog-content">
+      <div class="alert-dialog-header">
+        <h2 class="alert-dialog-title" id="ad2-title">Publish this post?</h2>
+        <p class="alert-dialog-description" id="ad2-desc">Once published, this post will be visible to all users. You can unpublish it later from the dashboard.</p>
+      </div>
+      <div class="alert-dialog-footer">
+        <button class="btn" data-variant="outline" data-alert-dialog-close>Cancel</button>
+        <button class="btn" data-variant="default" data-alert-dialog-close>Publish</button>
+      </div>
+    </div>
+  </dialog>
+  <ExampleCode>{"<button class=\"btn\" data-alert-dialog-trigger=\"publish-dialog\">\n  Publish Post\n</button>\n\n<dialog id=\"publish-dialog\" class=\"alert-dialog\" role=\"alertdialog\"\n        aria-modal=\"true\" aria-labelledby=\"...\" aria-describedby=\"...\">\n  ...\n</dialog>"}</ExampleCode>
+</Example>
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
+    <li><code>default</code> — closed (the authored state; only close buttons or the API close it — Escape is blocked)</li>
+    <li><code>open</code> — shown modally via <code>showModal()</code></li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/alert-dialog-\{state\}.png</code>.</p>
+</StatesSection>
+
+<SourceFiles component="alert-dialog" section="css">
+  <SourceNote for="css">Entry/exit animation</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="alert-dialog" section="js">
+  <SourceNote for="js">Alert Dialog</SourceNote>
+</SourceFiles>
+
+</DocPage>

@@ -1,0 +1,67 @@
+---
+title: "Newsletter"
+description: "A sign-up band using a real form: native email validation, autofill, and enterkeyhint."
+slug: "newsletter"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="newsletter" title="Newsletter" component="newsletter">
+  A sign-up band using a real form: native email validation, autofill, and enterkeyhint.
+</PageHeader>
+
+<SkillPanel component="newsletter">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;form&gt;</code> + <code>&lt;input type="email" required&gt;</code> + submit \[Button\](../button/component-skill.md). The browser enforces the email format; <code>enterkeyhint="send"</code> and <code>autocomplete="email"</code> tune mobile keyboards — zero validation JS.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email" title="constraint validation built in"><code>&lt;input type="email"&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete" title="password-manager autofill"><code>autocomplete</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/enterkeyhint" title="mobile keyboard label"><code>enterkeyhint</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="stacked → inline form"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-newsletter</code>
+    <code>.mk-newsletter-layout</code>
+    <code>.mk-newsletter-copy</code>
+    <code>.mk-newsletter-title</code>
+    <code>.mk-newsletter-desc</code>
+    <code>.mk-newsletter-form-col</code>
+    <code>.mk-newsletter-form</code>
+    <code>.mk-newsletter-note</code>
+  </SkillRow>
+  </SkillField>
+</SkillPanel>
+
+<Example first previewStyle="align-items:stretch;">
+  <ExampleLabel>Default</ExampleLabel>
+  <ExampleHint>Stacked on narrow widths, inline at 30rem+.</ExampleHint>
+  <section class="mk-newsletter" style="width:100%">
+    <div class="mk-newsletter-layout">
+      <div class="mk-newsletter-copy">
+        <h2 class="mk-newsletter-title">Stay in the loop</h2>
+        <p class="mk-newsletter-desc">Get insights, product updates, and productivity tips straight to your inbox.</p>
+      </div>
+      <div class="mk-newsletter-form-col">
+        <form class="mk-newsletter-form" action="#" method="post">
+          <label class="sr-only" for="mk-nl-email">Email address</label>
+          <input class="input" id="mk-nl-email" type="email" name="email" placeholder="email@example.com" required autocomplete="email" enterkeyhint="send" />
+          <button class="btn" type="submit" aria-label="Subscribe to newsletter"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg>Subscribe</button>
+        </form>
+        <span class="mk-newsletter-note" role="note">We respect your privacy.</span>
+      </div>
+    </div>
+  </section>
+  <ExampleCode>{"<section class=\"mk-newsletter\" style=\"width:100%\">\n  <div class=\"mk-newsletter-layout\">\n  <div class=\"mk-newsletter-copy\">\n    <h2 class=\"mk-newsletter-title\">Stay in the loop</h2>\n    <p class=\"mk-newsletter-desc\">Get insights, product updates, and productivity tips straight to your inbox.</p>\n  </div>\n  <div class=\"mk-newsletter-form-col\">\n    <form class=\"mk-newsletter-form\" action=\"#\" method=\"post\">\n      <label class=\"sr-only\" for=\"mk-nl-email\">Email address</label>\n      <input class=\"input\" id=\"mk-nl-email\" type=\"email\" name=\"email\" placeholder=\"email@example.com\" required autocomplete=\"email\" enterkeyhint=\"send\" />\n      <button class=\"btn\" type=\"submit\" aria-label=\"Subscribe to newsletter\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect width=\"20\" height=\"16\" x=\"2\" y=\"4\" rx=\"2\"/><path d=\"m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7\"/></svg>Subscribe</button>\n    </form>\n    <span class=\"mk-newsletter-note\" role=\"note\">We respect your privacy.</span>\n  </div>\n  </div>\n</section>"}</ExampleCode>
+</Example>
+
+<SourceFiles component="newsletter" section="css" />
+
+</DocPage>

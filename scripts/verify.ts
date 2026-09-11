@@ -8,9 +8,14 @@ import { componentFingerprints, declaredStates } from './lib/inputs.ts';
 import { BUNDLE_ARTIFACTS, isDerivedArtifact, minifyArtifactProblems } from './lib/minify.ts';
 import { STATS_FILE, statsClaimProblems, type StatsDoc } from './lib/stats.ts';
 import { buildStatsFileText } from './lib/stats-files.ts';
-import { snippetDrifts } from './lib/snippets.ts';
 import { mirrorHashes } from './lib/mirror.ts';
-import { changelogProblems, changelogMarkupProblems, FIX_TWO_COMMITS, parseChangelogEntries, type CommitInfo } from './lib/changelog.ts';
+import {
+  changelogProblems,
+  changelogDataMarkupProblems,
+  FIX_TWO_COMMITS,
+  parseChangelogData,
+  type CommitInfo,
+} from './lib/changelog.ts';
 import {
   parseSkillFrontmatter,
   SKILL_FRONTMATTER_KEYS,
@@ -21,8 +26,9 @@ import { readmeCssOnlyProblems } from './lib/readme.ts';
 import { ariaDescribedByProblems, fieldDescriptionOwnerProblems, fieldFeatureProblems } from './lib/fields.ts';
 import { parseThemes, defaultTokenModes, sidebarContrastProblems, radiusConsistencyProblems } from './lib/contrast.ts';
 import { buildSkillText } from './lib/skill-files.ts';
-import { ARCH_OUTPUT_FILE, ARCH_TEMPLATE_FILE, buildArchPageText } from './lib/arch-page.ts';
+import { archBodyHtml } from '../src/documentation/lib/arch-md.ts';
 import { typeBadgeHtml, type ComponentType } from './lib/taxonomy.ts';
+import { docsDistToSrc, isDocsSsgAuthoringSrc } from './lib/docs-ssg.ts';
 
 /**
  * Why: one static, fast gate that proves the repo is self-consistent after any
@@ -35,6 +41,8 @@ const ROOT = join(import.meta.dirname, '..');
 const SRC = join(ROOT, 'src');
 const DIST = join(ROOT, 'dist');
 const DOCS = join(SRC, 'documentation');
+const DOCS_PAGES = join(DOCS, 'pages');
+const DOCS_DIST = join(DIST, 'documentation');
 const COMPS = join(SRC, 'components');
 const E2E = join(ROOT, 'tests/e2e');
 
@@ -61,7 +69,13 @@ function check(name: string, problems: string[], fix: string, warnOnly = false):
 const componentDirs = readdirSync(COMPS).filter((d) => statSync(join(COMPS, d)).isDirectory());
 /** Both color schemes create-screenshots.ts captures; state PNGs need both. */
 const MODES = ['light', 'dark'];
-const docPages = readdirSync(DOCS).filter((f) => f.endsWith('.html'));
+/** Doc pages are defuss-ssg output: dist/documentation/*.html, rendered from
+ * src/documentation/pages/*.mdx (build:docs must run before verify — it does,
+ * in every package.json chain). Gates that check the SHIPPED surface read the
+ * rendered pages; gates about authoring read the .mdx sources. */
+const docPages = existsSync(DOCS_DIST)
+  ? readdirSync(DOCS_DIST).filter((f) => f.endsWith('.html'))
+  : [];
 
 // 1. every component folder ships a component skill
 check(
@@ -70,11 +84,11 @@ check(
   'write the skill (see AGENTS.md "Component skill template")',
 );
 
-// 2. every component has a documentation page
+// 2. every component has a documentation page (MDX source)
 check(
   'documentation pages',
-  componentDirs.filter((c) => !docPages.includes(`${c}.html`)).map((c) => `src/documentation/${c}.html missing`),
-  `copy src/documentation/badge.html as template`,
+  componentDirs.filter((c) => !existsSync(join(DOCS_PAGES, `${c}.mdx`))).map((c) => `src/documentation/pages/${c}.mdx missing`),
+  `copy src/documentation/pages/badge.mdx as template`,
 );
 
 // 3. every component has an e2e smoke test — rollout complete, hard gate.
@@ -114,39 +128,45 @@ const { docIssues, compIssues } = auditUtilities(ROOT);
 check(
   'utility classes (doc pages)',
   docIssues,
-  'define the class in documentation/css/docs-utilities.css',
+  'define the class in documentation/public/css/docs-utilities.css',
   true,
 );
 check(
   'utility classes (components)',
   compIssues,
-  'define the class in documentation/css/docs-utilities.css or replace with component CSS',
+  'define the class in documentation/public/css/docs-utilities.css or replace with component CSS',
 );
 
-// 6. inline CSS/JS snippets on doc pages match their source files
-const docHtml = docPages.map((p) => [p, readFileSync(join(DOCS, p), 'utf8')] as const);
+// 6. the source listings on the rendered doc pages must equal the component
+// sources they claim to show. <SourceFiles> embeds the file at SSG build
+// time, so drift is impossible by construction — this gate proves it holds:
+// every #source-css/#source-js section's <code> text must match the file its
+// "view file" anchor points at (entity-decoded textContent vs file bytes).
+const docHtml = docPages.map((p) => [p, readFileSync(join(DOCS_DIST, p), 'utf8')] as const);
 const snippetProblems: string[] = [];
 for (const [page, html] of docHtml) {
-  const cssLink = html.match(/<a\s+href="(\.\.\/components\/[^"]+\.css)"[^>]*>view file<\/a>/)?.[1];
-  if (cssLink) {
-    const cssPath = join(DOCS, cssLink);
-    if (existsSync(cssPath) && snippetDrifts(html, 'language-scss', readFileSync(cssPath, 'utf8'))) {
-      snippetProblems.push(`${page} — CSS snippet out of date vs ${cssLink}`);
-    }
-  }
-  const jsLink = html.match(/<a\s+href="(\.\.\/components\/[^"]+\.js)"[^>]*>view file<\/a>/)?.[1];
-  if (jsLink) {
-    const jsPath = join(DOCS, jsLink);
-    const src = existsSync(jsPath.replace(/\.js$/, '.ts')) ? jsPath.replace(/\.js$/, '.ts') : jsPath;
-    if (existsSync(src) && snippetDrifts(html, 'language-javascript', readFileSync(src, 'utf8'))) {
-      snippetProblems.push(`${page} — JS snippet out of date vs ${relative(DOCS, src)}`);
+  const { document } = parseHTML(html);
+  for (const section of document.querySelectorAll('section#source-css, section#source-js')) {
+    const anchor = section.querySelector('a[href*="/components/"]');
+    const href = anchor?.getAttribute('href') ?? '';
+    const comp = href.match(/components\/([^/]+)\/([^/]+)\.(css|js)$/)?.[1];
+    const ext = href.match(/\.(css|js)$/)?.[1];
+    if (!comp || !ext) continue;
+    const expected =
+      ext === 'css'
+        ? existsSync(join(COMPS, comp, `${comp}.css`)) && readFileSync(join(COMPS, comp, `${comp}.css`), 'utf8')
+        : existsSync(join(COMPS, comp, `${comp}.ts`)) && readFileSync(join(COMPS, comp, `${comp}.ts`), 'utf8');
+    if (!expected) continue;
+    const shown = section.querySelector('pre > code')?.textContent ?? '';
+    if (shown !== expected) {
+      snippetProblems.push(`${page} — #source-${ext} listing differs from src/components/${comp}/${comp}.${ext === 'css' ? 'css' : 'ts'} (rebuild docs)`);
     }
   }
 }
 check(
   'snippet sync',
   snippetProblems,
-  'run `bun run sync-snippets`',
+  'run `bun run build:docs` (SourceFiles re-embeds the current component sources)',
 );
 
 // 6b. doc-page code-block integrity: unbalanced <pre> tags mean a snippet's
@@ -180,18 +200,18 @@ check(
   'repair the page markup: every <pre><code class="language-…"> block needs its opening tag, and each section id must appear exactly once',
 );
 
-// 7. every doc page loads the single-file bundle (scripts/bundle.ts): one
-// all.css link + one all.js module script replace the old per-component
-// include lists (cross-page demos still work — the bundle covers all
-// components). Stray per-component stylesheet/script tags are banned so the
-// lists can't creep back; <a href> "view file" anchors, data-spec-href spans
-// and escaped code samples (&lt;link…) stay legal — only real tags match.
+// 7. every rendered doc page loads the single-file bundle (scripts/bundle.ts):
+// one all.css link + one all.js module script (cross-page demos still work —
+// the bundle covers all components). Stray per-component stylesheet/script
+// tags are banned so the lists can't creep back; <a href> "view file"
+// anchors, data-spec-href spans and escaped code samples (&lt;link…) stay
+// legal — only real tags match.
 const importProblems: string[] = [];
 for (const [page, html] of docHtml) {
-  if (!html.includes('<link rel="stylesheet" href="../components/all.css">')) {
+  if (!html.includes('<link rel="stylesheet" href="../components/all.css"')) {
     importProblems.push(`${page} missing the all.css bundle link`);
   }
-  if (!html.includes('<script type="module" src="../components/all.js"></script>')) {
+  if (!html.includes('<script type="module" src="../components/all.js"')) {
     importProblems.push(`${page} missing the all.js bundle script`);
   }
   for (const m of html.matchAll(/<link\b[^>]*\bhref="\.\.\/components\/[^/"]+\/[^/"]+\.css"/g)) {
@@ -207,12 +227,12 @@ check(
   'load the bundle on every doc page: <link rel="stylesheet" href="../components/all.css"> and <script type="module" src="../components/all.js"></script>',
 );
 
-// 8. every doc page is reachable from the sidebar (layout.ts NAV/BUILT)
-const layout = readFileSync(join(DOCS, 'js/layout.ts'), 'utf8');
+// 8. every doc page is reachable from the sidebar (lib/nav.ts NAV)
+const navSrc = readFileSync(join(DOCS, 'lib/nav.ts'), 'utf8');
 check(
   'sidebar coverage',
-  docPages.filter((p) => !layout.includes(`'${p}'`)).map((p) => `${p} not referenced in js/layout.ts`),
-  "add the page to the NAV array (and BUILT set if real) in js/layout.ts",
+  docPages.filter((p) => !navSrc.includes(`'${p}'`)).map((p) => `${p} not referenced in lib/nav.ts`),
+  "add the page to the NAV array in src/documentation/lib/nav.ts",
 );
 
 // 9. oxlint clean (oxlint exits non-zero only on errors — warnings pass by policy)
@@ -235,6 +255,9 @@ if (!existsSync(DIST)) {
     // ambient type declarations compile nothing and ship nothing; src/shared
     // is a build-time-only helper (inlined into dist component .js files)
     if (rel.endsWith('.d.ts') || rel.startsWith(`shared${sep}`)) continue;
+    // docs SSG authoring inputs (pages/, lib/, runtime/, data/, config.ts)
+    // are consumed by defuss-ssg, never copied 1:1
+    if (isDocsSsgAuthoringSrc(rel)) continue;
     if (rel.endsWith('.ts')) {
       const js = join(DIST, rel.replace(/\.ts$/, '.js'));
       if (!existsSync(js)) distProblems.push(`dist/${relative(SRC, f).replace(/\.ts$/, '.js')} missing — rebuild`);
@@ -252,7 +275,17 @@ if (!existsSync(DIST)) {
     // writes the generated stats document, scripts/bundle.ts writes the
     // single-file bundle — none of them are orphans
     if (isDerivedArtifact(rel) || BUNDLE_ARTIFACTS.has(rel) || rel === STATS_FILE) continue;
-    if (!srcSet.has(rel)) distProblems.push(`dist/${rel} is orphaned (no src/ counterpart) — rebuild`);
+    if (!srcSet.has(rel)) {
+      // docs pages/assets originate from the SSG authoring tree
+      // (pages/*.mdx, public/*, runtime/*.ts) — resolve before flagging
+      const docsRel = rel.startsWith(`documentation${sep}`) ? rel.slice(`documentation${sep}`.length) : null;
+      if (docsRel) {
+        const mapped = docsDistToSrc(docsRel);
+        // null = generated output with no src counterpart (js/search-index.js)
+        if (mapped === null || existsSync(join(SRC, mapped))) continue;
+      }
+      distProblems.push(`dist/${rel} is orphaned (no src/ counterpart) — rebuild`);
+    }
   }
 }
 check(
@@ -306,12 +339,14 @@ check(
 if (statsProblems.length === 0) {
   const statsDoc = JSON.parse(readFileSync(join(DIST, STATS_FILE), 'utf8')) as StatsDoc;
   const claim = statsClaimProblems(readFileSync(join(ROOT, 'README.md'), 'utf8'), 'README.md', statsDoc).concat(
-    statsClaimProblems(readFileSync(join(DOCS, 'index.html'), 'utf8'), 'src/documentation/index.html', statsDoc),
+    existsSync(join(DOCS_DIST, 'index.html'))
+      ? statsClaimProblems(readFileSync(join(DOCS_DIST, 'index.html'), 'utf8'), 'dist/documentation/index.html', statsDoc)
+      : ['dist/documentation/index.html missing — run `bun run build:docs`'],
   );
   check(
     'stats claim (README + index)',
     claim,
-    'state the current footprint verbatim in both files — update the sentence to match dist/stats.json and run `bun run docs` (README.md and src/documentation/index.html are a parity pair, commit them together)',
+    'state the current footprint verbatim in both files — update the sentence to match dist/stats.json and run `bun run docs` (README.md and the rendered index page are a parity pair, commit them together)',
   );
 }
 
@@ -390,15 +425,15 @@ check(
 //     contract create-screenshots.ts (and the agent's eye) relies on
 const previewProblems: string[] = [];
 for (const c of componentDirs) {
-  const page = join(DOCS, `${c}.html`);
+  const page = join(DOCS_DIST, `${c}.html`);
   if (existsSync(page) && !readFileSync(page, 'utf8').includes('class="preview"')) {
-    previewProblems.push(`src/documentation/${c}.html has no .preview block`);
+    previewProblems.push(`dist/documentation/${c}.html has no .preview block`);
   }
 }
 check(
   'preview blocks',
   previewProblems,
-  'wrap the default demo in <div class="preview">…</div> (see badge.html)',
+  'wrap the default demo in <div class="preview">…</div> (see pages/badge.mdx)',
 );
 
 // 12. every component has light + dark screenshots whose manifest fingerprint
@@ -439,7 +474,7 @@ for (const c of componentDirs) {
   const states = declaredStates(readFileSync(tsFile, 'utf8'));
   if (states.length === 0) continue;
 
-  const doc = existsSync(join(DOCS, `${c}.html`)) ? readFileSync(join(DOCS, `${c}.html`), 'utf8') : '';
+  const doc = existsSync(join(DOCS_DIST, `${c}.html`)) ? readFileSync(join(DOCS_DIST, `${c}.html`), 'utf8') : '';
   if (!doc.includes('data-state-demo')) coverageProblems.push(`${c}: doc page lacks a [data-state-demo] anchor for state capture`);
 
   const skill = existsSync(join(COMPS, c, 'component-skill.md'))
@@ -464,42 +499,34 @@ check(
   'each declared state needs screenshots (both modes), doc page, skill and e2e coverage (AGENTS.md "State API" rule 7)',
 );
 
-// 13. version is consistent: package.json ↔ the SITE_VERSION constant in
-// layout.ts, from which the header pill AND the footer render. Any OTHER
-// hard-coded v-semver literal in that file is stale by definition (the
-// footer read "v0.7.0" forever because it was a second, un-synced literal —
-// this check forbids that pattern instead of trusting the bump).
+// 13. version is consistent: package.json ↔ the header badge stamped into
+// every page at SSG build time (SiteHeader reads package.json — no version
+// literal anywhere to bump or forget).
 const version = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8')).version as string;
-const headerLayout = readFileSync(join(DOCS, 'js/layout.ts'), 'utf8');
 {
-  const sv = headerLayout.match(/var SITE_VERSION = '([^']*)'/);
   const versionProblems: string[] = [];
-  if (!sv) versionProblems.push("js/layout.ts lost the `var SITE_VERSION = 'v…'` constant");
-  else if (sv[1] !== `v${version}`)
-    versionProblems.push(`SITE_VERSION is ${sv[1]} but package.json says v${version} (header pill + footer both render this)`);
-  // every v-semver anywhere in the shell file must live on the SITE_VERSION
-  // assignment — pill/footer render the constant; the old footer kept its own
-  // 'v0.7.0' INSIDE a longer string where a quote-anchored regex misses it
-  headerLayout.split('\n').forEach((line, i) => {
-    if (/var SITE_VERSION =/.test(line)) return;
-    const hit = line.match(/\bv\d+\.\d+\.\d+\b/);
-    if (hit) versionProblems.push(`stale hard-coded ${hit[0]} at js/layout.ts:${i + 1} — render SITE_VERSION instead`);
-  });
-
+  const indexPage = join(DOCS_DIST, 'index.html');
+  if (!existsSync(indexPage)) versionProblems.push('dist/documentation/index.html missing — run `bun run build:docs`');
+  else {
+    const html = readFileSync(indexPage, 'utf8');
+    const badge = html.match(/<span class="badge header-brand-version"[^>]*>(v[^<]+)<\/span>/);
+    if (!badge) versionProblems.push('index.html lost the header version badge (span.header-brand-version)');
+    else if (badge[1] !== `v${version}`) versionProblems.push(`header badge says ${badge[1]} but package.json says v${version} — run \`bun run build:docs\``);
+  }
   check(
     'version consistency',
     versionProblems,
-    'set SITE_VERSION in src/documentation/js/layout.ts to v<package.json version> (deploy.sh does this) — header pill and footer derive from that single constant',
+    'the badge is stamped from package.json at docs build time — run `bun run build:docs`',
   );
 }
 
-// 14. changelog injection marker survived edits
+// 14. changelog data survived edits
 check(
-  'changelog marker',
-  readFileSync(join(DOCS, 'changelog.html'), 'utf8').includes('<!-- CHANGELOG_ENTRIES -->')
+  'changelog data',
+  existsSync(join(DOCS, 'data/changelog.json'))
     ? []
-    : ['marker "<!-- CHANGELOG_ENTRIES -->" removed from changelog.html'],
-  'restore the marker or deploy.sh cannot add entries',
+    : ['src/documentation/data/changelog.json missing — deploy.sh cannot add entries'],
+  'restore the changelog data file (entries rendered by lib/components/changelog-entries.tsx)',
 );
 
 // 15. code ↔ skill ↔ docs parity: every variant/size IMPLEMENTED in the
@@ -512,7 +539,6 @@ check(
 const skillProblems: string[] = [];
 for (const c of componentDirs) {
   const cssFile = join(COMPS, c, `${c}.css`);
-  const docPage = join(DOCS, `${c}.html`);
   const skillFile = join(COMPS, c, 'component-skill.md');
   if (!existsSync(cssFile)) continue;
   const tokens = new Set(
@@ -520,7 +546,7 @@ for (const c of componentDirs) {
   );
   if (tokens.size === 0) continue;
   const skillText = existsSync(skillFile) ? readFileSync(skillFile, 'utf8') : '';
-  const doc = existsSync(docPage) ? readFileSync(docPage, 'utf8') : '';
+  const doc = existsSync(join(DOCS_DIST, `${c}.html`)) ? readFileSync(join(DOCS_DIST, `${c}.html`), 'utf8') : '';
   const documented = (text: string, t: string) =>
     text.includes(`"${t}"`) || text.includes(`\`${t}\``) || new RegExp(`\\|\\s*${t}\\s*\\|`).test(text);
   const missSkill = [...tokens].filter((t) => !documented(skillText, t));
@@ -617,10 +643,10 @@ check(
 
 // 17. snippet escaping sentinel: an unescaped `<` inside <pre><code> breaks
 // every strict HTML parser (parse5 "invalid-first-character-of-tag-name") —
-// this bit us when htmlEncode silently degraded to identity replacements.
+// the SSG build escapes code text on render, so a hit here means someone
+// hand-pasted markup into a code block (or a pre-processing plugin broke).
 const escapeProblems: string[] = [];
-for (const f of readdirSync(DOCS).filter((x) => x.endsWith('.html'))) {
-  const html = readFileSync(join(DOCS, f), 'utf8');
+for (const [f, html] of docHtml) {
   for (const m of html.matchAll(/<pre><code[^>]*>([\s\S]*?)<\/code><\/pre>/g)) {
     if (/<[a-zA-Z/!?]/.test(m[1])) escapeProblems.push(`${f}: unescaped tag inside <pre><code>`);
   }
@@ -628,7 +654,7 @@ for (const f of readdirSync(DOCS).filter((x) => x.endsWith('.html'))) {
 check(
   'snippet escaping',
   escapeProblems,
-  'raw < in a snippet means htmlEncode was bypassed — run `bun run sync-snippets` (never paste source into doc pages by hand)',
+  'raw < in a code block means a snippet was hand-pasted — the docs build escapes code text on render; check the page source',
 );
 
 // 18. accessibility CSS promises (AGENTS.md "Accessibility CSS"): any
@@ -878,7 +904,8 @@ check(
 const windowProblems: string[] = [];
 for (const f of walk(SRC, ['.ts', '.js'])) {
   const src = readFileSync(f, 'utf8');
-  for (const m of src.matchAll(/\bwindow\s*(?:\.|[\['])\s*([A-Za-z_$][\w$]*)\s*(=|\+=|-=)/g)) {
+  // matches window.x = / window['x'] = / window["x"] = assignment forms
+  for (const m of src.matchAll(/\bwindow\s*(?:\.|\[)?['"]?\s*([A-Za-z_$][\w$]*)['"]?\s*\]?\s*(=|\+=|-=)/g)) {
     windowProblems.push(`${relative(ROOT, f)} assigns window.${m[1]}`);
   }
 }
@@ -888,20 +915,20 @@ check(
   'use globalThis and scope the name under globalThis._defussShadcn (AGENTS.md "No window globals")',
 );
 
-// 26. README ↔ index.html parity: the intro pillar lists must say the same
+// 26. README ↔ index page parity: the intro pillar lists must say the same
 // thing. README.md leads with `- **Name**` bullets (intro section, before the
-// first `##` heading); index.html renders the same pillars as card-title h3s.
-// They diverged once ("Observable state" went into the README only) — now the
-// gate catches it, and AGENTS.md demands both files change together.
+// first `##` heading); pages/index.mdx renders the same pillars as card-title
+// h3s. They diverged once ("Observable state" went into the README only) —
+// now the gate catches it, and AGENTS.md demands both files change together.
 {
   const readme = readFileSync(join(ROOT, 'README.md'), 'utf8');
   // the pillar bullets live under "## What this is", i.e. between the first
   // `##` and "## Quick start" — scan exactly that range
   const intro = readme.slice(0, readme.search(/^## Quick start$/m));
   const readmePillars = [...intro.matchAll(/^- \*\*(.+?)\*\*/gm)].map((m) => m[1].trim());
-  const indexHtml = readFileSync(join(DOCS, 'index.html'), 'utf8');
+  const indexMdx = readFileSync(join(DOCS_PAGES, 'index.mdx'), 'utf8');
   // pillar cards are the only card-title h3s on the page today
-  const indexPillars = [...indexHtml.matchAll(/<h3 class="card-title"[^>]*>([^<]+)<\/h3>/g)].map((m) =>
+  const indexPillars = [...indexMdx.matchAll(/<h3 class="card-title"[^>]*>([^<]+)<\/h3>/g)].map((m) =>
     m[1].trim(),
   );
   const missing = readmePillars.filter((p) => !indexPillars.includes(p));
@@ -909,10 +936,10 @@ check(
   check(
     'README ↔ index parity',
     [
-      ...missing.map((p) => `index.html card missing for README pillar "${p}"`),
-      ...extra.map((p) => `README bullet missing for index.html card "${p}"`),
+      ...missing.map((p) => `index page card missing for README pillar "${p}"`),
+      ...extra.map((p) => `README bullet missing for index page card "${p}"`),
     ],
-    'keep README.md intro bullets and documentation/index.html pillar cards in sync (AGENTS.md "README ↔ index parity") — change both files together',
+    'keep README.md intro bullets and documentation/pages/index.mdx pillar cards in sync (AGENTS.md "README ↔ index parity") — change both files together',
   );
 }
 
@@ -926,7 +953,7 @@ check(
   const SYNC_WINDOW = 15 * 60; // seconds
   const PAIR: Array<[string, string]> = [
     ['README.md', 'README.md'],
-    ['index.html', 'src/documentation/index.html'],
+    ['index page', 'src/documentation/pages/index.mdx'],
   ];
   const [readmeHash, readmeAt, indexHash, indexAt] = PAIR.flatMap(([, path]) =>
     Bun.spawnSync({ cmd: ['git', 'log', '-1', '--format=%H %ct', '--', path], cwd: ROOT })
@@ -938,7 +965,7 @@ check(
   if (readmeHash && indexHash && readmeHash !== indexHash) {
     const gap = Math.abs(Number(readmeAt) - Number(indexAt));
     if (gap > SYNC_WINDOW) {
-      const older = Number(readmeAt) < Number(indexAt) ? 'README.md' : 'index.html';
+      const older = Number(readmeAt) < Number(indexAt) ? 'README.md' : 'pages/index.mdx';
       problems.push(
         `${older} was last committed ${Math.round(gap / 60)} min apart from the other (> ${SYNC_WINDOW / 60} min) — its statements may have drifted`,
       );
@@ -947,7 +974,7 @@ check(
   check(
     'README ↔ index commit window',
     problems,
-    'update README.md and src/documentation/index.html in the same commit (or within 15 min of each other) so their shared claims stay true (AGENTS.md "README ↔ index parity")',
+    'update README.md and src/documentation/pages/index.mdx in the same commit (or within 15 min of each other) so their shared claims stay true (AGENTS.md "README ↔ index parity")',
   );
   }
   
@@ -991,10 +1018,13 @@ check(
     const resolveCommit = (hash: string): CommitInfo => {
       if (Bun.spawnSync({ cmd: ['git', 'cat-file', '-e', `${hash}^{commit}`], cwd: ROOT }).exitCode !== 0) return null;
       const files = Bun.spawnSync({ cmd: ['git', 'show', '--name-only', '--format=', hash], cwd: ROOT }).stdout.toString();
-      return { exists: true, touchesChangelog: files.includes('documentation/changelog.html') };
+      return { exists: true, touchesChangelog: files.includes('documentation/data/changelog.json') || files.includes('documentation/changelog.html') };
     };
+    const changelogJson = existsSync(join(DOCS, 'data/changelog.json'))
+      ? readFileSync(join(DOCS, 'data/changelog.json'), 'utf8')
+      : '{"entries":[]}';
     const { problems, warnings } = changelogProblems({
-      entries: parseChangelogEntries(readFileSync(join(DOCS, 'changelog.html'), 'utf8')),
+      entries: parseChangelogData(changelogJson),
       committedVersion,
       worktreeVersion: version,
       resolveCommit,
@@ -1005,8 +1035,8 @@ check(
     // working <video> and a raw <hr> in the middle of the changelog).
     check(
       'changelog entries are text',
-      changelogMarkupProblems(readFileSync(join(SRC, 'documentation/changelog.html'), 'utf8')),
-      'escape element names in <li> bodies as <video> — only <code>/<strong>/<a>/<span>/<em>/<b>/<i>/<kbd>/<li> may appear raw',
+      changelogDataMarkupProblems(changelogJson),
+      'escape element names in commit messages as <video> — only <code>/<strong>/<a>/<span>/<em>/<b>/<i>/<kbd>/<li> may appear raw',
     );
     check(
       'changelog pending bump',
@@ -1049,62 +1079,69 @@ check(
   }
 
   // 30b. architecture page ↔ ARCH.md: the published Overview page is a
-  // generated render of the repo's design manifesto (build.ts regenerates it
-  // from ARCH.md + architecture_tpl.html). Same drift class as SKILL.md:
-  // edit ARCH.md, rebuild — never hand-edit the page (AGENTS.md "ARCH.md ↔
-  // architecture page sync").
+  // generated render of the repo's design manifesto (ArchBody renders
+  // ARCH.md via lib/arch-md.ts at SSG build time). Same drift class as
+  // SKILL.md: edit ARCH.md, rebuild — never hand-edit the page (AGENTS.md
+  // "ARCH.md ↔ architecture page sync").
   {
-    let archProblems: string[] = [];
+    const archProblems: string[] = [];
     try {
-      const fresh = buildArchPageText(SRC);
-      if (!existsSync(join(SRC, 'documentation', ARCH_OUTPUT_FILE))) archProblems.push(`src/documentation/${ARCH_OUTPUT_FILE} missing`);
-      else if (readFileSync(join(SRC, 'documentation', ARCH_OUTPUT_FILE), 'utf8') !== fresh)
-        archProblems.push(`src/documentation/${ARCH_OUTPUT_FILE} is stale vs ARCH.md + ${ARCH_TEMPLATE_FILE}`);
+      const md = readFileSync(join(ROOT, 'ARCH.md'), 'utf8');
+      const expectedBody = archBodyHtml(md.trim());
+      const page = join(DOCS_DIST, 'architecture.html');
+      if (!existsSync(page)) archProblems.push('dist/documentation/architecture.html missing — run `bun run build:docs`');
+      else {
+        const { document } = parseHTML(readFileSync(page, 'utf8'));
+        // the § anchors are TOC chrome (the plugin injects them into every
+        // page) — strip before comparing against the ARCH.md render
+        document.querySelectorAll('.arch-prose .heading-anchor').forEach((el) => el.remove());
+        const shown = document.querySelector('.arch-prose')?.innerHTML ?? '';
+        // canonicalize both sides through the same HTML parse+serialize pass:
+        // the SSG serializer and linkedom normalize markup differently at the
+        // byte level, the DOM must be equal
+        const { document: canon } = parseHTML(`<div class="arch-prose">${expectedBody}</div>`);
+        const expected = canon.querySelector('.arch-prose')?.innerHTML ?? '';
+        if (shown !== expected) archProblems.push('architecture page body is stale vs ARCH.md — run `bun run build:docs`');
+      }
     } catch (e) {
-      archProblems.push(`${(e as Error).message.split(' — ')[0]} — architecture page cannot be generated`);
+      archProblems.push(`${(e as Error).message.split(' — ')[0]} — architecture page cannot be checked`);
     }
     check(
       'architecture ↔ ARCH.md',
       archProblems,
-      'run `bun run build` (build.ts regenerates the architecture page from ARCH.md; never edit architecture.html by hand)',
+      'run `bun run build:docs` (ArchBody regenerates the page from ARCH.md; never edit the page by hand)',
     );
   }
 
   // 30c. component taxonomy type: every component declares exactly one type
   // (ATM | MOL | ORG | BLK | TPL — AGENTS.md "Component taxonomy") in its skill
   // frontmatter, and the other two carriers of that claim must agree with it:
-  // the sidebar badge (layout.ts reads the generated search-index `d` field)
-  // and the doc page badge (exact markup from scripts/lib/taxonomy.ts). A
-  // generic PREVIEW marker anywhere in the sidebar is a failure — the type
-  // replaced it.
+  // the sidebar badge (site-nav reads the skill frontmatter at build time)
+  // and the doc page badge (exact markup from scripts/lib/taxonomy.ts).
   {
     const typeProblems: string[] = [];
-    const indexFile = join(DOCS, 'js/search-index.js');
-    const indexText = existsSync(indexFile) ? readFileSync(indexFile, 'utf8') : '';
-    if (!indexText) typeProblems.push('src/documentation/js/search-index.js missing — sidebar badges cannot be checked');
     for (const c of componentDirs) {
       const skill = join(COMPS, c, 'component-skill.md');
       if (!existsSync(skill)) continue; // reported by "component skills"
       const meta = parseSkillFrontmatter(readFileSync(skill, 'utf8'));
       if (!meta) continue; // reported by "skill frontmatter"
-      // sidebar: layout.ts derives its badge map from search-index page entries
-      const entry = indexText.match(new RegExp(`\\{[^{}]*"h":"${c}\\.html"[^{}]*\\}`));
-      const sidebar = entry && entry[0].match(/"d":"([A-Z]{3})"/);
-      if (!sidebar) typeProblems.push(`${c}: sidebar has no type badge (skill type absent from search index)`);
-      else if (sidebar[1] !== meta.type)
-        typeProblems.push(`${c}: sidebar badge says ${sidebar[1]}, skill frontmatter says ${meta.type}`);
-      // doc page: exact generated badge markup (never hand-written)
-      const page = join(DOCS, `${c}.html`);
+      const page = join(DOCS_DIST, `${c}.html`);
       if (!existsSync(page)) continue; // reported by "documentation pages"
-      if (!readFileSync(page, 'utf8').includes(typeBadgeHtml(meta.type as ComponentType)))
+      const html = readFileSync(page, 'utf8');
+      // doc page badge: exact generated markup (never hand-written)
+      if (!html.includes(typeBadgeHtml(meta.type as ComponentType))) {
         typeProblems.push(`${c}: doc page lacks the exact \`${meta.type}\` type badge`);
+      }
+      // sidebar badge on the same rendered page (site-nav built it from the
+      // same skill frontmatter at SSG build time)
+      const sidebarBadge = html.match(new RegExp(`<a class="nav-link[^"]*" href="${c}\\.html"[^>]*>[\\s\\S]*?data-type="([A-Z]{3})"`));
+      if (!sidebarBadge) typeProblems.push(`${c}: sidebar link lacks a type badge`);
+      else if (sidebarBadge[1] !== meta.type) typeProblems.push(`${c}: sidebar badge says ${sidebarBadge[1]}, skill frontmatter says ${meta.type}`);
     }
-    const layoutSrc = readFileSync(join(DOCS, 'js/layout.ts'), 'utf8');
-    if (layoutSrc.includes('PREVIEW')) typeProblems.push('src/documentation/js/layout.ts still renders the generic PREVIEW badge');
     check(
       'component type badges',
       typeProblems,
-      'one type per component, identical in all three places — skill `type:` frontmatter (source of truth), sidebar badge + search-index (`bun run build` regenerates both from frontmatter), doc page badge (see AGENTS.md "Component taxonomy")',
+      'one type per component, identical in all three places — skill `type:` frontmatter (source of truth), sidebar badge + doc page badge (both built from that frontmatter by defuss-ssg)',
     );
   }
 
@@ -1115,7 +1152,7 @@ check(
   {
     const withJs = componentDirs.filter((c) => existsSync(join(COMPS, c, `${c}.ts`)));
     const actual = { cssOnly: componentDirs.length - withJs.length, total: componentDirs.length };
-    const statFix = `update the "**N of M components need no JavaScript**" line in README.md AND src/documentation/index.html (within the 15-min parity window) to match the component tree (${actual.cssOnly} of ${actual.total})`;
+    const statFix = `update the "**N of M components need no JavaScript**" line in README.md AND src/documentation/pages/index.mdx (within the 15-min parity window) to match the component tree (${actual.cssOnly} of ${actual.total})`;
     check(
       'README CSS-only stat',
       readmeCssOnlyProblems(readFileSync(join(ROOT, 'README.md'), 'utf8'), 'README.md', actual),
@@ -1123,11 +1160,13 @@ check(
     );
     check(
       'index CSS-only stat',
-      readmeCssOnlyProblems(
-        readFileSync(join(DOCS, 'index.html'), 'utf8'),
-        'src/documentation/index.html',
-        actual,
-      ),
+      existsSync(join(DOCS_DIST, 'index.html'))
+        ? readmeCssOnlyProblems(
+            readFileSync(join(DOCS_DIST, 'index.html'), 'utf8'),
+            'dist/documentation/index.html',
+            actual,
+          )
+        : ['dist/documentation/index.html missing — run `bun run build:docs`'],
       statFix,
     );
   }
@@ -1137,7 +1176,7 @@ check(
   // they actually sit on (--sidebar / --sidebar-accent) — themes whose
   // sidebar-accent pairs failed this shipped invisible active nav links.
   {
-    const themes = parseThemes(readFileSync(join(DOCS, 'js/themes.ts'), 'utf8'));
+    const themes = parseThemes(readFileSync(join(DOCS, 'runtime/themes.ts'), 'utf8'));
     // the "default" theme isn't in themes.ts — fold the shipped token file in
     const defaultModes = defaultTokenModes(readFileSync(join(SRC, 'theme/default-semantic-tokens.css'), 'utf8'));
     const problems = sidebarContrastProblems([
@@ -1147,12 +1186,12 @@ check(
     check(
       'theme sidebar contrast',
       problems,
-      'raise the flagged theme token(s) in src/documentation/js/themes.ts (or src/theme/default-semantic-tokens.css) until the sidebar text pair reaches WCAG AA (>=4.5) — the measured pairs are pinned by tests/contrast.test.ts',
+      'raise the flagged theme token(s) in src/documentation/runtime/themes.ts (or src/theme/default-semantic-tokens.css) until the sidebar text pair reaches WCAG AA (>=4.5) — the measured pairs are pinned by tests/contrast.test.ts',
     );
     check(
       'theme radius consistency',
       radiusConsistencyProblems(themes),
-      'declare the same `radius` in BOTH the light and dark block of the flagged theme(s) in src/documentation/js/themes.ts (AGENTS.md "Theme radius consistency")',
+      'declare the same `radius` in BOTH the light and dark block of the flagged theme(s) in src/documentation/runtime/themes.ts (AGENTS.md "Theme radius consistency")',
     );
   }
 
