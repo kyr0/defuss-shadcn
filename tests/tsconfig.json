@@ -1,0 +1,9 @@
+{
+  // Why: same editor-discovery shim as scripts/tsconfig.json — the TS
+  // language server only auto-discovers files literally named
+  // tsconfig.json, so tests/*.ts opened in the editor never reached
+  // tsconfig.test.json and fell into the inferred project (no @types →
+  // ts(2591) on the node: imports). Thin extend only; CI type-checks via
+  // `bun run typecheck` which uses tsconfig.test.json directly.
+  "extends": "../tsconfig.test.json"
+}

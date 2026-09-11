@@ -1,0 +1,15 @@
+{
+  // Why: the TS language server only auto-discovers files literally named
+  // tsconfig.json, so scripts/*.ts opened in the editor never reached
+  // tsconfig.scripts.json (different name) and fell into the inferred
+  // project — no @types at all → ts(2591) "Cannot find name 'node:fs'" etc.
+  // This thin project is found by walking up from scripts/, extends the
+  // real tooling config (whose include/exclude stay repo-root-relative).
+  // Not used by the build — scripts run directly under bun.
+  "extends": "../tsconfig.scripts.json",
+  "compilerOptions": {
+    // bun-types + node side by side: Bun globals (Bun.*, import.meta.dirname)
+    // plus the full node: module surface the scripts import
+    "types": ["bun", "node"]
+  }
+}
