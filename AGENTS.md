@@ -1,6 +1,6 @@
 # defuss-shadcn — Maintainer Instructions
 
-Why this system exists (written by agents, for agents): [MOTIVATION.md](MOTIVATION.md).
+Why this system exists (written by agents, for agents): [ARCH.md](ARCH.md).
 
 Scratch space: throwaway scripts, probes and scaffolds go in the repo-local
 `tmp/` (gitignored) — never `/tmp` or other machine-specific locations. This
@@ -104,6 +104,7 @@ defuss-shadcn/
 │   ├── lib/skill-files.ts             ← dist/SKILL.md index generator from src/SKILL_tpl.md + skill frontmatter (build.ts regenerates every build)
 │   ├── create-screenshots.ts          ← parallel default-state screenshots for agent inspection
 │   ├── lib/audit.ts                   ← undefined-utility audit (used by verify)
+│   ├── lib/links.ts                   ← markdown link checker (verify markdown link integrity gate; pure)
 │   ├── lib/minify.ts                  ← derived-artifact recognition (verify 1:1 allow-list + min-twin gate; pure)
 │   ├── push.sh                        ← commit + push dev → main (non-release)
 │   ├── deploy.sh                      ← release: version bump, changelog, tag, GitHub release

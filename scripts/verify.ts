@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
-import { join, relative, sep } from 'node:path';
+import { dirname, join, relative, sep } from 'node:path';
 import { parseHTML } from 'linkedom';
 import { auditUtilities, walk } from './lib/audit.ts';
 import { componentFingerprints, declaredStates } from './lib/inputs.ts';
@@ -29,6 +29,7 @@ import { buildSkillText } from './lib/skill-files.ts';
 import { archBodyHtml } from '../src/documentation/lib/arch-md.ts';
 import { typeBadgeHtml, type ComponentType } from './lib/taxonomy.ts';
 import { docsDistToSrc, isDocsSsgAuthoringSrc } from './lib/docs-ssg.ts';
+import { markdownLinkProblems, type MdDoc } from './lib/links.ts';
 
 /**
  * Why: one static, fast gate that proves the repo is self-consistent after any
@@ -804,24 +805,46 @@ check(
 // <style> — including the raw skill markdown embedded in
 // <script type="text/plain"> — are text, not elements, so illustrative
 // markup there (src="photo.jpg") is never mistaken for a live link.
-// Ceiling (ponytail): cross-page anchors (page.html#id) only check the page.
+// Cross-page anchors (page.html#id) resolve against the target page's id set
+// (parsed once up front), so a renamed heading anchor is a build failure too.
 const linkProblems: string[] = [];
 if (existsSync(DIST)) {
-  for (const f of readdirSync(join(DIST, 'documentation')).filter((x) => x.endsWith('.html'))) {
+  const pageIds = new Map<string, Set<string>>(
+    docHtml.map(([page, html]) => [
+      page,
+      new Set(
+        [...parseHTML(html).document.querySelectorAll('[id]')]
+          .map((el) => el.getAttribute('id'))
+          .filter((v): v is string => !!v),
+      ),
+    ]),
+  );
+  for (const f of docPages) {
     const { document } = parseHTML(readFileSync(join(DIST, 'documentation', f), 'utf8'));
-    const ids = new Set([...document.querySelectorAll('[id]')].map((el) => el.getAttribute('id')));
     for (const el of document.querySelectorAll('[href],[src]')) {
       const url = (el.getAttribute(el.hasAttribute('href') ? 'href' : 'src') ?? '').trim();
       if (/^(https?:|mailto:|data:|javascript:)/i.test(url)) continue;
       // demo placeholders: no target at all, or the conventional "..." stub
       if (url === '' || url === '#' || url === '...') continue;
       if (url.startsWith('#')) {
-        if (!ids.has(url.slice(1))) linkProblems.push(`${f}: dead anchor #${url.slice(1)}`);
+        if (!pageIds.get(f)?.has(url.slice(1))) linkProblems.push(`${f}: dead anchor #${url.slice(1)}`);
         continue;
       }
-      const [path] = url.split('#');
+      const hashAt = url.indexOf('#');
+      const path = hashAt >= 0 ? url.slice(0, hashAt) : url;
+      const anchor = hashAt >= 0 ? url.slice(hashAt + 1) : '';
       if (!path) continue;
-      if (!existsSync(join(DIST, 'documentation', path))) linkProblems.push(`${f}: dead link ${url}`);
+      const targetAbs = join(DIST, 'documentation', path);
+      if (!existsSync(targetAbs)) {
+        linkProblems.push(`${f}: dead link ${url}`);
+        continue;
+      }
+      // cross-page anchor: #id inside a sibling html page must exist there
+      // too; non-html targets (CDN links, assets) carry no page ids of ours.
+      if (anchor && targetAbs.endsWith('.html')) {
+        const ids = pageIds.get(relative(join(DIST, 'documentation'), targetAbs));
+        if (ids && !ids.has(anchor)) linkProblems.push(`${f}: dead cross-page anchor ${url}`);
+      }
     }
   }
 }
@@ -830,6 +853,41 @@ check(
   linkProblems,
   'fix or remove the link (dead links on the published docs site are user-facing breakage)',
 );
+
+// 21b. markdown source link integrity: every [text](target) in the prose
+// sources (README/AGENTS/ARCH, src/SKILL.md, component skills, docs pages'
+// MDX) must resolve — to a real file (relative to the source file) or to a
+// heading anchor in the same file. This catches what the rendered-HTML gate
+// above structurally can't: links that never became links (escaped
+// `\[x\](y)` in MDX renders as literal text) and repo-relative links that
+// only ever work on GitHub (a since-deleted MOTIVATION.md hid behind one).
+// Fenced code samples are stripped before parsing (see scripts/lib/links.ts).
+{
+  const mdSources: MdDoc[] = [
+    ...['README.md', 'AGENTS.md', 'ARCH.md'].map((f) => [f, join(ROOT, f)] as const),
+    ...walk(SRC, ['.md']).map((p) => [relative(ROOT, p), p] as const),
+    ...walk(DOCS_PAGES, ['.mdx']).map((p) => [relative(ROOT, p), p] as const),
+  ]
+    .filter(([, abs]) => existsSync(abs))
+    .map(([name, abs]) => ({ name, text: readFileSync(abs, 'utf8') }));
+  // existence resolved inside ROOT, relative to the doc's own folder. .mdx
+  // pages additionally render one level up (dist/documentation/), so links
+  // there address the SHIPPED surface — mapped back onto the sources:
+  // `sibling.html` → the page's .mdx, `../x` → src/x (dist/components ← src/components).
+  const pagesDir = relative(ROOT, DOCS_PAGES);
+  const mdExists = (from: string, relPath: string): boolean => {
+    const abs = join(ROOT, dirname(from), relPath);
+    if (abs.startsWith(ROOT + sep) && existsSync(abs)) return true;
+    if (!from.startsWith(pagesDir)) return false;
+    if (relPath.endsWith('.html') && existsSync(join(DOCS_PAGES, relPath.replace(/\.html$/, '.mdx')))) return true;
+    return existsSync(join(SRC, relPath.replace(/^\.\.\//, '')));
+  };
+  check(
+    'markdown link integrity',
+    markdownLinkProblems(mdSources, mdExists),
+    'point every markdown link at an existing file (relative to its source) or a real heading; in .mdx use <DocLink href> — escaped \\[x\\](y) renders literally',
+  );
+}
 
 // 22. fixture ↔ CSS parity: every variant/size the component CSS implements
 // must be instantiated in its e2e fixture (docs parity rule, mechanical side).

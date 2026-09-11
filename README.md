@@ -20,7 +20,7 @@ The set includes 13 marketing blocks (Site Header, Hero, Pricing, Testimonials, 
 
 **[Documentation & Live Demos →](https://kyr0.github.io/defuss-shadcn/)** · [Architecture (ARCH.md)](ARCH.md) · [Agent integration guide (dist/SKILL.md)](dist/SKILL.md)
 
-Why this system exists, from the agents who built it: [MOTIVATION.md](MOTIVATION.md).
+Why this system exists, from the agents who built it: [ARCH.md](ARCH.md).
 
 ## What this is
 
