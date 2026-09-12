@@ -1838,6 +1838,8 @@ function init18() {
         sidebar.dataset.stateName = state === "collapsed" ? "collapsed" : "default";
       });
     });
+    document.__sidebarAutoRo?.observe(sidebar.parentElement ?? sidebar);
+    autoCollapseSidebar(sidebar);
   });
   document.querySelectorAll("[data-sidebar-mobile]:not([data-init])").forEach((trigger) => {
     trigger.dataset.init = "";
@@ -1854,6 +1856,28 @@ function init18() {
     });
   });
 }
+var AUTO_COLLAPSE_BELOW = 24 * 16;
+var AUTO_COLLAPSE_ABOVE = 28 * 16;
+function autoCollapseSidebar(sidebar) {
+  if (sidebar.dataset.stateName)
+    return;
+  const avail = (sidebar.parentElement ?? document.body).clientWidth || window.innerWidth;
+  const collapsed = sidebar.dataset.state === "collapsed";
+  if (!collapsed && avail < AUTO_COLLAPSE_BELOW)
+    sidebar.dataset.state = "collapsed";
+  else if (collapsed && avail >= AUTO_COLLAPSE_ABOVE) {
+    sidebar.dataset.state = sidebar._defaultState ?? "expanded";
+  }
+}
+if (typeof ResizeObserver !== "undefined" && !document.__sidebarAutoRo) {
+  document.__sidebarAutoRo = new ResizeObserver((entries) => {
+    for (const entry of entries) {
+      if (entry.target.classList?.contains("app-sidebar"))
+        autoCollapseSidebar(entry.target);
+      entry.target.querySelectorAll?.(".app-sidebar").forEach(autoCollapseSidebar);
+    }
+  });
+}
 init18();
 new MutationObserver(init18).observe(document, { childList: true, subtree: true });
 if (!document.__sidebarKbInit) {
@@ -1864,6 +1888,7 @@ if (!document.__sidebarKbInit) {
       const sidebar = document.querySelector(".app-sidebar");
       if (sidebar) {
         sidebar.dataset.state = sidebar.dataset.state === "collapsed" ? "expanded" : "collapsed";
+        sidebar.dataset.stateName = sidebar.dataset.state === "collapsed" ? "collapsed" : "default";
       }
     }
   });
@@ -2865,5 +2890,5 @@ function init27() {
 init27();
 new MutationObserver(init27).observe(document, { childList: true, subtree: true });
 
-//# debugId=FC1E29FFBACD051D64756E2164756E21
+//# debugId=2A1A0DC772583BF964756E2164756E21
 //# sourceMappingURL=all.js.map

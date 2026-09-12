@@ -9,17 +9,17 @@
   },
   "withJs": 27,
   "withoutJs": 44,
-  "totalSize": 413417,
-  "totalSizeMinified": 187615,
-  "totalSizeGz": 138332,
-  "totalSizeGzMinified": 71072,
+  "totalSize": 415987,
+  "totalSizeMinified": 188220,
+  "totalSizeGz": 139206,
+  "totalSizeGzMinified": 71262,
   "bundle": {
-    "jsSize": 100891,
-    "jsSizeMinified": 55452,
+    "jsSize": 101993,
+    "jsSizeMinified": 56077,
     "cssSize": 210048,
     "cssSizeMinified": 120234,
-    "totalSizeGz": 53309,
-    "totalSizeGzMinified": 31624
+    "totalSizeGz": 53604,
+    "totalSizeGzMinified": 31821
   },
   "components": {
     "accordion": {
@@ -624,14 +624,14 @@
       "name": "sidebar",
       "type": "ATM",
       "withJs": true,
-      "jsSize": 6506,
-      "jsSizeMinified": 1904,
+      "jsSize": 9076,
+      "jsSizeMinified": 2509,
       "cssSize": 11835,
       "cssSizeMinified": 6011,
-      "totalSizeGz": 4827,
-      "totalSizeGzMinified": 2210,
-      "totalSize": 18341,
-      "totalSizeMinified": 7915
+      "totalSizeGz": 5701,
+      "totalSizeGzMinified": 2400,
+      "totalSize": 20911,
+      "totalSizeMinified": 8520
     },
     "site-footer": {
       "name": "site-footer",

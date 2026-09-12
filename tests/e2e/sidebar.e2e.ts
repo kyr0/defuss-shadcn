@@ -177,6 +177,40 @@ try {
     await page.click('[data-sidebar-trigger="demo-sidebar"]'); // restore
   });
 
+  // -- Auto-collapse (documented: row < 24rem → rail, ≥ 28rem → restored) ---
+  await check('auto-collapse: sidebar in a 18rem row docks to the rail on load', async () => {
+    await page.waitForFunction(
+      () => (document.querySelector('#demo-auto') as HTMLElement).dataset.state === 'collapsed',
+    );
+    const w = await page.$eval('#demo-auto', (el) => el.getBoundingClientRect().width);
+    assert.ok(w < 100, `narrow-row sidebar is rail-width (${w}px)`);
+  });
+
+  await check('auto-collapse: widening the row past the hysteresis restores it', async () => {
+    await page.$eval('#narrow-row', (el) => ((el as HTMLElement).style.width = '60rem'));
+    // width animates (200ms ease) — wait for the settle, don't race the transition
+    await page.waitForFunction(
+      () => document.querySelector('#demo-auto')!.getBoundingClientRect().width >= 200,
+    );
+    await page.$eval('#narrow-row', (el) => ((el as HTMLElement).style.width = '18rem'));
+    await page.waitForFunction(
+      () => (document.querySelector('#demo-auto') as HTMLElement).dataset.state === 'collapsed',
+    );
+  });
+
+  await check('auto-collapse: an explicit setState pins against the heuristic', async () => {
+    // deliberate 'default' inside the narrow row must survive a re-check
+    await page.$eval('#demo-auto', (el) => (el as HTMLElement).api!.setState('default'));
+    await page.$eval('#narrow-row', (el) => ((el as HTMLElement).style.width = '17rem'));
+    await page.waitForTimeout(150); // let any RO callback land
+    const state = await page.$eval('#demo-auto', (el) => (el as HTMLElement).api!.getState());
+    assert.equal(state.name, 'default', 'explicit choice wins over the narrow row');
+    // and a later narrow→wide→narrow cycle keeps the pin
+    await page.$eval('#demo-auto', (el) => (el as HTMLElement).api!.setState('collapsed'));
+    const s2 = await page.$eval('#demo-auto', (el) => (el as HTMLElement).api!.getState());
+    assert.equal(s2.name, 'collapsed');
+  });
+
   await check('state API: unknown state names throw', async () => {
     const err = await page.evaluate(() => {
       try {

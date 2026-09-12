@@ -9,33 +9,46 @@
  * Labels are plain text (JSX escapes `&` → `&amp;` on render — the serialized
  * pages stay byte-identical to the old hand-written ones).
  */
+/** The one section rendered expanded on first load; every other section
+ * starts collapsed (see SiteNav / layout.ts collapse persistence). */
+export const ALWAYS_OPEN_SECTION = 'Introduction';
 export const NAV = [
-    { heading: 'Overview', items: [
-            { label: 'Introduction', href: 'index.html' },
+    { heading: 'Introduction', items: [
+            { label: 'Getting Started', href: 'index.html' },
             { label: 'Installation', href: 'installation.html' },
-            { label: 'Theming', href: 'theming.html' },
-            { label: 'Dark Mode', href: 'dark-mode.html' },
-            { label: 'Data Attribute API', href: 'data-attribute-api.html' },
-            { label: 'Architecture', href: 'architecture.html' },
-            { label: 'Cascade Layers', href: 'cascade-layers.html' },
-            { label: 'ES Modules', href: 'es-modules.html' },
-            { label: 'Native Web APIs', href: 'native-web-apis.html' },
-            { label: 'Animations', href: 'animations.html' },
-            { label: 'Sizing', href: 'sizing.html' },
-            { label: 'Layout', href: 'layout.html' },
-            { label: 'Accessibility', href: 'accessibility.html' },
+            { label: 'How to Use', href: 'how-to-use.html' },
             { label: 'Component Skills', href: 'component-skills.html' },
             { label: 'Changelog', href: 'changelog.html' },
         ] },
-    { heading: 'Sizing', items: [
-            { label: 'Width & Height', href: 'width-height.html' },
-            { label: 'Spacing', href: 'spacing.html' },
-            { label: 'Density', href: 'density.html' },
-        ] },
-    { heading: 'Layout', items: [
-            { label: 'Container', href: 'container.html' },
-            { label: 'Flex', href: 'flex.html' },
-            { label: 'Grid', href: 'grid.html' },
+    { heading: 'Guides', items: [
+            { label: 'Theming', href: 'theming.html' },
+            { label: 'Dark Mode', href: 'dark-mode.html' },
+            { label: 'Data Attribute API', href: 'data-attribute-api.html' },
+            { label: 'State API', href: 'state-api.html' },
+            { label: 'Verified Agentic Engineering (VAE)', href: 'architecture.html' },
+            { label: 'Cascade Layers', href: 'cascade-layers.html' },
+            { label: 'JavaScript Modules', href: 'es-modules.html' },
+            { label: 'Native Web APIs', href: 'native-web-apis.html' },
+            { label: 'Animations', href: 'animations.html' },
+            {
+                label: 'Sizing',
+                href: 'sizing.html',
+                children: [
+                    { label: 'Width & Height', href: 'width-height.html' },
+                    { label: 'Spacing', href: 'spacing.html' },
+                    { label: 'Density', href: 'density.html' },
+                ],
+            },
+            {
+                label: 'Layout',
+                href: 'layout.html',
+                children: [
+                    { label: 'Container', href: 'container.html' },
+                    { label: 'Flex', href: 'flex.html' },
+                    { label: 'Grid', href: 'grid.html' },
+                ],
+            },
+            { label: 'Accessibility', href: 'accessibility.html' },
         ] },
     { heading: 'Primitives', items: [
             { label: 'Typography', href: 'typography.html' },
@@ -127,20 +140,25 @@ export const NAV = [
             { label: 'Site Footer', href: 'site-footer.html' },
         ] },
 ];
+/** Every item including nested children, in reading order. */
+export function flattenNav(items) {
+    return items.flatMap((i) => [i, ...flattenNav(i.children ?? [])]);
+}
 /** Flat ordered list of all pages — the prev/next pager's universe. */
-export const ALL_PAGES = NAV.flatMap((s) => s.items);
+export const ALL_PAGES = NAV.flatMap((s) => flattenNav(s.items));
 /** The section heading a page belongs to (drives the always-open rule). */
 export function sectionOf(href) {
     for (const s of NAV)
-        if (s.items.some((i) => i.href === href))
+        if (flattenNav(s.items).some((i) => i.href === href))
             return s.heading;
     return null;
 }
 export function labelOf(href) {
-    for (const s of NAV)
-        for (const i of s.items)
-            if (i.href === href)
-                return i.label;
+    for (const s of NAV) {
+        const hit = flattenNav(s.items).find((i) => i.href === href);
+        if (hit)
+            return hit.label;
+    }
     return null;
 }
 //# sourceMappingURL=nav.js.map

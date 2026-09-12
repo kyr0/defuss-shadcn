@@ -110,6 +110,11 @@ function init() {
                 sidebar.dataset.stateName = state === 'collapsed' ? 'collapsed' : 'default';
             });
         });
+        // -- Auto-collapse wiring: correct state at first paint + on row resize --
+        // observe the row (not the sidebar): the sidebar keeps its authored width
+        // (flex-shrink: 0), so only the row's width reports available space.
+        document.__sidebarAutoRo?.observe(sidebar.parentElement ?? sidebar);
+        autoCollapseSidebar(sidebar);
     });
     // -- Mobile dialog triggers ----------------------------------
     document.querySelectorAll('[data-sidebar-mobile]:not([data-init])').forEach((trigger) => {
@@ -126,6 +131,42 @@ function init() {
         });
     });
 }
+// -- Auto-collapse: too little room → dock to the rail ----------
+// A full-width rail only stays useful with content beside it: once the
+// sidebar's row (its parent) drops below AUTO_COLLAPSE_BELOW px the
+// component docks itself to the icon rail, restoring above
+// AUTO_COLLAPSE_ABOVE (hysteresis, so a scrollbar appearing never flickers
+// it). An explicit choice always wins: trigger clicks, Cmd+B and
+// api.setState all set dataset.stateName, and while that is set the auto
+// behavior stays out. ponytail: threshold is px-based (authored default is
+// 16rem); a custom --sidebar-width beyond ~24rem needs a larger constant.
+const AUTO_COLLAPSE_BELOW = 24 * 16; // 384px
+const AUTO_COLLAPSE_ABOVE = 28 * 16; // 448px
+function autoCollapseSidebar(sidebar) {
+    if (sidebar.dataset.stateName)
+        return; // deliberate state — never fight it
+    // available space = the sidebar's row (a .sidebar-layout or any container);
+    // clientWidth of the parent, not the sidebar's own width (flex-shrink: 0
+    // keeps the authored width and overflows instead of shrinking).
+    const avail = (sidebar.parentElement ?? document.body).clientWidth || window.innerWidth;
+    const collapsed = sidebar.dataset.state === 'collapsed';
+    if (!collapsed && avail < AUTO_COLLAPSE_BELOW)
+        sidebar.dataset.state = 'collapsed';
+    else if (collapsed && avail >= AUTO_COLLAPSE_ABOVE) {
+        sidebar.dataset.state = sidebar._defaultState ?? 'expanded';
+    }
+}
+// One shared observer; each init() observes the sidebar's row, so container
+// queries / layout resizes re-run the check without a window resize.
+if (typeof ResizeObserver !== 'undefined' && !document.__sidebarAutoRo) {
+    document.__sidebarAutoRo = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+            if (entry.target.classList?.contains('app-sidebar'))
+                autoCollapseSidebar(entry.target);
+            entry.target.querySelectorAll?.('.app-sidebar').forEach(autoCollapseSidebar);
+        }
+    });
+}
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 // -- Keyboard shortcut: Cmd+B / Ctrl+B ----------------------
@@ -138,6 +179,8 @@ if (!document.__sidebarKbInit) {
             const sidebar = document.querySelector('.app-sidebar');
             if (sidebar) {
                 sidebar.dataset.state = sidebar.dataset.state === 'collapsed' ? 'expanded' : 'collapsed';
+                // user decision — pins against the auto-collapse heuristic
+                sidebar.dataset.stateName = sidebar.dataset.state === 'collapsed' ? 'collapsed' : 'default';
             }
         }
     });

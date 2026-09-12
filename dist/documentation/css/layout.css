@@ -50,7 +50,12 @@ main .h1, main .h2, main .h3, main .h4 { scroll-margin-top: 0; }
   height: 32px;
 }
 
-/* -- Site sidebar ------------------------------------------ */
+/* -- Site sidebar ------------------------------------------
+   Same collapse affordance as the shipped sidebar component: the dock
+   button docks it off-canvas (data-state="collapsed", the component's own
+   observable-state attribute — see src/components/sidebar/sidebar.css).
+   While docked, the header hamburger (hidden on desktop by the mobile
+   section below) reappears via :has() as the reopen control. */
 .site-sidebar {
   width: 14rem; flex-shrink: 0;
   border-right: 1px solid var(--sidebar-border);
@@ -59,6 +64,36 @@ main .h1, main .h2, main .h3, main .h4 { scroll-margin-top: 0; }
   background: var(--sidebar);
   display: flex; flex-direction: column;
   overflow: hidden;
+  transition: width 200ms ease; /* same feel as the component's collapse */
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-sidebar { transition: none; }
+}
+/* docked (data-state="collapsed" — the sidebar component's own state name):
+   zero width, hamburger appears as the reopen control */
+.site-sidebar[data-state="collapsed"] { width: 0; border-right: none; }
+body:has(.site-sidebar[data-state="collapsed"]) .sidebar-toggle { display: flex; }
+
+/* Dock button — docked via JS (layout.ts #sidebar-collapse) + persisted.
+   Only shown at desktop widths; below the breakpoint the hamburger owns it,
+   and the collapsed dock itself is neutralized (see mobile section). */
+.sidebar-collapse {
+  position: absolute; top: 0.625rem; right: 0.5rem; z-index: 1;
+  display: flex; align-items: center; justify-content: center;
+  width: 1.5rem; height: 1.5rem;
+  padding: 0;
+  border: none; border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  transition: color 120ms, background 120ms;
+}
+.sidebar-collapse:hover { color: var(--sidebar-foreground); background: var(--sidebar-accent); }
+.sidebar-collapse:focus-visible { outline: 2px solid var(--sidebar-ring); outline-offset: -2px; }
+.sidebar-collapse svg { width: 0.875rem; height: 0.875rem; transition: rotate 200ms ease; }
+.site-sidebar[data-state="collapsed"] .sidebar-collapse svg { rotate: 180deg; }
+@media (prefers-reduced-motion: reduce) {
+  .sidebar-collapse, .sidebar-collapse svg { transition: none; }
 }
 .sidebar-scroll {
   flex: 1 1 auto;
@@ -791,11 +826,15 @@ html.dark pre.shiki span {
   background: oklch(0 0 0 / 0.4);
 }
 
-@media (max-width: 48rem) {
+/* Too little horizontal space for a docked sidebar + readable prose —
+   the sidebar auto-collapses into the hamburger-driven overlay drawer
+   (same pattern the shipped sidebar component uses on mobile). Applies
+   from tablet width down, not just phones. */
+@media (max-width: 64rem) {
   /* Show hamburger */
   .sidebar-toggle { display: flex; }
 
-  /* Sidebar: off-canvas overlay on mobile */
+  /* Sidebar: off-canvas overlay */
   .site-sidebar {
     position: fixed;
     top: 3.5rem;
@@ -810,7 +849,17 @@ html.dark pre.shiki span {
   .site-sidebar.open {
     transform: translateX(0);
   }
+  /* drawer mode — the hamburger owns open/close here, not the dock button;
+     a stale docked state must not shrink the drawer (specificity of the
+     [data-state] dock rule outranks the plain .site-sidebar rule above) */
+  .sidebar-collapse { display: none; }
+  .site-sidebar[data-state="collapsed"] {
+    width: 16rem;
+    border-right: 1px solid var(--sidebar-border);
+  }
+}
 
+@media (max-width: 48rem) {
   /* Show backdrop when sidebar open */
   .sidebar-backdrop.open {
     display: block;

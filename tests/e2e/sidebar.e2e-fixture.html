@@ -31,6 +31,16 @@
 
     <div style="flex:1;position:relative;">
       <button data-sidebar-trigger="demo-sidebar" aria-label="Toggle sidebar">Toggle</button>
+      <!-- auto-collapse probe: narrow container forces its sidebar to the rail
+           (documented behavior: row < 24rem → collapsed, ≥ 28rem → restored) -->
+      <div id="narrow-row" style="width:18rem;display:flex;">
+        <aside class="app-sidebar" id="demo-auto" style="position:relative;height:12rem;">
+          <div class="sidebar-content">
+            <nav class="sidebar-nav"><a class="sidebar-link" href="#"><span>Auto</span></a></nav>
+          </div>
+        </aside>
+        <div style="flex:1;"></div>
+      </div>
       <!-- tall spacer keeps the document scrollable so the scroll-lock behavior
            (page behind the mobile sheet must stay put) is observable -->
       <div style="height:200vh"></div>

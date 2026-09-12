@@ -1,0 +1,153 @@
+---
+title: "State API"
+description: "Every interactive component declares its UI states by name and exposes them per element — el.api.setState('open') / el.api.getState() — for agents, tests, and code."
+slug: "state-api"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="state-api" title="State API" introStyle="max-width:38rem;">
+  Interactive components don't just look stateful — they <em>declare</em> their states. Every component that ships a <code>.js</code> file exposes its states by name, so agents, tests, and your own code can drive and observe any documented state without knowing the implementation.
+</PageHeader>
+
+<H2>The contract</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> Each component instance binds a tiny API directly on the element. State lives <em>on the element</em> (never in module scope), so twenty components on one page can each hold a different state: </p>
+
+<CodeCard title="the shape — any JS component" lang="javascript" mb="2.5rem">{"// set a declared state by name — throws on unknown names\nel.api.setState('open', { /* optional config */ });\n\n// read it back — always reflects the real UI\nel.api.getState(); // → { name: 'open', config: { ... } }"}</CodeCard>
+
+<p class="text-sm text-muted-foreground mb-5"> Three guarantees, verified by <DocLink href="https://github.com/kyr0/defuss-shadcn/blob/main/scripts/verify.ts" target="_blank">the build's verifier</DocLink> for every component: </p>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(16rem, 1fr));gap:1rem;margin-bottom:2.5rem;">
+  <div style="border:1px solid var(--border);border-radius:var(--radius-xl);padding:1.25rem;">
+    <p class="text-sm font-medium mb-2" style="margin-top:0;">Declared, not implied</p>
+    <p class="text-sm text-muted-foreground" style="margin-bottom:0;"> Each component lists its states as names (<code>const dialogStates = ['default', 'open']</code>) — <code>default</code> first. Unknown names throw with the supported list. </p>
+  </div>
+  <div style="border:1px solid var(--border);border-radius:var(--radius-xl);padding:1.25rem;">
+    <p class="text-sm font-medium mb-2" style="margin-top:0;">Honest reads</p>
+    <p class="text-sm text-muted-foreground" style="margin-bottom:0;"> <code>getState()</code> reflects what the user sees: pressing Escape on an open dialog returns <code>default</code>, not the stale last <code>setState</code> value. </p>
+  </div>
+  <div style="border:1px solid var(--border);border-radius:var(--radius-xl);padding:1.25rem;">
+    <p class="text-sm font-medium mb-2" style="margin-top:0;">Documented visually</p>
+    <p class="text-sm text-muted-foreground" style="margin-bottom:0;"> Every state is a named entry in the component's skill (<code>## States</code>), a section on its doc page, and a real screenshot in both light and dark mode. </p>
+  </div>
+</div>
+
+<H2>Try it</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> The buttons below call <code>api.setState()</code> and print what <code>api.getState()</code> reads back. Closing the dialog with Escape or the backdrop flips the observed state to <code>default</code> on its own — the read always matches the UI. </p>
+
+<Example first>
+  <ExampleLabel>Drive the dialog by name</ExampleLabel>
+  <ExampleHint>The same API keyboard users, tests, and agents use.</ExampleHint>
+  <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;width:100%;">
+    <button class="btn" data-variant="default" type="button" onclick="const d=document.getElementById('state-api-dialog');d.api.setState('open');document.getElementById('state-api-out').textContent=d.api.getState().name">api.setState('open')</button>
+    <button class="btn" data-variant="outline" type="button" onclick="const d=document.getElementById('state-api-dialog');d.api.setState('default');document.getElementById('state-api-out').textContent=d.api.getState().name">api.setState('default')</button>
+    <output class="badge" data-variant="secondary" id="state-api-out" aria-live="polite">default</output>
+  </div>
+  <ExampleCode>{`<!-- dialog.js binds el.api per instance on load -->
+<button class="btn" data-variant="default" type="button"
+        onclick="const d = document.getElementById('state-api-dialog'),
+                 o = document.getElementById('state-api-out');
+                 d.api.setState('open');   // by name — no showModal()
+                 o.textContent = d.api.getState().name">
+  api.setState('open')
+</button>
+<button class="btn" data-variant="outline" type="button"
+        onclick="const d = document.getElementById('state-api-dialog'),
+                 o = document.getElementById('state-api-out');
+                 d.api.setState('default');
+                 o.textContent = d.api.getState().name">
+  api.setState('default')
+</button>
+<output class="badge" data-variant="secondary"
+         id="state-api-out" aria-live="polite">default</output>
+
+<!-- the dialog: closes via Escape/backdrop/close-button; dialog.js
+     reflects that into the named state, so a deferred getState()
+     reads 'default' again -->
+<dialog id="state-api-dialog" class="dialog"
+        role="dialog" aria-modal="true" aria-labelledby="sa-title"
+        onclose="const d = this, o = document.getElementById('state-api-out');
+                 queueMicrotask(function () { o.textContent = d.api.getState().name; });">
+  <div class="dialog-content">
+    <div class="dialog-header">
+      <h2 class="dialog-title" id="sa-title">Named state</h2>
+    </div>
+    <div class="dialog-footer">
+      <button class="btn" data-variant="outline" data-dialog-close>Close</button>
+    </div>
+  </div>
+</dialog>`}</ExampleCode>
+</Example>
+
+<H2>Discovering the states</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> Three places name the same list. The skill frontmatter is the machine-readable source — <code>dist/SKILL.md</code> indexes it, and every component's doc page shows the states with a live demo: </p>
+
+<CodeCard title="dialog/component-skill.md" lang="markdown" mb="1.5rem">{"---\nname: Dialog\ntype: MOL\n...\nsupportedStates: default, open\n---\n\n## States\n- `default` — closed (authored initial state)\n- `open` — shown modally via showModal()\n\n```js\ndocument.querySelector('#confirm')\n  .api.setState('open');\n```"}</CodeCard>
+
+<p class="text-sm text-muted-foreground mb-5"> The component scripts also register their states and a registry-level API on <code>globalThis._defussShadcn</code> — useful when you have no element handle yet: </p>
+
+<CodeCard title="registry globals (set by each component .js)" lang="javascript" mb="2.5rem">{"globalThis._defussShadcn.dialogStates;  // ['default', 'open']\n\n// registry form — element passed explicitly, same contract as el.api\nconst { dialogApi } = globalThis._defussShadcn;\ndialogApi.setState(document.querySelector('#confirm'), 'open');\ndialogApi.getState(document.querySelector('#confirm'));\n// → { name: 'open', config: {} }"}</CodeCard>
+
+<H2>States across components</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> Every multi-state component, with its declared state names (from each skill's <code>supportedStates</code>). Components with no <code>.js</code> file are pure HTML/CSS — their only state is <code>default</code>, and their variants are markup attributes (<DocLink href="data-attribute-api.html">Data Attribute API</DocLink>), not runtime states. </p>
+
+<TableCard title="declared states per JS component" mb="2.5rem">
+  <table style="width:100%;border-collapse:collapse;font-size:0.8125rem;">
+    <thead>
+      <tr style="text-align:left;color:var(--muted-foreground);border-bottom:1px solid var(--border);">
+        <th style="padding:0.375rem 0;">Component</th>
+        <th style="padding:0.375rem 0;">States</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="accordion.html">Accordion</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>all-open</code> · <code>all-closed</code></td></tr>
+      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="alert-dialog.html">Alert Dialog</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>open</code></td></tr>
+      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="avatar.html">Avatar</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>error</code></td></tr>
+      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="combobox.html">Combobox</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>open</code></td></tr>
+      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="command.html">Command</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>open</code></td></tr>
+      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="context-menu.html">Context Menu</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>open</code></td></tr>
+      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="dialog.html">Dialog</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>open</code></td></tr>
+      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="dropdown.html">Dropdown Menu</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>open</code></td></tr>
+      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="image.html">Image</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>error</code></td></tr>
+      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="navigation-menu.html">Navigation Menu</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>open</code></td></tr>
+      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="popover.html">Popover</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>open</code></td></tr>
+      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="product-showcase.html">Product Showcase</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>playing</code></td></tr>
+      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="sheet.html">Sheet</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>open</code></td></tr>
+      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="sidebar.html">Sidebar</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>collapsed</code></td></tr>
+      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="slider.html">Slider</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>disabled</code></td></tr>
+      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="tabs.html">Tabs</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>active</code></td></tr>
+      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="toggle-group.html">Toggle Group</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>disabled</code></td></tr>
+      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="toggle.html">Toggle</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>pressed</code></td></tr>
+      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="tooltip.html">Tooltip</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>visible</code></td></tr>
+      <tr><td style="padding:0.375rem 0;"><DocLink href="tree-view.html">Tree View</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>expanded</code></td></tr>
+    </tbody>
+  </table>
+</TableCard>
+
+<H2>Why it exists</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> The <DocLink href="architecture.html">VAE page</DocLink> describes the proof loop: every declared state of every component must be visually verifiable — a screenshot per state per color scheme, driven through <code>api.setState()</code> by <code>scripts/create-screenshots.ts</code> — and asserted by an e2e test. That is only possible because the states are named, uniform, and callable from plain JavaScript, no matter what the component does internally. Your agents get the same handle: <a href="component-skills.html">the skills</a> name the states, the API drives them. </p>
+
+<p class="text-sm text-muted-foreground mb-8"> See also: <DocLink href="how-to-use.html">How to Use</DocLink> (where the <code>.js</code> layer sits), <DocLink href="data-attribute-api.html">Data Attribute API</DocLink> (markup configuration, as opposed to runtime state). </p>
+
+<PageOverlay>
+  <dialog id="state-api-dialog" class="dialog" role="dialog" aria-modal="true" aria-labelledby="sa-title" onclose="queueMicrotask(function () { const o = document.getElementById('state-api-out'); if (o) o.textContent = document.getElementById('state-api-dialog').api.getState().name; });">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h2 class="dialog-title" id="sa-title">Named state</h2>
+        <p class="dialog-description">Opened via <code>api.setState('open')</code> — close it with Escape and watch the badge flip back to <code>default</code>.</p>
+      </div>
+      <div class="dialog-footer">
+        <button class="btn" data-variant="outline" data-dialog-close>Close</button>
+      </div>
+    </div>
+  </dialog>
+</PageOverlay>
+
+</DocPage>

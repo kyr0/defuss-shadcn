@@ -262,6 +262,13 @@
         sidebar.classList.add('open');
         backdrop.classList.add('open');
         toggle.setAttribute('aria-expanded', 'true');
+        /* On desktop the hamburger doubles as the reopen control for the
+           docked sidebar (.site-sidebar[data-state="collapsed"]) — opening it
+           undoes the dock (see #sidebar-collapse below). */
+        sidebar.removeAttribute('data-state');
+        var dockBtn = document.getElementById('sidebar-collapse');
+        if (dockBtn) dockBtn.setAttribute('aria-expanded', 'true');
+        try { localStorage.setItem('defuss-shadcn-nav-docked', '0'); } catch { /* private mode */ }
       }
 
       toggle.addEventListener('click', function () {
@@ -290,23 +297,44 @@
     })();
 
     /* -- Nav collapse persistence --------------------------------
-       Sections render open; the inline script after the sidebar re-applies
-       remembered collapses pre-paint. This listener records new toggles
-       (except Overview — the entry point stays visible). */
+       Sections render collapsed by default (except Introduction and the one
+       holding the current page — see SiteNav); the inline script in DocPage
+       re-applies remembered toggles pre-paint. Every explicit user toggle is
+       stored as heading → '1'|'0', so expanding a default-collapsed section
+       survives reloads exactly like collapsing an open one used to. */
     var NAV_COLLAPSE_KEY = 'defuss-shadcn-nav-collapsed';
-    var navCollapsed = function () {
-      try { return JSON.parse(localStorage.getItem(NAV_COLLAPSE_KEY) || '[]'); }
-      catch { return []; }
+    var navToggles = function () {
+      try {
+        var m = JSON.parse(localStorage.getItem(NAV_COLLAPSE_KEY) || '{}');
+        return m && typeof m === 'object' && !Array.isArray(m) ? m : {};
+      } catch { return {}; }
     };
     document.querySelectorAll('details[data-nav-section]').forEach(function (d) {
       d.addEventListener('toggle', function () {
-        if (d.dataset.navSection === 'Overview') { d.open = true; return; }
-        var set = navCollapsed();
-        if (d.open) set = set.filter(function (h) { return h !== d.dataset.navSection; });
-        else if (set.indexOf(d.dataset.navSection) === -1) set.push(d.dataset.navSection);
-        try { localStorage.setItem(NAV_COLLAPSE_KEY, JSON.stringify(set)); } catch { /* private mode */ }
+        var map = navToggles();
+        map[d.dataset.navSection] = d.open ? '1' : '0';
+        try { localStorage.setItem(NAV_COLLAPSE_KEY, JSON.stringify(map)); } catch { /* private mode */ }
       });
     });
+
+    /* -- Sidebar collapse (desktop dock) ---------------------------
+       Same UX as the shipped sidebar component's trigger: dock the site
+       sidebar off-canvas (CSS keys on .site-sidebar[data-state="collapsed"]),
+       which reveals the header hamburger as the reopen control. Persisted;
+       the pre-paint script in DocPage restores it. */
+    var NAV_DOCK_KEY = 'defuss-shadcn-nav-docked';
+    var dockBtn = document.getElementById('sidebar-collapse');
+    var siteSidebar = document.querySelector('.site-sidebar');
+    if (dockBtn && siteSidebar) {
+      dockBtn.addEventListener('click', function () {
+        var collapse = siteSidebar.dataset.state !== 'collapsed';
+        if (collapse) siteSidebar.dataset.state = 'collapsed';
+        else delete siteSidebar.dataset.state;
+        dockBtn.setAttribute('aria-expanded', collapse ? 'false' : 'true');
+        try { localStorage.setItem(NAV_DOCK_KEY, collapse ? '1' : '0'); } catch { /* private mode */ }
+      });
+      dockBtn.setAttribute('aria-expanded', siteSidebar.dataset.state === 'collapsed' ? 'false' : 'true');
+    }
 
     /* -- GitHub star count (cached in sessionStorage) ------------ */
     var updateStarCount = function (count) {

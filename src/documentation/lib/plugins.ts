@@ -1,7 +1,7 @@
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import type { SsgConfig, SsgPlugin } from 'defuss-ssg';
-import { NAV } from './nav';
+import { flattenNav, NAV } from './nav';
 import { readSkillMeta } from './repo';
 
 /**
@@ -139,7 +139,8 @@ export const searchIndexPlugin: SsgPlugin = {
     type Entry = { t: string; h: string; s: string; d?: string };
     const entries: Entry[] = [];
     for (const section of NAV) {
-      for (const item of section.items) {
+      // submenu children (e.g. Width & Height under Sizing) are first-class pages
+      for (const item of flattenNav(section.items)) {
         const meta = readSkillMeta(item.href.replace(/\.html$/, ''));
         entries.push({
           t: item.label,

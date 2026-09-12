@@ -1062,9 +1062,9 @@ index, and TOC pick the page up automatically.
 ## Sidebar nav order
 
 The sidebar is ordered by dependency (primitives first):
-1. Overview (Introduction, Installation, Theming, Dark Mode, Data Attribute API, Cascade Layers, ES Modules, Native Web APIs, Animations, Accessibility, Component Skills, Changelog)
-2. Primitives (Typography, Separator, Icon)
-3. Layout (Scroll Area, Carousel, Sortable)
+1. Introduction (Getting Started, Installation, How to Use, Component Skills, Changelog) — the only section open on first load (`ALWAYS_OPEN_SECTION` in `lib/nav.ts`)
+2. Guides (Theming, Dark Mode, Data Attribute API, State API, Verified Agentic Engineering (VAE), Cascade Layers, JavaScript Modules, Native Web APIs, Animations, Sizing → {Width & Height, Spacing, Density}, Layout → {Container, Flex, Grid}, Accessibility) — Sizing/Layout are parent pages with nested submenu children (`NavItem.children`)
+3. Primitives (Typography, Separator, Icon)
 4. Actions (Button, Toggle, Toggle Group, Button Group, Toolbar)
 5. Forms & Inputs (Label, Input, Textarea, Checkbox, Radio Group, Switch, Slider, Select, Number Input, File Input, Color Picker, Date Picker, Combobox, Form)
 6. Data Display (Badge, Avatar, Card, Image, Statistic, Table, Collapsible, Timeline, Tree View, Calendar)
@@ -1073,6 +1073,13 @@ The sidebar is ordered by dependency (primitives first):
 9. Navigation (Breadcrumb, Pagination, Steps, Tabs, Dropdown Menu, Navigation Menu)
 10. Application (Sidebar)
 11. Marketing (Site Header, Hero, Product Showcase, Brand Logos, Feature Details, Testimonials, Stats, Pricing, Blog, FAQ, Get In Touch, Newsletter, Site Footer) — CSS-only page sections composed from the same tokens + primitives
+
+Every section except Introduction (and the section holding the current
+page) renders **collapsed**; user toggles persist as a heading→'1'|'0' map
+in localStorage (`defuss-shadcn-nav-collapsed`), restored pre-paint by the
+inline script in `DocPage`. The whole sidebar docks to zero width via the
+header hamburger / its collapse button (`defuss-shadcn-nav-docked`), and
+below 64rem it auto-collapses into the hamburger-driven drawer.
 
 To reorder, edit the `NAV` array in `src/documentation/lib/nav.ts`.
 

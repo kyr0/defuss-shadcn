@@ -1,6 +1,6 @@
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
-import { NAV } from './nav';
+import { flattenNav, NAV } from './nav';
 import { readSkillMeta } from './repo';
 /**
  * The docs build plugins. They replace what used to be runtime DOM injection
@@ -122,7 +122,8 @@ export const searchIndexPlugin = {
     fn: (projectDir, config) => {
         const entries = [];
         for (const section of NAV) {
-            for (const item of section.items) {
+            // submenu children (e.g. Width & Height under Sizing) are first-class pages
+            for (const item of flattenNav(section.items)) {
                 const meta = readSkillMeta(item.href.replace(/\.html$/, ''));
                 entries.push({
                     t: item.label,

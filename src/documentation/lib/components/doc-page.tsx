@@ -83,15 +83,26 @@ export function DocPage({ meta, mainStyle, themeExtras, children }: DocPageProps
             <div class="site-toc-content"></div>
           </aside>
         </div>
-        {/* Re-apply remembered nav collapses before first paint (the section
-            of the current page is never collapsed — same rule as the old
-            runtime enforced, just statically rendered). */}
+        {/* Re-apply remembered nav toggles before first paint. Sections ship
+            collapsed by default (except Introduction and the section holding
+            the current page — see SiteNav); the stored map is
+            heading → '1'|'0' for every explicit user toggle. The section of
+            the current page is never hidden. The docked-sidebar state set here
+            is only visible at desktop widths (CSS keys the hide there), so it
+            can be restored unconditionally. */}
         <script>{`try {
-  var c = JSON.parse(localStorage.getItem('defuss-shadcn-nav-collapsed') || '[]');
-  for (var i = 0; i < c.length; i++) {
-    if (c[i] === 'Overview') continue;
-    var d = document.querySelector('details[data-nav-section="' + c[i] + '"]');
-    if (d && !d.querySelector('a.nav-link.active')) d.open = false;
+  var c = JSON.parse(localStorage.getItem('defuss-shadcn-nav-collapsed') || '{}');
+  if (c && typeof c === 'object' && !Array.isArray(c)) {
+    for (var h in c) {
+      var d = document.querySelector('details[data-nav-section="' + h + '"]');
+      if (!d) continue;
+      if (c[h] === '1') d.open = true;
+      else if (!d.querySelector('a.nav-link.active')) d.open = false;
+    }
+  }
+  if (localStorage.getItem('defuss-shadcn-nav-docked') === '1') {
+    var sb = document.querySelector('.site-sidebar');
+    if (sb) sb.dataset.state = 'collapsed';
   }
 } catch (e) {}`}</script>
         <SiteFooter />

@@ -44,6 +44,7 @@ try {
       header: !!document.querySelector('.site-header .header-brand'),
       links: document.querySelectorAll('.site-sidebar .nav-link').length,
       sections: document.querySelectorAll('.site-sidebar .nav-section').length,
+      openByDefault: [...document.querySelectorAll('details[data-nav-section]')].filter((d) => d.open).length,
     }));
     assert.ok(counts.header, 'site-header did not render the brand');
     // brand must read "defuss-shadcn" — the pre-fork "shadcn-html" regressed once
@@ -54,6 +55,13 @@ try {
     );
     assert.ok(counts.links > 50, `expected the full sidebar (>50 links), got ${counts.links}`);
     assert.ok(counts.sections >= 8, `expected >8 nav sections, got ${counts.sections}`);
+    // collapsed-by-default contract: only the Introduction section opens on load
+    assert.equal(counts.openByDefault, 1, 'exactly one section (Introduction) starts open');
+    // expand everything so the link-clicking checks below can see their targets
+    // (the collapse UX itself is covered by ui.test.ts)
+    await page.evaluate(() =>
+      document.querySelectorAll('.site-sidebar details').forEach((d) => ((d as HTMLDetailsElement).open = true)),
+    );
   });
 
   await check('CSS chain applied: tokens + component CSS render the intro', async () => {
@@ -307,7 +315,7 @@ try {
       h2s: [...document.querySelectorAll('main h2')].map((h) => h.textContent?.trim() ?? ''),
       prose: !!document.querySelector('.arch-prose'),
     }));
-    assert.match(state.h1, /Architecture/, 'h1 missing');
+    assert.match(state.h1, /Verified Agentic Engineering/, 'h1 missing');
     assert.ok(state.prose, 'ARCH.md body not injected (.arch-prose missing)');
     // ARCH.md's five parts + the proof loop must all be present
     for (const want of ['AGENTS.MD', 'VERIFIER', 'PROOF LOOP', 'HUMAN EXPERT']) {

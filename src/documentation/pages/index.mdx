@@ -110,43 +110,4 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </div>
 </div>
 
-<h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.875rem;">Built on five layers.</h2>
-
-<p class="text-sm text-muted-foreground mb-4">Tokens. Component skill. CSS. HTML. JavaScript (if needed). That's the whole system.</p>
-
-<div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:0.75rem;">
-  <div style="padding:0.75rem 1.25rem;background:var(--muted);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
-    <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">1 — semantic tokens</span>
-  </div>
-  <pre style="border-radius:0;border:none;"><code class="language-css"><span class="dim">{"/* default-semantic-tokens.css — the design system */"}</span>{"\n:root {\n  --background:         oklch(1 0 0);\n  --foreground:         oklch(0.145 0.005 285);\n  --primary:            oklch(0.205 0.005 285);\n  --primary-foreground: oklch(0.985 0.002 247);\n  --border:             oklch(0.88 0.004 247);\n  --radius:             0.625rem;\n  "}<span class="dim">{"/* ...all color pairs, shadows, spacing */"}</span>{"\n}\n.dark { "}<span class="dim">{"/* same keys, dark values */"}</span>{" }"}</code></pre>
-</div>
-
-<div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:0.75rem;">
-  <div style="padding:0.75rem 1.25rem;background:var(--muted);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
-    <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">2 — component-skill.md file</span>
-  </div>
-  <pre style="border-radius:0;border:none;"><code class="language-markup"><span class="dim">{"# Pattern: Button"}</span>{"\n\n## Native basis\n`"}{"<"}{"button"}{">"}{"` element. Also works on `"}{"<"}{"a"}{">"}{"` for link-style buttons.\n\n## Native Web APIs\n- `"}{"<"}{"button"}{">"}{"` — native clickable element with built-in keyboard and form support\n- `:focus-visible` — keyboard-only focus ring\n- `commandfor` / `command` — declarative button→dialog/popover triggers without JS\n"}<span class="dim">{"  # ...prefers-reduced-motion, prefers-contrast, forced-colors"}</span>{"\n\n## Structure\n"}{"<"}{"button class=\"btn\" data-variant=\"default\""}{">"}{"Click me"}{"<"}{"/button"}{">"}{"\n\n## Variants\n| data-variant  | Surface              | Text                     | Hover           |\n|---------------|----------------------|--------------------------|-----------------|\n| default       | --primary            | --primary-foreground     | opacity: 0.88   |\n| secondary     | --secondary          | --secondary-foreground   | opacity: 0.8    |\n| outline       | --background + border | --foreground             | --accent bg     |\n| ghost         | transparent          | --foreground             | --accent bg     |\n| destructive   | --destructive        | --destructive-foreground | opacity: 0.88   |\n| link          | transparent          | --primary                | underline       |\n"}<span class="dim">{"  # ...sizes, accessibility, notes"}</span></code></pre>
-</div>
-
-<div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:0.75rem;">
-  <div style="padding:0.75rem 1.25rem;background:var(--muted);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
-    <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">3 — component CSS</span>
-  </div>
-  <pre style="border-radius:0;border:none;"><code class="language-css"><span class="dim">{"/* button.css — styled with tokens */"}</span>{"\n@layer components {\n  .btn {\n    display: inline-flex;\n    align-items: center;\n    border-radius: var(--radius-md);\n    font-weight: 500;\n  }\n  .btn[data-variant=\"default\"] {\n    background: var(--primary);\n    color: var(--primary-foreground);\n  }\n  "}<span class="dim">{"/* ...secondary, destructive, outline, ghost, link */"}</span>{"\n}"}</code></pre>
-</div>
-
-<div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:0.75rem;">
-  <div style="padding:0.75rem 1.25rem;background:var(--muted);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
-    <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">4 — semantic HTML</span>
-  </div>
-  <pre style="border-radius:0;border:none;"><code class="language-markup">{"<button class=\"btn\" data-variant=\"default\"\n        data-dialog-trigger=\"confirm\">\n  Open Dialog\n</button>\n\n<dialog id=\"confirm\" class=\"dialog\">\n  <div class=\"dialog-content\">...</div>\n</dialog>"}</code></pre>
-</div>
-
-<div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;">
-  <div style="padding:0.75rem 1.25rem;background:var(--muted);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
-    <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">5 — vanilla JavaScript (if needed)</span>
-  </div>
-  <pre style="border-radius:0;border:none;"><code class="language-javascript"><span class="dim">{"// dialog.js — wire interactivity"}</span>{"\nfunction init() {\n  document.querySelectorAll('[data-dialog-trigger]:not([data-init])').forEach((trigger) ="}{">"}{" {\n    trigger.dataset.init = '';\n    const dialog = document.getElementById(trigger.dataset.dialogTrigger);\n    if (!dialog) return;\n    trigger.addEventListener('click', () ="}{">"}{" dialog.showModal());\n  });\n  "}<span class="dim">{"/* ...close-on-backdrop, [data-dialog-close] buttons, focus restore */"}</span>{"\n}\n\ninit();\nnew MutationObserver(init).observe(document, { childList: true, subtree: true });"}</code></pre>
-</div>
-
 </DocPage>

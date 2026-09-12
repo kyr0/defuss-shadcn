@@ -49,7 +49,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 
   <SkillField label="Notes">
-<p class="text-muted-foreground" style="margin:0 0 0;">• While the mobile sheet is modal, <code>html:has(.sidebar-mobile:modal)</code> sets <code>overflow: hidden</code> + <code>scrollbar-gutter: stable</code> — the page behind cannot scroll and its position is preserved for when the sheet closes (no JS scroll-lock).</p>
+<p class="text-muted-foreground" style="margin:0 0 0;">• While the mobile sheet is modal, <code>html:has(.sidebar-mobile:modal)</code> sets <code>overflow: hidden</code> + <code>scrollbar-gutter: stable</code> — the page behind cannot scroll and its position is preserved for when the sheet closes (no JS scroll-lock).<br/>• <strong>Auto-collapse</strong>: when the sidebar's row (its container) drops below 24rem the component docks itself to the icon rail and restores above 28rem (hysteresis — no flicker). Trigger clicks, <code>Cmd/Ctrl+B</code> and <code>api.setState()</code> count as deliberate choices and pin the sidebar against the heuristic.</p>
   </SkillField>
 </SkillPanel>
 

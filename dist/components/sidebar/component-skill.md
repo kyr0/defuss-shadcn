@@ -128,6 +128,7 @@ The registry global is `_defussShadcn.sidebarApi` / `_defussShadcn.sidebarStates
 ## Notes
 
 - **Mobile**: Desktop sidebar hidden below 768px. Use `<dialog class="sidebar-mobile">` for slide-in sheet. While it is modal, `html:has(.sidebar-mobile:modal)` sets `overflow: hidden` + `scrollbar-gutter: stable` — the page behind cannot scroll and keeps its position (no JS scroll-lock).
+- **Auto-collapse**: When the sidebar's row (its container) drops below 24rem, the component docks itself to the icon rail; it restores above 28rem (hysteresis — a scrollbar appearing never flickers it). A deliberate choice always wins: trigger clicks, Cmd/Ctrl+B and `api.setState()` set `dataset.stateName`, which pins the sidebar against the heuristic until it is cleared.
 - **Collapsible groups**: `<details class="sidebar-group">` — native toggle, no JS.
 - **Submenus**: `<details class="sidebar-submenu">` for nested nav with left border.
 - **Badges**: `<span class="sidebar-badge">` for notification counts.

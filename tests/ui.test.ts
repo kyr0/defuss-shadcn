@@ -14,6 +14,16 @@ type DocsGlobal = Window & { _defussShadcn: { docs: { realignWhenSettled?: (id: 
 /** Header/sidebar are static markup now (defuss-ssg renders them per page). */
 type HTMLElementOrNull = HTMLElement | null;
 
+/** Why: sections render collapsed by default (only Introduction and the
+ * active page's section are open) — tests that click a link expand its
+ * section first, exactly like a visitor would. */
+async function expandSection(doc: Document, heading: string): Promise<void> {
+  const group = doc.querySelector(`details[data-nav-section="${heading}"]`) as HTMLDetailsElement | null;
+  expect(group, `nav section "${heading}"`).toBeTruthy();
+  if (!group!.open) await clickSelector(doc, `details[data-nav-section="${heading}"] > summary`);
+  await waitFor(() => group!.open, `"${heading}" section to open`);
+}
+
 test('site shell renders header and sidebar from layout.js web components', async () => {
   const { doc } = await openDocPage('index.html');
 
@@ -21,9 +31,17 @@ test('site shell renders header and sidebar from layout.js web components', asyn
   await waitFor(() => doc.querySelector('.site-header button#theme-toggle'), 'site-header to render');
   // checkVisibility() runs in the iframe's document, since Vitest's ARIA-based
   // expect.element doesn't traverse into child frames reliably.
-  const navLink: HTMLElementOrNull = doc.querySelector('.site-sidebar a[href="accordion.html"]');
-  expect(navLink, 'sidebar link to Accordion').toBeTruthy();
+  // Installation lives in the always-open Introduction section → visible.
+  const navLink: HTMLElementOrNull = doc.querySelector('.site-sidebar a[href="installation.html"]');
+  expect(navLink, 'sidebar link to Installation').toBeTruthy();
   expect(navLink!.checkVisibility({ opacityProperty: true, visibilityProperty: true })).toBe(true);
+  // collapsed-by-default sections keep their links in the DOM (the group
+  // holds them closed — checkVisibility() can't see the closed state, since
+  // Blink hides <details> content via content-visibility, which that API
+  // ignores without checkVisibilityCSS)
+  const accordion: HTMLElementOrNull = doc.querySelector('.site-sidebar a[href="accordion.html"]');
+  expect(accordion, 'sidebar link to Accordion').toBeTruthy();
+  expect((accordion!.closest('details') as HTMLDetailsElement).open, 'Accordion section closed').toBe(false);
 });
 
 test('sidebar shows component type badges (taxonomy), never the generic PREVIEW marker', async () => {
@@ -64,6 +82,7 @@ test('SPA router swaps <main> content on nav click without reloading', async () 
   const { doc } = await openDocPage('index.html');
   await waitFor(() => doc.querySelector('.site-header button#theme-toggle'), 'shell to render');
 
+  await expandSection(doc, 'Navigation');
   await clickSelector(doc, '.site-sidebar a[href="tabs.html"]');
 
   // the router replaces <main> innerHTML — new page shows its own <h1>
@@ -134,6 +153,7 @@ test('SPA router migrates body-level dialogs so triggers work after nav', async 
   const { doc } = await openDocPage('index.html');
   await waitFor(() => doc.querySelector('.site-header button#theme-toggle'), 'shell to render');
 
+  await expandSection(doc, 'Overlays');
   await clickSelector(doc, '.site-sidebar a[href="dialog.html"]');
   await waitFor(() => doc.querySelector('main h1')?.textContent?.includes('Dialog'), 'dialog page content');
   await waitFor(() => doc.getElementById('demo-dialog'), 'migrated dialog in DOM');
@@ -161,17 +181,29 @@ test('sidebar sections are collapsible (dogfood of the sidebar-group pattern)', 
   // every nav section is a <details class="nav-section sidebar-group">
   const groups = [...doc.querySelectorAll('details.nav-section')] as HTMLDetailsElement[];
   expect(groups.length, 'nav renders collapsible sections').toBeGreaterThan(3);
-  expect(groups[0].open, 'sections start expanded').toBe(true);
 
-  // clicking the summary collapses the section and persists it
+  // collapsed-by-default contract: only Introduction (holding index.html) is open
+  const intro = groups.find((g) => g.dataset.navSection === 'Introduction')!;
+  expect(intro.open, 'Introduction section starts expanded').toBe(true);
   const forms = groups.find((g) => g.dataset.navSection === 'Forms & Inputs')!;
+  expect(forms.open, 'other sections start collapsed').toBe(false);
+
+  // clicking the summary expands the section and persists '1'
   expect(forms.querySelector('a[href="input.html"]'), 'section contains its links').toBeTruthy();
   await clickSelector(doc, 'details[data-nav-section="Forms & Inputs"] > summary');
-  await waitFor(() => !forms.open, 'Forms & Inputs to collapse');
+  await waitFor(() => forms.open, 'Forms & Inputs to expand');
   // `open` flips synchronously on click but the toggle event (which persists
   // to localStorage) is a queued task — wait on the stored value itself
   await waitFor(
-    () => (doc.defaultView!.localStorage.getItem('defuss-shadcn-nav-collapsed') ?? '').includes('Forms & Inputs'),
+    () => (doc.defaultView!.localStorage.getItem('defuss-shadcn-nav-collapsed') ?? '').includes('"Forms & Inputs":"1"'),
+    'expand to persist to localStorage',
+  );
+
+  // collapsing again persists '0' — an explicit choice either way
+  await clickSelector(doc, 'details[data-nav-section="Forms & Inputs"] > summary');
+  await waitFor(() => !forms.open, 'Forms & Inputs to collapse');
+  await waitFor(
+    () => (doc.defaultView!.localStorage.getItem('defuss-shadcn-nav-collapsed') ?? '').includes('"Forms & Inputs":"0"'),
     'collapse to persist to localStorage',
   );
 
@@ -180,8 +212,8 @@ test('sidebar sections are collapsible (dogfood of the sidebar-group pattern)', 
   await waitFor(() => doc.querySelector('main h1')?.textContent?.includes('Input'), 'input page content');
   await waitFor(() => forms.open, 'collapsed section to reopen on navigation into it');
   await waitFor(
-    () => !(doc.defaultView!.localStorage.getItem('defuss-shadcn-nav-collapsed') ?? '').includes('Forms & Inputs'),
-    're-open to clear the stored collapse',
+    () => (doc.defaultView!.localStorage.getItem('defuss-shadcn-nav-collapsed') ?? '').includes('"Forms & Inputs":"1"'),
+    're-open to persist the new state',
   );
 });
 

@@ -13,6 +13,9 @@
 export interface NavItem {
   label: string;
   href: string;
+  /** Sub-pages of this item's own page (e.g. Sizing → Width & Height).
+   *  Rendered as a collapsible submenu; the parent href stays a real page. */
+  children?: NavItem[];
 }
 
 export interface NavSection {
@@ -20,33 +23,47 @@ export interface NavSection {
   items: NavItem[];
 }
 
+/** The one section rendered expanded on first load; every other section
+ * starts collapsed (see SiteNav / layout.ts collapse persistence). */
+export const ALWAYS_OPEN_SECTION = 'Introduction';
+
 export const NAV: NavSection[] = [
-  { heading: 'Overview', items: [
-    { label: 'Introduction', href: 'index.html' },
+  { heading: 'Introduction', items: [
+    { label: 'Getting Started', href: 'index.html' },
     { label: 'Installation', href: 'installation.html' },
-    { label: 'Theming', href: 'theming.html' },
-    { label: 'Dark Mode', href: 'dark-mode.html' },
-    { label: 'Data Attribute API', href: 'data-attribute-api.html' },
-    { label: 'Architecture', href: 'architecture.html' },
-    { label: 'Cascade Layers', href: 'cascade-layers.html' },
-    { label: 'ES Modules', href: 'es-modules.html' },
-    { label: 'Native Web APIs', href: 'native-web-apis.html' },
-    { label: 'Animations', href: 'animations.html' },
-    { label: 'Sizing', href: 'sizing.html' },
-    { label: 'Layout', href: 'layout.html' },
-    { label: 'Accessibility', href: 'accessibility.html' },
+    { label: 'How to Use', href: 'how-to-use.html' },
     { label: 'Component Skills', href: 'component-skills.html' },
     { label: 'Changelog', href: 'changelog.html' },
   ]},
-  { heading: 'Sizing', items: [
-    { label: 'Width & Height', href: 'width-height.html' },
-    { label: 'Spacing', href: 'spacing.html' },
-    { label: 'Density', href: 'density.html' },
-  ]},
-  { heading: 'Layout', items: [
-    { label: 'Container', href: 'container.html' },
-    { label: 'Flex', href: 'flex.html' },
-    { label: 'Grid', href: 'grid.html' },
+  { heading: 'Guides', items: [
+    { label: 'Theming', href: 'theming.html' },
+    { label: 'Dark Mode', href: 'dark-mode.html' },
+    { label: 'Data Attribute API', href: 'data-attribute-api.html' },
+    { label: 'State API', href: 'state-api.html' },
+    { label: 'Verified Agentic Engineering (VAE)', href: 'architecture.html' },
+    { label: 'Cascade Layers', href: 'cascade-layers.html' },
+    { label: 'JavaScript Modules', href: 'es-modules.html' },
+    { label: 'Native Web APIs', href: 'native-web-apis.html' },
+    { label: 'Animations', href: 'animations.html' },
+    {
+      label: 'Sizing',
+      href: 'sizing.html',
+      children: [
+        { label: 'Width & Height', href: 'width-height.html' },
+        { label: 'Spacing', href: 'spacing.html' },
+        { label: 'Density', href: 'density.html' },
+      ],
+    },
+    {
+      label: 'Layout',
+      href: 'layout.html',
+      children: [
+        { label: 'Container', href: 'container.html' },
+        { label: 'Flex', href: 'flex.html' },
+        { label: 'Grid', href: 'grid.html' },
+      ],
+    },
+    { label: 'Accessibility', href: 'accessibility.html' },
   ]},
   { heading: 'Primitives', items: [
     { label: 'Typography', href: 'typography.html' },
@@ -139,16 +156,24 @@ export const NAV: NavSection[] = [
   ]},
 ];
 
+/** Every item including nested children, in reading order. */
+export function flattenNav(items: NavItem[]): NavItem[] {
+  return items.flatMap((i) => [i, ...flattenNav(i.children ?? [])]);
+}
+
 /** Flat ordered list of all pages — the prev/next pager's universe. */
-export const ALL_PAGES: NavItem[] = NAV.flatMap((s) => s.items);
+export const ALL_PAGES: NavItem[] = NAV.flatMap((s) => flattenNav(s.items));
 
 /** The section heading a page belongs to (drives the always-open rule). */
 export function sectionOf(href: string): string | null {
-  for (const s of NAV) if (s.items.some((i) => i.href === href)) return s.heading;
+  for (const s of NAV) if (flattenNav(s.items).some((i) => i.href === href)) return s.heading;
   return null;
 }
 
 export function labelOf(href: string): string | null {
-  for (const s of NAV) for (const i of s.items) if (i.href === href) return i.label;
+  for (const s of NAV) {
+    const hit = flattenNav(s.items).find((i) => i.href === href);
+    if (hit) return hit.label;
+  }
   return null;
 }
