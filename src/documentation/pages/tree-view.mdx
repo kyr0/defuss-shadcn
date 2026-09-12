@@ -41,7 +41,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <SkillText dense>• Branch items have <code>role="treeitem"</code> and <code>aria-expanded</code></SkillText>
   <SkillText dense>• Leaf items have <code>role="treeitem"</code> without <code>aria-expanded</code></SkillText>
   <SkillText dense>• Nested groups use <code>role="group"</code></SkillText>
-  <p class="text-muted-foreground skill-bullet">• Keyboard: Arrow keys navigate, Enter/Space toggles branches</p>
+  <p class="text-muted-foreground m-0">• Keyboard: Arrow keys navigate, Enter/Space toggles branches</p>
   </SkillField>
 </SkillPanel>
 
@@ -143,15 +143,15 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <ExampleLabel>Density</ExampleLabel>
   <ExampleHint>Set <code>data-density</code> on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), typography and fixed dimensions stay identical. <code>comfortable</code> matches the unsized default.</ExampleHint>
   <div class="flex flex-wrap gap-4">
-    <div class="demo-col">
+    <div class="flex-1 min-w-48">
       <p class="demo-label">Compact</p>
       <ul class="tree" role="tree" aria-label="Files compact" data-density="compact"><li class="tree-item" role="treeitem" aria-expanded="true"><details class="tree-branch" open><summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6" /></svg><span>src</span></summary><ul class="tree-group" role="group"><li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>button.ts</span></span></li><li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>card.ts</span></span></li></ul></details></li></ul>
     </div>
-    <div class="demo-col">
+    <div class="flex-1 min-w-48">
       <p class="demo-label">Comfortable</p>
       <ul class="tree" role="tree" aria-label="Files comfortable" data-density="comfortable"><li class="tree-item" role="treeitem" aria-expanded="true"><details class="tree-branch" open><summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6" /></svg><span>src</span></summary><ul class="tree-group" role="group"><li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>button.ts</span></span></li><li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>card.ts</span></span></li></ul></details></li></ul>
     </div>
-    <div class="demo-col">
+    <div class="flex-1 min-w-48">
       <p class="demo-label">Spacious</p>
       <ul class="tree" role="tree" aria-label="Files spacious" data-density="spacious"><li class="tree-item" role="treeitem" aria-expanded="true"><details class="tree-branch" open><summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6" /></svg><span>src</span></summary><ul class="tree-group" role="group"><li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>button.ts</span></span></li><li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>card.ts</span></span></li></ul></details></li></ul>
     </div>
@@ -159,8 +159,8 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </Example>
 
 <StatesSection>
-  <p class="text-sm text-muted-foreground lead-sm">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
-  <ul class="text-sm text-muted-foreground prose-list">
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
     <li><code>default</code> — the branch's authored open/closed state (restored from the init snapshot)</li>
     <li><code>expanded</code> — branch open, children visible (per-branch API; <code>aria-expanded</code> stays in sync via the toggle event)</li>
   </ul>

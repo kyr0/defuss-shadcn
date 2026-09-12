@@ -103,6 +103,23 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <DemoCode>{"<div class=\"flex gap-4\">\n  <aside class=\"w-24 shrink-0\">w-24 shrink-0</aside>\n  <main class=\"flex-1 min-w-0\" style=\"overflow-wrap:anywhere;\">\n    flex-1 min-w-0 — AnUnusuallyLongIdentifierThatMustWrap…\n  </main>\n</div>"}</DemoCode>
 </Demo>
 
+<DocText>A constrained box turns its overflow into a scrollbar with <code>overflow-x-auto</code>; pair it with <code>whitespace-nowrap</code> on the content so wide rows scroll instead of wrapping into a mess:</DocText>
+
+<Demo viewport>
+  <div class="demo-viewport">
+    <div class="demo-tile demo-outline max-w-64 overflow-x-auto" data-variant="muted" style="display:block;padding:0.75rem;">
+      <table class="table whitespace-nowrap" style="font-size:0.8125rem;">
+        <thead><tr class="table-row"><th class="table-head">Component</th><th class="table-head">Native basis</th><th class="table-head">Needs JS</th></tr></thead>
+        <tbody>
+          <tr class="table-row"><td class="table-cell">Dialog</td><td class="table-cell">{"<dialog> + showModal()"}</td><td class="table-cell">State API only</td></tr>
+          <tr class="table-row"><td class="table-cell">Accordion</td><td class="table-cell">{"<details name>"}</td><td class="table-cell">No</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <DemoCode>{"<div class=\"max-w-64 overflow-x-auto\">\n  <table class=\"table whitespace-nowrap\">…</table>\n</div>"}</DemoCode>
+</Demo>
+
 <div class="sep" />
 
 <h2 id="logical" class="h2-display">Logical dimensions</h2>
@@ -209,7 +226,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <h2 id="available" class="h2-display">Available classes</h2>
 
-<div class="table-scroll">
+<div class="overflow-x-auto mb-6">
   <table class="table" data-variant="simple">
     <thead>
       <tr>

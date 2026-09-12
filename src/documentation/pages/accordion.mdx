@@ -60,7 +60,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <SkillText dense>• The chevron rotation relies on <code>details\[open\] &gt;</code> selector — this is pure CSS</SkillText>
   <SkillText dense>• Content height animation uses <code>::details-content</code> pseudo-element with <code>block-size</code> transition and <code>@starting-style</code> for the enter animation — fully CSS-only, no JS measurement needed</SkillText>
   <SkillText dense>• Set <code>data-type="single"</code> for accordion behavior (only one open); omit for disclosure list (any number open)</SkillText>
-  <p class="text-muted-foreground skill-bullet">• Set <code>data-collapsible</code> alongside <code>data-type="single"</code> to allow all items to be closed</p>
+  <p class="text-muted-foreground m-0">• Set <code>data-collapsible</code> alongside <code>data-type="single"</code> to allow all items to be closed</p>
   </SkillField>
 </SkillPanel>
 
@@ -150,15 +150,15 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <ExampleLabel>Density</ExampleLabel>
   <ExampleHint>Set <code>data-density</code> on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), typography and fixed dimensions stay identical. <code>comfortable</code> matches the unsized default.</ExampleHint>
   <div class="flex flex-wrap gap-4">
-    <div class="demo-col">
+    <div class="flex-1 min-w-48">
       <p class="demo-label">Compact</p>
       <div class="accordion" data-density="compact"><details class="accordion-item" open><summary class="accordion-trigger"><span>Section compact</span><svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6" /></svg></summary><div class="accordion-content"><p>Trigger and panel padding scale with the density.</p></div></details><details class="accordion-item"><summary class="accordion-trigger"><span>Second section</span><svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6" /></svg></summary><div class="accordion-content"><p>Closed until opened.</p></div></details></div>
     </div>
-    <div class="demo-col">
+    <div class="flex-1 min-w-48">
       <p class="demo-label">Comfortable</p>
       <div class="accordion" data-density="comfortable"><details class="accordion-item" open><summary class="accordion-trigger"><span>Section comfortable</span><svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6" /></svg></summary><div class="accordion-content"><p>Trigger and panel padding scale with the density.</p></div></details><details class="accordion-item"><summary class="accordion-trigger"><span>Second section</span><svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6" /></svg></summary><div class="accordion-content"><p>Closed until opened.</p></div></details></div>
     </div>
-    <div class="demo-col">
+    <div class="flex-1 min-w-48">
       <p class="demo-label">Spacious</p>
       <div class="accordion" data-density="spacious"><details class="accordion-item" open><summary class="accordion-trigger"><span>Section spacious</span><svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6" /></svg></summary><div class="accordion-content"><p>Trigger and panel padding scale with the density.</p></div></details><details class="accordion-item"><summary class="accordion-trigger"><span>Second section</span><svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6" /></svg></summary><div class="accordion-content"><p>Closed until opened.</p></div></details></div>
     </div>
@@ -166,8 +166,8 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </Example>
 
 <StatesSection>
-  <p class="text-sm text-muted-foreground lead-sm">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
-  <ul class="text-sm text-muted-foreground prose-list">
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
     <li><code>default</code> — the authored markup, snapshotted when the component initializes</li>
     <li><code>all-open</code> — every <code>&lt;details&gt;</code> item expanded (single-open enforcement suspended)</li>
     <li><code>all-closed</code> — every item collapsed, even without <code>data-collapsible</code></li>

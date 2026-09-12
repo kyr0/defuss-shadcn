@@ -16,7 +16,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5">If you came from a component framework, this mapping should feel familiar.</p>
 
-<div class="grid-auto-fit">
+<div class="grid grid-cols-auto gap-4 mb-10">
   <CodeCard title="React / Solid (props)" lang="markup" column>{"<Button\n  variant=\"destructive\"\n  size=\"lg\"\n>\n  Delete\n</Button>"}</CodeCard>
   <CodeCard title="defuss-shadcn (data attributes)" lang="markup" column>{"<button class=\"btn\"\n  data-variant=\"destructive\"\n  data-size=\"lg\"\n>\n  Delete\n</button>"}</CodeCard>
 </div>
@@ -46,7 +46,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5">Traditional systems like Bootstrap and BEM use modifier classes: <code>.btn-primary</code>, <code>.btn--lg</code>, <code>.btn-outline-danger</code>. Here's why we don't.</p>
 
-<div class="grid-auto-fit">
+<div class="grid grid-cols-auto gap-4 mb-10">
   <CodeCard title="Modifier classes" lang="markup" column>{"<"}{"button class=\"btn btn-destructive btn-lg\""}{">"}{"\n  Delete\n"}{"<"}{"/button"}{">"}<Dim>{"/* Conflicting specificity */"}</Dim>{"\n.btn-primary { ... }\n.btn-lg { ... }\n.btn-primary.btn-lg { ... }"}</CodeCard>
   <CodeCard title="Data attributes" lang="markup" column>{"<"}{"button class=\"btn\"\n  data-variant=\"destructive\"\n  data-size=\"lg\""}{">"}{"\n  Delete\n"}{"<"}{"/button"}{">"}<Dim>{"/* Flat specificity */"}</Dim>{"\n.btn[data-variant=\"destructive\"] { ... }\n.btn[data-size=\"lg\"] { ... }\n"}<Dim>{"/* no combo needed */"}</Dim></CodeCard>
 </div>
@@ -93,7 +93,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <table class="table" data-variant="simple">
       <thead>
         <tr>
-          <th class="th-nowrap">Component</th>
+          <th class="whitespace-nowrap">Component</th>
           <th>Values</th>
         </tr>
       </thead>
@@ -192,7 +192,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <table class="table" data-variant="simple">
       <thead>
         <tr>
-          <th class="th-nowrap">Component</th>
+          <th class="whitespace-nowrap">Component</th>
           <th>Values</th>
         </tr>
       </thead>
@@ -268,7 +268,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <table class="table" data-variant="simple">
       <thead>
         <tr>
-          <th class="th-nowrap">Attribute</th>
+          <th class="whitespace-nowrap">Attribute</th>
           <th>Component</th>
           <th>Values</th>
           <th>Purpose</th>
@@ -362,7 +362,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <table class="table" data-variant="simple">
       <thead>
         <tr>
-          <th class="th-nowrap">Attribute</th>
+          <th class="whitespace-nowrap">Attribute</th>
           <th>Component</th>
           <th>Purpose</th>
         </tr>
@@ -457,7 +457,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <table class="table" data-variant="simple">
       <thead>
         <tr>
-          <th class="th-nowrap">Attribute</th>
+          <th class="whitespace-nowrap">Attribute</th>
           <th>Component</th>
           <th>Purpose</th>
         </tr>

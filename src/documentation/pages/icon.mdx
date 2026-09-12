@@ -42,7 +42,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <SkillText dense>• Use <code>stroke-width</code> attribute to adjust line thickness (default: <code>2</code>)</SkillText>
   <SkillText dense>• Prefer visually-hidden text (<code>.sr-only</code>) over <code>aria-label</code> for accessible standalone icons</SkillText>
   <SkillText dense>• Animations (e.g., <code>data-animate="spin"</code>) are suppressed when the user has <code>prefers-reduced-motion</code> enabled</SkillText>
-  <p class="text-muted-foreground skill-bullet">• <code>prefers-contrast: more</code> increases stroke width to 2.5 for better visibility</p>
+  <p class="text-muted-foreground m-0">• <code>prefers-contrast: more</code> increases stroke width to 2.5 for better visibility</p>
   </SkillField>
 </SkillPanel>
 
@@ -63,27 +63,27 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Example first previewStyle="gap:2rem;align-items:center;">
   <ExampleLabel>Sizes</ExampleLabel>
   <ExampleHint>Use <code>data-size</code> to control icon size.</ExampleHint>
-  <div class="demo-col-stack">
+  <div class="flex flex-col items-center gap-2">
     <i data-lucide="star" data-size="xs" />
     <span class="mono-meta">xs (12px)</span>
   </div>
-  <div class="demo-col-stack">
+  <div class="flex flex-col items-center gap-2">
     <i data-lucide="star" data-size="sm" />
     <span class="mono-meta">sm (14px)</span>
   </div>
-  <div class="demo-col-stack">
+  <div class="flex flex-col items-center gap-2">
     <i data-lucide="star" />
     <span class="mono-meta">default (16px)</span>
   </div>
-  <div class="demo-col-stack">
+  <div class="flex flex-col items-center gap-2">
     <i data-lucide="star" data-size="md" />
     <span class="mono-meta">md (20px)</span>
   </div>
-  <div class="demo-col-stack">
+  <div class="flex flex-col items-center gap-2">
     <i data-lucide="star" data-size="lg" />
     <span class="mono-meta">lg (24px)</span>
   </div>
-  <div class="demo-col-stack">
+  <div class="flex flex-col items-center gap-2">
     <i data-lucide="star" data-size="xl" />
     <span class="mono-meta">xl (32px)</span>
   </div>
@@ -115,19 +115,19 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Example first previewStyle="gap:2rem;align-items:center;">
   <ExampleLabel>Stroke width</ExampleLabel>
   <ExampleHint>Adjust line thickness with the <code>stroke-width</code> attribute. Default is <code>2</code>.</ExampleHint>
-  <div class="demo-col-stack">
+  <div class="flex flex-col items-center gap-2">
     <i data-lucide="heart" data-size="lg" stroke-width="1" />
     <span class="mono-meta">1</span>
   </div>
-  <div class="demo-col-stack">
+  <div class="flex flex-col items-center gap-2">
     <i data-lucide="heart" data-size="lg" stroke-width="1.5" />
     <span class="mono-meta">1.5</span>
   </div>
-  <div class="demo-col-stack">
+  <div class="flex flex-col items-center gap-2">
     <i data-lucide="heart" data-size="lg" stroke-width="2" />
     <span class="mono-meta">2</span>
   </div>
-  <div class="demo-col-stack">
+  <div class="flex flex-col items-center gap-2">
     <i data-lucide="heart" data-size="lg" stroke-width="3" />
     <span class="mono-meta">3</span>
   </div>

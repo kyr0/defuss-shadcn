@@ -20,7 +20,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5"> Three guarantees, verified by <DocLink href="https://github.com/kyr0/defuss-shadcn/blob/main/scripts/verify.ts" target="_blank">the build's verifier</DocLink> for every component: </p>
 
-<div class="grid-auto-fit">
+<div class="grid grid-cols-auto gap-4 mb-10">
   <div style="border:1px solid var(--border);border-radius:var(--radius-xl);padding:1.25rem;">
     <p class="text-sm font-medium mb-2" style="margin-top:0;">Declared, not implied</p>
     <p class="text-sm text-muted-foreground" style="margin-bottom:0;"> Each component lists its states as names (<code>const dialogStates = ['default', 'open']</code>) — <code>default</code> first. Unknown names throw with the supported list. </p>

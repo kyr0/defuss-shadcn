@@ -54,14 +54,14 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <SkillText dense>• The toggle is just a button with <code>aria-pressed</code> — no custom elements needed.</SkillText>
   <SkillText dense>• Icon-only toggles must have <code>aria-label</code> for screen readers.</SkillText>
   <SkillText dense>• For toggle groups (e.g., text alignment), wrap in a container with <code>role="group"</code> and <code>aria-label</code>.</SkillText>
-  <p class="text-muted-foreground skill-bullet">• The pressed state uses <code>--accent</code> / <code>--accent-foreground</code> to match shadcn conventions.</p>
+  <p class="text-muted-foreground m-0">• The pressed state uses <code>--accent</code> / <code>--accent-foreground</code> to match shadcn conventions.</p>
   </SkillField>
 </SkillPanel>
 
 <Example first>
   <ExampleLabel>Default</ExampleLabel>
   <ExampleHint>Transparent at rest. Background appears on hover and when pressed.</ExampleHint>
-  <div class="demo-row-sm">
+  <div class="flex items-center gap-3">
     <button class="toggle" aria-pressed="false" aria-label="Bookmark (unpressed)" data-state-demo>
       <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
@@ -107,7 +107,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Example>
   <ExampleLabel>Size</ExampleLabel>
   <ExampleHint>The full five-step scale via <code>data-size</code> — the default equals <code>md</code>.</ExampleHint>
-  <div class="demo-row-sm">
+  <div class="flex items-center gap-3">
     <button class="toggle" data-variant="outline" data-size="xs" aria-pressed="false">Extra Small</button>
     <button class="toggle" data-variant="outline" data-size="sm" aria-pressed="false">Small</button>
     <button class="toggle" data-variant="outline" data-size="md" aria-pressed="false">Medium</button>
@@ -120,7 +120,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Example>
   <ExampleLabel>Disabled</ExampleLabel>
   <ExampleHint>Non-interactive at 50% opacity.</ExampleHint>
-  <div class="demo-row-sm">
+  <div class="flex items-center gap-3">
     <button class="toggle" data-variant="outline" aria-pressed="false" disabled>Disabled</button>
     <button class="toggle" data-variant="outline" aria-pressed="true" disabled>Disabled</button>
   </div>
@@ -128,8 +128,8 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </Example>
 
 <StatesSection>
-  <p class="text-sm text-muted-foreground lead-sm">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
-  <ul class="text-sm text-muted-foreground prose-list">
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
     <li><code>default</code> — unpressed (the authored <code>aria-pressed</code> value is restored by <code>setState('default')</code>)</li>
     <li><code>pressed</code> — <code>aria-pressed="true"</code>, accent background</li>
   </ul>

@@ -364,6 +364,23 @@ describe('layout utilities', () => {
     expect(b.children[2].getBoundingClientRect().top).toBeCloseTo(a.children[2].getBoundingClientRect().top, 0);
   });
 
+  it('clips and scrolls boxes and controls text-flow clipping', () => {
+    // overflow family: the generic pairing for capped containers (a wide table
+    // inside a capped column needs overflow-x-auto plus nowrap cells)
+    const wide = add('overflow-x-auto', host, 'width:100px');
+    add('', wide, 'width:300px;height:10px');
+    expect(css(wide, 'overflow-x')).toBe('auto');
+    expect(wide.scrollWidth > wide.clientWidth).toBe(true);
+    // a lone visible axis is adjusted to auto per the overflow pairing rule
+    expect(css(wide, 'overflow-y')).toBe('auto');
+    expect(css(add('overflow-y-auto'), 'overflow-y')).toBe('auto');
+    expect(css(add('overflow-auto'), 'overflow')).toBe('auto');
+    expect(css(add('overflow-hidden'), 'overflow')).toBe('hidden');
+    expect(css(add('whitespace-nowrap'), 'white-space')).toBe('nowrap');
+    expect(css(add('whitespace-normal'), 'white-space')).toBe('normal');
+    expect(css(add('whitespace-pre-wrap'), 'white-space')).toBe('pre-wrap');
+  });
+
   it('keeps a 44px target minimum independent of scale and density', () => {
     host.style.setProperty('--size-base', '2px');
     host.dataset.density = 'compact';

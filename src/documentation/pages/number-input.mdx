@@ -37,7 +37,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <SkillText dense>• Reuses the <code>.input</code> class for consistent styling.</SkillText>
   <SkillText dense>• Native spinner buttons are hidden with <code>::-webkit-inner-spin-button</code>.</SkillText>
   <SkillText dense>• Use <code>min</code>, <code>max</code>, and <code>step</code> for range constraints.</SkillText>
-  <p class="text-muted-foreground skill-bullet">• Keyboard: arrow keys increment/decrement by step value.</p>
+  <p class="text-muted-foreground m-0">• Keyboard: arrow keys increment/decrement by step value.</p>
   </SkillField>
 </SkillPanel>
 
@@ -71,31 +71,31 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Example>
   <ExampleLabel>Sizes</ExampleLabel>
   <ExampleHint>The stepper follows the shared input ladder via <code>data-size</code> — <code>md</code> is 2.25rem like every other form control.</ExampleHint>
-  <div class="demo-row">
+  <div class="flex items-center gap-4 mb-3">
     <span class="demo-label demo-label-w5">Extra small</span>
     <div class="number-input" data-size="xs"><button data-action="decrement" aria-label="Decrease">−</button><input type="number" value="1" min="0" max="99" step="1" aria-label="Quantity xs" /><button data-action="increment" aria-label="Increase">+</button></div>
   </div>
-  <div class="demo-row">
+  <div class="flex items-center gap-4 mb-3">
     <span class="demo-label demo-label-w5">Small</span>
     <div class="number-input" data-size="sm"><button data-action="decrement" aria-label="Decrease">−</button><input type="number" value="1" min="0" max="99" step="1" aria-label="Quantity sm" /><button data-action="increment" aria-label="Increase">+</button></div>
   </div>
-  <div class="demo-row">
+  <div class="flex items-center gap-4 mb-3">
     <span class="demo-label demo-label-w5">Medium</span>
     <div class="number-input" data-size="md"><button data-action="decrement" aria-label="Decrease">−</button><input type="number" value="1" min="0" max="99" step="1" aria-label="Quantity md" /><button data-action="increment" aria-label="Increase">+</button></div>
   </div>
-  <div class="demo-row">
+  <div class="flex items-center gap-4 mb-3">
     <span class="demo-label demo-label-w5">Large</span>
     <div class="number-input" data-size="lg"><button data-action="decrement" aria-label="Decrease">−</button><input type="number" value="1" min="0" max="99" step="1" aria-label="Quantity lg" /><button data-action="increment" aria-label="Increase">+</button></div>
   </div>
-  <div class="demo-row">
+  <div class="flex items-center gap-4 mb-3">
     <span class="demo-label demo-label-w5">Extra large</span>
     <div class="number-input" data-size="xl"><button data-action="decrement" aria-label="Decrease">−</button><input type="number" value="1" min="0" max="99" step="1" aria-label="Quantity xl" /><button data-action="increment" aria-label="Increase">+</button></div>
   </div>
 </Example>
 
 <StatesSection>
-  <p class="text-sm text-muted-foreground lead-sm">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
-  <ul class="text-sm text-muted-foreground prose-list">
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
     <li><code>default</code> — enabled; <code>setState('default', \{ value \})</code> presets the number through the native input (events fire), and <code>getState().config.value</code> reports the live value</li>
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/number-input-\{state\}.png</code>.</p>

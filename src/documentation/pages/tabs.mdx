@@ -62,7 +62,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <SkillText dense>• The active panel uses <code>tabindex="0"</code> so it can receive focus from the tab trigger</SkillText>
   <SkillText dense>• Use <code>hidden</code> attribute on inactive panels for accessibility (screen readers skip them)</SkillText>
   <SkillText dense>• Disabled tabs should have <code>disabled</code> attribute and be skipped by keyboard navigation</SkillText>
-  <p class="text-muted-foreground skill-bullet">• For lazy-loaded content, panels can be rendered empty and populated on activation</p>
+  <p class="text-muted-foreground m-0">• For lazy-loaded content, panels can be rendered empty and populated on activation</p>
   </SkillField>
 </SkillPanel>
 
@@ -198,31 +198,31 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Example>
   <ExampleLabel>Sizes</ExampleLabel>
   <ExampleHint>Set <code>data-size</code> on the <code>.tab-list</code>; triggers scale with it — the default equals <code>md</code>.</ExampleHint>
-  <div class="demo-row">
+  <div class="flex items-center gap-4 mb-3">
     <span class="demo-label demo-label-w5">Extra small</span>
     <div class="tab-list" role="tablist" aria-label="Demo xs" data-size="xs"><button class="tab-trigger" role="tab" aria-selected="true" id="sz-xs-a">Account</button><button class="tab-trigger" role="tab" id="sz-xs-b" tabindex="-1">Password</button></div>
   </div>
-  <div class="demo-row">
+  <div class="flex items-center gap-4 mb-3">
     <span class="demo-label demo-label-w5">Small</span>
     <div class="tab-list" role="tablist" aria-label="Demo sm" data-size="sm"><button class="tab-trigger" role="tab" aria-selected="true" id="sz-sm-a">Account</button><button class="tab-trigger" role="tab" id="sz-sm-b" tabindex="-1">Password</button></div>
   </div>
-  <div class="demo-row">
+  <div class="flex items-center gap-4 mb-3">
     <span class="demo-label demo-label-w5">Medium</span>
     <div class="tab-list" role="tablist" aria-label="Demo md" data-size="md"><button class="tab-trigger" role="tab" aria-selected="true" id="sz-md-a">Account</button><button class="tab-trigger" role="tab" id="sz-md-b" tabindex="-1">Password</button></div>
   </div>
-  <div class="demo-row">
+  <div class="flex items-center gap-4 mb-3">
     <span class="demo-label demo-label-w5">Large</span>
     <div class="tab-list" role="tablist" aria-label="Demo lg" data-size="lg"><button class="tab-trigger" role="tab" aria-selected="true" id="sz-lg-a">Account</button><button class="tab-trigger" role="tab" id="sz-lg-b" tabindex="-1">Password</button></div>
   </div>
-  <div class="demo-row">
+  <div class="flex items-center gap-4 mb-3">
     <span class="demo-label demo-label-w5">Extra large</span>
     <div class="tab-list" role="tablist" aria-label="Demo xl" data-size="xl"><button class="tab-trigger" role="tab" aria-selected="true" id="sz-xl-a">Account</button><button class="tab-trigger" role="tab" id="sz-xl-b" tabindex="-1">Password</button></div>
   </div>
 </Example>
 
 <StatesSection>
-  <p class="text-sm text-muted-foreground lead-sm">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
-  <ul class="text-sm text-muted-foreground prose-list">
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
     <li><code>default</code> — this tab's authored selection (setState restores the snapshot taken at init)</li>
     <li><code>active</code> — this tab is selected and its panel visible (per-tab API; selection stays exclusive)</li>
   </ul>

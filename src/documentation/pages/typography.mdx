@@ -54,7 +54,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <SkillText dense>• <code>&lt;blockquote&gt;</code> is announced as a quote by assistive technology — no extra ARIA needed.</SkillText>
   <SkillText dense>• <code>&lt;code&gt;</code> is announced as code — no extra ARIA needed.</SkillText>
   <SkillText dense>• <code>prefers-contrast: more</code> — removes tight letter-spacing, adds outline to inline code, thickens blockquote border, promotes muted text to foreground color.</SkillText>
-  <p class="text-muted-foreground skill-bullet">• <code>forced-colors: active</code> — blockquote border and inline code adapt to system colors.</p>
+  <p class="text-muted-foreground m-0">• <code>forced-colors: active</code> — blockquote border and inline code adapt to system colors.</p>
   </SkillField>
 
   <SkillField label="Notes">
@@ -66,7 +66,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <SkillText dense>• <code>hanging-punctuation</code> is used on blockquotes for optical quote alignment.</SkillText>
   <SkillText dense>• Blockquote uses logical properties (<code>border-inline-start</code>, <code>padding-inline-start</code>) for automatic RTL support.</SkillText>
   <SkillText dense>• For lists, use the List component (<code>list.css</code>) — typography does not ship its own list styles.</SkillText>
-  <p class="text-muted-foreground skill-bullet">• For prose tables, use the Table component (<code>table.css</code>) — typography does not ship its own table styles.</p>
+  <p class="text-muted-foreground m-0">• For prose tables, use the Table component (<code>table.css</code>) — typography does not ship its own table styles.</p>
   </SkillField>
 </SkillPanel>
 
@@ -102,7 +102,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <div style="display:flex;flex-direction:column;gap:0.75rem;align-items:center;">
     <div class="large">Are you absolutely sure?</div>
     <small class="small">Email address</small>
-    <p class="muted flat">>Enter your email address.</p>
+    <p class="muted m-0">>Enter your email address.</p>
   </div>
   <ExampleCode>{"<div class=\"large\">Are you absolutely sure?</div>\n<small class=\"small\">Email address</small>\n<p class=\"muted\">Enter your email address.</p>"}</ExampleCode>
 </Example>

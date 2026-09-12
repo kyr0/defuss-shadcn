@@ -53,7 +53,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <SkillText dense>• No backdrop click dismiss — user must make an explicit choice</SkillText>
   <SkillText dense>• Escape key is disabled — user must use the action buttons</SkillText>
   <SkillText dense>• Focus is trapped inside the dialog via native <code>showModal()</code></SkillText>
-  <p class="text-muted-foreground skill-bullet">• While the alert is modal, <code>html:has(dialog.alert-dialog:modal)</code> sets <code>overflow: hidden</code> + <code>scrollbar-gutter: stable</code> — the page behind cannot scroll and its position is preserved for when the alert closes (no JS scroll-lock)</p>
+  <p class="text-muted-foreground m-0">• While the alert is modal, <code>html:has(dialog.alert-dialog:modal)</code> sets <code>overflow: hidden</code> + <code>scrollbar-gutter: stable</code> — the page behind cannot scroll and its position is preserved for when the alert closes (no JS scroll-lock)</p>
   </SkillField>
 </SkillPanel>
 
@@ -96,8 +96,8 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </Example>
 
 <StatesSection>
-  <p class="text-sm text-muted-foreground lead-sm">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
-  <ul class="text-sm text-muted-foreground prose-list">
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
     <li><code>default</code> — closed (the authored state; only close buttons or the API close it — Escape is blocked)</li>
     <li><code>open</code> — shown modally via <code>showModal()</code></li>
   </ul>

@@ -96,7 +96,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5">Traditional CSS libraries (Bootstrap, Bulma) ship unlayered styles. That creates problems when you try to customize them.</p>
 
-<div class="grid-auto-fit">
+<div class="grid grid-cols-auto gap-4 mb-10">
   <CodeCard title="Without @layer" lang="css" column><Dim>{"/* Library: high specificity */"}</Dim>{"\n.btn.btn-primary { background: blue; }\n\n"}<Dim>{"/* Your override: loses */"}</Dim>{"\n.btn { background: tomato; }  "}<Dim>{"/* ✗ */"}</Dim><Dim>{"/* Forced to escalate */"}</Dim>{"\n.btn { background: tomato !important; }"}</CodeCard>
   <CodeCard title="With @layer (defuss-shadcn)" lang="css" column><Dim>{"/* Library: layered */"}</Dim>{"\n@layer components {\n  .btn { background: var(--primary); }\n}\n\n"}<Dim>{"/* Your override: unlayered */"}</Dim>{"\n.btn { background: tomato; }  "}<Dim>{"/* ✓ wins */"}</Dim><Dim>{"/* No !important needed. */"}</Dim></CodeCard>
 </div>

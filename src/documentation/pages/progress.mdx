@@ -35,7 +35,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <SkillField label="Accessibility">
 <SkillText dense>• <code>&lt;progress&gt;</code> is natively accessible — screen readers announce the percentage</SkillText>
   <SkillText dense>• The text content inside <code>&lt;progress&gt;</code> is the fallback for non-supporting browsers</SkillText>
-  <p class="text-muted-foreground skill-bullet">• Use <code>aria-label</code> if the progress bar lacks a visible label</p>
+  <p class="text-muted-foreground m-0">• Use <code>aria-label</code> if the progress bar lacks a visible label</p>
   </SkillField>
 </SkillPanel>
 
@@ -106,25 +106,25 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Example>
   <ExampleLabel>Sizes</ExampleLabel>
   <ExampleHint>{'Bar thickness scales via '}<code>data-size</code>{' on the '}<code>{'<progress>'}</code>{' — the default equals '}<code>md</code>.</ExampleHint>
-  <div class="demo-row">
+  <div class="flex items-center gap-4 mb-3">
     <span class="demo-label demo-label-w5">Extra small</span>
-    <progress class="progress demo-ctl" value="65" max="100" data-size="xs" style="max-width:16rem;"></progress>
+    <progress class="progress flex-1" value="65" max="100" data-size="xs" style="max-width:16rem;"></progress>
   </div>
-  <div class="demo-row">
+  <div class="flex items-center gap-4 mb-3">
     <span class="demo-label demo-label-w5">Small</span>
-    <progress class="progress demo-ctl" value="65" max="100" data-size="sm" style="max-width:16rem;"></progress>
+    <progress class="progress flex-1" value="65" max="100" data-size="sm" style="max-width:16rem;"></progress>
   </div>
-  <div class="demo-row">
+  <div class="flex items-center gap-4 mb-3">
     <span class="demo-label demo-label-w5">Medium</span>
-    <progress class="progress demo-ctl" value="65" max="100" data-size="md" style="max-width:16rem;"></progress>
+    <progress class="progress flex-1" value="65" max="100" data-size="md" style="max-width:16rem;"></progress>
   </div>
-  <div class="demo-row">
+  <div class="flex items-center gap-4 mb-3">
     <span class="demo-label demo-label-w5">Large</span>
-    <progress class="progress demo-ctl" value="65" max="100" data-size="lg" style="max-width:16rem;"></progress>
+    <progress class="progress flex-1" value="65" max="100" data-size="lg" style="max-width:16rem;"></progress>
   </div>
-  <div class="demo-row">
+  <div class="flex items-center gap-4 mb-3">
     <span class="demo-label demo-label-w5">Extra large</span>
-    <progress class="progress demo-ctl" value="65" max="100" data-size="xl" style="max-width:16rem;"></progress>
+    <progress class="progress flex-1" value="65" max="100" data-size="xl" style="max-width:16rem;"></progress>
   </div>
 </Example>
 

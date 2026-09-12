@@ -43,14 +43,14 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <SkillField label="Accessibility">
 <SkillText dense>• Native <code>&lt;select&gt;</code> provides full keyboard navigation (arrow keys, type-ahead).</SkillText>
   <SkillText dense>• Use <code>&lt;label&gt;</code> with <code>for</code> for description.</SkillText>
-  <p class="text-muted-foreground skill-bullet">• The placeholder is a <code>&lt;option value="" selected&gt;</code><strong>without</strong><code>disabled</code> — a disabled placeholder cannot be re-selected, so a made selection could never be cleared (issue #32). Keep it selectable and mark the field <code>required</code> if empty must not submit; the control reads as a placeholder while the empty option is selected (muted text via <code>:has(option:checked)</code>).</p>
+  <p class="text-muted-foreground m-0">• The placeholder is a <code>&lt;option value="" selected&gt;</code><strong>without</strong><code>disabled</code> — a disabled placeholder cannot be re-selected, so a made selection could never be cleared (issue #32). Keep it selectable and mark the field <code>required</code> if empty must not submit; the control reads as a placeholder while the empty option is selected (muted text via <code>:has(option:checked)</code>).</p>
   </SkillField>
 
   <SkillField label="Notes">
 <SkillText dense>• Uses <code>appearance: none</code> with a custom chevron via <code>background-image</code> SVG.</SkillText>
   <SkillText dense>• The dropdown list is rendered by the browser — it cannot be styled.</SkillText>
   <SkillText dense>• For a fully custom dropdown, use the Combobox component instead.</SkillText>
-  <p class="text-muted-foreground skill-bullet">• While the empty option is selected the closed control renders muted (<code>:has(&gt; option\[value=""\]:checked)</code>); choosing a value restores the foreground color.</p>
+  <p class="text-muted-foreground m-0">• While the empty option is selected the closed control renders muted (<code>:has(&gt; option\[value=""\]:checked)</code>); choosing a value restores the foreground color.</p>
   </SkillField>
 </SkillPanel>
 

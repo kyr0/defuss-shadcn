@@ -17,9 +17,6 @@ export interface DocPageProps extends Props {
   meta: DocPageMeta;
   /** index.html uses a taller hero padding */
   mainStyle?: string;
-  /** architecture.html historically ships without the opt-in sizing/layout
-   *  utility layers — false drops those two <link>s */
-  themeExtras?: boolean;
 }
 
 /**
@@ -28,7 +25,7 @@ export interface DocPageProps extends Props {
  * chrome (header, sidebar, TOC shell, footer) and the end-of-body scripts.
  * Replaces the ~40 lines of boilerplate every doc page used to repeat.
  */
-export function DocPage({ meta, mainStyle, themeExtras, children }: DocPageProps) {
+export function DocPage({ meta, mainStyle, children }: DocPageProps) {
   const title = meta.fullTitle ?? `${meta.title} — defuss-shadcn`;
   const url = `https://kyr0.github.io/defuss-shadcn/documentation/${meta.slug}.html`;
   // partition: <PageOverlay> children render as direct body children (demo
@@ -64,8 +61,8 @@ export function DocPage({ meta, mainStyle, themeExtras, children }: DocPageProps
         <script src="js/layout.js"></script>
         <script src="js/search-index.js"></script>
         <link rel="stylesheet" href="../theme/default-semantic-tokens.css" />
-        {themeExtras !== false ? <link rel="stylesheet" href="../theme/sizing.css" /> : null}
-        {themeExtras !== false ? <link rel="stylesheet" href="../theme/layout.css" /> : null}
+        <link rel="stylesheet" href="../theme/sizing.css" />
+        <link rel="stylesheet" href="../theme/layout.css" />
         <link rel="stylesheet" href="css/docs-theme.css" />
         <link rel="stylesheet" href="css/docs-utilities.css" />
         <link rel="stylesheet" href="css/layout.css" />

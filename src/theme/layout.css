@@ -148,4 +148,15 @@
   :where(.grid-rows-subgrid) { grid-template-rows: subgrid; }
   :where(.auto-rows-auto) { grid-auto-rows: auto; }
   :where(.auto-cols-auto) { grid-auto-columns: auto; }
+
+  /* Box clipping/scrolling and text-flow clipping — orthogonal to gap/track
+     selection; the generic pairing for constrained containers (a scrollable
+     table on a capped width needs both overflow-x-auto and nowrap cells). */
+  :where(.overflow-x-auto) { overflow-x: auto; }
+  :where(.overflow-y-auto) { overflow-y: auto; }
+  :where(.overflow-auto) { overflow: auto; }
+  :where(.overflow-hidden) { overflow: hidden; }
+  :where(.whitespace-nowrap) { white-space: nowrap; }
+  :where(.whitespace-normal) { white-space: normal; }
+  :where(.whitespace-pre-wrap) { white-space: pre-wrap; }
 }

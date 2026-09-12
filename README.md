@@ -100,7 +100,7 @@ Tokens are compatible with [tweakcn.com](https://tweakcn.com) theme exports. To 
 Two standalone stylesheets live beside the token file and are opt-in — no component depends on them, and the token export stays tweakcn-pure:
 
 - [`dist/theme/sizing.css`](dist/theme/sizing.css) — one numeric scale (`w-4` = four base units, `--size-*` aliases, density-aware spacing)
-- [`dist/theme/layout.css`](dist/theme/layout.css) — small layout surface (`flex`, `grid`, `stack`, `container`, named `query` boundaries)
+- [`dist/theme/layout.css`](dist/theme/layout.css) — small layout surface (`flex`, `grid`, `stack`, `container`, named `query` boundaries, overflow + text-flow helpers)
 
 Load them after the tokens, before component CSS. Docs: [Sizing](https://kyr0.github.io/defuss-shadcn/sizing.html) · [Layout](https://kyr0.github.io/defuss-shadcn/layout.html)
 

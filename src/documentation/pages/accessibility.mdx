@@ -16,7 +16,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5">Components start from the most semantic native element available. A <code>&lt;button&gt;</code> is already a button — no <code>role="button"</code> needed. A <code>&lt;dialog&gt;</code> already traps focus and handles Escape. ARIA is only added when the native element doesn't express the full semantics of the widget.</p>
 
-<div class="grid-auto-fit">
+<div class="grid grid-cols-auto gap-4 mb-10">
   <CodeCard title="Avoid: unnecessary ARIA" lang="markup" column><Dim>{"<!-- Don't add ARIA roles to native elements -->"}</Dim>{"<"}{"div role=\"button\" tabindex=\"0\"\n  onclick=\"...\""}{">"}{"\n  Click me\n"}{"<"}{"/div"}{">"}</CodeCard>
   <CodeCard title="Prefer: native elements" lang="markup" column><Dim>{"<!-- Native button: focusable, keyboard\n     activatable, announced correctly -->"}</Dim>{"<"}{"button class=\"btn\""}{">"}{"\n  Click me\n"}{"<"}{"/button"}{">"}</CodeCard>
 </div>
@@ -30,7 +30,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <TableCard title="ARIA roles by component" mb="2.5rem"><table class="table" data-variant="simple">
       <thead>
         <tr>
-          <th class="th-nowrap">Role</th>
+          <th class="whitespace-nowrap">Role</th>
           <th>Component</th>
           <th>Purpose</th>
         </tr>
@@ -153,7 +153,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <TableCard title="ARIA state attributes" mb="2.5rem"><table class="table" data-variant="simple">
       <thead>
         <tr>
-          <th class="th-nowrap">Attribute</th>
+          <th class="whitespace-nowrap">Attribute</th>
           <th>Values</th>
           <th>Usage</th>
         </tr>
@@ -226,7 +226,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <TableCard title="relationship attributes" mb="1.5rem"><table class="table" data-variant="simple">
       <thead>
         <tr>
-          <th class="th-nowrap">Attribute</th>
+          <th class="whitespace-nowrap">Attribute</th>
           <th>Purpose</th>
           <th>Example</th>
         </tr>
@@ -288,7 +288,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <TableCard title="keyboard patterns by component type" mb="2.5rem"><table class="table" data-variant="simple">
       <thead>
         <tr>
-          <th class="th-nowrap">Key</th>
+          <th class="whitespace-nowrap">Key</th>
           <th>Menus &amp; Dropdowns</th>
           <th>Tabs</th>
           <th>Dialogs</th>

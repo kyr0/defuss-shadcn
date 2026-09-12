@@ -141,11 +141,14 @@ export function auditUtilities(root: string): { docIssues: string[]; compIssues:
       .map(([c, files]) => `${c} (${files.length}× in ${relative(root, files[0])}${files.length > 1 ? ' et al.' : ''})`);
   }
 
+  // The shipped optional modules (theme/sizing.css + theme/layout.css) define
+  // the utility vocabulary every demo and skill sample composes with — the
+  // docs pages link them on every page, and component skills/fixtures are
+  // documentation too (the scan never covers components' shipped .css/.js,
+  // which stay module-independent).
+  const modules = moduleDefinedClasses(root);
   return {
-    // doc pages load theme/sizing.css + theme/layout.css globally (every page
-    // links them) → their utilities are legitimately usable in demos;
-    // components ship standalone → they may not depend on the modules.
-    docIssues: scan(walk(DOC_DIR, ['.mdx', '.tsx']), moduleDefinedClasses(root)),
-    compIssues: scan(walk(COMP_DIR, ['.html', '.md'])),
+    docIssues: scan(walk(DOC_DIR, ['.mdx', '.tsx']), modules),
+    compIssues: scan(walk(COMP_DIR, ['.html', '.md']), modules),
   };
 }

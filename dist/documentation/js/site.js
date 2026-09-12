@@ -95,7 +95,7 @@
                 var surface = p[0], fg = p[1];
                 var row = document.createElement('div');
                 row.className = 'swatch-row';
-                row.innerHTML = '<div class="swatch-pair"><div class="swatch-sq" style="background:var(--' + surface + ');"></div><div class="swatch-sq" style="background:var(--' + fg + ');"></div></div><div><p class="swatch-name">--' + surface + '</p><p class="swatch-sub">--' + fg + '</p></div><span class="swatch-val">var(--' + surface + ') var(--' + fg + ')</span>';
+                row.innerHTML = '<div class="flex gap-1.5 shrink-0"><div class="swatch-sq" style="background:var(--' + surface + ');"></div><div class="swatch-sq" style="background:var(--' + fg + ');"></div></div><div><p class="swatch-name">--' + surface + '</p><p class="swatch-sub">--' + fg + '</p></div><span class="swatch-val">var(--' + surface + ') var(--' + fg + ')</span>';
                 swatchContainer.appendChild(row);
             });
         }
@@ -105,7 +105,7 @@
                 var surface = p[0], fg = p[1];
                 var row = document.createElement('div');
                 row.className = 'swatch-row';
-                row.innerHTML = '<div class="swatch-pair"><div class="swatch-sq" style="background:var(--' + surface + ');"></div><div class="swatch-sq" style="background:var(--' + fg + ');"></div></div><div><p class="swatch-name">--' + surface + '</p><p class="swatch-sub">--' + fg + '</p></div><span class="swatch-val">var(--' + surface + ') var(--' + fg + ')</span>';
+                row.innerHTML = '<div class="flex gap-1.5 shrink-0"><div class="swatch-sq" style="background:var(--' + surface + ');"></div><div class="swatch-sq" style="background:var(--' + fg + ');"></div></div><div><p class="swatch-name">--' + surface + '</p><p class="swatch-sub">--' + fg + '</p></div><span class="swatch-val">var(--' + surface + ') var(--' + fg + ')</span>';
                 sidebarSwatchContainer.appendChild(row);
             });
             [['sidebar-border', 'border-sidebar-border'], ['sidebar-ring', 'ring-sidebar-ring']].forEach(function (p) {

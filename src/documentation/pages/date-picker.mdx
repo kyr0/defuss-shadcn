@@ -35,7 +35,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <SkillText dense>• Reuses the <code>.input</code> class — the native date picker provides the calendar UI.</SkillText>
   <SkillText dense>• No custom calendar implementation needed — the browser handles it.</SkillText>
   <SkillText dense>• The calendar popup is rendered by the OS/browser and cannot be styled.</SkillText>
-  <p class="text-muted-foreground skill-bullet">• For a fully custom date picker, a custom calendar component would be needed.</p>
+  <p class="text-muted-foreground m-0">• For a fully custom date picker, a custom calendar component would be needed.</p>
   </SkillField>
 </SkillPanel>
 
@@ -70,25 +70,25 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Example>
   <ExampleLabel>Sizes</ExampleLabel>
   <ExampleHint>Same ladder as <code>.input</code> via <code>data-size</code> — <code>md</code> is 2.25rem, so date fields row-align with text inputs.</ExampleHint>
-  <div class="demo-row">
+  <div class="flex items-center gap-4 mb-3">
     <span class="demo-label demo-label-w5">Extra small</span>
-    <input class="date-input demo-ctl" type="date" value="2026-09-12" data-size="xs" aria-label="Date xs" style="max-width:12rem;" />
+    <input class="date-input flex-1" type="date" value="2026-09-12" data-size="xs" aria-label="Date xs" style="max-width:12rem;" />
   </div>
-  <div class="demo-row">
+  <div class="flex items-center gap-4 mb-3">
     <span class="demo-label demo-label-w5">Small</span>
-    <input class="date-input demo-ctl" type="date" value="2026-09-12" data-size="sm" aria-label="Date sm" style="max-width:12rem;" />
+    <input class="date-input flex-1" type="date" value="2026-09-12" data-size="sm" aria-label="Date sm" style="max-width:12rem;" />
   </div>
-  <div class="demo-row">
+  <div class="flex items-center gap-4 mb-3">
     <span class="demo-label demo-label-w5">Medium</span>
-    <input class="date-input demo-ctl" type="date" value="2026-09-12" data-size="md" aria-label="Date md" style="max-width:12rem;" />
+    <input class="date-input flex-1" type="date" value="2026-09-12" data-size="md" aria-label="Date md" style="max-width:12rem;" />
   </div>
-  <div class="demo-row">
+  <div class="flex items-center gap-4 mb-3">
     <span class="demo-label demo-label-w5">Large</span>
-    <input class="date-input demo-ctl" type="date" value="2026-09-12" data-size="lg" aria-label="Date lg" style="max-width:12rem;" />
+    <input class="date-input flex-1" type="date" value="2026-09-12" data-size="lg" aria-label="Date lg" style="max-width:12rem;" />
   </div>
-  <div class="demo-row">
+  <div class="flex items-center gap-4 mb-3">
     <span class="demo-label demo-label-w5">Extra large</span>
-    <input class="date-input demo-ctl" type="date" value="2026-09-12" data-size="xl" aria-label="Date xl" style="max-width:12rem;" />
+    <input class="date-input flex-1" type="date" value="2026-09-12" data-size="xl" aria-label="Date xl" style="max-width:12rem;" />
   </div>
 </Example>
 

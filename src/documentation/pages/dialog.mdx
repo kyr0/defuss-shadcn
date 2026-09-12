@@ -64,7 +64,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <SkillText dense>• Animation uses CSS-only enter via <code>@starting-style</code> and exit via <code>transition</code> + <code>allow-discrete</code>.</SkillText>
   <SkillText dense>• While the dialog is modal, <code>html:has(dialog.dialog:modal)</code> sets <code>overflow: hidden</code> + <code>scrollbar-gutter: stable</code> — the page behind cannot scroll and its position is preserved for when the dialog closes (no JS scroll-lock).</SkillText>
   <SkillText dense>• The selector is <code>dialog.dialog</code> (element + class) to avoid styling native <code>&lt;dialog&gt;</code> elements used elsewhere.</SkillText>
-  <p class="text-muted-foreground skill-bullet">• For forms inside dialogs, use the <code>dialog-body</code> wrapper for the form content.</p>
+  <p class="text-muted-foreground m-0">• For forms inside dialogs, use the <code>dialog-body</code> wrapper for the form content.</p>
   </SkillField>
 </SkillPanel>
 
@@ -83,8 +83,8 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </Example>
 
 <StatesSection>
-  <p class="text-sm text-muted-foreground lead-sm">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
-  <ul class="text-sm text-muted-foreground prose-list">
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
     <li><code>default</code> — closed (the authored state)</li>
     <li><code>open</code> — shown modally via <code>showModal()</code></li>
   </ul>

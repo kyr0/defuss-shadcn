@@ -1152,20 +1152,34 @@ files at docs build time and embeds them (escaped) with copy buttons. There is
 
 ## Doc-site utility classes
 
-Every doc page loads the shipped `theme/sizing.css` + `theme/layout.css`, so
-sizing/layout one-offs should use those utilities first (`w-full`, `h-8`,
-`gap-4`, `p-6`, `mx-auto`, `text-center`, …) — the same classes the demos teach.
-On top of that, `public/css/docs-utilities.css` holds a small set of plain
-class rules (opt-in by class name, so they cannot leak into component styles):
+The docs dogfood the product: every page loads the shipped
+`theme/sizing.css` + `theme/layout.css`, and their utilities are used
+DIRECTLY (`flex items-center gap-4 mb-3`, `w-full max-w-80`,
+`overflow-x-auto`, `whitespace-nowrap`, …) — never re-declared in
+`public/css/docs-utilities.css`. The audit gate
+(`scripts/lib/audit.ts → moduleDefinedClasses`) already counts the modules'
+classes as defined on doc pages. If a genuinely generic utility is missing
+(it applies without knowing the component), add it to the shipped module —
+with a contract test in `tests/sizing-layout.test.ts` and a demo on the
+matching Width & Height / Spacing / Layout / Density page — instead of
+hand-rolling it in the docs sheet.
 
-- **utilities** (`mb-4`, `text-sm`, `sr-only`) — add directly when needed.
-- **pattern classes** (`.demo-row`, `.code-card`, `.mono-meta`, `.flat`,
-  `.h2-display`, …) — each replaces an inline style that was copy-pasted
-  across pages. Keep declarations byte-identical to the style they replaced
-  (screenshot baselines compare against that rendering), and override shipped
-  component classes only via compound selectors (`.card-title.card-title-sm`)
-  because `all.css` loads AFTER this sheet. Inline `style` stays right for
+`public/css/docs-utilities.css` therefore holds only:
+
+- **doc typography utilities** (`text-sm`, `text-xs`, `font-medium`, …) —
+  they can't move to the modules: `tests/sizing-layout.test.ts` pins those
+  to geometry/spacing only (no `font-size`).
+- **semantic pattern classes** (`.code-card`, `.mono-meta`, `.swatch-*`,
+  `.h2-display`, `.mini-table`, …) — token colors, fonts and page-chrome
+  geometry no consumer needs. When a pattern is just a utility stack,
+  delete it and use the stack.
+- The sheet is UNLAYERED, so its classes beat the layered modules and
+  `all.css` on shared properties — keep declarations minimal, and override
+  shipped component classes only via compound selectors
+  (`.card-title.card-title-sm`). Inline `style` stays right for
   per-instance values (a demo's `max-width`, an inline SVG's `width`).
-- **never** re-inline a declaration that already has a pattern class, and when
-  you replace an inline style in a demo, update that demo's code sample in the
-  same edit if the sample is explicit (`<ExampleCode>`/`<DemoCode>`).
+- **never** re-inline a declaration that has a module or pattern class, and
+  when you replace an inline style in a demo, update that demo's code sample
+  in the same edit if the sample is explicit (`<ExampleCode>`/`<DemoCode>`).
+  Remember `gap-N`/`m-N`/`p-N` are density-scaled — inside a `[data-density]`
+  demo scope they intentionally resize with the demo.

@@ -57,7 +57,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <SkillText dense>• Right/left sheets have a fixed width of <code>24rem</code> with <code>max-width: 100vw</code> for small screens.</SkillText>
   <SkillText dense>• Top/bottom sheets are full width with <code>height: auto</code> — they size to their content.</SkillText>
   <SkillText dense>• The selector is <code>dialog.sheet</code> (element + class) to avoid conflicts with <code>dialog.dialog</code>.</SkillText>
-  <p class="text-muted-foreground skill-bullet">• The <code>sheet-header</code> has <code>padding-right: 2rem</code> to avoid overlapping the close button.</p>
+  <p class="text-muted-foreground m-0">• The <code>sheet-header</code> has <code>padding-right: 2rem</code> to avoid overlapping the close button.</p>
   </SkillField>
 </SkillPanel>
 
@@ -90,8 +90,8 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </Example>
 
 <StatesSection>
-  <p class="text-sm text-muted-foreground lead-sm">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
-  <ul class="text-sm text-muted-foreground prose-list">
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
     <li><code>default</code> — closed, off-screen (the authored state; the trigger opens it)</li>
     <li><code>open</code> — shown modally via <code>showModal()</code>, slid in from its side</li>
   </ul>

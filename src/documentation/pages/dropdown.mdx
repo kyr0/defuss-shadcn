@@ -63,7 +63,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <SkillText dense>• The <code>popover</code> API handles light-dismiss (click outside) automatically</SkillText>
   <SkillText dense>• For submenus, nest another <code>\[popover\]</code> element triggered by a <code>menuitem</code> with <code>aria-haspopup="menu"</code></SkillText>
   <SkillText dense>• Escape closes the menu and returns focus to the trigger</SkillText>
-  <p class="text-muted-foreground skill-bullet">• Menu items use <code>tabindex="-1"</code> — only arrow keys move focus (roving focus pattern)</p>
+  <p class="text-muted-foreground m-0">• Menu items use <code>tabindex="-1"</code> — only arrow keys move focus (roving focus pattern)</p>
   </SkillField>
 </SkillPanel>
 
@@ -137,7 +137,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Example>
   <ExampleLabel>Sizes</ExampleLabel>
   <ExampleHint>Set <code>data-size</code> on the <code>.dropdown-content</code> menu; items scale with it. The trigger keeps its own <code>.btn</code> size.</ExampleHint>
-  <div class="demo-row">
+  <div class="flex items-center gap-4 mb-3">
     <span class="demo-label demo-label-w5">Extra small</span>
     <button class="btn" data-variant="outline" data-size="xs" aria-haspopup="menu" aria-expanded="false" aria-controls="sz-dd-xs" data-dropdown-trigger="sz-dd-xs">Options</button>
     <div id="sz-dd-xs" role="menu" popover class="dropdown-content" data-size="xs" aria-label="Options xs">
@@ -145,7 +145,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
       <button role="menuitem" class="dropdown-item" tabindex="-1">Settings</button>
     </div>
   </div>
-  <div class="demo-row">
+  <div class="flex items-center gap-4 mb-3">
     <span class="demo-label demo-label-w5">Small</span>
     <button class="btn" data-variant="outline" data-size="sm" aria-haspopup="menu" aria-expanded="false" aria-controls="sz-dd-sm" data-dropdown-trigger="sz-dd-sm">Options</button>
     <div id="sz-dd-sm" role="menu" popover class="dropdown-content" data-size="sm" aria-label="Options sm">
@@ -153,7 +153,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
       <button role="menuitem" class="dropdown-item" tabindex="-1">Settings</button>
     </div>
   </div>
-  <div class="demo-row">
+  <div class="flex items-center gap-4 mb-3">
     <span class="demo-label demo-label-w5">Medium</span>
     <button class="btn" data-variant="outline" data-size="md" aria-haspopup="menu" aria-expanded="false" aria-controls="sz-dd-md" data-dropdown-trigger="sz-dd-md">Options</button>
     <div id="sz-dd-md" role="menu" popover class="dropdown-content" data-size="md" aria-label="Options md">
@@ -161,7 +161,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
       <button role="menuitem" class="dropdown-item" tabindex="-1">Settings</button>
     </div>
   </div>
-  <div class="demo-row">
+  <div class="flex items-center gap-4 mb-3">
     <span class="demo-label demo-label-w5">Large</span>
     <button class="btn" data-variant="outline" data-size="lg" aria-haspopup="menu" aria-expanded="false" aria-controls="sz-dd-lg" data-dropdown-trigger="sz-dd-lg">Options</button>
     <div id="sz-dd-lg" role="menu" popover class="dropdown-content" data-size="lg" aria-label="Options lg">
@@ -169,7 +169,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
       <button role="menuitem" class="dropdown-item" tabindex="-1">Settings</button>
     </div>
   </div>
-  <div class="demo-row">
+  <div class="flex items-center gap-4 mb-3">
     <span class="demo-label demo-label-w5">Extra large</span>
     <button class="btn" data-variant="outline" data-size="xl" aria-haspopup="menu" aria-expanded="false" aria-controls="sz-dd-xl" data-dropdown-trigger="sz-dd-xl">Options</button>
     <div id="sz-dd-xl" role="menu" popover class="dropdown-content" data-size="xl" aria-label="Options xl">
@@ -180,8 +180,8 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </Example>
 
 <StatesSection>
-  <p class="text-sm text-muted-foreground lead-sm">Named states via the shared State API, driven per menu through the bound <code>api</code>:</p>
-  <ul class="text-sm text-muted-foreground prose-list">
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per menu through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
     <li><code>default</code> — closed (the authored state; the trigger toggles it)</li>
     <li><code>open</code> — shown via the native <code>showPopover()</code>, first item highlighted</li>
   </ul>

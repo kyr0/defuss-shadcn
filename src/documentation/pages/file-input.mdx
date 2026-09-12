@@ -33,14 +33,14 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <SkillField label="Notes">
 <SkillText dense>• Reuses the <code>.input</code> styling pattern for consistency.</SkillText>
   <SkillText dense>• The <code>::file-selector-button</code> is styled as a muted button with hover effect.</SkillText>
-  <p class="text-muted-foreground skill-bullet">• The existing <code>.input\[type="file"\]</code> already covers this — the file-input component provides a standalone class.</p>
+  <p class="text-muted-foreground m-0">• The existing <code>.input\[type="file"\]</code> already covers this — the file-input component provides a standalone class.</p>
   </SkillField>
 </SkillPanel>
 
 <Example first>
   <ExampleLabel>Default</ExampleLabel>
   <ExampleHint>Single file selection.</ExampleHint>
-  <div class="demo-form">
+  <div class="w-full max-w-80">
     <label class="label" for="d-avatar">Picture</label>
     <input class="file-input" type="file" id="d-avatar" />
   </div>
@@ -49,7 +49,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <Example>
   <ExampleLabel>Multiple files</ExampleLabel>
-  <div class="demo-form">
+  <div class="w-full max-w-80">
     <label class="label" for="d-docs">Documents</label>
     <input class="file-input" type="file" id="d-docs" multiple />
   </div>
@@ -58,7 +58,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <Example>
   <ExampleLabel>Accept filter</ExampleLabel>
-  <div class="demo-form">
+  <div class="w-full max-w-80">
     <label class="label" for="d-img">Image only</label>
     <input class="file-input" type="file" id="d-img" accept="image/*" />
   </div>
@@ -68,25 +68,25 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Example>
   <ExampleLabel>Sizes</ExampleLabel>
   <ExampleHint>The control follows the shared input ladder via <code>data-size</code> — <code>md</code> is 2.25rem, matching <code>.input</code>.</ExampleHint>
-  <div class="demo-row">
+  <div class="flex items-center gap-4 mb-3">
     <span class="demo-label demo-label-w5">Extra small</span>
-    <input class="file-input demo-ctl" type="file" data-size="xs" aria-label="Upload xs" style="max-width:16rem;" />
+    <input class="file-input flex-1" type="file" data-size="xs" aria-label="Upload xs" style="max-width:16rem;" />
   </div>
-  <div class="demo-row">
+  <div class="flex items-center gap-4 mb-3">
     <span class="demo-label demo-label-w5">Small</span>
-    <input class="file-input demo-ctl" type="file" data-size="sm" aria-label="Upload sm" style="max-width:16rem;" />
+    <input class="file-input flex-1" type="file" data-size="sm" aria-label="Upload sm" style="max-width:16rem;" />
   </div>
-  <div class="demo-row">
+  <div class="flex items-center gap-4 mb-3">
     <span class="demo-label demo-label-w5">Medium</span>
-    <input class="file-input demo-ctl" type="file" data-size="md" aria-label="Upload md" style="max-width:16rem;" />
+    <input class="file-input flex-1" type="file" data-size="md" aria-label="Upload md" style="max-width:16rem;" />
   </div>
-  <div class="demo-row">
+  <div class="flex items-center gap-4 mb-3">
     <span class="demo-label demo-label-w5">Large</span>
-    <input class="file-input demo-ctl" type="file" data-size="lg" aria-label="Upload lg" style="max-width:16rem;" />
+    <input class="file-input flex-1" type="file" data-size="lg" aria-label="Upload lg" style="max-width:16rem;" />
   </div>
-  <div class="demo-row">
+  <div class="flex items-center gap-4 mb-3">
     <span class="demo-label demo-label-w5">Extra large</span>
-    <input class="file-input demo-ctl" type="file" data-size="xl" aria-label="Upload xl" style="max-width:16rem;" />
+    <input class="file-input flex-1" type="file" data-size="xl" aria-label="Upload xl" style="max-width:16rem;" />
   </div>
 </Example>
 
