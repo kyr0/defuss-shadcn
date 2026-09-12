@@ -16,7 +16,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5">Components start from the most semantic native element available. A <code>&lt;button&gt;</code> is already a button — no <code>role="button"</code> needed. A <code>&lt;dialog&gt;</code> already traps focus and handles Escape. ARIA is only added when the native element doesn't express the full semantics of the widget.</p>
 
-<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(16rem, 1fr));gap:1rem;margin-bottom:2.5rem;">
+<div class="grid-auto-fit">
   <CodeCard title="Avoid: unnecessary ARIA" lang="markup" column><Dim>{"<!-- Don't add ARIA roles to native elements -->"}</Dim>{"<"}{"div role=\"button\" tabindex=\"0\"\n  onclick=\"...\""}{">"}{"\n  Click me\n"}{"<"}{"/div"}{">"}</CodeCard>
   <CodeCard title="Prefer: native elements" lang="markup" column><Dim>{"<!-- Native button: focusable, keyboard\n     activatable, announced correctly -->"}</Dim>{"<"}{"button class=\"btn\""}{">"}{"\n  Click me\n"}{"<"}{"/button"}{">"}</CodeCard>
 </div>
@@ -27,10 +27,10 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5">When no native element expresses the widget semantics, ARIA roles tell assistive technology what the element represents. These follow the <a href="https://www.w3.org/WAI/ARIA/apg/" target="_blank" rel="noopener" class="btn" data-variant="link">WAI-ARIA Authoring Practices Guide (APG)</a>.</p>
 
-<TableCard title="ARIA roles by component" mb="2.5rem"><table class="table" data-variant="simple" style="margin:0;">
+<TableCard title="ARIA roles by component" mb="2.5rem"><table class="table" data-variant="simple">
       <thead>
         <tr>
-          <th style="white-space:nowrap;">Role</th>
+          <th class="th-nowrap">Role</th>
           <th>Component</th>
           <th>Purpose</th>
         </tr>
@@ -150,10 +150,10 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5">ARIA state attributes communicate dynamic state changes to assistive technology. These are managed by JavaScript at runtime.</p>
 
-<TableCard title="ARIA state attributes" mb="2.5rem"><table class="table" data-variant="simple" style="margin:0;">
+<TableCard title="ARIA state attributes" mb="2.5rem"><table class="table" data-variant="simple">
       <thead>
         <tr>
-          <th style="white-space:nowrap;">Attribute</th>
+          <th class="th-nowrap">Attribute</th>
           <th>Values</th>
           <th>Usage</th>
         </tr>
@@ -223,10 +223,10 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5">These attributes create semantic connections between elements, allowing assistive technology to navigate related content.</p>
 
-<TableCard title="relationship attributes" mb="1.5rem"><table class="table" data-variant="simple" style="margin:0;">
+<TableCard title="relationship attributes" mb="1.5rem"><table class="table" data-variant="simple">
       <thead>
         <tr>
-          <th style="white-space:nowrap;">Attribute</th>
+          <th class="th-nowrap">Attribute</th>
           <th>Purpose</th>
           <th>Example</th>
         </tr>
@@ -285,10 +285,10 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5">Every interactive component is fully keyboard accessible. The keyboard patterns follow WAI-ARIA APG conventions so users get consistent behavior across the web.</p>
 
-<TableCard title="keyboard patterns by component type" mb="2.5rem"><table class="table" data-variant="simple" style="margin:0;">
+<TableCard title="keyboard patterns by component type" mb="2.5rem"><table class="table" data-variant="simple">
       <thead>
         <tr>
-          <th style="white-space:nowrap;">Key</th>
+          <th class="th-nowrap">Key</th>
           <th>Menus &amp; Dropdowns</th>
           <th>Tabs</th>
           <th>Dialogs</th>
@@ -378,12 +378,12 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5">When overlays open and close, focus must move predictably. Dialogs trap focus. When a modal closes, focus returns to the trigger that opened it.</p>
 
-<div style="display:grid;grid-template-columns:auto 1fr;gap:0.5rem 1rem;margin-bottom:1.5rem;align-items:baseline;">
-  <span style="font-weight:600;font-size:0.8125rem;">Focus trapping</span>
+<div class="def-grid">
+  <span class="def-term">Focus trapping</span>
   <span class="text-sm text-muted-foreground"><code>&lt;dialog&gt;</code> with <code>.showModal()</code> traps focus natively — Tab cycles within the dialog only. No JS focus-trap library needed.</span>
-  <span style="font-weight:600;font-size:0.8125rem;">Focus restoration</span>
+  <span class="def-term">Focus restoration</span>
   <span class="text-sm text-muted-foreground">When a dialog or menu closes, focus returns to the trigger element that opened it. JS stores a reference to the trigger before opening.</span>
-  <span style="font-weight:600;font-size:0.8125rem;">Focus-visible</span>
+  <span class="def-term">Focus-visible</span>
   <span class="text-sm text-muted-foreground"><code>:focus-visible</code> shows focus rings only on keyboard navigation, not mouse clicks. Applied to every interactive component.</span>
 </div>
 
@@ -395,7 +395,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5">Live regions announce dynamic content changes to screen readers without moving focus. Toast notifications and alerts use these to ensure users are informed of updates.</p>
 
-<div style="display:grid;grid-template-columns:auto 1fr;gap:0.5rem 1rem;margin-bottom:1.5rem;align-items:baseline;">
+<div class="def-grid">
   <code style="font-size:0.8125rem;font-weight:600;">aria-live="polite"</code>
   <span class="text-sm text-muted-foreground">Announced after the screen reader finishes its current output. Used for info and success toasts.</span>
   <code style="font-size:0.8125rem;font-weight:600;">aria-live="assertive"</code>
@@ -412,14 +412,14 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5">A few patterns help screen readers present clean, meaningful content.</p>
 
-<div style="display:grid;grid-template-columns:auto 1fr;gap:0.5rem 1rem;margin-bottom:1.5rem;align-items:baseline;">
-  <span style="font-weight:600;font-size:0.8125rem;">Decorative icons</span>
+<div class="def-grid">
+  <span class="def-term">Decorative icons</span>
   <span class="text-sm text-muted-foreground">Icons next to text labels get <code>aria-hidden="true"</code> so they're not announced redundantly.</span>
-  <span style="font-weight:600;font-size:0.8125rem;">Icon-only buttons</span>
+  <span class="def-term">Icon-only buttons</span>
   <span class="text-sm text-muted-foreground">Buttons with no visible text need <code>aria-label</code> to provide an accessible name: <code>&lt;button aria-label="Close"&gt;</code>.</span>
-  <span style="font-weight:600;font-size:0.8125rem;">Visually hidden text</span>
+  <span class="def-term">Visually hidden text</span>
   <span class="text-sm text-muted-foreground">Text that should be announced but not visible uses a CSS visually-hidden utility (clipped off-screen, still in the accessibility tree).</span>
-  <span style="font-weight:600;font-size:0.8125rem;">Form labels</span>
+  <span class="def-term">Form labels</span>
   <span class="text-sm text-muted-foreground">Every form input has a visible <code>&lt;label&gt;</code> element with a matching <code>for</code>/<code>id</code> pair, or <code>aria-label</code> for unlabeled inputs.</span>
 </div>
 

@@ -95,7 +95,7 @@
                 var surface = p[0], fg = p[1];
                 var row = document.createElement('div');
                 row.className = 'swatch-row';
-                row.innerHTML = '<div style="display:flex;gap:0.375rem;flex-shrink:0;"><div style="width:1.875rem;height:1.875rem;border-radius:var(--radius-sm);background:var(--' + surface + ');border:1px solid var(--border);"></div><div style="width:1.875rem;height:1.875rem;border-radius:var(--radius-sm);background:var(--' + fg + ');border:1px solid var(--border);"></div></div><div><p style="margin:0;font-size:0.8125rem;font-family:var(--font-mono);">--' + surface + '</p><p style="margin:0;font-size:0.75rem;color:var(--muted-foreground);font-family:var(--font-mono);">--' + fg + '</p></div><span style="margin-left:auto;font-size:0.75rem;color:var(--muted-foreground);font-family:var(--font-mono);">var(--' + surface + ') var(--' + fg + ')</span>';
+                row.innerHTML = '<div class="swatch-pair"><div class="swatch-sq" style="background:var(--' + surface + ');"></div><div class="swatch-sq" style="background:var(--' + fg + ');"></div></div><div><p class="swatch-name">--' + surface + '</p><p class="swatch-sub">--' + fg + '</p></div><span class="swatch-val">var(--' + surface + ') var(--' + fg + ')</span>';
                 swatchContainer.appendChild(row);
             });
         }
@@ -105,14 +105,14 @@
                 var surface = p[0], fg = p[1];
                 var row = document.createElement('div');
                 row.className = 'swatch-row';
-                row.innerHTML = '<div style="display:flex;gap:0.375rem;flex-shrink:0;"><div style="width:1.875rem;height:1.875rem;border-radius:var(--radius-sm);background:var(--' + surface + ');border:1px solid var(--border);"></div><div style="width:1.875rem;height:1.875rem;border-radius:var(--radius-sm);background:var(--' + fg + ');border:1px solid var(--border);"></div></div><div><p style="margin:0;font-size:0.8125rem;font-family:var(--font-mono);">--' + surface + '</p><p style="margin:0;font-size:0.75rem;color:var(--muted-foreground);font-family:var(--font-mono);">--' + fg + '</p></div><span style="margin-left:auto;font-size:0.75rem;color:var(--muted-foreground);font-family:var(--font-mono);">var(--' + surface + ') var(--' + fg + ')</span>';
+                row.innerHTML = '<div class="swatch-pair"><div class="swatch-sq" style="background:var(--' + surface + ');"></div><div class="swatch-sq" style="background:var(--' + fg + ');"></div></div><div><p class="swatch-name">--' + surface + '</p><p class="swatch-sub">--' + fg + '</p></div><span class="swatch-val">var(--' + surface + ') var(--' + fg + ')</span>';
                 sidebarSwatchContainer.appendChild(row);
             });
             [['sidebar-border', 'border-sidebar-border'], ['sidebar-ring', 'ring-sidebar-ring']].forEach(function (p) {
                 var token = p[0], _utility = p[1];
                 var row = document.createElement('div');
                 row.className = 'swatch-row';
-                row.innerHTML = '<div style="width:1.875rem;height:1.875rem;border-radius:var(--radius-sm);background:var(--' + token + ');border:1px solid var(--border);flex-shrink:0;"></div><code>--' + token + '</code><span class="text-sm text-muted-foreground ml-auto">var(--' + token + ')</span>';
+                row.innerHTML = '<div class="swatch-sq" style="background:var(--' + token + ');"></div><code>--' + token + '</code><span class="swatch-meta">var(--' + token + ')</span>';
                 sidebarSwatchContainer.appendChild(row);
             });
         }

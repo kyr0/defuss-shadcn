@@ -40,7 +40,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <SkillText dense>• Avoid deeply nesting cards (card inside card) — use <code>--muted</code> surface instead</SkillText>
   <SkillText dense>• For interactive cards (click to navigate), wrap in <code>&lt;a&gt;</code> and apply card classes to it</SkillText>
   <SkillText dense>• <code>card-footer</code> uses <code>padding-top: 0</code> to avoid double-spacing with <code>card-content</code></SkillText>
-  <p class="text-muted-foreground" style="margin:0 0 0;">• For a card grid, use CSS Grid on the parent — the card itself has no layout opinion</p>
+  <p class="text-muted-foreground skill-bullet">• For a card grid, use CSS Grid on the parent — the card itself has no layout opinion</p>
   </SkillField>
 </SkillPanel>
 
@@ -153,16 +153,16 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Example>
   <ExampleLabel>Density</ExampleLabel>
   <ExampleHint>Set <code>data-density</code> on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), typography and fixed dimensions stay identical. <code>comfortable</code> matches the unsized default.</ExampleHint>
-  <div style="display:flex;gap:1rem;flex-wrap:wrap;">
-    <div style="flex:1;min-width:12rem;">
+  <div class="flex flex-wrap gap-4">
+    <div class="demo-col">
       <p class="demo-label">Compact</p>
       <div class="card" data-density="compact"><div class="card-header"><h3 class="card-title">Density</h3><p class="card-description">Section padding scales.</p></div><div class="card-content"><p>Body copy stays put — only whitespace changes.</p></div><div class="card-footer"><span>Footer</span></div></div>
     </div>
-    <div style="flex:1;min-width:12rem;">
+    <div class="demo-col">
       <p class="demo-label">Comfortable</p>
       <div class="card" data-density="comfortable"><div class="card-header"><h3 class="card-title">Density</h3><p class="card-description">Section padding scales.</p></div><div class="card-content"><p>Body copy stays put — only whitespace changes.</p></div><div class="card-footer"><span>Footer</span></div></div>
     </div>
-    <div style="flex:1;min-width:12rem;">
+    <div class="demo-col">
       <p class="demo-label">Spacious</p>
       <div class="card" data-density="spacious"><div class="card-header"><h3 class="card-title">Density</h3><p class="card-description">Section padding scales.</p></div><div class="card-content"><p>Body copy stays put — only whitespace changes.</p></div><div class="card-footer"><span>Footer</span></div></div>
     </div>

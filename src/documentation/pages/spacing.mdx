@@ -12,7 +12,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   One arithmetic spacing scale for gaps, padding and margins, with optional density and direction-aware helpers.
 </PageHeader>
 
-<h2 id="spacing-scale" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Spacing on the same base</h2>
+<h2 id="spacing-scale" class="h2-display">Spacing on the same base</h2>
 
 <DocText>Gaps, padding and margins use <code>n × --size-base × --layout-density</code>. Density is 1 by default. <code>gap-4</code> therefore matches <code>1rem</code> at the default base; <code>w-4</code> remains geometric when density changes. The <code>px</code> suffix always means one CSS pixel and is not density-scaled. Below, the three everyday jobs of spacing: <code>gap-2</code> between related actions, <code>gap-6</code> between independent cards, <code>p-6</code> inside a card.</DocText>
 
@@ -31,18 +31,18 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
       <div class="flex flex-wrap gap-6">
         <div class="card" style="width:9rem;">
           <div class="card-header">
-            <p class="card-title" style="font-size:0.875rem;">Research</p>
+            <p class="card-title card-title-xs">Research</p>
           </div>
-          <div style="padding:0 1rem 1rem;">
-            <p class="text-muted-foreground" style="margin:0;font-size:0.75rem;">12 open</p>
+          <div class="card-body">
+            <p class="text-muted-foreground meta-xs">12 open</p>
           </div>
         </div>
         <div class="card" style="width:9rem;">
           <div class="card-header">
-            <p class="card-title" style="font-size:0.875rem;">Design</p>
+            <p class="card-title card-title-xs">Design</p>
           </div>
-          <div style="padding:0 1rem 1rem;">
-            <p class="text-muted-foreground" style="margin:0;font-size:0.75rem;">4 open</p>
+          <div class="card-body">
+            <p class="text-muted-foreground meta-xs">4 open</p>
           </div>
         </div>
       </div>
@@ -50,7 +50,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <div>
       <p class="demo-label">p-6 — padding keeps content off the card's edge</p>
       <div class="card p-6" style="max-width:20rem;">
-        <p style="margin:0;font-size:0.875rem;font-weight:500;">Weekly digest</p>
+        <p class="row-title">Weekly digest</p>
         <p class="text-muted-foreground" style="margin:0.25rem 0 0;font-size:0.8125rem;">The same p-6 on every side — no measuring, no magic numbers.</p>
       </div>
     </div>
@@ -60,7 +60,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="box-model" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">The box model, labeled</h2>
+<h2 id="box-model" class="h2-display">The box model, labeled</h2>
 
 <DocText>Every spacing utility addresses one zone of the box model: <code>m-\*</code> works outside the border (against siblings), <code>p-\*</code> inside it (against content). The physical sides (<code>t/r/b/l</code>) never move; the logical sides (<code>s/e</code>) follow the writing direction. The diagram uses <em>ordinary CSS colors</em> to make the zones visible — the classes label what each zone is.</DocText>
 
@@ -73,8 +73,8 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
         <div class="demo-tile h-16">content</div>
       </div>
       <div class="flex justify-between" style="margin-top:0.5rem;">
-        <span class="demo-label" style="margin:0;">ms/me-\* — start/end</span>
-        <span class="demo-label" style="margin:0;">mt/mr/mb/ml-\* — physical</span>
+        <span class="demo-label demo-label-inline">ms/me-\* — start/end</span>
+        <span class="demo-label demo-label-inline">mt/mr/mb/ml-\* — physical</span>
       </div>
     </div>
   </div>
@@ -83,7 +83,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="gap-axes" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Gap axes</h2>
+<h2 id="gap-axes" class="h2-display">Gap axes</h2>
 
 <DocText><code>gap-x-\*</code> sets <code>column-gap</code>, <code>gap-y-\*</code> sets <code>row-gap</code> — the two axes are independent. A calendar makes that tangible: days of a week sit <code>gap-x-3</code> apart while the weeks stack tightly at <code>gap-y-1</code>.</DocText>
 
@@ -120,7 +120,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="padding" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Padding families</h2>
+<h2 id="padding" class="h2-display">Padding families</h2>
 
 <DocText>Padding shares the numeric scale with gap. <code>p-\*</code> pads all four sides; <code>px-\*</code> and <code>py-\*</code> pad the inline and block axes independently — the recipe for chips, badges and inputs; a single-side helper like <code>pt-\*</code> adds space in one direction, useful for optical alignment against a divider or media edge. The dashed outline marks the box edge: the band between it and the filled content is the padding.</DocText>
 
@@ -150,7 +150,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="margins" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Centering and pushing with margins</h2>
+<h2 id="margins" class="h2-display">Centering and pushing with margins</h2>
 
 <DocText>Automatic margins absorb spare space. <code>mx-auto</code> on a fixed-width box centers it in its container — the classic content column. <code>ms-auto</code> on one flex item pushes it, and everything after it, to the inline end — the standard right-aligned toolbar action. Negative margins and margin-based <code>space-x/y</code> shortcuts are intentionally omitted.</DocText>
 
@@ -169,7 +169,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="logical" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Physical vs logical sides</h2>
+<h2 id="logical" class="h2-display">Physical vs logical sides</h2>
 
 <DocText>The axis families already follow the writing mode — <code>px-\*</code> is <code>padding-inline</code>, <code>py-\*</code> is <code>padding-block</code>. For single sides there are two families: physical <code>pt/pr/pb/pl-\*</code> always hit the same physical edge, while logical <code>ps/pe-\*</code> follow inline-start and inline-end. The same classes render below in <code>dir="ltr"</code> and in <code>dir="rtl"</code>: the logical box mirrors with the direction, the physical box does not move. The filled band is the content box; the empty bands are the padding.</DocText>
 
@@ -203,11 +203,11 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="families" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Spacing families</h2>
+<h2 id="families" class="h2-display">Spacing families</h2>
 
 <DocText>Every family in this table is demonstrated in the sections before it.</DocText>
 
-<div style="overflow-x:auto;margin-bottom:1.5rem;">
+<div class="table-scroll">
   <table class="table" data-variant="simple">
     <thead>
       <tr>
@@ -266,7 +266,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="real-world" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Real world: a receipt</h2>
+<h2 id="real-world" class="h2-display">Real world: a receipt</h2>
 
 <DocText>A whole component on one rhythm: <code>p-6</code> around the card, <code>stack gap-3</code> between line items, <code>ms-auto</code> to push amounts right, and <code>mt-4 pt-4</code> with a top border to separate the total. No custom CSS anywhere.</DocText>
 
@@ -275,15 +275,15 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <p style="margin:0;font-size:0.9375rem;font-weight:600;">Order #1042</p>
     <div class="flex items-baseline gap-2">
       <span style="font-size:0.875rem;">Pro plan, monthly</span>
-      <span class="demo-label ms-auto" style="margin:0;">$24.00</span>
+      <span class="demo-label ms-auto demo-label-inline">>$24.00</span>
     </div>
     <div class="flex items-baseline gap-2">
       <span style="font-size:0.875rem;">Extra seats × 2</span>
-      <span class="demo-label ms-auto" style="margin:0;">$12.00</span>
+      <span class="demo-label ms-auto demo-label-inline">>$12.00</span>
     </div>
     <div class="flex items-baseline gap-2">
       <span style="font-size:0.875rem;">Priority support</span>
-      <span class="demo-label ms-auto" style="margin:0;">$8.00</span>
+      <span class="demo-label ms-auto demo-label-inline">>$8.00</span>
     </div>
     <div class="flex items-baseline gap-2 mt-4 pt-4" style="border-top:1px solid var(--border);">
       <span style="font-size:0.875rem;font-weight:600;">Total</span>
@@ -295,7 +295,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="overrides" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Custom gaps and cascade</h2>
+<h2 id="overrides" class="h2-display">Custom gaps and cascade</h2>
 
 <Demo>
   <DemoCode>{"<div class=\"stack\" style=\"--layout-gap:clamp(1rem, 2vw, 2rem);\">\n  <p>First block</p>\n  <p>Second block</p>\n</div>"}</DemoCode>
@@ -305,7 +305,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="references" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Platform references</h2>
+<h2 id="references" class="h2-display">Platform references</h2>
 
 <DocText><a href="https://www.w3.org/TR/css-cascade-5/" target="_blank" rel="noopener">CSS cascade layers</a> · <a href="https://www.w3.org/TR/css-logical-1/" target="_blank" rel="noopener">CSS logical properties</a></DocText>
 

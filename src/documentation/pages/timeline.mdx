@@ -136,16 +136,16 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Example>
   <ExampleLabel>Density</ExampleLabel>
   <ExampleHint>Set <code>data-density</code> on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), typography and fixed dimensions stay identical. <code>comfortable</code> matches the unsized default.</ExampleHint>
-  <div style="display:flex;gap:1rem;flex-wrap:wrap;">
-    <div style="flex:1;min-width:12rem;">
+  <div class="flex flex-wrap gap-4">
+    <div class="demo-col">
       <p class="demo-label">Compact</p>
       <ul class="timeline" data-density="compact"><li class="timeline-item"><span class="timeline-dot" data-variant="active"></span><div class="timeline-content"><p class="timeline-title">Deployed</p><p class="timeline-description">v1.2.0 shipped</p></div></li><li class="timeline-item"><span class="timeline-dot"></span><div class="timeline-content"><p class="timeline-title">Planned</p><p class="timeline-description">v1.3.0 scope</p></div></li></ul>
     </div>
-    <div style="flex:1;min-width:12rem;">
+    <div class="demo-col">
       <p class="demo-label">Comfortable</p>
       <ul class="timeline" data-density="comfortable"><li class="timeline-item"><span class="timeline-dot" data-variant="active"></span><div class="timeline-content"><p class="timeline-title">Deployed</p><p class="timeline-description">v1.2.0 shipped</p></div></li><li class="timeline-item"><span class="timeline-dot"></span><div class="timeline-content"><p class="timeline-title">Planned</p><p class="timeline-description">v1.3.0 scope</p></div></li></ul>
     </div>
-    <div style="flex:1;min-width:12rem;">
+    <div class="demo-col">
       <p class="demo-label">Spacious</p>
       <ul class="timeline" data-density="spacious"><li class="timeline-item"><span class="timeline-dot" data-variant="active"></span><div class="timeline-content"><p class="timeline-title">Deployed</p><p class="timeline-description">v1.2.0 shipped</p></div></li><li class="timeline-item"><span class="timeline-dot"></span><div class="timeline-content"><p class="timeline-title">Planned</p><p class="timeline-description">v1.3.0 scope</p></div></li></ul>
     </div>

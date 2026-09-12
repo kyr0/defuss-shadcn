@@ -33,7 +33,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <SkillField label="Notes">
 <SkillText dense>• The native color picker renders a full-featured dialog — no JS needed.</SkillText>
   <SkillText dense>• The wrapper adds a styled border and displays the current hex value.</SkillText>
-  <p class="text-muted-foreground" style="margin:0 0 0;">• The color swatch is provided by the browser's native <code>&lt;input type="color"&gt;</code>.</p>
+  <p class="text-muted-foreground skill-bullet">• The color swatch is provided by the browser's native <code>&lt;input type="color"&gt;</code>.</p>
   </SkillField>
 </SkillPanel>
 
@@ -74,31 +74,31 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Example>
   <ExampleLabel>Sizes</ExampleLabel>
   <ExampleHint>The box height lands on the shared input ladder via <code>data-size</code> — <code>md</code> is the typical 2.25rem.</ExampleHint>
-  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
-    <span class="demo-label" style="width:5rem;margin:0;">Extra small</span>
+  <div class="demo-row">
+    <span class="demo-label demo-label-w5">Extra small</span>
     <div class="color-picker" data-size="xs"><input type="color" id="d-color-xs" value="#6366f1" /><span class="color-picker-value">#6366f1</span></div>
   </div>
-  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
-    <span class="demo-label" style="width:5rem;margin:0;">Small</span>
+  <div class="demo-row">
+    <span class="demo-label demo-label-w5">Small</span>
     <div class="color-picker" data-size="sm"><input type="color" id="d-color-sm" value="#6366f1" /><span class="color-picker-value">#6366f1</span></div>
   </div>
-  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
-    <span class="demo-label" style="width:5rem;margin:0;">Medium</span>
+  <div class="demo-row">
+    <span class="demo-label demo-label-w5">Medium</span>
     <div class="color-picker" data-size="md"><input type="color" id="d-color-md" value="#6366f1" /><span class="color-picker-value">#6366f1</span></div>
   </div>
-  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
-    <span class="demo-label" style="width:5rem;margin:0;">Large</span>
+  <div class="demo-row">
+    <span class="demo-label demo-label-w5">Large</span>
     <div class="color-picker" data-size="lg"><input type="color" id="d-color-lg" value="#6366f1" /><span class="color-picker-value">#6366f1</span></div>
   </div>
-  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
-    <span class="demo-label" style="width:5rem;margin:0;">Extra large</span>
+  <div class="demo-row">
+    <span class="demo-label demo-label-w5">Extra large</span>
     <div class="color-picker" data-size="xl"><input type="color" id="d-color-xl" value="#6366f1" /><span class="color-picker-value">#6366f1</span></div>
   </div>
 </Example>
 
 <StatesSection>
-  <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
-  <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
+  <p class="text-sm text-muted-foreground lead-sm">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground prose-list">
     <li><code>default</code> — <code>setState('default', \{ value \})</code> presets the color through the native input (events fire); <code>getState().config.value</code> reports the live hex</li>
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/color-picker-\{state\}.png</code>.</p>

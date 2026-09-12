@@ -96,19 +96,19 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5">Traditional CSS libraries (Bootstrap, Bulma) ship unlayered styles. That creates problems when you try to customize them.</p>
 
-<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(16rem, 1fr));gap:1rem;margin-bottom:2.5rem;">
+<div class="grid-auto-fit">
   <CodeCard title="Without @layer" lang="css" column><Dim>{"/* Library: high specificity */"}</Dim>{"\n.btn.btn-primary { background: blue; }\n\n"}<Dim>{"/* Your override: loses */"}</Dim>{"\n.btn { background: tomato; }  "}<Dim>{"/* ✗ */"}</Dim><Dim>{"/* Forced to escalate */"}</Dim>{"\n.btn { background: tomato !important; }"}</CodeCard>
   <CodeCard title="With @layer (defuss-shadcn)" lang="css" column><Dim>{"/* Library: layered */"}</Dim>{"\n@layer components {\n  .btn { background: var(--primary); }\n}\n\n"}<Dim>{"/* Your override: unlayered */"}</Dim>{"\n.btn { background: tomato; }  "}<Dim>{"/* ✓ wins */"}</Dim><Dim>{"/* No !important needed. */"}</Dim></CodeCard>
 </div>
 
 <div style="display:grid;grid-template-columns:auto 1fr;gap:0.5rem 1rem;margin-bottom:2.5rem;align-items:baseline;">
-  <span style="font-weight:600;font-size:0.8125rem;">Clean overrides</span>
+  <span class="def-term">Clean overrides</span>
   <span class="text-sm text-muted-foreground">Your CSS beats layered component defaults without <code>!important</code> or specificity hacks.</span>
-  <span style="font-weight:600;font-size:0.8125rem;">Predictable cascade</span>
+  <span class="def-term">Predictable cascade</span>
   <span class="text-sm text-muted-foreground">Component internals can use any selector complexity — it won't leak into your layer.</span>
-  <span style="font-weight:600;font-size:0.8125rem;">Composable layers</span>
+  <span class="def-term">Composable layers</span>
   <span class="text-sm text-muted-foreground">Works cleanly alongside other libraries or your own <code>@layer</code> declarations.</span>
-  <span style="font-weight:600;font-size:0.8125rem;">Future-proof</span>
+  <span class="def-term">Future-proof</span>
   <span class="text-sm text-muted-foreground"><code>@layer</code> is a W3C standard, built into every modern browser. Not a framework convention.</span>
 </div>
 
@@ -120,16 +120,16 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5">Shadow DOM creates a styling boundary that makes theming painful — external CSS can't reach inside, so every component needs its own token-plumbing or <code>::part()</code> surface. SSR is complex, framework interop suffers, and devtools show an extra layer of indirection. <code>@scope</code> strips context from class names, making selectors ambiguous outside their block. Both add abstraction that makes the system harder to read, generate, and modify — for humans and AI alike — so we use neither.</p>
 
-<div style="display:grid;grid-template-columns:auto 1fr;gap:0.5rem 1rem;margin-bottom:1.5rem;align-items:baseline;">
-  <span style="font-weight:600;font-size:0.8125rem;">Plain HTML is the simplest target</span>
+<div class="def-grid">
+  <span class="def-term">Plain HTML is the simplest target</span>
   <span class="text-sm text-muted-foreground">A <code>&lt;button class="btn" data-variant="outline"&gt;</code> is just HTML. No custom element registration, no shadow root, no template cloning. Nothing to misunderstand, nothing to get wrong.</span>
-  <span style="font-weight:600;font-size:0.8125rem;">Theming without boundaries</span>
+  <span class="def-term">Theming without boundaries</span>
   <span class="text-sm text-muted-foreground">Shadow DOM blocks external stylesheets from reaching component internals. With plain HTML, your CSS custom properties and overrides apply everywhere — no <code>::part()</code> or adopted stylesheets required.</span>
-  <span style="font-weight:600;font-size:0.8125rem;">Flat, visible DOM</span>
+  <span class="def-term">Flat, visible DOM</span>
   <span class="text-sm text-muted-foreground">Shadow DOM hides structure behind custom elements and adds another inspection boundary. DevTools can still reveal open shadow roots, but plain HTML keeps every component directly visible in the main DOM tree and easier for tools to reason about.</span>
-  <span style="font-weight:600;font-size:0.8125rem;">Self-documenting class names</span>
+  <span class="def-term">Self-documenting class names</span>
   <span class="text-sm text-muted-foreground">A class like <code>.card-header</code> carries its meaning in the name — it can be generated without knowing the surrounding markup. With <code>@scope</code>, a generic <code>.header</code> is ambiguous outside its block.</span>
-  <span style="font-weight:600;font-size:0.8125rem;">The cascade delivers context for free</span>
+  <span class="def-term">The cascade delivers context for free</span>
   <span class="text-sm text-muted-foreground"><code>.card-title</code> inherits font and color tokens from its parent <code>.card</code> automatically. This inheritance <em>is</em> the context — the more of it embedded in the structure, the more reliably tools and AI produce correct output.</span>
 </div>
 
@@ -141,12 +141,12 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5"><code>@layer</code> is supported in all modern browsers. No polyfill needed. </p>
 
-<div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:1.5rem;">
-  <div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);">
-    <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">browser support</span>
+<div class="code-card" style="margin-bottom:1.5rem;">
+  <div class="code-card-head">
+    <span class="mono-meta">browser support</span>
   </div>
   <div style="padding:1rem 1.25rem;font-size:0.8125rem;">
-    <table class="table" data-variant="simple" style="margin:0;">
+    <table class="table" data-variant="simple">
       <thead>
         <tr>
           <th>Browser</th>

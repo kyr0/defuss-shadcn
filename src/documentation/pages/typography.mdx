@@ -54,7 +54,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <SkillText dense>• <code>&lt;blockquote&gt;</code> is announced as a quote by assistive technology — no extra ARIA needed.</SkillText>
   <SkillText dense>• <code>&lt;code&gt;</code> is announced as code — no extra ARIA needed.</SkillText>
   <SkillText dense>• <code>prefers-contrast: more</code> — removes tight letter-spacing, adds outline to inline code, thickens blockquote border, promotes muted text to foreground color.</SkillText>
-  <p class="text-muted-foreground" style="margin:0 0 0;">• <code>forced-colors: active</code> — blockquote border and inline code adapt to system colors.</p>
+  <p class="text-muted-foreground skill-bullet">• <code>forced-colors: active</code> — blockquote border and inline code adapt to system colors.</p>
   </SkillField>
 
   <SkillField label="Notes">
@@ -66,11 +66,11 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <SkillText dense>• <code>hanging-punctuation</code> is used on blockquotes for optical quote alignment.</SkillText>
   <SkillText dense>• Blockquote uses logical properties (<code>border-inline-start</code>, <code>padding-inline-start</code>) for automatic RTL support.</SkillText>
   <SkillText dense>• For lists, use the List component (<code>list.css</code>) — typography does not ship its own list styles.</SkillText>
-  <p class="text-muted-foreground" style="margin:0 0 0;">• For prose tables, use the Table component (<code>table.css</code>) — typography does not ship its own table styles.</p>
+  <p class="text-muted-foreground skill-bullet">• For prose tables, use the Table component (<code>table.css</code>) — typography does not ship its own table styles.</p>
   </SkillField>
 </SkillPanel>
 
-<Example first previewStyle="text-align:left;padding:2.5rem;">
+<Example first previewClass="preview preview-left">
   <ExampleLabel>Headings</ExampleLabel>
   <ExampleHint>Four heading levels — h1 is extrabold, h2 includes a bottom border, h3 and h4 are semibold.</ExampleHint>
   <div style="max-width:32rem;margin:0 auto;display:flex;flex-direction:column;gap:1.5rem;">
@@ -82,14 +82,14 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <ExampleCode>{"<h1 class=\"h1\">Taxing Laughter</h1>\n<h2 class=\"h2\">The People of the Kingdom</h2>\n<h3 class=\"h3\">The Joke Tax</h3>\n<h4 class=\"h4\">People stopped telling jokes</h4>"}</ExampleCode>
 </Example>
 
-<Example previewStyle="text-align:left;padding:2.5rem;">
+<Example previewClass="preview preview-left">
   <ExampleLabel>Paragraph</ExampleLabel>
   <ExampleHint>Standard body text with generous line height.</ExampleHint>
   <p class="p" style="max-width:32rem;margin:0 auto;">The king, seeing how much happier his subjects were, realized the error of his ways and repealed the joke tax.</p>
   <ExampleCode>{"<p class=\"p\">The king, seeing how much happier his subjects were, realized the error of his ways and repealed the joke tax.</p>"}</ExampleCode>
 </Example>
 
-<Example previewStyle="text-align:left;padding:2.5rem;">
+<Example previewClass="preview preview-left">
   <ExampleLabel>Lead</ExampleLabel>
   <ExampleHint>Larger, muted intro paragraph.</ExampleHint>
   <p class="lead" style="max-width:32rem;margin:0 auto;">A modal dialog that interrupts the user with important content and expects a response.</p>
@@ -102,12 +102,12 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <div style="display:flex;flex-direction:column;gap:0.75rem;align-items:center;">
     <div class="large">Are you absolutely sure?</div>
     <small class="small">Email address</small>
-    <p class="muted" style="margin:0;">Enter your email address.</p>
+    <p class="muted flat">>Enter your email address.</p>
   </div>
   <ExampleCode>{"<div class=\"large\">Are you absolutely sure?</div>\n<small class=\"small\">Email address</small>\n<p class=\"muted\">Enter your email address.</p>"}</ExampleCode>
 </Example>
 
-<Example previewStyle="text-align:left;padding:2.5rem;">
+<Example previewClass="preview preview-left">
   <ExampleLabel>Blockquote</ExampleLabel>
   <ExampleHint>Quoted block with left border and italic style.</ExampleHint>
   <blockquote class="blockquote" style="max-width:32rem;margin:0 auto;">
@@ -134,7 +134,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <ExampleCode>{"<p style=\"font-family:var(--font-serif)\">Display headings</p>"}</ExampleCode>
 </Example>
 
-<Example previewStyle="text-align:left;padding:2.5rem;">
+<Example previewClass="preview preview-left">
   <ExampleLabel>Prose Composition</ExampleLabel>
   <ExampleHint>All typography classes combined in a full prose layout — matching the shadcn/ui demo.</ExampleHint>
   <div style="max-width:38rem;margin:0 auto;">
@@ -164,7 +164,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <ExampleCode>{"<h1 class=\"h1\" style=\"text-align:center;\">Taxing Laughter</h1>\n<p class=\"p\">Once upon a time...</p>\n<h2 class=\"h2\">The King's Plan</h2>\n<p class=\"p\">The king thought long and hard...</p>\n<blockquote class=\"blockquote\">\n  <p>\"After all,\" he said...</p>\n</blockquote>\n<h3 class=\"h3\">The Joke Tax</h3>\n<ul class=\"list\">\n  <li>1st level of puns: 5 gold coins</li>\n  <li>2nd level of jokes: 10 gold coins</li>\n</ul>"}</ExampleCode>
 </Example>
 
-<Example previewStyle="text-align:left;padding:2.5rem;">
+<Example previewClass="preview preview-left">
   <ExampleLabel>RTL support</ExampleLabel>
   <ExampleHint>Blockquotes use logical properties (<code>border-inline-start</code>, <code>padding-inline-start</code>) — they flip automatically in RTL contexts.</ExampleHint>
   <div dir="rtl" style="max-width:32rem;margin:0 auto;">

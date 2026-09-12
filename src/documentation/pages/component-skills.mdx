@@ -35,27 +35,27 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <p class="text-sm text-muted-foreground mb-5">Every component skill opens with a YAML frontmatter block and then follows a consistent template with these sections in order:</p>
 
 <div style="display:grid;grid-template-columns:auto 1fr;gap:0.5rem 1rem;margin-bottom:2.5rem;align-items:baseline;">
-  <span style="font-weight:600;font-size:0.8125rem;">0. Frontmatter</span>
+  <span class="def-term">0. Frontmatter</span>
   <span class="text-sm text-muted-foreground">Machine-readable header (<code>name</code>, <code>type</code>, <code>why</code>, <code>when</code>, <code>where</code>, <code>supportedStates</code>) that <code>SKILL.md</code> is generated from — required on every skill and enforced by <code>verify</code>.</span>
-  <span style="font-weight:600;font-size:0.8125rem;">1. Native basis</span>
+  <span class="def-term">1. Native basis</span>
   <span class="text-sm text-muted-foreground">Which HTML element or browser API the component builds on. Every component starts from native semantics.</span>
-  <span style="font-weight:600;font-size:0.8125rem;">2. Native Web APIs</span>
+  <span class="def-term">2. Native Web APIs</span>
   <span class="text-sm text-muted-foreground">Bulleted list of significant platform APIs used (Popover API, CSS Anchor Positioning, <code>&lt;dialog&gt;</code>, etc.) with MDN links.</span>
-  <span style="font-weight:600;font-size:0.8125rem;">3. Structure</span>
+  <span class="def-term">3. Structure</span>
   <span class="text-sm text-muted-foreground">Complete HTML markup showing the component's element hierarchy, class names, and required attributes.</span>
-  <span style="font-weight:600;font-size:0.8125rem;">4. Variants</span>
+  <span class="def-term">4. Variants</span>
   <span class="text-sm text-muted-foreground">Table of <code>data-variant</code> values with descriptions and example markup.</span>
-  <span style="font-weight:600;font-size:0.8125rem;">5. Sizes</span>
+  <span class="def-term">5. Sizes</span>
   <span class="text-sm text-muted-foreground">Table of <code>data-size</code> values (if the component supports them).</span>
-  <span style="font-weight:600;font-size:0.8125rem;">6. Accessibility</span>
+  <span class="def-term">6. Accessibility</span>
   <span class="text-sm text-muted-foreground">Required ARIA attributes, keyboard interactions, and screen reader considerations.</span>
-  <span style="font-weight:600;font-size:0.8125rem;">7. Notes</span>
+  <span class="def-term">7. Notes</span>
   <span class="text-sm text-muted-foreground">Edge cases, composition tips, caveats, and integration notes.</span>
 </div>
 
 <div class="sep" />
 
-<h2 id="component-taxonomy" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Component taxonomy</h2>
+<h2 id="component-taxonomy" class="h2-display">Component taxonomy</h2>
 
 <p class="text-sm text-muted-foreground mb-5">Every component is classified with exactly one type, expressed in three places that <code>verify</code> keeps in sync: the skill's <code>type:</code> frontmatter (source of truth), the sidebar badge, and the badge on the component's doc page. Classification never leaks into component names — <code>Button</code>, never <code>ButtonAtom</code>.</p>
 
@@ -97,13 +97,13 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <p class="text-sm text-muted-foreground mb-5">Component skills are designed to give AI assistants everything they need to generate correct, accessible markup in a single reference. Here's how to use them:</p>
 
 <div style="display:grid;grid-template-columns:auto 1fr;gap:0.75rem 1.5rem;margin-bottom:1.5rem;align-items:baseline;">
-  <span style="font-weight:600;font-size:0.8125rem;">Start at SKILL.md</span>
+  <span class="def-term">Start at SKILL.md</span>
   <span class="text-sm text-muted-foreground">Give the agent <code>dist/SKILL.md</code> as its entry point: it explains integration and philosophy once, then points at the right component skill — the agent only reads the skills it actually needs.</span>
-  <span style="font-weight:600;font-size:0.8125rem;">Copy &amp; paste</span>
+  <span class="def-term">Copy &amp; paste</span>
   <span class="text-sm text-muted-foreground">Copy the skill file content into your AI chat alongside your request. The AI will use it as context to generate correct markup.</span>
-  <span style="font-weight:600;font-size:0.8125rem;">File reference</span>
+  <span class="def-term">File reference</span>
   <span class="text-sm text-muted-foreground">In tools that support file context (Copilot, Cursor, etc.), point the AI at <code>dist/components/\{name\}/component-skill.md</code>.</span>
-  <span style="font-weight:600;font-size:0.8125rem;">Multiple skills</span>
+  <span class="def-term">Multiple skills</span>
   <span class="text-sm text-muted-foreground">For pages with multiple components, provide all relevant skill files. The AI will compose them correctly.</span>
 </div>
 
@@ -116,11 +116,11 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <p class="text-sm text-muted-foreground mb-5">Even without AI, skill files serve as quick references. Need to know what variants a Badge supports? Open <code>component-skill.md</code> and check the variants table. Need the exact ARIA attributes for a Combobox? The accessibility section has them.</p>
 
 <div style="display:grid;grid-template-columns:auto 1fr;gap:0.5rem 1rem;margin-bottom:2.5rem;align-items:baseline;">
-  <span style="font-weight:600;font-size:0.8125rem;">Quick lookup</span>
+  <span class="def-term">Quick lookup</span>
   <span class="text-sm text-muted-foreground">Skill files are faster than searching through CSS for which <code>data-variant</code> values exist or scanning JS for keyboard bindings.</span>
-  <span style="font-weight:600;font-size:0.8125rem;">Copy-paste HTML</span>
+  <span class="def-term">Copy-paste HTML</span>
   <span class="text-sm text-muted-foreground">The Structure section gives you copy-paste-ready markup with all required attributes already in place.</span>
-  <span style="font-weight:600;font-size:0.8125rem;">ARIA checklist</span>
+  <span class="def-term">ARIA checklist</span>
   <span class="text-sm text-muted-foreground">The Accessibility section doubles as a checklist to verify your implementation covers all accessibility requirements.</span>
 </div>
 

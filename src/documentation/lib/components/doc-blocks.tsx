@@ -32,18 +32,14 @@ export function DocLink({ href, target, rel, children }: Props & { href: string;
 
 /** Display section heading (picked up by the TOC plugin). */
 export function H2({ children }: Props) {
-  return (
-    <h2 style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">
-      {children}
-    </h2>
-  );
+  return <h2 class="h2-display">{children}</h2>;
 }
 
 /** One labeled field of a <SkillPanel> (label + content). */
 export function SkillField({ label, children }: Props & { label: string }) {
   return (
     <>
-      <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.8125rem;font-family:var(--font-mono);">{label}</p>
+      <p class="skill-field-label">{label}</p>
       {children}
     </>
   );
@@ -108,13 +104,11 @@ export function CodeCard({
   column,
   children,
 }: Props & { title: string; lang: string; mb?: string; column?: boolean }) {
-  const outer = column
-    ? 'border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;display:flex;flex-direction:column;'
-    : `border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:${mb ?? '1.5rem'};`;
+  const outer = column ? 'code-card code-card-col' : 'code-card';
   return (
-    <div style={outer}>
-      <div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);">
-        <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">{title}</span>
+    <div class={outer} {...(column ? {} : { style: `margin-bottom:${mb ?? '1.5rem'};` })}>
+      <div class="code-card-head">
+        <span class="code-card-title">{title}</span>
       </div>
       <pre style="border-radius:0;border:none;margin:0;background:transparent;flex:1;overflow:hidden;">
         <code class={`language-${lang}`}>{children}</code>
@@ -126,9 +120,9 @@ export function CodeCard({
 /** Same bordered card with a table body (reference tables in guide pages). */
 export function TableCard({ title, mb, children }: Props & { title: string; mb?: string }) {
   return (
-    <div style={`border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:${mb ?? '1.5rem'};`}>
-      <div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);">
-        <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--muted-foreground);">{title}</span>
+    <div class="code-card" style={`margin-bottom:${mb ?? '1.5rem'};`}>
+      <div class="code-card-head">
+        <span class="code-card-title">{title}</span>
       </div>
       <div style="padding:1rem 1.25rem;font-size:0.8125rem;overflow-x:auto;">{children}</div>
     </div>

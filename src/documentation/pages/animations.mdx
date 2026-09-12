@@ -51,9 +51,9 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <CodeCard title="complete popover animation — CSS only" lang="css" mb="1.5rem">{"@layer components {\n  .popover {\n    "}<Dim>{"/* 1. Base state (also the exit target) */"}</Dim>{"\n    opacity: 0;\n    transform: translateY(-4px);\n    transition:\n      opacity 150ms ease,\n      transform 150ms ease,\n      display 150ms allow-discrete;\n\n    "}<Dim>{"/* 2. Open state — what it transitions TO */"}</Dim>{"&"}{":popover-open {\n      opacity: 1;\n      transform: translateY(0);\n    }\n  }\n\n  "}<Dim>{"/* 3. Starting style — what it transitions FROM */"}</Dim>{"\n  @starting-style {\n    .popover:popover-open {\n      opacity: 0;\n      transform: translateY(-4px);\n    }\n  }\n}"}</CodeCard>
 
 <div style="display:grid;grid-template-columns:auto 1fr;gap:0.5rem 1rem;margin-bottom:2.5rem;align-items:baseline;">
-  <span style="font-weight:600;font-size:0.8125rem;">Enter</span>
+  <span class="def-term">Enter</span>
   <span class="text-sm text-muted-foreground"><code>@starting-style</code> values → transition → <code>:popover-open</code> values. The popover fades in and slides up.</span>
-  <span style="font-weight:600;font-size:0.8125rem;">Exit</span>
+  <span class="def-term">Exit</span>
   <span class="text-sm text-muted-foreground"><code>:popover-open</code> values → transition → base state values. The <code>allow-discrete</code> on <code>display</code> keeps the element visible during the fade-out.</span>
 </div>
 
@@ -80,9 +80,9 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <CodeCard title="accordion height animation — CSS only" lang="css" mb="1.5rem">{".accordion-item {\n  "}<Dim>{"/* Target the collapsible content area */"}</Dim>{"&"}{" ::details-content {\n    block-size: 0;\n    overflow-y: clip;\n    transition:\n      block-size 200ms ease,\n      content-visibility 200ms allow-discrete;\n  }\n\n  "}<Dim>{"/* When open, expand to natural height */"}</Dim>{"&"}{"[open] ::details-content {\n    block-size: auto;\n  }\n}\n\n"}<Dim>{"/* Start from 0 when opening */"}</Dim>{"\n@starting-style {\n  .accordion-item[open] ::details-content {\n    block-size: 0;\n  }\n}"}</CodeCard>
 
 <div style="display:grid;grid-template-columns:auto 1fr;gap:0.5rem 1rem;margin-bottom:2.5rem;align-items:baseline;">
-  <span style="font-weight:600;font-size:0.8125rem;">block-size: auto</span>
+  <span class="def-term">block-size: auto</span>
   <span class="text-sm text-muted-foreground">The browser calculates the natural height and smoothly transitions from <code>0</code> to that value. No JavaScript height measurement needed.</span>
-  <span style="font-weight:600;font-size:0.8125rem;">content-visibility</span>
+  <span class="def-term">content-visibility</span>
   <span class="text-sm text-muted-foreground">The <code>allow-discrete</code> on <code>content-visibility</code> prevents the content from disappearing before the close animation finishes.</span>
 </div>
 
@@ -102,10 +102,10 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5">Which components use animations and what type of animation they use.</p>
 
-<TableCard title="animation patterns by component" mb="2.5rem"><table class="table" data-variant="simple" style="margin:0;">
+<TableCard title="animation patterns by component" mb="2.5rem"><table class="table" data-variant="simple">
       <thead>
         <tr>
-          <th style="white-space:nowrap;">Component</th>
+          <th class="th-nowrap">Component</th>
           <th>Animation</th>
           <th>Technique</th>
         </tr>

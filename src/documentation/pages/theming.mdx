@@ -24,19 +24,19 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="flex flex-col gap-2 mb-10">
   <div class="swatch-row">
-    <div style="width:1.875rem;height:1.875rem;border-radius:var(--radius-sm);background:var(--border);border:1px solid var(--border);flex-shrink:0;" />
+    <div class="swatch-sq" style="background:var(--border);" />
     <code>--border</code>
-    <span class="text-sm text-muted-foreground ml-auto">var(--border)</span>
+    <span class="swatch-meta">var(--border)</span>
   </div>
   <div class="swatch-row">
-    <div style="width:1.875rem;height:1.875rem;border-radius:var(--radius-sm);background:var(--input);border:1px solid var(--border);flex-shrink:0;" />
+    <div class="swatch-sq" style="background:var(--input);" />
     <code>--input</code>
-    <span class="text-sm text-muted-foreground ml-auto">var(--input)</span>
+    <span class="swatch-meta">var(--input)</span>
   </div>
   <div class="swatch-row">
-    <div style="width:1.875rem;height:1.875rem;border-radius:var(--radius-sm);background:var(--ring);border:1px solid var(--border);flex-shrink:0;" />
+    <div class="swatch-sq" style="background:var(--ring);" />
     <code>--ring</code>
-    <span class="text-sm text-muted-foreground ml-auto">var(--ring)</span>
+    <span class="swatch-meta">var(--ring)</span>
   </div>
 </div>
 
@@ -48,27 +48,27 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="flex flex-col gap-2">
   <div class="swatch-row">
-    <div style="width:3rem;height:1.875rem;background:var(--muted);border-radius:var(--radius);border:1px solid var(--border);flex-shrink:0;" />
+    <div class="swatch-chip" style="border-radius:var(--radius);" />
     <code>--radius</code>
     <span class="dim text-sm ml-auto">base (0.625rem)</span>
   </div>
   <div class="swatch-row">
-    <div style="width:3rem;height:1.875rem;background:var(--muted);border-radius:var(--radius-sm);border:1px solid var(--border);flex-shrink:0;" />
+    <div class="swatch-chip" style="border-radius:var(--radius-sm);" />
     <code>--radius-sm</code>
     <span class="dim text-sm ml-auto">radius − 4px</span>
   </div>
   <div class="swatch-row">
-    <div style="width:3rem;height:1.875rem;background:var(--muted);border-radius:var(--radius-md);border:1px solid var(--border);flex-shrink:0;" />
+    <div class="swatch-chip" style="border-radius:var(--radius-md);" />
     <code>--radius-md</code>
     <span class="dim text-sm ml-auto">radius − 2px</span>
   </div>
   <div class="swatch-row">
-    <div style="width:3rem;height:1.875rem;background:var(--muted);border-radius:var(--radius-lg);border:1px solid var(--border);flex-shrink:0;" />
+    <div class="swatch-chip" style="border-radius:var(--radius-lg);" />
     <code>--radius-lg</code>
     <span class="dim text-sm ml-auto">base (--radius)</span>
   </div>
   <div class="swatch-row">
-    <div style="width:3rem;height:1.875rem;background:var(--muted);border-radius:var(--radius-xl);border:1px solid var(--border);flex-shrink:0;" />
+    <div class="swatch-chip" style="border-radius:var(--radius-xl);" />
     <code>--radius-xl</code>
     <span class="dim text-sm ml-auto">radius + 4px</span>
   </div>
@@ -92,27 +92,27 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <div class="swatch-row">
     <div style="width:1.875rem;height:1.875rem;border-radius:var(--radius-sm);background:var(--chart-1);flex-shrink:0;" />
     <code>--chart-1</code>
-    <span class="text-sm text-muted-foreground ml-auto">var(--chart-1)</span>
+    <span class="swatch-meta">var(--chart-1)</span>
   </div>
   <div class="swatch-row">
     <div style="width:1.875rem;height:1.875rem;border-radius:var(--radius-sm);background:var(--chart-2);flex-shrink:0;" />
     <code>--chart-2</code>
-    <span class="text-sm text-muted-foreground ml-auto">var(--chart-2)</span>
+    <span class="swatch-meta">var(--chart-2)</span>
   </div>
   <div class="swatch-row">
     <div style="width:1.875rem;height:1.875rem;border-radius:var(--radius-sm);background:var(--chart-3);flex-shrink:0;" />
     <code>--chart-3</code>
-    <span class="text-sm text-muted-foreground ml-auto">var(--chart-3)</span>
+    <span class="swatch-meta">var(--chart-3)</span>
   </div>
   <div class="swatch-row">
     <div style="width:1.875rem;height:1.875rem;border-radius:var(--radius-sm);background:var(--chart-4);flex-shrink:0;" />
     <code>--chart-4</code>
-    <span class="text-sm text-muted-foreground ml-auto">var(--chart-4)</span>
+    <span class="swatch-meta">var(--chart-4)</span>
   </div>
   <div class="swatch-row">
     <div style="width:1.875rem;height:1.875rem;border-radius:var(--radius-sm);background:var(--chart-5);flex-shrink:0;" />
     <code>--chart-5</code>
-    <span class="text-sm text-muted-foreground ml-auto">var(--chart-5)</span>
+    <span class="swatch-meta">var(--chart-5)</span>
   </div>
 </div>
 
@@ -126,17 +126,17 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <div class="swatch-row">
     <span style="font-family:var(--font-sans);font-size:0.875rem;flex-shrink:0;width:8rem;">The quick brown fox</span>
     <code>--font-sans</code>
-    <span class="text-sm text-muted-foreground ml-auto">var(--font-sans)</span>
+    <span class="swatch-meta">var(--font-sans)</span>
   </div>
   <div class="swatch-row">
     <span style="font-family:var(--font-serif);font-size:0.875rem;flex-shrink:0;width:8rem;">The quick brown fox</span>
     <code>--font-serif</code>
-    <span class="text-sm text-muted-foreground ml-auto">var(--font-serif)</span>
+    <span class="swatch-meta">var(--font-serif)</span>
   </div>
   <div class="swatch-row">
     <span style="font-family:var(--font-mono);font-size:0.875rem;flex-shrink:0;width:8rem;">The quick brown fox</span>
     <code>--font-mono</code>
-    <span class="text-sm text-muted-foreground ml-auto">var(--font-mono)</span>
+    <span class="swatch-meta">var(--font-mono)</span>
   </div>
 </div>
 
@@ -150,42 +150,42 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <div class="swatch-row">
     <div style="width:4rem;height:2rem;background:light-dark(var(--background), oklch(0.35 0 0));border-radius:var(--radius-md);box-shadow:var(--shadow-2xs);flex-shrink:0;" />
     <code>--shadow-2xs</code>
-    <span class="text-sm text-muted-foreground ml-auto">var(--shadow-2xs)</span>
+    <span class="swatch-meta">var(--shadow-2xs)</span>
   </div>
   <div class="swatch-row">
     <div style="width:4rem;height:2rem;background:light-dark(var(--background), oklch(0.35 0 0));border-radius:var(--radius-md);box-shadow:var(--shadow-xs);flex-shrink:0;" />
     <code>--shadow-xs</code>
-    <span class="text-sm text-muted-foreground ml-auto">var(--shadow-xs)</span>
+    <span class="swatch-meta">var(--shadow-xs)</span>
   </div>
   <div class="swatch-row">
     <div style="width:4rem;height:2rem;background:light-dark(var(--background), oklch(0.35 0 0));border-radius:var(--radius-md);box-shadow:var(--shadow-sm);flex-shrink:0;" />
     <code>--shadow-sm</code>
-    <span class="text-sm text-muted-foreground ml-auto">var(--shadow-sm)</span>
+    <span class="swatch-meta">var(--shadow-sm)</span>
   </div>
   <div class="swatch-row">
     <div style="width:4rem;height:2rem;background:light-dark(var(--background), oklch(0.35 0 0));border-radius:var(--radius-md);box-shadow:var(--shadow);flex-shrink:0;" />
     <code>--shadow</code>
-    <span class="text-sm text-muted-foreground ml-auto">var(--shadow)</span>
+    <span class="swatch-meta">var(--shadow)</span>
   </div>
   <div class="swatch-row">
     <div style="width:4rem;height:2rem;background:light-dark(var(--background), oklch(0.35 0 0));border-radius:var(--radius-md);box-shadow:var(--shadow-md);flex-shrink:0;" />
     <code>--shadow-md</code>
-    <span class="text-sm text-muted-foreground ml-auto">var(--shadow-md)</span>
+    <span class="swatch-meta">var(--shadow-md)</span>
   </div>
   <div class="swatch-row">
     <div style="width:4rem;height:2rem;background:light-dark(var(--background), oklch(0.35 0 0));border-radius:var(--radius-md);box-shadow:var(--shadow-lg);flex-shrink:0;" />
     <code>--shadow-lg</code>
-    <span class="text-sm text-muted-foreground ml-auto">var(--shadow-lg)</span>
+    <span class="swatch-meta">var(--shadow-lg)</span>
   </div>
   <div class="swatch-row">
     <div style="width:4rem;height:2rem;background:light-dark(var(--background), oklch(0.35 0 0));border-radius:var(--radius-md);box-shadow:var(--shadow-xl);flex-shrink:0;" />
     <code>--shadow-xl</code>
-    <span class="text-sm text-muted-foreground ml-auto">var(--shadow-xl)</span>
+    <span class="swatch-meta">var(--shadow-xl)</span>
   </div>
   <div class="swatch-row">
     <div style="width:4rem;height:2rem;background:light-dark(var(--background), oklch(0.35 0 0));border-radius:var(--radius-md);box-shadow:var(--shadow-2xl);flex-shrink:0;" />
     <code>--shadow-2xl</code>
-    <span class="text-sm text-muted-foreground ml-auto">var(--shadow-2xl)</span>
+    <span class="swatch-meta">var(--shadow-2xl)</span>
   </div>
 </div>
 

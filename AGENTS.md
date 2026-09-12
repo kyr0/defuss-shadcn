@@ -1152,11 +1152,20 @@ files at docs build time and embeds them (escaped) with copy buttons. There is
 
 ## Doc-site utility classes
 
-The doc site uses a small, hand-written set of utility classes for layout and
-spacing inside doc pages (`public/css/docs-utilities.css`). The utilities are plain
-class rules — they only affect elements that explicitly opt in by using the
-class name, so they cannot leak into component styles.
+Every doc page loads the shipped `theme/sizing.css` + `theme/layout.css`, so
+sizing/layout one-offs should use those utilities first (`w-full`, `h-8`,
+`gap-4`, `p-6`, `mx-auto`, `text-center`, …) — the same classes the demos teach.
+On top of that, `public/css/docs-utilities.css` holds a small set of plain
+class rules (opt-in by class name, so they cannot leak into component styles):
 
-If you need a new utility (e.g. `mt-4`, `gap-5`), add it directly to
-`public/css/docs-utilities.css`. Keep the utility set minimal — prefer inline `style`
-attributes for one-off layout tweaks in demo wrappers.
+- **utilities** (`mb-4`, `text-sm`, `sr-only`) — add directly when needed.
+- **pattern classes** (`.demo-row`, `.code-card`, `.mono-meta`, `.flat`,
+  `.h2-display`, …) — each replaces an inline style that was copy-pasted
+  across pages. Keep declarations byte-identical to the style they replaced
+  (screenshot baselines compare against that rendering), and override shipped
+  component classes only via compound selectors (`.card-title.card-title-sm`)
+  because `all.css` loads AFTER this sheet. Inline `style` stays right for
+  per-instance values (a demo's `max-width`, an inline SVG's `width`).
+- **never** re-inline a declaration that already has a pattern class, and when
+  you replace an inline style in a demo, update that demo's code sample in the
+  same edit if the sample is explicit (`<ExampleCode>`/`<DemoCode>`).

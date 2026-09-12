@@ -39,21 +39,21 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <SkillText dense>• Clicking the label focuses the associated input — this is native <code>&lt;label&gt;</code> behavior.</SkillText>
   <SkillText dense>• The required indicator <code>\*</code> uses <code>aria-hidden="true"</code> since the <code>required</code> attribute on the input already conveys the requirement to assistive technology.</SkillText>
   <SkillText dense>• Do not use <code>&lt;label&gt;</code> without a <code>for</code> attribute or a nested input.</SkillText>
-  <p class="text-muted-foreground" style="margin:0 0 0;">• In <code>forced-colors</code> mode, label text maps to system <code>LinkText</code> color.</p>
+  <p class="text-muted-foreground skill-bullet">• In <code>forced-colors</code> mode, label text maps to system <code>LinkText</code> color.</p>
   </SkillField>
 
   <SkillField label="Notes">
 <SkillText dense>• The <code>.label</code> class is intentionally minimal — it styles the label text with appropriate font size, weight, and color.</SkillText>
   <SkillText dense>• Labels auto-detect disabled state from adjacent controls via <code>:has(+ :disabled)</code> — the explicit <code>data-disabled</code> attribute is also supported.</SkillText>
   <SkillText dense>• For inline use with checkboxes, switches, or radios, add <code>style="margin:0;"</code> to remove the default bottom margin.</SkillText>
-  <p class="text-muted-foreground" style="margin:0 0 0;">• Labels compose with Input, Textarea, Select, Checkbox, Radio, Switch, and all other form controls.</p>
+  <p class="text-muted-foreground skill-bullet">• Labels compose with Input, Textarea, Select, Checkbox, Radio, Switch, and all other form controls.</p>
   </SkillField>
 </SkillPanel>
 
 <Example first>
   <ExampleLabel>Default</ExampleLabel>
   <ExampleHint>Basic label paired with an input. Click the label to focus the input — <code>for="demo-email"</code> and <code>id="demo-email"</code> must always match; changing one without the other breaks the link.</ExampleHint>
-  <div style="width:100%;max-width:20rem;">
+  <div class="demo-form">
     <label class="label" for="demo-email">Email</label>
     <input class="input" type="email" id="demo-email" placeholder="you@example.com" />
   </div>
@@ -63,7 +63,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Example>
   <ExampleLabel>Required</ExampleLabel>
   <ExampleHint>Required indicator using a red asterisk.</ExampleHint>
-  <div style="width:100%;max-width:20rem;">
+  <div class="demo-form">
     <label class="label" for="demo-name"> Name <span aria-hidden="true" class="text-destructive">\*</span></label>
     <input class="input" type="text" id="demo-name" required placeholder="Jane Doe" />
   </div>
@@ -73,7 +73,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Example>
   <ExampleLabel>Optional hint</ExampleLabel>
   <ExampleHint>Hint text indicating the field is optional.</ExampleHint>
-  <div style="width:100%;max-width:20rem;">
+  <div class="demo-form">
     <label class="label" for="demo-bio"> Bio <span class="label-hint">(optional)</span></label>
     <input class="input" type="text" id="demo-bio" placeholder="Tell us about yourself" />
   </div>
@@ -83,7 +83,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Example>
   <ExampleLabel>Disabled</ExampleLabel>
   <ExampleHint>Dimmed label for disabled fields. The label auto-detects the disabled input via <code>:has()</code> — no <code>data-disabled</code> attribute needed.</ExampleHint>
-  <div style="width:100%;max-width:20rem;">
+  <div class="demo-form">
     <label class="label" for="demo-disabled">Disabled field</label>
     <input class="input" type="text" id="demo-disabled" disabled placeholder="Cannot edit" />
   </div>
@@ -113,7 +113,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Example>
   <ExampleLabel>Form Field</ExampleLabel>
   <ExampleHint>Label composed with an input and description text, as used in forms.</ExampleHint>
-  <div style="width:100%;max-width:20rem;">
+  <div class="demo-form">
     <label class="label" for="demo-username">Username</label>
     <input class="input" type="text" id="demo-username" placeholder="shadcn" aria-describedby="demo-username-desc" />
     <p class="field-description" id="demo-username-desc">This is your public display name.</p>

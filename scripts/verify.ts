@@ -985,8 +985,9 @@ check(
   const intro = readme.slice(0, readme.search(/^## Quick start$/m));
   const readmePillars = [...intro.matchAll(/^- \*\*(.+?)\*\*/gm)].map((m) => m[1].trim());
   const indexMdx = readFileSync(join(DOCS_PAGES, 'index.mdx'), 'utf8');
-  // pillar cards are the only card-title h3s on the page today
-  const indexPillars = [...indexMdx.matchAll(/<h3 class="card-title"[^>]*>([^<]+)<\/h3>/g)].map((m) =>
+  // pillar cards are the only card-title h3s on the page today; the class
+  // attribute may carry additional pattern classes (card-title-sm etc.)
+  const indexPillars = [...indexMdx.matchAll(/<h3 class="card-title\b[^"]*"[^>]*>([^<]+)<\/h3>/g)].map((m) =>
     m[1].trim(),
   );
   const missing = readmePillars.filter((p) => !indexPillars.includes(p));

@@ -12,7 +12,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   Arithmetic dimensions, fractions, content and viewport sizing, and explicit constraints. Density does not change geometric sizes. Every code block shows exactly the classes that render the demo above it; demos marked with a width toolbar can be resized between Mobile, Tablet and Desktop.
 </PageHeader>
 
-<h2 id="numeric" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Numeric dimensions</h2>
+<h2 id="numeric" class="h2-display">Numeric dimensions</h2>
 
 <DocText><code>w-n</code>, <code>h-n</code> and <code>size-n</code> map directly to <code>n × --size-base</code> — <code>w-48</code> is 48 × 4px = 192px at the default root. Width and height are physical axes, matching their CSS names, and density does not change them.</DocText>
 
@@ -22,7 +22,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <div class="demo-tile w-24 h-8">w-24 h-8</div>
     <div class="flex items-center gap-3">
       <div class="demo-tile size-8" />
-      <span class="demo-label" style="margin:0;">size-8 — same in both axes</span>
+      <span class="demo-label demo-label-inline">size-8 — same in both axes</span>
     </div>
   </div>
   <DemoCode>{"<div class=\"stack gap-4\">\n  <div class=\"w-48 h-8\">w-48 h-8</div>\n  <div class=\"w-24 h-8\">w-24 h-8</div>\n  <div class=\"size-8\"></div> <!-- same in both axes -->\n</div>"}</DemoCode>
@@ -30,7 +30,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="fractions" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Fractions and full width</h2>
+<h2 id="fractions" class="h2-display">Fractions and full width</h2>
 
 <DocText><code>w-1/2</code>, <code>w-1/3</code>, <code>w-2/3</code>, <code>w-1/4</code>, <code>w-3/4</code> and <code>w-full</code> size against the containing block. Percentage heights like <code>h-1/2</code> need a definite containing height.</DocText>
 
@@ -62,7 +62,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="intrinsic" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Content-based sizing</h2>
+<h2 id="intrinsic" class="h2-display">Content-based sizing</h2>
 
 <DocText><code>w-auto</code> defers to the layout algorithm; <code>w-fit</code> shrinks to the content; <code>w-min</code> and <code>w-max</code> use the content's minimum and maximum intrinsic widths. These are the right tools for badges, chips and buttons that should hug their label.</DocText>
 
@@ -77,7 +77,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="constraints" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Constraints: min, max and none</h2>
+<h2 id="constraints" class="h2-display">Constraints: min, max and none</h2>
 
 <DocText>Dimensions are constraints, not clipping. <code>max-w-\*</code> caps a box without narrowing the page below the cap; <code>min-h-\*</code> guarantees a floor while content can grow past it; <code>max-w-none</code> removes a cap a component shipped with.</DocText>
 
@@ -105,7 +105,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="logical" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Logical dimensions</h2>
+<h2 id="logical" class="h2-display">Logical dimensions</h2>
 
 <DocText><code>inline-\*</code> and <code>block-\*</code> mirror the numeric scale on the writing-mode axes: inline is width in horizontal writing, height in vertical writing. Below, the same classes — <code>inline-40 block-24 ps-4</code> — in three contexts. The filled area is the content box; the gap the <code>ps-4</code> leaves follows inline-start: left in LTR, right in RTL, top in vertical writing.</DocText>
 
@@ -135,7 +135,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="viewport" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Viewport sizes and the app shell</h2>
+<h2 id="viewport" class="h2-display">Viewport sizes and the app shell</h2>
 
 <DocText><code>h-screen</code> / <code>min-h-screen</code> / <code>max-h-screen</code> are 100vh, with <code>dvh</code>, <code>svh</code> and <code>lvh</code> variants for mobile browser chrome. Their classic use is the app shell — header, fluid content, footer at the bottom even with little content. The demo renders that pattern inside a fixed-height frame; at page level you would write <code>min-h-screen</code> instead of <code>h-full</code>.</DocText>
 
@@ -156,7 +156,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="app-layout" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Real world: a fixed sidebar and a fluid main</h2>
+<h2 id="app-layout" class="h2-display">Real world: a fixed sidebar and a fluid main</h2>
 
 <DocText>The most common layout on the web: a fixed-width sidebar that never squishes (<code>w-56 shrink-0</code>) next to a main region that takes whatever is left (<code>flex-1 min-w-0</code>). Resize with the toolbar — the sidebar holds 224px while the main column gives.</DocText>
 
@@ -179,7 +179,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="real-world" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Real world: profile rows</h2>
+<h2 id="real-world" class="h2-display">Real world: profile rows</h2>
 
 <DocText>A comment/mention row: square avatar (<code>size-10 shrink-0</code>), text that can shrink and wrap (<code>flex-1 min-w-0</code>), and a timestamp that never wraps (<code>shrink-0</code>). Every width on the row is one of the utilities from this page.</DocText>
 
@@ -188,18 +188,18 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <div class="flex items-center gap-3">
       <div class="demo-tile size-10 shrink-0" data-variant="accent">AL</div>
       <div class="flex-1 min-w-0">
-        <p style="margin:0;font-size:0.875rem;font-weight:500;">Ada Lovelace</p>
+        <p class="row-title">Ada Lovelace</p>
         <p class="text-muted-foreground" style="margin:0;font-size:0.8125rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">left a comment on the sizing module</p>
       </div>
-      <span class="demo-label shrink-0" style="margin:0;">2h</span>
+      <span class="demo-label shrink-0 demo-label-inline">>2h</span>
     </div>
     <div class="flex items-center gap-3">
       <div class="demo-tile size-10 shrink-0" data-variant="secondary">GR</div>
       <div class="flex-1 min-w-0">
-        <p style="margin:0;font-size:0.875rem;font-weight:500;">Grace Hopper</p>
+        <p class="row-title">Grace Hopper</p>
         <p class="text-muted-foreground" style="margin:0;font-size:0.8125rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">approved the request</p>
       </div>
-      <span class="demo-label shrink-0" style="margin:0;">5h</span>
+      <span class="demo-label shrink-0 demo-label-inline">>5h</span>
     </div>
   </div>
   <DemoCode>{"<div class=\"flex items-center gap-3\">\n  <div class=\"size-10 shrink-0\">AL</div>\n  <div class=\"flex-1 min-w-0\">\n    <p>Ada Lovelace</p>\n    <p>left a comment on the sizing module</p>\n  </div>\n  <span class=\"shrink-0\">2h</span>\n</div>"}</DemoCode>
@@ -207,9 +207,9 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="available" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Available classes</h2>
+<h2 id="available" class="h2-display">Available classes</h2>
 
-<div style="overflow-x:auto;margin-bottom:1.5rem;">
+<div class="table-scroll">
   <table class="table" data-variant="simple">
     <thead>
       <tr>
@@ -269,159 +269,159 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Demo>
   <div class="stack gap-2" data-demo="scale">
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">0</span>
+      <span class="demo-label demo-label-end">0</span>
       <div class="demo-tile w-0 h-3" style="min-width:1px;" />
-      <span class="demo-label" style="margin:0;">0px</span>
+      <span class="demo-label demo-label-inline">0px</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">0.5</span>
+      <span class="demo-label demo-label-end">0.5</span>
       <div class="demo-tile w-0.5 h-3" />
-      <span class="demo-label" style="margin:0;">2px</span>
+      <span class="demo-label demo-label-inline">2px</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">1</span>
+      <span class="demo-label demo-label-end">1</span>
       <div class="demo-tile w-1 h-3" />
-      <span class="demo-label" style="margin:0;">4px</span>
+      <span class="demo-label demo-label-inline">4px</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">1.5</span>
+      <span class="demo-label demo-label-end">1.5</span>
       <div class="demo-tile w-1.5 h-3" />
-      <span class="demo-label" style="margin:0;">6px</span>
+      <span class="demo-label demo-label-inline">6px</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">2</span>
+      <span class="demo-label demo-label-end">2</span>
       <div class="demo-tile w-2 h-3" />
-      <span class="demo-label" style="margin:0;">8px</span>
+      <span class="demo-label demo-label-inline">8px</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">2.5</span>
+      <span class="demo-label demo-label-end">2.5</span>
       <div class="demo-tile w-2.5 h-3" />
-      <span class="demo-label" style="margin:0;">10px</span>
+      <span class="demo-label demo-label-inline">10px</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">3</span>
+      <span class="demo-label demo-label-end">3</span>
       <div class="demo-tile w-3 h-3" />
-      <span class="demo-label" style="margin:0;">12px</span>
+      <span class="demo-label demo-label-inline">12px</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">3.5</span>
+      <span class="demo-label demo-label-end">3.5</span>
       <div class="demo-tile w-3.5 h-3" />
-      <span class="demo-label" style="margin:0;">14px</span>
+      <span class="demo-label demo-label-inline">14px</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">4</span>
+      <span class="demo-label demo-label-end">4</span>
       <div class="demo-tile w-4 h-3" />
-      <span class="demo-label" style="margin:0;">16px</span>
+      <span class="demo-label demo-label-inline">16px</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">5</span>
+      <span class="demo-label demo-label-end">5</span>
       <div class="demo-tile w-5 h-3" />
-      <span class="demo-label" style="margin:0;">20px</span>
+      <span class="demo-label demo-label-inline">20px</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">6</span>
+      <span class="demo-label demo-label-end">6</span>
       <div class="demo-tile w-6 h-3" />
-      <span class="demo-label" style="margin:0;">24px</span>
+      <span class="demo-label demo-label-inline">24px</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">7</span>
+      <span class="demo-label demo-label-end">7</span>
       <div class="demo-tile w-7 h-3" />
-      <span class="demo-label" style="margin:0;">28px</span>
+      <span class="demo-label demo-label-inline">28px</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">8</span>
+      <span class="demo-label demo-label-end">8</span>
       <div class="demo-tile w-8 h-3" />
-      <span class="demo-label" style="margin:0;">32px</span>
+      <span class="demo-label demo-label-inline">32px</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">9</span>
+      <span class="demo-label demo-label-end">9</span>
       <div class="demo-tile w-9 h-3" />
-      <span class="demo-label" style="margin:0;">36px</span>
+      <span class="demo-label demo-label-inline">36px</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">10</span>
+      <span class="demo-label demo-label-end">10</span>
       <div class="demo-tile w-10 h-3" />
-      <span class="demo-label" style="margin:0;">40px</span>
+      <span class="demo-label demo-label-inline">40px</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">11</span>
+      <span class="demo-label demo-label-end">11</span>
       <div class="demo-tile w-11 h-3" />
-      <span class="demo-label" style="margin:0;">44px</span>
+      <span class="demo-label demo-label-inline">44px</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">12</span>
+      <span class="demo-label demo-label-end">12</span>
       <div class="demo-tile w-12 h-3" />
-      <span class="demo-label" style="margin:0;">48px</span>
+      <span class="demo-label demo-label-inline">48px</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">14</span>
+      <span class="demo-label demo-label-end">14</span>
       <div class="demo-tile w-14 h-3" />
-      <span class="demo-label" style="margin:0;">56px</span>
+      <span class="demo-label demo-label-inline">56px</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">16</span>
+      <span class="demo-label demo-label-end">16</span>
       <div class="demo-tile w-16 h-3" />
-      <span class="demo-label" style="margin:0;">64px</span>
+      <span class="demo-label demo-label-inline">64px</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">20</span>
+      <span class="demo-label demo-label-end">20</span>
       <div class="demo-tile w-20 h-3" />
-      <span class="demo-label" style="margin:0;">80px</span>
+      <span class="demo-label demo-label-inline">80px</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">24</span>
+      <span class="demo-label demo-label-end">24</span>
       <div class="demo-tile w-24 h-3" />
-      <span class="demo-label" style="margin:0;">96px</span>
+      <span class="demo-label demo-label-inline">96px</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">28</span>
+      <span class="demo-label demo-label-end">28</span>
       <div class="demo-tile w-28 h-3" />
-      <span class="demo-label" style="margin:0;">112px</span>
+      <span class="demo-label demo-label-inline">112px</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">32</span>
+      <span class="demo-label demo-label-end">32</span>
       <div class="demo-tile w-32 h-3" />
-      <span class="demo-label" style="margin:0;">128px</span>
+      <span class="demo-label demo-label-inline">128px</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">36</span>
+      <span class="demo-label demo-label-end">36</span>
       <div class="demo-tile w-36 h-3" />
-      <span class="demo-label" style="margin:0;">144px</span>
+      <span class="demo-label demo-label-inline">144px</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">40</span>
+      <span class="demo-label demo-label-end">40</span>
       <div class="demo-tile w-40 h-3" />
-      <span class="demo-label" style="margin:0;">160px</span>
+      <span class="demo-label demo-label-inline">160px</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">48</span>
+      <span class="demo-label demo-label-end">48</span>
       <div class="demo-tile w-48 h-3" />
-      <span class="demo-label" style="margin:0;">192px</span>
+      <span class="demo-label demo-label-inline">192px</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">56</span>
+      <span class="demo-label demo-label-end">56</span>
       <div class="demo-tile w-56 h-3" />
-      <span class="demo-label" style="margin:0;">224px</span>
+      <span class="demo-label demo-label-inline">224px</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">64</span>
+      <span class="demo-label demo-label-end">64</span>
       <div class="demo-tile w-64 h-3" />
-      <span class="demo-label" style="margin:0;">256px</span>
+      <span class="demo-label demo-label-inline">256px</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">72</span>
+      <span class="demo-label demo-label-end">72</span>
       <div class="demo-tile w-72 h-3" />
-      <span class="demo-label" style="margin:0;">288px</span>
+      <span class="demo-label demo-label-inline">288px</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">80</span>
+      <span class="demo-label demo-label-end">80</span>
       <div class="demo-tile w-80 h-3" />
-      <span class="demo-label" style="margin:0;">320px</span>
+      <span class="demo-label demo-label-inline">320px</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="demo-label" style="margin:0;width:2.5rem;text-align:end;flex-shrink:0;">96</span>
+      <span class="demo-label demo-label-end">96</span>
       <div class="demo-tile w-96 h-3" />
-      <span class="demo-label" style="margin:0;">384px</span>
+      <span class="demo-label demo-label-inline">384px</span>
     </div>
   </div>
   <DemoCode>{"<!-- the scale is arithmetic: w-n = n × --size-base (4px) -->\n<div class=\"w-0.5\"></div>   <!-- 2px -->\n<div class=\"w-1\"></div>     <!-- 4px -->\n<div class=\"w-2\"></div>     <!-- 8px -->\n<!-- …0, 1.5, 2.5, 3, 3.5, 4–12, 14, 16, 20, 24, 28, 32, 36, 40, 48, 56, 64, 72, 80… -->\n<div class=\"w-96\"></div>    <!-- 384px -->"}</DemoCode>
@@ -429,7 +429,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="custom" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Application-specific sizes</h2>
+<h2 id="custom" class="h2-display">Application-specific sizes</h2>
 
 <DocText>Values outside the scale are ordinary CSS — a clamped inspector panel and an optimal reading width. Resize with the toolbar: the inspector's <code>clamp()</code> tracks the frame width while the prose column stays at its measure.</DocText>
 
@@ -447,7 +447,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="references" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Platform references</h2>
+<h2 id="references" class="h2-display">Platform references</h2>
 
 <DocText><a href="https://www.w3.org/TR/css-values-4/" target="_blank" rel="noopener">CSS Values and Units</a> · <a href="https://www.w3.org/TR/css-logical-1/" target="_blank" rel="noopener">CSS logical properties</a></DocText>
 

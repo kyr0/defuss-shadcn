@@ -20,7 +20,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5"> Three guarantees, verified by <DocLink href="https://github.com/kyr0/defuss-shadcn/blob/main/scripts/verify.ts" target="_blank">the build's verifier</DocLink> for every component: </p>
 
-<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(16rem, 1fr));gap:1rem;margin-bottom:2.5rem;">
+<div class="grid-auto-fit">
   <div style="border:1px solid var(--border);border-radius:var(--radius-xl);padding:1.25rem;">
     <p class="text-sm font-medium mb-2" style="margin-top:0;">Declared, not implied</p>
     <p class="text-sm text-muted-foreground" style="margin-bottom:0;"> Each component lists its states as names (<code>const dialogStates = ['default', 'open']</code>) — <code>default</code> first. Unknown names throw with the supported list. </p>
@@ -98,34 +98,34 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <p class="text-sm text-muted-foreground mb-5"> Every multi-state component, with its declared state names (from each skill's <code>supportedStates</code>). Components with no <code>.js</code> file are pure HTML/CSS — their only state is <code>default</code>, and their variants are markup attributes (<DocLink href="data-attribute-api.html">Data Attribute API</DocLink>), not runtime states. </p>
 
 <TableCard title="declared states per JS component" mb="2.5rem">
-  <table style="width:100%;border-collapse:collapse;font-size:0.8125rem;">
+  <table class="mini-table">
     <thead>
-      <tr style="text-align:left;color:var(--muted-foreground);border-bottom:1px solid var(--border);">
-        <th style="padding:0.375rem 0;">Component</th>
-        <th style="padding:0.375rem 0;">States</th>
+      <tr>
+        <th>>Component</th>
+        <th>>States</th>
       </tr>
     </thead>
     <tbody>
-      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="accordion.html">Accordion</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>all-open</code> · <code>all-closed</code></td></tr>
-      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="alert-dialog.html">Alert Dialog</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>open</code></td></tr>
-      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="avatar.html">Avatar</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>error</code></td></tr>
-      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="combobox.html">Combobox</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>open</code></td></tr>
-      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="command.html">Command</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>open</code></td></tr>
-      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="context-menu.html">Context Menu</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>open</code></td></tr>
-      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="dialog.html">Dialog</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>open</code></td></tr>
-      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="dropdown.html">Dropdown Menu</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>open</code></td></tr>
-      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="image.html">Image</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>error</code></td></tr>
-      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="navigation-menu.html">Navigation Menu</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>open</code></td></tr>
-      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="popover.html">Popover</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>open</code></td></tr>
-      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="product-showcase.html">Product Showcase</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>playing</code></td></tr>
-      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="sheet.html">Sheet</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>open</code></td></tr>
-      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="sidebar.html">Sidebar</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>collapsed</code></td></tr>
-      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="slider.html">Slider</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>disabled</code></td></tr>
-      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="tabs.html">Tabs</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>active</code></td></tr>
-      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="toggle-group.html">Toggle Group</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>disabled</code></td></tr>
-      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="toggle.html">Toggle</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>pressed</code></td></tr>
-      <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.375rem 0;"><DocLink href="tooltip.html">Tooltip</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>visible</code></td></tr>
-      <tr><td style="padding:0.375rem 0;"><DocLink href="tree-view.html">Tree View</DocLink></td><td style="padding:0.375rem 0;"><code>default</code> · <code>expanded</code></td></tr>
+      <tr><td>><DocLink href="accordion.html">Accordion</DocLink></td><td>><code>default</code> · <code>all-open</code> · <code>all-closed</code></td></tr>
+      <tr><td>><DocLink href="alert-dialog.html">Alert Dialog</DocLink></td><td>><code>default</code> · <code>open</code></td></tr>
+      <tr><td>><DocLink href="avatar.html">Avatar</DocLink></td><td>><code>default</code> · <code>error</code></td></tr>
+      <tr><td>><DocLink href="combobox.html">Combobox</DocLink></td><td>><code>default</code> · <code>open</code></td></tr>
+      <tr><td>><DocLink href="command.html">Command</DocLink></td><td>><code>default</code> · <code>open</code></td></tr>
+      <tr><td>><DocLink href="context-menu.html">Context Menu</DocLink></td><td>><code>default</code> · <code>open</code></td></tr>
+      <tr><td>><DocLink href="dialog.html">Dialog</DocLink></td><td>><code>default</code> · <code>open</code></td></tr>
+      <tr><td>><DocLink href="dropdown.html">Dropdown Menu</DocLink></td><td>><code>default</code> · <code>open</code></td></tr>
+      <tr><td>><DocLink href="image.html">Image</DocLink></td><td>><code>default</code> · <code>error</code></td></tr>
+      <tr><td>><DocLink href="navigation-menu.html">Navigation Menu</DocLink></td><td>><code>default</code> · <code>open</code></td></tr>
+      <tr><td>><DocLink href="popover.html">Popover</DocLink></td><td>><code>default</code> · <code>open</code></td></tr>
+      <tr><td>><DocLink href="product-showcase.html">Product Showcase</DocLink></td><td>><code>default</code> · <code>playing</code></td></tr>
+      <tr><td>><DocLink href="sheet.html">Sheet</DocLink></td><td>><code>default</code> · <code>open</code></td></tr>
+      <tr><td>><DocLink href="sidebar.html">Sidebar</DocLink></td><td>><code>default</code> · <code>collapsed</code></td></tr>
+      <tr><td>><DocLink href="slider.html">Slider</DocLink></td><td>><code>default</code> · <code>disabled</code></td></tr>
+      <tr><td>><DocLink href="tabs.html">Tabs</DocLink></td><td>><code>default</code> · <code>active</code></td></tr>
+      <tr><td>><DocLink href="toggle-group.html">Toggle Group</DocLink></td><td>><code>default</code> · <code>disabled</code></td></tr>
+      <tr><td>><DocLink href="toggle.html">Toggle</DocLink></td><td>><code>default</code> · <code>pressed</code></td></tr>
+      <tr><td>><DocLink href="tooltip.html">Tooltip</DocLink></td><td>><code>default</code> · <code>visible</code></td></tr>
+      <tr><td>><DocLink href="tree-view.html">Tree View</DocLink></td><td>><code>default</code> · <code>expanded</code></td></tr>
     </tbody>
   </table>
 </TableCard>

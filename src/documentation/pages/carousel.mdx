@@ -50,11 +50,11 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <ExampleLabel>Default</ExampleLabel>
   <div class="carousel" role="region" aria-roledescription="carousel" aria-label="Default demo" data-state-demo style="max-width:24rem;margin:0 auto;">
     <div class="carousel-viewport" aria-live="polite">
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="1 of 5" style="flex:0 0 100%;min-height:12rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">1</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="2 of 5" style="flex:0 0 100%;min-height:12rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">2</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="3 of 5" style="flex:0 0 100%;min-height:12rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">3</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="4 of 5" style="flex:0 0 100%;min-height:12rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">4</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="5 of 5" style="flex:0 0 100%;min-height:12rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">5</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="1 of 5" style="flex:0 0 100%;min-height:12rem;">1</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="2 of 5" style="flex:0 0 100%;min-height:12rem;">2</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="3 of 5" style="flex:0 0 100%;min-height:12rem;">3</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="4 of 5" style="flex:0 0 100%;min-height:12rem;">4</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="5 of 5" style="flex:0 0 100%;min-height:12rem;">5</div>
     </div>
     <button class="carousel-prev" aria-label="Previous slide">
       <i data-lucide="chevron-left" />
@@ -73,15 +73,15 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Example previewStyle="padding: 2.5rem 3rem;" codeLang="html">
   <div class="carousel" role="region" aria-roledescription="carousel" aria-label="Multi-slide demo" style="max-width:30rem;margin:0 auto;">
     <div class="carousel-viewport" aria-live="polite">
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="1 of 9" style="flex:0 0 calc(33.333% - 0.667rem);min-height:10rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">1</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="2 of 9" style="flex:0 0 calc(33.333% - 0.667rem);min-height:10rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">2</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="3 of 9" style="flex:0 0 calc(33.333% - 0.667rem);min-height:10rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">3</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="4 of 9" style="flex:0 0 calc(33.333% - 0.667rem);min-height:10rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">4</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="5 of 9" style="flex:0 0 calc(33.333% - 0.667rem);min-height:10rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">5</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="6 of 9" style="flex:0 0 calc(33.333% - 0.667rem);min-height:10rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">6</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="7 of 9" style="flex:0 0 calc(33.333% - 0.667rem);min-height:10rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">7</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="8 of 9" style="flex:0 0 calc(33.333% - 0.667rem);min-height:10rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">8</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="9 of 9" style="flex:0 0 calc(33.333% - 0.667rem);min-height:10rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">9</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="1 of 9" style="flex:0 0 calc(33.333% - 0.667rem);min-height:10rem;">1</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="2 of 9" style="flex:0 0 calc(33.333% - 0.667rem);min-height:10rem;">2</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="3 of 9" style="flex:0 0 calc(33.333% - 0.667rem);min-height:10rem;">3</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="4 of 9" style="flex:0 0 calc(33.333% - 0.667rem);min-height:10rem;">4</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="5 of 9" style="flex:0 0 calc(33.333% - 0.667rem);min-height:10rem;">5</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="6 of 9" style="flex:0 0 calc(33.333% - 0.667rem);min-height:10rem;">6</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="7 of 9" style="flex:0 0 calc(33.333% - 0.667rem);min-height:10rem;">7</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="8 of 9" style="flex:0 0 calc(33.333% - 0.667rem);min-height:10rem;">8</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="9 of 9" style="flex:0 0 calc(33.333% - 0.667rem);min-height:10rem;">9</div>
     </div>
     <button class="carousel-prev" aria-label="Previous slide">
       <i data-lucide="chevron-left" />
@@ -100,11 +100,11 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Example previewStyle="padding: 2.5rem 3rem;" codeLang="html">
   <div class="carousel" role="region" aria-roledescription="carousel" aria-label="Dots demo" style="max-width:24rem;margin:0 auto;">
     <div class="carousel-viewport" aria-live="polite">
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="1 of 5" style="flex:0 0 100%;min-height:12rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">1</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="2 of 5" style="flex:0 0 100%;min-height:12rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">2</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="3 of 5" style="flex:0 0 100%;min-height:12rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">3</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="4 of 5" style="flex:0 0 100%;min-height:12rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">4</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="5 of 5" style="flex:0 0 100%;min-height:12rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">5</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="1 of 5" style="flex:0 0 100%;min-height:12rem;">1</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="2 of 5" style="flex:0 0 100%;min-height:12rem;">2</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="3 of 5" style="flex:0 0 100%;min-height:12rem;">3</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="4 of 5" style="flex:0 0 100%;min-height:12rem;">4</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="5 of 5" style="flex:0 0 100%;min-height:12rem;">5</div>
     </div>
     <button class="carousel-prev" aria-label="Previous slide">
       <i data-lucide="chevron-left" />
@@ -124,11 +124,11 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Example previewStyle="padding: 2.5rem 3rem;" codeLang="html">
   <div class="carousel" role="region" aria-roledescription="carousel" aria-label="Counter demo" style="max-width:24rem;margin:0 auto;">
     <div class="carousel-viewport" aria-live="polite">
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="1 of 5" style="flex:0 0 100%;min-height:12rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">1</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="2 of 5" style="flex:0 0 100%;min-height:12rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">2</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="3 of 5" style="flex:0 0 100%;min-height:12rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">3</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="4 of 5" style="flex:0 0 100%;min-height:12rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">4</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="5 of 5" style="flex:0 0 100%;min-height:12rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">5</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="1 of 5" style="flex:0 0 100%;min-height:12rem;">1</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="2 of 5" style="flex:0 0 100%;min-height:12rem;">2</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="3 of 5" style="flex:0 0 100%;min-height:12rem;">3</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="4 of 5" style="flex:0 0 100%;min-height:12rem;">4</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="5 of 5" style="flex:0 0 100%;min-height:12rem;">5</div>
     </div>
     <button class="carousel-prev" aria-label="Previous slide">
       <i data-lucide="chevron-left" />
@@ -148,11 +148,11 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Example previewStyle="padding: 2.5rem 3rem;" codeLang="html">
   <div class="carousel" data-orientation="vertical" role="region" aria-roledescription="carousel" aria-label="Vertical demo" style="max-width:24rem;margin:2rem auto;">
     <div class="carousel-viewport" aria-live="polite" style="height:14rem;">
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="1 of 5" style="flex:0 0 100%;min-height:14rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">1</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="2 of 5" style="flex:0 0 100%;min-height:14rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">2</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="3 of 5" style="flex:0 0 100%;min-height:14rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">3</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="4 of 5" style="flex:0 0 100%;min-height:14rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">4</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="5 of 5" style="flex:0 0 100%;min-height:14rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">5</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="1 of 5" style="flex:0 0 100%;min-height:14rem;">1</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="2 of 5" style="flex:0 0 100%;min-height:14rem;">2</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="3 of 5" style="flex:0 0 100%;min-height:14rem;">3</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="4 of 5" style="flex:0 0 100%;min-height:14rem;">4</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="5 of 5" style="flex:0 0 100%;min-height:14rem;">5</div>
     </div>
     <button class="carousel-prev" aria-label="Previous slide">
       <i data-lucide="chevron-up" />
@@ -171,11 +171,11 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Example previewStyle="padding: 2.5rem 3rem;" codeLang="html">
   <div class="carousel" data-loop role="region" aria-roledescription="carousel" aria-label="Loop demo" style="max-width:24rem;margin:0 auto;">
     <div class="carousel-viewport" aria-live="polite">
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="1 of 5" style="flex:0 0 100%;min-height:12rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">1</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="2 of 5" style="flex:0 0 100%;min-height:12rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">2</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="3 of 5" style="flex:0 0 100%;min-height:12rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">3</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="4 of 5" style="flex:0 0 100%;min-height:12rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">4</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="5 of 5" style="flex:0 0 100%;min-height:12rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">5</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="1 of 5" style="flex:0 0 100%;min-height:12rem;">1</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="2 of 5" style="flex:0 0 100%;min-height:12rem;">2</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="3 of 5" style="flex:0 0 100%;min-height:12rem;">3</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="4 of 5" style="flex:0 0 100%;min-height:12rem;">4</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="5 of 5" style="flex:0 0 100%;min-height:12rem;">5</div>
     </div>
     <button class="carousel-prev" aria-label="Previous slide">
       <i data-lucide="chevron-left" />
@@ -195,11 +195,11 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Example previewStyle="padding: 2.5rem 3rem;" codeLang="html">
   <div class="carousel" data-autoplay="3000" data-loop role="region" aria-roledescription="carousel" aria-label="Auto-rotating demo" style="max-width:24rem;margin:0 auto;">
     <div class="carousel-viewport" aria-live="off">
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="1 of 5" style="flex:0 0 100%;min-height:12rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">1</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="2 of 5" style="flex:0 0 100%;min-height:12rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">2</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="3 of 5" style="flex:0 0 100%;min-height:12rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">3</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="4 of 5" style="flex:0 0 100%;min-height:12rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">4</div>
-      <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="5 of 5" style="flex:0 0 100%;min-height:12rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card);font-size:0.875rem;color:var(--foreground);">5</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="1 of 5" style="flex:0 0 100%;min-height:12rem;">1</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="2 of 5" style="flex:0 0 100%;min-height:12rem;">2</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="3 of 5" style="flex:0 0 100%;min-height:12rem;">3</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="4 of 5" style="flex:0 0 100%;min-height:12rem;">4</div>
+      <div class="carousel-slide demo-preview" role="group" aria-roledescription="slide" aria-label="5 of 5" style="flex:0 0 100%;min-height:12rem;">5</div>
     </div>
     <button class="carousel-prev" aria-label="Previous slide">
       <i data-lucide="chevron-left" />
@@ -220,7 +220,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <div class="carousel" role="region" aria-roledescription="carousel" aria-label="Card carousel" style="max-width:24rem;margin:0 auto;">
     <div class="carousel-viewport" aria-live="polite">
       <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="1 of 3" style="flex:0 0 100%;">
-        <div class="card" style="width:100%;">
+        <div class="card w-full">
           <div class="card-header">
             <h3 class="card-title">Project Alpha</h3>
             <p class="card-description">A new design system built from scratch</p>
@@ -231,7 +231,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
         </div>
       </div>
       <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="2 of 3" style="flex:0 0 100%;">
-        <div class="card" style="width:100%;">
+        <div class="card w-full">
           <div class="card-header">
             <h3 class="card-title">Project Beta</h3>
             <p class="card-description">Performance-first component library</p>
@@ -242,7 +242,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
         </div>
       </div>
       <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="3 of 3" style="flex:0 0 100%;">
-        <div class="card" style="width:100%;">
+        <div class="card w-full">
           <div class="card-header">
             <h3 class="card-title">Project Gamma</h3>
             <p class="card-description">Accessible by default</p>
@@ -264,8 +264,8 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </Example>
 
 <StatesSection>
-  <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
-  <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
+  <p class="text-sm text-muted-foreground lead-sm">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground prose-list">
     <li><code>default</code> — showing a slide; <code>setState('default', \{ index \})</code> scrolls to that slide (loop-aware), and <code>getState().config.index</code> reports the live index</li>
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/carousel-\{state\}.png</code>.</p>

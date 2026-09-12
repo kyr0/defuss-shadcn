@@ -76,14 +76,14 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <SkillText dense>• <code>data-type="single"</code> enforces one-at-a-time selection (radio-like). Pressing the active item deselects it.</SkillText>
   <SkillText dense>• <code>data-type="multiple"</code> allows any combination of pressed states (checkbox-like).</SkillText>
   <SkillText dense>• CSS uses logical properties for RTL support.</SkillText>
-  <p class="text-muted-foreground" style="margin:0 0 0;">• Connected mode collapses adjacent radii; outline variant collapses double borders via negative margin.</p>
+  <p class="text-muted-foreground skill-bullet">• Connected mode collapses adjacent radii; outline variant collapses double borders via negative margin.</p>
   </SkillField>
 </SkillPanel>
 
 <Example first>
   <ExampleLabel>Single selection</ExampleLabel>
   <ExampleHint>Only one item can be active at a time. Use <code>data-type="single"</code>.</ExampleHint>
-  <div style="display:flex;align-items:center;justify-content:center;padding:2.5rem 0;">
+  <div class="demo-stage-center">
     <div class="toggle-group" role="group" aria-label="Text alignment" data-type="single" data-state-demo>
       <button class="toggle" aria-pressed="true">
         <i data-lucide="align-left" />
@@ -102,7 +102,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Example>
   <ExampleLabel>Multiple selection</ExampleLabel>
   <ExampleHint>Any combination of items can be active. Use <code>data-type="multiple"</code>.</ExampleHint>
-  <div style="display:flex;align-items:center;justify-content:center;padding:2.5rem 0;">
+  <div class="demo-stage-center">
     <div class="toggle-group" role="group" aria-label="Text formatting" data-type="multiple">
       <button class="toggle" aria-pressed="true">
         <i data-lucide="bold" />
@@ -121,7 +121,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Example>
   <ExampleLabel>Outline variant</ExampleLabel>
   <ExampleHint>Use <code>data-variant="outline"</code> for bordered toggles with shadow.</ExampleHint>
-  <div style="display:flex;align-items:center;justify-content:center;padding:2.5rem 0;">
+  <div class="demo-stage-center">
     <div class="toggle-group" role="group" aria-label="View" data-type="single" data-variant="outline">
       <button class="toggle" aria-pressed="true">
         <i data-lucide="list" />
@@ -203,7 +203,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Example>
   <ExampleLabel>With spacing</ExampleLabel>
   <ExampleHint>Add <code>data-spacing</code> for gaps between items with individual border-radius.</ExampleHint>
-  <div style="display:flex;align-items:center;justify-content:center;padding:2.5rem 0;">
+  <div class="demo-stage-center">
     <div class="toggle-group" role="group" aria-label="Spaced" data-type="single" data-variant="outline" data-spacing>
       <button class="toggle" aria-pressed="true">
         <i data-lucide="align-left" />
@@ -252,7 +252,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Example>
   <ExampleLabel>With text</ExampleLabel>
   <ExampleHint>Toggle items can include text alongside icons.</ExampleHint>
-  <div style="display:flex;align-items:center;justify-content:center;padding:2.5rem 0;">
+  <div class="demo-stage-center">
     <div class="toggle-group" role="group" aria-label="View mode" data-type="single" data-variant="outline">
       <button class="toggle" aria-pressed="true"><i data-lucide="list" /> List</button>
       <button class="toggle" aria-pressed="false"><i data-lucide="grid-2x2" /> Grid</button>
@@ -265,7 +265,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Example>
   <ExampleLabel>Disabled</ExampleLabel>
   <ExampleHint>Add <code>data-disabled</code> to the group and <code>disabled</code> on each button.</ExampleHint>
-  <div style="display:flex;align-items:center;justify-content:center;padding:2.5rem 0;">
+  <div class="demo-stage-center">
     <div class="toggle-group" role="group" aria-label="Formatting disabled" data-type="multiple" data-disabled>
       <button class="toggle" aria-pressed="true" disabled>
         <i data-lucide="bold" />
@@ -282,8 +282,8 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </Example>
 
 <StatesSection>
-  <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
-  <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
+  <p class="text-sm text-muted-foreground lead-sm">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground prose-list">
     <li><code>default</code> — enabled (items clickable and focusable)</li>
     <li><code>disabled</code> — sets the documented <code>data-disabled</code> attribute (CSS dims items, <code>pointer-events: none</code>)</li>
   </ul>

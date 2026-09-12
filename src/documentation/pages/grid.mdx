@@ -12,7 +12,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   Intrinsic card grids, explicit tracks and aligned subgrids. Responsive to available space without a breakpoint utility generator. Every code block shows exactly the classes that render the demo above it — only the demo's decorative colors are omitted.
 </PageHeader>
 
-<h2 id="intrinsic" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Intrinsic columns without breakpoints</h2>
+<h2 id="intrinsic" class="h2-display">Intrinsic columns without breakpoints</h2>
 
 <DocText><code>grid</code> only enables Grid. Add <code>grid-cols-auto</code> for auto-fit columns with a preferred minimum; <code>--layout-min</code> defaults to 16rem. Empty tracks collapse, and populated tracks share spare space. This is the card-wall pattern: team directories, feature matrices and gallery grids that reflow as the page widens — no media queries. Resize the demo with the toolbar and watch tracks appear and collapse.</DocText>
 
@@ -35,11 +35,11 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="explicit" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Explicit tracks and spans</h2>
+<h2 id="explicit" class="h2-display">Explicit tracks and spans</h2>
 
 <DocText>Fixed track counts with explicit spans compose the classic dashboard: a full-width header, a filter rail and a results region that takes the remaining columns.</DocText>
 
-<div style="overflow-x:auto;margin-bottom:1.5rem;">
+<div class="table-scroll">
   <table class="table" data-variant="simple">
     <thead>
       <tr>
@@ -89,7 +89,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="alignment" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Alignment inside tracks</h2>
+<h2 id="alignment" class="h2-display">Alignment inside tracks</h2>
 
 <DocText>Items stretch to fill their track area by default. <code>place-items-\*</code> sets the default for every cell (<code>items-\*</code> and <code>justify-items-\*</code> address the block and inline axes separately); <code>justify-self-\*</code> and <code>place-self-\*</code> override one item — centering an icon in its cell, or pinning an action to the end of a row.</DocText>
 
@@ -117,7 +117,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="subgrid" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Share track alignment with subgrid</h2>
+<h2 id="subgrid" class="h2-display">Share track alignment with subgrid</h2>
 
 <DocText>Cards in a row usually carry different amounts of body copy, but their footers should still line up — pricing tiers, feature cards, article teasers. Subgrid lets each card adopt the parent's row tracks, so one row height is negotiated across all cards.</DocText>
 
@@ -141,7 +141,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="real-world" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">A realistic card wall</h2>
+<h2 id="real-world" class="h2-display">A realistic card wall</h2>
 
 <DocText>The same auto-fit track list drives a typical content listing — article teasers, product cards, team directories. Each card is ordinary component markup (card, title, description, badge); the grid owns the tracks and nothing here measures the viewport. Resize with the toolbar: the wall deals out one, two, three or more columns as the frame widens.</DocText>
 
@@ -209,7 +209,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="advanced" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Real world: the holy-grail layout</h2>
+<h2 id="advanced" class="h2-display">Real world: the holy-grail layout</h2>
 
 <DocText>When the skeleton is stable — header, nav, main, aside, footer — a fixed 12-track grid with explicit spans states the structure directly: <code>grid grid-cols-12 gap-4</code>, <code>col-span-full</code> for the chrome, <code>col-span-3</code> / <code>col-span-6</code> / <code>col-span-3</code> for the body. The middle spans sum to 12, so every item lands on a declared track and no implicit columns are created. Resize with the toolbar and watch the <code>minmax(0, 1fr)</code> tracks compress while the proportions hold — auto-fit would have reflowed the skeleton; spans keep it.</DocText>
 
@@ -228,7 +228,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="references" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Platform references</h2>
+<h2 id="references" class="h2-display">Platform references</h2>
 
 <DocText><a href="https://www.w3.org/TR/css-grid-2/" target="_blank" rel="noopener">CSS Grid and subgrid</a> · <a href="https://www.w3.org/TR/css-contain-3/" target="_blank" rel="noopener">CSS container queries</a></DocText>
 

@@ -12,11 +12,11 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   Native Grid, Flexbox and container queries with a small, optional class API. Compose layouts without a compiler or runtime. Every code block shows exactly the classes that render the demo above it; demos marked with a width toolbar can be resized between Mobile, Tablet and Desktop.
 </PageHeader>
 
-<h2 id="small-surface" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">A small surface over native layout</h2>
+<h2 id="small-surface" class="h2-display">A small surface over native layout</h2>
 
 <DocText>Use short, familiar classes for common operations; keep configuration properties descriptive. <code>flex</code> selects Flexbox and <code>grid</code> selects Grid. Neither silently chooses a gap, wrapping or columns. More opinionated composition is explicit.</DocText>
 
-<div style="overflow-x:auto;margin-bottom:1.5rem;">
+<div class="table-scroll">
   <table class="table" data-variant="simple">
     <thead>
       <tr>
@@ -69,18 +69,18 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
         <button class="btn" type="button">New project</button>
       </div>
       <div class="grid grid-cols-auto gap-4" style="--layout-min:12rem;">
-        <div style="border:1px solid var(--border);border-radius:var(--radius-md);background:var(--muted);color:var(--muted-foreground);padding:1rem;">Research</div>
-        <div style="border:1px solid var(--border);border-radius:var(--radius-md);background:var(--muted);color:var(--muted-foreground);padding:1rem;">Design</div>
-        <div style="border:1px solid var(--border);border-radius:var(--radius-md);background:var(--muted);color:var(--muted-foreground);padding:1rem;">Engineering</div>
+        <div class="demo-box">Research</div>
+        <div class="demo-box">Design</div>
+        <div class="demo-box">Engineering</div>
       </div>
     </div>
   </div>
-  <DemoCode>{"<div class=\"stack gap-6\">\n  <div class=\"flex flex-wrap items-center justify-between gap-3\">\n    <h3>Projects</h3>\n    <button class=\"btn\" type=\"button\">New project</button>\n  </div>\n  <div class=\"grid grid-cols-auto gap-4\" style=\"--layout-min:12rem;\">\n    <div>Research</div>\n    <div>Design</div>\n    <div>Engineering</div>\n  </div>\n</div>"}</DemoCode>
+  <DemoCode>{"<div class=\"stack gap-6\">\n  <div class=\"flex flex-wrap items-center justify-between gap-3\">\n    <h3>Projects</h3>\n    <button class=\"btn\" type=\"button\">New project</button>\n  </div>\n  <div class=\"grid grid-cols-auto gap-4\" style=\"--layout-min:12rem;\">\n    <div class=\"demo-box\">Research</div>\n    <div class=\"demo-box\">Design</div>\n    <div class=\"demo-box\">Engineering</div>\n  </div>\n</div>"}</DemoCode>
 </Demo>
 
 <div class="sep" />
 
-<h2 id="intrinsic" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Let available space do the work</h2>
+<h2 id="intrinsic" class="h2-display">Let available space do the work</h2>
 
 <DocText>Use wrapping Flexbox for one-dimensional content and an intrinsic Grid for equal-width cards — the two halves of the composition demo above, which reacts when you resize it with the width toolbar. A grid can adapt inside a sidebar, dialog or full page without viewport breakpoints. Use container queries only when the structure must change.</DocText>
 
@@ -90,29 +90,29 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="guides" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Guides</h2>
+<h2 id="guides" class="h2-display">Guides</h2>
 
 <DocText>Each primitive has its own page with rendered demos and the full class reference:</DocText>
 
 <div class="grid grid-cols-auto gap-4" style="--layout-min:11rem;margin-bottom:1.5rem;">
   <a href="container.html" class="card" style="display:block;text-decoration:none;color:inherit;">
     <div class="card-header">
-      <h3 class="card-title" style="font-size:0.9375rem;">Container</h3>
-      <p class="card-description" style="font-size:0.8125rem;">Centered, bounded content with logical gutters — and named containment when you need it.</p>
+      <h3 class="card-title card-title-sm">Container</h3>
+      <p class="card-description card-desc-sm">Centered, bounded content with logical gutters — and named containment when you need it.</p>
     </div>
     <div style="height:1.25rem;" />
   </a>
   <a href="flex.html" class="card" style="display:block;text-decoration:none;color:inherit;">
     <div class="card-header">
-      <h3 class="card-title" style="font-size:0.9375rem;">Flex</h3>
-      <p class="card-description" style="font-size:0.8125rem;">Direction, wrapping, alignment and flexible sizing using native Flexbox.</p>
+      <h3 class="card-title card-title-sm">Flex</h3>
+      <p class="card-description card-desc-sm">Direction, wrapping, alignment and flexible sizing using native Flexbox.</p>
     </div>
     <div style="height:1.25rem;" />
   </a>
   <a href="grid.html" class="card" style="display:block;text-decoration:none;color:inherit;">
     <div class="card-header">
-      <h3 class="card-title" style="font-size:0.9375rem;">Grid</h3>
-      <p class="card-description" style="font-size:0.8125rem;">Intrinsic card grids, explicit tracks and aligned subgrids — responsive without breakpoints.</p>
+      <h3 class="card-title card-title-sm">Grid</h3>
+      <p class="card-description card-desc-sm">Intrinsic card grids, explicit tracks and aligned subgrids — responsive without breakpoints.</p>
     </div>
     <div style="height:1.25rem;" />
   </a>
@@ -120,9 +120,9 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="ownership" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Each primitive owns its parameters</h2>
+<h2 id="ownership" class="h2-display">Each primitive owns its parameters</h2>
 
-<div style="overflow-x:auto;margin-bottom:1.5rem;">
+<div class="table-scroll">
   <table class="table" data-variant="simple">
     <thead>
       <tr>
@@ -167,7 +167,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="compatibility" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Familiar names, not a Tailwind compiler</h2>
+<h2 id="compatibility" class="h2-display">Familiar names, not a Tailwind compiler</h2>
 
 <DocText>Numeric sizing, spacing, alignment, flex and fixed-grid names follow familiar Tailwind conventions at the default scale. <code>stack</code>, <code>center</code>, <code>query</code>, <code>grid-cols-auto</code> and the centered/guttered <code>container</code> are deliberate extensions. There are no arbitrary-value brackets, generated breakpoint prefixes, class scanning or runtime layout scripts. Use ordinary CSS for exceptional layouts.</DocText>
 
@@ -175,13 +175,13 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="semantics" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Keep semantics and reading order</h2>
+<h2 id="semantics" class="h2-display">Keep semantics and reading order</h2>
 
 <DocText>CSS Grid does not imply an ARIA grid widget. Preserve meaningful DOM order; no dense placement or visual-reordering helpers are shipped. Display helpers leave native hidden elements, until-found content, closed dialogs and closed popovers under native control. Long content still needs an explicit wrapping or scrolling policy; the module does not hide overflow.</DocText>
 
 <div class="sep" />
 
-<h2 id="install" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Load the optional modules</h2>
+<h2 id="install" class="h2-display">Load the optional modules</h2>
 
 <Demo>
   <DemoCode>{"<link rel=\"stylesheet\" href=\"../theme/default-semantic-tokens.css\">\n<link rel=\"stylesheet\" href=\"../theme/sizing.css\">\n<link rel=\"stylesheet\" href=\"../theme/layout.css\">\n<!-- Load the component stylesheets you actually use next. -->\n<link rel=\"stylesheet\" href=\"../components/button/button.css\">"}</DemoCode>
@@ -189,7 +189,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="references" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Platform references</h2>
+<h2 id="references" class="h2-display">Platform references</h2>
 
 <DocText><a href="https://www.w3.org/TR/css-grid-2/" target="_blank" rel="noopener">CSS Grid and subgrid</a> · <a href="https://www.w3.org/TR/css-flexbox-1/" target="_blank" rel="noopener">CSS Flexible Box Layout</a> · <a href="https://www.w3.org/TR/css-contain-3/" target="_blank" rel="noopener">CSS container queries</a> · <a href="https://html.spec.whatwg.org/multipage/interaction.html#the-hidden-attribute" target="_blank" rel="noopener">HTML hidden states</a></DocText>
 

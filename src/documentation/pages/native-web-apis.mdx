@@ -16,7 +16,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5">Traditional component libraries ship thousands of lines of JavaScript to implement behaviors that browsers now provide natively — dropdown positioning, modal focus trapping, popover light-dismiss, auto-growing textareas. defuss-shadcn eliminates that JavaScript entirely by building on the platform.</p>
 
-<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(16rem, 1fr));gap:1rem;margin-bottom:2.5rem;">
+<div class="grid-auto-fit">
   <CodeCard title="Traditional approach" lang="markup" column><Dim>{"<!-- Dropdown: Floating UI + JS toggle\n     + click-outside + focus trap\n     + scroll lock + virtual positioning -->"}</Dim>{"<"}{"div class=\"dropdown-trigger\" onclick=\"...\""}{">"}{"\n  Open Menu\n"}{"<"}{"/div"}{">"}{"<"}{"div class=\"dropdown-panel\"\n  style=\"position:absolute;top:...;left:...\""}{">"}{"\n  ...\n"}{"<"}{"/div"}{">"}</CodeCard>
   <CodeCard title="defuss-shadcn approach" lang="markup" column><Dim>{"<!-- Popover API + CSS Anchor Positioning\n     Browser handles: positioning, light-dismiss,\n     top-layer, and auto-flip -->"}</Dim>{"<"}{"button popovertarget=\"menu\""}{">"}{"\n  Open Menu\n"}{"<"}{"/button"}{">"}{"<"}{"div id=\"menu\" popover\n  class=\"dropdown-content\""}{">"}{"\n  ...\n"}{"<"}{"/div"}{">"}</CodeCard>
 </div>
@@ -27,17 +27,17 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5">Every native API available for the component library, what it replaces, and where it applies.</p>
 
-<TableCard title="native APIs vs. traditional JS libraries" mb="2.5rem"><table class="table" data-variant="simple" style="margin:0;">
+<TableCard title="native APIs vs. traditional JS libraries" mb="2.5rem"><table class="table" data-variant="simple">
       <thead>
         <tr>
-          <th style="white-space:nowrap;">Native API</th>
+          <th class="th-nowrap">Native API</th>
           <th>Replaces</th>
           <th>Components</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td colspan="3" style="font-weight:600;padding-top:1rem;color:var(--foreground);">HTML Elements &amp; Attributes</td>
+          <td colspan="3" class="table-group-head">HTML Elements &amp; Attributes</td>
         </tr>
         <tr>
           <td>
@@ -102,7 +102,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
           <td>Dialog, Alert Dialog, Sheet, Popover</td>
         </tr>
         <tr>
-          <td colspan="3" style="font-weight:600;padding-top:1rem;color:var(--foreground);">CSS Layout &amp; Positioning</td>
+          <td colspan="3" class="table-group-head">CSS Layout &amp; Positioning</td>
         </tr>
         <tr>
           <td>CSS Anchor Positioning</td>
@@ -130,7 +130,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
           <td>Full-screen overlays, mobile layout</td>
         </tr>
         <tr>
-          <td colspan="3" style="font-weight:600;padding-top:1rem;color:var(--foreground);">CSS Animations &amp; Transitions</td>
+          <td colspan="3" class="table-group-head">CSS Animations &amp; Transitions</td>
         </tr>
         <tr>
           <td><code>@starting-style</code> + <code>allow-discrete</code></td>
@@ -167,7 +167,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
           <td>Progress rings, gradient transitions</td>
         </tr>
         <tr>
-          <td colspan="3" style="font-weight:600;padding-top:1rem;color:var(--foreground);">CSS Colors &amp; Theming</td>
+          <td colspan="3" class="table-group-head">CSS Colors &amp; Theming</td>
         </tr>
         <tr>
           <td><code>oklch()</code> + relative color syntax</td>
@@ -203,7 +203,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
           <td>Slider, Checkbox, Radio, Progress</td>
         </tr>
         <tr>
-          <td colspan="3" style="font-weight:600;padding-top:1rem;color:var(--foreground);">CSS Selectors &amp; Pseudo-classes</td>
+          <td colspan="3" class="table-group-head">CSS Selectors &amp; Pseudo-classes</td>
         </tr>
         <tr>
           <td>
@@ -256,7 +256,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
           <td>Progress, Checkbox</td>
         </tr>
         <tr>
-          <td colspan="3" style="font-weight:600;padding-top:1rem;color:var(--foreground);">CSS Typography &amp; Form</td>
+          <td colspan="3" class="table-group-head">CSS Typography &amp; Form</td>
         </tr>
         <tr>
           <td>
@@ -287,7 +287,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
           <td>Blockquotes, pull quotes</td>
         </tr>
         <tr>
-          <td colspan="3" style="font-weight:600;padding-top:1rem;color:var(--foreground);">CSS Scrolling</td>
+          <td colspan="3" class="table-group-head">CSS Scrolling</td>
         </tr>
         <tr>
           <td>
@@ -311,7 +311,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
           <td>Command, Scroll Area</td>
         </tr>
         <tr>
-          <td colspan="3" style="font-weight:600;padding-top:1rem;color:var(--foreground);">CSS Architecture</td>
+          <td colspan="3" class="table-group-head">CSS Architecture</td>
         </tr>
         <tr>
           <td>CSS nesting / <code>@layer</code></td>
@@ -352,7 +352,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
           <td>Accordion, Collapsible, Tree View</td>
         </tr>
         <tr>
-          <td colspan="3" style="font-weight:600;padding-top:1rem;color:var(--foreground);">CSS Accessibility</td>
+          <td colspan="3" class="table-group-head">CSS Accessibility</td>
         </tr>
         <tr>
           <td>
@@ -383,7 +383,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
           <td>All components (system color fallbacks)</td>
         </tr>
         <tr>
-          <td colspan="3" style="font-weight:600;padding-top:1rem;color:var(--foreground);">JavaScript APIs</td>
+          <td colspan="3" class="table-group-head">JavaScript APIs</td>
         </tr>
         <tr>
           <td>Web Animations API</td>

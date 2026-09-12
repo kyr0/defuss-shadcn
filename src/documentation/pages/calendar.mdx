@@ -45,7 +45,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <SkillText dense>• Month heading uses <code>aria-live="polite"</code> for navigation announcements</SkillText>
   <SkillText dense>• Day cells are focusable buttons within the grid</SkillText>
   <SkillText dense>• Arrow keys navigate the grid, Enter/Space selects a day</SkillText>
-  <p class="text-muted-foreground" style="margin:0 0 0;">• Previous/next navigation buttons have <code>aria-label</code></p>
+  <p class="text-muted-foreground skill-bullet">• Previous/next navigation buttons have <code>aria-label</code></p>
   </SkillField>
 </SkillPanel>
 
@@ -111,8 +111,8 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </Example>
 
 <StatesSection>
-  <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
-  <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
+  <p class="text-sm text-muted-foreground lead-sm">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground prose-list">
     <li><code>default</code> — reset to today's month with no selection; <code>setState('default', \{ year, month, day \})</code> (0-based month) navigates and optionally selects, and <code>getState().config</code> reports the live view</li>
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/calendar-\{state\}.png</code>.</p>

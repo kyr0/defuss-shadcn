@@ -108,31 +108,31 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Example>
   <ExampleLabel>Sizes</ExampleLabel>
   <ExampleHint>Set <code>data-size</code> on the <code>.nav-menu</code> nav; links, triggers and popover rows scale together.</ExampleHint>
-  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
-    <span class="demo-label" style="width:5rem;margin:0;">Extra small</span>
+  <div class="demo-row">
+    <span class="demo-label demo-label-w5">Extra small</span>
     <nav class="nav-menu" data-size="xs" aria-label="Site xs"><ul class="nav-menu-list"><li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li><li class="nav-menu-item"><button class="nav-menu-trigger" popovertarget="sz-nav-xs">Products</button><div class="nav-menu-content" id="sz-nav-xs" popover><a class="nav-menu-content-link" href="#">Analytics</a></div></li></ul></nav>
   </div>
-  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
-    <span class="demo-label" style="width:5rem;margin:0;">Small</span>
+  <div class="demo-row">
+    <span class="demo-label demo-label-w5">Small</span>
     <nav class="nav-menu" data-size="sm" aria-label="Site sm"><ul class="nav-menu-list"><li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li><li class="nav-menu-item"><button class="nav-menu-trigger" popovertarget="sz-nav-sm">Products</button><div class="nav-menu-content" id="sz-nav-sm" popover><a class="nav-menu-content-link" href="#">Analytics</a></div></li></ul></nav>
   </div>
-  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
-    <span class="demo-label" style="width:5rem;margin:0;">Medium</span>
+  <div class="demo-row">
+    <span class="demo-label demo-label-w5">Medium</span>
     <nav class="nav-menu" data-size="md" aria-label="Site md"><ul class="nav-menu-list"><li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li><li class="nav-menu-item"><button class="nav-menu-trigger" popovertarget="sz-nav-md">Products</button><div class="nav-menu-content" id="sz-nav-md" popover><a class="nav-menu-content-link" href="#">Analytics</a></div></li></ul></nav>
   </div>
-  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
-    <span class="demo-label" style="width:5rem;margin:0;">Large</span>
+  <div class="demo-row">
+    <span class="demo-label demo-label-w5">Large</span>
     <nav class="nav-menu" data-size="lg" aria-label="Site lg"><ul class="nav-menu-list"><li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li><li class="nav-menu-item"><button class="nav-menu-trigger" popovertarget="sz-nav-lg">Products</button><div class="nav-menu-content" id="sz-nav-lg" popover><a class="nav-menu-content-link" href="#">Analytics</a></div></li></ul></nav>
   </div>
-  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
-    <span class="demo-label" style="width:5rem;margin:0;">Extra large</span>
+  <div class="demo-row">
+    <span class="demo-label demo-label-w5">Extra large</span>
     <nav class="nav-menu" data-size="xl" aria-label="Site xl"><ul class="nav-menu-list"><li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li><li class="nav-menu-item"><button class="nav-menu-trigger" popovertarget="sz-nav-xl">Products</button><div class="nav-menu-content" id="sz-nav-xl" popover><a class="nav-menu-content-link" href="#">Analytics</a></div></li></ul></nav>
   </div>
 </Example>
 
 <StatesSection>
-  <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
-  <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">
+  <p class="text-sm text-muted-foreground lead-sm">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground prose-list">
     <li><code>default</code> — hidden (the authored state; the trigger toggles it)</li>
     <li><code>open</code> — shown via the native <code>showPopover()</code>, anchored below its trigger</li>
   </ul>

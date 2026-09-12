@@ -41,7 +41,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <SkillField label="Accessibility">
 <SkillText dense>• Use <code>&lt;th&gt;</code> with appropriate <code>scope</code> for column/row headers</SkillText>
   <SkillText dense>• <code>&lt;caption&gt;</code> provides an accessible name for the table</SkillText>
-  <p class="text-muted-foreground" style="margin:0 0 0;">• Screen readers announce table structure (rows, columns, headers)</p>
+  <p class="text-muted-foreground skill-bullet">• Screen readers announce table structure (rows, columns, headers)</p>
   </SkillField>
 </SkillPanel>
 
@@ -155,18 +155,18 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <Example>
   <ExampleLabel>Density</ExampleLabel>
   <ExampleHint>Set <code>data-density</code> on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), typography and fixed dimensions stay identical. <code>comfortable</code> matches the unsized default.</ExampleHint>
-  <div style="display:flex;gap:1rem;flex-wrap:wrap;">
-    <div style="flex:1;min-width:12rem;">
+  <div class="flex flex-wrap gap-4">
+    <div class="demo-col">
       <p class="demo-label">Compact</p>
-      <table class="table" data-density="compact" style="width:100%;"><thead><tr class="table-row"><th class="table-head">Item</th><th class="table-head">Qty</th></tr></thead><tbody><tr class="table-row"><td class="table-cell">Pasta</td><td class="table-cell">2</td></tr><tr class="table-row"><td class="table-cell">Sauce</td><td class="table-cell">1</td></tr></tbody></table>
+      <table class="table w-full" data-density="compact"><thead><tr class="table-row"><th class="table-head">Item</th><th class="table-head">Qty</th></tr></thead><tbody><tr class="table-row"><td class="table-cell">Pasta</td><td class="table-cell">2</td></tr><tr class="table-row"><td class="table-cell">Sauce</td><td class="table-cell">1</td></tr></tbody></table>
     </div>
-    <div style="flex:1;min-width:12rem;">
+    <div class="demo-col">
       <p class="demo-label">Comfortable</p>
-      <table class="table" data-density="comfortable" style="width:100%;"><thead><tr class="table-row"><th class="table-head">Item</th><th class="table-head">Qty</th></tr></thead><tbody><tr class="table-row"><td class="table-cell">Pasta</td><td class="table-cell">2</td></tr><tr class="table-row"><td class="table-cell">Sauce</td><td class="table-cell">1</td></tr></tbody></table>
+      <table class="table w-full" data-density="comfortable"><thead><tr class="table-row"><th class="table-head">Item</th><th class="table-head">Qty</th></tr></thead><tbody><tr class="table-row"><td class="table-cell">Pasta</td><td class="table-cell">2</td></tr><tr class="table-row"><td class="table-cell">Sauce</td><td class="table-cell">1</td></tr></tbody></table>
     </div>
-    <div style="flex:1;min-width:12rem;">
+    <div class="demo-col">
       <p class="demo-label">Spacious</p>
-      <table class="table" data-density="spacious" style="width:100%;"><thead><tr class="table-row"><th class="table-head">Item</th><th class="table-head">Qty</th></tr></thead><tbody><tr class="table-row"><td class="table-cell">Pasta</td><td class="table-cell">2</td></tr><tr class="table-row"><td class="table-cell">Sauce</td><td class="table-cell">1</td></tr></tbody></table>
+      <table class="table w-full" data-density="spacious"><thead><tr class="table-row"><th class="table-head">Item</th><th class="table-head">Qty</th></tr></thead><tbody><tr class="table-row"><td class="table-cell">Pasta</td><td class="table-cell">2</td></tr><tr class="table-row"><td class="table-cell">Sauce</td><td class="table-cell">1</td></tr></tbody></table>
     </div>
   </div>
 </Example>
