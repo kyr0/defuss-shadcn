@@ -30,6 +30,18 @@ supportedStates: default
 <progress class="progress" max="100">Loading...</progress>
 ```
 
+## Sizes
+
+| `data-size` | Bar height |
+|-------------|------------|
+| `xs` | 0.25rem |
+| `sm` | 0.375rem |
+| `md` | 0.5rem |
+| *(none)* | 0.5rem |
+| `lg` | 0.75rem |
+| `xl` | 1rem |
+
+---
 ## Accessibility
 
 - `<progress>` is natively accessible — screen readers announce the percentage

@@ -32,4 +32,10 @@ await cssSmoke('badge', [
     selector: '#b-outline',
     css: { 'border-top-width': '1px' },
   },
+
+  { label: 'badge: data-size="xs" geometry', selector: '#z-badge-xs', css: { 'font-size': '9px' } },
+  { label: 'badge: data-size="sm" geometry', selector: '#z-badge-sm', css: { 'font-size': '10px' } },
+  { label: 'badge: data-size="md" geometry', selector: '#z-badge-md', css: { 'font-size': '11px' } },
+  { label: 'badge: data-size="lg" geometry', selector: '#z-badge-lg', css: { 'font-size': '13px' } },
+  { label: 'badge: data-size="xl" geometry', selector: '#z-badge-xl', css: { 'font-size': '15px' } },
 ]);

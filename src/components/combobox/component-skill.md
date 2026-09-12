@@ -110,6 +110,22 @@ the search input when the popover opens.
 
 ---
 
+## Sizes
+
+Set `data-size` on the `.combobox` wrapper; the trigger (a `.btn`) and the popover rows scale together.
+
+| `data-size` | Trigger height | Trigger font | Row font |
+|-------------|----------------|--------------|----------|
+| `xs` | 1.75rem | 0.75rem | 0.75rem |
+| `sm` | 2rem | 0.8125rem | 0.8125rem |
+| `md` | 2.25rem | 0.875rem | 0.875rem |
+| *(none)* | 2.25rem (`.btn` default) | 0.875rem | 0.875rem |
+| `lg` | 2.75rem | 1rem | 1rem |
+| `xl` | 3.25rem | 1.125rem | 1.125rem |
+
+`md` equals the unsized default (the `.btn` md step).
+
+---
 ## ARIA
 
 | Attribute                | Where            | Value                                   |

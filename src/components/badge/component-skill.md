@@ -43,6 +43,20 @@ supportedStates: default
 
 ---
 
+## Sizes
+
+| `data-size` | Font size | Padding | Height (line-height) |
+|-------------|-----------|---------|----------------------|
+| `xs` | 0.5625rem | 0 0.375rem | 1.125rem |
+| `sm` | 0.625rem | 0.0625rem 0.5rem | 1.25rem |
+| `md` | 0.6875rem | 0.125rem 0.625rem | 1.5rem |
+| *(none)* | 0.6875rem | 0.125rem 0.625rem | 1.5rem |
+| `lg` | 0.8125rem | 0.1875rem 0.75rem | 1.75rem |
+| `xl` | 0.9375rem | 0.25rem 0.875rem | 2rem |
+
+`md` matches the unsized default, so the full five-step scale is pinnable on any component.
+
+---
 ## Accessibility
 
 - Use descriptive text content — badges are read inline by screen readers.

@@ -287,6 +287,28 @@ try {
     assert.deepEqual(reg.states, ['default', 'open']);
     assert.ok(reg.dollarWorks, 'globalThis.$ query alias missing');
   });
+
+  await check('combobox: data-size="xs" → height 28px', async () => {
+    const val = await page.$eval('#z-combobox-xs .combobox-trigger', (el) => String(el.getBoundingClientRect().height) + 'px');
+    assert.equal(val, '28px');
+  });
+  await check('combobox: data-size="sm" → height 32px', async () => {
+    const val = await page.$eval('#z-combobox-sm .combobox-trigger', (el) => String(el.getBoundingClientRect().height) + 'px');
+    assert.equal(val, '32px');
+  });
+  await check('combobox: data-size="md" → height 36px', async () => {
+    const val = await page.$eval('#z-combobox-md .combobox-trigger', (el) => String(el.getBoundingClientRect().height) + 'px');
+    assert.equal(val, '36px');
+  });
+  await check('combobox: data-size="lg" → height 44px', async () => {
+    const val = await page.$eval('#z-combobox-lg .combobox-trigger', (el) => String(el.getBoundingClientRect().height) + 'px');
+    assert.equal(val, '44px');
+  });
+  await check('combobox: data-size="xl" → height 52px', async () => {
+    const val = await page.$eval('#z-combobox-xl .combobox-trigger', (el) => String(el.getBoundingClientRect().height) + 'px');
+    assert.equal(val, '52px');
+  });
+
 } finally {
   await browser.close();
   server.stop();

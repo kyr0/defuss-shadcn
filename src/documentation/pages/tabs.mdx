@@ -195,6 +195,31 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <ExampleCode>{"<div class=\"tabs\">\n  <div class=\"tab-list\" role=\"tablist\"\n       aria-label=\"Settings\"\n       aria-orientation=\"vertical\">\n    <button class=\"tab-trigger\" role=\"tab\"\n            aria-selected=\"true\"\n            aria-controls=\"vert-panel-general\"\n            id=\"vert-tab-general\">General</button>\n    <button class=\"tab-trigger\" role=\"tab\"\n            aria-selected=\"false\"\n            aria-controls=\"vert-panel-security\"\n            id=\"vert-tab-security\"\n            tabindex=\"-1\">Security</button>\n    <button class=\"tab-trigger\" role=\"tab\"\n            aria-selected=\"false\"\n            aria-controls=\"vert-panel-notif\"\n            id=\"vert-tab-notif\"\n            tabindex=\"-1\">Notifications</button>\n  </div>\n\n  <div class=\"tab-content\" role=\"tabpanel\"\n       id=\"vert-panel-general\"\n       aria-labelledby=\"vert-tab-general\"\n       tabindex=\"0\">\n    <div class=\"card\">\n      <div class=\"card-header\">\n        <h3 class=\"card-title\" style=\"font-size:1rem;\">General Settings</h3>\n        <p class=\"card-description\">Manage your general account preferences.</p>\n      </div>\n      <div class=\"card-content\" style=\"display:flex;flex-direction:column;gap:0.75rem;\">\n        <div>\n          <label class=\"label\" for=\"vert-display\">Display name</label>\n          <input class=\"input\" id=\"vert-display\" type=\"text\" value=\"Cody Lindley\">\n        </div>\n        <div>\n          <label class=\"label\" for=\"vert-email\">Email</label>\n          <input class=\"input\" id=\"vert-email\" type=\"email\" value=\"cody@example.com\">\n        </div>\n      </div>\n    </div>\n  </div>\n\n  <div class=\"tab-content\" role=\"tabpanel\"\n       id=\"vert-panel-security\"\n       aria-labelledby=\"vert-tab-security\"\n       tabindex=\"0\" hidden>\n    <div class=\"card\">\n      <div class=\"card-header\">\n        <h3 class=\"card-title\" style=\"font-size:1rem;\">Security</h3>\n        <p class=\"card-description\">Configure your security settings.</p>\n      </div>\n      <div class=\"card-content\">\n        <p class=\"text-muted-foreground\" style=\"font-size:0.875rem;\">Two-factor authentication, session management, and login history.</p>\n      </div>\n    </div>\n  </div>\n\n  <div class=\"tab-content\" role=\"tabpanel\"\n       id=\"vert-panel-notif\"\n       aria-labelledby=\"vert-tab-notif\"\n       tabindex=\"0\" hidden>\n    <div class=\"card\">\n      <div class=\"card-header\">\n        <h3 class=\"card-title\" style=\"font-size:1rem;\">Notifications</h3>\n        <p class=\"card-description\">Choose what you want to be notified about.</p>\n      </div>\n      <div class=\"card-content\">\n        <p class=\"text-muted-foreground\" style=\"font-size:0.875rem;\">Email notifications, push alerts, and digest preferences.</p>\n      </div>\n    </div>\n  </div>\n</div>"}</ExampleCode>
 </Example>
 
+<Example>
+  <ExampleLabel>Sizes</ExampleLabel>
+  <ExampleHint>Set <code>data-size</code> on the <code>.tab-list</code>; triggers scale with it — the default equals <code>md</code>.</ExampleHint>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Extra small</span>
+    <div class="tab-list" role="tablist" aria-label="Demo xs" data-size="xs"><button class="tab-trigger" role="tab" aria-selected="true" id="sz-xs-a">Account</button><button class="tab-trigger" role="tab" id="sz-xs-b" tabindex="-1">Password</button></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Small</span>
+    <div class="tab-list" role="tablist" aria-label="Demo sm" data-size="sm"><button class="tab-trigger" role="tab" aria-selected="true" id="sz-sm-a">Account</button><button class="tab-trigger" role="tab" id="sz-sm-b" tabindex="-1">Password</button></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Medium</span>
+    <div class="tab-list" role="tablist" aria-label="Demo md" data-size="md"><button class="tab-trigger" role="tab" aria-selected="true" id="sz-md-a">Account</button><button class="tab-trigger" role="tab" id="sz-md-b" tabindex="-1">Password</button></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Large</span>
+    <div class="tab-list" role="tablist" aria-label="Demo lg" data-size="lg"><button class="tab-trigger" role="tab" aria-selected="true" id="sz-lg-a">Account</button><button class="tab-trigger" role="tab" id="sz-lg-b" tabindex="-1">Password</button></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Extra large</span>
+    <div class="tab-list" role="tablist" aria-label="Demo xl" data-size="xl"><button class="tab-trigger" role="tab" aria-selected="true" id="sz-xl-a">Account</button><button class="tab-trigger" role="tab" id="sz-xl-b" tabindex="-1">Password</button></div>
+  </div>
+</Example>
+
 <StatesSection>
   <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
   <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">

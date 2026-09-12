@@ -12,6 +12,28 @@
     & svg { width: 0.875rem; height: 0.875rem; color: var(--muted-foreground); transition: transform 200ms ease; }
   }
 
+  /* -- Sizes: set data-size on the .nav-menu nav; every link/trigger and
+     the popover's rows scale together. md == the unsized default. */
+  .nav-menu[data-size="xs"] {
+    & :is(.nav-menu-link, .nav-menu-trigger) { padding: 0.25rem 0.5rem; font-size: 0.75rem; }
+    & .nav-menu-content-link { padding: 0.25rem 0.5rem; font-size: 0.75rem; }
+  }
+  .nav-menu[data-size="sm"] {
+    & :is(.nav-menu-link, .nav-menu-trigger) { padding: 0.375rem 0.625rem; font-size: 0.8125rem; }
+    & .nav-menu-content-link { padding: 0.375rem 0.625rem; font-size: 0.8125rem; }
+  }
+  .nav-menu[data-size="md"] {
+    & :is(.nav-menu-link, .nav-menu-trigger) { padding: 0.5rem 0.75rem; font-size: 0.875rem; }
+  }
+  .nav-menu[data-size="lg"] {
+    & :is(.nav-menu-link, .nav-menu-trigger) { padding: 0.625rem 1rem; font-size: 1rem; }
+    & .nav-menu-content-link { padding: 0.625rem 1rem; font-size: 1rem; }
+  }
+  .nav-menu[data-size="xl"] {
+    & :is(.nav-menu-link, .nav-menu-trigger) { padding: 0.75rem 1.25rem; font-size: 1.125rem; }
+    & .nav-menu-content-link { padding: 0.75rem 1.25rem; font-size: 1.125rem; }
+  }
+
   /* Rotate chevron when popover is open */
   .nav-menu-trigger:has(+ .nav-menu-content:popover-open) svg {
     transform: rotate(180deg);

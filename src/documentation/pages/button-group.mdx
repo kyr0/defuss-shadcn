@@ -90,8 +90,20 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <Example>
   <ExampleLabel>Sizes</ExampleLabel>
-  <ExampleHint>Control button size with <code>data-size</code> on individual buttons.</ExampleHint>
+  <ExampleHint>Button size is controlled with <code>data-size</code> on the individual <code>.btn</code> children — group them at any step of the full scale.</ExampleHint>
   <div style="display:flex;flex-direction:column;gap:1.0rem;align-items:center;">
+    <div class="btn-group" role="group" aria-label="Extra small actions">
+      <button class="btn" data-variant="outline" data-size="xs">Save</button>
+      <button class="btn" data-variant="outline" data-size="xs">Edit</button>
+    </div>
+    <div class="btn-group" role="group" aria-label="Medium actions">
+      <button class="btn" data-variant="outline" data-size="md">Save</button>
+      <button class="btn" data-variant="outline" data-size="md">Edit</button>
+    </div>
+    <div class="btn-group" role="group" aria-label="Extra large actions">
+      <button class="btn" data-variant="outline" data-size="xl">Save</button>
+      <button class="btn" data-variant="outline" data-size="xl">Edit</button>
+    </div>
     <div class="btn-group" role="group" aria-label="Small actions">
       <button class="btn" data-variant="outline" data-size="sm">Save</button>
       <button class="btn" data-variant="outline" data-size="sm">Edit</button>

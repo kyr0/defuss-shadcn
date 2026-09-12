@@ -30,4 +30,10 @@ await cssSmoke('file-input', [
     selector: '#fi-disabled',
     css: { opacity: '0.5', cursor: 'not-allowed' },
   },
+
+  { label: 'file-input: data-size="xs" geometry', selector: '#z-fileinput-xs', css: { 'height': '28px' } },
+  { label: 'file-input: data-size="sm" geometry', selector: '#z-fileinput-sm', css: { 'height': '32px' } },
+  { label: 'file-input: data-size="md" geometry', selector: '#z-fileinput-md', css: { 'height': '36px' } },
+  { label: 'file-input: data-size="lg" geometry', selector: '#z-fileinput-lg', css: { 'height': '44px' } },
+  { label: 'file-input: data-size="xl" geometry', selector: '#z-fileinput-xl', css: { 'height': '52px' } },
 ]);

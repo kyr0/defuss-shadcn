@@ -103,6 +103,31 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </div>
 </Example>
 
+<Example>
+  <ExampleLabel>Sizes</ExampleLabel>
+  <ExampleHint>{'Bar thickness scales via '}<code>data-size</code>{' on the '}<code>{'<progress>'}</code>{' — the default equals '}<code>md</code>.</ExampleHint>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Extra small</span>
+    <progress class="progress" value="65" max="100" style="max-width:16rem;flex:1;" data-size="xs"></progress>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Small</span>
+    <progress class="progress" value="65" max="100" style="max-width:16rem;flex:1;" data-size="sm"></progress>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Medium</span>
+    <progress class="progress" value="65" max="100" style="max-width:16rem;flex:1;" data-size="md"></progress>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Large</span>
+    <progress class="progress" value="65" max="100" style="max-width:16rem;flex:1;" data-size="lg"></progress>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Extra large</span>
+    <progress class="progress" value="65" max="100" style="max-width:16rem;flex:1;" data-size="xl"></progress>
+  </div>
+</Example>
+
 <SourceFiles component="progress" section="css">
   <SourceNote for="css">WebKit (Chrome, Safari, Edge)</SourceNote>
 </SourceFiles>

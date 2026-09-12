@@ -105,6 +105,31 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <ExampleCode>{"<nav class=\"nav-menu\" aria-label=\"Site navigation\">\n  <ul class=\"nav-menu-list\">\n    <li class=\"nav-menu-item\">\n      <button class=\"nav-menu-trigger\" popovertarget=\"nav-products\">\n        Products\n        <svg aria-hidden=\"true\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\"\n             fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">\n          <path d=\"m6 9 6 6 6-6\"/>\n        </svg>\n      </button>\n      <div class=\"nav-menu-content\" id=\"nav-products\" popover>\n        <a class=\"nav-menu-content-link\" href=\"#\">\n          <strong>Analytics</strong>\n          <p>View your dashboard and metrics</p>\n        </a>\n        <a class=\"nav-menu-content-link\" href=\"#\">...</a>\n      </div>\n    </li>\n    <li class=\"nav-menu-item\">\n      <a class=\"nav-menu-link\" href=\"#\">Pricing</a>\n    </li>\n  </ul>\n</nav>"}</ExampleCode>
 </Example>
 
+<Example>
+  <ExampleLabel>Sizes</ExampleLabel>
+  <ExampleHint>Set <code>data-size</code> on the <code>.nav-menu</code> nav; links, triggers and popover rows scale together.</ExampleHint>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Extra small</span>
+    <nav class="nav-menu" data-size="xs" aria-label="Site xs"><ul class="nav-menu-list"><li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li><li class="nav-menu-item"><button class="nav-menu-trigger" popovertarget="sz-nav-xs">Products</button><div class="nav-menu-content" id="sz-nav-xs" popover><a class="nav-menu-content-link" href="#">Analytics</a></div></li></ul></nav>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Small</span>
+    <nav class="nav-menu" data-size="sm" aria-label="Site sm"><ul class="nav-menu-list"><li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li><li class="nav-menu-item"><button class="nav-menu-trigger" popovertarget="sz-nav-sm">Products</button><div class="nav-menu-content" id="sz-nav-sm" popover><a class="nav-menu-content-link" href="#">Analytics</a></div></li></ul></nav>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Medium</span>
+    <nav class="nav-menu" data-size="md" aria-label="Site md"><ul class="nav-menu-list"><li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li><li class="nav-menu-item"><button class="nav-menu-trigger" popovertarget="sz-nav-md">Products</button><div class="nav-menu-content" id="sz-nav-md" popover><a class="nav-menu-content-link" href="#">Analytics</a></div></li></ul></nav>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Large</span>
+    <nav class="nav-menu" data-size="lg" aria-label="Site lg"><ul class="nav-menu-list"><li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li><li class="nav-menu-item"><button class="nav-menu-trigger" popovertarget="sz-nav-lg">Products</button><div class="nav-menu-content" id="sz-nav-lg" popover><a class="nav-menu-content-link" href="#">Analytics</a></div></li></ul></nav>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Extra large</span>
+    <nav class="nav-menu" data-size="xl" aria-label="Site xl"><ul class="nav-menu-list"><li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li><li class="nav-menu-item"><button class="nav-menu-trigger" popovertarget="sz-nav-xl">Products</button><div class="nav-menu-content" id="sz-nav-xl" popover><a class="nav-menu-content-link" href="#">Analytics</a></div></li></ul></nav>
+  </div>
+</Example>
+
 <StatesSection>
   <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
   <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">

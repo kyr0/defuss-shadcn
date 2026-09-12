@@ -130,6 +130,36 @@
     letter-spacing: 0.05em;
   }
 
+  /* -- Sizes ----------------------------------------------------
+     data-size goes on the .dropdown-content popover; items, labels,
+     shortcuts and the check indicators scale together. md == the unsized
+     default. The [data-size] compound outranks the single-class item
+     rules; it only touches block padding/font so the check/radio inline
+     padding (padding-inline-start) keeps working. */
+  .dropdown-content[data-size="xs"] {
+    & .dropdown-item { padding-block: 0.1875rem; font-size: 0.75rem; }
+    & .dropdown-label { padding-block: 0.1875rem; font-size: 0.6875rem; }
+    & .dropdown-shortcut { font-size: 0.6875rem; }
+    & :is(.dropdown-check, .dropdown-radio)::before { width: 0.75rem; height: 0.75rem; }
+  }
+  .dropdown-content[data-size="sm"] {
+    & .dropdown-item { padding-block: 0.25rem; font-size: 0.8125rem; }
+    & .dropdown-shortcut { font-size: 0.75rem; }
+  }
+  .dropdown-content[data-size="md"] {
+    & .dropdown-item { padding-block: 0.375rem; font-size: 0.875rem; }
+  }
+  .dropdown-content[data-size="lg"] {
+    & .dropdown-item { padding-block: 0.5rem; font-size: 1rem; }
+    & .dropdown-label { font-size: 0.8125rem; }
+    & .dropdown-shortcut { font-size: 0.875rem; }
+  }
+  .dropdown-content[data-size="xl"] {
+    & .dropdown-item { padding-block: 0.625rem; font-size: 1.125rem; }
+    & .dropdown-label { font-size: 0.875rem; }
+    & .dropdown-shortcut { font-size: 1rem; }
+  }
+
   /* -- Accessibility ------------------------------------------ */
 
   @media (prefers-reduced-motion: reduce) {

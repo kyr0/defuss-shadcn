@@ -67,6 +67,31 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <ExampleCode>{"<input class=\"date-input\" type=\"date\" min=\"2024-01-01\" max=\"2026-12-31\">"}</ExampleCode>
 </Example>
 
+<Example>
+  <ExampleLabel>Sizes</ExampleLabel>
+  <ExampleHint>Same ladder as <code>.input</code> via <code>data-size</code> — <code>md</code> is 2.25rem, so date fields row-align with text inputs.</ExampleHint>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Extra small</span>
+    <input class="date-input" type="date" value="2026-09-12" data-size="xs" style="max-width:12rem;flex:1;" aria-label="Date xs" />
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Small</span>
+    <input class="date-input" type="date" value="2026-09-12" data-size="sm" style="max-width:12rem;flex:1;" aria-label="Date sm" />
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Medium</span>
+    <input class="date-input" type="date" value="2026-09-12" data-size="md" style="max-width:12rem;flex:1;" aria-label="Date md" />
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Large</span>
+    <input class="date-input" type="date" value="2026-09-12" data-size="lg" style="max-width:12rem;flex:1;" aria-label="Date lg" />
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Extra large</span>
+    <input class="date-input" type="date" value="2026-09-12" data-size="xl" style="max-width:12rem;flex:1;" aria-label="Date xl" />
+  </div>
+</Example>
+
 <SourceFiles component="date-picker" section="css" />
 
 </DocPage>

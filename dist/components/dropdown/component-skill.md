@@ -73,6 +73,22 @@ Requires JavaScript for keyboard navigation and ARIA management.
 
 ---
 
+## Sizes
+
+Set `data-size` on the `.dropdown-content` popover; items, labels, shortcuts and the check/radio indicators scale together.
+
+| `data-size` | Item padding | Item font | Label font |
+|-------------|--------------|-----------|------------|
+| `xs` | 0.1875rem 0.5rem | 0.75rem | 0.6875rem |
+| `sm` | 0.25rem 0.5rem | 0.8125rem | 0.75rem |
+| `md` | 0.375rem 0.5rem | 0.875rem | 0.75rem |
+| *(none)* | 0.375rem 0.5rem | 0.875rem | 0.75rem |
+| `lg` | 0.5rem 0.5rem | 1rem | 0.8125rem |
+| `xl` | 0.625rem 0.5rem | 1.125rem | 0.875rem |
+
+The trigger button's own `data-size` (from `.btn`) is independent — set both to match. `md` equals the unsized default.
+
+---
 ## ARIA
 
 | Attribute                  | Where            | Value                         |

@@ -26,7 +26,21 @@
     &:hover { opacity: 0.85; }
   }
 
-  /* -- Size variants ------------------------------------------ */
+  /* -- Size variants ------------------------------------------
+     Five-step ladder (xs–xl). md == the unsized default (2rem indicator),
+     so md is selectable everywhere without a visual jump. Connector
+     offsets follow the existing pattern per indicator size I: horizontal
+     top = I/2, left inset = I/2 + 0.25rem; vertical top = I + 0.25rem,
+     left = I/2 - 1px (centers the 2px bar under the indicator). */
+  .steps[data-size='xs'] {
+    & .step:not(:last-child)::after { top: 0.625rem; left: calc(50% + 0.875rem); right: calc(-50% + 0.875rem); }
+    & .step-indicator { width: 1.25rem; height: 1.25rem; font-size: 0.625rem; }
+    & .step-indicator svg { width: 0.625rem; height: 0.625rem; }
+    & .step-title { font-size: 0.6875rem; }
+    & .step-description { font-size: 0.625rem; }
+    &[data-orientation='vertical'] .step:not(:last-child)::after { top: 1.5rem; left: 0.5625rem; height: calc(100% - 1.5rem); }
+  }
+
   .steps[data-size='sm'] {
     & .step:not(:last-child)::after { top: 0.75rem; left: calc(50% + 1rem); right: calc(-50% + 1rem); }
     & .step-indicator { width: 1.5rem; height: 1.5rem; font-size: 0.6875rem; }
@@ -36,6 +50,15 @@
     &[data-orientation='vertical'] .step:not(:last-child)::after { top: 1.75rem; left: 0.6875rem; height: calc(100% - 1.75rem); }
   }
 
+  .steps[data-size='md'] {
+    & .step:not(:last-child)::after { top: 1rem; left: calc(50% + 1.25rem); right: calc(-50% + 1.25rem); }
+    & .step-indicator { width: 2rem; height: 2rem; font-size: 0.75rem; }
+    & .step-indicator svg { width: 0.875rem; height: 0.875rem; }
+    & .step-title { font-size: 0.8125rem; }
+    & .step-description { font-size: 0.75rem; }
+    &[data-orientation='vertical'] .step:not(:last-child)::after { top: 2.25rem; left: 0.9375rem; height: calc(100% - 2.25rem); }
+  }
+
   .steps[data-size='lg'] {
     & .step:not(:last-child)::after { top: 1.25rem; left: calc(50% + 1.5rem); right: calc(-50% + 1.5rem); }
     & .step-indicator { width: 2.5rem; height: 2.5rem; font-size: 0.875rem; }
@@ -43,6 +66,15 @@
     & .step-title { font-size: 0.9375rem; }
     & .step-description { font-size: 0.8125rem; }
     &[data-orientation='vertical'] .step:not(:last-child)::after { top: 2.75rem; left: 1.1875rem; height: calc(100% - 2.75rem); }
+  }
+
+  .steps[data-size='xl'] {
+    & .step:not(:last-child)::after { top: 1.5rem; left: calc(50% + 1.75rem); right: calc(-50% + 1.75rem); }
+    & .step-indicator { width: 3rem; height: 3rem; font-size: 1rem; }
+    & .step-indicator svg { width: 1.125rem; height: 1.125rem; }
+    & .step-title { font-size: 1.0625rem; }
+    & .step-description { font-size: 0.875rem; }
+    &[data-orientation='vertical'] .step:not(:last-child)::after { top: 3.25rem; left: 1.4375rem; height: calc(100% - 3.25rem); }
   }
 
   /* -- Vertical orientation ---------------------------------- */

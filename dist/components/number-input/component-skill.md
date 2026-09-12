@@ -28,6 +28,20 @@ supportedStates: default
 
 ---
 
+## Sizes
+
+| `data-size` | Box height | Button width | Font |
+|-------------|------------|--------------|------|
+| `xs` | 1.75rem | 1.5rem | 0.75rem |
+| `sm` | 2rem | 1.75rem | 0.8125rem |
+| `md` | 2.25rem | 2rem | 0.875rem |
+| *(none)* | auto (2.5rem children) | 2rem | 0.875rem |
+| `lg` | 2.75rem | 2.25rem | 1rem |
+| `xl` | 3.25rem | 2.5rem | 1.125rem |
+
+The ladder matches `.input` / `.btn` (md = 2.25rem).
+
+---
 ## States
 
 The component's observable state is the number itself. Declared states:

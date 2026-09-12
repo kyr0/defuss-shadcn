@@ -435,6 +435,14 @@
     letter-spacing: 0.01em;
     line-height: 1.5rem;
 
+    /* -- Sizes: font, vertical padding and the line-height (which gives the
+       pill its height) scale together. Default (no attribute) == md. */
+    &[data-size="xs"] { font-size: 0.5625rem; padding: 0 0.375rem;    line-height: 1.125rem; }
+    &[data-size="sm"] { font-size: 0.625rem;  padding: 0.0625rem 0.5rem; line-height: 1.25rem; }
+    &[data-size="md"] { font-size: 0.6875rem; padding: 0.125rem 0.625rem; line-height: 1.5rem; }
+    &[data-size="lg"] { font-size: 0.8125rem; padding: 0.1875rem 0.75rem; line-height: 1.75rem; }
+    &[data-size="xl"] { font-size: 0.9375rem; padding: 0.25rem 0.875rem;  line-height: 2rem; }
+
     &[data-variant="outline"] {
       border: 1px solid var(--border);
       color: var(--muted-foreground);
@@ -1654,6 +1662,21 @@
       font-family: var(--font-mono);
       color: var(--muted-foreground);
     }
+
+    /* -- Sizes -------------------------------------------------
+       Swatch + padding re-derived per step so the TOTAL box height lands
+       on the shared input ladder (xs 28 / sm 32 / md 36 / lg 44 / xl 52
+       px — md is the typical 2.25rem the other inputs use at md). The UA
+       styles form controls border-box, so:
+       total = swatch + 2×padding-block + 2px frame:
+       xs 20+6+2 · sm 24+6+2 · md 28+6+2 · lg 32+10+2 · xl 40+10+2.
+       The unsized default keeps the historical 42px box (2rem swatch,
+       0.25rem block padding) — exactly like .input keeps 2.5rem. */
+    &[data-size="xs"] { padding: 0.1875rem 0.5rem; gap: 0.375rem; & input[type="color"] { width: 1.25rem; height: 1.25rem; } & .color-picker-value { font-size: 0.6875rem; } }
+    &[data-size="sm"] { padding: 0.1875rem 0.625rem; gap: 0.375rem; & input[type="color"] { width: 1.5rem; height: 1.5rem; } & .color-picker-value { font-size: 0.75rem; } }
+    &[data-size="md"] { padding: 0.1875rem 0.75rem; & input[type="color"] { width: 1.75rem; height: 1.75rem; } & .color-picker-value { font-size: 0.8125rem; } }
+    &[data-size="lg"] { padding: 0.3125rem 0.875rem; & input[type="color"] { width: 2rem; height: 2rem; } & .color-picker-value { font-size: 0.875rem; } }
+    &[data-size="xl"] { padding: 0.3125rem 1rem; gap: 0.625rem; & input[type="color"] { width: 2.5rem; height: 2.5rem; } & .color-picker-value { font-size: 1rem; } }
   }
 }
 
@@ -1663,6 +1686,30 @@
 @layer components {
   .combobox {
     position: relative;
+
+    /* -- Sizes: set data-size on the .combobox wrapper; the trigger (a
+       .btn) and the popover's rows scale together. Heights/fonts mirror the
+       button + input ladder (md = 2.25rem = the .btn default; the unsized
+       default equals md, so md is always selectable without a jump). */
+    &[data-size="xs"] {
+      & .combobox-trigger { height: 1.75rem; padding: 0 0.5rem; font-size: 0.75rem; }
+      & .combobox-item, & .combobox-group-label { font-size: 0.75rem; padding-block: 0.25rem; }
+    }
+    &[data-size="sm"] {
+      & .combobox-trigger { height: 2rem; padding: 0 0.625rem; font-size: 0.8125rem; }
+      & .combobox-item, & .combobox-group-label { font-size: 0.8125rem; padding-block: 0.3125rem; }
+    }
+    &[data-size="md"] {
+      & .combobox-trigger { height: 2.25rem; }
+    }
+    &[data-size="lg"] {
+      & .combobox-trigger { height: 2.75rem; padding: 0 1rem; font-size: 1rem; }
+      & .combobox-item, & .combobox-group-label { font-size: 1rem; padding-block: 0.5rem; }
+    }
+    &[data-size="xl"] {
+      & .combobox-trigger { height: 3.25rem; padding: 0 1.25rem; font-size: 1.125rem; }
+      & .combobox-item, & .combobox-group-label { font-size: 1.125rem; padding-block: 0.625rem; }
+    }
   }
 
   .combobox-trigger {
@@ -2083,6 +2130,15 @@
       cursor: not-allowed;
     }
 
+    /* -- Sizes: same ladder as .input (md = 2.25rem; the unsized default
+       stays at the historical 2.5rem) so date fields sit in the same row
+       rhythm as text inputs at every step. */
+    &[data-size="xs"] { height: 1.75rem; padding: 0 0.5rem;    font-size: 0.75rem; }
+    &[data-size="sm"] { height: 2rem;    padding: 0 0.625rem;  font-size: 0.8125rem; }
+    &[data-size="md"] { height: 2.25rem; padding: 0 0.75rem;   font-size: 0.875rem; }
+    &[data-size="lg"] { height: 2.75rem; padding: 0 1rem;      font-size: 1rem; }
+    &[data-size="xl"] { height: 3.25rem; padding: 0 1.25rem;   font-size: 1.125rem; }
+
     /* Style the calendar icon */
     &::-webkit-calendar-picker-indicator {
       cursor: pointer;
@@ -2333,6 +2389,36 @@
     font-size: 0.75rem;
     color: var(--muted-foreground);
     letter-spacing: 0.05em;
+  }
+
+  /* -- Sizes ----------------------------------------------------
+     data-size goes on the .dropdown-content popover; items, labels,
+     shortcuts and the check indicators scale together. md == the unsized
+     default. The [data-size] compound outranks the single-class item
+     rules; it only touches block padding/font so the check/radio inline
+     padding (padding-inline-start) keeps working. */
+  .dropdown-content[data-size="xs"] {
+    & .dropdown-item { padding-block: 0.1875rem; font-size: 0.75rem; }
+    & .dropdown-label { padding-block: 0.1875rem; font-size: 0.6875rem; }
+    & .dropdown-shortcut { font-size: 0.6875rem; }
+    & :is(.dropdown-check, .dropdown-radio)::before { width: 0.75rem; height: 0.75rem; }
+  }
+  .dropdown-content[data-size="sm"] {
+    & .dropdown-item { padding-block: 0.25rem; font-size: 0.8125rem; }
+    & .dropdown-shortcut { font-size: 0.75rem; }
+  }
+  .dropdown-content[data-size="md"] {
+    & .dropdown-item { padding-block: 0.375rem; font-size: 0.875rem; }
+  }
+  .dropdown-content[data-size="lg"] {
+    & .dropdown-item { padding-block: 0.5rem; font-size: 1rem; }
+    & .dropdown-label { font-size: 0.8125rem; }
+    & .dropdown-shortcut { font-size: 0.875rem; }
+  }
+  .dropdown-content[data-size="xl"] {
+    & .dropdown-item { padding-block: 0.625rem; font-size: 1.125rem; }
+    & .dropdown-label { font-size: 0.875rem; }
+    & .dropdown-shortcut { font-size: 1rem; }
   }
 
   /* -- Accessibility ------------------------------------------ */
@@ -2627,6 +2713,16 @@
       opacity: 0.5;
       cursor: not-allowed;
     }
+
+    /* -- Sizes: same ladder as .input/.date-input (md = 2.25rem; the
+       unsized default keeps the historical 2.5rem). The file-selector
+       button fills the container (height:100%), so only the box and the
+       font scale. */
+    &[data-size="xs"] { height: 1.75rem; font-size: 0.75rem;    &::file-selector-button { padding: 0 0.5rem; margin-right: 0.5rem; font-size: 0.75rem; } }
+    &[data-size="sm"] { height: 2rem;    font-size: 0.8125rem;  &::file-selector-button { padding: 0 0.625rem; margin-right: 0.625rem; font-size: 0.8125rem; } }
+    &[data-size="md"] { height: 2.25rem; font-size: 0.875rem; }
+    &[data-size="lg"] { height: 2.75rem; font-size: 1rem;       &::file-selector-button { padding: 0 1rem; margin-right: 1rem; font-size: 1rem; } }
+    &[data-size="xl"] { height: 3.25rem; font-size: 1.125rem;   &::file-selector-button { padding: 0 1.25rem; margin-right: 1.25rem; font-size: 1.125rem; } }
   }
 }
 
@@ -3436,6 +3532,28 @@
     & svg { width: 0.875rem; height: 0.875rem; color: var(--muted-foreground); transition: transform 200ms ease; }
   }
 
+  /* -- Sizes: set data-size on the .nav-menu nav; every link/trigger and
+     the popover's rows scale together. md == the unsized default. */
+  .nav-menu[data-size="xs"] {
+    & :is(.nav-menu-link, .nav-menu-trigger) { padding: 0.25rem 0.5rem; font-size: 0.75rem; }
+    & .nav-menu-content-link { padding: 0.25rem 0.5rem; font-size: 0.75rem; }
+  }
+  .nav-menu[data-size="sm"] {
+    & :is(.nav-menu-link, .nav-menu-trigger) { padding: 0.375rem 0.625rem; font-size: 0.8125rem; }
+    & .nav-menu-content-link { padding: 0.375rem 0.625rem; font-size: 0.8125rem; }
+  }
+  .nav-menu[data-size="md"] {
+    & :is(.nav-menu-link, .nav-menu-trigger) { padding: 0.5rem 0.75rem; font-size: 0.875rem; }
+  }
+  .nav-menu[data-size="lg"] {
+    & :is(.nav-menu-link, .nav-menu-trigger) { padding: 0.625rem 1rem; font-size: 1rem; }
+    & .nav-menu-content-link { padding: 0.625rem 1rem; font-size: 1rem; }
+  }
+  .nav-menu[data-size="xl"] {
+    & :is(.nav-menu-link, .nav-menu-trigger) { padding: 0.75rem 1.25rem; font-size: 1.125rem; }
+    & .nav-menu-content-link { padding: 0.75rem 1.25rem; font-size: 1.125rem; }
+  }
+
   /* Rotate chevron when popover is open */
   .nav-menu-trigger:has(+ .nav-menu-content:popover-open) svg {
     transform: rotate(180deg);
@@ -3561,6 +3679,11 @@
     background: var(--background);
     box-shadow: var(--shadow-xs);
     overflow: hidden;
+    /* explicit border-box: the size ladder below sets an explicit container
+       height and must land on it exactly (a div is content-box by default;
+       inputs get border-box from the UA). The unsized default keeps its
+       auto height (children drive it), so this changes nothing today. */
+    box-sizing: border-box;
 
     & input {
       border: none;
@@ -3614,6 +3737,37 @@
       border-color: var(--ring);
       box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
     }
+
+    /* -- Sizes -------------------------------------------------
+       Container height + input/button/font scale together, matching the
+       input/button ladders (md = 2.25rem; the unsized default stays at the
+       historical 2.5rem, exactly like .input does). Children switch to
+       height:100% so they can't fight the container. */
+    &[data-size="xs"] {
+      height: 1.75rem;
+      & input { height: 100%; width: 3rem; font-size: 0.75rem; }
+      & button { height: 100%; width: 1.5rem; font-size: 0.875rem; }
+    }
+    &[data-size="sm"] {
+      height: 2rem;
+      & input { height: 100%; width: 3.5rem; font-size: 0.8125rem; }
+      & button { height: 100%; width: 1.75rem; font-size: 0.9375rem; }
+    }
+    &[data-size="md"] {
+      height: 2.25rem;
+      & input { height: 100%; font-size: 0.875rem; }
+      & button { height: 100%; }
+    }
+    &[data-size="lg"] {
+      height: 2.75rem;
+      & input { height: 100%; width: 4.5rem; font-size: 1rem; }
+      & button { height: 100%; width: 2.25rem; font-size: 1.125rem; }
+    }
+    &[data-size="xl"] {
+      height: 3.25rem;
+      & input { height: 100%; width: 5rem; font-size: 1.125rem; }
+      & button { height: 100%; width: 2.5rem; font-size: 1.25rem; }
+    }
   }
 }
 
@@ -3664,6 +3818,32 @@
     display: inline-flex; align-items: center; justify-content: center;
     width: 2.25rem; height: 2.25rem; color: var(--muted-foreground);
     & span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+  }
+
+  /* -- Sizes ----------------------------------------------------
+     Set data-size on the .pagination nav; every cell (page links, prev/next,
+     ellipsis) scales. :where() keeps each rule at one class of specificity
+     so the .pagination-prev padding-inline above still wins per-item.
+     md == the unsized default. */
+  .pagination:where([data-size="xs"]) {
+    & :is(.pagination-link, .pagination-prev, .pagination-next) { min-width: 1.75rem; height: 1.75rem; font-size: 0.75rem; }
+    & .pagination-ellipsis { width: 1.75rem; height: 1.75rem; }
+  }
+  .pagination:where([data-size="sm"]) {
+    & :is(.pagination-link, .pagination-prev, .pagination-next) { min-width: 2rem; height: 2rem; font-size: 0.8125rem; }
+    & .pagination-ellipsis { width: 2rem; height: 2rem; }
+  }
+  .pagination:where([data-size="md"]) {
+    & :is(.pagination-link, .pagination-prev, .pagination-next) { min-width: 2.25rem; height: 2.25rem; font-size: 0.875rem; }
+    & .pagination-ellipsis { width: 2.25rem; height: 2.25rem; }
+  }
+  .pagination:where([data-size="lg"]) {
+    & :is(.pagination-link, .pagination-prev, .pagination-next) { min-width: 2.5rem; height: 2.5rem; font-size: 1rem; }
+    & .pagination-ellipsis { width: 2.5rem; height: 2.5rem; }
+  }
+  .pagination:where([data-size="xl"]) {
+    & :is(.pagination-link, .pagination-prev, .pagination-next) { min-width: 2.75rem; height: 2.75rem; font-size: 1.125rem; }
+    & .pagination-ellipsis { width: 2.75rem; height: 2.75rem; }
   }
 
   /* -- Accessibility ------------------------------------------ */
@@ -4045,6 +4225,13 @@
     border-radius: 9999px;
     overflow: hidden;
     background-color: var(--secondary);
+
+    /* -- Sizes: bar thickness scale; default (no attribute) == md. */
+    &[data-size="xs"] { height: 0.25rem; }
+    &[data-size="sm"] { height: 0.375rem; }
+    &[data-size="md"] { height: 0.5rem; }
+    &[data-size="lg"] { height: 0.75rem; }
+    &[data-size="xl"] { height: 1rem; }
   }
 
   /* WebKit (Chrome, Safari, Edge) */
@@ -5467,6 +5654,81 @@
         margin-left: -0.375rem;
       }
     }
+
+    /* -- Sizes -------------------------------------------------
+       Track thickness + thumb diameter scale together; the WebKit thumb
+       margin-top (and the vertical margin-left) re-centers it for each
+       size: (track − thumb) / 2. md == the default (md explicitly
+       selectable so demos/e2e can pin it like the other four). */
+    &[data-size="xs"] {
+      height: 0.25rem;
+      &::-webkit-slider-runnable-track { height: 0.25rem; }
+      &::-moz-range-track { height: 0.25rem; }
+      &::-moz-range-progress { height: 0.25rem; }
+      &::-webkit-slider-thumb { width: 0.75rem; height: 0.75rem; margin-top: -0.25rem; }
+      &::-moz-range-thumb { width: 0.75rem; height: 0.75rem; }
+      &[data-orientation="vertical"] {
+        width: 0.25rem;
+        &::-webkit-slider-runnable-track { width: 0.25rem; }
+        &::-webkit-slider-thumb { margin-top: 0; margin-left: -0.25rem; }
+      }
+    }
+
+    &[data-size="sm"] {
+      height: 0.375rem;
+      &::-webkit-slider-runnable-track { height: 0.375rem; }
+      &::-moz-range-track { height: 0.375rem; }
+      &::-moz-range-progress { height: 0.375rem; }
+      &::-webkit-slider-thumb { width: 1rem; height: 1rem; margin-top: -0.3125rem; }
+      &::-moz-range-thumb { width: 1rem; height: 1rem; }
+      &[data-orientation="vertical"] {
+        width: 0.375rem;
+        &::-webkit-slider-runnable-track { width: 0.375rem; }
+        &::-webkit-slider-thumb { margin-top: 0; margin-left: -0.3125rem; }
+      }
+    }
+
+    &[data-size="md"] {
+      height: 0.5rem;
+      &::-webkit-slider-runnable-track { height: 0.5rem; }
+      &::-moz-range-track { height: 0.5rem; }
+      &::-moz-range-progress { height: 0.5rem; }
+      &::-webkit-slider-thumb { width: 1.25rem; height: 1.25rem; margin-top: -0.375rem; }
+      &::-moz-range-thumb { width: 1.25rem; height: 1.25rem; }
+      &[data-orientation="vertical"] {
+        width: 0.5rem;
+        &::-webkit-slider-runnable-track { width: 0.5rem; }
+        &::-webkit-slider-thumb { margin-top: 0; margin-left: -0.375rem; }
+      }
+    }
+
+    &[data-size="lg"] {
+      height: 0.625rem;
+      &::-webkit-slider-runnable-track { height: 0.625rem; }
+      &::-moz-range-track { height: 0.625rem; }
+      &::-moz-range-progress { height: 0.625rem; }
+      &::-webkit-slider-thumb { width: 1.5rem; height: 1.5rem; margin-top: -0.4375rem; }
+      &::-moz-range-thumb { width: 1.5rem; height: 1.5rem; }
+      &[data-orientation="vertical"] {
+        width: 0.625rem;
+        &::-webkit-slider-runnable-track { width: 0.625rem; }
+        &::-webkit-slider-thumb { margin-top: 0; margin-left: -0.4375rem; }
+      }
+    }
+
+    &[data-size="xl"] {
+      height: 0.75rem;
+      &::-webkit-slider-runnable-track { height: 0.75rem; }
+      &::-moz-range-track { height: 0.75rem; }
+      &::-moz-range-progress { height: 0.75rem; }
+      &::-webkit-slider-thumb { width: 1.75rem; height: 1.75rem; margin-top: -0.5rem; }
+      &::-moz-range-thumb { width: 1.75rem; height: 1.75rem; }
+      &[data-orientation="vertical"] {
+        width: 0.75rem;
+        &::-webkit-slider-runnable-track { width: 0.75rem; }
+        &::-webkit-slider-thumb { margin-top: 0; margin-left: -0.5rem; }
+      }
+    }
   }
 
   /* Reduced motion */
@@ -5891,7 +6153,21 @@
     &:hover { opacity: 0.85; }
   }
 
-  /* -- Size variants ------------------------------------------ */
+  /* -- Size variants ------------------------------------------
+     Five-step ladder (xs–xl). md == the unsized default (2rem indicator),
+     so md is selectable everywhere without a visual jump. Connector
+     offsets follow the existing pattern per indicator size I: horizontal
+     top = I/2, left inset = I/2 + 0.25rem; vertical top = I + 0.25rem,
+     left = I/2 - 1px (centers the 2px bar under the indicator). */
+  .steps[data-size='xs'] {
+    & .step:not(:last-child)::after { top: 0.625rem; left: calc(50% + 0.875rem); right: calc(-50% + 0.875rem); }
+    & .step-indicator { width: 1.25rem; height: 1.25rem; font-size: 0.625rem; }
+    & .step-indicator svg { width: 0.625rem; height: 0.625rem; }
+    & .step-title { font-size: 0.6875rem; }
+    & .step-description { font-size: 0.625rem; }
+    &[data-orientation='vertical'] .step:not(:last-child)::after { top: 1.5rem; left: 0.5625rem; height: calc(100% - 1.5rem); }
+  }
+
   .steps[data-size='sm'] {
     & .step:not(:last-child)::after { top: 0.75rem; left: calc(50% + 1rem); right: calc(-50% + 1rem); }
     & .step-indicator { width: 1.5rem; height: 1.5rem; font-size: 0.6875rem; }
@@ -5901,6 +6177,15 @@
     &[data-orientation='vertical'] .step:not(:last-child)::after { top: 1.75rem; left: 0.6875rem; height: calc(100% - 1.75rem); }
   }
 
+  .steps[data-size='md'] {
+    & .step:not(:last-child)::after { top: 1rem; left: calc(50% + 1.25rem); right: calc(-50% + 1.25rem); }
+    & .step-indicator { width: 2rem; height: 2rem; font-size: 0.75rem; }
+    & .step-indicator svg { width: 0.875rem; height: 0.875rem; }
+    & .step-title { font-size: 0.8125rem; }
+    & .step-description { font-size: 0.75rem; }
+    &[data-orientation='vertical'] .step:not(:last-child)::after { top: 2.25rem; left: 0.9375rem; height: calc(100% - 2.25rem); }
+  }
+
   .steps[data-size='lg'] {
     & .step:not(:last-child)::after { top: 1.25rem; left: calc(50% + 1.5rem); right: calc(-50% + 1.5rem); }
     & .step-indicator { width: 2.5rem; height: 2.5rem; font-size: 0.875rem; }
@@ -5908,6 +6193,15 @@
     & .step-title { font-size: 0.9375rem; }
     & .step-description { font-size: 0.8125rem; }
     &[data-orientation='vertical'] .step:not(:last-child)::after { top: 2.75rem; left: 1.1875rem; height: calc(100% - 2.75rem); }
+  }
+
+  .steps[data-size='xl'] {
+    & .step:not(:last-child)::after { top: 1.5rem; left: calc(50% + 1.75rem); right: calc(-50% + 1.75rem); }
+    & .step-indicator { width: 3rem; height: 3rem; font-size: 1rem; }
+    & .step-indicator svg { width: 1.125rem; height: 1.125rem; }
+    & .step-title { font-size: 1.0625rem; }
+    & .step-description { font-size: 0.875rem; }
+    &[data-orientation='vertical'] .step:not(:last-child)::after { top: 3.25rem; left: 1.4375rem; height: calc(100% - 3.25rem); }
   }
 
   /* -- Vertical orientation ---------------------------------- */
@@ -6309,6 +6603,23 @@
     border-radius: var(--radius-lg);
     padding: 0.25rem;
     gap: 0.125rem;
+
+    /* -- Sizes: trigger font + padding scale (set data-size on .tab-list).
+       :where() keeps these at one class of specificity over the plain
+       .tab-trigger base. md == each variant's own base padding, so md is
+       selectable everywhere without a visual change. The line variant's
+       trigger base (0.5rem/1rem, nested in [data-variant="line"]) outranks
+       the :where() rules, so its overrides are un-:where()'d (two attrs). */
+    &:where([data-size="xs"]) .tab-trigger { padding: 0.25rem 0.5rem;    font-size: 0.75rem; }
+    &:where([data-size="sm"]) .tab-trigger { padding: 0.3125rem 0.625rem; font-size: 0.8125rem; }
+    &:where([data-size="md"]) .tab-trigger { padding: 0.375rem 0.75rem;   font-size: 0.875rem; }
+    &:where([data-size="lg"]) .tab-trigger { padding: 0.5rem 1rem;       font-size: 1rem; }
+    &:where([data-size="xl"]) .tab-trigger { padding: 0.625rem 1.25rem;  font-size: 1.125rem; }
+    &[data-variant="line"][data-size="xs"] .tab-trigger { padding: 0.25rem 0.5rem; }
+    &[data-variant="line"][data-size="sm"] .tab-trigger { padding: 0.375rem 0.75rem; }
+    &[data-variant="line"][data-size="md"] .tab-trigger { padding: 0.5rem 1rem; }
+    &[data-variant="line"][data-size="lg"] .tab-trigger { padding: 0.625rem 1.25rem; }
+    &[data-variant="line"][data-size="xl"] .tab-trigger { padding: 0.75rem 1.5rem; }
 
     /* -- Line variant --------------------------------------------- */
     &[data-variant="line"] {

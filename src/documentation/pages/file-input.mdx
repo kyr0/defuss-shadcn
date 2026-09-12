@@ -65,6 +65,31 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <ExampleCode>{"<input class=\"file-input\" type=\"file\" accept=\"image/*\">"}</ExampleCode>
 </Example>
 
+<Example>
+  <ExampleLabel>Sizes</ExampleLabel>
+  <ExampleHint>The control follows the shared input ladder via <code>data-size</code> — <code>md</code> is 2.25rem, matching <code>.input</code>.</ExampleHint>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Extra small</span>
+    <input class="file-input" type="file" data-size="xs" style="max-width:16rem;flex:1;" aria-label="Upload xs" />
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Small</span>
+    <input class="file-input" type="file" data-size="sm" style="max-width:16rem;flex:1;" aria-label="Upload sm" />
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Medium</span>
+    <input class="file-input" type="file" data-size="md" style="max-width:16rem;flex:1;" aria-label="Upload md" />
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Large</span>
+    <input class="file-input" type="file" data-size="lg" style="max-width:16rem;flex:1;" aria-label="Upload lg" />
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Extra large</span>
+    <input class="file-input" type="file" data-size="xl" style="max-width:16rem;flex:1;" aria-label="Upload xl" />
+  </div>
+</Example>
+
 <SourceFiles component="file-input" section="css" />
 
 </DocPage>

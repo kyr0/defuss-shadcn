@@ -127,6 +127,28 @@ try {
     assert.deepEqual(reg.states, ['default']);
     assert.ok(reg.dollarWorks, 'globalThis.$ query alias missing');
   });
+
+  await check('number-input: data-size="xs" → height 28px', async () => {
+    const val = await page.$eval('#z-numberinput-xs', (el) => String(el.getBoundingClientRect().height) + 'px');
+    assert.equal(val, '28px');
+  });
+  await check('number-input: data-size="sm" → height 32px', async () => {
+    const val = await page.$eval('#z-numberinput-sm', (el) => String(el.getBoundingClientRect().height) + 'px');
+    assert.equal(val, '32px');
+  });
+  await check('number-input: data-size="md" → height 36px', async () => {
+    const val = await page.$eval('#z-numberinput-md', (el) => String(el.getBoundingClientRect().height) + 'px');
+    assert.equal(val, '36px');
+  });
+  await check('number-input: data-size="lg" → height 44px', async () => {
+    const val = await page.$eval('#z-numberinput-lg', (el) => String(el.getBoundingClientRect().height) + 'px');
+    assert.equal(val, '44px');
+  });
+  await check('number-input: data-size="xl" → height 52px', async () => {
+    const val = await page.$eval('#z-numberinput-xl', (el) => String(el.getBoundingClientRect().height) + 'px');
+    assert.equal(val, '52px');
+  });
+
 } finally {
   await browser.close();
   server.stop();

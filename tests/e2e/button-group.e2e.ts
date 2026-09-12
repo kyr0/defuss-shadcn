@@ -70,4 +70,11 @@ await cssSmoke('button-group', [
       assert.deepEqual(corners.bottom, ['0px', '0px', '8px', '8px'], 'Bottom rounded on both bottom corners');
     },
   },
+  // size ladder (doc page "Sizes" demo): size rides on the .btn children,
+  // so the group's first button must render at the shared .btn ladder height
+  { label: 'size ladder: xs button is 28px', selector: '#bg-xs .btn', css: { height: '28px' } },
+  { label: 'size ladder: sm button is 32px', selector: '#bg-sm .btn', css: { height: '32px' } },
+  { label: 'size ladder: md button is 36px', selector: '#bg-md .btn', css: { height: '36px' } },
+  { label: 'size ladder: lg button is 44px', selector: '#bg-lg .btn', css: { height: '44px' } },
+  { label: 'size ladder: xl button is 52px', selector: '#bg-xl .btn', css: { height: '52px' } },
 ]);

@@ -31,6 +31,20 @@ supportedStates: default
 
 ---
 
+## Sizes
+
+| `data-size` | Box height | Swatch | Value font |
+|-------------|------------|--------|------------|
+| `xs` | 1.75rem | 1.25rem | 0.6875rem |
+| `sm` | 2rem | 1.5rem | 0.75rem |
+| `md` | 2.25rem | 1.75rem | 0.8125rem |
+| *(none)* | 2.625rem | 2rem | 0.8125rem |
+| `lg` | 2.75rem | 2rem | 0.875rem |
+| `xl` | 3.25rem | 2.5rem | 1rem |
+
+Box heights land on the shared input ladder (`md` = 2.25rem, the typical md of `.input` / `.btn`); swatch + padding re-derive each step.
+
+---
 ## States
 
 The picker's observable state is the chosen color. Declared states:

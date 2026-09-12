@@ -101,6 +101,28 @@ try {
     assert.deepEqual(reg.states, ['default']);
     assert.ok(reg.dollarWorks, 'globalThis.$ query alias missing');
   });
+
+  await check('color-picker: data-size="xs" → height 28px', async () => {
+    const val = await page.$eval('#z-colorpicker-xs', (el) => String(el.getBoundingClientRect().height) + 'px');
+    assert.equal(val, '28px');
+  });
+  await check('color-picker: data-size="sm" → height 32px', async () => {
+    const val = await page.$eval('#z-colorpicker-sm', (el) => String(el.getBoundingClientRect().height) + 'px');
+    assert.equal(val, '32px');
+  });
+  await check('color-picker: data-size="md" → height 36px', async () => {
+    const val = await page.$eval('#z-colorpicker-md', (el) => String(el.getBoundingClientRect().height) + 'px');
+    assert.equal(val, '36px');
+  });
+  await check('color-picker: data-size="lg" → height 44px', async () => {
+    const val = await page.$eval('#z-colorpicker-lg', (el) => String(el.getBoundingClientRect().height) + 'px');
+    assert.equal(val, '44px');
+  });
+  await check('color-picker: data-size="xl" → height 52px', async () => {
+    const val = await page.$eval('#z-colorpicker-xl', (el) => String(el.getBoundingClientRect().height) + 'px');
+    assert.equal(val, '52px');
+  });
+
 } finally {
   await browser.close();
   server.stop();

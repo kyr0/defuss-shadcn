@@ -215,6 +215,28 @@ try {
     assert.deepEqual(reg.states, ['default', 'open']);
     assert.ok(reg.dollarWorks, 'globalThis.$ query alias missing');
   });
+
+  await check('dropdown: data-size="xs" → font-size 12px', async () => {
+    const val = await page.$eval('#z-dropdown-xs-pop .dropdown-item', (el) => getComputedStyle(el).fontSize);
+    assert.equal(val, '12px');
+  });
+  await check('dropdown: data-size="sm" → font-size 13px', async () => {
+    const val = await page.$eval('#z-dropdown-sm-pop .dropdown-item', (el) => getComputedStyle(el).fontSize);
+    assert.equal(val, '13px');
+  });
+  await check('dropdown: data-size="md" → font-size 14px', async () => {
+    const val = await page.$eval('#z-dropdown-md-pop .dropdown-item', (el) => getComputedStyle(el).fontSize);
+    assert.equal(val, '14px');
+  });
+  await check('dropdown: data-size="lg" → font-size 16px', async () => {
+    const val = await page.$eval('#z-dropdown-lg-pop .dropdown-item', (el) => getComputedStyle(el).fontSize);
+    assert.equal(val, '16px');
+  });
+  await check('dropdown: data-size="xl" → font-size 18px', async () => {
+    const val = await page.$eval('#z-dropdown-xl-pop .dropdown-item', (el) => getComputedStyle(el).fontSize);
+    assert.equal(val, '18px');
+  });
+
 } finally {
   await browser.close();
   server.stop();

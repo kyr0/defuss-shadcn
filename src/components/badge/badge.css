@@ -11,6 +11,14 @@
     letter-spacing: 0.01em;
     line-height: 1.5rem;
 
+    /* -- Sizes: font, vertical padding and the line-height (which gives the
+       pill its height) scale together. Default (no attribute) == md. */
+    &[data-size="xs"] { font-size: 0.5625rem; padding: 0 0.375rem;    line-height: 1.125rem; }
+    &[data-size="sm"] { font-size: 0.625rem;  padding: 0.0625rem 0.5rem; line-height: 1.25rem; }
+    &[data-size="md"] { font-size: 0.6875rem; padding: 0.125rem 0.625rem; line-height: 1.5rem; }
+    &[data-size="lg"] { font-size: 0.8125rem; padding: 0.1875rem 0.75rem; line-height: 1.75rem; }
+    &[data-size="xl"] { font-size: 0.9375rem; padding: 0.25rem 0.875rem;  line-height: 2rem; }
+
     &[data-variant="outline"] {
       border: 1px solid var(--border);
       color: var(--muted-foreground);

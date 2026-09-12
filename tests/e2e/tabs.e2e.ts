@@ -135,6 +135,28 @@ try {
     assert.deepEqual(reg.states, ['default', 'active']);
     assert.ok(reg.dollarWorks, 'globalThis.$ query alias missing');
   });
+
+  await check('tabs: data-size="xs" → font-size 12px', async () => {
+    const val = await page.$eval('#z-tabs-xs .tab-trigger', (el) => getComputedStyle(el).fontSize);
+    assert.equal(val, '12px');
+  });
+  await check('tabs: data-size="sm" → font-size 13px', async () => {
+    const val = await page.$eval('#z-tabs-sm .tab-trigger', (el) => getComputedStyle(el).fontSize);
+    assert.equal(val, '13px');
+  });
+  await check('tabs: data-size="md" → font-size 14px', async () => {
+    const val = await page.$eval('#z-tabs-md .tab-trigger', (el) => getComputedStyle(el).fontSize);
+    assert.equal(val, '14px');
+  });
+  await check('tabs: data-size="lg" → font-size 16px', async () => {
+    const val = await page.$eval('#z-tabs-lg .tab-trigger', (el) => getComputedStyle(el).fontSize);
+    assert.equal(val, '16px');
+  });
+  await check('tabs: data-size="xl" → font-size 18px', async () => {
+    const val = await page.$eval('#z-tabs-xl .tab-trigger', (el) => getComputedStyle(el).fontSize);
+    assert.equal(val, '18px');
+  });
+
 } finally {
   await browser.close();
   server.stop();

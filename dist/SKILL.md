@@ -432,8 +432,8 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 
 ## Pagination
 
-**Type:** ATM
-**Why:** Numbered page links in a nav > ol with aria-current="page" on the active page.
+**Type:** MOL
+**Why:** Numbered page links in a nav > ol with aria-current="page" on the active page — a composition of button atoms (page/prev/next).
 **When:** Splitting long lists or tables across pages.
 **Files:** dist/components/pagination/pagination.css
 **Supported states:** default

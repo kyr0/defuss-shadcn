@@ -91,6 +91,20 @@ All keyboard interaction is provided natively by `<input type="range">`.
 
 ---
 
+## Sizes
+
+| `data-size` | Track height | Thumb |
+|-------------|--------------|-------|
+| `xs` | 0.25rem | 0.75rem |
+| `sm` | 0.375rem | 1rem |
+| `md` | 0.5rem | 1.25rem |
+| *(none)* | 0.5rem | 1.25rem |
+| `lg` | 0.625rem | 1.5rem |
+| `xl` | 0.75rem | 1.75rem |
+
+Track thickness and thumb diameter scale together (the WebKit thumb margin re-centers per step); `md` equals the unsized default.
+
+---
 ## ARIA
 
 | Attribute | Element | Purpose |

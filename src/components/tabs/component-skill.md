@@ -66,6 +66,22 @@ panel switching. Follows the WAI-ARIA Tabs design pattern.
 
 ---
 
+## Sizes
+
+Set `data-size` on the `.tab-list`; the triggers scale with it.
+
+| `data-size` | Trigger padding | Trigger font |
+|-------------|-----------------|--------------|
+| `xs` | 0.25rem 0.5rem | 0.75rem |
+| `sm` | 0.3125rem 0.625rem | 0.8125rem |
+| `md` | 0.375rem 0.75rem | 0.875rem |
+| *(none)* | 0.375rem 0.75rem | 0.875rem |
+| `lg` | 0.5rem 1rem | 1rem |
+| `xl` | 0.625rem 1.25rem | 1.125rem |
+
+The `line` variant preserves its trigger's roomier base padding at every step (`md` = 0.5rem 1rem).
+
+---
 ## ARIA
 
 | Attribute             | Where          | Value                                    |

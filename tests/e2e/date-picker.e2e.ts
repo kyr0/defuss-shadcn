@@ -16,4 +16,10 @@ await cssSmoke('date-picker', [
     selector: '#dp-disabled',
     css: { opacity: '0.5', cursor: 'not-allowed' },
   },
+
+  { label: 'date-picker: data-size="xs" geometry', selector: '#z-datepicker-xs', css: { 'height': '28px' } },
+  { label: 'date-picker: data-size="sm" geometry', selector: '#z-datepicker-sm', css: { 'height': '32px' } },
+  { label: 'date-picker: data-size="md" geometry', selector: '#z-datepicker-md', css: { 'height': '36px' } },
+  { label: 'date-picker: data-size="lg" geometry', selector: '#z-datepicker-lg', css: { 'height': '44px' } },
+  { label: 'date-picker: data-size="xl" geometry', selector: '#z-datepicker-xl', css: { 'height': '52px' } },
 ]);

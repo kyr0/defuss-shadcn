@@ -56,6 +56,22 @@ supportedStates: default, open
 
 ---
 
+## Sizes
+
+Set `data-size` on the `.nav-menu` nav; links/triggers and the popover rows scale together.
+
+| `data-size` | Link padding | Link font |
+|-------------|--------------|-----------|
+| `xs` | 0.25rem 0.5rem | 0.75rem |
+| `sm` | 0.375rem 0.625rem | 0.8125rem |
+| `md` | 0.5rem 0.75rem | 0.875rem |
+| *(none)* | 0.5rem 0.75rem | 0.875rem |
+| `lg` | 0.625rem 1rem | 1rem |
+| `xl` | 0.75rem 1.25rem | 1.125rem |
+
+`md` equals the unsized default.
+
+---
 ## ARIA
 
 | Attribute | Element | Purpose |

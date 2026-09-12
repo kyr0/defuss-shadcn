@@ -9,6 +9,11 @@
     background: var(--background);
     box-shadow: var(--shadow-xs);
     overflow: hidden;
+    /* explicit border-box: the size ladder below sets an explicit container
+       height and must land on it exactly (a div is content-box by default;
+       inputs get border-box from the UA). The unsized default keeps its
+       auto height (children drive it), so this changes nothing today. */
+    box-sizing: border-box;
 
     & input {
       border: none;
@@ -61,6 +66,37 @@
     &:focus-within {
       border-color: var(--ring);
       box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
+    }
+
+    /* -- Sizes -------------------------------------------------
+       Container height + input/button/font scale together, matching the
+       input/button ladders (md = 2.25rem; the unsized default stays at the
+       historical 2.5rem, exactly like .input does). Children switch to
+       height:100% so they can't fight the container. */
+    &[data-size="xs"] {
+      height: 1.75rem;
+      & input { height: 100%; width: 3rem; font-size: 0.75rem; }
+      & button { height: 100%; width: 1.5rem; font-size: 0.875rem; }
+    }
+    &[data-size="sm"] {
+      height: 2rem;
+      & input { height: 100%; width: 3.5rem; font-size: 0.8125rem; }
+      & button { height: 100%; width: 1.75rem; font-size: 0.9375rem; }
+    }
+    &[data-size="md"] {
+      height: 2.25rem;
+      & input { height: 100%; font-size: 0.875rem; }
+      & button { height: 100%; }
+    }
+    &[data-size="lg"] {
+      height: 2.75rem;
+      & input { height: 100%; width: 4.5rem; font-size: 1rem; }
+      & button { height: 100%; width: 2.25rem; font-size: 1.125rem; }
+    }
+    &[data-size="xl"] {
+      height: 3.25rem;
+      & input { height: 100%; width: 5rem; font-size: 1.125rem; }
+      & button { height: 100%; width: 2.5rem; font-size: 1.25rem; }
     }
   }
 }

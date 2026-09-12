@@ -42,6 +42,16 @@
       opacity: 0.5;
       cursor: not-allowed;
     }
+
+    /* -- Sizes: same ladder as .input/.date-input (md = 2.25rem; the
+       unsized default keeps the historical 2.5rem). The file-selector
+       button fills the container (height:100%), so only the box and the
+       font scale. */
+    &[data-size="xs"] { height: 1.75rem; font-size: 0.75rem;    &::file-selector-button { padding: 0 0.5rem; margin-right: 0.5rem; font-size: 0.75rem; } }
+    &[data-size="sm"] { height: 2rem;    font-size: 0.8125rem;  &::file-selector-button { padding: 0 0.625rem; margin-right: 0.625rem; font-size: 0.8125rem; } }
+    &[data-size="md"] { height: 2.25rem; font-size: 0.875rem; }
+    &[data-size="lg"] { height: 2.75rem; font-size: 1rem;       &::file-selector-button { padding: 0 1rem; margin-right: 1rem; font-size: 1rem; } }
+    &[data-size="xl"] { height: 3.25rem; font-size: 1.125rem;   &::file-selector-button { padding: 0 1.25rem; margin-right: 1.25rem; font-size: 1.125rem; } }
   }
 }
 

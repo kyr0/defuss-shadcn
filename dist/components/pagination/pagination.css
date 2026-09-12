@@ -26,6 +26,32 @@
     & span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
   }
 
+  /* -- Sizes ----------------------------------------------------
+     Set data-size on the .pagination nav; every cell (page links, prev/next,
+     ellipsis) scales. :where() keeps each rule at one class of specificity
+     so the .pagination-prev padding-inline above still wins per-item.
+     md == the unsized default. */
+  .pagination:where([data-size="xs"]) {
+    & :is(.pagination-link, .pagination-prev, .pagination-next) { min-width: 1.75rem; height: 1.75rem; font-size: 0.75rem; }
+    & .pagination-ellipsis { width: 1.75rem; height: 1.75rem; }
+  }
+  .pagination:where([data-size="sm"]) {
+    & :is(.pagination-link, .pagination-prev, .pagination-next) { min-width: 2rem; height: 2rem; font-size: 0.8125rem; }
+    & .pagination-ellipsis { width: 2rem; height: 2rem; }
+  }
+  .pagination:where([data-size="md"]) {
+    & :is(.pagination-link, .pagination-prev, .pagination-next) { min-width: 2.25rem; height: 2.25rem; font-size: 0.875rem; }
+    & .pagination-ellipsis { width: 2.25rem; height: 2.25rem; }
+  }
+  .pagination:where([data-size="lg"]) {
+    & :is(.pagination-link, .pagination-prev, .pagination-next) { min-width: 2.5rem; height: 2.5rem; font-size: 1rem; }
+    & .pagination-ellipsis { width: 2.5rem; height: 2.5rem; }
+  }
+  .pagination:where([data-size="xl"]) {
+    & :is(.pagination-link, .pagination-prev, .pagination-next) { min-width: 2.75rem; height: 2.75rem; font-size: 1.125rem; }
+    & .pagination-ellipsis { width: 2.75rem; height: 2.75rem; }
+  }
+
   /* -- Accessibility ------------------------------------------ */
 
   @media (prefers-reduced-motion: reduce) {

@@ -36,4 +36,10 @@ await cssSmoke('progress', [
       assert.equal(half, empty);
     },
   },
+
+  { label: 'progress: data-size="xs" geometry', selector: '#z-progress-xs', css: { 'height': '4px' } },
+  { label: 'progress: data-size="sm" geometry', selector: '#z-progress-sm', css: { 'height': '6px' } },
+  { label: 'progress: data-size="md" geometry', selector: '#z-progress-md', css: { 'height': '8px' } },
+  { label: 'progress: data-size="lg" geometry', selector: '#z-progress-lg', css: { 'height': '12px' } },
+  { label: 'progress: data-size="xl" geometry', selector: '#z-progress-xl', css: { 'height': '16px' } },
 ]);

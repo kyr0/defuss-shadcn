@@ -1,7 +1,7 @@
 ---
 name: Pagination
-type: ATM
-why: Numbered page links in a nav > ol with aria-current="page" on the active page.
+type: MOL
+why: Numbered page links in a nav > ol with aria-current="page" on the active page — a composition of button atoms (page/prev/next).
 when: Splitting long lists or tables across pages.
 where: dist/components/pagination/pagination.css
 supportedStates: default
@@ -83,6 +83,20 @@ supportedStates: default
 
 ---
 
+## Sizes
+
+Set `data-size` on the `.pagination` nav; page links, prev/next and the ellipsis all scale.
+
+| `data-size` | Cell height | Cell min-width | Font |
+|-------------|-------------|----------------|------|
+| `xs` | 1.75rem | 1.75rem | 0.75rem |
+| `sm` | 2rem | 2rem | 0.8125rem |
+| `md` | 2.25rem | 2.25rem | 0.875rem |
+| *(none)* | 2.25rem | 2.25rem | 0.875rem |
+| `lg` | 2.5rem | 2.5rem | 1rem |
+| `xl` | 2.75rem | 2.75rem | 1.125rem |
+
+---
 ## ARIA
 
 | Attribute | Element | Purpose |

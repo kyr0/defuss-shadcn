@@ -3,6 +3,30 @@
 @layer components {
   .combobox {
     position: relative;
+
+    /* -- Sizes: set data-size on the .combobox wrapper; the trigger (a
+       .btn) and the popover's rows scale together. Heights/fonts mirror the
+       button + input ladder (md = 2.25rem = the .btn default; the unsized
+       default equals md, so md is always selectable without a jump). */
+    &[data-size="xs"] {
+      & .combobox-trigger { height: 1.75rem; padding: 0 0.5rem; font-size: 0.75rem; }
+      & .combobox-item, & .combobox-group-label { font-size: 0.75rem; padding-block: 0.25rem; }
+    }
+    &[data-size="sm"] {
+      & .combobox-trigger { height: 2rem; padding: 0 0.625rem; font-size: 0.8125rem; }
+      & .combobox-item, & .combobox-group-label { font-size: 0.8125rem; padding-block: 0.3125rem; }
+    }
+    &[data-size="md"] {
+      & .combobox-trigger { height: 2.25rem; }
+    }
+    &[data-size="lg"] {
+      & .combobox-trigger { height: 2.75rem; padding: 0 1rem; font-size: 1rem; }
+      & .combobox-item, & .combobox-group-label { font-size: 1rem; padding-block: 0.5rem; }
+    }
+    &[data-size="xl"] {
+      & .combobox-trigger { height: 3.25rem; padding: 0 1.25rem; font-size: 1.125rem; }
+      & .combobox-item, & .combobox-group-label { font-size: 1.125rem; padding-block: 0.625rem; }
+    }
   }
 
   .combobox-trigger {

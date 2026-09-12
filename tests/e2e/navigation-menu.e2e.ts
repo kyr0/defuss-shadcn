@@ -121,6 +121,28 @@ try {
     assert.deepEqual(reg.states, ['default', 'open']);
     assert.ok(reg.dollarWorks, 'globalThis.$ query alias missing');
   });
+
+  await check('navigation-menu: data-size="xs" → font-size 12px', async () => {
+    const val = await page.$eval('#z-navigationmenu-xs .nav-menu-link', (el) => getComputedStyle(el).fontSize);
+    assert.equal(val, '12px');
+  });
+  await check('navigation-menu: data-size="sm" → font-size 13px', async () => {
+    const val = await page.$eval('#z-navigationmenu-sm .nav-menu-link', (el) => getComputedStyle(el).fontSize);
+    assert.equal(val, '13px');
+  });
+  await check('navigation-menu: data-size="md" → font-size 14px', async () => {
+    const val = await page.$eval('#z-navigationmenu-md .nav-menu-link', (el) => getComputedStyle(el).fontSize);
+    assert.equal(val, '14px');
+  });
+  await check('navigation-menu: data-size="lg" → font-size 16px', async () => {
+    const val = await page.$eval('#z-navigationmenu-lg .nav-menu-link', (el) => getComputedStyle(el).fontSize);
+    assert.equal(val, '16px');
+  });
+  await check('navigation-menu: data-size="xl" → font-size 18px', async () => {
+    const val = await page.$eval('#z-navigationmenu-xl .nav-menu-link', (el) => getComputedStyle(el).fontSize);
+    assert.equal(val, '18px');
+  });
+
 } finally {
   await browser.close();
   server.stop();

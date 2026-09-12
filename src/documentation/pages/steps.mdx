@@ -222,66 +222,93 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </Example>
 
 <Example>
-  <ExampleLabel>Small</ExampleLabel>
-  <ExampleHint>Add <code>data-size="sm"</code> to <code>.steps</code> for a compact step indicator.</ExampleHint>
-  <ol class="steps" data-size="sm" style="max-width:24rem;width:100%;">
-    <li class="step" data-status="complete">
-      <div class="step-indicator">
-        <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 6 9 17l-5-5" />
-        </svg>
-      </div>
-      <div class="step-content">
-        <p class="step-title">Account</p>
-      </div>
-    </li>
-    <li class="step" data-status="current" aria-current="step">
-      <div class="step-indicator">2</div>
-      <div class="step-content">
-        <p class="step-title">Profile</p>
-      </div>
-    </li>
-    <li class="step">
-      <div class="step-indicator">3</div>
-      <div class="step-content">
-        <p class="step-title">Complete</p>
-      </div>
-    </li>
-  </ol>
-  <ExampleCode>{"<ol class=\"steps\" data-size=\"sm\">\n  <li class=\"step\" data-status=\"complete\">...</li>\n  <li class=\"step\" data-status=\"current\" aria-current=\"step\">...</li>\n  <li class=\"step\">...</li>\n</ol>"}</ExampleCode>
-</Example>
-
-<Example>
-  <ExampleLabel>Large</ExampleLabel>
-  <ExampleHint>Add <code>data-size="lg"</code> to <code>.steps</code> for a larger step indicator.</ExampleHint>
-  <ol class="steps" data-size="lg" style="max-width:32rem;width:100%;">
-    <li class="step" data-status="complete">
-      <div class="step-indicator">
-        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 6 9 17l-5-5" />
-        </svg>
-      </div>
-      <div class="step-content">
-        <p class="step-title">Account</p>
-        <p class="step-description">Create credentials</p>
-      </div>
-    </li>
-    <li class="step" data-status="current" aria-current="step">
-      <div class="step-indicator">2</div>
-      <div class="step-content">
-        <p class="step-title">Profile</p>
-        <p class="step-description">Personal details</p>
-      </div>
-    </li>
-    <li class="step">
-      <div class="step-indicator">3</div>
-      <div class="step-content">
-        <p class="step-title">Complete</p>
-        <p class="step-description">Review &amp; confirm</p>
-      </div>
-    </li>
-  </ol>
-  <ExampleCode>{"<ol class=\"steps\" data-size=\"lg\">\n  <li class=\"step\" data-status=\"complete\">...</li>\n  <li class=\"step\" data-status=\"current\" aria-current=\"step\">...</li>\n  <li class=\"step\">...</li>\n</ol>"}</ExampleCode>
+  <ExampleLabel>Sizes</ExampleLabel>
+  <ExampleHint>The full five-step scale via <code>data-size</code> on <code>.steps</code> — the default equals <code>md</code>.</ExampleHint>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Extra small</span>
+    <ol class="steps" data-size="xs" style="max-width:22rem;width:100%;flex:1;">
+      <li class="step" data-status="complete">
+        <div class="step-indicator"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg></div>
+        <div class="step-content"><p class="step-title">Account</p></div>
+      </li>
+      <li class="step" data-status="current" aria-current="step">
+        <div class="step-indicator">2</div>
+        <div class="step-content"><p class="step-title">Profile</p></div>
+      </li>
+      <li class="step">
+        <div class="step-indicator">3</div>
+        <div class="step-content"><p class="step-title">Done</p></div>
+      </li>
+    </ol>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Small</span>
+    <ol class="steps" data-size="sm" style="max-width:22rem;width:100%;flex:1;">
+      <li class="step" data-status="complete">
+        <div class="step-indicator"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg></div>
+        <div class="step-content"><p class="step-title">Account</p></div>
+      </li>
+      <li class="step" data-status="current" aria-current="step">
+        <div class="step-indicator">2</div>
+        <div class="step-content"><p class="step-title">Profile</p></div>
+      </li>
+      <li class="step">
+        <div class="step-indicator">3</div>
+        <div class="step-content"><p class="step-title">Done</p></div>
+      </li>
+    </ol>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Medium</span>
+    <ol class="steps" data-size="md" style="max-width:22rem;width:100%;flex:1;">
+      <li class="step" data-status="complete">
+        <div class="step-indicator"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg></div>
+        <div class="step-content"><p class="step-title">Account</p></div>
+      </li>
+      <li class="step" data-status="current" aria-current="step">
+        <div class="step-indicator">2</div>
+        <div class="step-content"><p class="step-title">Profile</p></div>
+      </li>
+      <li class="step">
+        <div class="step-indicator">3</div>
+        <div class="step-content"><p class="step-title">Done</p></div>
+      </li>
+    </ol>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Large</span>
+    <ol class="steps" data-size="lg" style="max-width:22rem;width:100%;flex:1;">
+      <li class="step" data-status="complete">
+        <div class="step-indicator"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg></div>
+        <div class="step-content"><p class="step-title">Account</p></div>
+      </li>
+      <li class="step" data-status="current" aria-current="step">
+        <div class="step-indicator">2</div>
+        <div class="step-content"><p class="step-title">Profile</p></div>
+      </li>
+      <li class="step">
+        <div class="step-indicator">3</div>
+        <div class="step-content"><p class="step-title">Done</p></div>
+      </li>
+    </ol>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Extra large</span>
+    <ol class="steps" data-size="xl" style="max-width:22rem;width:100%;flex:1;">
+      <li class="step" data-status="complete">
+        <div class="step-indicator"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg></div>
+        <div class="step-content"><p class="step-title">Account</p></div>
+      </li>
+      <li class="step" data-status="current" aria-current="step">
+        <div class="step-indicator">2</div>
+        <div class="step-content"><p class="step-title">Profile</p></div>
+      </li>
+      <li class="step">
+        <div class="step-indicator">3</div>
+        <div class="step-content"><p class="step-title">Done</p></div>
+      </li>
+    </ol>
+  </div>
 </Example>
 
 <Example>

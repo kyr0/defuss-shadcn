@@ -146,6 +146,28 @@ try {
     assert.deepEqual(reg.states, ['default', 'disabled']);
     assert.ok(reg.dollarWorks, 'globalThis.$ query alias missing');
   });
+
+  await check('slider: data-size="xs" → height 4px', async () => {
+    const val = await page.$eval('#z-slider-xs', (el) => String(el.getBoundingClientRect().height) + 'px');
+    assert.equal(val, '4px');
+  });
+  await check('slider: data-size="sm" → height 6px', async () => {
+    const val = await page.$eval('#z-slider-sm', (el) => String(el.getBoundingClientRect().height) + 'px');
+    assert.equal(val, '6px');
+  });
+  await check('slider: data-size="md" → height 8px', async () => {
+    const val = await page.$eval('#z-slider-md', (el) => String(el.getBoundingClientRect().height) + 'px');
+    assert.equal(val, '8px');
+  });
+  await check('slider: data-size="lg" → height 10px', async () => {
+    const val = await page.$eval('#z-slider-lg', (el) => String(el.getBoundingClientRect().height) + 'px');
+    assert.equal(val, '10px');
+  });
+  await check('slider: data-size="xl" → height 12px', async () => {
+    const val = await page.$eval('#z-slider-xl', (el) => String(el.getBoundingClientRect().height) + 'px');
+    assert.equal(val, '12px');
+  });
+
 } finally {
   await browser.close();
   server.stop();

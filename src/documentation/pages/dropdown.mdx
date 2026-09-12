@@ -134,6 +134,51 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <ExampleCode>{"<!-- Secondary trigger -->\n<button class=\"btn\" data-variant=\"secondary\"\n        aria-haspopup=\"menu\" aria-expanded=\"false\"\n        aria-controls=\"demo-dropdown-3\"\n        data-dropdown-trigger=\"demo-dropdown-3\">\n  More\n  <svg aria-hidden=\"true\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\"\n       fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">\n    <path d=\"m6 9 6 6 6-6\"/>\n  </svg>\n</button>\n\n<div id=\"demo-dropdown-3\" role=\"menu\" popover\n     class=\"dropdown-content\" aria-label=\"More options\"\n     style=\"min-width:10rem;\">\n  <button role=\"menuitem\" class=\"dropdown-item\" tabindex=\"-1\">Copy</button>\n  <button role=\"menuitem\" class=\"dropdown-item\" tabindex=\"-1\">Paste</button>\n  <div class=\"dropdown-separator\" role=\"separator\"></div>\n  <button role=\"menuitem\" class=\"dropdown-item\" tabindex=\"-1\">Select All</button>\n</div>\n\n<!-- Ghost icon trigger -->\n<button class=\"btn\" data-variant=\"ghost\" data-size=\"icon\"\n        aria-haspopup=\"menu\" aria-expanded=\"false\"\n        aria-controls=\"demo-dropdown-4\"\n        data-dropdown-trigger=\"demo-dropdown-4\"\n        aria-label=\"More options\">\n  <svg aria-hidden=\"true\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\"\n       fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"\n       stroke-linecap=\"round\">\n    <circle cx=\"12\" cy=\"12\" r=\"1\"/>\n    <circle cx=\"12\" cy=\"5\" r=\"1\"/>\n    <circle cx=\"12\" cy=\"19\" r=\"1\"/>\n  </svg>\n</button>\n\n<div id=\"demo-dropdown-4\" role=\"menu\" popover\n     class=\"dropdown-content\" aria-label=\"Actions\"\n     style=\"min-width:10rem;\">\n  <button role=\"menuitem\" class=\"dropdown-item\" tabindex=\"-1\">Edit</button>\n  <button role=\"menuitem\" class=\"dropdown-item\" tabindex=\"-1\">Duplicate</button>\n  <div class=\"dropdown-separator\" role=\"separator\"></div>\n  <button role=\"menuitem\" class=\"dropdown-item\"\n          data-variant=\"destructive\" tabindex=\"-1\">Delete</button>\n</div>"}</ExampleCode>
 </Example>
 
+<Example>
+  <ExampleLabel>Sizes</ExampleLabel>
+  <ExampleHint>Set <code>data-size</code> on the <code>.dropdown-content</code> menu; items scale with it. The trigger keeps its own <code>.btn</code> size.</ExampleHint>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Extra small</span>
+    <button class="btn" data-variant="outline" data-size="xs" aria-haspopup="menu" aria-expanded="false" aria-controls="sz-dd-xs" data-dropdown-trigger="sz-dd-xs">Options</button>
+    <div id="sz-dd-xs" role="menu" popover class="dropdown-content" data-size="xs" aria-label="Options xs">
+      <button role="menuitem" class="dropdown-item" tabindex="-1">Profile</button>
+      <button role="menuitem" class="dropdown-item" tabindex="-1">Settings</button>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Small</span>
+    <button class="btn" data-variant="outline" data-size="sm" aria-haspopup="menu" aria-expanded="false" aria-controls="sz-dd-sm" data-dropdown-trigger="sz-dd-sm">Options</button>
+    <div id="sz-dd-sm" role="menu" popover class="dropdown-content" data-size="sm" aria-label="Options sm">
+      <button role="menuitem" class="dropdown-item" tabindex="-1">Profile</button>
+      <button role="menuitem" class="dropdown-item" tabindex="-1">Settings</button>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Medium</span>
+    <button class="btn" data-variant="outline" data-size="md" aria-haspopup="menu" aria-expanded="false" aria-controls="sz-dd-md" data-dropdown-trigger="sz-dd-md">Options</button>
+    <div id="sz-dd-md" role="menu" popover class="dropdown-content" data-size="md" aria-label="Options md">
+      <button role="menuitem" class="dropdown-item" tabindex="-1">Profile</button>
+      <button role="menuitem" class="dropdown-item" tabindex="-1">Settings</button>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Large</span>
+    <button class="btn" data-variant="outline" data-size="lg" aria-haspopup="menu" aria-expanded="false" aria-controls="sz-dd-lg" data-dropdown-trigger="sz-dd-lg">Options</button>
+    <div id="sz-dd-lg" role="menu" popover class="dropdown-content" data-size="lg" aria-label="Options lg">
+      <button role="menuitem" class="dropdown-item" tabindex="-1">Profile</button>
+      <button role="menuitem" class="dropdown-item" tabindex="-1">Settings</button>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Extra large</span>
+    <button class="btn" data-variant="outline" data-size="xl" aria-haspopup="menu" aria-expanded="false" aria-controls="sz-dd-xl" data-dropdown-trigger="sz-dd-xl">Options</button>
+    <div id="sz-dd-xl" role="menu" popover class="dropdown-content" data-size="xl" aria-label="Options xl">
+      <button role="menuitem" class="dropdown-item" tabindex="-1">Profile</button>
+      <button role="menuitem" class="dropdown-item" tabindex="-1">Settings</button>
+    </div>
+  </div>
+</Example>
+
 <StatesSection>
   <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per menu through the bound <code>api</code>:</p>
   <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">

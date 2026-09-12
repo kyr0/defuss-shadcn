@@ -53,4 +53,10 @@ await cssSmoke('steps', [
     selector: '#st-vertical',
     css: { 'flex-direction': 'column' },
   },
+
+  { label: 'steps: data-size="xs" geometry', selector: '#z-steps-xs .step-indicator', css: { 'height': '20px' } },
+  { label: 'steps: data-size="sm" geometry', selector: '#z-steps-sm .step-indicator', css: { 'height': '24px' } },
+  { label: 'steps: data-size="md" geometry', selector: '#z-steps-md .step-indicator', css: { 'height': '32px' } },
+  { label: 'steps: data-size="lg" geometry', selector: '#z-steps-lg .step-indicator', css: { 'height': '40px' } },
+  { label: 'steps: data-size="xl" geometry', selector: '#z-steps-xl .step-indicator', css: { 'height': '48px' } },
 ]);

@@ -143,9 +143,14 @@ supportedStates: default
 
 | `data-size` | Indicator | Title font | Description font |
 |-------------|-----------|------------|------------------|
+| `xs` | 1.25rem | 0.6875rem | 0.625rem |
 | `sm` | 1.5rem | 0.75rem | 0.6875rem |
+| `md` | 2rem | 0.8125rem | 0.75rem |
 | *(none)* | 2rem | 0.8125rem | 0.75rem |
 | `lg` | 2.5rem | 0.9375rem | 0.8125rem |
+| `xl` | 3rem | 1.0625rem | 0.875rem |
+
+Connector offsets follow the indicator size in both orientations; `md` equals the unsized default.
 
 ---
 

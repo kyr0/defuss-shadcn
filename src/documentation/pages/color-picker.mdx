@@ -71,6 +71,31 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <ExampleCode>{"<div class=\"color-picker\">\n  <input type=\"color\" value=\"#0a0a0a\">\n  <span class=\"color-picker-value\">#0a0a0a</span>\n</div>"}</ExampleCode>
 </Example>
 
+<Example>
+  <ExampleLabel>Sizes</ExampleLabel>
+  <ExampleHint>The box height lands on the shared input ladder via <code>data-size</code> — <code>md</code> is the typical 2.25rem.</ExampleHint>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Extra small</span>
+    <div class="color-picker" data-size="xs"><input type="color" id="d-color-xs" value="#6366f1" /><span class="color-picker-value">#6366f1</span></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Small</span>
+    <div class="color-picker" data-size="sm"><input type="color" id="d-color-sm" value="#6366f1" /><span class="color-picker-value">#6366f1</span></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Medium</span>
+    <div class="color-picker" data-size="md"><input type="color" id="d-color-md" value="#6366f1" /><span class="color-picker-value">#6366f1</span></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Large</span>
+    <div class="color-picker" data-size="lg"><input type="color" id="d-color-lg" value="#6366f1" /><span class="color-picker-value">#6366f1</span></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:5rem;margin:0;">Extra large</span>
+    <div class="color-picker" data-size="xl"><input type="color" id="d-color-xl" value="#6366f1" /><span class="color-picker-value">#6366f1</span></div>
+  </div>
+</Example>
+
 <StatesSection>
   <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
   <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">

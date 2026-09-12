@@ -42,5 +42,11 @@ await cssSmoke('pagination', [
     selector: '#pg-ellipsis',
     css: { display: 'inline-flex', width: '36px', height: '36px' },
   },
+
+  { label: 'pagination: data-size="xs" geometry', selector: '#z-pagination-xs .pagination-link', css: { 'height': '28px' } },
+  { label: 'pagination: data-size="sm" geometry', selector: '#z-pagination-sm .pagination-link', css: { 'height': '32px' } },
+  { label: 'pagination: data-size="md" geometry', selector: '#z-pagination-md .pagination-link', css: { 'height': '36px' } },
+  { label: 'pagination: data-size="lg" geometry', selector: '#z-pagination-lg .pagination-link', css: { 'height': '40px' } },
+  { label: 'pagination: data-size="xl" geometry', selector: '#z-pagination-xl .pagination-link', css: { 'height': '44px' } },
 ]);
 void assert;

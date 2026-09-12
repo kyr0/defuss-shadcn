@@ -120,6 +120,81 @@
         margin-left: -0.375rem;
       }
     }
+
+    /* -- Sizes -------------------------------------------------
+       Track thickness + thumb diameter scale together; the WebKit thumb
+       margin-top (and the vertical margin-left) re-centers it for each
+       size: (track − thumb) / 2. md == the default (md explicitly
+       selectable so demos/e2e can pin it like the other four). */
+    &[data-size="xs"] {
+      height: 0.25rem;
+      &::-webkit-slider-runnable-track { height: 0.25rem; }
+      &::-moz-range-track { height: 0.25rem; }
+      &::-moz-range-progress { height: 0.25rem; }
+      &::-webkit-slider-thumb { width: 0.75rem; height: 0.75rem; margin-top: -0.25rem; }
+      &::-moz-range-thumb { width: 0.75rem; height: 0.75rem; }
+      &[data-orientation="vertical"] {
+        width: 0.25rem;
+        &::-webkit-slider-runnable-track { width: 0.25rem; }
+        &::-webkit-slider-thumb { margin-top: 0; margin-left: -0.25rem; }
+      }
+    }
+
+    &[data-size="sm"] {
+      height: 0.375rem;
+      &::-webkit-slider-runnable-track { height: 0.375rem; }
+      &::-moz-range-track { height: 0.375rem; }
+      &::-moz-range-progress { height: 0.375rem; }
+      &::-webkit-slider-thumb { width: 1rem; height: 1rem; margin-top: -0.3125rem; }
+      &::-moz-range-thumb { width: 1rem; height: 1rem; }
+      &[data-orientation="vertical"] {
+        width: 0.375rem;
+        &::-webkit-slider-runnable-track { width: 0.375rem; }
+        &::-webkit-slider-thumb { margin-top: 0; margin-left: -0.3125rem; }
+      }
+    }
+
+    &[data-size="md"] {
+      height: 0.5rem;
+      &::-webkit-slider-runnable-track { height: 0.5rem; }
+      &::-moz-range-track { height: 0.5rem; }
+      &::-moz-range-progress { height: 0.5rem; }
+      &::-webkit-slider-thumb { width: 1.25rem; height: 1.25rem; margin-top: -0.375rem; }
+      &::-moz-range-thumb { width: 1.25rem; height: 1.25rem; }
+      &[data-orientation="vertical"] {
+        width: 0.5rem;
+        &::-webkit-slider-runnable-track { width: 0.5rem; }
+        &::-webkit-slider-thumb { margin-top: 0; margin-left: -0.375rem; }
+      }
+    }
+
+    &[data-size="lg"] {
+      height: 0.625rem;
+      &::-webkit-slider-runnable-track { height: 0.625rem; }
+      &::-moz-range-track { height: 0.625rem; }
+      &::-moz-range-progress { height: 0.625rem; }
+      &::-webkit-slider-thumb { width: 1.5rem; height: 1.5rem; margin-top: -0.4375rem; }
+      &::-moz-range-thumb { width: 1.5rem; height: 1.5rem; }
+      &[data-orientation="vertical"] {
+        width: 0.625rem;
+        &::-webkit-slider-runnable-track { width: 0.625rem; }
+        &::-webkit-slider-thumb { margin-top: 0; margin-left: -0.4375rem; }
+      }
+    }
+
+    &[data-size="xl"] {
+      height: 0.75rem;
+      &::-webkit-slider-runnable-track { height: 0.75rem; }
+      &::-moz-range-track { height: 0.75rem; }
+      &::-moz-range-progress { height: 0.75rem; }
+      &::-webkit-slider-thumb { width: 1.75rem; height: 1.75rem; margin-top: -0.5rem; }
+      &::-moz-range-thumb { width: 1.75rem; height: 1.75rem; }
+      &[data-orientation="vertical"] {
+        width: 0.75rem;
+        &::-webkit-slider-runnable-track { width: 0.75rem; }
+        &::-webkit-slider-thumb { margin-top: 0; margin-left: -0.5rem; }
+      }
+    }
   }
 
   /* Reduced motion */
