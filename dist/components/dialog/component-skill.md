@@ -80,6 +80,17 @@ Requires minimal JavaScript — only for trigger wiring and backdrop-click-to-cl
 
 ---
 
+
+## Density
+
+Set `data-density` on the `.dialog` root. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25); typography and fixed dimensions stay identical. `comfortable` matches the unsized default.
+
+| Value | Effect |
+| --- | --- |
+| `compact` | content padding 1rem |
+| `comfortable` | content padding 1.5rem — identical to the unsized default |
+| `spacious` | content padding 2rem |
+
 ## Sizes
 
 | `data-size` | Max width  | Use case                         |

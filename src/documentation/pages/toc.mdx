@@ -51,6 +51,40 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <ExampleCode>{"<nav class=\"toc\" aria-label=\"On this page\">\n  <p class=\"toc-title\">On This Page</p>\n  <a class=\"toc-link\" href=\"#installation\">Installation</a>\n  <a class=\"toc-link\" href=\"#usage\">Usage</a>\n  <a class=\"toc-link\" href=\"#api\" aria-current=\"location\">API</a>\n  <a class=\"toc-link\" href=\"#faq\">FAQ</a>\n</nav>"}</ExampleCode>
 </Example>
 
+<Example previewStyle="align-items:flex-start;gap:1.5rem;">
+  <ExampleLabel>Density</ExampleLabel>
+  <ExampleHint>Set <code>data-density</code> on the component root to scale the link rows' vertical rhythm. A whitespace policy, not a zoom: only the block padding scales (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), font size stays identical. <code>comfortable</code> matches the unsized default.</ExampleHint>
+  <div class="flex flex-wrap gap-4" style="align-items:flex-start;">
+    <div class="card" style="padding:1rem;width:14rem;">
+      <p class="demo-label">Compact</p>
+      <nav class="toc" aria-label="Compact density" data-density="compact">
+        <p class="toc-title">On This Page</p>
+        <a class="toc-link" href="#">Installation</a>
+        <a class="toc-link" href="#">Usage</a>
+        <a class="toc-link" href="#">API</a>
+      </nav>
+    </div>
+    <div class="card" style="padding:1rem;width:14rem;">
+      <p class="demo-label">Comfortable</p>
+      <nav class="toc" aria-label="Comfortable density" data-density="comfortable">
+        <p class="toc-title">On This Page</p>
+        <a class="toc-link" href="#">Installation</a>
+        <a class="toc-link" href="#">Usage</a>
+        <a class="toc-link" href="#">API</a>
+      </nav>
+    </div>
+    <div class="card" style="padding:1rem;width:14rem;">
+      <p class="demo-label">Spacious</p>
+      <nav class="toc" aria-label="Spacious density" data-density="spacious">
+        <p class="toc-title">On This Page</p>
+        <a class="toc-link" href="#">Installation</a>
+        <a class="toc-link" href="#">Usage</a>
+        <a class="toc-link" href="#">API</a>
+      </nav>
+    </div>
+  </div>
+</Example>
+
 <SourceFiles component="toc" />
 
 </DocPage>

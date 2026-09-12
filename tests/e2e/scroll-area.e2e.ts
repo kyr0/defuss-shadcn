@@ -22,7 +22,20 @@ await cssSmoke('scroll-area', [
       ]);
       assert.equal(width, 'thin');
       assert.match(css, /scrollbar-color:/, 'scrollbar-color themed');
-      assert.match(css, /::-webkit-scrollbar\s*{\s*width:\s*6px/, 'webkit thumb sized 6px');
+      // thumb size flows through the density custom property (6px default)
+      assert.match(css, /--scrollbar-size:\s*6px/, 'webkit thumb sized via 6px default');
+      assert.match(css, /::-webkit-scrollbar\s*{\s*width:\s*var\(--scrollbar-size\)/, 'webkit thumb reads the token');
+    },
+  },
+  {
+    label: 'density compact/comfortable/spacious → 4/6/8px scrollbar token',
+    run: async (page) => {
+      const sizes = await page.evaluate(() =>
+        ['sa-compact', 'sa-comfortable', 'sa-spacious'].map((id) =>
+          getComputedStyle(document.getElementById(id)!).getPropertyValue('--scrollbar-size').trim(),
+        ),
+      );
+      assert.deepEqual(sizes, ['4px', '6px', '8px'], `density scrollbar sizes, got ${sizes.join('/')}`);
     },
   },
 ]);

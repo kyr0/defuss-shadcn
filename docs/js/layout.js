@@ -245,12 +245,46 @@
                 }
             });
         }
-        /* -- Mobile sidebar toggle ---------------------------------- */
-        (function initMobileSidebar() {
+        /* -- Sidebar dock persistence ----------------------------------
+           Persists the sidebar component's dock state (data-state="collapsed")
+           for DocPage's pre-paint restore and keeps the header toggle's
+           aria-label honest. Every path that flips it — the header toggle and
+           ⌘B/Ctrl+B (sidebar.js's shortcut, which toggles the first .app-sidebar
+           directly) — funnels through this one sync. */
+        var NAV_DOCK_KEY = 'defuss-shadcn-nav-docked';
+        var syncDockState = function () {
+            var sidebar = document.querySelector('.site-sidebar');
+            var toggle = document.getElementById('sidebar-toggle');
+            if (!sidebar || !toggle)
+                return;
+            var collapsed = sidebar.dataset.state === 'collapsed';
+            toggle.setAttribute('aria-label', collapsed ? 'Expand sidebar' : 'Collapse sidebar');
+            try {
+                localStorage.setItem(NAV_DOCK_KEY, collapsed ? '1' : '0');
+            }
+            catch { /* private mode */ }
+        };
+        /* label must reflect a pre-paint restored dock (DocPage inline script) */
+        syncDockState();
+        /* -- Header sidebar toggle (#sidebar-toggle) --------------------
+           The panel-left button next to the brand (site-header.tsx) is the
+           single sidebar collapse control (it replaced both the component's
+           footer dock trigger and the old hamburger). Mode-aware:
+    
+           - desktop: click docks/undoes the sidebar — the same data-state +
+             data-stateName flip sidebar.js applies on ⌘B/Ctrl+B (the stateName
+             pins the choice against the component's auto-collapse), persisted
+             via syncDockState for DocPage's pre-paint restore;
+           - drawer mode (<64rem): click opens/closes the off-canvas drawer,
+             undoing any desktop dock (the drawer owns open/close there). */
+        (function initSidebarToggle() {
             var toggle = document.getElementById('sidebar-toggle');
             var sidebar = document.querySelector('.site-sidebar');
             if (!toggle || !sidebar)
                 return;
+            var isDrawerMode = function () {
+                return window.matchMedia('(max-width: 64rem)').matches;
+            };
             /* Create backdrop element if not already present — directly after the
                sidebar (the old custom-element wrapper held it inside <site-nav>) */
             var backdrop = document.querySelector('.sidebar-backdrop');
@@ -262,22 +296,22 @@
             function closeSidebar() {
                 sidebar.classList.remove('open');
                 backdrop.classList.remove('open');
-                toggle.setAttribute('aria-expanded', 'false');
             }
             function openSidebar() {
                 sidebar.classList.add('open');
                 backdrop.classList.add('open');
-                toggle.setAttribute('aria-expanded', 'true');
-                /* On desktop the hamburger doubles as the reopen control for the
-                   docked sidebar (.site-sidebar[data-state="collapsed"]) — opening it
-                   undoes the component-level dock and clears the persisted choice. */
+                /* opening the drawer undoes a desktop dock and its persisted choice */
                 sidebar.removeAttribute('data-state');
-                try {
-                    localStorage.setItem('defuss-shadcn-nav-docked', '0');
-                }
-                catch { /* private mode */ }
+                syncDockState();
             }
             toggle.addEventListener('click', function () {
+                if (!isDrawerMode()) {
+                    var collapsed = sidebar.dataset.state !== 'collapsed';
+                    sidebar.dataset.state = collapsed ? 'collapsed' : 'expanded';
+                    sidebar.dataset.stateName = collapsed ? 'collapsed' : 'default';
+                    syncDockState();
+                    return;
+                }
                 if (sidebar.classList.contains('open')) {
                     closeSidebar();
                 }
@@ -325,33 +359,14 @@
                 catch { /* private mode */ }
             });
         });
-        /* -- Sidebar dock persistence ----------------------------------
-           The site sidebar IS the sidebar component: its own footer trigger (and
-           ⌘B) toggles data-state through sidebar.js (module eval — before this
-           DOMContentLoaded handler binds). So this listener never toggles; it
-           just PERSISTS the component's new state for DocPage's pre-paint
-           restore and keeps the trigger's aria-label honest. CSS keys the dock
-           on .site-sidebar[data-state="collapsed"], which reveals the header
-           hamburger as the reopen control. */
-        var NAV_DOCK_KEY = 'defuss-shadcn-nav-docked';
-        var siteSidebar = document.querySelector('.site-sidebar');
-        var dockTrigger = siteSidebar && siteSidebar.querySelector('[data-sidebar-trigger]');
-        if (dockTrigger && siteSidebar) {
-            var syncDock = function () {
-                var collapsed = siteSidebar.dataset.state === 'collapsed';
-                dockTrigger.setAttribute('aria-label', collapsed ? 'Expand sidebar' : 'Collapse sidebar');
-                try {
-                    localStorage.setItem(NAV_DOCK_KEY, collapsed ? '1' : '0');
-                }
-                catch { /* private mode */ }
-            };
-            dockTrigger.addEventListener('click', syncDock);
-            document.addEventListener('keydown', function (e) {
-                // sidebar.js's shortcut listener runs first; read the result next tick
-                if ((e.metaKey || e.ctrlKey) && e.key === 'b')
-                    setTimeout(syncDock, 0);
-            });
-        }
+        /* -- GitHub star count (cached in sessionStorage) ------------ */
+        /* ⌘B flips data-state through sidebar.js; #sidebar-toggle's own click
+           handler funnels through syncDockState, but the shortcut bypasses it —
+           re-sync on that keystroke so the persisted dock + aria-label stay right. */
+        document.addEventListener('keydown', function (e) {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'b')
+                setTimeout(syncDockState, 0);
+        });
         /* -- GitHub star count (cached in sessionStorage) ------------ */
         var updateStarCount = function (count) {
             var el = document.querySelector('.github-stars');

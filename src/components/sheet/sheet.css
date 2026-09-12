@@ -133,6 +133,15 @@
   /* -- Content sections -------------------------------------- */
   .sheet-content     { padding: 1.5rem; position: relative; }
 
+  /* -- Density ----------------------------------------------------
+     data-density on the .sheet root scales the content padding
+     (0.75 / 1 / 1.25 of the 1.5rem default); comfortable matches the
+     unsized default. The sheet's slide-in width is layout, not whitespace —
+     it stays put. */
+  .sheet:where([data-density="compact"]) .sheet-content     { padding: 1rem; }
+  .sheet:where([data-density="comfortable"]) .sheet-content { padding: 1.5rem; }
+  .sheet:where([data-density="spacious"]) .sheet-content    { padding: 2rem; }
+
   /* Top/bottom sheets span the full viewport width — on wide screens the
      content would stretch unaligned, so keep a readable, centered column
      (the side sheets are already width-constrained at 24rem). */

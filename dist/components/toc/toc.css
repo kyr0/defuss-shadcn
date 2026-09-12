@@ -15,6 +15,14 @@
     padding: 0 0.5rem;
   }
 
+  /* -- Density ----------------------------------------------------
+     data-density on the .toc root scales the vertical rhythm of the links
+     (0.75 / 1 / 1.25 of the 3px block padding); comfortable matches the
+     unsized default. Font size stays put — whitespace, not zoom. */
+  .toc:where([data-density="compact"]) .toc-link    { padding: 0.125rem 0.5rem; }
+  .toc:where([data-density="comfortable"]) .toc-link { padding: 0.1875rem 0.5rem; }
+  .toc:where([data-density="spacious"]) .toc-link   { padding: 0.25rem 0.5rem; }
+
   .toc-link {
     display: block;
     padding: 0.1875rem 0.5rem;

@@ -141,6 +141,20 @@ try {
     assert.ok(err && err.includes('unknown state'), `expected throw, got ${err}`);
   });
 
+  // -- Density: content padding 16/24/32px ----------------------------------
+  await check('data-density scales .alert-dialog-content padding to 16/24/32px', async () => {
+    const pads = await page.evaluate(() =>
+      ['ad-den-compact', 'ad-den-comfortable', 'ad-den-spacious'].map((id) => {
+        const d = document.getElementById(id) as HTMLDialogElement;
+        d.showModal();
+        const p = getComputedStyle(d.querySelector('.alert-dialog-content')!).padding;
+        d.close();
+        return p;
+      }),
+    );
+    assert.deepEqual(pads, ['16px', '24px', '32px'], `density paddings, got ${pads.join(' / ')}`);
+  });
+
   await check('state API: registry globals expose api + declared states (camelCase)', async () => {
     const reg = await page.evaluate(() => ({
       hasApi: typeof globalThis._defussShadcn?.alertDialogApi?.setState === 'function',

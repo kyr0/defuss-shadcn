@@ -67,6 +67,14 @@
     scrollbar-gutter: stable;
   }
 
+  /* -- Density ------------------------------------------------
+     data-density on the .dialog root scales the content padding
+     (0.75 / 1 / 1.25 of the 1.5rem default); comfortable matches the
+     unsized default. Width stays governed by data-size — two axes. */
+  .dialog:where([data-density="compact"]) .dialog-content      { padding: 1rem; }
+  .dialog:where([data-density="comfortable"]) .dialog-content  { padding: 1.5rem; }
+  .dialog:where([data-density="spacious"]) .dialog-content     { padding: 2rem; }
+
   /* -- Content sections ------------------------------------- */
   .dialog-content { padding: 1.5rem; }
   .dialog-header  { margin-bottom: 1rem; }

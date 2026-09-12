@@ -56,6 +56,17 @@ document.querySelector('#my-alert').api.getState(); // { name: 'open', config: {
 The api is bound per dialog; the registry global is
 `_defussShadcn.alertDialogApi` / `_defussShadcn.alertDialogStates` (camelCase).
 
+
+## Density
+
+Set `data-density` on the `.alert-dialog` root. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25); typography and fixed dimensions stay identical. `comfortable` matches the unsized default.
+
+| Value | Effect |
+| --- | --- |
+| `compact` | content padding 1rem |
+| `comfortable` | content padding 1.5rem — identical to the unsized default |
+| `spacious` | content padding 2rem |
+
 ## Accessibility
 
 - Uses `role="alertdialog"` instead of `role="dialog"` — signals interruption

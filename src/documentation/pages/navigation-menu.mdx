@@ -130,6 +130,32 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </div>
 </Example>
 
+<Example previewStyle="align-items:flex-start;gap:1.5rem;flex-direction:column;">
+  <ExampleLabel>Density</ExampleLabel>
+  <ExampleHint>Set <code>data-density</code> on the <code>.nav-menu</code> nav to scale the gap between top-level items. A whitespace policy, not a zoom: only the row gap scales; link padding belongs to <code>data-size</code>. <code>comfortable</code> matches the unsized default.</ExampleHint>
+  <nav class="nav-menu" aria-label="Compact" data-density="compact">
+    <ul class="nav-menu-list">
+      <li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li>
+      <li class="nav-menu-item"><a class="nav-menu-link" href="#">About</a></li>
+      <li class="nav-menu-item"><a class="nav-menu-link" href="#">Contact</a></li>
+    </ul>
+  </nav>
+  <nav class="nav-menu" aria-label="Comfortable" data-density="comfortable">
+    <ul class="nav-menu-list">
+      <li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li>
+      <li class="nav-menu-item"><a class="nav-menu-link" href="#">About</a></li>
+      <li class="nav-menu-item"><a class="nav-menu-link" href="#">Contact</a></li>
+    </ul>
+  </nav>
+  <nav class="nav-menu" aria-label="Spacious" data-density="spacious">
+    <ul class="nav-menu-list">
+      <li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li>
+      <li class="nav-menu-item"><a class="nav-menu-link" href="#">About</a></li>
+      <li class="nav-menu-item"><a class="nav-menu-link" href="#">Contact</a></li>
+    </ul>
+  </nav>
+</Example>
+
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
   <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">

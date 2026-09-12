@@ -1,3 +1,4 @@
+import assert from 'node:assert/strict';
 import { cssSmoke, type Check } from './lib/css-smoke.ts';
 
 const checks: Check[] = [
@@ -45,6 +46,17 @@ const checks: Check[] = [
       await link.hover();
       const after = await link.evaluate((el) => getComputedStyle(el).color);
       if (before === after) throw new Error(`hover color did not change (${before})`);
+    },
+  },
+  {
+    label: 'density compact/comfortable/spacious → link block padding 2px/3px/4px',
+    run: async (page) => {
+      const pads = await page.evaluate(() =>
+        ['toc-compact', 'toc-comfortable', 'toc-spacious'].map((id) =>
+          getComputedStyle(document.querySelector(`#${id} .toc-link`)!).paddingTop,
+        ),
+      );
+      assert.deepEqual(pads, ['2px', '3px', '4px'], `link paddings, got ${pads.join('/')}`);
     },
   },
 ];

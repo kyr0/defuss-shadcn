@@ -66,6 +66,27 @@
     vertical-align: middle;
   }
 
+  /* -- Density --------------------------------------------------
+     data-density on the .calendar root scales the whitespace between the
+     frame and the grid plus the day hit-areas (0.75 / 1 / 1.25-ish scale of
+     the 2rem/2.25rem cells); comfortable matches the unsized default.
+     Typography stays put — a spacing policy, not a zoom. */
+  .calendar:where([data-density="compact"]) {
+    padding: 0.5rem;
+    & .calendar-day-label,
+    & .calendar-day { width: 1.75rem; height: 1.75rem; }
+    & .calendar-day button { width: 1.5rem; height: 1.5rem; }
+  }
+  .calendar:where([data-density="comfortable"]) {
+    padding: 0.75rem;
+  }
+  .calendar:where([data-density="spacious"]) {
+    padding: 1rem;
+    & .calendar-day-label,
+    & .calendar-day { width: 2.75rem; height: 2.75rem; }
+    & .calendar-day button { width: 2.5rem; height: 2.5rem; }
+  }
+
   .calendar-day {
     width: 2.25rem;
     height: 2.25rem;

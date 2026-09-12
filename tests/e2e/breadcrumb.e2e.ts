@@ -1,3 +1,4 @@
+import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
@@ -47,5 +48,17 @@ await cssSmoke('breadcrumb', [
       { selector: '.breadcrumb-link', prop: 'color' },
       { selector: '.breadcrumb-page', prop: 'color' },
     ],
+  },
+  {
+    // size ladder mirrors the shared field sizes: 12/13/14/16/18px on the list
+    label: 'data-size scales the trail type 12/13/14/16/18px',
+    run: async (page) => {
+      const sizes = await page.evaluate(() =>
+        ['bc-xs', 'bc-sm', 'bc-md', 'bc-lg', 'bc-xl'].map((id) =>
+          getComputedStyle(document.querySelector(`#${id} .breadcrumb-list`)!).fontSize,
+        ),
+      );
+      assert.deepEqual(sizes, ['12px', '13px', '14px', '16px', '18px'], `sizes, got ${sizes.join('/')}`);
+    },
   },
 ]);

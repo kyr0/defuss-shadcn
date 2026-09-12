@@ -50,6 +50,19 @@ supportedStates: default
 
 ---
 
+
+## Sizes
+
+Set `data-size` on the `.toolbar` root. The toolbar and its direct `.btn` / `.toggle` controls scale together — set the size once on the root.
+
+| `data-size` | Effect |
+|-------------|--------|
+| `xs` | chrome 0.125rem, controls 1.75rem tall (0.75rem font) |
+| `sm` | chrome 0.1875rem, controls 2rem tall (0.8125rem font) |
+| `md` | chrome 0.25rem, controls 2.25rem tall — identical to the unsized default (.btn default) |
+| `lg` | chrome 0.375rem, controls 2.75rem tall (1rem font) |
+| `xl` | chrome 0.5rem, controls 3.25rem tall (1.125rem font) |
+
 ## Accessibility
 
 | Attribute | Element | Purpose |

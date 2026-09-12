@@ -72,4 +72,11 @@ await cssSmoke('radio', [
       assert.equal(g.row, '1/3', 'radio spans both label rows');
     },
   },
+  {
+    label: 'density compact/comfortable/spacious → option gap 4/8/12px',
+    css: { gap: '4px' },
+    selector: '#rg-compact',
+  },
+  { label: 'density comfortable keeps the 8px default gap', selector: '#rg-comfortable', css: { gap: '8px' } },
+  { label: 'density spacious → option gap 12px', selector: '#rg-spacious', css: { gap: '12px' } },
 ]);

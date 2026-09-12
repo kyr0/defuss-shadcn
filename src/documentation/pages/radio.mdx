@@ -196,6 +196,28 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <ExampleCode>{"<fieldset class=\"radio-group\">\n  <legend class=\"label\">Notification Preferences</legend>\n  <p class=\"radio-group-description\">Choose how you want to receive notifications.</p>\n  <div class=\"radio-item\">\n    <input class=\"radio\" type=\"radio\" name=\"notif\" id=\"inv1\" value=\"email\" aria-invalid=\"true\">\n    <label for=\"inv1\">Email only</label>\n  </div>\n  <div class=\"radio-item\">\n    <input class=\"radio\" type=\"radio\" name=\"notif\" id=\"inv2\" value=\"sms\" aria-invalid=\"true\">\n    <label for=\"inv2\">SMS only</label>\n  </div>\n</fieldset>"}</ExampleCode>
 </Example>
 
+<Example>
+  <ExampleLabel>Density</ExampleLabel>
+  <ExampleHint>Set <code>data-density</code> on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), typography and fixed dimensions stay identical. <code>comfortable</code> matches the unsized default.</ExampleHint>
+  <div class="flex flex-wrap gap-8">
+    <fieldset class="radio-group" data-density="compact">
+      <legend class="label">Compact</legend>
+      <div class="radio-item"><input class="radio" type="radio" name="den-a" id="den-a1" checked /><label for="den-a1">Free</label></div>
+      <div class="radio-item"><input class="radio" type="radio" name="den-a" id="den-a2" /><label for="den-a2">Pro</label></div>
+    </fieldset>
+    <fieldset class="radio-group" data-density="comfortable">
+      <legend class="label">Comfortable</legend>
+      <div class="radio-item"><input class="radio" type="radio" name="den-b" id="den-b1" checked /><label for="den-b1">Free</label></div>
+      <div class="radio-item"><input class="radio" type="radio" name="den-b" id="den-b2" /><label for="den-b2">Pro</label></div>
+    </fieldset>
+    <fieldset class="radio-group" data-density="spacious">
+      <legend class="label">Spacious</legend>
+      <div class="radio-item"><input class="radio" type="radio" name="den-c" id="den-c1" checked /><label for="den-c1">Free</label></div>
+      <div class="radio-item"><input class="radio" type="radio" name="den-c" id="den-c2" /><label for="den-c2">Pro</label></div>
+    </fieldset>
+  </div>
+</Example>
+
 <SourceFiles component="radio" section="css" />
 
 </DocPage>

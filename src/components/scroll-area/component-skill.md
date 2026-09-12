@@ -40,6 +40,17 @@ CSS overflow with custom-styled scrollbars using both standard and Webkit scroll
 </div>
 ```
 
+
+## Density
+
+Set `data-density` on the `.scroll-area` root. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25); typography and fixed dimensions stay identical. `comfortable` matches the unsized default.
+For a scroll area the whitespace policy is the scrollbar gutter itself.
+| Value | Effect |
+| --- | --- |
+| `compact` | scrollbar thumb 4px |
+| `comfortable` | thumb 6px — identical to the unsized default |
+| `spacious` | thumb 8px (standard `scrollbar-width: medium`) |
+
 ## Accessibility
 
 - Scrollable areas are keyboard-navigable by default when they have focusable content or `tabindex="0"`.

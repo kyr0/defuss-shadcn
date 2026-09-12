@@ -1,21 +1,33 @@
 @layer components {
   .scroll-area {
+    /* -- Density --------------------------------------------------
+       For a scroll area the whitespace policy IS the scrollbar gutter:
+       data-density scales the thumb thickness (4 / 6 / 8px); comfortable
+       matches the unsized default. */
+    --scrollbar-size: 6px;
     overflow: auto;
     position: relative;
     overscroll-behavior: contain;
     scrollbar-gutter: stable;
 
     /* Webkit custom scrollbar */
-    &::-webkit-scrollbar { width: 6px; height: 6px; }
+    &::-webkit-scrollbar { width: var(--scrollbar-size); height: var(--scrollbar-size); }
     &::-webkit-scrollbar-track { background: transparent; }
     &::-webkit-scrollbar-thumb {
       background-color: var(--border);
-      border-radius: 3px;
+      border-radius: calc(var(--scrollbar-size) / 2);
       &:hover { background-color: var(--muted-foreground); }
     }
 
     /* Standard scrollbar */
     scrollbar-width: thin;
     scrollbar-color: var(--border) transparent;
+
+    &[data-density="compact"] { --scrollbar-size: 4px; }
+    &[data-density="comfortable"] { --scrollbar-size: 6px; }
+    &[data-density="spacious"] {
+      --scrollbar-size: 8px;
+      scrollbar-width: medium;
+    }
   }
 }

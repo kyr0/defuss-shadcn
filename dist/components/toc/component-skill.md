@@ -54,6 +54,17 @@ supportedStates: default
 
 ---
 
+
+## Density
+
+Set `data-density` on the `.toc` root. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25); typography and fixed dimensions stay identical. `comfortable` matches the unsized default.
+
+| Value | Effect |
+| --- | --- |
+| `compact` | links 0.125rem block padding |
+| `comfortable` | links 0.1875rem block padding — identical to the unsized default |
+| `spacious` | links 0.25rem block padding |
+
 ## Accessibility
 
 - Give the nav a name: `aria-label="On this page"`.

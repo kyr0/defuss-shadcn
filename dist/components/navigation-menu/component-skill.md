@@ -56,6 +56,17 @@ supportedStates: default, open
 
 ---
 
+
+## Density
+
+Set `data-density` on the `.nav-menu` nav. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25); typography and fixed dimensions stay identical. `comfortable` matches the unsized default.
+
+| Value | Effect |
+| --- | --- |
+| `compact` | top-level item gap 0.125rem |
+| `comfortable` | gap 0.25rem — identical to the unsized default |
+| `spacious` | gap 0.375rem |
+
 ## Sizes
 
 Set `data-size` on the `.nav-menu` nav; links/triggers and the popover rows scale together.

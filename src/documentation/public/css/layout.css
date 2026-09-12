@@ -22,12 +22,12 @@ main .h1, main .h2, main .h3, main .h4 { scroll-margin-top: 0; }
   height: 3.5rem;
   border-bottom: 1px solid var(--border);
   display: flex; align-items: center;
-  padding: 0 1.5rem; gap: 1rem;
+  padding: 0 0.75rem; gap: 1rem;
   background: oklch(from var(--background) l c h / 0.88);
   backdrop-filter: blur(14px);
 }
 
-/* -- Header brand (logo + version) ------------------------- */
+/* -- Header brand (logo + name) ---------------------------- */
 .header-brand {
   display: flex;
   align-items: center;
@@ -42,8 +42,16 @@ main .h1, main .h2, main .h3, main .h4 { scroll-margin-top: 0; }
   color: var(--foreground);
   white-space: nowrap;
 }
-.header-brand-version {
+.header-version {
   white-space: nowrap;
+  align-self: center;
+}
+/* vertical separators in the actions nav: the component's `align-self:
+   stretch` would span the whole 2.25rem row — constrain to a hairline */
+.site-header .separator[data-orientation="vertical"] {
+  align-self: center;
+  height: 1.25rem;
+  margin: 0 0.125rem;
 }
 .header-brand-logo {
   width: auto;
@@ -53,12 +61,13 @@ main .h1, main .h2, main .h3, main .h4 { scroll-margin-top: 0; }
 /* -- Site sidebar ------------------------------------------
    The docs sidebar IS the shipped `sidebar` component: markup is the
    component's (.app-sidebar + .sidebar-content + .sidebar-group +
-   .sidebar-submenu + .sidebar-link + .sidebar-trigger — styling and the
-   collapse toggle (footer trigger, ⌘B) come from components/sidebar.css/.js
-   via all.css/all.js). Only chrome geometry is site-side: the fixed-header
+   .sidebar-submenu + .sidebar-link — styling and the collapse state
+   (⌘B via sidebar.js) come from components/sidebar.css/.js via
+   all.css/all.js). Only chrome geometry is site-side: the fixed-header
    offset, dock-to-zero-width (the component's icon rail is pointless without
-   icons), and the mobile drawer. site-header.tsx/layout.ts persist the dock
-   choice; the hamburger (revealed via :has()) re-opens the docked sidebar. */
+   icons), and the mobile drawer. site-header.tsx/layout.ts own the header's
+   panel-left toggle: it docks/undoes the sidebar on desktop and drives the
+   drawer below 64rem; layout.ts persists the dock choice. */
 .site-sidebar {
   --sidebar-width: 14rem;
   flex-shrink: 0;
@@ -69,13 +78,12 @@ main .h1, main .h2, main .h3, main .h4 { scroll-margin-top: 0; }
 @media (prefers-reduced-motion: reduce) {
   .site-sidebar { transition: none; }
 }
-/* docked (the component's own data-state): zero width, hamburger reveals itself */
+/* docked (data-state="collapsed", set by the header toggle or ⌘B): zero width */
 .site-sidebar[data-state="collapsed"] {
   width: 0;
   min-width: 0;
   border-right: none;
 }
-body:has(.site-sidebar[data-state="collapsed"]) .sidebar-toggle { display: flex; }
 /* drawer mode: the component hides itself below 767px (apps use the mobile
    <dialog> sheet there); the docs site instead owns the off-canvas drawer —
    display:flex beats the layered rule, and the footer trigger is inert */
@@ -171,7 +179,7 @@ main {
 /* the component's icon-rail rules would hide the label spans at 3.5rem —
    the docs dock collapses to zero width instead; neutralize the rail
    (desktop only — in drawer mode a stale collapsed state must still show
-   the nav, since the hamburger owns open/close there) */
+   the nav, since the drawer owns open/close there) */
 @media (min-width: 64rem) {
   .site-sidebar[data-state="collapsed"] .sidebar-content { display: none; }
 }
@@ -753,9 +761,12 @@ html.dark pre.shiki span {
 
 /* -- Mobile responsive ------------------------------------- */
 
-/* Hamburger menu button (hidden on desktop) */
+/* Sidebar dock toggle — panel-left glyph (lucide), sits in the header right
+   after the brand (where the version badge used to ride). Always visible:
+   docks/undoes the sidebar on desktop, opens/closes the drawer below 64rem
+   (both wired in layout.ts#initSidebarToggle). */
 .sidebar-toggle {
-  display: none;
+  display: flex;
   align-items: center;
   justify-content: center;
   width: 2.25rem;
@@ -780,13 +791,10 @@ html.dark pre.shiki span {
 }
 
 /* Too little horizontal space for a docked sidebar + readable prose —
-   the sidebar auto-collapses into the hamburger-driven overlay drawer
-   (same pattern the shipped sidebar component uses on mobile). Applies
-   from tablet width down, not just phones. */
+   the sidebar auto-collapses into the drawer, opened/closed by the header's
+   panel-left toggle (same pattern the shipped sidebar component uses on
+   mobile). Applies from tablet width down, not just phones. */
 @media (max-width: 64rem) {
-  /* Show hamburger */
-  .sidebar-toggle { display: flex; }
-
   /* Sidebar: off-canvas drawer. `display:flex` beats the component's own
      mobile hide rule (that one assumes an app-side <dialog> sheet; the docs
      site owns the drawer). Unlayered, so it wins regardless of specificity. */
@@ -805,7 +813,7 @@ html.dark pre.shiki span {
   .site-sidebar.open {
     transform: translateX(0);
   }
-  /* drawer mode — the hamburger owns open/close; the component's auto-collapse
+  /* drawer mode — the drawer owns open/close; the component's auto-collapse
      or a stale desktop dock state must not shrink/empty the drawer */
   .site-sidebar[data-state="collapsed"] {
     width: 16rem;
@@ -848,10 +856,15 @@ html.dark pre.shiki span {
     font-size: 0.9375rem;
     line-height: 1.2;
   }
-  .header-brand-version {
+  .header-version {
     font-size: 0.5625rem;
     padding: 0 0.25rem;
     line-height: 1.4;
+  }
+  /* the actions nav gets cramped on phones — drop the separators and the
+     version badge, keep icon buttons reachable */
+  .site-header .separator[data-orientation="vertical"] {
+    display: none;
   }
 
   /* Shrink header action buttons on mobile */

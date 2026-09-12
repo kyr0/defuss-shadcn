@@ -111,6 +111,16 @@ try {
     assert.ok(err && err.includes('unknown state'), `expected throw, got ${err}`);
   });
 
+  // -- Density: top-level item gap 2/4/6px ----------------------------------
+  await check('data-density scales the list gap to 2/4/6px', async () => {
+    const gaps = await page.evaluate(() =>
+      ['z-navmenu-den-compact', 'z-navmenu-den-comfortable', 'z-navmenu-den-spacious'].map(
+        (id) => getComputedStyle(document.querySelector('#' + id + ' .nav-menu-list')!).gap,
+      ),
+    );
+    assert.deepEqual(gaps, ['2px', '4px', '6px'], `list gaps, got ${gaps.join('/')}`);
+  });
+
   await check('state API: registry globals expose api + declared states (camelCase)', async () => {
     const reg = await page.evaluate(() => ({
       hasApi: typeof globalThis._defussShadcn?.navigationMenuApi?.setState === 'function',

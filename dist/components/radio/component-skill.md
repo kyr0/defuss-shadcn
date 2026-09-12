@@ -115,6 +115,17 @@ supportedStates: default
 
 ---
 
+
+## Density
+
+Set `data-density` on the `.radio-group` root. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25); typography and fixed dimensions stay identical. `comfortable` matches the unsized default.
+
+| Value | Effect |
+| --- | --- |
+| `compact` | option gap 0.25rem (horizontal 0.75rem), card padding 0.75rem 1rem |
+| `comfortable` | gap 0.5rem (horizontal 1rem) — identical to the unsized default |
+| `spacious` | gap 0.75rem (horizontal 1.5rem), card padding 1.25rem 1.5rem |
+
 ## ARIA
 
 | Attribute | Element | Purpose |

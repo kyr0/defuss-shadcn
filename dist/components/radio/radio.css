@@ -59,6 +59,26 @@
     }
   }
 
+  /* -- Density --------------------------------------------------
+     data-density on the .radio-group root is a whitespace policy: the gap
+     between options (and card padding) scale at the shared 0.75 / 1 / 1.25
+     ratio; comfortable matches the unsized default. Radio size itself stays
+     fixed — this is spacing, not zoom. */
+  .radio-group:where([data-density="compact"]) {
+    gap: 0.25rem;
+    &[data-orientation="horizontal"] { gap: 0.75rem; }
+    & .radio-card { padding: 0.75rem 1rem; }
+  }
+  .radio-group:where([data-density="comfortable"]) {
+    gap: 0.5rem;
+    &[data-orientation="horizontal"] { gap: 1rem; }
+  }
+  .radio-group:where([data-density="spacious"]) {
+    gap: 0.75rem;
+    &[data-orientation="horizontal"] { gap: 1.5rem; }
+    & .radio-card { padding: 1.25rem 1.5rem; }
+  }
+
   /* -- Card variant ------------------------------------------- */
   .radio-card {
     position: relative;

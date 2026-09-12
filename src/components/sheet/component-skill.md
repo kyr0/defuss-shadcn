@@ -89,6 +89,17 @@ Uses `data-side` attribute to control which edge: `top`, `right`, `bottom`, `lef
 
 ---
 
+
+## Density
+
+Set `data-density` on the `.sheet` root. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25); typography and fixed dimensions stay identical. `comfortable` matches the unsized default.
+
+| Value | Effect |
+| --- | --- |
+| `compact` | content padding 1rem |
+| `comfortable` | content padding 1.5rem — identical to the unsized default |
+| `spacious` | content padding 2rem |
+
 ## ARIA
 
 | Attribute            | Element          | Value                |

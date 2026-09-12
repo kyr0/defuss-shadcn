@@ -57,6 +57,19 @@
     [data-position="top-center"] & { top: calc(1rem + var(--toast-stack, 0px)); left: 50%; translate: -50% 0; }
     [data-position="bottom-center"] & { bottom: calc(1rem + var(--toast-stack, 0px)); left: 50%; translate: -50% 0; }
 
+    /* -- Sizes + Density ------------------------------------------
+       data-size scales the toast's width envelope (sm/md/lg, md == the
+       unsized default); data-density is the whitespace policy — padding and
+       the content gap at the shared 0.75 / 1 / 1.25 ratio, comfortable ==
+       the unsized default. Both live on the .toast element itself. */
+    &[data-size="sm"] { min-width: 16rem; max-width: 20rem; }
+    &[data-size="md"] { min-width: 20rem; max-width: 26rem; }
+    &[data-size="lg"] { min-width: 24rem; max-width: 32rem; }
+
+    &[data-density="compact"]    { padding: 0.75rem; & .toast-content { gap: 0.5rem; } }
+    &[data-density="comfortable"] { padding: 1rem; }
+    &[data-density="spacious"]   { padding: 1.25rem; & .toast-content { gap: 1rem; } }
+
     /* -- Variants ------------------------------------------------- */
     &[data-variant="destructive"] {
       background-color: var(--destructive);

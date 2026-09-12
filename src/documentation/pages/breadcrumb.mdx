@@ -116,6 +116,39 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <ExampleCode>{"<nav class=\"breadcrumb\" aria-label=\"Breadcrumb\">\n  <ol class=\"breadcrumb-list\">\n    <li class=\"breadcrumb-item\"><a class=\"breadcrumb-link\" href=\"#\">Home</a></li>\n    <li class=\"breadcrumb-separator\" aria-hidden=\"true\">/</li>\n    <li class=\"breadcrumb-item\">\n      <span class=\"breadcrumb-ellipsis\" aria-hidden=\"true\">&#x22EF;</span>\n    </li>\n    <li class=\"breadcrumb-separator\" aria-hidden=\"true\">/</li>\n    <li class=\"breadcrumb-item\"><a class=\"breadcrumb-link\" href=\"#\">Components</a></li>\n    <li class=\"breadcrumb-separator\" aria-hidden=\"true\">/</li>\n    <li class=\"breadcrumb-item\"><span class=\"breadcrumb-page\" aria-current=\"page\">Breadcrumb</span></li>\n  </ol>\n</nav>"}</ExampleCode>
 </Example>
 
+<Example previewStyle="align-items:flex-start;flex-direction:column;gap:1rem;">
+  <ExampleLabel>Sizes</ExampleLabel>
+  <ExampleHint>Set <code>data-size</code> on the <code>.breadcrumb</code> nav to scale the trail's type and separators together — the ladder mirrors the shared field sizes (<code>md</code> matches the unsized default).</ExampleHint>
+  <nav class="breadcrumb" aria-label="Breadcrumb xs" data-size="xs">
+    <ol class="breadcrumb-list">
+      <li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Home</a></li>
+      <li class="breadcrumb-separator" aria-hidden="true">/</li>
+      <li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Components</a></li>
+      <li class="breadcrumb-separator" aria-hidden="true">/</li>
+      <li class="breadcrumb-item"><span class="breadcrumb-page">xs</span></li>
+    </ol>
+  </nav>
+  <nav class="breadcrumb" aria-label="Breadcrumb sm" data-size="sm">
+    <ol class="breadcrumb-list">
+      <li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Home</a></li>
+      <li class="breadcrumb-separator" aria-hidden="true">/</li>
+      <li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Components</a></li>
+      <li class="breadcrumb-separator" aria-hidden="true">/</li>
+      <li class="breadcrumb-item"><span class="breadcrumb-page">sm</span></li>
+    </ol>
+  </nav>
+  <nav class="breadcrumb" aria-label="Breadcrumb lg" data-size="lg">
+    <ol class="breadcrumb-list">
+      <li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Home</a></li>
+      <li class="breadcrumb-separator" aria-hidden="true">/</li>
+      <li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Components</a></li>
+      <li class="breadcrumb-separator" aria-hidden="true">/</li>
+      <li class="breadcrumb-item"><span class="breadcrumb-page">lg</span></li>
+    </ol>
+  </nav>
+  <ExampleCode>{"<nav class=\"breadcrumb\" aria-label=\"Breadcrumb\" data-size=\"lg\">\n  <ol class=\"breadcrumb-list\">\n    <li class=\"breadcrumb-item\"><a class=\"breadcrumb-link\" href=\"#\">Home</a></li>\n    <li class=\"breadcrumb-separator\" aria-hidden=\"true\">/</li>\n    <li class=\"breadcrumb-item\"><span class=\"breadcrumb-page\">Current</span></li>\n  </ol>\n</nav>\n\n<!-- xs 0.75rem · sm 0.8125rem · md 0.875rem (default) · lg 1rem · xl 1.125rem -->"}</ExampleCode>
+</Example>
+
 <SourceFiles component="breadcrumb" section="css">
   <SourceNote for="css">Styles for the breadcrumb component. Uses design tokens for colors, spacing, and radius.</SourceNote>
 </SourceFiles>

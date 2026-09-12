@@ -199,6 +199,37 @@ try {
     assert.ok(err && err.includes('unknown state'), `expected throw, got ${err}`);
   });
 
+  // -- Size + density: show() forwards them as data-* on the toast element ---
+  await check('size/density options land as data attributes with the documented geometry', async () => {
+    await page.click('#t-size-sm');
+    await page.click('#t-size-lg');
+    await page.click('#t-density-compact');
+    const seen = await page.evaluate(() => {
+      const toasts = [...document.querySelectorAll<HTMLElement>('.toast')];
+      const pick = (attr: string) => toasts.find((t) => t.getAttribute(attr))?.getAttribute(attr);
+      const sm = toasts.find((t) => t.dataset.size === 'sm')!;
+      const lg = toasts.find((t) => t.dataset.size === 'lg')!;
+      const compact = toasts.find((t) => t.dataset.density === 'compact')!;
+      return {
+        smSize: pick('data-size'),
+        compactDensity: pick('data-density'),
+        smMinW: getComputedStyle(sm).minWidth,
+        lgMinW: getComputedStyle(lg).minWidth,
+        compactPad: getComputedStyle(compact).padding,
+      };
+    });
+    assert.equal(seen.smSize, 'sm');
+    assert.equal(seen.compactDensity, 'compact');
+    assert.equal(seen.smMinW, '256px', 'size sm → 16rem min-width');
+    assert.equal(seen.lgMinW, '384px', 'size lg → 24rem min-width');
+    assert.equal(seen.compactPad, '12px', 'density compact → 0.75rem padding');
+    await page.evaluate(() => {
+      const container = document.querySelector<HTMLElement>('#toast-container')!;
+      // loose registry contract (see src/types/defuss-shadcn.d.ts): cast the call
+      (globalThis._defussShadcn.toastApi as unknown as { setState(el: Element, name: string): void }).setState(container, 'default');
+    });
+  });
+
   await check('state API: registry globals expose api + declared states', async () => {
     const reg = await page.evaluate(() => ({
       hasApi: typeof globalThis._defussShadcn?.toastApi?.setState === 'function',

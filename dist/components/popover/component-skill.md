@@ -61,6 +61,17 @@ supportedStates: default, open
 | `data-side` | `.popover` | `top`, `right`, `bottom`, `left` | `bottom` | Which side of the trigger to position |
 | `data-align` | `.popover` | `start`, `center`, `end` | `center` | Alignment along the side axis |
 
+
+## Density
+
+Set `data-density` on the `.popover` root. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25); typography and fixed dimensions stay identical. `comfortable` matches the unsized default.
+
+| Value | Effect |
+| --- | --- |
+| `compact` | content padding 0.75rem |
+| `comfortable` | content padding 1rem — identical to the unsized default |
+| `spacious` | content padding 1.25rem |
+
 ## ARIA
 
 No additional ARIA attributes are needed. The native `popover` attribute and `popovertarget` handle accessibility automatically:

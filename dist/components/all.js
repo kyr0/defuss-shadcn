@@ -2345,7 +2345,7 @@ var toastDismiss = (el, callback) => {
 };
 var toastCreate = (options) => {
   const o = typeof options === "string" ? { title: options } : options;
-  const { title, description, variant, action, onDismiss } = o;
+  const { title, description, variant, action, onDismiss, size, density } = o;
   const duration = o.duration != null ? o.duration : DURATION;
   const el = document.createElement("div");
   el.className = "toast";
@@ -2355,6 +2355,10 @@ var toastCreate = (options) => {
   el.setAttribute("popover", "manual");
   if (variant)
     el.setAttribute("data-variant", variant);
+  if (size)
+    el.setAttribute("data-size", size);
+  if (density)
+    el.setAttribute("data-density", density);
   const icons = {
     success: '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>',
     warning: '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',
@@ -2890,5 +2894,5 @@ function init27() {
 init27();
 new MutationObserver(init27).observe(document, { childList: true, subtree: true });
 
-//# debugId=2A1A0DC772583BF964756E2164756E21
+//# debugId=C5401EBAD14B3D8364756E2164756E21
 //# sourceMappingURL=all.js.map

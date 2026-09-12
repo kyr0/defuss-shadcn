@@ -82,6 +82,17 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <ExampleCode>{"<button class=\"btn\" data-variant=\"outline\"\n        data-dialog-trigger=\"confirm-dialog\"\n        aria-haspopup=\"dialog\">\n  Confirm Delete\n</button>\n\n<dialog id=\"confirm-dialog\" class=\"dialog\"\n        role=\"dialog\" aria-modal=\"true\"\n        aria-labelledby=\"confirm-title\">\n  <div class=\"dialog-content\">\n    <div class=\"dialog-header\">\n      <h2 class=\"dialog-title\" id=\"confirm-title\">Delete account?</h2>\n      <p class=\"dialog-description\">This action cannot be undone.\n        This will permanently delete your account.</p>\n    </div>\n    <div class=\"dialog-footer\">\n      <button class=\"btn\" data-variant=\"outline\"\n              data-dialog-close>Cancel</button>\n      <button class=\"btn\" data-variant=\"destructive\"\n              data-dialog-close>Delete account</button>\n    </div>\n  </div>\n</dialog>"}</ExampleCode>
 </Example>
 
+<Example>
+  <ExampleLabel>Density</ExampleLabel>
+  <ExampleHint>Set <code>data-density</code> on the <code>{"<dialog>"}</code> root to scale the content padding. A whitespace policy, not a zoom: only padding scales (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), typography and the width ladder (<code>data-size</code>) stay identical. <code>comfortable</code> matches the unsized default.</ExampleHint>
+  <div class="flex flex-wrap gap-2">
+    <button class="btn" data-variant="outline" data-dialog-trigger="density-compact-dialog" aria-haspopup="dialog">Compact</button>
+    <button class="btn" data-variant="outline" data-dialog-trigger="density-comfortable-dialog" aria-haspopup="dialog">Comfortable</button>
+    <button class="btn" data-variant="outline" data-dialog-trigger="density-spacious-dialog" aria-haspopup="dialog">Spacious</button>
+  </div>
+  <ExampleCode>{"<dialog id=\"my-dialog\" class=\"dialog\" data-density=\"compact\" ...>\n  <div class=\"dialog-content\">…</div>\n</dialog>\n\n<!-- compact → 1rem · comfortable → 1.5rem · spacious → 2rem content padding -->"}</ExampleCode>
+</Example>
+
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
   <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
@@ -129,6 +140,39 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
       <div class="dialog-footer">
         <button class="btn" data-variant="outline" data-dialog-close>Cancel</button>
         <button class="btn" data-variant="destructive" data-dialog-close>Delete account</button>
+      </div>
+    </div>
+  </dialog>
+  <dialog id="density-compact-dialog" class="dialog" data-density="compact" role="dialog" aria-modal="true" aria-labelledby="dc-title">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h2 class="dialog-title" id="dc-title">Compact density</h2>
+        <p class="dialog-description">Content padding is 1rem instead of the default 1.5rem.</p>
+      </div>
+      <div class="dialog-footer">
+        <button class="btn" data-variant="outline" data-dialog-close>Close</button>
+      </div>
+    </div>
+  </dialog>
+  <dialog id="density-comfortable-dialog" class="dialog" data-density="comfortable" role="dialog" aria-modal="true" aria-labelledby="dcm-title">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h2 class="dialog-title" id="dcm-title">Comfortable density</h2>
+        <p class="dialog-description">Identical to the unsized default — 1.5rem content padding.</p>
+      </div>
+      <div class="dialog-footer">
+        <button class="btn" data-variant="outline" data-dialog-close>Close</button>
+      </div>
+    </div>
+  </dialog>
+  <dialog id="density-spacious-dialog" class="dialog" data-density="spacious" role="dialog" aria-modal="true" aria-labelledby="ds-title">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h2 class="dialog-title" id="ds-title">Spacious density</h2>
+        <p class="dialog-description">Content padding grows to 2rem.</p>
+      </div>
+      <div class="dialog-footer">
+        <button class="btn" data-variant="outline" data-dialog-close>Close</button>
       </div>
     </div>
   </dialog>

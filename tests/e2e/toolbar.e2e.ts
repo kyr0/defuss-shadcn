@@ -139,6 +139,23 @@ try {
     assert.ok(err && err.includes('unknown state'), `expected throw, got ${err}`);
   });
 
+  // -- Sizes: the toolbar chrome and its controls scale together -------------
+  await check('data-size scales chrome padding + control heights (28/32/36/44/52px)', async () => {
+    const rows = await page.evaluate(() =>
+      ['tb-xs', 'tb-sm', 'tb-md', 'tb-lg', 'tb-xl'].map((id) => {
+        const tb = document.getElementById(id)!;
+        return [
+          getComputedStyle(tb).paddingTop,
+          Math.round(tb.querySelector('.btn')!.getBoundingClientRect().height),
+        ] as [string, number];
+      }),
+    );
+    const pads = rows.map((r) => r[0]).join('/');
+    const heights = rows.map((r) => r[1]).join('/');
+    assert.equal(pads, ['2px', '3px', '4px', '6px', '8px'].join('/'), `chrome paddings, got ${pads}`);
+    assert.equal(heights, [28, 32, 36, 44, 52].join('/'), `control heights, got ${heights}`);
+  });
+
   await check('state API: registry globals expose api + declared states', async () => {
     const reg = await page.evaluate(() => ({
       hasApi: typeof globalThis._defussShadcn?.toolbarApi?.setState === 'function',

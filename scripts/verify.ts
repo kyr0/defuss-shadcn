@@ -510,8 +510,8 @@ const version = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8')).ver
   if (!existsSync(indexPage)) versionProblems.push('dist/documentation/index.html missing — run `bun run build:docs`');
   else {
     const html = readFileSync(indexPage, 'utf8');
-    const badge = html.match(/<span class="badge header-brand-version"[^>]*>(v[^<]+)<\/span>/);
-    if (!badge) versionProblems.push('index.html lost the header version badge (span.header-brand-version)');
+    const badge = html.match(/<span class="badge header-version"[^>]*>(v[^<]+)<\/span>/);
+    if (!badge) versionProblems.push('index.html lost the header version badge (span.header-version)');
     else if (badge[1] !== `v${version}`) versionProblems.push(`header badge says ${badge[1]} but package.json says v${version} — run \`bun run build:docs\``);
   }
   check(

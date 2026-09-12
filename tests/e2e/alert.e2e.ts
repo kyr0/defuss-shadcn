@@ -34,4 +34,19 @@ await cssSmoke('alert', [
       assert.equal(border, title, 'both are var(--destructive)');
     },
   },
+  {
+    label: 'density compact → padding 12px 16px, gap 8px',
+    selector: '#al-compact',
+    css: { padding: '12px 16px', gap: '8px' },
+  },
+  {
+    label: 'density comfortable keeps the default padding',
+    selector: '#al-comfortable',
+    css: { padding: '16px 20px', gap: '12px' },
+  },
+  {
+    label: 'density spacious → padding 20px 24px, gap 16px',
+    selector: '#al-spacious',
+    css: { padding: '20px 24px', gap: '16px' },
+  },
 ]);

@@ -154,6 +154,20 @@ try {
       }
     }
   });
+
+  // -- Density (skill: 0.75 / 1 / 1.25 of the 1.5rem content padding) --------
+  await check('data-density scales .dialog-content padding to 16/24/32px', async () => {
+    const pads = await page.evaluate(() =>
+      ['den-compact', 'den-comfortable', 'den-spacious'].map((id) => {
+        const d = document.getElementById(id) as HTMLDialogElement;
+        d.showModal();
+        const p = getComputedStyle(d.querySelector('.dialog-content')!).padding;
+        d.close();
+        return p;
+      }),
+    );
+    assert.deepEqual(pads, ['16px', '24px', '32px'], `density paddings, got ${pads.join(' / ')}`);
+  });
 } finally {
   await browser.close();
   server.stop();

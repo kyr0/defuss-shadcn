@@ -33,4 +33,19 @@ await cssSmoke('collapsible', [
     selector: '#cl-open .collapsible-content',
     css: { padding: '0px 16px 12px', 'font-size': '14px', 'line-height': '22.4px' },
   },
+  {
+    label: 'density compact → trigger 8px block padding',
+    selector: '#cl-compact .collapsible-trigger',
+    css: { padding: '8px 12px' },
+  },
+  {
+    label: 'density comfortable keeps the 12px 16px trigger default',
+    selector: '#cl-comfortable .collapsible-trigger',
+    css: { padding: '12px 16px' },
+  },
+  {
+    label: 'density spacious → trigger 16px block padding',
+    selector: '#cl-spacious .collapsible-trigger',
+    css: { padding: '16px 20px' },
+  },
 ]);

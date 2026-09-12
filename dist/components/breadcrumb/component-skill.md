@@ -86,6 +86,19 @@ supportedStates: default
 
 ---
 
+
+## Sizes
+
+Set `data-size` on the `.breadcrumb` nav. 
+
+| `data-size` | Effect |
+|-------------|--------|
+| `xs` | 0.75rem type, 0.75rem separators |
+| `sm` | 0.8125rem type |
+| `md` | 0.875rem type — identical to the unsized default |
+| `lg` | 1rem type, 1rem separators |
+| `xl` | 1.125rem type, 1.125rem separators |
+
 ## ARIA
 
 | Attribute | Element | Purpose |

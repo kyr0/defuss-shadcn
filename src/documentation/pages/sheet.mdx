@@ -89,6 +89,17 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <ExampleCode>{"<!-- Trigger -->\n<button class=\"btn\" data-variant=\"outline\"\n        data-sheet-trigger=\"sheet-bottom\"\n        aria-haspopup=\"dialog\">Open Bottom Sheet</button>\n\n<!-- Sheet -->\n<dialog id=\"sheet-bottom\" class=\"sheet\" data-side=\"bottom\"\n        role=\"dialog\" aria-modal=\"true\"\n        aria-labelledby=\"sheet-bottom-title\">\n  <div class=\"sheet-content\">\n    <div class=\"sheet-header\">\n      <h2 class=\"sheet-title\" id=\"sheet-bottom-title\">Cookie Preferences</h2>\n      <p class=\"sheet-description\">Manage your cookie settings. You can enable or disable different types of cookies below.</p>\n    </div>\n    <div class=\"sheet-body\">\n      <div style=\"display:flex;flex-direction:column;gap:1rem;\">\n        <div style=\"display:flex;align-items:center;justify-content:space-between;\">\n          <div><p style=\"font-size:0.875rem;font-weight:500;\">Essential Cookies</p><p style=\"font-size:0.75rem;color:var(--muted-foreground);margin-top:0.125rem;\">Required for the website to function.</p></div>\n          <span style=\"font-size:0.75rem;color:var(--muted-foreground);\">Always on</span>\n        </div>\n        <div style=\"display:flex;align-items:center;justify-content:space-between;gap:1rem;\">\n          <div><p style=\"font-size:0.875rem;font-weight:500;\" id=\"cookie-analytics-label\">Analytics Cookies</p><p style=\"font-size:0.75rem;color:var(--muted-foreground);margin-top:0.125rem;\">Help us improve our website.</p></div>\n          <input class=\"checkbox\" type=\"checkbox\" id=\"cookie-analytics\" aria-labelledby=\"cookie-analytics-label\" checked>\n        </div>\n        <div style=\"display:flex;align-items:center;justify-content:space-between;gap:1rem;\">\n          <div><p style=\"font-size:0.875rem;font-weight:500;\" id=\"cookie-marketing-label\">Marketing Cookies</p><p style=\"font-size:0.75rem;color:var(--muted-foreground);margin-top:0.125rem;\">Used for targeted advertising.</p></div>\n          <input class=\"checkbox\" type=\"checkbox\" id=\"cookie-marketing\" aria-labelledby=\"cookie-marketing-label\">\n        </div>\n      </div>\n    </div>\n    <div class=\"sheet-footer\">\n      <button class=\"btn\" data-variant=\"outline\" data-sheet-close>Cancel</button>\n      <button class=\"btn\" data-variant=\"default\" data-sheet-close>Save preferences</button>\n    </div>\n  </div>\n  <button class=\"sheet-close-x\" data-sheet-close aria-label=\"Close\">\n    <svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\"\n         stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">\n      <path d=\"M18 6 6 18M6 6l12 12\"/>\n    </svg>\n  </button>\n</dialog>"}</ExampleCode>
 </Example>
 
+<Example>
+  <ExampleLabel>Density</ExampleLabel>
+  <ExampleHint>Set <code>data-density</code> on the <code>{"<dialog>"}</code> root to scale the content padding. A whitespace policy, not a zoom: only padding scales (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), the slide-in width and typography stay identical. <code>comfortable</code> matches the unsized default.</ExampleHint>
+  <div class="flex flex-wrap gap-2">
+    <button class="btn" data-variant="outline" data-sheet-trigger="density-sheet-compact" aria-haspopup="dialog">Compact</button>
+    <button class="btn" data-variant="outline" data-sheet-trigger="density-sheet-comfortable" aria-haspopup="dialog">Comfortable</button>
+    <button class="btn" data-variant="outline" data-sheet-trigger="density-sheet-spacious" aria-haspopup="dialog">Spacious</button>
+  </div>
+  <ExampleCode>{"<dialog id=\"my-sheet\" class=\"sheet\" data-density=\"compact\" ...>\n  <div class=\"sheet-content\">…</div>\n</dialog>\n\n<!-- compact → 1rem · comfortable → 1.5rem · spacious → 2rem content padding -->"}</ExampleCode>
+</Example>
+
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
   <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
@@ -237,6 +248,33 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
         <path d="M18 6 6 18M6 6l12 12" />
       </svg>
     </button>
+  </dialog>
+  <dialog id="density-sheet-compact" class="sheet" data-side="right" data-density="compact" role="dialog" aria-modal="true" aria-labelledby="ds-c-title">
+    <div class="sheet-content">
+      <div class="sheet-header">
+        <h2 class="sheet-title" id="ds-c-title">Compact density</h2>
+        <p class="sheet-description">Content padding is 1rem instead of the default 1.5rem.</p>
+      </div>
+    </div>
+    <button class="sheet-close-x" data-sheet-close aria-label="Close"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg></button>
+  </dialog>
+  <dialog id="density-sheet-comfortable" class="sheet" data-side="right" data-density="comfortable" role="dialog" aria-modal="true" aria-labelledby="ds-cm-title">
+    <div class="sheet-content">
+      <div class="sheet-header">
+        <h2 class="sheet-title" id="ds-cm-title">Comfortable density</h2>
+        <p class="sheet-description">Identical to the unsized default — 1.5rem content padding.</p>
+      </div>
+    </div>
+    <button class="sheet-close-x" data-sheet-close aria-label="Close"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg></button>
+  </dialog>
+  <dialog id="density-sheet-spacious" class="sheet" data-side="right" data-density="spacious" role="dialog" aria-modal="true" aria-labelledby="ds-s-title">
+    <div class="sheet-content">
+      <div class="sheet-header">
+        <h2 class="sheet-title" id="ds-s-title">Spacious density</h2>
+        <p class="sheet-description">Content padding grows to 2rem.</p>
+      </div>
+    </div>
+    <button class="sheet-close-x" data-sheet-close aria-label="Close"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg></button>
   </dialog>
 </PageOverlay>
 

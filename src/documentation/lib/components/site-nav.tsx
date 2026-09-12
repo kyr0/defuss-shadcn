@@ -6,9 +6,10 @@ import { NavTypeBadge } from './type-badge';
 /**
  * Why: the docs sidebar dogfoods the shipped `sidebar` component (see
  * dist/components/sidebar/) — .app-sidebar shell, .sidebar-content scroller,
- * .sidebar-group sections, .sidebar-submenu parents, .sidebar-link links,
- * .sidebar-trigger dock button. That means sidebar.js owns its collapse
- * (trigger + Cmd+B) and what a visitor sees is the component working.
+ * .sidebar-group sections, .sidebar-submenu parents, .sidebar-link links.
+ * Collapse rides the component's data-state; the header's panel-left toggle
+ * (site-header.tsx + layout.ts) and sidebar.js's ⌘B shortcut are its
+ * controls, so what a visitor sees is the component working.
  * Site chrome (fixed header offset, mobile drawer, dock-to-zero-width) stays
  * docs-side as unlayered overrides in public/css/layout.css.
  *
@@ -98,21 +99,8 @@ export function SiteNav({ active }: Props & { active: string }) {
           );
         })}
       </div>
-      {/* Dock control — the component's own trigger: sidebar.js toggles
-          data-state (also on ⌘B/Ctrl+B); layout.ts persists it and the
-          hamburger re-opens the docked sidebar on desktop. */}
-      <div class="sidebar-footer">
-        <button
-          class="sidebar-trigger"
-          data-sidebar-trigger="docs-sidebar"
-          aria-label="Collapse sidebar"
-          title="Collapse sidebar (⌘B)"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="m15 18-6-6 6-6" />
-          </svg>
-        </button>
-      </div>
+      {/* No footer dock control here: the header's panel-left toggle
+          (#sidebar-toggle, site-header.tsx) owns dock/undock + drawer. */}
     </aside>
   );
 }

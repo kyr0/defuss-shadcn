@@ -58,6 +58,17 @@ supportedStates: default
 | `default`     | Standard informational alert              |
 | `destructive` | Error or warning state with destructive styling |
 
+
+## Density
+
+Set `data-density` on the `.alert` root. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25); typography and fixed dimensions stay identical. `comfortable` matches the unsized default.
+
+| Value | Effect |
+| --- | --- |
+| `compact` | padding 0.75rem 1rem, icon gap 0.5rem |
+| `comfortable` | padding 1rem 1.25rem, gap 0.75rem — identical to the unsized default |
+| `spacious` | padding 1.25rem 1.5rem, gap 1rem |
+
 ## Accessibility
 
 - Use `role="alert"` for important messages that should interrupt screen readers

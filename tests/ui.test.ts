@@ -44,6 +44,40 @@ test('site shell renders header and sidebar from layout.js web components', asyn
   expect((accordion!.closest('details') as HTMLDetailsElement).open, 'Accordion section closed').toBe(false);
 });
 
+test('header: panel-left toggle docks the sidebar; version badge + separators sit by the GitHub link', async () => {
+  const { doc } = await openDocPage('index.html');
+  await waitFor(() => doc.querySelector('.site-header #sidebar-toggle'), 'sidebar toggle');
+
+  // the toggle rides right behind the brand (where the version badge used to be)
+  const toggle: HTMLElementOrNull = doc.querySelector('.site-header #sidebar-toggle');
+  expect(toggle, 'header sidebar toggle').toBeTruthy();
+  expect(toggle!.previousElementSibling?.classList.contains('header-brand'), 'toggle follows the brand').toBe(true);
+
+  // version badge now lives in the actions nav, left of the GitHub link,
+  // separated from it (and from the icon buttons) by vertical separators
+  const nav = doc.querySelector('.site-header nav');
+  expect(nav, 'actions nav').toBeTruthy();
+  const version: HTMLElementOrNull = nav!.querySelector('.header-version');
+  expect(version, 'version badge in actions nav').toBeTruthy();
+  expect(version!.textContent).toMatch(/^v\d+\.\d+\.\d+$/);
+  const separators = nav!.querySelectorAll('.separator[data-orientation="vertical"]');
+  expect(separators.length, 'version↔GitHub and GitHub↔buttons separators').toBe(2);
+  expect(version!.nextElementSibling?.classList.contains('separator'), 'separator after version').toBe(true);
+  const gh = nav!.querySelector<HTMLAnchorElement>('a[href*="github.com"]');
+  expect(gh?.previousElementSibling?.classList.contains('separator'), 'separator before GitHub').toBe(true);
+  expect(gh?.nextElementSibling?.classList.contains('separator'), 'separator after GitHub').toBe(true);
+
+  // clicking the toggle docks the sidebar (component data-state) and re-labels it
+  await clickSelector(doc, '.site-header #sidebar-toggle');
+  const sidebar: HTMLElementOrNull = doc.querySelector('.site-sidebar');
+  await waitFor(() => sidebar?.dataset.state === 'collapsed', 'sidebar to dock');
+  expect(toggle!.getAttribute('aria-label'), 'toggle re-labelled for reopen').toBe('Expand sidebar');
+  // second click undocks
+  await clickSelector(doc, '.site-header #sidebar-toggle');
+  await waitFor(() => sidebar?.dataset.state === 'expanded', 'sidebar to expand');
+  expect(toggle!.getAttribute('aria-label')).toBe('Collapse sidebar');
+});
+
 test('sidebar shows component type badges (taxonomy), never the generic PREVIEW marker', async () => {
   const { doc } = await openDocPage('index.html');
   await waitFor(() => doc.querySelector('.site-sidebar a[href="accordion.html"]'), 'sidebar links');

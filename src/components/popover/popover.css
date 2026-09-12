@@ -8,6 +8,14 @@
     background-color: var(--popover);
     color: var(--popover-foreground);
     padding: 1rem;
+
+    /* -- Density --------------------------------------------------
+       data-density on the .popover root scales the content padding
+       (0.75 / 1 / 1.25 of the 1rem default); comfortable matches the
+       unsized default. */
+    &[data-density="compact"]     { padding: 0.75rem; }
+    &[data-density="comfortable"] { padding: 1rem; }
+    &[data-density="spacious"]    { padding: 1.25rem; }
     box-shadow: var(--shadow-md);
     width: 20rem;
     opacity: 0;

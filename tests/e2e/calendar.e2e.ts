@@ -15,10 +15,10 @@ const FIXTURE = '/tests/e2e/calendar.e2e-fixture.html';
 const server = startServer();
 const browser = await chromium.launch();
 
-const heading = (page: Page) => page.$eval('.calendar-heading', (el) => el.textContent!.trim());
-const dayCount = (page: Page) => page.$$eval('.calendar-day:not([data-outside])', (els) => els.length);
+const heading = (page: Page) => page.$eval('#cal-default .calendar-heading', (el) => el.textContent!.trim());
+const dayCount = (page: Page) => page.$$eval('#cal-default .calendar-day:not([data-outside])', (els) => els.length);
 const selectedDay = (page: Page) =>
-  page.$eval('.calendar-day[data-selected] button', (el) => el.textContent).catch(() => null);
+  page.$eval('#cal-default .calendar-day[data-selected] button', (el) => el.textContent).catch(() => null);
 
 let failures = 0;
 async function check(label: string, fn: () => Promise<void>): Promise<void> {
@@ -36,7 +36,7 @@ try {
   await page.goto(`${server.url}${FIXTURE}`);
 
   await check('calendar.js rendered a grid for the current month', async () => {
-    await page.waitForFunction(() => document.querySelectorAll('.calendar-day').length > 0);
+    await page.waitForFunction(() => document.querySelectorAll('#cal-default .calendar-day').length > 0);
     const now = new Date();
     const monthName = new Intl.DateTimeFormat(undefined, { month: 'long' }).format(now);
     assert.equal(await heading(page), `${monthName} ${now.getFullYear()}`);
@@ -44,11 +44,11 @@ try {
     const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
     assert.equal(await dayCount(page), daysInMonth, 'one cell per day of the month');
     // day labels row
-    assert.equal(await page.$$eval('.calendar-day-label', (els) => els.length), 7);
+    assert.equal(await page.$$eval('#cal-default .calendar-day-label', (els) => els.length), 7);
   });
 
   await check('calendar.css applied (grid + button sizing)', async () => {
-    const style = await page.$eval('.calendar', (el) => {
+    const style = await page.$eval('#cal-default', (el) => {
       const cs = getComputedStyle(el);
       return { padding: cs.padding, radius: cs.borderTopLeftRadius };
     });
@@ -56,19 +56,19 @@ try {
   });
 
   await check('today is marked with data-today', async () => {
-    const today = await page.$eval('.calendar-day[data-today] button', (el) => el.textContent);
+    const today = await page.$eval('#cal-default .calendar-day[data-today] button', (el) => el.textContent);
     assert.equal(Number(today), new Date().getDate());
   });
 
   await check('leading/trailing days are marked data-outside', async () => {
-    const outside = await page.$$eval('.calendar-day[data-outside] button', (els) =>
+    const outside = await page.$$eval('#cal-default .calendar-day[data-outside] button', (els) =>
       els.map((el) => el.dataset.outside),
     );
     assert.ok(outside.includes('prev') && outside.includes('next'), 'both spillovers rendered');
   });
 
   await check('next/prev month navigation updates the heading', async () => {
-    await page.click('[data-action="next-month"]');
+    await page.click('#cal-default [data-action="next-month"]');
     const next = new Date();
     next.setMonth(next.getMonth() + 1);
     const monthName = new Intl.DateTimeFormat(undefined, { month: 'long' }).format(next);
@@ -78,7 +78,7 @@ try {
       new Date(next.getFullYear(), next.getMonth() + 1, 0).getDate(),
       'grid holds the full next month',
     );
-    await page.click('[data-action="prev-month"]');
+    await page.click('#cal-default [data-action="prev-month"]');
     const now = new Date();
     const cur = new Intl.DateTimeFormat(undefined, { month: 'long' }).format(now);
     assert.equal(await heading(page), `${cur} ${now.getFullYear()}`, 'back to today');
@@ -108,7 +108,7 @@ try {
     next.setMonth(next.getMonth() + 1);
     const monthName = new Intl.DateTimeFormat(undefined, { month: 'long' }).format(next);
     assert.match(await heading(page), new RegExp(monthName), 'navigated into next month');
-    const selected = await page.$eval('.calendar-day[data-selected] button', (el) => el.textContent);
+    const selected = await page.$eval('#cal-default .calendar-day[data-selected] button', (el) => el.textContent);
     assert.ok(selected, 'the spillover day is selected in the new month');
   });
 
@@ -152,7 +152,7 @@ try {
   });
 
   await check('state API: getState reflects nav clicks (no setState involved)', async () => {
-    await page.click('[data-action="next-month"]');
+    await page.click('#cal-default [data-action="next-month"]');
     const now = new Date();
     const state = await page.$eval('#cal-default', (el) => (el as HTMLElement).api!.getState());
     const expected = new Date(now.getFullYear(), now.getMonth() + 1);
@@ -169,6 +169,20 @@ try {
       }
     });
     assert.ok(err && err.includes('unknown state'), `expected throw, got ${err}`);
+  });
+
+  // -- Density: frame padding 8/12/16px + day hit-areas 24/32/40px ----------
+  await check('data-density scales frame padding and day hit-areas', async () => {
+    const rows = await page.evaluate(() =>
+      ['cal-den-compact', 'cal-den-comfortable', 'cal-den-spacious'].map((id) => {
+        const cal = document.getElementById(id)!;
+        const pad = getComputedStyle(cal).padding;
+        const btn = cal.querySelector('.calendar-day button')!;
+        return [pad, btn ? Math.round(btn.getBoundingClientRect().height) : -1] as [string, number];
+      }),
+    );
+    assert.equal(rows.map((r) => r[0]).join('/'), '8px/12px/16px', `frame paddings, got ${rows.map((r) => r[0]).join('/')}`);
+    assert.equal(rows.map((r) => r[1]).join('/'), '24/32/40', `day button heights, got ${rows.map((r) => r[1]).join('/')}`);
   });
 
   await check('state API: registry globals expose api + declared states', async () => {

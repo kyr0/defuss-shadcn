@@ -100,6 +100,18 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <ExampleCode>{"<button class=\"btn\" data-variant=\"outline\"\n        onclick=\"_defussShadcn.toast.show({ title: 'Changes saved', description: 'Your profile has been updated.', action: { label: 'Undo', onClick: () => _defussShadcn.toast.show('Undone!') } })\">\n  Show Toast\n</button>\n\n<script>\n_defussShadcn.toast.show({\n  title: 'Changes saved',\n  description: 'Your profile has been updated.',\n  action: {\n    label: 'Undo',\n    onClick: () => _defussShadcn.toast.show('Undone!')\n  }\n});\n</script>"}</ExampleCode>
 </Example>
 
+<Example>
+  <ExampleLabel>Size & Density</ExampleLabel>
+  <ExampleHint><code>size</code> scales the width envelope (<code>sm</code> / <code>md</code> / <code>lg</code>, <code>md</code> matches the unsized default), <code>density</code> the padding and content gap (<code>compact</code> / <code>comfortable</code> / <code>spacious</code>) — pass either option to <code>show()</code> and it lands as the matching <code>data-*</code> attribute on the toast.</ExampleHint>
+  <div class="flex flex-wrap gap-2">
+    <button class="btn" data-variant="outline" onclick="_defussShadcn.toast.show({ title: 'Narrow toast', description: 'Width envelope sm.', size: 'sm' })">Size sm</button>
+    <button class="btn" data-variant="outline" onclick="_defussShadcn.toast.show({ title: 'Wide toast', description: 'Width envelope lg.', size: 'lg' })">Size lg</button>
+    <button class="btn" data-variant="outline" onclick="_defussShadcn.toast.show({ title: 'Compact toast', description: 'Tighter padding and gap.', density: 'compact' })">Density compact</button>
+    <button class="btn" data-variant="outline" onclick="_defussShadcn.toast.show({ title: 'Spacious toast', description: 'Roomier padding and gap.', density: 'spacious' })">Density spacious</button>
+  </div>
+  <ExampleCode>{"// size: \"sm\" | \"md\" | \"lg\" (md == unsized default)\n// density: \"compact\" | \"comfortable\" | \"spacious\" (comfortable == default)\n_defussShadcn.toast.show({\n  title: 'Narrow toast',\n  description: 'Width envelope sm.',\n  size: 'sm',\n});\n\n_defussShadcn.toast.show({\n  title: 'Compact toast',\n  description: 'Tighter padding and gap.',\n  density: 'compact',\n});"}</ExampleCode>
+</Example>
+
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">The named-state API is bound to the region container (<code>#toast-container</code>):</p>
   <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">

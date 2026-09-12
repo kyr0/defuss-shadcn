@@ -62,6 +62,14 @@
     padding: 1.5rem;
   }
 
+  /* -- Density ------------------------------------------------
+     data-density on the .alert-dialog root scales the content padding
+     (0.75 / 1 / 1.25 of the 1.5rem default); comfortable matches the
+     unsized default. */
+  .alert-dialog:where([data-density="compact"]) .alert-dialog-content     { padding: 1rem; }
+  .alert-dialog:where([data-density="comfortable"]) .alert-dialog-content { padding: 1.5rem; }
+  .alert-dialog:where([data-density="spacious"]) .alert-dialog-content    { padding: 2rem; }
+
   .alert-dialog-header {
     margin-bottom: 1.25rem;
   }

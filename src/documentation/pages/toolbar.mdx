@@ -102,6 +102,44 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <ExampleCode>{"<div class=\"toolbar\" role=\"toolbar\" aria-label=\"Actions\">\n  <button class=\"btn\" data-variant=\"ghost\" data-size=\"icon\" aria-label=\"Undo\">\n    <i data-lucide=\"undo-2\"></i>\n  </button>\n  <button class=\"btn\" data-variant=\"ghost\" data-size=\"icon\" aria-label=\"Redo\">\n    <i data-lucide=\"redo-2\"></i>\n  </button>\n  <div class=\"separator\" data-orientation=\"vertical\" role=\"separator\"></div>\n  <button class=\"btn\" data-variant=\"ghost\" data-size=\"icon\" aria-label=\"Copy\">...</button>\n  <button class=\"btn\" data-variant=\"ghost\" data-size=\"icon\" aria-label=\"Cut\">...</button>\n  <button class=\"btn\" data-variant=\"ghost\" data-size=\"icon\" aria-label=\"Paste\">...</button>\n</div>"}</ExampleCode>
 </Example>
 
+<Example previewStyle="align-items:flex-start;flex-direction:column;gap:1rem;">
+  <ExampleLabel>Sizes</ExampleLabel>
+  <ExampleHint>Set <code>data-size</code> on the <code>.toolbar</code> root and the chrome plus its <code>.btn</code> / <code>.toggle</code> controls scale together — the ladder mirrors the button sizes (<code>md</code> matches the unsized default).</ExampleHint>
+  <div class="flex flex-wrap gap-4" style="align-items:flex-start;">
+    <div class="toolbar" role="toolbar" aria-label="Size xs" data-size="xs">
+      <button class="btn" type="button">xs</button>
+      <div class="separator" data-orientation="vertical" role="separator" />
+      <button class="toggle" type="button" aria-pressed="false"><i data-lucide="bold" /></button>
+      <button class="toggle" type="button" aria-pressed="false"><i data-lucide="italic" /></button>
+    </div>
+    <div class="toolbar" role="toolbar" aria-label="Size sm" data-size="sm">
+      <button class="btn" type="button">sm</button>
+      <div class="separator" data-orientation="vertical" role="separator" />
+      <button class="toggle" type="button" aria-pressed="false"><i data-lucide="bold" /></button>
+      <button class="toggle" type="button" aria-pressed="false"><i data-lucide="italic" /></button>
+    </div>
+    <div class="toolbar" role="toolbar" aria-label="Size md" data-size="md">
+      <button class="btn" type="button">md</button>
+      <div class="separator" data-orientation="vertical" role="separator" />
+      <button class="toggle" type="button" aria-pressed="false"><i data-lucide="bold" /></button>
+      <button class="toggle" type="button" aria-pressed="false"><i data-lucide="italic" /></button>
+    </div>
+    <div class="toolbar" role="toolbar" aria-label="Size lg" data-size="lg">
+      <button class="btn" type="button">lg</button>
+      <div class="separator" data-orientation="vertical" role="separator" />
+      <button class="toggle" type="button" aria-pressed="false"><i data-lucide="bold" /></button>
+      <button class="toggle" type="button" aria-pressed="false"><i data-lucide="italic" /></button>
+    </div>
+    <div class="toolbar" role="toolbar" aria-label="Size xl" data-size="xl">
+      <button class="btn" type="button">xl</button>
+      <div class="separator" data-orientation="vertical" role="separator" />
+      <button class="toggle" type="button" aria-pressed="false"><i data-lucide="bold" /></button>
+      <button class="toggle" type="button" aria-pressed="false"><i data-lucide="italic" /></button>
+    </div>
+  </div>
+  <ExampleCode>{"<div class=\"toolbar\" role=\"toolbar\" data-size=\"sm\">\n  <button class=\"btn\" type=\"button\">…</button>\n  <div class=\"separator\" data-orientation=\"vertical\" role=\"separator\" />\n  <button class=\"toggle\" type=\"button\" aria-pressed=\"false\">…</button>\n</div>\n\n<!-- xs 1.75rem · sm 2rem · md 2.25rem (default) · lg 2.75rem · xl 3.25rem controls -->"}</ExampleCode>
+</Example>
+
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
   <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">

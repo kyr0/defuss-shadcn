@@ -11,7 +11,7 @@
 
 **A UI component system that scales with _local_ AI.** Themeable components built on semantic HTML, modern CSS, and vanilla JavaScript. No framework. No build step for consumers — `dist/` is committed and ready to use as-is. The simplest possible foundation for AI-driven prototyping.
 
-**71 components — 27 with JavaScript, 44 CSS-only — 71.9 KiB minified + compressed — 33.1 KiB as the all.css/all.js bundle.**
+**71 components — 27 with JavaScript, 44 CSS-only — 72.8 KiB minified + compressed — 33.9 KiB as the all.css/all.js bundle.**
 44 of 71 components need no JavaScript — native HTML and modern CSS cover them entirely.
 The footprint is measured from the shipped `dist/` files on every build and published as
 [`dist/stats.json`](dist/stats.json); `verify` fails the build if this sentence and that file disagree.

@@ -119,6 +119,16 @@ try {
     assert.ok(err && err.includes('unknown state'), `expected throw, got ${err}`);
   });
 
+  // -- Density: content padding 12/16/20px ----------------------------------
+  await check('data-density scales .popover padding to 12/16/20px', async () => {
+    const pads = await page.evaluate(() =>
+      ['pop-den-compact', 'pop-den-comfortable', 'pop-den-spacious'].map(
+        (id) => getComputedStyle(document.getElementById(id)!).padding,
+      ),
+    );
+    assert.deepEqual(pads, ['12px', '16px', '20px'], `density paddings, got ${pads.join(' / ')}`);
+  });
+
   await check('state API: registry globals expose api + declared states', async () => {
     const reg = await page.evaluate(() => ({
       hasApi: typeof globalThis._defussShadcn?.popoverApi?.setState === 'function',

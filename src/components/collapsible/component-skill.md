@@ -34,6 +34,17 @@ supportedStates: default
 </details>
 ```
 
+
+## Density
+
+Set `data-density` on the `.collapsible` root. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25); typography and fixed dimensions stay identical. `comfortable` matches the unsized default.
+
+| Value | Effect |
+| --- | --- |
+| `compact` | trigger 0.5rem 0.75rem, content 0 0.75rem 0.5rem |
+| `comfortable` | trigger 0.75rem 1rem, content 0 1rem 0.75rem — identical to the unsized default |
+| `spacious` | trigger 1rem 1.25rem, content 0 1.25rem 1rem |
+
 ## Accessibility
 
 - `<details>`/`<summary>` is natively accessible — keyboard and screen reader support built in

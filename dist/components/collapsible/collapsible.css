@@ -28,6 +28,23 @@
     }
   }
 
+  /* -- Density --------------------------------------------------
+     data-density on the .collapsible root scales the padding between text
+     and the outer border (trigger + content), ratio 0.75 / 1 / 1.25;
+     comfortable matches the unsized default. */
+  .collapsible:where([data-density="compact"]) {
+    & .collapsible-trigger { padding: 0.5rem 0.75rem; }
+    & .collapsible-content  { padding: 0 0.75rem 0.5rem; }
+  }
+  .collapsible:where([data-density="comfortable"]) {
+    & .collapsible-trigger { padding: 0.75rem 1rem; }
+    & .collapsible-content  { padding: 0 1rem 0.75rem; }
+  }
+  .collapsible:where([data-density="spacious"]) {
+    & .collapsible-trigger { padding: 1rem 1.25rem; }
+    & .collapsible-content  { padding: 0 1.25rem 1rem; }
+  }
+
   .collapsible-trigger {
     display: flex;
     align-items: center;

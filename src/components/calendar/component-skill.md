@@ -76,6 +76,17 @@ document.querySelector('#my-calendar').api.getState(); // { name: 'default', con
 The api is bound per calendar; the registry global is
 `_defussShadcn.calendarApi` / `_defussShadcn.calendarStates`.
 
+
+## Density
+
+Set `data-density` on the `.calendar` root. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25); typography and fixed dimensions stay identical. `comfortable` matches the unsized default.
+
+| Value | Effect |
+| --- | --- |
+| `compact` | frame 0.5rem, day cells 1.75rem (hit-area 1.5rem) |
+| `comfortable` | frame 0.75rem, day cells 2.25rem (hit-area 2rem) — identical to the unsized default |
+| `spacious` | frame 1rem, day cells 2.75rem (hit-area 2.5rem) |
+
 ## Accessibility
 
 - Month heading uses `aria-live="polite"` for navigation announcements

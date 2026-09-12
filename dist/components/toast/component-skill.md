@@ -75,6 +75,27 @@ region announcements. Follows `role="status"` with `aria-live="polite"`.
 
 ---
 
+
+## Sizes
+
+Set `data-size` on the .toast element. Width envelope only — typography and padding are density’s job.
+
+| `data-size` | Effect |
+|-------------|--------|
+| `sm` | min-width 16rem, max-width 20rem |
+| `md` | min-width 20rem, max-width 26rem — identical to the unsized default |
+| `lg` | min-width 24rem, max-width 32rem |
+
+## Density
+
+Set `data-density` on the `.toast` element. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25); typography and fixed dimensions stay identical. `comfortable` matches the unsized default.
+
+| Value | Effect |
+| --- | --- |
+| `compact` | padding 0.75rem, content gap 0.5rem |
+| `comfortable` | padding 1rem, gap 0.75rem — identical to the unsized default |
+| `spacious` | padding 1.25rem, gap 1rem |
+
 ## ARIA
 
 | Attribute           | Where            | Value                       |

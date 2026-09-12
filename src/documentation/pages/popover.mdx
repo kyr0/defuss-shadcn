@@ -160,6 +160,25 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </div>
 </Example>
 
+<Example previewStyle="align-items:flex-start;flex-direction:column;gap:1rem;">
+  <ExampleLabel>Density</ExampleLabel>
+  <ExampleHint>Set <code>data-density</code> on the component root to scale its content padding. A whitespace policy, not a zoom: only padding scales (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), typography stays identical. <code>comfortable</code> matches the unsized default.</ExampleHint>
+  <div class="flex flex-wrap gap-2">
+    <button class="btn" data-variant="outline" popovertarget="density-popover-compact">Compact</button>
+    <div class="popover" id="density-popover-compact" popover data-density="compact">
+      <div class="popover-header"><p class="popover-title">Compact density</p><p class="popover-description">Content padding 0.75rem.</p></div>
+    </div>
+    <button class="btn" data-variant="outline" popovertarget="density-popover-comfortable">Comfortable</button>
+    <div class="popover" id="density-popover-comfortable" popover data-density="comfortable">
+      <div class="popover-header"><p class="popover-title">Comfortable density</p><p class="popover-description">Identical to the unsized default — 1rem.</p></div>
+    </div>
+    <button class="btn" data-variant="outline" popovertarget="density-popover-spacious">Spacious</button>
+    <div class="popover" id="density-popover-spacious" popover data-density="spacious">
+      <div class="popover-header"><p class="popover-title">Spacious density</p><p class="popover-description">Content padding 1.25rem.</p></div>
+    </div>
+  </div>
+</Example>
+
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per popover through the bound <code>api</code>:</p>
   <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">

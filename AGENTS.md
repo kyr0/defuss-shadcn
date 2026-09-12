@@ -1081,9 +1081,9 @@ in localStorage (`defuss-shadcn-nav-collapsed`), restored pre-paint by the
 inline script in `DocPage`. The docs sidebar **is the shipped `sidebar`
 component** (`.app-sidebar`/`.sidebar-content`/`.sidebar-group`/
 `.sidebar-submenu`/`.sidebar-link`; the `nav-link` class rides along as the
-router's hook) — its footer trigger or ⌘B dock it to zero width
-(`defuss-shadcn-nav-docked`; the header hamburger reopens it), and below
-64rem it auto-collapses into the hamburger-driven drawer.
+router's hook) — the header's panel-left toggle (next to the brand) or ⌘B
+dock it to zero width (`defuss-shadcn-nav-docked`), and below 64rem it
+auto-collapses into the drawer that same toggle opens.
 
 To reorder, edit the `NAV` array in `src/documentation/lib/nav.ts`.
 
