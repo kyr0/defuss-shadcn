@@ -4,8 +4,19 @@
     <meta charset="utf-8" />
     <title>form e2e fixture</title>
     <link rel="stylesheet" href="/dist/theme/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/sizing.css" />
+    <link rel="stylesheet" href="/dist/theme/layout.css" />
     <link rel="stylesheet" href="/dist/components/form/form.css" />
     <link rel="stylesheet" href="/dist/components/label/label.css" />
+    <!-- the ladder check below pairs form glue with every field control it wraps -->
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/input/input.css" />
+    <link rel="stylesheet" href="/dist/components/select/select.css" />
+    <link rel="stylesheet" href="/dist/components/number-input/number-input.css" />
+    <link rel="stylesheet" href="/dist/components/combobox/combobox.css" />
+    <link rel="stylesheet" href="/dist/components/date-picker/date-picker.css" />
+    <link rel="stylesheet" href="/dist/components/color-picker/color-picker.css" />
+    <link rel="stylesheet" href="/dist/components/file-input/file-input.css" />
   </head>
   <body style="padding:2rem;">
     <!-- mirrors the doc page: stacked form, horizontal field, inline row, fieldset -->
@@ -31,5 +42,17 @@
       </fieldset>
       <div class="form-actions" id="fm-actions"><button type="button">Save</button></div>
     </form>
+
+    <!-- the doc page's "Consistent field heights" grid, same markup (minus the
+         popover): every field must render the same box for the same size step -->
+    <div id="fm-ladder" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;">
+      <input class="input" id="ld-input" />
+      <select class="select" id="ld-select"><option>A</option></select>
+      <div class="number-input" id="ld-number"><button type="button">−</button><input type="text" value="1" /><button type="button">+</button></div>
+      <div class="combobox" id="ld-combobox"><button class="btn combobox-trigger" type="button">Pick</button></div>
+      <input class="input date-input" type="date" id="ld-date" />
+      <div class="color-picker" id="ld-color"><input type="color" value="#3b82f6" /><span class="color-picker-value">#3B82F6</span></div>
+      <input class="file-input" type="file" id="ld-file" />
+    </div>
   </body>
 </html>

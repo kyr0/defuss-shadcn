@@ -24,6 +24,8 @@
 
 @layer components {
   .date-input {
+    /* see .input — border-box so the declared ladder height is the real box */
+    box-sizing: border-box;
     height: 2.5rem;
     width: 100%;
     border: 1px solid var(--input);

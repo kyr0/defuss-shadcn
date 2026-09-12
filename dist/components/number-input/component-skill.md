@@ -35,7 +35,7 @@ supportedStates: default
 | `xs` | 1.75rem | 1.5rem | 0.75rem |
 | `sm` | 2rem | 1.75rem | 0.8125rem |
 | `md` | 2.25rem | 2rem | 0.875rem |
-| *(none)* | auto (2.5rem children) | 2rem | 0.875rem |
+| *(none)* | 2.5rem | 2rem | 0.875rem |
 | `lg` | 2.75rem | 2.25rem | 1rem |
 | `xl` | 3.25rem | 2.5rem | 1.125rem |
 

@@ -19,7 +19,8 @@ await cssSmoke('file-input', [
         const s = getComputedStyle(document.querySelector('#fi-default')!, '::file-selector-button');
         return { height: s.height, 'border-right-width': s.borderRightWidth, cursor: s.cursor };
       });
-      // computed style resolves the author's `height: 100%` to the 40px box
+      // computed style resolves the author's `height: calc(100% + 2px)` to the
+      // 40px border-box (flush with the frame, no 1px gaps above/below)
       assert.equal(btn.height, '40px', 'button fills the control height');
       assert.equal(btn['border-right-width'], '1px', 'divider between button and file name');
       assert.equal(btn.cursor, 'pointer');

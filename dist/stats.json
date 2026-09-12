@@ -9,17 +9,17 @@
   },
   "withJs": 27,
   "withoutJs": 44,
-  "totalSize": 441313,
-  "totalSizeMinified": 202053,
-  "totalSizeGz": 144985,
-  "totalSizeGzMinified": 73566,
+  "totalSize": 443083,
+  "totalSizeMinified": 202181,
+  "totalSizeGz": 145692,
+  "totalSizeGzMinified": 73614,
   "bundle": {
     "jsSize": 101993,
     "jsSizeMinified": 56077,
-    "cssSize": 235374,
-    "cssSizeMinified": 134067,
-    "totalSizeGz": 58458,
-    "totalSizeGzMinified": 33872
+    "cssSize": 237144,
+    "cssSizeMinified": 134195,
+    "totalSizeGz": 59089,
+    "totalSizeGzMinified": 33905
   },
   "components": {
     "accordion": {
@@ -223,12 +223,12 @@
       "withJs": true,
       "jsSize": 4948,
       "jsSizeMinified": 1230,
-      "cssSize": 2496,
-      "cssSizeMinified": 1393,
-      "totalSizeGz": 2880,
-      "totalSizeGzMinified": 1082,
-      "totalSize": 7444,
-      "totalSizeMinified": 2623
+      "cssSize": 2649,
+      "cssSizeMinified": 1397,
+      "totalSizeGz": 2923,
+      "totalSizeGzMinified": 1080,
+      "totalSize": 7597,
+      "totalSizeMinified": 2627
     },
     "combobox": {
       "name": "combobox",
@@ -236,12 +236,12 @@
       "withJs": true,
       "jsSize": 12129,
       "jsSizeMinified": 4416,
-      "cssSize": 7126,
-      "cssSizeMinified": 4107,
-      "totalSizeGz": 6096,
-      "totalSizeGzMinified": 3203,
-      "totalSize": 19255,
-      "totalSizeMinified": 8523
+      "cssSize": 7391,
+      "cssSizeMinified": 4121,
+      "totalSizeGz": 6182,
+      "totalSizeGzMinified": 3208,
+      "totalSize": 19520,
+      "totalSizeMinified": 8537
     },
     "command": {
       "name": "command",
@@ -275,12 +275,12 @@
       "withJs": false,
       "jsSize": 0,
       "jsSizeMinified": 0,
-      "cssSize": 2318,
-      "cssSizeMinified": 1188,
-      "totalSizeGz": 961,
-      "totalSizeGzMinified": 507,
-      "totalSize": 2318,
-      "totalSizeMinified": 1188
+      "cssSize": 2428,
+      "cssSizeMinified": 1210,
+      "totalSizeGz": 1005,
+      "totalSizeGzMinified": 516,
+      "totalSize": 2428,
+      "totalSizeMinified": 1210
     },
     "dialog": {
       "name": "dialog",
@@ -340,12 +340,12 @@
       "withJs": false,
       "jsSize": 0,
       "jsSizeMinified": 0,
-      "cssSize": 2712,
-      "cssSizeMinified": 1615,
-      "totalSizeGz": 968,
-      "totalSizeGzMinified": 565,
-      "totalSize": 2712,
-      "totalSizeMinified": 1615
+      "cssSize": 3066,
+      "cssSizeMinified": 1649,
+      "totalSizeGz": 1140,
+      "totalSizeGzMinified": 585,
+      "totalSize": 3066,
+      "totalSizeMinified": 1649
     },
     "form": {
       "name": "form",
@@ -431,12 +431,12 @@
       "withJs": false,
       "jsSize": 0,
       "jsSizeMinified": 0,
-      "cssSize": 4096,
-      "cssSizeMinified": 2265,
-      "totalSizeGz": 1180,
-      "totalSizeGzMinified": 775,
-      "totalSize": 4096,
-      "totalSizeMinified": 2265
+      "cssSize": 4429,
+      "cssSizeMinified": 2287,
+      "totalSizeGz": 1332,
+      "totalSizeGzMinified": 783,
+      "totalSize": 4429,
+      "totalSizeMinified": 2287
     },
     "label": {
       "name": "label",
@@ -483,12 +483,12 @@
       "withJs": true,
       "jsSize": 5541,
       "jsSizeMinified": 1497,
-      "cssSize": 3770,
-      "cssSizeMinified": 1957,
-      "totalSizeGz": 3416,
-      "totalSizeGzMinified": 1376,
-      "totalSize": 9311,
-      "totalSizeMinified": 3454
+      "cssSize": 4155,
+      "cssSizeMinified": 1967,
+      "totalSizeGz": 3546,
+      "totalSizeGzMinified": 1377,
+      "totalSize": 9696,
+      "totalSizeMinified": 3464
     },
     "pagination": {
       "name": "pagination",
@@ -808,12 +808,12 @@
       "withJs": false,
       "jsSize": 0,
       "jsSizeMinified": 0,
-      "cssSize": 1772,
-      "cssSizeMinified": 1180,
-      "totalSizeGz": 618,
-      "totalSizeGzMinified": 515,
-      "totalSize": 1772,
-      "totalSizeMinified": 1180
+      "cssSize": 1942,
+      "cssSizeMinified": 1202,
+      "totalSizeGz": 698,
+      "totalSizeGzMinified": 522,
+      "totalSize": 1942,
+      "totalSizeMinified": 1202
     },
     "timeline": {
       "name": "timeline",

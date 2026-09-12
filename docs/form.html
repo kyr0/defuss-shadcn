@@ -19,6 +19,143 @@
     &lt;button class="btn" type="submit" data-variant="default"&gt;Submit&lt;/button&gt;
     &lt;button class="btn" type="reset" data-variant="outline"&gt;Reset&lt;/button&gt;
   &lt;/div&gt;
+&lt;/form&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-8" id="toc-consistent-field-heights"><a class="heading-anchor" href="#toc-consistent-field-heights" aria-label="Link to section: Consistent field heights">§</a>Consistent field heights</p><p class="text-xs text-muted-foreground mb-3">Every field control renders the same box height for the same <code>data-size</code> — the <a href="input.html">Input</a> ladder is the standard (<code>40 / 28 / 32 / 36 / 44 / 52px</code> for default / xs / sm / md / lg / xl), so mixed fields sit on one baseline. The rows below use the shipped <a href="grid.html">grid</a> helpers (<code>grid</code> + <code>grid-cols-4</code> + <code>gap-4</code>) directly.</p><div class="preview" style="align-items:flex-start;padding:2rem;"><form class="form w-full" style="max-width:46rem;" onsubmit="return false;"><div class="grid grid-cols-4 gap-4"><div class="form-field"><label class="label" for="fh-1a">Text</label><input class="input" type="text" id="fh-1a" placeholder="Name" /></div><div class="form-field"><label class="label" for="fh-1b">Select</label><select class="select" id="fh-1b"><option>Option A</option><option>Option B</option></select></div><div class="form-field"><label class="label" for="fh-1c">Number</label><div class="number-input w-full"><button type="button" aria-label="Decrease">−</button><input type="text" id="fh-1c" value="1" /><button type="button" aria-label="Increase">+</button></div></div><div class="form-field"><label class="label" id="fh-1d-label">Combobox</label><div class="combobox"><button class="btn combobox-trigger" type="button" data-variant="outline" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="fh-1d-label" aria-controls="fh-1d-popover"><span class="combobox-value" data-placeholder="Pick…">Pick…</span><svg class="combobox-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg></button><div id="fh-1d-popover" class="combobox-content" popover=""><div class="combobox-listbox" role="listbox" aria-label="Height demo options"><div role="option" class="combobox-item" data-value="a" aria-selected="false">Option A</div><div role="option" class="combobox-item" data-value="b" aria-selected="false">Option B</div></div></div></div></div></div><div class="grid grid-cols-4 gap-4"><div class="form-field"><label class="label" for="fh-2a">Date</label><input class="input date-input" type="date" id="fh-2a" /></div><div class="form-field"><label class="label" for="fh-2b">Color</label><div class="color-picker w-full"><input type="color" id="fh-2b" value="#3b82f6" /><span class="color-picker-value">#3B82F6</span></div></div><div class="form-field"><label class="label" for="fh-2c">File</label><input class="file-input" type="file" id="fh-2c" /></div><div class="form-field"><label class="label" for="fh-2d">Reference</label><input class="input" type="text" id="fh-2d" placeholder="Input" /></div></div><div class="grid grid-cols-4 gap-4"><div class="form-field"><label class="label" for="fh-3a">Text <code>xs</code></label><input class="input" type="text" id="fh-3a" data-size="xs" /></div><div class="form-field"><label class="label" for="fh-3b">Select <code>xs</code></label><select class="select" id="fh-3b" data-size="xs"><option>A</option></select></div><div class="form-field"><label class="label" for="fh-3c">Number <code>xs</code></label><div class="number-input w-full" data-size="xs"><button type="button" aria-label="Decrease">−</button><input type="text" id="fh-3c" value="1" /><button type="button" aria-label="Increase">+</button></div></div><div class="form-field"><label class="label" for="fh-3d">Date <code>xs</code></label><input class="input date-input" type="date" id="fh-3d" data-size="xs" /></div></div><div class="grid grid-cols-4 gap-4"><div class="form-field"><label class="label" for="fh-4a">Text <code>lg</code></label><input class="input" type="text" id="fh-4a" data-size="lg" /></div><div class="form-field"><label class="label" for="fh-4b">Select <code>lg</code></label><select class="select" id="fh-4b" data-size="lg"><option>A</option></select></div><div class="form-field"><label class="label" for="fh-4c">Number <code>lg</code></label><div class="number-input w-full" data-size="lg"><button type="button" aria-label="Decrease">−</button><input type="text" id="fh-4c" value="1" /><button type="button" aria-label="Increase">+</button></div></div><div class="form-field"><label class="label" for="fh-4d">Date <code>lg</code></label><input class="input date-input" type="date" id="fh-4d" data-size="lg" /></div></div></form></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;form class="form w-full" style="max-width:46rem;" onsubmit="return false;"&gt;
+  &lt;div class="grid grid-cols-4 gap-4"&gt;
+    &lt;div class="form-field"&gt;
+      &lt;label class="label" for="fh-1a"&gt;Text&lt;/label&gt;
+      &lt;input class="input" type="text" id="fh-1a" placeholder="Name"&gt;
+    &lt;/div&gt;
+    &lt;div class="form-field"&gt;
+      &lt;label class="label" for="fh-1b"&gt;Select&lt;/label&gt;
+      &lt;select class="select" id="fh-1b"&gt;
+        &lt;option&gt;Option A&lt;/option&gt;
+        &lt;option&gt;Option B&lt;/option&gt;
+      &lt;/select&gt;
+    &lt;/div&gt;
+    &lt;div class="form-field"&gt;
+      &lt;label class="label" for="fh-1c"&gt;Number&lt;/label&gt;
+      &lt;div class="number-input w-full"&gt;
+        &lt;button type="button" aria-label="Decrease"&gt;−&lt;/button&gt;
+        &lt;input type="text" id="fh-1c" value="1"&gt;
+        &lt;button type="button" aria-label="Increase"&gt;+&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="form-field"&gt;
+      &lt;label class="label" id="fh-1d-label"&gt;Combobox&lt;/label&gt;
+      &lt;div class="combobox"&gt;
+        &lt;button class="btn combobox-trigger" type="button" data-variant="outline" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="fh-1d-label" aria-controls="fh-1d-popover"&gt;
+          &lt;span class="combobox-value" data-placeholder="Pick…"&gt;Pick…&lt;/span&gt;
+          &lt;svg class="combobox-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"&gt;
+            &lt;path d="m7 15 5 5 5-5"&gt;&lt;/path&gt;
+            &lt;path d="m7 9 5-5 5 5"&gt;&lt;/path&gt;
+          &lt;/svg&gt;
+        &lt;/button&gt;
+        &lt;div id="fh-1d-popover" class="combobox-content" popover&gt;
+          &lt;div class="combobox-listbox" role="listbox" aria-label="Height demo options"&gt;
+            &lt;div role="option" class="combobox-item" data-value="a" aria-selected="false"&gt;
+Option A
+            &lt;/div&gt;
+            &lt;div role="option" class="combobox-item" data-value="b" aria-selected="false"&gt;
+Option B
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="grid grid-cols-4 gap-4"&gt;
+    &lt;div class="form-field"&gt;
+      &lt;label class="label" for="fh-2a"&gt;Date&lt;/label&gt;
+      &lt;input class="input date-input" type="date" id="fh-2a"&gt;
+    &lt;/div&gt;
+    &lt;div class="form-field"&gt;
+      &lt;label class="label" for="fh-2b"&gt;Color&lt;/label&gt;
+      &lt;div class="color-picker w-full"&gt;
+        &lt;input type="color" id="fh-2b" value="#3b82f6"&gt;
+        &lt;span class="color-picker-value"&gt;#3B82F6&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="form-field"&gt;
+      &lt;label class="label" for="fh-2c"&gt;File&lt;/label&gt;
+      &lt;input class="file-input" type="file" id="fh-2c"&gt;
+    &lt;/div&gt;
+    &lt;div class="form-field"&gt;
+      &lt;label class="label" for="fh-2d"&gt;Reference&lt;/label&gt;
+      &lt;input class="input" type="text" id="fh-2d" placeholder="Input"&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="grid grid-cols-4 gap-4"&gt;
+    &lt;div class="form-field"&gt;
+      &lt;label class="label" for="fh-3a"&gt;
+Text 
+        &lt;code&gt;xs&lt;/code&gt;
+      &lt;/label&gt;
+      &lt;input class="input" type="text" id="fh-3a" data-size="xs"&gt;
+    &lt;/div&gt;
+    &lt;div class="form-field"&gt;
+      &lt;label class="label" for="fh-3b"&gt;
+Select 
+        &lt;code&gt;xs&lt;/code&gt;
+      &lt;/label&gt;
+      &lt;select class="select" id="fh-3b" data-size="xs"&gt;
+        &lt;option&gt;A&lt;/option&gt;
+      &lt;/select&gt;
+    &lt;/div&gt;
+    &lt;div class="form-field"&gt;
+      &lt;label class="label" for="fh-3c"&gt;
+Number 
+        &lt;code&gt;xs&lt;/code&gt;
+      &lt;/label&gt;
+      &lt;div class="number-input w-full" data-size="xs"&gt;
+        &lt;button type="button" aria-label="Decrease"&gt;−&lt;/button&gt;
+        &lt;input type="text" id="fh-3c" value="1"&gt;
+        &lt;button type="button" aria-label="Increase"&gt;+&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="form-field"&gt;
+      &lt;label class="label" for="fh-3d"&gt;
+Date 
+        &lt;code&gt;xs&lt;/code&gt;
+      &lt;/label&gt;
+      &lt;input class="input date-input" type="date" id="fh-3d" data-size="xs"&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="grid grid-cols-4 gap-4"&gt;
+    &lt;div class="form-field"&gt;
+      &lt;label class="label" for="fh-4a"&gt;
+Text 
+        &lt;code&gt;lg&lt;/code&gt;
+      &lt;/label&gt;
+      &lt;input class="input" type="text" id="fh-4a" data-size="lg"&gt;
+    &lt;/div&gt;
+    &lt;div class="form-field"&gt;
+      &lt;label class="label" for="fh-4b"&gt;
+Select 
+        &lt;code&gt;lg&lt;/code&gt;
+      &lt;/label&gt;
+      &lt;select class="select" id="fh-4b" data-size="lg"&gt;
+        &lt;option&gt;A&lt;/option&gt;
+      &lt;/select&gt;
+    &lt;/div&gt;
+    &lt;div class="form-field"&gt;
+      &lt;label class="label" for="fh-4c"&gt;
+Number 
+        &lt;code&gt;lg&lt;/code&gt;
+      &lt;/label&gt;
+      &lt;div class="number-input w-full" data-size="lg"&gt;
+        &lt;button type="button" aria-label="Decrease"&gt;−&lt;/button&gt;
+        &lt;input type="text" id="fh-4c" value="1"&gt;
+        &lt;button type="button" aria-label="Increase"&gt;+&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="form-field"&gt;
+      &lt;label class="label" for="fh-4d"&gt;
+Date 
+        &lt;code&gt;lg&lt;/code&gt;
+      &lt;/label&gt;
+      &lt;input class="input date-input" type="date" id="fh-4d" data-size="lg"&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
 &lt;/form&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-8" id="toc-inline-fields"><a class="heading-anchor" href="#toc-inline-fields" aria-label="Link to section: Inline fields">§</a>Inline fields</p><p class="text-xs text-muted-foreground mb-3">Checkbox and switch aligned with labels.</p><div class="preview" style="justify-content:start;padding:2rem;"><form class="form" style="width:100%;max-width:24rem;" onsubmit="return false;"><div class="form-field"><label class="label" for="f2-user">Username</label><input class="input" type="text" id="f2-user" placeholder="kyr0" /></div><div class="form-field-inline"><input class="checkbox" type="checkbox" id="f2-terms" /><label for="f2-terms" style="font-size:0.875rem;">Accept terms and conditions</label></div><div class="form-field-inline"><input class="switch" type="checkbox" role="switch" id="f2-news" /><label for="f2-news" style="font-size:0.875rem;">Subscribe to newsletter</label></div><div class="form-actions"><button class="btn" type="submit" data-variant="default">Create account</button></div></form></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;div class="form-field-inline"&gt;
   &lt;input class="checkbox" type="checkbox" id="terms"&gt;
   &lt;label for="terms"&gt;Accept terms and conditions&lt;/label&gt;
@@ -234,7 +371,7 @@
     }
   }
 }
-</code></pre></div></section><nav class="page-nav"><a class="page-nav-link page-nav-prev" href="combobox.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><div><span class="page-nav-label">Previous</span><span class="page-nav-title">Combobox</span></div></a><a class="page-nav-link page-nav-next" href="badge.html"><div><span class="page-nav-label">Next</span><span class="page-nav-title">Badge</span></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></nav></main><aside class="site-toc"><div class="site-toc-content"><p class="toc-title">On This Page</p><a class="toc-link" href="#toc-default">Default</a><a class="toc-link" href="#toc-inline-fields">Inline fields</a><a class="toc-link" href="#toc-switch-rows-notifications">Switch rows (notifications)</a><a class="toc-link" href="#toc-fieldset-grouping">Fieldset grouping</a><a class="toc-link" href="#toc-horizontal-layout">Horizontal layout</a><a class="toc-link" href="#toc-validation-with-errors">Validation with errors</a><a class="toc-link" href="#toc-full-composition">Full composition</a><a class="toc-link" href="#toc-css">CSS</a></div></aside></div><script>try {
+</code></pre></div></section><nav class="page-nav"><a class="page-nav-link page-nav-prev" href="combobox.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><div><span class="page-nav-label">Previous</span><span class="page-nav-title">Combobox</span></div></a><a class="page-nav-link page-nav-next" href="badge.html"><div><span class="page-nav-label">Next</span><span class="page-nav-title">Badge</span></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></nav></main><aside class="site-toc"><div class="site-toc-content"><p class="toc-title">On This Page</p><a class="toc-link" href="#toc-default">Default</a><a class="toc-link" href="#toc-consistent-field-heights">Consistent field heights</a><a class="toc-link" href="#toc-inline-fields">Inline fields</a><a class="toc-link" href="#toc-switch-rows-notifications">Switch rows (notifications)</a><a class="toc-link" href="#toc-fieldset-grouping">Fieldset grouping</a><a class="toc-link" href="#toc-horizontal-layout">Horizontal layout</a><a class="toc-link" href="#toc-validation-with-errors">Validation with errors</a><a class="toc-link" href="#toc-full-composition">Full composition</a><a class="toc-link" href="#toc-css">CSS</a></div></aside></div><script>try {
   var c = JSON.parse(localStorage.getItem('defuss-shadcn-nav-collapsed') || '{}');
   if (c && typeof c === 'object' && !Array.isArray(c)) {
     for (var h in c) {

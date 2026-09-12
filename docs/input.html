@@ -68,6 +68,11 @@
 
 @layer components {
   .input {
+    /* border-box is load-bearing for the shared field ladder: the UA gives
+       &lt;input&gt; content-box, so `height` would otherwise exclude the 2px frame
+       and render 2px taller than the border-box fields (select, button-based
+       triggers). With it, every declared height IS the rendered box. */
+    box-sizing: border-box;
     height: 2.5rem;
     width: 100%;
     border: 1px solid var(--input);

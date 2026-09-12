@@ -5,6 +5,9 @@
 
 @layer components {
   .textarea {
+    /* border-box: UA gives &lt;textarea&gt; content-box, which would render the
+       min-height 2px above the shared field frame (see .input) */
+    box-sizing: border-box;
     width: 100%;
     min-height: 5rem;
     border: 1px solid var(--input);

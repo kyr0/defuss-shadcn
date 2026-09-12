@@ -192,8 +192,9 @@ Beta
 
     /* -- Sizes: set data-size on the .combobox wrapper; the trigger (a
        .btn) and the popover's rows scale together. Heights/fonts mirror the
-       button + input ladder (md = 2.25rem = the .btn default; the unsized
-       default equals md, so md is always selectable without a jump). */
+       field ladder the .input defines: the unsized trigger renders 2.5rem —
+       the .input default — via the .combobox-trigger rule below, md = 2.25rem
+       is the ladder's md, exactly like .input goes 2.5rem → 2.25rem at md. */
     &amp;[data-size="xs"] {
       &amp; .combobox-trigger { height: 1.75rem; padding: 0 0.5rem; font-size: 0.75rem; }
       &amp; .combobox-item, &amp; .combobox-group-label { font-size: 0.75rem; padding-block: 0.25rem; }
@@ -218,6 +219,9 @@ Beta
   .combobox-trigger {
     width: 100%;
     justify-content: space-between;
+    /* the field standard for the unsized default (see .input; a bare .btn
+       trigger would render 2.25rem = 36px, 4px below its input siblings) */
+    height: 2.5rem;
   }
 
   .combobox-value {

@@ -14,12 +14,16 @@
        inputs get border-box from the UA). The unsized default keeps its
        auto height (children drive it), so this changes nothing today. */
     box-sizing: border-box;
+    /* explicit default box height (the size ladder below does the rest): an
+       auto-height box let the UA-padding children overshoot to 44px, 4px off
+       the field standard (.input renders exactly 2.5rem = 40px) */
+    height: 2.5rem;
 
     & input {
       border: none;
       outline: none;
       background: transparent;
-      height: 2.5rem;
+      height: 100%;
       width: 4rem;
       text-align: center;
       font-size: 0.875rem;
@@ -39,7 +43,9 @@
       align-items: center;
       justify-content: center;
       width: 2rem;
-      height: 2.5rem;
+      /* height:100% so the button can't overshoot the container's border-box
+         height (the ladder below already sets children to 100%) */
+      height: 100%;
       border: none;
       background: transparent;
       color: var(--muted-foreground);

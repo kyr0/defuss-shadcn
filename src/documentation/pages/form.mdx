@@ -88,6 +88,96 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <ExampleCode>{"<form class=\"form\">\n  <div class=\"form-field\">\n    <label class=\"label\" for=\"name\">Username</label>\n    <input class=\"input\" type=\"text\" id=\"name\" required aria-describedby=\"name-desc\">\n    <p class=\"field-description\" id=\"name-desc\">This is your public display name.</p>\n  </div>\n  <div class=\"form-field\">\n    <label class=\"label\" for=\"email\">Email</label>\n    <input class=\"input\" type=\"email\" id=\"email\" required aria-describedby=\"email-desc\">\n    <p class=\"field-description\" id=\"email-desc\">You can manage email addresses in your settings.</p>\n  </div>\n  <div class=\"form-field\">\n    <label class=\"label\" for=\"bio\">Bio</label>\n    <textarea class=\"textarea\" id=\"bio\" aria-describedby=\"bio-desc\"></textarea>\n    <p class=\"field-description\" id=\"bio-desc\">You can @mention other users and organizations.</p>\n  </div>\n  <div class=\"form-actions\">\n    <button class=\"btn\" type=\"submit\" data-variant=\"default\">Submit</button>\n    <button class=\"btn\" type=\"reset\" data-variant=\"outline\">Reset</button>\n  </div>\n</form>"}</ExampleCode>
 </Example>
 
+<Example previewStyle="align-items:flex-start;padding:2rem;">
+  <ExampleLabel>Consistent field heights</ExampleLabel>
+  <ExampleHint>Every field control renders the same box height for the same <code>data-size</code> — the <a href="input.html">Input</a> ladder is the standard (<code>40 / 28 / 32 / 36 / 44 / 52px</code> for default / xs / sm / md / lg / xl), so mixed fields sit on one baseline. The rows below use the shipped <a href="grid.html">grid</a> helpers (<code>grid</code> + <code>grid-cols-4</code> + <code>gap-4</code>) directly.</ExampleHint>
+  <form class="form w-full" style="max-width:46rem;" onsubmit="return false;">
+    <div class="grid grid-cols-4 gap-4">
+      <div class="form-field">
+        <label class="label" for="fh-1a">Text</label>
+        <input class="input" type="text" id="fh-1a" placeholder="Name" />
+      </div>
+      <div class="form-field">
+        <label class="label" for="fh-1b">Select</label>
+        <select class="select" id="fh-1b"><option>Option A</option><option>Option B</option></select>
+      </div>
+      <div class="form-field">
+        <label class="label" for="fh-1c">Number</label>
+        <div class="number-input w-full"><button type="button" aria-label="Decrease">−</button><input type="text" id="fh-1c" value="1" /><button type="button" aria-label="Increase">+</button></div>
+      </div>
+      <div class="form-field">
+        <label class="label" id="fh-1d-label">Combobox</label>
+        <div class="combobox">
+          <button class="btn combobox-trigger" type="button" data-variant="outline" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="fh-1d-label" aria-controls="fh-1d-popover">
+            <span class="combobox-value" data-placeholder="Pick…">Pick…</span>
+            <svg class="combobox-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5" /><path d="m7 9 5-5 5 5" /></svg>
+          </button>
+          <div id="fh-1d-popover" class="combobox-content" popover>
+            <div class="combobox-listbox" role="listbox" aria-label="Height demo options">
+              <div role="option" class="combobox-item" data-value="a" aria-selected="false">Option A</div>
+              <div role="option" class="combobox-item" data-value="b" aria-selected="false">Option B</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="grid grid-cols-4 gap-4">
+      <div class="form-field">
+        <label class="label" for="fh-2a">Date</label>
+        <input class="input date-input" type="date" id="fh-2a" />
+      </div>
+      <div class="form-field">
+        <label class="label" for="fh-2b">Color</label>
+        <div class="color-picker w-full"><input type="color" id="fh-2b" value="#3b82f6" /><span class="color-picker-value">#3B82F6</span></div>
+      </div>
+      <div class="form-field">
+        <label class="label" for="fh-2c">File</label>
+        <input class="file-input" type="file" id="fh-2c" />
+      </div>
+      <div class="form-field">
+        <label class="label" for="fh-2d">Reference</label>
+        <input class="input" type="text" id="fh-2d" placeholder="Input" />
+      </div>
+    </div>
+    <div class="grid grid-cols-4 gap-4">
+      <div class="form-field">
+        <label class="label" for="fh-3a">Text <code>xs</code></label>
+        <input class="input" type="text" id="fh-3a" data-size="xs" />
+      </div>
+      <div class="form-field">
+        <label class="label" for="fh-3b">Select <code>xs</code></label>
+        <select class="select" id="fh-3b" data-size="xs"><option>A</option></select>
+      </div>
+      <div class="form-field">
+        <label class="label" for="fh-3c">Number <code>xs</code></label>
+        <div class="number-input w-full" data-size="xs"><button type="button" aria-label="Decrease">−</button><input type="text" id="fh-3c" value="1" /><button type="button" aria-label="Increase">+</button></div>
+      </div>
+      <div class="form-field">
+        <label class="label" for="fh-3d">Date <code>xs</code></label>
+        <input class="input date-input" type="date" id="fh-3d" data-size="xs" />
+      </div>
+    </div>
+    <div class="grid grid-cols-4 gap-4">
+      <div class="form-field">
+        <label class="label" for="fh-4a">Text <code>lg</code></label>
+        <input class="input" type="text" id="fh-4a" data-size="lg" />
+      </div>
+      <div class="form-field">
+        <label class="label" for="fh-4b">Select <code>lg</code></label>
+        <select class="select" id="fh-4b" data-size="lg"><option>A</option></select>
+      </div>
+      <div class="form-field">
+        <label class="label" for="fh-4c">Number <code>lg</code></label>
+        <div class="number-input w-full" data-size="lg"><button type="button" aria-label="Decrease">−</button><input type="text" id="fh-4c" value="1" /><button type="button" aria-label="Increase">+</button></div>
+      </div>
+      <div class="form-field">
+        <label class="label" for="fh-4d">Date <code>lg</code></label>
+        <input class="input date-input" type="date" id="fh-4d" data-size="lg" />
+      </div>
+    </div>
+  </form>
+</Example>
+
 <Example previewStyle="justify-content:start;padding:2rem;">
   <ExampleLabel>Inline fields</ExampleLabel>
   <ExampleHint>Checkbox and switch aligned with labels.</ExampleHint>

@@ -2,6 +2,8 @@
 
 @layer components {
   .file-input {
+    /* see .input — border-box so the declared ladder height is the real box */
+    box-sizing: border-box;
     width: 100%;
     height: 2.5rem;
     border: 1px solid var(--input);
@@ -17,7 +19,10 @@
     cursor: pointer;
 
     &::file-selector-button {
-      height: 100%;
+      /* % resolves against the border-box's CONTENT height once the control is
+         border-box — 100% would leave 1px gaps above/below the divider; +2px
+         makes the button flush with the frame (its original visual) */
+      height: calc(100% + 2px);
       border: none;
       border-right: 1px solid var(--input);
       background: var(--muted);

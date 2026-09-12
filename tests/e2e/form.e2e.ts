@@ -13,6 +13,24 @@ await cssSmoke('form', [
     css: { display: 'flex', 'flex-direction': 'column', gap: '24px' },
   },
   {
+    // the doc page's "Consistent field heights" grid, tested at the family
+    // level: the .input ladder (2.5rem = 40px unsized) must be the real box
+    // of EVERY field control, whichever UA box-sizing it inherits
+    label: 'every field control renders the same 40px box (.input is the standard)',
+    run: async (page) => {
+      const heights = await page.evaluate(() =>
+        ['#ld-input', '#ld-select', '#ld-number', '#ld-combobox', '#ld-date', '#ld-color', '#ld-file'].map(
+          (sel) => Math.round(document.querySelector(sel)!.getBoundingClientRect().height),
+        ),
+      );
+      assert.deepEqual(
+        heights,
+        Array(7).fill(40),
+        `mixed field row must sit on the 2.5rem ladder, got ${heights.join('/')}`,
+      );
+    },
+  },
+  {
     label: 'data-orientation="horizontal" rows the field and widens the label',
     run: async (page) => {
       const [dir, label] = await page.evaluate(() => [
