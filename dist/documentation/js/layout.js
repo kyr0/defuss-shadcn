@@ -270,11 +270,8 @@
                 toggle.setAttribute('aria-expanded', 'true');
                 /* On desktop the hamburger doubles as the reopen control for the
                    docked sidebar (.site-sidebar[data-state="collapsed"]) — opening it
-                   undoes the dock (see #sidebar-collapse below). */
+                   undoes the component-level dock and clears the persisted choice. */
                 sidebar.removeAttribute('data-state');
-                var dockBtn = document.getElementById('sidebar-collapse');
-                if (dockBtn)
-                    dockBtn.setAttribute('aria-expanded', 'true');
                 try {
                     localStorage.setItem('defuss-shadcn-nav-docked', '0');
                 }
@@ -328,28 +325,32 @@
                 catch { /* private mode */ }
             });
         });
-        /* -- Sidebar collapse (desktop dock) ---------------------------
-           Same UX as the shipped sidebar component's trigger: dock the site
-           sidebar off-canvas (CSS keys on .site-sidebar[data-state="collapsed"]),
-           which reveals the header hamburger as the reopen control. Persisted;
-           the pre-paint script in DocPage restores it. */
+        /* -- Sidebar dock persistence ----------------------------------
+           The site sidebar IS the sidebar component: its own footer trigger (and
+           ⌘B) toggles data-state through sidebar.js (module eval — before this
+           DOMContentLoaded handler binds). So this listener never toggles; it
+           just PERSISTS the component's new state for DocPage's pre-paint
+           restore and keeps the trigger's aria-label honest. CSS keys the dock
+           on .site-sidebar[data-state="collapsed"], which reveals the header
+           hamburger as the reopen control. */
         var NAV_DOCK_KEY = 'defuss-shadcn-nav-docked';
-        var dockBtn = document.getElementById('sidebar-collapse');
         var siteSidebar = document.querySelector('.site-sidebar');
-        if (dockBtn && siteSidebar) {
-            dockBtn.addEventListener('click', function () {
-                var collapse = siteSidebar.dataset.state !== 'collapsed';
-                if (collapse)
-                    siteSidebar.dataset.state = 'collapsed';
-                else
-                    delete siteSidebar.dataset.state;
-                dockBtn.setAttribute('aria-expanded', collapse ? 'false' : 'true');
+        var dockTrigger = siteSidebar && siteSidebar.querySelector('[data-sidebar-trigger]');
+        if (dockTrigger && siteSidebar) {
+            var syncDock = function () {
+                var collapsed = siteSidebar.dataset.state === 'collapsed';
+                dockTrigger.setAttribute('aria-label', collapsed ? 'Expand sidebar' : 'Collapse sidebar');
                 try {
-                    localStorage.setItem(NAV_DOCK_KEY, collapse ? '1' : '0');
+                    localStorage.setItem(NAV_DOCK_KEY, collapsed ? '1' : '0');
                 }
                 catch { /* private mode */ }
+            };
+            dockTrigger.addEventListener('click', syncDock);
+            document.addEventListener('keydown', function (e) {
+                // sidebar.js's shortcut listener runs first; read the result next tick
+                if ((e.metaKey || e.ctrlKey) && e.key === 'b')
+                    setTimeout(syncDock, 0);
             });
-            dockBtn.setAttribute('aria-expanded', siteSidebar.dataset.state === 'collapsed' ? 'false' : 'true');
         }
         /* -- GitHub star count (cached in sessionStorage) ------------ */
         var updateStarCount = function (count) {
@@ -384,13 +385,13 @@
         var link = e.target.closest('a.nav-link, .site-header a[href="index.html"]');
         if (!link)
             return;
-        var sidebar = document.querySelector('.sidebar-scroll');
+        var sidebar = document.querySelector('.site-sidebar .sidebar-content');
         if (sidebar)
             sessionStorage.setItem(SCROLL_KEY, sidebar.scrollTop);
     });
     /* Restore sidebar scroll & scroll active link into view */
     document.addEventListener('DOMContentLoaded', function () {
-        var sidebar = document.querySelector('.sidebar-scroll');
+        var sidebar = document.querySelector('.site-sidebar .sidebar-content');
         if (!sidebar)
             return;
         var saved = sessionStorage.getItem(SCROLL_KEY);
@@ -472,17 +473,26 @@
                 document.title = doc.title;
                 /* Update current page tracker */
                 currentPage = href;
-                /* Update active nav link */
+                /* Update active nav link — `.active` for tests/hooks, aria-current
+                   for the look: the sidebar component styles [aria-current="page"]
+                   (unlayered .nav-link.active would override component CSS). */
                 document.querySelectorAll('.nav-link').forEach(function (link) {
-                    link.classList.toggle('active', link.getAttribute('href') === currentPage);
+                    var isActive = link.getAttribute('href') === currentPage;
+                    link.classList.toggle('active', isActive);
+                    if (isActive)
+                        link.setAttribute('aria-current', 'page');
+                    else
+                        link.removeAttribute('aria-current');
                 });
-                /* Reveal the section the navigation landed in — a collapsed group
-                   must not hide the page you just opened (toggle listener then
-                   persists the un-collapse). */
+                /* Reveal every <details> ancestor of the active link — the nav
+                   section and, for submenu pages (Width & Height under Sizing),
+                   the submenu too. A collapsed group must never hide the page you
+                   just opened; the section's toggle listener persists it. */
                 var active = document.querySelector('.nav-link.active');
-                var grp = active && active.closest('details[data-nav-section]');
-                if (grp && !grp.open)
-                    grp.open = true;
+                for (var d = active && active.closest('details'); d; d = d.parentElement && d.parentElement.closest('details')) {
+                    if (!d.open)
+                        d.open = true;
+                }
                 /* Push browser history */
                 if (pushState !== false) {
                     history.pushState({ page: href }, '', href);

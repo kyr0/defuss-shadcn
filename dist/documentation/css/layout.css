@@ -51,86 +51,36 @@ main .h1, main .h2, main .h3, main .h4 { scroll-margin-top: 0; }
 }
 
 /* -- Site sidebar ------------------------------------------
-   Same collapse affordance as the shipped sidebar component: the dock
-   button docks it off-canvas (data-state="collapsed", the component's own
-   observable-state attribute — see src/components/sidebar/sidebar.css).
-   While docked, the header hamburger (hidden on desktop by the mobile
-   section below) reappears via :has() as the reopen control. */
+   The docs sidebar IS the shipped `sidebar` component: markup is the
+   component's (.app-sidebar + .sidebar-content + .sidebar-group +
+   .sidebar-submenu + .sidebar-link + .sidebar-trigger — styling and the
+   collapse toggle (footer trigger, ⌘B) come from components/sidebar.css/.js
+   via all.css/all.js). Only chrome geometry is site-side: the fixed-header
+   offset, dock-to-zero-width (the component's icon rail is pointless without
+   icons), and the mobile drawer. site-header.tsx/layout.ts persist the dock
+   choice; the hamburger (revealed via :has()) re-opens the docked sidebar. */
 .site-sidebar {
-  width: 14rem; flex-shrink: 0;
-  border-right: 1px solid var(--sidebar-border);
-  position: sticky; top: 3.5rem;
+  --sidebar-width: 14rem;
+  flex-shrink: 0;
+  position: sticky; /* overrides the component's sticky top:0 (fixed header) */
+  top: 3.5rem;
   height: calc(100vh - 3.5rem);
-  background: var(--sidebar);
-  display: flex; flex-direction: column;
-  overflow: hidden;
-  transition: width 200ms ease; /* same feel as the component's collapse */
 }
 @media (prefers-reduced-motion: reduce) {
   .site-sidebar { transition: none; }
 }
-/* docked (data-state="collapsed" — the sidebar component's own state name):
-   zero width, hamburger appears as the reopen control */
-.site-sidebar[data-state="collapsed"] { width: 0; border-right: none; }
+/* docked (the component's own data-state): zero width, hamburger reveals itself */
+.site-sidebar[data-state="collapsed"] {
+  width: 0;
+  min-width: 0;
+  border-right: none;
+}
 body:has(.site-sidebar[data-state="collapsed"]) .sidebar-toggle { display: flex; }
-
-/* Dock button — docked via JS (layout.ts #sidebar-collapse) + persisted.
-   Only shown at desktop widths; below the breakpoint the hamburger owns it,
-   and the collapsed dock itself is neutralized (see mobile section). */
-.sidebar-collapse {
-  position: absolute; top: 0.625rem; right: 0.5rem; z-index: 1;
-  display: flex; align-items: center; justify-content: center;
-  width: 1.5rem; height: 1.5rem;
-  padding: 0;
-  border: none; border-radius: var(--radius-md);
-  background: transparent;
-  color: var(--muted-foreground);
-  cursor: pointer;
-  transition: color 120ms, background 120ms;
-}
-.sidebar-collapse:hover { color: var(--sidebar-foreground); background: var(--sidebar-accent); }
-.sidebar-collapse:focus-visible { outline: 2px solid var(--sidebar-ring); outline-offset: -2px; }
-.sidebar-collapse svg { width: 0.875rem; height: 0.875rem; transition: rotate 200ms ease; }
-.site-sidebar[data-state="collapsed"] .sidebar-collapse svg { rotate: 180deg; }
-@media (prefers-reduced-motion: reduce) {
-  .sidebar-collapse, .sidebar-collapse svg { transition: none; }
-}
-.sidebar-scroll {
-  flex: 1 1 auto;
-  overflow-y: auto;
-  padding: 1.25rem 0.75rem;
-}
-/* -- Nav section heading (a <summary> of a collapsible group; the docs
-   dogfood the sidebar component's .sidebar-group collapse pattern) ----- */
-.nav-heading {
-  display: flex; align-items: center; gap: 0.5rem;
-  font-size: 0.75rem; font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  /* sidebar-scoped token: section headings sit on --sidebar; --primary is
-     only paired against --background and fails on most theme presets */
-  color: var(--sidebar-foreground);
-  padding: 0.25rem 0.75rem;
-  margin: 0 0 0.25rem;
-  cursor: pointer;
-  list-style: none;
-  user-select: none;
-  border-radius: var(--radius-md);
-  transition: color 120ms;
-}
-.nav-heading::-webkit-details-marker { display: none; }
-.nav-heading:hover { color: var(--sidebar-accent-foreground); }
-.nav-heading svg {
-  width: 0.875rem; height: 0.875rem;
-  margin-left: auto;
-  flex-shrink: 0;
-  transition: rotate 200ms ease;
-}
-details[open] > .nav-heading svg { rotate: 90deg; }
-/* collapsed: tighten the group so the sidebar shrinks to just headings */
-details.nav-section:not([open]) { margin-bottom: 0.25rem !important; }
-@media (prefers-reduced-motion: reduce) {
-  .nav-heading, .nav-heading svg { transition: none; }
+/* drawer mode: the component hides itself below 767px (apps use the mobile
+   <dialog> sheet there); the docs site instead owns the off-canvas drawer —
+   display:flex beats the layered rule, and the footer trigger is inert */
+@media (max-width: 64rem) {
+  .site-sidebar .sidebar-footer { display: none; }
 }
 
 /* -- Header action button / link --------------------------- */
@@ -194,33 +144,36 @@ main {
   from { opacity: 0; }
 }
 
-/* -- Nav link ---------------------------------------------- */
-.nav-link {
-  display: block;
-  padding: 0.3125rem 0.75rem;
-  margin-bottom: 2px;
-  border-radius: var(--radius-md);
-  font-size: 0.875rem;
-  /* sidebar-scoped tokens: the nav sits on --sidebar, so its text must be
-     paired with --sidebar, not with the page-level muted/primary/accent
-     tokens (theme authors pair those against --background only) */
-  color: var(--sidebar-foreground);
-  text-decoration: none;
-  cursor: pointer;
-  border: none;
-  background: none;
-  width: 100%;
-  text-align: left;
-  font-family: var(--font-sans);
-  transition: all 120ms;
-  line-height: 1.6;
-}
-.nav-link:hover { color: var(--sidebar-foreground); background: var(--sidebar-accent); }
-.nav-link.active { color: var(--sidebar-accent-foreground); font-weight: 500; background: var(--sidebar-accent); }
+/* -- Nav link ----------------------------------------------
+   The docs sidebar's links ARE the sidebar component's .sidebar-link
+   (all.css styles them; aria-current="page" renders the active state).
+   .nav-link itself is the router's JS hook only (SPA intercept, active
+   class toggle, prefetch, scroll persistence) — no competing look here;
+   anything declared unlayered would override the layered component CSS. */
+.nav-link { cursor: pointer; }
 .nav-link.disabled {
   opacity: 0.4;
   pointer-events: none;
   cursor: default;
+}
+
+/* Submenu rows (Guides → Sizing/Layout): the summary is a row wrapper, the
+   .sidebar-link inside it is the label + hit area — the component's summary
+   padding would double the link's, so the row defers to the link. */
+.site-sidebar .sidebar-submenu > summary { padding: 0; }
+.site-sidebar .sidebar-submenu > summary:hover { background: transparent; }
+.site-sidebar .sidebar-submenu > summary > .sidebar-link { flex: 1; }
+/* the group's uppercase section label is a <summary><span>; the component
+   already styles it — keep the sidebar's scroll padding roomy like before */
+.site-sidebar .sidebar-content { padding: 0.75rem 0.5rem 1.25rem; gap: 0.25rem; }
+/* nested pages of a submenu align under the parent label (component uses 1.5rem) */
+.site-sidebar .sidebar-submenu > .sidebar-nav { padding-left: 0.875rem; }
+/* the component's icon-rail rules would hide the label spans at 3.5rem —
+   the docs dock collapses to zero width instead; neutralize the rail
+   (desktop only — in drawer mode a stale collapsed state must still show
+   the nav, since the hamburger owns open/close there) */
+@media (min-width: 64rem) {
+  .site-sidebar[data-state="collapsed"] .sidebar-content { display: none; }
 }
 
 /* -- Header search (nav filter) ----------------------------- */
@@ -834,8 +787,11 @@ html.dark pre.shiki span {
   /* Show hamburger */
   .sidebar-toggle { display: flex; }
 
-  /* Sidebar: off-canvas overlay */
+  /* Sidebar: off-canvas drawer. `display:flex` beats the component's own
+     mobile hide rule (that one assumes an app-side <dialog> sheet; the docs
+     site owns the drawer). Unlayered, so it wins regardless of specificity. */
   .site-sidebar {
+    display: flex;
     position: fixed;
     top: 3.5rem;
     left: 0;
@@ -849,10 +805,8 @@ html.dark pre.shiki span {
   .site-sidebar.open {
     transform: translateX(0);
   }
-  /* drawer mode — the hamburger owns open/close here, not the dock button;
-     a stale docked state must not shrink the drawer (specificity of the
-     [data-state] dock rule outranks the plain .site-sidebar rule above) */
-  .sidebar-collapse { display: none; }
+  /* drawer mode — the hamburger owns open/close; the component's auto-collapse
+     or a stale desktop dock state must not shrink/empty the drawer */
   .site-sidebar[data-state="collapsed"] {
     width: 16rem;
     border-right: 1px solid var(--sidebar-border);

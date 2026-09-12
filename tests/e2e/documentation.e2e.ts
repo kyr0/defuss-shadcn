@@ -44,7 +44,7 @@ try {
       header: !!document.querySelector('.site-header .header-brand'),
       links: document.querySelectorAll('.site-sidebar .nav-link').length,
       sections: document.querySelectorAll('.site-sidebar .nav-section').length,
-      openByDefault: [...document.querySelectorAll('details[data-nav-section]')].filter((d) => d.open).length,
+      openByDefault: [...document.querySelectorAll('details[data-nav-section]')].filter((d) => (d as HTMLDetailsElement).open).length,
     }));
     assert.ok(counts.header, 'site-header did not render the brand');
     // brand must read "defuss-shadcn" — the pre-fork "shadcn-html" regressed once
@@ -60,7 +60,7 @@ try {
     // expand everything so the link-clicking checks below can see their targets
     // (the collapse UX itself is covered by ui.test.ts)
     await page.evaluate(() =>
-      document.querySelectorAll('.site-sidebar details').forEach((d) => ((d as HTMLDetailsElement).open = true)),
+      document.querySelectorAll('details').forEach((d) => ((d as HTMLDetailsElement).open = true)),
     );
   });
 

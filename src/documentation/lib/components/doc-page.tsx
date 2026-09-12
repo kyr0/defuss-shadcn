@@ -102,7 +102,9 @@ export function DocPage({ meta, mainStyle, themeExtras, children }: DocPageProps
   }
   if (localStorage.getItem('defuss-shadcn-nav-docked') === '1') {
     var sb = document.querySelector('.site-sidebar');
-    if (sb) sb.dataset.state = 'collapsed';
+    /* stateName pins it: the sidebar component's auto-collapse treats a
+       set stateName as a deliberate user choice and leaves it alone */
+    if (sb) { sb.dataset.state = 'collapsed'; sb.dataset.stateName = 'collapsed'; }
   }
 } catch (e) {}`}</script>
         <SiteFooter />

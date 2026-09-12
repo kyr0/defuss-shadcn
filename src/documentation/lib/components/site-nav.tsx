@@ -3,35 +3,59 @@ import { ALWAYS_OPEN_SECTION, flattenNav, NAV, type NavItem } from '../nav';
 import { readSkillMeta } from '../repo';
 import { NavTypeBadge } from './type-badge';
 
+/**
+ * Why: the docs sidebar dogfoods the shipped `sidebar` component (see
+ * dist/components/sidebar/) — .app-sidebar shell, .sidebar-content scroller,
+ * .sidebar-group sections, .sidebar-submenu parents, .sidebar-link links,
+ * .sidebar-trigger dock button. That means sidebar.js owns its collapse
+ * (trigger + Cmd+B) and what a visitor sees is the component working.
+ * Site chrome (fixed header offset, mobile drawer, dock-to-zero-width) stays
+ * docs-side as unlayered overrides in public/css/layout.css.
+ *
+ * Sections start COLLAPSED except Introduction and the one holding the
+ * current page; DocPage's pre-paint script re-applies remembered toggles.
+ * `nav-link` rides the component's `sidebar-link` class: it is the router's
+ * navigation/hook contract (SPA intercept, active marking, prefetch), not
+ * styling — the component's CSS owns the look.
+ */
+
 const CHEVRON = (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <path d="m9 18 6-6-6-6" />
   </svg>
 );
 
-/** One sidebar link, active-marked, with the skill-frontmatter type badge. */
+/** One sidebar link: component .sidebar-link + the router's .nav-link hook. */
 function NavItemLink({ item, active }: { item: NavItem; active: string }) {
   const type = readSkillMeta(item.href.replace(/\.html$/, ''))?.type;
+  const isActive = item.href === active;
   return (
-    <a class={item.href === active ? 'nav-link active' : 'nav-link'} href={item.href} style="display:flex;align-items:center;gap:0.375rem;">
-      {item.label}
-      {type ? <> <NavTypeBadge type={type} /></> : null}
+    <a
+      class={isActive ? 'nav-link sidebar-link active' : 'nav-link sidebar-link'}
+      href={item.href}
+      {...(isActive ? { 'aria-current': 'page' } : {})}
+    >
+      <span>{item.label}</span>
+      {type ? <NavTypeBadge type={type} /> : null}
     </a>
   );
 }
 
-/** Parent page with sub-pages (Sizing → Width & Height, …), dogfooding the
- * sidebar component's .sidebar-submenu pattern: the summary is the parent
- * page link (the SPA router preventDefaults it, so clicking the label
- * navigates without toggling) and the chevron/row toggles the submenu. */
+/** Parent page with sub-pages (Sizing → Width & Height, …) — the component's
+ * .sidebar-submenu pattern. The label is the parent page link (click
+ * navigates); clicking elsewhere on the row toggles the submenu. */
 function NavItemSubmenu({ item, active }: { item: NavItem; active: string }) {
   const kids = item.children ?? [];
   const containsActive = item.href === active || kids.some((k) => k.href === active);
   return (
-    <details class="nav-submenu sidebar-submenu" {...(containsActive ? { open: '' } : {})}>
+    <details class="sidebar-submenu" {...(containsActive ? { open: '' } : {})}>
       <summary>
-        <a class={item.href === active ? 'nav-link active' : 'nav-link'} href={item.href}>
-          {item.label}
+        <a
+          class={item.href === active ? 'nav-link sidebar-link active' : 'nav-link sidebar-link'}
+          href={item.href}
+          {...(item.href === active ? { 'aria-current': 'page' } : {})}
+        >
+          <span>{item.label}</span>
         </a>
         {CHEVRON}
       </summary>
@@ -44,60 +68,51 @@ function NavItemSubmenu({ item, active }: { item: NavItem; active: string }) {
   );
 }
 
-/**
- * The docs sidebar. Statically rendered per page (replaces the old <site-nav>
- * custom element): NAV sections as <details> groups in the sidebar component's
- * .sidebar-group design, the active link marked, type badges from the skill
- * frontmatter. All sections start COLLAPSED except the Introduction section
- * and the one holding the current page; the inline restore script in DocPage
- * re-applies the visitor's remembered toggles pre-paint.
- */
 export function SiteNav({ active }: Props & { active: string }) {
   return (
-    <>
-      <aside class="site-sidebar">
-        {/* Dock control, mirroring the shipped sidebar component's trigger
-            (layout.ts #sidebar-collapse toggles data-state="collapsed").
-            Hidden below the desktop breakpoint, where the hamburger owns it. */}
+    <aside class="app-sidebar site-sidebar" id="docs-sidebar" data-state="expanded">
+      <div class="sidebar-content">
+        {NAV.map((section) => {
+          const containsActive = flattenNav(section.items).some((i) => i.href === active);
+          const expanded = containsActive || section.heading === ALWAYS_OPEN_SECTION;
+          return (
+            <details
+              class="sidebar-group nav-section"
+              {...(expanded ? { open: '' } : {})}
+              data-nav-section={section.heading}
+            >
+              <summary>
+                <span>{section.heading}</span>
+                {CHEVRON}
+              </summary>
+              <nav class="sidebar-nav">
+                {section.items.map((item) =>
+                  item.children?.length ? (
+                    <NavItemSubmenu item={item} active={active} />
+                  ) : (
+                    <NavItemLink item={item} active={active} />
+                  ),
+                )}
+              </nav>
+            </details>
+          );
+        })}
+      </div>
+      {/* Dock control — the component's own trigger: sidebar.js toggles
+          data-state (also on ⌘B/Ctrl+B); layout.ts persists it and the
+          hamburger re-opens the docked sidebar on desktop. */}
+      <div class="sidebar-footer">
         <button
-          class="sidebar-collapse"
-          id="sidebar-collapse"
+          class="sidebar-trigger"
+          data-sidebar-trigger="docs-sidebar"
           aria-label="Collapse sidebar"
-          title="Collapse sidebar"
+          title="Collapse sidebar (⌘B)"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="m15 18-6-6 6-6" />
           </svg>
         </button>
-        <div class="sidebar-scroll">
-          {NAV.map((section) => {
-            const containsActive = flattenNav(section.items).some((i) => i.href === active);
-            const expanded = containsActive || section.heading === ALWAYS_OPEN_SECTION;
-            return (
-              <details
-                class="nav-section sidebar-group"
-                {...(expanded ? { open: '' } : {})}
-                data-nav-section={section.heading}
-                style="margin-bottom:0.75rem;"
-              >
-                <summary class="nav-heading">
-                  {section.heading}
-                  {CHEVRON}
-                </summary>
-                <nav class="sidebar-nav">
-                  {section.items.map((item) =>
-                    item.children?.length ? (
-                      <NavItemSubmenu item={item} active={active} />
-                    ) : (
-                      <NavItemLink item={item} active={active} />
-                    ),
-                  )}
-                </nav>
-              </details>
-            );
-          })}
-        </div>
-      </aside>
-    </>
+      </div>
+    </aside>
   );
 }

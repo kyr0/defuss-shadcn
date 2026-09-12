@@ -1077,9 +1077,12 @@ The sidebar is ordered by dependency (primitives first):
 Every section except Introduction (and the section holding the current
 page) renders **collapsed**; user toggles persist as a heading→'1'|'0' map
 in localStorage (`defuss-shadcn-nav-collapsed`), restored pre-paint by the
-inline script in `DocPage`. The whole sidebar docks to zero width via the
-header hamburger / its collapse button (`defuss-shadcn-nav-docked`), and
-below 64rem it auto-collapses into the hamburger-driven drawer.
+inline script in `DocPage`. The docs sidebar **is the shipped `sidebar`
+component** (`.app-sidebar`/`.sidebar-content`/`.sidebar-group`/
+`.sidebar-submenu`/`.sidebar-link`; the `nav-link` class rides along as the
+router's hook) — its footer trigger or ⌘B dock it to zero width
+(`defuss-shadcn-nav-docked`; the header hamburger reopens it), and below
+64rem it auto-collapses into the hamburger-driven drawer.
 
 To reorder, edit the `NAV` array in `src/documentation/lib/nav.ts`.
 
