@@ -418,13 +418,38 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <span class="def-term">Icon-only buttons</span>
   <span class="text-sm text-muted-foreground">Buttons with no visible text need <code>aria-label</code> to provide an accessible name: <code>&lt;button aria-label="Close"&gt;</code>.</span>
   <span class="def-term">Visually hidden text</span>
-  <span class="text-sm text-muted-foreground">Text that should be announced but not visible uses a CSS visually-hidden utility (clipped off-screen, still in the accessibility tree).</span>
+  <span class="text-sm text-muted-foreground">Text that should be announced but not visible uses the shipped <code>.sr-only</code> utility (see below).</span>
   <span class="def-term">Form labels</span>
   <span class="text-sm text-muted-foreground">Every form input has a visible <code>&lt;label&gt;</code> element with a matching <code>for</code>/<code>id</code> pair, or <code>aria-label</code> for unlabeled inputs.</span>
 </div>
 
 <CodeCard title="icon button accessibility" lang="markup" mb="2.5rem"><Dim>{"<!-- Icon-only button: needs aria-label -->"}</Dim>{"<"}{"button class=\"btn\" data-size=\"icon\" aria-label=\"Close\""}{">"}{"<"}{"svg aria-hidden=\"true\""}{">"}{"..."}{"<"}{"/svg"}{">"}{"<"}{"/button"}{">"}<Dim>{"<!-- Button with text: icon is decorative -->"}</Dim>{"<"}{"button class=\"btn\""}{">"}{"<"}{"svg aria-hidden=\"true\""}{">"}{"..."}{"<"}{"/svg"}{">"}{"\n  Save Changes\n"}{"<"}{"/button"}{">"}</CodeCard>
 
-<p class="text-sm text-muted-foreground mb-8"> Each component's <code>component-skill.md</code> includes a dedicated ARIA section listing the exact attributes required for that component. See the <a href="https://www.w3.org/WAI/ARIA/apg/" target="_blank" rel="noopener" class="btn" data-variant="link">WAI-ARIA APG</a> for the full specifications these patterns implement. </p>
+<div class="sep" />
+
+<H2>Screen-reader-only content</H2>
+
+<p class="text-sm text-muted-foreground mb-5">
+  Some text belongs to the accessibility tree but not to the visual design: an extra word of context on a link, the unit a <code>{"<meter>"}</code> omits, the label an icon-only control needs. <code>.sr-only</code> ships in the optional <a href="#install"><code>theme/accessibility.css</code></a> module and clips content to a 1px box — CSS the browser still hands to assistive technology (unlike <code>display:none</code> or <code>visibility:hidden</code>, which hide it from screen readers too). <code>.not-sr-only</code> reverses it — the classic skip-link pattern. This very page links the module, so the demo below is the real utility, not a replica.
+</p>
+
+<Demo>
+  <div class="demo-tile" data-variant="outline" style="gap:0.5rem;padding:0.75rem 1rem;">
+    <a class="btn" data-variant="link" href="#">Read the changelog<span class="sr-only"> (opens the release history)</span></a>
+  </div>
+  <DemoCode>{"<a class=\"btn\" data-variant=\"link\" href=\"#\">\n  Read the changelog<span class=\"sr-only\"> (opens the release history)</span>\n</a>"}</DemoCode>
+</Demo>
+
+<p class="text-xs text-muted-foreground mt-3 mb-8">
+  The link reads identically on screen — a screen reader announces the extra phrase. Never put the <em>only</em> accessible name of a focusable control inside <code>.sr-only</code>; use <code>aria-label</code> for that.
+</p>
+
+<h2 id="install" class="h2-display">Load the accessibility module</h2>
+
+<Demo>
+  <DemoCode>{"<link rel=\"stylesheet\" href=\"../theme/default-semantic-tokens.css\">\n<!-- optional module: .sr-only / .not-sr-only -->\n<link rel=\"stylesheet\" href=\"../theme/accessibility.css\">"}</DemoCode>
+</Demo>
+
+<p class="text-sm text-muted-foreground mt-8 mb-8"> Each component's <code>component-skill.md</code> includes a dedicated ARIA section listing the exact attributes required for that component. See the <a href="https://www.w3.org/WAI/ARIA/apg/" target="_blank" rel="noopener" class="btn" data-variant="link">WAI-ARIA APG</a> for the full specifications these patterns implement. </p>
 
 </DocPage>

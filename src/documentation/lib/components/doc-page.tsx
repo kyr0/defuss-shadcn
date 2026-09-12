@@ -63,6 +63,7 @@ export function DocPage({ meta, mainStyle, children }: DocPageProps) {
         <link rel="stylesheet" href="../theme/default-semantic-tokens.css" />
         <link rel="stylesheet" href="../theme/sizing.css" />
         <link rel="stylesheet" href="../theme/layout.css" />
+        <link rel="stylesheet" href="../theme/accessibility.css" />
         <link rel="stylesheet" href="css/docs-theme.css" />
         <link rel="stylesheet" href="css/docs-utilities.css" />
         <link rel="stylesheet" href="css/layout.css" />

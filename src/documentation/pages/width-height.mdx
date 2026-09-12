@@ -97,10 +97,10 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <div class="demo-viewport">
     <div class="flex gap-4">
       <aside class="demo-tile w-24 shrink-0 h-16">w-24 shrink-0</aside>
-      <main class="flex-1 min-w-0 demo-tile h-auto p-2" data-variant="outline" style="overflow-wrap:anywhere;justify-content:flex-start;">flex-1 min-w-0 — AnUnusuallyLongIdentifierThatMustWrapInsteadOfWideningThePage</main>
+      <main class="flex-1 min-w-0 wrap-anywhere demo-tile h-auto p-2" data-variant="outline" style="justify-content:flex-start;">flex-1 min-w-0 — AnUnusuallyLongIdentifierThatMustWrapInsteadOfWideningThePage</main>
     </div>
   </div>
-  <DemoCode>{"<div class=\"flex gap-4\">\n  <aside class=\"w-24 shrink-0\">w-24 shrink-0</aside>\n  <main class=\"flex-1 min-w-0\" style=\"overflow-wrap:anywhere;\">\n    flex-1 min-w-0 — AnUnusuallyLongIdentifierThatMustWrap…\n  </main>\n</div>"}</DemoCode>
+  <DemoCode>{"<div class=\"flex gap-4\">\n  <aside class=\"w-24 shrink-0\">w-24 shrink-0</aside>\n  <main class=\"flex-1 min-w-0 wrap-anywhere\">\n    flex-1 min-w-0 — AnUnusuallyLongIdentifierThatMustWrap…\n  </main>\n</div>"}</DemoCode>
 </Demo>
 
 <DocText>A constrained box turns its overflow into a scrollbar with <code>overflow-x-auto</code>; pair it with <code>whitespace-nowrap</code> on the content so wide rows scroll instead of wrapping into a mess:</DocText>

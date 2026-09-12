@@ -97,12 +97,13 @@ Tokens are compatible with [tweakcn.com](https://tweakcn.com) theme exports. To 
 
 ## Optional modules
 
-Two standalone stylesheets live beside the token file and are opt-in — no component depends on them, and the token export stays tweakcn-pure:
+Three standalone stylesheets live beside the token file and are opt-in — no component depends on them, and the token export stays tweakcn-pure:
 
 - [`dist/theme/sizing.css`](dist/theme/sizing.css) — one numeric scale (`w-4` = four base units, `--size-*` aliases, density-aware spacing)
 - [`dist/theme/layout.css`](dist/theme/layout.css) — small layout surface (`flex`, `grid`, `stack`, `container`, named `query` boundaries, overflow + text-flow helpers)
+- [`dist/theme/accessibility.css`](dist/theme/accessibility.css) — screen-reader-only content (`.sr-only` / `.not-sr-only`, the clip pattern)
 
-Load them after the tokens, before component CSS. Docs: [Sizing](https://kyr0.github.io/defuss-shadcn/sizing.html) · [Layout](https://kyr0.github.io/defuss-shadcn/layout.html)
+Load them after the tokens, before component CSS. Docs: [Sizing](https://kyr0.github.io/defuss-shadcn/sizing.html) · [Layout](https://kyr0.github.io/defuss-shadcn/layout.html) · [Accessibility](https://kyr0.github.io/defuss-shadcn/accessibility.html)
 
 ## Components
 

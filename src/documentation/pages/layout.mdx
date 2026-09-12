@@ -90,6 +90,66 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
+<h2 id="overflow" class="h2-display">Handle overflow deliberately</h2>
+
+<DocText>Every constrained container eventually overflows; the question is only which policy you choose. The overflow family covers the box axes, <code>truncate</code> bundles the classic single-line ellipsis recipe, and the break/wrap family decides what happens to <em>words</em> that don't fit — <code>wrap-anywhere</code> is the flex <code>min-w-0</code> companion that lets a long identifier wrap inside a shrinkable track.</DocText>
+
+<div class="overflow-x-auto mb-6">
+  <table class="table" data-variant="simple">
+    <thead>
+      <tr>
+        <th scope="col">Class</th>
+        <th scope="col">Contract</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>overflow-auto</code> / <code>-x-auto</code> / <code>-y-auto</code></td>
+        <td>Scroll the box on the chosen axes.</td>
+      </tr>
+      <tr>
+        <td><code>overflow-hidden</code> / <code>-x-hidden</code> / <code>-y-hidden</code></td>
+        <td>Clip at the padding edge, no scrolling.</td>
+      </tr>
+      <tr>
+        <td><code>overflow-clip</code> / <code>overflow-visible</code></td>
+        <td>Hard clip (no scrollable overflow area at all) / the native default.</td>
+      </tr>
+      <tr>
+        <td><code>truncate</code></td>
+        <td><code>overflow-hidden</code> + <code>text-overflow:ellipsis</code> + <code>nowrap</code> in one class.</td>
+      </tr>
+      <tr>
+        <td><code>text-ellipsis</code> / <code>text-clip</code></td>
+        <td>How an overflowing inline box ends — needs an overflow context.</td>
+      </tr>
+      <tr>
+        <td><code>break-words</code> / <code>break-all</code> / <code>break-normal</code></td>
+        <td>Word-breaking policy: break on demand, break anywhere per character, native.</td>
+      </tr>
+      <tr>
+        <td><code>wrap-anywhere</code></td>
+        <td><code>overflow-wrap:anywhere</code> — also shrinks min-content, the partner of <code>min-w-0</code>.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<Demo viewport>
+  <div class="demo-viewport">
+    <div class="stack gap-4" data-demo="layout-overflow">
+      <div class="overflow-x-auto h-8 demo-tile" data-variant="muted" style="justify-content:flex-start;">
+        <span class="w-64 shrink-0" style="padding-inline:0.5rem;">overflow-x-auto — the tile scrolls instead of widening the page when the stage gets narrower →</span>
+      </div>
+      <div class="truncate h-8 demo-tile" data-variant="outline" style="display:block;line-height:2rem;padding-inline:0.5rem;">truncate — a single line that must not widen its container collapses to an ellipsis exactly like a UI list row</div>
+      <div class="h-auto p-2 demo-tile wrap-anywhere" data-variant="secondary" style="justify-content:flex-start;">wrap-anywhere — PneumonoultramicroscopicsilicovolcanoconiosisLongIdentifiers break here instead of pushing the track open</div>
+    </div>
+  </div>
+  <DemoCode>{"<!-- scroll the box -->\n<div class=\"overflow-x-auto h-8\">…wide content…</div>\n\n<!-- single-line ellipsis recipe -->\n<div class=\"truncate h-8\">…text that must not widen its row…</div>\n\n<!-- long identifiers break inside a shrinkable track -->\n<div class=\"wrap-anywhere\">…Pneumonoultramicroscopicsilicovolcanoconiosis…</div>"}</DemoCode>
+</Demo>
+
+<div class="sep" />
+
 <h2 id="guides" class="h2-display">Guides</h2>
 
 <DocText>Each primitive has its own page with rendered demos and the full class reference:</DocText>
@@ -113,6 +173,13 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <div class="card-header">
       <h3 class="card-title card-title-sm">Grid</h3>
       <p class="card-description card-desc-sm">Intrinsic card grids, explicit tracks and aligned subgrids — responsive without breakpoints.</p>
+    </div>
+    <div style="height:1.25rem;" />
+  </a>
+  <a href="#overflow" class="card" style="display:block;text-decoration:none;color:inherit;">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Overflow</h3>
+      <p class="card-description card-desc-sm">Box clipping/scrolling and text-flow policies for constrained containers — the overflow, truncate and wrap families.</p>
     </div>
     <div style="height:1.25rem;" />
   </a>
@@ -184,7 +251,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <h2 id="install" class="h2-display">Load the optional modules</h2>
 
 <Demo>
-  <DemoCode>{"<link rel=\"stylesheet\" href=\"../theme/default-semantic-tokens.css\">\n<link rel=\"stylesheet\" href=\"../theme/sizing.css\">\n<link rel=\"stylesheet\" href=\"../theme/layout.css\">\n<!-- Load the component stylesheets you actually use next. -->\n<link rel=\"stylesheet\" href=\"../components/button/button.css\">"}</DemoCode>
+  <DemoCode>{"<link rel=\"stylesheet\" href=\"../theme/default-semantic-tokens.css\">\n<link rel=\"stylesheet\" href=\"../theme/sizing.css\">\n<link rel=\"stylesheet\" href=\"../theme/layout.css\">\n<link rel=\"stylesheet\" href=\"../theme/accessibility.css\">\n<!-- Load the component stylesheets you actually use next. -->\n<link rel=\"stylesheet\" href=\"../components/button/button.css\">"}</DemoCode>
 </Demo>
 
 <div class="sep" />

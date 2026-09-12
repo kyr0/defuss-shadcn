@@ -5,6 +5,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 // (tokens → sizing → layout), layer declarations included.
 import sizingCss from '../src/theme/sizing.css?raw';
 import layoutCss from '../src/theme/layout.css?raw';
+import a11yCss from '../src/theme/accessibility.css?raw';
 
 /**
  * Why: theme/sizing.css + theme/layout.css are shipped as standalone public
@@ -49,7 +50,7 @@ let cleanup: (() => void)[] = [];
 beforeAll(() => {
   // load order matters: layer declarations in the sheets establish
   // `components` before `utilities`, exactly like <link> order on a page.
-  removeSheets = [inject(sizingCss), inject(layoutCss)];
+  removeSheets = [inject(sizingCss), inject(layoutCss), inject(a11yCss)];
   // the "named query boundary" contracts need one app-level rule —
   // unlayered on purpose (a consumer's own CSS overrides the layers).
   cleanup.push(inject('@container layout (inline-size >= 400px) { .query-test { flex-direction: row; } }'));
@@ -379,6 +380,43 @@ describe('layout utilities', () => {
     expect(css(add('whitespace-nowrap'), 'white-space')).toBe('nowrap');
     expect(css(add('whitespace-normal'), 'white-space')).toBe('normal');
     expect(css(add('whitespace-pre-wrap'), 'white-space')).toBe('pre-wrap');
+  });
+
+  it('ships the full Tailwind overflow/truncate/wrap vocabulary', () => {
+    expect(css(add('overflow-visible'), 'overflow')).toBe('visible');
+    expect(css(add('overflow-clip'), 'overflow')).toBe('clip');
+    expect(css(add('overflow-x-hidden'), 'overflow-x')).toBe('hidden');
+    expect(css(add('overflow-y-hidden'), 'overflow-y')).toBe('hidden');
+    expect(css(add('text-ellipsis'), 'text-overflow')).toBe('ellipsis');
+    expect(css(add('text-clip'), 'text-overflow')).toBe('clip');
+    // truncate = the three-part recipe in one class
+    const t = add('truncate');
+    expect([css(t, 'overflow'), css(t, 'text-overflow'), css(t, 'white-space')]).toEqual([
+      'hidden', 'ellipsis', 'nowrap',
+    ]);
+    expect(css(add('break-normal'), 'overflow-wrap')).toBe('normal');
+    expect(css(add('break-normal'), 'word-break')).toBe('normal');
+    expect(css(add('break-words'), 'overflow-wrap')).toBe('break-word');
+    expect(css(add('break-all'), 'word-break')).toBe('break-all');
+    expect(css(add('wrap-anywhere'), 'overflow-wrap')).toBe('anywhere');
+  });
+
+  it('hides .sr-only visually but keeps it in the AT tree; .not-sr-only undoes it', () => {
+    const el = add('sr-only');
+    const cs = getComputedStyle(el);
+    expect(cs.position).toBe('absolute');
+    expect([cs.width, cs.height]).toEqual(['1px', '1px']);
+    expect(cs.overflow).toBe('hidden');
+    // the clip recipe (clip + clip-path) + nowrap + zero border = the pattern
+    // screen readers still announce; display:none would not
+    expect(cs.clipPath).toBe('inset(50%)');
+    expect(cs.whiteSpace).toBe('nowrap');
+    expect(cs.borderWidth).toBe('0px');
+    // undo: ordinary flow content again
+    const back = add('not-sr-only');
+    expect(getComputedStyle(back).position).toBe('static');
+    expect(getComputedStyle(back).clipPath).toBe('none');
+    expect(getComputedStyle(back).whiteSpace).toBe('normal');
   });
 
   it('keeps a 44px target minimum independent of scale and density', () => {

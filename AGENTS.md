@@ -49,7 +49,8 @@ defuss-shadcn/
 │   ├── theme/                        ← design tokens + optional standalone modules
 │   │   ├── default-semantic-tokens.css        ← tokens (source of truth for colors, radius, shadows)
 │   │   ├── sizing.css                         ← opt-in numeric scale (w-4 = 4 base units, --size-* aliases, density)
-│   │   └── layout.css                         ← opt-in layout surface (flex, grid, stack, container, query)
+│   │   ├── layout.css                         ← opt-in layout surface (flex, grid, stack, container, query, overflow)
+│   │   └── accessibility.css                  ← opt-in screen-reader utilities (.sr-only / .not-sr-only)
 │   ├── components/                    ← self-contained component folders
 │   │   ├── all.css / all.js          ← generated single-file bundle (scripts/bundle.ts; + .min twins & maps from minify.ts)
 │   │   └── {name}/

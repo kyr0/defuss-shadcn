@@ -52,8 +52,8 @@ try {
     page.on('response', onResponse);
     try {
       await page.goto(`${server.url}/dist/documentation/sizing.html`, { waitUntil: 'networkidle' });
-      // both optional modules must be linked on the page (they were iframes-only before)
-      for (const sheet of ['../theme/sizing.css', '../theme/layout.css']) {
+      // all optional modules must be linked on the page (they were iframes-only before)
+      for (const sheet of ['../theme/sizing.css', '../theme/layout.css', '../theme/accessibility.css']) {
         assert.ok(
           await page.locator(`head link[href="${sheet}"]`).count(),
           `head is missing ${sheet}`,
