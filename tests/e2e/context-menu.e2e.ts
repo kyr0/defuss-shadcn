@@ -48,7 +48,8 @@ try {
   await check('menu opens only AFTER the right-button release (no light-dismiss on mouse-up)', async () => {
     // regression: opening during the hold made the platform light-dismiss the
     // auto popover the moment the button went up — the menu vanished on release
-    const box = (await page.locator('.context-menu-trigger').boundingBox())!;
+    // scoped to the original demo trigger — the density instances below add more
+    const box = (await page.locator('[data-context-menu="demo-ctx"]').boundingBox())!;
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
     await page.mouse.down({ button: 'right' });
     await page.waitForTimeout(120);
@@ -61,7 +62,7 @@ try {
   });
 
   await check('right-click opens the menu at the pointer', async () => {
-    await page.click('.context-menu-trigger', { button: 'right' });
+    await page.click('[data-context-menu="demo-ctx"]', { button: 'right' });
     await page.waitForFunction(() => document.querySelector('#demo-ctx')!.matches(':popover-open'));
     const pos = await page.$eval('#demo-ctx', (el) => ({
       top: el.style.top,
@@ -145,6 +146,21 @@ try {
     assert.ok(reg.hasApi, '_defussShadcn.contextMenuApi.setState missing');
     assert.deepEqual(reg.states, ['default', 'open']);
     assert.ok(reg.dollarWorks, 'globalThis.$ query alias missing');
+  });
+
+  await check('context-menu: density "compact" → padding-top 4px', async () => {
+    const val = await page.$eval('#ctx-compact .context-menu-item', (el) => getComputedStyle(el).paddingTop);
+    assert.equal(val, '4px');
+  });
+
+  await check('context-menu: density "comfortable" → padding-top 6px', async () => {
+    const val = await page.$eval('#ctx-comfortable .context-menu-item', (el) => getComputedStyle(el).paddingTop);
+    assert.equal(val, '6px');
+  });
+
+  await check('context-menu: density "spacious" → padding-top 8px', async () => {
+    const val = await page.$eval('#ctx-spacious .context-menu-item', (el) => getComputedStyle(el).paddingTop);
+    assert.equal(val, '8px');
   });
 } finally {
   await browser.close();

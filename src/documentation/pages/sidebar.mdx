@@ -174,6 +174,25 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <ExampleCode>{"<div class=\"sidebar-layout\">\n  <main style=\"flex:1\">\n    <button class=\"sidebar-trigger\" data-sidebar-trigger=\"my-sidebar\">\n      <i data-lucide=\"panel-right\"></i>\n    </button>\n  </main>\n  <aside class=\"app-sidebar\" id=\"my-sidebar\" data-side=\"right\">\n    <div class=\"sidebar-header\">\n      <a class=\"sidebar-logo\" href=\"/\">MyApp</a>\n    </div>\n    <div class=\"sidebar-content\">\n      <nav class=\"sidebar-nav\">\n        <a class=\"sidebar-link\" href=\"#\" aria-current=\"page\">\n          <i data-lucide=\"home\"></i> <span>Dashboard</span>\n        </a>\n      </nav>\n    </div>\n  </aside>\n</div>"}</ExampleCode>
 </Example>
 
+<Example>
+  <ExampleLabel>Density</ExampleLabel>
+  <ExampleHint>Set <code>data-density</code> on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), typography and fixed dimensions stay identical. <code>comfortable</code> matches the unsized default.</ExampleHint>
+  <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+    <div style="flex:1;min-width:12rem;">
+      <p class="demo-label">Compact</p>
+      <aside class="app-sidebar" data-density="compact" style="position:relative;width:auto;height:11rem;border:1px solid var(--border);border-radius:var(--radius-lg);"><div class="sidebar-header"><span class="sidebar-logo-text">App</span></div><div class="sidebar-content"><nav class="sidebar-nav"><a class="sidebar-link" href="#"><span>Dashboard</span></a><a class="sidebar-link" href="#"><span>Inbox</span></a><a class="sidebar-link" href="#"><span>Settings</span></a></nav></div></aside>
+    </div>
+    <div style="flex:1;min-width:12rem;">
+      <p class="demo-label">Comfortable</p>
+      <aside class="app-sidebar" data-density="comfortable" style="position:relative;width:auto;height:11rem;border:1px solid var(--border);border-radius:var(--radius-lg);"><div class="sidebar-header"><span class="sidebar-logo-text">App</span></div><div class="sidebar-content"><nav class="sidebar-nav"><a class="sidebar-link" href="#"><span>Dashboard</span></a><a class="sidebar-link" href="#"><span>Inbox</span></a><a class="sidebar-link" href="#"><span>Settings</span></a></nav></div></aside>
+    </div>
+    <div style="flex:1;min-width:12rem;">
+      <p class="demo-label">Spacious</p>
+      <aside class="app-sidebar" data-density="spacious" style="position:relative;width:auto;height:11rem;border:1px solid var(--border);border-radius:var(--radius-lg);"><div class="sidebar-header"><span class="sidebar-logo-text">App</span></div><div class="sidebar-content"><nav class="sidebar-nav"><a class="sidebar-link" href="#"><span>Dashboard</span></a><a class="sidebar-link" href="#"><span>Inbox</span></a><a class="sidebar-link" href="#"><span>Settings</span></a></nav></div></aside>
+    </div>
+  </div>
+</Example>
+
 <StatesSection>
   <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
   <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">

@@ -29,6 +29,16 @@ Popover API triggered by right-click.
 </div>
 ```
 
+## Density
+
+Set `data-density` on the `.context-menu` root; container padding and item rows scale.
+
+| Value | Effect |
+| --- | --- |
+| `compact` | Container 0.125rem, items 0.25rem |
+| `comfortable` | 0.25rem / 0.375rem — identical to the unsized default |
+| `spacious` | 0.375rem / 0.5rem |
+
 ## States
 
 The api is bound **per menu popover**. Declared states: `default` (closed)

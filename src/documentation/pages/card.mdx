@@ -150,6 +150,25 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <ExampleCode>{"<div class=\"card\">\n  <div class=\"card-header\"\n       style=\"flex-direction:row;align-items:center;\n              justify-content:space-between;\">\n    <div>\n      <h3 class=\"card-title\">Team Members</h3>\n      <p class=\"card-description\">Manage who has access.</p>\n    </div>\n    <button class=\"btn\" data-variant=\"ghost\" data-size=\"icon\"\n            aria-label=\"More options\">\n      <svg aria-hidden=\"true\" ...>...</svg>\n    </button>\n  </div>\n  <div class=\"card-content\">\n    <!-- list items -->\n  </div>\n  <div class=\"card-footer\"\n       style=\"padding-top:1rem;border-top:1px solid var(--border);\">\n    <button class=\"btn\" data-variant=\"outline\" data-size=\"sm\"\n            style=\"width:100%;\">\n      <svg aria-hidden=\"true\" ...>...</svg>\n      Invite member\n    </button>\n  </div>\n</div>"}</ExampleCode>
 </Example>
 
+<Example>
+  <ExampleLabel>Density</ExampleLabel>
+  <ExampleHint>Set <code>data-density</code> on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), typography and fixed dimensions stay identical. <code>comfortable</code> matches the unsized default.</ExampleHint>
+  <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+    <div style="flex:1;min-width:12rem;">
+      <p class="demo-label">Compact</p>
+      <div class="card" data-density="compact"><div class="card-header"><h3 class="card-title">Density</h3><p class="card-description">Section padding scales.</p></div><div class="card-content"><p>Body copy stays put — only whitespace changes.</p></div><div class="card-footer"><span>Footer</span></div></div>
+    </div>
+    <div style="flex:1;min-width:12rem;">
+      <p class="demo-label">Comfortable</p>
+      <div class="card" data-density="comfortable"><div class="card-header"><h3 class="card-title">Density</h3><p class="card-description">Section padding scales.</p></div><div class="card-content"><p>Body copy stays put — only whitespace changes.</p></div><div class="card-footer"><span>Footer</span></div></div>
+    </div>
+    <div style="flex:1;min-width:12rem;">
+      <p class="demo-label">Spacious</p>
+      <div class="card" data-density="spacious"><div class="card-header"><h3 class="card-title">Density</h3><p class="card-description">Section padding scales.</p></div><div class="card-content"><p>Body copy stays put — only whitespace changes.</p></div><div class="card-footer"><span>Footer</span></div></div>
+    </div>
+  </div>
+</Example>
+
 <SourceFiles component="card" section="css" />
 
 </DocPage>

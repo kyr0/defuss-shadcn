@@ -41,10 +41,14 @@ try {
     await page.waitForFunction(
       () => document.querySelectorAll('.sortable:not([data-init])').length === 0,
     );
-    const live = await page.$$eval('.sortable-live', (els) =>
-      els.map((el) => el.getAttribute('aria-live')),
-    );
-    assert.deepEqual(live, ['assertive', 'assertive'], 'one live region per list');
+    // count against the live DOM (the density instances add lists)
+    const live = await page.$$eval('.sortable-live', (els) => ({
+      count: els.length,
+      lists: document.querySelectorAll('.sortable').length,
+      allAssertive: els.every((el) => el.getAttribute('aria-live') === 'assertive'),
+    }));
+    assert.equal(live.count, live.lists, 'one live region per list');
+    assert.ok(live.allAssertive, 'every live region is assertive');
   });
 
   await check('roving tabindex: first item tabbable', async () => {
@@ -178,6 +182,36 @@ try {
     assert.ok(reg.hasApi, '_defussShadcn.sortableApi.setState missing');
     assert.deepEqual(reg.states, ['default']);
     assert.ok(reg.dollarWorks, 'globalThis.$ query alias missing');
+  });
+
+  await check('sortable: density "compact" → padding-top 6px', async () => {
+    const val = await page.$eval('#srt-compact .sortable-item', (el) => getComputedStyle(el).paddingTop);
+    assert.equal(val, '6px');
+  });
+
+  await check('sortable: density "compact" → padding-left 8px', async () => {
+    const val = await page.$eval('#srt-compact .sortable-item', (el) => getComputedStyle(el).paddingLeft);
+    assert.equal(val, '8px');
+  });
+
+  await check('sortable: density "comfortable" → padding-top 8px', async () => {
+    const val = await page.$eval('#srt-comfortable .sortable-item', (el) => getComputedStyle(el).paddingTop);
+    assert.equal(val, '8px');
+  });
+
+  await check('sortable: density "comfortable" → padding-left 12px', async () => {
+    const val = await page.$eval('#srt-comfortable .sortable-item', (el) => getComputedStyle(el).paddingLeft);
+    assert.equal(val, '12px');
+  });
+
+  await check('sortable: density "spacious" → padding-top 10px', async () => {
+    const val = await page.$eval('#srt-spacious .sortable-item', (el) => getComputedStyle(el).paddingTop);
+    assert.equal(val, '10px');
+  });
+
+  await check('sortable: density "spacious" → padding-left 16px', async () => {
+    const val = await page.$eval('#srt-spacious .sortable-item', (el) => getComputedStyle(el).paddingLeft);
+    assert.equal(val, '16px');
   });
 } finally {
   await browser.close();

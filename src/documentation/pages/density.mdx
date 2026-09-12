@@ -230,6 +230,38 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
+<h2 id="component-density" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Components with native density</h2>
+
+<DocText>Beyond the utility scale above, the components whose information density a user actually dials in implement <code>data-density</code> themselves — set it on the component root and their internal whitespace scales with the same <code>0.75 / 1 / 1.25</code> ratio, <code>comfortable</code> being identical to the unsized default. Each component page shows the three steps side by side:</DocText>
+
+<div style="overflow-x:auto;margin-bottom:1.5rem;">
+  <table class="table" data-variant="simple">
+    <thead>
+      <tr>
+        <th scope="col">Component</th>
+        <th scope="col">What the density scales</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><a href="card.html">Card</a></td><td>Header / content / footer section paddings</td></tr>
+      <tr><td><a href="table.html">Table</a></td><td>Head, cell and caption padding</td></tr>
+      <tr><td><a href="accordion.html">Accordion</a></td><td>Trigger and panel padding</td></tr>
+      <tr><td><a href="steps.html">Steps</a></td><td>Step and content gaps (size ladder owns indicator size)</td></tr>
+      <tr><td><a href="timeline.html">Timeline</a></td><td>Per-item rhythm (connector gap + trailing space)</td></tr>
+      <tr><td><a href="tree-view.html">Tree View</a></td><td>Row padding-block (indent is structural, never scaled)</td></tr>
+      <tr><td><a href="sidebar.html">Sidebar</a></td><td>Link rows and the content frame</td></tr>
+      <tr><td><a href="command.html">Command</a></td><td>Palette rows, search wrapper, group headings</td></tr>
+      <tr><td><a href="context-menu.html">Context Menu</a></td><td>Container padding and item rows</td></tr>
+      <tr><td><a href="sortable.html">Sortable</a></td><td>List gap and item padding</td></tr>
+      <tr><td><a href="pagination.html">Pagination</a></td><td>Inter-cell gap only (size ladder owns cell dimensions)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<DocText>Components already covered by a dedicated size ladder (Button, Input, Badge, …) deliberately stay out: their compactness is the size axis, and stacking a second whitespace axis on the same padding would make the two fight. Density stays the policy for <em>collections and surfaces</em>; sizes stay the policy for <em>controls</em>.</DocText>
+
+<div class="sep" />
+
 <h2 id="custom-density" style="font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.875rem;">Customize a context</h2>
 
 <Demo>

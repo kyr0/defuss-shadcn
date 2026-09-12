@@ -234,6 +234,25 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <ExampleCode>{"<!-- Keyboard: Tab to focus, ↑/↓ to navigate, Alt+↑/↓ to reorder -->\n<!-- Screen readers hear: \"JavaScript, moved to position 2 of 5\" -->\n<ul class=\"sortable\" role=\"listbox\" aria-label=\"Rank languages\">\n  <li class=\"sortable-item\" draggable=\"true\" role=\"option\" tabindex=\"0\">\n    <span class=\"sortable-handle\"><i data-lucide=\"grip-vertical\"></i></span>\n    <span>JavaScript</span>\n  </li>\n  <!-- more items... -->\n</ul>"}</ExampleCode>
 </Example>
 
+<Example>
+  <ExampleLabel>Density</ExampleLabel>
+  <ExampleHint>Set <code>data-density</code> on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), typography and fixed dimensions stay identical. <code>comfortable</code> matches the unsized default.</ExampleHint>
+  <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+    <div style="flex:1;min-width:12rem;">
+      <p class="demo-label">Compact</p>
+      <ul class="sortable" aria-label="Tasks compact" data-density="compact"><li class="sortable-item" draggable="true"><span class="sortable-handle">⋮⋮</span><span>Build components</span></li><li class="sortable-item" draggable="true"><span class="sortable-handle">⋮⋮</span><span>Write docs</span></li></ul>
+    </div>
+    <div style="flex:1;min-width:12rem;">
+      <p class="demo-label">Comfortable</p>
+      <ul class="sortable" aria-label="Tasks comfortable" data-density="comfortable"><li class="sortable-item" draggable="true"><span class="sortable-handle">⋮⋮</span><span>Build components</span></li><li class="sortable-item" draggable="true"><span class="sortable-handle">⋮⋮</span><span>Write docs</span></li></ul>
+    </div>
+    <div style="flex:1;min-width:12rem;">
+      <p class="demo-label">Spacious</p>
+      <ul class="sortable" aria-label="Tasks spacious" data-density="spacious"><li class="sortable-item" draggable="true"><span class="sortable-handle">⋮⋮</span><span>Build components</span></li><li class="sortable-item" draggable="true"><span class="sortable-handle">⋮⋮</span><span>Write docs</span></li></ul>
+    </div>
+  </div>
+</Example>
+
 <StatesSection>
   <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
   <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">

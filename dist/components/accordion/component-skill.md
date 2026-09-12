@@ -106,6 +106,16 @@ is required. For multi-open, pure HTML with no JS works.
 
 ---
 
+## Density
+
+Set `data-density` on the `.accordion` root; trigger and panel padding scale.
+
+| Value | Effect |
+| --- | --- |
+| `compact` | Trigger/panel padding 0.75rem |
+| `comfortable` | Padding 1rem — identical to the unsized default |
+| `spacious` | Padding 1.25rem |
+
 ## ARIA
 
 The `<details>/<summary>` elements provide built-in accessibility:

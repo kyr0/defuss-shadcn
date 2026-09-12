@@ -78,6 +78,22 @@
 
     & p { margin: 0; }
   }
+  /* -- Density ----------------------------------------------------
+     data-density on the .accordion root scales trigger + panel padding.
+     comfortable (1rem) == the unsized default. Ratio mirrors sizing.css. */
+  .accordion:where([data-density="compact"]) {
+    & .accordion-trigger { padding: 0.75rem 0; }
+    & .accordion-content { padding-bottom: 0.75rem; }
+  }
+  .accordion:where([data-density="comfortable"]) {
+    & .accordion-trigger { padding: 1rem 0; }
+    & .accordion-content { padding-bottom: 1rem; }
+  }
+  .accordion:where([data-density="spacious"]) {
+    & .accordion-trigger { padding: 1.25rem 0; }
+    & .accordion-content { padding-bottom: 1.25rem; }
+  }
+
 }
 
 /* Accessibility: reduced motion suppresses the expand/collapse animation
@@ -1206,6 +1222,30 @@
     padding-top: 1rem;
   }
 
+  /* -- Density --------------------------------------------------
+     data-density on the .card root scales the section paddings together.
+     Scale matches sizing.css data-density (0.75 / 1 / 1.25): comfortable is
+     the unsized default (1.5rem), compact 1rem, spacious 2rem; the
+     header+footer-only gap (1rem base) follows the ratio (0.75 / 1 / 1.5). */
+  .card:where([data-density="compact"]) {
+    & .card-header { padding: 1rem; padding-bottom: 0; }
+    & .card-content { padding: 1rem; }
+    & .card-footer { padding: 1rem; padding-top: 0; }
+    & .card-header + .card-footer { padding-top: 0.75rem; }
+  }
+  .card:where([data-density="comfortable"]) {
+    & .card-header { padding: 1.5rem; padding-bottom: 0; }
+    & .card-content { padding: 1.5rem; }
+    & .card-footer { padding: 1.5rem; padding-top: 0; }
+    & .card-header + .card-footer { padding-top: 1rem; }
+  }
+  .card:where([data-density="spacious"]) {
+    & .card-header { padding: 2rem; padding-bottom: 0; }
+    & .card-content { padding: 2rem; }
+    & .card-footer { padding: 2rem; padding-top: 0; }
+    & .card-header + .card-footer { padding-top: 1.5rem; }
+  }
+
   /* -- Container query: compact card in narrow containers -- */
   @container (max-width: 280px) {
     .card-header { padding: 1rem; padding-bottom: 0; }
@@ -2020,6 +2060,25 @@
     }
     .command-separator { background-color: CanvasText; }
   }
+  /* -- Density ----------------------------------------------------
+     data-density on the dialog.command root scales the rows of the palette.
+     comfortable == the unsized default. (0,2,1) beats the base (0,1,0). */
+  dialog.command:where([data-density="compact"]) {
+    & .command-input-wrapper { padding: 0.5rem 0.75rem; }
+    & .command-item { padding: 0.375rem 0.5rem; }
+    & .command-group-heading { padding: 0.25rem 0.5rem; }
+  }
+  dialog.command:where([data-density="comfortable"]) {
+    & .command-input-wrapper { padding: 0.75rem 1rem; }
+    & .command-item { padding: 0.5rem 0.5rem; }
+    & .command-group-heading { padding: 0.375rem 0.5rem; }
+  }
+  dialog.command:where([data-density="spacious"]) {
+    & .command-input-wrapper { padding: 1rem 1.25rem; }
+    & .command-item { padding: 0.625rem 0.5rem; }
+    & .command-group-heading { padding: 0.5rem 0.5rem; }
+  }
+
 }
 
 /* ── components/context-menu/context-menu.css ── */
@@ -2056,6 +2115,22 @@
   }
 
   .context-menu-separator { height: 1px; background-color: var(--border); margin: 0.25rem -0.25rem; }
+  /* -- Density ----------------------------------------------------
+     data-density on the .context-menu root scales the container padding and
+     the item rows. comfortable == the unsized default. */
+  .context-menu:where([data-density="compact"]) {
+    padding: 0.125rem;
+    & .context-menu-item { padding: 0.25rem 0.5rem; }
+  }
+  .context-menu:where([data-density="comfortable"]) {
+    padding: 0.25rem;
+    & .context-menu-item { padding: 0.375rem 0.5rem; }
+  }
+  .context-menu:where([data-density="spacious"]) {
+    padding: 0.375rem;
+    & .context-menu-item { padding: 0.5rem 0.625rem; }
+  }
+
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all
@@ -3868,6 +3943,14 @@
       &:hover { forced-color-adjust: none; background: Highlight; color: HighlightText; }
     }
   }
+  /* -- Density ----------------------------------------------------
+     data-density on the .pagination nav scales only the inter-cell gap —
+     the size ladder owns cell dimensions, so size and density stay
+     independent axes. Ratio mirrors sizing.css (0.75 / 1 / 1.25). */
+  .pagination:where([data-density="compact"]) { & .pagination-list { gap: 0.125rem; } }
+  .pagination:where([data-density="comfortable"]) { & .pagination-list { gap: 0.25rem; } }
+  .pagination:where([data-density="spacious"]) { & .pagination-list { gap: 0.5rem; } }
+
 }
 
 /* ── components/popover/popover.css ── */
@@ -5303,6 +5386,23 @@
     .sidebar-mobile { transition: none; }
     .sidebar-mobile::backdrop { transition: none; }
   }
+  /* -- Density ----------------------------------------------------
+     data-density on the .app-sidebar root scales link rows and the content
+     frame. comfortable == the unsized default (0.5rem). Independent of the
+     collapsed rail, whose compact paddings win by higher specificity. */
+  .app-sidebar:where([data-density="compact"]) {
+    & .sidebar-link { padding-block: 0.375rem; }
+    & .sidebar-content { padding: 0.375rem; gap: 0.375rem; }
+  }
+  .app-sidebar:where([data-density="comfortable"]) {
+    & .sidebar-link { padding-block: 0.5rem; }
+    & .sidebar-content { padding: 0.5rem; gap: 0.5rem; }
+  }
+  .app-sidebar:where([data-density="spacious"]) {
+    & .sidebar-link { padding-block: 0.625rem; }
+    & .sidebar-content { padding: 0.625rem; gap: 0.625rem; }
+  }
+
 }
 
 /* ── components/site-footer/site-footer.css ── */
@@ -5917,6 +6017,22 @@
     }
     .sortable-handle { color: GrayText; }
   }
+  /* -- Density ----------------------------------------------------
+     data-density on the .sortable root scales the list gap and the item
+     padding. comfortable == the unsized default. */
+  .sortable:where([data-density="compact"]) {
+    gap: 0.125rem;
+    & .sortable-item { padding: 0.375rem 0.5rem; }
+  }
+  .sortable:where([data-density="comfortable"]) {
+    gap: 0.25rem;
+    & .sortable-item { padding: 0.5rem 0.75rem; }
+  }
+  .sortable:where([data-density="spacious"]) {
+    gap: 0.375rem;
+    & .sortable-item { padding: 0.625rem 1rem; }
+  }
+
 }
 
 /* ── components/spinner/spinner.css ── */
@@ -6251,6 +6367,26 @@
     .step[data-status='complete']:not(:last-child)::after { background: Highlight; }
     .step[data-status='error']:not(:last-child)::after { background: Mark; }
   }
+  /* -- Density ----------------------------------------------------
+     data-density on the .steps root scales the flex gaps only — the size
+     ladder owns indicator/typography, size and density stay independent.
+     comfortable == the unsized default (.5rem / .125rem). */
+  .steps:where([data-density="compact"]) {
+    gap: 0.375rem;
+    & .step { gap: 0.375rem; }
+    & .step-content { gap: 0.0625rem; }
+  }
+  .steps:where([data-density="comfortable"]) {
+    gap: 0.5rem;
+    & .step { gap: 0.5rem; }
+    & .step-content { gap: 0.125rem; }
+  }
+  .steps:where([data-density="spacious"]) {
+    gap: 0.75rem;
+    & .step { gap: 0.75rem; }
+    & .step-content { gap: 0.25rem; }
+  }
+
 }
 
 /* ── components/switch/switch.css ── */
@@ -6527,6 +6663,25 @@
 
   tfoot .table-cell:last-child {
     border-bottom-right-radius: var(--radius-lg);
+  }
+
+  /* -- Density ----------------------------------------------------
+     data-density on the .table root scales cell/head/caption padding.
+     Scale matches sizing.css (0.75 / 1 / 1.25): comfortable == the unsized
+     default (0.75rem 1rem), compact 0.375rem 0.625rem, spacious 1rem 1.25rem.
+     :where() gives these (0,2,0) — an explicit density always beats the
+     automatic narrow-container compaction below. */
+  .table:where([data-density="compact"]) {
+    & .table-head, & .table-cell { padding: 0.375rem 0.625rem; }
+    & .table-caption { padding: 0.5rem 0.625rem; }
+  }
+  .table:where([data-density="comfortable"]) {
+    & .table-head, & .table-cell { padding: 0.75rem 1rem; }
+    & .table-caption { padding: 0.75rem 1rem; }
+  }
+  .table:where([data-density="spacious"]) {
+    & .table-head, & .table-cell { padding: 1rem 1.25rem; }
+    & .table-caption { padding: 1rem 1.25rem; }
   }
 
   /* -- Container query: compact table in narrow containers -- */
@@ -7026,6 +7181,25 @@
     color: var(--muted-foreground);
     margin-top: 0.125rem;
   }
+  /* -- Density ----------------------------------------------------
+     data-density on the .timeline root scales the item rhythm (connector
+     gap + trailing space). comfortable == the unsized default. The
+     padding-bottom rule is gated :not(:last-child) so the base
+     `:last-child { padding-bottom: 0 }` (same specificity, earlier source)
+     keeps winning for the final item. */
+  .timeline:where([data-density="compact"]) {
+    & .timeline-item { gap: 0.75rem; }
+    & .timeline-item:not(:last-child) { padding-bottom: 1.125rem; }
+  }
+  .timeline:where([data-density="comfortable"]) {
+    & .timeline-item { gap: 1rem; }
+    & .timeline-item:not(:last-child) { padding-bottom: 1.5rem; }
+  }
+  .timeline:where([data-density="spacious"]) {
+    & .timeline-item { gap: 1.25rem; }
+    & .timeline-item:not(:last-child) { padding-bottom: 1.875rem; }
+  }
+
 }
 
 /* ── components/toast/toast.css ── */
@@ -7862,6 +8036,19 @@
       color: var(--muted-foreground);
     }
   }
+  /* -- Density ----------------------------------------------------
+     data-density on the .tree root scales the row padding-block. Indent
+     (padding-left) is structural — untouched. comfortable == the default. */
+  .tree:where([data-density="compact"]) {
+    & .tree-branch-trigger, & .tree-leaf { padding-block: 0.125rem; }
+  }
+  .tree:where([data-density="comfortable"]) {
+    & .tree-branch-trigger, & .tree-leaf { padding-block: 0.25rem; }
+  }
+  .tree:where([data-density="spacious"]) {
+    & .tree-branch-trigger, & .tree-leaf { padding-block: 0.375rem; }
+  }
+
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all

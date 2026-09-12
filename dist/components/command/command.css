@@ -81,4 +81,23 @@
     }
     .command-separator { background-color: CanvasText; }
   }
+  /* -- Density ----------------------------------------------------
+     data-density on the dialog.command root scales the rows of the palette.
+     comfortable == the unsized default. (0,2,1) beats the base (0,1,0). */
+  dialog.command:where([data-density="compact"]) {
+    & .command-input-wrapper { padding: 0.5rem 0.75rem; }
+    & .command-item { padding: 0.375rem 0.5rem; }
+    & .command-group-heading { padding: 0.25rem 0.5rem; }
+  }
+  dialog.command:where([data-density="comfortable"]) {
+    & .command-input-wrapper { padding: 0.75rem 1rem; }
+    & .command-item { padding: 0.5rem 0.5rem; }
+    & .command-group-heading { padding: 0.375rem 0.5rem; }
+  }
+  dialog.command:where([data-density="spacious"]) {
+    & .command-input-wrapper { padding: 1rem 1.25rem; }
+    & .command-item { padding: 0.625rem 0.5rem; }
+    & .command-group-heading { padding: 0.5rem 0.5rem; }
+  }
+
 }

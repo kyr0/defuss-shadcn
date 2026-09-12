@@ -14,7 +14,65 @@
       &lt;p class="timeline-title"&gt;Current step&lt;/p&gt;
     &lt;/div&gt;
   &lt;/li&gt;
-&lt;/ol&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-8" id="toc-activity-feed"><a class="heading-anchor" href="#toc-activity-feed" aria-label="Link to section: Activity Feed">§</a>Activity Feed</p><p class="text-xs text-muted-foreground mb-3">Timeline composed with <code>.avatar</code> and <code>.badge</code> for an activity feed pattern.</p><div class="preview"><ol class="timeline" style="max-width:28rem;"><li class="timeline-item"><div class="timeline-dot" data-variant="active"></div><div class="timeline-content"><div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn" /><span class="avatar-fallback">CN</span></span><span style="font-weight:500;font-size:0.8125rem;">Cody Lindley</span><span class="badge" data-variant="default" style="margin-left:auto;">Merged</span></div><p class="timeline-description">Merged pull request #42 — Add new components</p><time class="timeline-time">2 hours ago</time></div></li><li class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;"><span class="avatar" data-size="sm"><span class="avatar-fallback">JD</span></span><span style="font-weight:500;font-size:0.8125rem;">Jordan Davis</span><span class="badge" data-variant="outline" style="margin-left:auto;">Review</span></div><p class="timeline-description">Requested changes on the sidebar layout</p><time class="timeline-time">5 hours ago</time></div></li><li class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;"><span class="avatar" data-size="sm"><span class="avatar-fallback">AS</span></span><span style="font-weight:500;font-size:0.8125rem;">Alex Smith</span><span class="badge" data-variant="secondary" style="margin-left:auto;">Comment</span></div><p class="timeline-description">Commented on issue #38</p><time class="timeline-time">Yesterday</time></div></li></ol></div><section style="margin-top:3rem;" id="source-css"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-css"><a class="heading-anchor" href="#toc-css" aria-label="Link to section: CSS">§</a>CSS <a href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/timeline/timeline.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2><p class="text-muted-foreground text-sm mb-4">Connector line</p><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-scss">@layer components {
+&lt;/ol&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-8" id="toc-activity-feed"><a class="heading-anchor" href="#toc-activity-feed" aria-label="Link to section: Activity Feed">§</a>Activity Feed</p><p class="text-xs text-muted-foreground mb-3">Timeline composed with <code>.avatar</code> and <code>.badge</code> for an activity feed pattern.</p><div class="preview"><ol class="timeline" style="max-width:28rem;"><li class="timeline-item"><div class="timeline-dot" data-variant="active"></div><div class="timeline-content"><div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn" /><span class="avatar-fallback">CN</span></span><span style="font-weight:500;font-size:0.8125rem;">Cody Lindley</span><span class="badge" data-variant="default" style="margin-left:auto;">Merged</span></div><p class="timeline-description">Merged pull request #42 — Add new components</p><time class="timeline-time">2 hours ago</time></div></li><li class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;"><span class="avatar" data-size="sm"><span class="avatar-fallback">JD</span></span><span style="font-weight:500;font-size:0.8125rem;">Jordan Davis</span><span class="badge" data-variant="outline" style="margin-left:auto;">Review</span></div><p class="timeline-description">Requested changes on the sidebar layout</p><time class="timeline-time">5 hours ago</time></div></li><li class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;"><span class="avatar" data-size="sm"><span class="avatar-fallback">AS</span></span><span style="font-weight:500;font-size:0.8125rem;">Alex Smith</span><span class="badge" data-variant="secondary" style="margin-left:auto;">Comment</span></div><p class="timeline-description">Commented on issue #38</p><time class="timeline-time">Yesterday</time></div></li></ol></div><p class="text-sm font-medium mb-2 mt-8" id="toc-density"><a class="heading-anchor" href="#toc-density" aria-label="Link to section: Density">§</a>Density</p><p class="text-xs text-muted-foreground mb-3">Set <code>data-density</code> on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), typography and fixed dimensions stay identical. <code>comfortable</code> matches the unsized default.</p><div class="preview"><div style="display:flex;gap:1rem;flex-wrap:wrap;"><div style="flex:1;min-width:12rem;"><p class="demo-label">Compact</p><ul class="timeline" data-density="compact"><li class="timeline-item"><span class="timeline-dot" data-variant="active"></span><div class="timeline-content"><p class="timeline-title">Deployed</p><p class="timeline-description">v1.2.0 shipped</p></div></li><li class="timeline-item"><span class="timeline-dot"></span><div class="timeline-content"><p class="timeline-title">Planned</p><p class="timeline-description">v1.3.0 scope</p></div></li></ul></div><div style="flex:1;min-width:12rem;"><p class="demo-label">Comfortable</p><ul class="timeline" data-density="comfortable"><li class="timeline-item"><span class="timeline-dot" data-variant="active"></span><div class="timeline-content"><p class="timeline-title">Deployed</p><p class="timeline-description">v1.2.0 shipped</p></div></li><li class="timeline-item"><span class="timeline-dot"></span><div class="timeline-content"><p class="timeline-title">Planned</p><p class="timeline-description">v1.3.0 scope</p></div></li></ul></div><div style="flex:1;min-width:12rem;"><p class="demo-label">Spacious</p><ul class="timeline" data-density="spacious"><li class="timeline-item"><span class="timeline-dot" data-variant="active"></span><div class="timeline-content"><p class="timeline-title">Deployed</p><p class="timeline-description">v1.2.0 shipped</p></div></li><li class="timeline-item"><span class="timeline-dot"></span><div class="timeline-content"><p class="timeline-title">Planned</p><p class="timeline-description">v1.3.0 scope</p></div></li></ul></div></div></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;div style="display:flex;gap:1rem;flex-wrap:wrap;"&gt;
+  &lt;div style="flex:1;min-width:12rem;"&gt;
+    &lt;p class="demo-label"&gt;Compact&lt;/p&gt;
+    &lt;ul class="timeline" data-density="compact"&gt;
+      &lt;li class="timeline-item"&gt;
+        &lt;span class="timeline-dot" data-variant="active"&gt;&lt;/span&gt;
+        &lt;div class="timeline-content"&gt;
+          &lt;p class="timeline-title"&gt;Deployed&lt;/p&gt;
+          &lt;p class="timeline-description"&gt;v1.2.0 shipped&lt;/p&gt;
+        &lt;/div&gt;
+      &lt;/li&gt;
+      &lt;li class="timeline-item"&gt;
+        &lt;span class="timeline-dot"&gt;&lt;/span&gt;
+        &lt;div class="timeline-content"&gt;
+          &lt;p class="timeline-title"&gt;Planned&lt;/p&gt;
+          &lt;p class="timeline-description"&gt;v1.3.0 scope&lt;/p&gt;
+        &lt;/div&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/div&gt;
+  &lt;div style="flex:1;min-width:12rem;"&gt;
+    &lt;p class="demo-label"&gt;Comfortable&lt;/p&gt;
+    &lt;ul class="timeline" data-density="comfortable"&gt;
+      &lt;li class="timeline-item"&gt;
+        &lt;span class="timeline-dot" data-variant="active"&gt;&lt;/span&gt;
+        &lt;div class="timeline-content"&gt;
+          &lt;p class="timeline-title"&gt;Deployed&lt;/p&gt;
+          &lt;p class="timeline-description"&gt;v1.2.0 shipped&lt;/p&gt;
+        &lt;/div&gt;
+      &lt;/li&gt;
+      &lt;li class="timeline-item"&gt;
+        &lt;span class="timeline-dot"&gt;&lt;/span&gt;
+        &lt;div class="timeline-content"&gt;
+          &lt;p class="timeline-title"&gt;Planned&lt;/p&gt;
+          &lt;p class="timeline-description"&gt;v1.3.0 scope&lt;/p&gt;
+        &lt;/div&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/div&gt;
+  &lt;div style="flex:1;min-width:12rem;"&gt;
+    &lt;p class="demo-label"&gt;Spacious&lt;/p&gt;
+    &lt;ul class="timeline" data-density="spacious"&gt;
+      &lt;li class="timeline-item"&gt;
+        &lt;span class="timeline-dot" data-variant="active"&gt;&lt;/span&gt;
+        &lt;div class="timeline-content"&gt;
+          &lt;p class="timeline-title"&gt;Deployed&lt;/p&gt;
+          &lt;p class="timeline-description"&gt;v1.2.0 shipped&lt;/p&gt;
+        &lt;/div&gt;
+      &lt;/li&gt;
+      &lt;li class="timeline-item"&gt;
+        &lt;span class="timeline-dot"&gt;&lt;/span&gt;
+        &lt;div class="timeline-content"&gt;
+          &lt;p class="timeline-title"&gt;Planned&lt;/p&gt;
+          &lt;p class="timeline-description"&gt;v1.3.0 scope&lt;/p&gt;
+        &lt;/div&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre></div><section style="margin-top:3rem;" id="source-css"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-css"><a class="heading-anchor" href="#toc-css" aria-label="Link to section: CSS">§</a>CSS <a href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/timeline/timeline.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2><p class="text-muted-foreground text-sm mb-4">Connector line</p><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-scss">@layer components {
   .timeline {
     list-style: none;
     margin: 0;
@@ -91,8 +149,27 @@
     color: var(--muted-foreground);
     margin-top: 0.125rem;
   }
+  /* -- Density ----------------------------------------------------
+     data-density on the .timeline root scales the item rhythm (connector
+     gap + trailing space). comfortable == the unsized default. The
+     padding-bottom rule is gated :not(:last-child) so the base
+     `:last-child { padding-bottom: 0 }` (same specificity, earlier source)
+     keeps winning for the final item. */
+  .timeline:where([data-density="compact"]) {
+    &amp; .timeline-item { gap: 0.75rem; }
+    &amp; .timeline-item:not(:last-child) { padding-bottom: 1.125rem; }
+  }
+  .timeline:where([data-density="comfortable"]) {
+    &amp; .timeline-item { gap: 1rem; }
+    &amp; .timeline-item:not(:last-child) { padding-bottom: 1.5rem; }
+  }
+  .timeline:where([data-density="spacious"]) {
+    &amp; .timeline-item { gap: 1.25rem; }
+    &amp; .timeline-item:not(:last-child) { padding-bottom: 1.875rem; }
+  }
+
 }
-</code></pre></div></section><nav class="page-nav"><a class="page-nav-link page-nav-prev" href="collapsible.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><div><span class="page-nav-label">Previous</span><span class="page-nav-title">Collapsible</span></div></a><a class="page-nav-link page-nav-next" href="tree-view.html"><div><span class="page-nav-label">Next</span><span class="page-nav-title">Tree View</span></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></nav></main><aside class="site-toc"><div class="site-toc-content"><p class="toc-title">On This Page</p><a class="toc-link" href="#toc-basic">Basic</a><a class="toc-link" href="#toc-activity-feed">Activity Feed</a><a class="toc-link" href="#toc-css">CSS</a></div></aside></div><script>try {
+</code></pre></div></section><nav class="page-nav"><a class="page-nav-link page-nav-prev" href="collapsible.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><div><span class="page-nav-label">Previous</span><span class="page-nav-title">Collapsible</span></div></a><a class="page-nav-link page-nav-next" href="tree-view.html"><div><span class="page-nav-label">Next</span><span class="page-nav-title">Tree View</span></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></nav></main><aside class="site-toc"><div class="site-toc-content"><p class="toc-title">On This Page</p><a class="toc-link" href="#toc-basic">Basic</a><a class="toc-link" href="#toc-activity-feed">Activity Feed</a><a class="toc-link" href="#toc-density">Density</a><a class="toc-link" href="#toc-css">CSS</a></div></aside></div><script>try {
   var c = JSON.parse(localStorage.getItem('defuss-shadcn-nav-collapsed') || '{}');
   if (c && typeof c === 'object' && !Array.isArray(c)) {
     for (var h in c) {

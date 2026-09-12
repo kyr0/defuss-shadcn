@@ -13,7 +13,69 @@
       &lt;/div&gt;
     &lt;/div&gt;
   &lt;/div&gt;
-&lt;/dialog&gt;</code></pre></div><section style="margin-top:3rem;" id="states"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-states"><a class="heading-anchor" href="#toc-states" aria-label="Link to section: States">§</a>States</h2><p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p><ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;"><li><code>default</code> — closed (the authored state; trigger or <code>Cmd/Ctrl+K</code> opens it)</li><li><code>open</code> — shown modally with the search input focused</li></ul><p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/{mode}/command-{state}.png</code>.</p></section><section style="margin-top:3rem;" id="source-css"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-css"><a class="heading-anchor" href="#toc-css" aria-label="Link to section: CSS">§</a>CSS <a href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/command/command.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2><p class="text-muted-foreground text-sm mb-4">Styles for the command component. Uses design tokens for colors, spacing, and radius.</p><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-scss">@layer components {
+&lt;/dialog&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-8" id="toc-density"><a class="heading-anchor" href="#toc-density" aria-label="Link to section: Density">§</a>Density</p><p class="text-xs text-muted-foreground mb-3">Set <code>data-density</code> on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), typography and fixed dimensions stay identical. <code>comfortable</code> matches the unsized default.</p><div class="preview"><div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;"><span class="demo-label" style="width:7.5rem;margin:0;">Compact</span><button class="btn" data-variant="outline" data-command-trigger="density-cmd-compact">Open Compact palette</button><dialog id="density-cmd-compact" class="command" data-density="compact" role="dialog" aria-modal="true" aria-label="Compact command palette"><div class="command-content"><div class="command-input-wrapper"><input class="command-input" type="text" placeholder="Type a command or search..." autocomplete="off" /></div><div class="command-list"><div class="command-group"><p class="command-group-heading">Suggestions</p><button class="command-item">Calendar</button><button class="command-item">Search Emoji</button><button class="command-item">Calculator</button></div></div></div></dialog></div><div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;"><span class="demo-label" style="width:7.5rem;margin:0;">Comfortable</span><button class="btn" data-variant="outline" data-command-trigger="density-cmd-comfortable">Open Comfortable palette</button><dialog id="density-cmd-comfortable" class="command" data-density="comfortable" role="dialog" aria-modal="true" aria-label="Comfortable command palette"><div class="command-content"><div class="command-input-wrapper"><input class="command-input" type="text" placeholder="Type a command or search..." autocomplete="off" /></div><div class="command-list"><div class="command-group"><p class="command-group-heading">Suggestions</p><button class="command-item">Calendar</button><button class="command-item">Search Emoji</button><button class="command-item">Calculator</button></div></div></div></dialog></div><div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;"><span class="demo-label" style="width:7.5rem;margin:0;">Spacious</span><button class="btn" data-variant="outline" data-command-trigger="density-cmd-spacious">Open Spacious palette</button><dialog id="density-cmd-spacious" class="command" data-density="spacious" role="dialog" aria-modal="true" aria-label="Spacious command palette"><div class="command-content"><div class="command-input-wrapper"><input class="command-input" type="text" placeholder="Type a command or search..." autocomplete="off" /></div><div class="command-list"><div class="command-group"><p class="command-group-heading">Suggestions</p><button class="command-item">Calendar</button><button class="command-item">Search Emoji</button><button class="command-item">Calculator</button></div></div></div></dialog></div></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;"&gt;
+  &lt;span class="demo-label" style="width:7.5rem;margin:0;"&gt;Compact&lt;/span&gt;
+  &lt;button class="btn" data-variant="outline" data-command-trigger="density-cmd-compact"&gt;
+Open Compact palette
+  &lt;/button&gt;
+  &lt;dialog id="density-cmd-compact" class="command" data-density="compact" role="dialog" aria-modal="true" aria-label="Compact command palette"&gt;
+    &lt;div class="command-content"&gt;
+      &lt;div class="command-input-wrapper"&gt;
+        &lt;input class="command-input" type="text" placeholder="Type a command or search..." autocomplete="off"&gt;
+      &lt;/div&gt;
+      &lt;div class="command-list"&gt;
+        &lt;div class="command-group"&gt;
+          &lt;p class="command-group-heading"&gt;Suggestions&lt;/p&gt;
+          &lt;button class="command-item"&gt;Calendar&lt;/button&gt;
+          &lt;button class="command-item"&gt;Search Emoji&lt;/button&gt;
+          &lt;button class="command-item"&gt;Calculator&lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/dialog&gt;
+&lt;/div&gt;
+&lt;div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;"&gt;
+  &lt;span class="demo-label" style="width:7.5rem;margin:0;"&gt;Comfortable&lt;/span&gt;
+  &lt;button class="btn" data-variant="outline" data-command-trigger="density-cmd-comfortable"&gt;
+Open Comfortable palette
+  &lt;/button&gt;
+  &lt;dialog id="density-cmd-comfortable" class="command" data-density="comfortable" role="dialog" aria-modal="true" aria-label="Comfortable command palette"&gt;
+    &lt;div class="command-content"&gt;
+      &lt;div class="command-input-wrapper"&gt;
+        &lt;input class="command-input" type="text" placeholder="Type a command or search..." autocomplete="off"&gt;
+      &lt;/div&gt;
+      &lt;div class="command-list"&gt;
+        &lt;div class="command-group"&gt;
+          &lt;p class="command-group-heading"&gt;Suggestions&lt;/p&gt;
+          &lt;button class="command-item"&gt;Calendar&lt;/button&gt;
+          &lt;button class="command-item"&gt;Search Emoji&lt;/button&gt;
+          &lt;button class="command-item"&gt;Calculator&lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/dialog&gt;
+&lt;/div&gt;
+&lt;div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;"&gt;
+  &lt;span class="demo-label" style="width:7.5rem;margin:0;"&gt;Spacious&lt;/span&gt;
+  &lt;button class="btn" data-variant="outline" data-command-trigger="density-cmd-spacious"&gt;
+Open Spacious palette
+  &lt;/button&gt;
+  &lt;dialog id="density-cmd-spacious" class="command" data-density="spacious" role="dialog" aria-modal="true" aria-label="Spacious command palette"&gt;
+    &lt;div class="command-content"&gt;
+      &lt;div class="command-input-wrapper"&gt;
+        &lt;input class="command-input" type="text" placeholder="Type a command or search..." autocomplete="off"&gt;
+      &lt;/div&gt;
+      &lt;div class="command-list"&gt;
+        &lt;div class="command-group"&gt;
+          &lt;p class="command-group-heading"&gt;Suggestions&lt;/p&gt;
+          &lt;button class="command-item"&gt;Calendar&lt;/button&gt;
+          &lt;button class="command-item"&gt;Search Emoji&lt;/button&gt;
+          &lt;button class="command-item"&gt;Calculator&lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/dialog&gt;
+&lt;/div&gt;</code></pre></div><section style="margin-top:3rem;" id="states"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-states"><a class="heading-anchor" href="#toc-states" aria-label="Link to section: States">§</a>States</h2><p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p><ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;"><li><code>default</code> — closed (the authored state; trigger or <code>Cmd/Ctrl+K</code> opens it)</li><li><code>open</code> — shown modally with the search input focused</li></ul><p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/{mode}/command-{state}.png</code>.</p></section><section style="margin-top:3rem;" id="source-css"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-css"><a class="heading-anchor" href="#toc-css" aria-label="Link to section: CSS">§</a>CSS <a href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/command/command.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2><p class="text-muted-foreground text-sm mb-4">Styles for the command component. Uses design tokens for colors, spacing, and radius.</p><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-scss">@layer components {
   dialog.command {
     border: none; border-radius: var(--radius-xl);
     background: var(--popover); color: var(--popover-foreground);
@@ -96,6 +158,25 @@
     }
     .command-separator { background-color: CanvasText; }
   }
+  /* -- Density ----------------------------------------------------
+     data-density on the dialog.command root scales the rows of the palette.
+     comfortable == the unsized default. (0,2,1) beats the base (0,1,0). */
+  dialog.command:where([data-density="compact"]) {
+    &amp; .command-input-wrapper { padding: 0.5rem 0.75rem; }
+    &amp; .command-item { padding: 0.375rem 0.5rem; }
+    &amp; .command-group-heading { padding: 0.25rem 0.5rem; }
+  }
+  dialog.command:where([data-density="comfortable"]) {
+    &amp; .command-input-wrapper { padding: 0.75rem 1rem; }
+    &amp; .command-item { padding: 0.5rem 0.5rem; }
+    &amp; .command-group-heading { padding: 0.375rem 0.5rem; }
+  }
+  dialog.command:where([data-density="spacious"]) {
+    &amp; .command-input-wrapper { padding: 1rem 1.25rem; }
+    &amp; .command-item { padding: 0.625rem 0.5rem; }
+    &amp; .command-group-heading { padding: 0.5rem 0.5rem; }
+  }
+
 }
 </code></pre></div></section><section style="margin-top:3rem;" id="source-js"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-javascript"><a class="heading-anchor" href="#toc-javascript" aria-label="Link to section: JavaScript">§</a>JavaScript <a href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/command/command.js" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2><p class="text-muted-foreground text-sm mb-4">Interaction logic for the command component. Uses data attributes for wiring.</p><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-javascript">// -- Command --------------------------------------------------
 // Command palette dialog with search filtering, keyboard navigation, and
@@ -265,7 +346,7 @@ document.querySelectorAll('[data-command-trigger]:not([data-init])').forEach((tr
 
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
-</code></pre></div></section><nav class="page-nav"><a class="page-nav-link page-nav-prev" href="accordion.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><div><span class="page-nav-label">Previous</span><span class="page-nav-title">Accordion</span></div></a><a class="page-nav-link page-nav-next" href="breadcrumb.html"><div><span class="page-nav-label">Next</span><span class="page-nav-title">Breadcrumb</span></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></nav></main><aside class="site-toc"><div class="site-toc-content"><p class="toc-title">On This Page</p><a class="toc-link" href="#toc-default">Default</a><a class="toc-link" href="#toc-states">States</a><a class="toc-link" href="#toc-css">CSS</a><a class="toc-link" href="#toc-javascript">JavaScript</a></div></aside></div><script>try {
+</code></pre></div></section><nav class="page-nav"><a class="page-nav-link page-nav-prev" href="accordion.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><div><span class="page-nav-label">Previous</span><span class="page-nav-title">Accordion</span></div></a><a class="page-nav-link page-nav-next" href="breadcrumb.html"><div><span class="page-nav-label">Next</span><span class="page-nav-title">Breadcrumb</span></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></nav></main><aside class="site-toc"><div class="site-toc-content"><p class="toc-title">On This Page</p><a class="toc-link" href="#toc-default">Default</a><a class="toc-link" href="#toc-density">Density</a><a class="toc-link" href="#toc-states">States</a><a class="toc-link" href="#toc-css">CSS</a><a class="toc-link" href="#toc-javascript">JavaScript</a></div></aside></div><script>try {
   var c = JSON.parse(localStorage.getItem('defuss-shadcn-nav-collapsed') || '{}');
   if (c && typeof c === 'object' && !Array.isArray(c)) {
     for (var h in c) {

@@ -51,6 +51,30 @@
     padding-top: 1rem;
   }
 
+  /* -- Density --------------------------------------------------
+     data-density on the .card root scales the section paddings together.
+     Scale matches sizing.css data-density (0.75 / 1 / 1.25): comfortable is
+     the unsized default (1.5rem), compact 1rem, spacious 2rem; the
+     header+footer-only gap (1rem base) follows the ratio (0.75 / 1 / 1.5). */
+  .card:where([data-density="compact"]) {
+    & .card-header { padding: 1rem; padding-bottom: 0; }
+    & .card-content { padding: 1rem; }
+    & .card-footer { padding: 1rem; padding-top: 0; }
+    & .card-header + .card-footer { padding-top: 0.75rem; }
+  }
+  .card:where([data-density="comfortable"]) {
+    & .card-header { padding: 1.5rem; padding-bottom: 0; }
+    & .card-content { padding: 1.5rem; }
+    & .card-footer { padding: 1.5rem; padding-top: 0; }
+    & .card-header + .card-footer { padding-top: 1rem; }
+  }
+  .card:where([data-density="spacious"]) {
+    & .card-header { padding: 2rem; padding-bottom: 0; }
+    & .card-content { padding: 2rem; }
+    & .card-footer { padding: 2rem; padding-top: 0; }
+    & .card-header + .card-footer { padding-top: 1.5rem; }
+  }
+
   /* -- Container query: compact card in narrow containers -- */
   @container (max-width: 280px) {
     .card-header { padding: 1rem; padding-bottom: 0; }

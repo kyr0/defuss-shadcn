@@ -43,6 +43,70 @@
       &lt;/nav&gt;
     &lt;/div&gt;
   &lt;/aside&gt;
+&lt;/div&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-8" id="toc-density"><a class="heading-anchor" href="#toc-density" aria-label="Link to section: Density">§</a>Density</p><p class="text-xs text-muted-foreground mb-3">Set <code>data-density</code> on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), typography and fixed dimensions stay identical. <code>comfortable</code> matches the unsized default.</p><div class="preview"><div style="display:flex;gap:1rem;flex-wrap:wrap;"><div style="flex:1;min-width:12rem;"><p class="demo-label">Compact</p><aside class="app-sidebar" data-density="compact" style="position:relative;width:auto;height:11rem;border:1px solid var(--border);border-radius:var(--radius-lg);"><div class="sidebar-header"><span class="sidebar-logo-text">App</span></div><div class="sidebar-content"><nav class="sidebar-nav"><a class="sidebar-link" href="#"><span>Dashboard</span></a><a class="sidebar-link" href="#"><span>Inbox</span></a><a class="sidebar-link" href="#"><span>Settings</span></a></nav></div></aside></div><div style="flex:1;min-width:12rem;"><p class="demo-label">Comfortable</p><aside class="app-sidebar" data-density="comfortable" style="position:relative;width:auto;height:11rem;border:1px solid var(--border);border-radius:var(--radius-lg);"><div class="sidebar-header"><span class="sidebar-logo-text">App</span></div><div class="sidebar-content"><nav class="sidebar-nav"><a class="sidebar-link" href="#"><span>Dashboard</span></a><a class="sidebar-link" href="#"><span>Inbox</span></a><a class="sidebar-link" href="#"><span>Settings</span></a></nav></div></aside></div><div style="flex:1;min-width:12rem;"><p class="demo-label">Spacious</p><aside class="app-sidebar" data-density="spacious" style="position:relative;width:auto;height:11rem;border:1px solid var(--border);border-radius:var(--radius-lg);"><div class="sidebar-header"><span class="sidebar-logo-text">App</span></div><div class="sidebar-content"><nav class="sidebar-nav"><a class="sidebar-link" href="#"><span>Dashboard</span></a><a class="sidebar-link" href="#"><span>Inbox</span></a><a class="sidebar-link" href="#"><span>Settings</span></a></nav></div></aside></div></div></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;div style="display:flex;gap:1rem;flex-wrap:wrap;"&gt;
+  &lt;div style="flex:1;min-width:12rem;"&gt;
+    &lt;p class="demo-label"&gt;Compact&lt;/p&gt;
+    &lt;aside class="app-sidebar" data-density="compact" style="position:relative;width:auto;height:11rem;border:1px solid var(--border);border-radius:var(--radius-lg);"&gt;
+      &lt;div class="sidebar-header"&gt;
+        &lt;span class="sidebar-logo-text"&gt;App&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;div class="sidebar-content"&gt;
+        &lt;nav class="sidebar-nav"&gt;
+          &lt;a class="sidebar-link" href="#"&gt;
+            &lt;span&gt;Dashboard&lt;/span&gt;
+          &lt;/a&gt;
+          &lt;a class="sidebar-link" href="#"&gt;
+            &lt;span&gt;Inbox&lt;/span&gt;
+          &lt;/a&gt;
+          &lt;a class="sidebar-link" href="#"&gt;
+            &lt;span&gt;Settings&lt;/span&gt;
+          &lt;/a&gt;
+        &lt;/nav&gt;
+      &lt;/div&gt;
+    &lt;/aside&gt;
+  &lt;/div&gt;
+  &lt;div style="flex:1;min-width:12rem;"&gt;
+    &lt;p class="demo-label"&gt;Comfortable&lt;/p&gt;
+    &lt;aside class="app-sidebar" data-density="comfortable" style="position:relative;width:auto;height:11rem;border:1px solid var(--border);border-radius:var(--radius-lg);"&gt;
+      &lt;div class="sidebar-header"&gt;
+        &lt;span class="sidebar-logo-text"&gt;App&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;div class="sidebar-content"&gt;
+        &lt;nav class="sidebar-nav"&gt;
+          &lt;a class="sidebar-link" href="#"&gt;
+            &lt;span&gt;Dashboard&lt;/span&gt;
+          &lt;/a&gt;
+          &lt;a class="sidebar-link" href="#"&gt;
+            &lt;span&gt;Inbox&lt;/span&gt;
+          &lt;/a&gt;
+          &lt;a class="sidebar-link" href="#"&gt;
+            &lt;span&gt;Settings&lt;/span&gt;
+          &lt;/a&gt;
+        &lt;/nav&gt;
+      &lt;/div&gt;
+    &lt;/aside&gt;
+  &lt;/div&gt;
+  &lt;div style="flex:1;min-width:12rem;"&gt;
+    &lt;p class="demo-label"&gt;Spacious&lt;/p&gt;
+    &lt;aside class="app-sidebar" data-density="spacious" style="position:relative;width:auto;height:11rem;border:1px solid var(--border);border-radius:var(--radius-lg);"&gt;
+      &lt;div class="sidebar-header"&gt;
+        &lt;span class="sidebar-logo-text"&gt;App&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;div class="sidebar-content"&gt;
+        &lt;nav class="sidebar-nav"&gt;
+          &lt;a class="sidebar-link" href="#"&gt;
+            &lt;span&gt;Dashboard&lt;/span&gt;
+          &lt;/a&gt;
+          &lt;a class="sidebar-link" href="#"&gt;
+            &lt;span&gt;Inbox&lt;/span&gt;
+          &lt;/a&gt;
+          &lt;a class="sidebar-link" href="#"&gt;
+            &lt;span&gt;Settings&lt;/span&gt;
+          &lt;/a&gt;
+        &lt;/nav&gt;
+      &lt;/div&gt;
+    &lt;/aside&gt;
+  &lt;/div&gt;
 &lt;/div&gt;</code></pre></div><section style="margin-top:3rem;" id="states"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-states"><a class="heading-anchor" href="#toc-states" aria-label="Link to section: States">§</a>States</h2><p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p><ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;"><li><code>default</code> — expanded (the authored width; <code>setState('default')</code> restores it)</li><li><code>collapsed</code> — icon-rail width via the documented <code>data-state="collapsed"</code> attribute</li></ul><p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/{mode}/sidebar-{state}.png</code>.</p></section><section style="margin-top:3rem;" id="source-css"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-css"><a class="heading-anchor" href="#toc-css" aria-label="Link to section: CSS">§</a>CSS <a href="../components/sidebar/sidebar.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2><p class="text-muted-foreground text-sm mb-4">Full sidebar layout with collapsible state, mobile dialog overlay, collapsible groups, submenus, badges, and responsive behavior.</p><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-scss">/* -- Sidebar component ------------------------------------------ */
 /* Application sidebar with collapsible state, mobile sheet overlay, */
 /* collapsible groups, submenus, and keyboard shortcut (Cmd+B).      */
@@ -418,6 +482,23 @@
     .sidebar-mobile { transition: none; }
     .sidebar-mobile::backdrop { transition: none; }
   }
+  /* -- Density ----------------------------------------------------
+     data-density on the .app-sidebar root scales link rows and the content
+     frame. comfortable == the unsized default (0.5rem). Independent of the
+     collapsed rail, whose compact paddings win by higher specificity. */
+  .app-sidebar:where([data-density="compact"]) {
+    &amp; .sidebar-link { padding-block: 0.375rem; }
+    &amp; .sidebar-content { padding: 0.375rem; gap: 0.375rem; }
+  }
+  .app-sidebar:where([data-density="comfortable"]) {
+    &amp; .sidebar-link { padding-block: 0.5rem; }
+    &amp; .sidebar-content { padding: 0.5rem; gap: 0.5rem; }
+  }
+  .app-sidebar:where([data-density="spacious"]) {
+    &amp; .sidebar-link { padding-block: 0.625rem; }
+    &amp; .sidebar-content { padding: 0.625rem; gap: 0.625rem; }
+  }
+
 }
 </code></pre></div></section><section style="margin-top:3rem;" id="source-js"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-javascript"><a class="heading-anchor" href="#toc-javascript" aria-label="Link to section: JavaScript">§</a>JavaScript <a href="../components/sidebar/sidebar.js" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2><p class="text-muted-foreground text-sm mb-4">Toggle collapse, keyboard shortcut (Cmd+B / Ctrl+B), and mobile dialog management.</p><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-javascript">// -- Sidebar --------------------------------------------------
 // Toggle collapse, keyboard shortcut (Cmd+B), and mobile dialog,
@@ -572,7 +653,7 @@ if (!document.__sidebarKbInit) {
     }
   });
 }
-</code></pre></div></section><nav class="page-nav"><a class="page-nav-link page-nav-prev" href="navigation-menu.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><div><span class="page-nav-label">Previous</span><span class="page-nav-title">Navigation Menu</span></div></a><a class="page-nav-link page-nav-next" href="site-header.html"><div><span class="page-nav-label">Next</span><span class="page-nav-title">Site Header</span></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></nav></main><aside class="site-toc"><div class="site-toc-content"><p class="toc-title">On This Page</p><a class="toc-link" href="#toc-default">Default</a><a class="toc-link" href="#toc-right-side">Right Side</a><a class="toc-link" href="#toc-states">States</a><a class="toc-link" href="#toc-css">CSS</a><a class="toc-link" href="#toc-javascript">JavaScript</a></div></aside></div><script>try {
+</code></pre></div></section><nav class="page-nav"><a class="page-nav-link page-nav-prev" href="navigation-menu.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><div><span class="page-nav-label">Previous</span><span class="page-nav-title">Navigation Menu</span></div></a><a class="page-nav-link page-nav-next" href="site-header.html"><div><span class="page-nav-label">Next</span><span class="page-nav-title">Site Header</span></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></nav></main><aside class="site-toc"><div class="site-toc-content"><p class="toc-title">On This Page</p><a class="toc-link" href="#toc-default">Default</a><a class="toc-link" href="#toc-right-side">Right Side</a><a class="toc-link" href="#toc-density">Density</a><a class="toc-link" href="#toc-states">States</a><a class="toc-link" href="#toc-css">CSS</a><a class="toc-link" href="#toc-javascript">JavaScript</a></div></aside></div><script>try {
   var c = JSON.parse(localStorage.getItem('defuss-shadcn-nav-collapsed') || '{}');
   if (c && typeof c === 'object' && !Array.isArray(c)) {
     for (var h in c) {

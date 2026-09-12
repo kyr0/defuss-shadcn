@@ -41,4 +41,10 @@ await cssSmoke('table', [
       assert.equal(narrow, '8px 12px', 'narrow table gets compact padding');
     },
   },
+  { label: 'table: density "compact" → padding-top 6px', selector: '#td-compact .table-cell', css: { 'padding-top': '6px' } },
+  { label: 'table: density "compact" → padding-left 10px', selector: '#td-compact .table-cell', css: { 'padding-left': '10px' } },
+  { label: 'table: density "comfortable" → padding-top 12px', selector: '#td-comfortable .table-cell', css: { 'padding-top': '12px' } },
+  { label: 'table: density "comfortable" → padding-left 16px', selector: '#td-comfortable .table-cell', css: { 'padding-left': '16px' } },
+  { label: 'table: density "spacious" → padding-top 16px', selector: '#td-spacious .table-cell', css: { 'padding-top': '16px' } },
+  { label: 'table: density "spacious" → padding-left 20px', selector: '#td-spacious .table-cell', css: { 'padding-left': '20px' } },
 ]);

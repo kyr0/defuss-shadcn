@@ -36,4 +36,10 @@ await cssSmoke('timeline', [
       assert.equal(rails.width, '1px');
     },
   },
+  { label: 'timeline: density "compact" → padding-bottom 18px', selector: '#tld-compact .timeline-item', css: { 'padding-bottom': '18px' } },
+  { label: 'timeline: density "compact" → column-gap 12px', selector: '#tld-compact .timeline-item', css: { 'column-gap': '12px' } },
+  { label: 'timeline: density "comfortable" → padding-bottom 24px', selector: '#tld-comfortable .timeline-item', css: { 'padding-bottom': '24px' } },
+  { label: 'timeline: density "comfortable" → column-gap 16px', selector: '#tld-comfortable .timeline-item', css: { 'column-gap': '16px' } },
+  { label: 'timeline: density "spacious" → padding-bottom 30px', selector: '#tld-spacious .timeline-item', css: { 'padding-bottom': '30px' } },
+  { label: 'timeline: density "spacious" → column-gap 20px', selector: '#tld-spacious .timeline-item', css: { 'column-gap': '20px' } },
 ]);

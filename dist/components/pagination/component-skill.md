@@ -97,6 +97,16 @@ Set `data-size` on the `.pagination` nav; page links, prev/next and the ellipsis
 | `xl` | 2.75rem | 2.75rem | 1.125rem |
 
 ---
+## Density
+
+Set `data-density` on the `.pagination` nav; only the inter-cell gap scales — the size ladder owns cell dimensions, so size and density stay independent axes (ratio `0.75` / `1` / `1.25`, matching `sizing.css`).
+
+| Value | Effect |
+| --- | --- |
+| `compact` | List gap 0.125rem |
+| `comfortable` | Gap 0.25rem — identical to the unsized default |
+| `spacious` | Gap 0.5rem |
+
 ## ARIA
 
 | Attribute | Element | Purpose |

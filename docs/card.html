@@ -75,6 +75,52 @@
       Invite member
     &lt;/button&gt;
   &lt;/div&gt;
+&lt;/div&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-8" id="toc-density"><a class="heading-anchor" href="#toc-density" aria-label="Link to section: Density">§</a>Density</p><p class="text-xs text-muted-foreground mb-3">Set <code>data-density</code> on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), typography and fixed dimensions stay identical. <code>comfortable</code> matches the unsized default.</p><div class="preview"><div style="display:flex;gap:1rem;flex-wrap:wrap;"><div style="flex:1;min-width:12rem;"><p class="demo-label">Compact</p><div class="card" data-density="compact"><div class="card-header"><h3 class="card-title">Density</h3><p class="card-description">Section padding scales.</p></div><div class="card-content"><p>Body copy stays put — only whitespace changes.</p></div><div class="card-footer"><span>Footer</span></div></div></div><div style="flex:1;min-width:12rem;"><p class="demo-label">Comfortable</p><div class="card" data-density="comfortable"><div class="card-header"><h3 class="card-title">Density</h3><p class="card-description">Section padding scales.</p></div><div class="card-content"><p>Body copy stays put — only whitespace changes.</p></div><div class="card-footer"><span>Footer</span></div></div></div><div style="flex:1;min-width:12rem;"><p class="demo-label">Spacious</p><div class="card" data-density="spacious"><div class="card-header"><h3 class="card-title">Density</h3><p class="card-description">Section padding scales.</p></div><div class="card-content"><p>Body copy stays put — only whitespace changes.</p></div><div class="card-footer"><span>Footer</span></div></div></div></div></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;div style="display:flex;gap:1rem;flex-wrap:wrap;"&gt;
+  &lt;div style="flex:1;min-width:12rem;"&gt;
+    &lt;p class="demo-label"&gt;Compact&lt;/p&gt;
+    &lt;div class="card" data-density="compact"&gt;
+      &lt;div class="card-header"&gt;
+        &lt;h3 class="card-title"&gt;Density&lt;/h3&gt;
+        &lt;p class="card-description"&gt;Section padding scales.&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;div class="card-content"&gt;
+        &lt;p&gt;Body copy stays put — only whitespace changes.&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;div class="card-footer"&gt;
+        &lt;span&gt;Footer&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div style="flex:1;min-width:12rem;"&gt;
+    &lt;p class="demo-label"&gt;Comfortable&lt;/p&gt;
+    &lt;div class="card" data-density="comfortable"&gt;
+      &lt;div class="card-header"&gt;
+        &lt;h3 class="card-title"&gt;Density&lt;/h3&gt;
+        &lt;p class="card-description"&gt;Section padding scales.&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;div class="card-content"&gt;
+        &lt;p&gt;Body copy stays put — only whitespace changes.&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;div class="card-footer"&gt;
+        &lt;span&gt;Footer&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div style="flex:1;min-width:12rem;"&gt;
+    &lt;p class="demo-label"&gt;Spacious&lt;/p&gt;
+    &lt;div class="card" data-density="spacious"&gt;
+      &lt;div class="card-header"&gt;
+        &lt;h3 class="card-title"&gt;Density&lt;/h3&gt;
+        &lt;p class="card-description"&gt;Section padding scales.&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;div class="card-content"&gt;
+        &lt;p&gt;Body copy stays put — only whitespace changes.&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;div class="card-footer"&gt;
+        &lt;span&gt;Footer&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
 &lt;/div&gt;</code></pre></div><section style="margin-top:3rem;" id="source-css"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-css"><a class="heading-anchor" href="#toc-css" aria-label="Link to section: CSS">§</a>CSS <a href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/card/card.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-scss">/* -- Card component -------------------------------------------- */
 
 @layer components {
@@ -128,6 +174,30 @@
     padding-top: 1rem;
   }
 
+  /* -- Density --------------------------------------------------
+     data-density on the .card root scales the section paddings together.
+     Scale matches sizing.css data-density (0.75 / 1 / 1.25): comfortable is
+     the unsized default (1.5rem), compact 1rem, spacious 2rem; the
+     header+footer-only gap (1rem base) follows the ratio (0.75 / 1 / 1.5). */
+  .card:where([data-density="compact"]) {
+    &amp; .card-header { padding: 1rem; padding-bottom: 0; }
+    &amp; .card-content { padding: 1rem; }
+    &amp; .card-footer { padding: 1rem; padding-top: 0; }
+    &amp; .card-header + .card-footer { padding-top: 0.75rem; }
+  }
+  .card:where([data-density="comfortable"]) {
+    &amp; .card-header { padding: 1.5rem; padding-bottom: 0; }
+    &amp; .card-content { padding: 1.5rem; }
+    &amp; .card-footer { padding: 1.5rem; padding-top: 0; }
+    &amp; .card-header + .card-footer { padding-top: 1rem; }
+  }
+  .card:where([data-density="spacious"]) {
+    &amp; .card-header { padding: 2rem; padding-bottom: 0; }
+    &amp; .card-content { padding: 2rem; }
+    &amp; .card-footer { padding: 2rem; padding-top: 0; }
+    &amp; .card-header + .card-footer { padding-top: 1.5rem; }
+  }
+
   /* -- Container query: compact card in narrow containers -- */
   @container (max-width: 280px) {
     .card-header { padding: 1rem; padding-bottom: 0; }
@@ -136,7 +206,7 @@
     .card-title { font-size: 1rem; }
   }
 }
-</code></pre></div></section><nav class="page-nav"><a class="page-nav-link page-nav-prev" href="avatar.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><div><span class="page-nav-label">Previous</span><span class="page-nav-title">Avatar</span></div></a><a class="page-nav-link page-nav-next" href="image.html"><div><span class="page-nav-label">Next</span><span class="page-nav-title">Image</span></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></nav></main><aside class="site-toc"><div class="site-toc-content"><p class="toc-title">On This Page</p><a class="toc-link" href="#toc-standard">Standard</a><a class="toc-link" href="#toc-metric">Metric</a><a class="toc-link" href="#toc-with-image">With Image</a><a class="toc-link" href="#toc-header-action">Header Action</a><a class="toc-link" href="#toc-css">CSS</a></div></aside></div><script>try {
+</code></pre></div></section><nav class="page-nav"><a class="page-nav-link page-nav-prev" href="avatar.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><div><span class="page-nav-label">Previous</span><span class="page-nav-title">Avatar</span></div></a><a class="page-nav-link page-nav-next" href="image.html"><div><span class="page-nav-label">Next</span><span class="page-nav-title">Image</span></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></nav></main><aside class="site-toc"><div class="site-toc-content"><p class="toc-title">On This Page</p><a class="toc-link" href="#toc-standard">Standard</a><a class="toc-link" href="#toc-metric">Metric</a><a class="toc-link" href="#toc-with-image">With Image</a><a class="toc-link" href="#toc-header-action">Header Action</a><a class="toc-link" href="#toc-density">Density</a><a class="toc-link" href="#toc-css">CSS</a></div></aside></div><script>try {
   var c = JSON.parse(localStorage.getItem('defuss-shadcn-nav-collapsed') || '{}');
   if (c && typeof c === 'object' && !Array.isArray(c)) {
     for (var h in c) {

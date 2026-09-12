@@ -128,4 +128,20 @@
     }
     .sortable-handle { color: GrayText; }
   }
+  /* -- Density ----------------------------------------------------
+     data-density on the .sortable root scales the list gap and the item
+     padding. comfortable == the unsized default. */
+  .sortable:where([data-density="compact"]) {
+    gap: 0.125rem;
+    & .sortable-item { padding: 0.375rem 0.5rem; }
+  }
+  .sortable:where([data-density="comfortable"]) {
+    gap: 0.25rem;
+    & .sortable-item { padding: 0.5rem 0.75rem; }
+  }
+  .sortable:where([data-density="spacious"]) {
+    gap: 0.375rem;
+    & .sortable-item { padding: 0.625rem 1rem; }
+  }
+
 }

@@ -75,6 +75,16 @@ HTML Drag and Drop API + keyboard reordering for accessible drag-and-drop lists.
 | _(default)_ | Vertical (column) | `↑` / `↓` | `Alt + ↑` / `Alt + ↓` |
 | `horizontal` | Horizontal (row) | `←` / `→` | `Alt + ←` / `Alt + →` |
 
+## Density
+
+Set `data-density` on the `.sortable` root; list gap and item padding scale.
+
+| Value | Effect |
+| --- | --- |
+| `compact` | Gap 0.125rem, item padding 0.375rem 0.5rem |
+| `comfortable` | 0.25rem / 0.5rem 0.75rem — identical to the unsized default |
+| `spacious` | 0.375rem / 0.625rem 1rem |
+
 ## States
 
 | `data-*` / attribute | Element | Visual |

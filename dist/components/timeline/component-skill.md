@@ -48,6 +48,16 @@ supportedStates: default
 | `default` | Muted dot (default)             |
 | `active`  | Primary-colored dot             |
 
+## Density
+
+Set `data-density` on the `.timeline` root; the per-item rhythm (connector gap + trailing space) scales. Last item keeps no trailing space in any density.
+
+| Value | Effect |
+| --- | --- |
+| `compact` | Item gap 0.75rem, spacing 1.125rem |
+| `comfortable` | Gap 1rem, spacing 1.5rem — identical to the unsized default |
+| `spacious` | Gap 1.25rem, spacing 1.875rem |
+
 ## Accessibility
 
 - `<ol>` provides sequential ordering for screen readers

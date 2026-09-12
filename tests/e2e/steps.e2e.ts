@@ -59,4 +59,7 @@ await cssSmoke('steps', [
   { label: 'steps: data-size="md" geometry', selector: '#z-steps-md .step-indicator', css: { 'height': '32px' } },
   { label: 'steps: data-size="lg" geometry', selector: '#z-steps-lg .step-indicator', css: { 'height': '40px' } },
   { label: 'steps: data-size="xl" geometry', selector: '#z-steps-xl .step-indicator', css: { 'height': '48px' } },
+  { label: 'steps: density "compact" → row-gap 6px', selector: '#st-compact .step', css: { 'row-gap': '6px' } },
+  { label: 'steps: density "comfortable" → row-gap 8px', selector: '#st-comfortable .step', css: { 'row-gap': '8px' } },
+  { label: 'steps: density "spacious" → row-gap 12px', selector: '#st-spacious .step', css: { 'row-gap': '12px' } },
 ]);

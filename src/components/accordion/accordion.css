@@ -77,6 +77,22 @@
 
     & p { margin: 0; }
   }
+  /* -- Density ----------------------------------------------------
+     data-density on the .accordion root scales trigger + panel padding.
+     comfortable (1rem) == the unsized default. Ratio mirrors sizing.css. */
+  .accordion:where([data-density="compact"]) {
+    & .accordion-trigger { padding: 0.75rem 0; }
+    & .accordion-content { padding-bottom: 0.75rem; }
+  }
+  .accordion:where([data-density="comfortable"]) {
+    & .accordion-trigger { padding: 1rem 0; }
+    & .accordion-content { padding-bottom: 1rem; }
+  }
+  .accordion:where([data-density="spacious"]) {
+    & .accordion-trigger { padding: 1.25rem 0; }
+    & .accordion-content { padding-bottom: 1.25rem; }
+  }
+
 }
 
 /* Accessibility: reduced motion suppresses the expand/collapse animation

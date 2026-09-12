@@ -48,5 +48,8 @@ await cssSmoke('pagination', [
   { label: 'pagination: data-size="md" geometry', selector: '#z-pagination-md .pagination-link', css: { 'height': '36px' } },
   { label: 'pagination: data-size="lg" geometry', selector: '#z-pagination-lg .pagination-link', css: { 'height': '40px' } },
   { label: 'pagination: data-size="xl" geometry', selector: '#z-pagination-xl .pagination-link', css: { 'height': '44px' } },
+  { label: 'pagination: density "compact" → gap 2px', selector: '#pg-compact .pagination-list', css: { 'gap': '2px' } },
+  { label: 'pagination: density "comfortable" → gap 4px', selector: '#pg-comfortable .pagination-list', css: { 'gap': '4px' } },
+  { label: 'pagination: density "spacious" → gap 8px', selector: '#pg-spacious .pagination-list', css: { 'gap': '8px' } },
 ]);
 void assert;

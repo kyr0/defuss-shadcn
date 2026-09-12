@@ -5,6 +5,38 @@
 &lt;div class="context-menu" id="my-ctx" popover&gt;
   &lt;button class="context-menu-item" role="menuitem"&gt;Cut&lt;/button&gt;
   &lt;button class="context-menu-item" role="menuitem"&gt;Copy&lt;/button&gt;
+&lt;/div&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-8" id="toc-density"><a class="heading-anchor" href="#toc-density" aria-label="Link to section: Density">§</a>Density</p><p class="text-xs text-muted-foreground mb-3">Set <code>data-density</code> on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), typography and fixed dimensions stay identical. <code>comfortable</code> matches the unsized default.</p><div class="preview"><div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;"><span class="demo-label" style="width:7.5rem;margin:0;">Compact</span><div class="context-menu-trigger" data-context-menu="density-ctx-compact" style="padding:1rem;border:1px dashed var(--border);border-radius:var(--radius-md);flex:1;">Right-click — Compact</div><div class="context-menu" id="density-ctx-compact" popover="" data-density="compact" role="menu"><button class="context-menu-item" role="menuitem">Cut</button><button class="context-menu-item" role="menuitem">Copy</button><button class="context-menu-item" role="menuitem">Paste</button></div></div><div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;"><span class="demo-label" style="width:7.5rem;margin:0;">Comfortable</span><div class="context-menu-trigger" data-context-menu="density-ctx-comfortable" style="padding:1rem;border:1px dashed var(--border);border-radius:var(--radius-md);flex:1;">Right-click — Comfortable</div><div class="context-menu" id="density-ctx-comfortable" popover="" data-density="comfortable" role="menu"><button class="context-menu-item" role="menuitem">Cut</button><button class="context-menu-item" role="menuitem">Copy</button><button class="context-menu-item" role="menuitem">Paste</button></div></div><div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;"><span class="demo-label" style="width:7.5rem;margin:0;">Spacious</span><div class="context-menu-trigger" data-context-menu="density-ctx-spacious" style="padding:1rem;border:1px dashed var(--border);border-radius:var(--radius-md);flex:1;">Right-click — Spacious</div><div class="context-menu" id="density-ctx-spacious" popover="" data-density="spacious" role="menu"><button class="context-menu-item" role="menuitem">Cut</button><button class="context-menu-item" role="menuitem">Copy</button><button class="context-menu-item" role="menuitem">Paste</button></div></div></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;"&gt;
+  &lt;span class="demo-label" style="width:7.5rem;margin:0;"&gt;Compact&lt;/span&gt;
+  &lt;div class="context-menu-trigger" data-context-menu="density-ctx-compact" style="padding:1rem;border:1px dashed var(--border);border-radius:var(--radius-md);flex:1;"&gt;
+Right-click — Compact
+  &lt;/div&gt;
+  &lt;div class="context-menu" id="density-ctx-compact" popover data-density="compact" role="menu"&gt;
+    &lt;button class="context-menu-item" role="menuitem"&gt;Cut&lt;/button&gt;
+    &lt;button class="context-menu-item" role="menuitem"&gt;Copy&lt;/button&gt;
+    &lt;button class="context-menu-item" role="menuitem"&gt;Paste&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;"&gt;
+  &lt;span class="demo-label" style="width:7.5rem;margin:0;"&gt;Comfortable&lt;/span&gt;
+  &lt;div class="context-menu-trigger" data-context-menu="density-ctx-comfortable" style="padding:1rem;border:1px dashed var(--border);border-radius:var(--radius-md);flex:1;"&gt;
+Right-click — Comfortable
+  &lt;/div&gt;
+  &lt;div class="context-menu" id="density-ctx-comfortable" popover data-density="comfortable" role="menu"&gt;
+    &lt;button class="context-menu-item" role="menuitem"&gt;Cut&lt;/button&gt;
+    &lt;button class="context-menu-item" role="menuitem"&gt;Copy&lt;/button&gt;
+    &lt;button class="context-menu-item" role="menuitem"&gt;Paste&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;"&gt;
+  &lt;span class="demo-label" style="width:7.5rem;margin:0;"&gt;Spacious&lt;/span&gt;
+  &lt;div class="context-menu-trigger" data-context-menu="density-ctx-spacious" style="padding:1rem;border:1px dashed var(--border);border-radius:var(--radius-md);flex:1;"&gt;
+Right-click — Spacious
+  &lt;/div&gt;
+  &lt;div class="context-menu" id="density-ctx-spacious" popover data-density="spacious" role="menu"&gt;
+    &lt;button class="context-menu-item" role="menuitem"&gt;Cut&lt;/button&gt;
+    &lt;button class="context-menu-item" role="menuitem"&gt;Copy&lt;/button&gt;
+    &lt;button class="context-menu-item" role="menuitem"&gt;Paste&lt;/button&gt;
+  &lt;/div&gt;
 &lt;/div&gt;</code></pre></div><section style="margin-top:3rem;" id="states"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-states"><a class="heading-anchor" href="#toc-states" aria-label="Link to section: States">§</a>States</h2><p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p><ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;"><li><code>default</code> — closed (the authored state; right-click opens it)</li><li><code>open</code> — menu shown; <code>setState('open', { x, y })</code> positions it (viewport top-left by default, there is no pointer to anchor to)</li></ul><p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/{mode}/context-menu-{state}.png</code>.</p></section><section style="margin-top:3rem;" id="source-css"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-css"><a class="heading-anchor" href="#toc-css" aria-label="Link to section: CSS">§</a>CSS <a href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/context-menu/context-menu.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2><p class="text-muted-foreground text-sm mb-4">Styles for the context-menu component. Uses design tokens for colors, spacing, and radius.</p><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-scss">@layer components {
   .context-menu-trigger {
     display: flex; align-items: center; justify-content: center;
@@ -38,6 +70,22 @@
   }
 
   .context-menu-separator { height: 1px; background-color: var(--border); margin: 0.25rem -0.25rem; }
+  /* -- Density ----------------------------------------------------
+     data-density on the .context-menu root scales the container padding and
+     the item rows. comfortable == the unsized default. */
+  .context-menu:where([data-density="compact"]) {
+    padding: 0.125rem;
+    &amp; .context-menu-item { padding: 0.25rem 0.5rem; }
+  }
+  .context-menu:where([data-density="comfortable"]) {
+    padding: 0.25rem;
+    &amp; .context-menu-item { padding: 0.375rem 0.5rem; }
+  }
+  .context-menu:where([data-density="spacious"]) {
+    padding: 0.375rem;
+    &amp; .context-menu-item { padding: 0.5rem 0.625rem; }
+  }
+
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all
@@ -218,7 +266,7 @@ function init() {
 
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
-</code></pre></div></section><nav class="page-nav"><a class="page-nav-link page-nav-prev" href="tooltip.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><div><span class="page-nav-label">Previous</span><span class="page-nav-title">Tooltip</span></div></a><a class="page-nav-link page-nav-next" href="dialog.html"><div><span class="page-nav-label">Next</span><span class="page-nav-title">Dialog</span></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></nav></main><aside class="site-toc"><div class="site-toc-content"><p class="toc-title">On This Page</p><a class="toc-link" href="#toc-default">Default</a><a class="toc-link" href="#toc-states">States</a><a class="toc-link" href="#toc-css">CSS</a><a class="toc-link" href="#toc-javascript">JavaScript</a></div></aside></div><script>try {
+</code></pre></div></section><nav class="page-nav"><a class="page-nav-link page-nav-prev" href="tooltip.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><div><span class="page-nav-label">Previous</span><span class="page-nav-title">Tooltip</span></div></a><a class="page-nav-link page-nav-next" href="dialog.html"><div><span class="page-nav-label">Next</span><span class="page-nav-title">Dialog</span></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></nav></main><aside class="site-toc"><div class="site-toc-content"><p class="toc-title">On This Page</p><a class="toc-link" href="#toc-default">Default</a><a class="toc-link" href="#toc-density">Density</a><a class="toc-link" href="#toc-states">States</a><a class="toc-link" href="#toc-css">CSS</a><a class="toc-link" href="#toc-javascript">JavaScript</a></div></aside></div><script>try {
   var c = JSON.parse(localStorage.getItem('defuss-shadcn-nav-collapsed') || '{}');
   if (c && typeof c === 'object' && !Array.isArray(c)) {
     for (var h in c) {

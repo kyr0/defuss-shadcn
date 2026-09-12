@@ -60,6 +60,16 @@ supportedStates: default, open
 
 ---
 
+## Density
+
+Set `data-density` on the `dialog.command` root; the palette rows, search wrapper and group headings scale.
+
+| Value | Effect |
+| --- | --- |
+| `compact` | Item padding 0.375rem |
+| `comfortable` | 0.5rem — identical to the unsized default |
+| `spacious` | 0.625rem |
+
 ## ARIA
 
 | Attribute | Element | Purpose |

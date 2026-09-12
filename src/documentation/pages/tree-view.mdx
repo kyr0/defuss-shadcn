@@ -139,6 +139,25 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <ExampleCode>{"<ul class=\"tree\" role=\"tree\" aria-label=\"File explorer\">\n  <li class=\"tree-item\" role=\"treeitem\" aria-expanded=\"true\">\n    <details class=\"tree-branch\" open>\n      <summary class=\"tree-branch-trigger\">\n        <svg>...chevron...</svg>\n        <svg>...folder...</svg>\n        <span>src</span>\n      </summary>\n      <ul class=\"tree-group\" role=\"group\">\n        <li class=\"tree-item\" role=\"treeitem\">\n          <span class=\"tree-leaf\">\n            <svg>...file...</svg>\n            <span>index.ts</span>\n          </span>\n        </li>\n      </ul>\n    </details>\n  </li>\n</ul>"}</ExampleCode>
 </Example>
 
+<Example>
+  <ExampleLabel>Density</ExampleLabel>
+  <ExampleHint>Set <code>data-density</code> on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), typography and fixed dimensions stay identical. <code>comfortable</code> matches the unsized default.</ExampleHint>
+  <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+    <div style="flex:1;min-width:12rem;">
+      <p class="demo-label">Compact</p>
+      <ul class="tree" role="tree" aria-label="Files compact" data-density="compact"><li class="tree-item" role="treeitem" aria-expanded="true"><details class="tree-branch" open><summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6" /></svg><span>src</span></summary><ul class="tree-group" role="group"><li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>button.ts</span></span></li><li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>card.ts</span></span></li></ul></details></li></ul>
+    </div>
+    <div style="flex:1;min-width:12rem;">
+      <p class="demo-label">Comfortable</p>
+      <ul class="tree" role="tree" aria-label="Files comfortable" data-density="comfortable"><li class="tree-item" role="treeitem" aria-expanded="true"><details class="tree-branch" open><summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6" /></svg><span>src</span></summary><ul class="tree-group" role="group"><li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>button.ts</span></span></li><li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>card.ts</span></span></li></ul></details></li></ul>
+    </div>
+    <div style="flex:1;min-width:12rem;">
+      <p class="demo-label">Spacious</p>
+      <ul class="tree" role="tree" aria-label="Files spacious" data-density="spacious"><li class="tree-item" role="treeitem" aria-expanded="true"><details class="tree-branch" open><summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6" /></svg><span>src</span></summary><ul class="tree-group" role="group"><li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>button.ts</span></span></li><li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>card.ts</span></span></li></ul></details></li></ul>
+    </div>
+  </div>
+</Example>
+
 <StatesSection>
   <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
   <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">

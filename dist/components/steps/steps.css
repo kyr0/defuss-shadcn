@@ -124,4 +124,24 @@
     .step[data-status='complete']:not(:last-child)::after { background: Highlight; }
     .step[data-status='error']:not(:last-child)::after { background: Mark; }
   }
+  /* -- Density ----------------------------------------------------
+     data-density on the .steps root scales the flex gaps only — the size
+     ladder owns indicator/typography, size and density stay independent.
+     comfortable == the unsized default (.5rem / .125rem). */
+  .steps:where([data-density="compact"]) {
+    gap: 0.375rem;
+    & .step { gap: 0.375rem; }
+    & .step-content { gap: 0.0625rem; }
+  }
+  .steps:where([data-density="comfortable"]) {
+    gap: 0.5rem;
+    & .step { gap: 0.5rem; }
+    & .step-content { gap: 0.125rem; }
+  }
+  .steps:where([data-density="spacious"]) {
+    gap: 0.75rem;
+    & .step { gap: 0.75rem; }
+    & .step-content { gap: 0.25rem; }
+  }
+
 }

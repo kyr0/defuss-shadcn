@@ -154,6 +154,21 @@ try {
     assert.equal(after, before, 'scroll position preserved after close');
     await page.evaluate(() => window.scrollTo(0, 0)); // leave a clean viewport
   });
+
+  await check('command: density "compact" → padding-top 6px', async () => {
+    const val = await page.$eval('#cmd-compact .command-item', (el) => getComputedStyle(el).paddingTop);
+    assert.equal(val, '6px');
+  });
+
+  await check('command: density "comfortable" → padding-top 8px', async () => {
+    const val = await page.$eval('#cmd-comfortable .command-item', (el) => getComputedStyle(el).paddingTop);
+    assert.equal(val, '8px');
+  });
+
+  await check('command: density "spacious" → padding-top 10px', async () => {
+    const val = await page.$eval('#cmd-spacious .command-item', (el) => getComputedStyle(el).paddingTop);
+    assert.equal(val, '10px');
+  });
 } finally {
   await browser.close();
   server.stop();

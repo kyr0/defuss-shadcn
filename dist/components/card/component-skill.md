@@ -121,6 +121,16 @@ No JavaScript required.
 
 ---
 
+## Density
+
+Set `data-density` on the `.card` root; header/content/footer paddings scale together (ratio `0.75` / `1` / `1.25`, matching `sizing.css`).
+
+| Value | Effect |
+| --- | --- |
+| `compact` | Section padding 1rem (header+footer-only gap 0.75rem) |
+| `comfortable` | Section padding 1.5rem — identical to the unsized default |
+| `spacious` | Section padding 2rem (gap 1.5rem) |
+
 ## Notes
 
 - Card is a container pattern — its children define its purpose

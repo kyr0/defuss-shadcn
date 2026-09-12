@@ -47,4 +47,7 @@ await cssSmoke('card', [
       assert.equal(narrow.widePad, '24px 24px 0px', 'wide card unaffected');
     },
   },
+  { label: 'card: density "compact" → padding-top 16px', selector: '#cd-compact .card-header', css: { 'padding-top': '16px' } },
+  { label: 'card: density "comfortable" → padding-top 24px', selector: '#cd-comfortable .card-header', css: { 'padding-top': '24px' } },
+  { label: 'card: density "spacious" → padding-top 32px', selector: '#cd-spacious .card-header', css: { 'padding-top': '32px' } },
 ]);

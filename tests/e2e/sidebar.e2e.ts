@@ -233,6 +233,21 @@ try {
     assert.deepEqual(reg.states, ['default', 'collapsed']);
     assert.ok(reg.dollarWorks, 'globalThis.$ query alias missing');
   });
+
+  await check('sidebar: density "compact" → padding-top 6px', async () => {
+    const val = await page.$eval('#sb-compact .sidebar-link', (el) => getComputedStyle(el).paddingTop);
+    assert.equal(val, '6px');
+  });
+
+  await check('sidebar: density "comfortable" → padding-top 8px', async () => {
+    const val = await page.$eval('#sb-comfortable .sidebar-link', (el) => getComputedStyle(el).paddingTop);
+    assert.equal(val, '8px');
+  });
+
+  await check('sidebar: density "spacious" → padding-top 10px', async () => {
+    const val = await page.$eval('#sb-spacious .sidebar-link', (el) => getComputedStyle(el).paddingTop);
+    assert.equal(val, '10px');
+  });
 } finally {
   await browser.close();
   server.stop();

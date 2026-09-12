@@ -31,6 +31,22 @@
   }
 
   .context-menu-separator { height: 1px; background-color: var(--border); margin: 0.25rem -0.25rem; }
+  /* -- Density ----------------------------------------------------
+     data-density on the .context-menu root scales the container padding and
+     the item rows. comfortable == the unsized default. */
+  .context-menu:where([data-density="compact"]) {
+    padding: 0.125rem;
+    & .context-menu-item { padding: 0.25rem 0.5rem; }
+  }
+  .context-menu:where([data-density="comfortable"]) {
+    padding: 0.25rem;
+    & .context-menu-item { padding: 0.375rem 0.5rem; }
+  }
+  .context-menu:where([data-density="spacious"]) {
+    padding: 0.375rem;
+    & .context-menu-item { padding: 0.5rem 0.625rem; }
+  }
+
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all

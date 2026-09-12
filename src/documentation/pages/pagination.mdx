@@ -196,6 +196,23 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </div>
 </Example>
 
+<Example>
+  <ExampleLabel>Density</ExampleLabel>
+  <ExampleHint>Set <code>data-density</code> on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), typography and fixed dimensions stay identical. <code>comfortable</code> matches the unsized default.</ExampleHint>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:7.5rem;margin:0;">Compact</span>
+    <nav class="pagination" data-density="compact" aria-label="Pagination compact"><ol class="pagination-list"><li><a class="pagination-link" href="#">1</a></li><li><a class="pagination-link pagination-active" aria-current="page" href="#">2</a></li><li><a class="pagination-link" href="#">3</a></li></ol></nav>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:7.5rem;margin:0;">Comfortable</span>
+    <nav class="pagination" data-density="comfortable" aria-label="Pagination comfortable"><ol class="pagination-list"><li><a class="pagination-link" href="#">1</a></li><li><a class="pagination-link pagination-active" aria-current="page" href="#">2</a></li><li><a class="pagination-link" href="#">3</a></li></ol></nav>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:7.5rem;margin:0;">Spacious</span>
+    <nav class="pagination" data-density="spacious" aria-label="Pagination spacious"><ol class="pagination-list"><li><a class="pagination-link" href="#">1</a></li><li><a class="pagination-link pagination-active" aria-current="page" href="#">2</a></li><li><a class="pagination-link" href="#">3</a></li></ol></nav>
+  </div>
+</Example>
+
 <SourceFiles component="pagination" section="css">
   <SourceNote for="css">Styles for the pagination component. Uses design tokens for colors, spacing, and radius.</SourceNote>
 </SourceFiles>

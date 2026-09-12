@@ -194,6 +194,21 @@ try {
     assert.deepEqual(reg.states, ['default', 'expanded']);
     assert.ok(reg.dollarWorks, 'globalThis.$ query alias missing');
   });
+
+  await check('tree-view: density "compact" → padding-top 2px', async () => {
+    const val = await page.$eval('#tvd-compact .tree-leaf', (el) => getComputedStyle(el).paddingTop);
+    assert.equal(val, '2px');
+  });
+
+  await check('tree-view: density "comfortable" → padding-top 4px', async () => {
+    const val = await page.$eval('#tvd-comfortable .tree-leaf', (el) => getComputedStyle(el).paddingTop);
+    assert.equal(val, '4px');
+  });
+
+  await check('tree-view: density "spacious" → padding-top 6px', async () => {
+    const val = await page.$eval('#tvd-spacious .tree-leaf', (el) => getComputedStyle(el).paddingTop);
+    assert.equal(val, '6px');
+  });
 } finally {
   await browser.close();
   server.stop();

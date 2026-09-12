@@ -194,7 +194,96 @@
   &lt;div class="step-indicator" role="button" tabindex="0"
        aria-label="Go to step 1: Account"&gt;1&lt;/div&gt;
   &lt;div class="step-content"&gt;&lt;p class="step-title"&gt;Account&lt;/p&gt;&lt;/div&gt;
-&lt;/li&gt;</code></pre></div><section style="margin-top:3rem;" id="source-css"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-css"><a class="heading-anchor" href="#toc-css" aria-label="Link to section: CSS">§</a>CSS <a href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/steps/steps.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2><p class="text-muted-foreground text-sm mb-4">Styles for the steps component. Uses design tokens for colors, spacing, and radius.</p><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-scss">@layer components {
+&lt;/li&gt;</code></pre></div><p class="text-sm font-medium mb-2 mt-8" id="toc-density"><a class="heading-anchor" href="#toc-density" aria-label="Link to section: Density">§</a>Density</p><p class="text-xs text-muted-foreground mb-3">Set <code>data-density</code> on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), typography and fixed dimensions stay identical. <code>comfortable</code> matches the unsized default.</p><div class="preview"><div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;"><span class="demo-label" style="width:7.5rem;margin:0;">Compact</span><ol class="steps" data-density="compact" style="max-width:20rem;width:100%;flex:1;"><li class="step" data-status="complete"><div class="step-indicator"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><div class="step-content"><p class="step-title">Account</p><p class="step-description">Credentials</p></div></li><li class="step" data-status="current" aria-current="step"><div class="step-indicator">2</div><div class="step-content"><p class="step-title">Profile</p><p class="step-description">Details</p></div></li><li class="step"><div class="step-indicator">3</div><div class="step-content"><p class="step-title">Done</p><p class="step-description">Confirm</p></div></li></ol></div><div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;"><span class="demo-label" style="width:7.5rem;margin:0;">Comfortable</span><ol class="steps" data-density="comfortable" style="max-width:20rem;width:100%;flex:1;"><li class="step" data-status="complete"><div class="step-indicator"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><div class="step-content"><p class="step-title">Account</p><p class="step-description">Credentials</p></div></li><li class="step" data-status="current" aria-current="step"><div class="step-indicator">2</div><div class="step-content"><p class="step-title">Profile</p><p class="step-description">Details</p></div></li><li class="step"><div class="step-indicator">3</div><div class="step-content"><p class="step-title">Done</p><p class="step-description">Confirm</p></div></li></ol></div><div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;"><span class="demo-label" style="width:7.5rem;margin:0;">Spacious</span><ol class="steps" data-density="spacious" style="max-width:20rem;width:100%;flex:1;"><li class="step" data-status="complete"><div class="step-indicator"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><div class="step-content"><p class="step-title">Account</p><p class="step-description">Credentials</p></div></li><li class="step" data-status="current" aria-current="step"><div class="step-indicator">2</div><div class="step-content"><p class="step-title">Profile</p><p class="step-description">Details</p></div></li><li class="step"><div class="step-indicator">3</div><div class="step-content"><p class="step-title">Done</p><p class="step-description">Confirm</p></div></li></ol></div></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;"&gt;
+  &lt;span class="demo-label" style="width:7.5rem;margin:0;"&gt;Compact&lt;/span&gt;
+  &lt;ol class="steps" data-density="compact" style="max-width:20rem;width:100%;flex:1;"&gt;
+    &lt;li class="step" data-status="complete"&gt;
+      &lt;div class="step-indicator"&gt;
+        &lt;svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"&gt;
+          &lt;path d="M20 6 9 17l-5-5"&gt;&lt;/path&gt;
+        &lt;/svg&gt;
+      &lt;/div&gt;
+      &lt;div class="step-content"&gt;
+        &lt;p class="step-title"&gt;Account&lt;/p&gt;
+        &lt;p class="step-description"&gt;Credentials&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/li&gt;
+    &lt;li class="step" data-status="current" aria-current="step"&gt;
+      &lt;div class="step-indicator"&gt;2&lt;/div&gt;
+      &lt;div class="step-content"&gt;
+        &lt;p class="step-title"&gt;Profile&lt;/p&gt;
+        &lt;p class="step-description"&gt;Details&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/li&gt;
+    &lt;li class="step"&gt;
+      &lt;div class="step-indicator"&gt;3&lt;/div&gt;
+      &lt;div class="step-content"&gt;
+        &lt;p class="step-title"&gt;Done&lt;/p&gt;
+        &lt;p class="step-description"&gt;Confirm&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;
+&lt;div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;"&gt;
+  &lt;span class="demo-label" style="width:7.5rem;margin:0;"&gt;Comfortable&lt;/span&gt;
+  &lt;ol class="steps" data-density="comfortable" style="max-width:20rem;width:100%;flex:1;"&gt;
+    &lt;li class="step" data-status="complete"&gt;
+      &lt;div class="step-indicator"&gt;
+        &lt;svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"&gt;
+          &lt;path d="M20 6 9 17l-5-5"&gt;&lt;/path&gt;
+        &lt;/svg&gt;
+      &lt;/div&gt;
+      &lt;div class="step-content"&gt;
+        &lt;p class="step-title"&gt;Account&lt;/p&gt;
+        &lt;p class="step-description"&gt;Credentials&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/li&gt;
+    &lt;li class="step" data-status="current" aria-current="step"&gt;
+      &lt;div class="step-indicator"&gt;2&lt;/div&gt;
+      &lt;div class="step-content"&gt;
+        &lt;p class="step-title"&gt;Profile&lt;/p&gt;
+        &lt;p class="step-description"&gt;Details&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/li&gt;
+    &lt;li class="step"&gt;
+      &lt;div class="step-indicator"&gt;3&lt;/div&gt;
+      &lt;div class="step-content"&gt;
+        &lt;p class="step-title"&gt;Done&lt;/p&gt;
+        &lt;p class="step-description"&gt;Confirm&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;
+&lt;div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;"&gt;
+  &lt;span class="demo-label" style="width:7.5rem;margin:0;"&gt;Spacious&lt;/span&gt;
+  &lt;ol class="steps" data-density="spacious" style="max-width:20rem;width:100%;flex:1;"&gt;
+    &lt;li class="step" data-status="complete"&gt;
+      &lt;div class="step-indicator"&gt;
+        &lt;svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"&gt;
+          &lt;path d="M20 6 9 17l-5-5"&gt;&lt;/path&gt;
+        &lt;/svg&gt;
+      &lt;/div&gt;
+      &lt;div class="step-content"&gt;
+        &lt;p class="step-title"&gt;Account&lt;/p&gt;
+        &lt;p class="step-description"&gt;Credentials&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/li&gt;
+    &lt;li class="step" data-status="current" aria-current="step"&gt;
+      &lt;div class="step-indicator"&gt;2&lt;/div&gt;
+      &lt;div class="step-content"&gt;
+        &lt;p class="step-title"&gt;Profile&lt;/p&gt;
+        &lt;p class="step-description"&gt;Details&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/li&gt;
+    &lt;li class="step"&gt;
+      &lt;div class="step-indicator"&gt;3&lt;/div&gt;
+      &lt;div class="step-content"&gt;
+        &lt;p class="step-title"&gt;Done&lt;/p&gt;
+        &lt;p class="step-description"&gt;Confirm&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;</code></pre></div><section style="margin-top:3rem;" id="source-css"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-css"><a class="heading-anchor" href="#toc-css" aria-label="Link to section: CSS">§</a>CSS <a href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/steps/steps.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2><p class="text-muted-foreground text-sm mb-4">Styles for the steps component. Uses design tokens for colors, spacing, and radius.</p><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-scss">@layer components {
   .steps { display: flex; gap: 0.5rem; list-style: none; margin: 0; padding: 0; }
   .step {
     flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; position: relative; text-align: center;
@@ -320,8 +409,28 @@
     .step[data-status='complete']:not(:last-child)::after { background: Highlight; }
     .step[data-status='error']:not(:last-child)::after { background: Mark; }
   }
+  /* -- Density ----------------------------------------------------
+     data-density on the .steps root scales the flex gaps only — the size
+     ladder owns indicator/typography, size and density stay independent.
+     comfortable == the unsized default (.5rem / .125rem). */
+  .steps:where([data-density="compact"]) {
+    gap: 0.375rem;
+    &amp; .step { gap: 0.375rem; }
+    &amp; .step-content { gap: 0.0625rem; }
+  }
+  .steps:where([data-density="comfortable"]) {
+    gap: 0.5rem;
+    &amp; .step { gap: 0.5rem; }
+    &amp; .step-content { gap: 0.125rem; }
+  }
+  .steps:where([data-density="spacious"]) {
+    gap: 0.75rem;
+    &amp; .step { gap: 0.75rem; }
+    &amp; .step-content { gap: 0.25rem; }
+  }
+
 }
-</code></pre></div></section><nav class="page-nav"><a class="page-nav-link page-nav-prev" href="pagination.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><div><span class="page-nav-label">Previous</span><span class="page-nav-title">Pagination</span></div></a><a class="page-nav-link page-nav-next" href="tabs.html"><div><span class="page-nav-label">Next</span><span class="page-nav-title">Tabs</span></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></nav></main><aside class="site-toc"><div class="site-toc-content"><p class="toc-title">On This Page</p><a class="toc-link" href="#toc-default">Default</a><a class="toc-link" href="#toc-with-form-content">With Form Content</a><a class="toc-link" href="#toc-with-checkmarks">With checkmarks</a><a class="toc-link" href="#toc-vertical">Vertical</a><a class="toc-link" href="#toc-error-state">Error State</a><a class="toc-link" href="#toc-sizes">Sizes</a><a class="toc-link" href="#toc-clickable-steps">Clickable Steps</a><a class="toc-link" href="#toc-css">CSS</a></div></aside></div><script>try {
+</code></pre></div></section><nav class="page-nav"><a class="page-nav-link page-nav-prev" href="pagination.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><div><span class="page-nav-label">Previous</span><span class="page-nav-title">Pagination</span></div></a><a class="page-nav-link page-nav-next" href="tabs.html"><div><span class="page-nav-label">Next</span><span class="page-nav-title">Tabs</span></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></nav></main><aside class="site-toc"><div class="site-toc-content"><p class="toc-title">On This Page</p><a class="toc-link" href="#toc-default">Default</a><a class="toc-link" href="#toc-with-form-content">With Form Content</a><a class="toc-link" href="#toc-with-checkmarks">With checkmarks</a><a class="toc-link" href="#toc-vertical">Vertical</a><a class="toc-link" href="#toc-error-state">Error State</a><a class="toc-link" href="#toc-sizes">Sizes</a><a class="toc-link" href="#toc-clickable-steps">Clickable Steps</a><a class="toc-link" href="#toc-density">Density</a><a class="toc-link" href="#toc-css">CSS</a></div></aside></div><script>try {
   var c = JSON.parse(localStorage.getItem('defuss-shadcn-nav-collapsed') || '{}');
   if (c && typeof c === 'object' && !Array.isArray(c)) {
     for (var h in c) {

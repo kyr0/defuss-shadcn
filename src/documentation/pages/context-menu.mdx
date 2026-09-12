@@ -55,6 +55,23 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <ExampleCode>{"<div class=\"context-menu-trigger\" data-context-menu=\"my-ctx\">\n  Right click here\n</div>\n<div class=\"context-menu\" id=\"my-ctx\" popover>\n  <button class=\"context-menu-item\" role=\"menuitem\">Cut</button>\n  <button class=\"context-menu-item\" role=\"menuitem\">Copy</button>\n</div>"}</ExampleCode>
 </Example>
 
+<Example>
+  <ExampleLabel>Density</ExampleLabel>
+  <ExampleHint>Set <code>data-density</code> on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), typography and fixed dimensions stay identical. <code>comfortable</code> matches the unsized default.</ExampleHint>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:7.5rem;margin:0;">Compact</span>
+    <div class="context-menu-trigger" data-context-menu="density-ctx-compact" style="padding:1rem;border:1px dashed var(--border);border-radius:var(--radius-md);flex:1;">Right-click — Compact</div><div class="context-menu" id="density-ctx-compact" popover data-density="compact" role="menu"><button class="context-menu-item" role="menuitem">Cut</button><button class="context-menu-item" role="menuitem">Copy</button><button class="context-menu-item" role="menuitem">Paste</button></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:7.5rem;margin:0;">Comfortable</span>
+    <div class="context-menu-trigger" data-context-menu="density-ctx-comfortable" style="padding:1rem;border:1px dashed var(--border);border-radius:var(--radius-md);flex:1;">Right-click — Comfortable</div><div class="context-menu" id="density-ctx-comfortable" popover data-density="comfortable" role="menu"><button class="context-menu-item" role="menuitem">Cut</button><button class="context-menu-item" role="menuitem">Copy</button><button class="context-menu-item" role="menuitem">Paste</button></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:7.5rem;margin:0;">Spacious</span>
+    <div class="context-menu-trigger" data-context-menu="density-ctx-spacious" style="padding:1rem;border:1px dashed var(--border);border-radius:var(--radius-md);flex:1;">Right-click — Spacious</div><div class="context-menu" id="density-ctx-spacious" popover data-density="spacious" role="menu"><button class="context-menu-item" role="menuitem">Cut</button><button class="context-menu-item" role="menuitem">Copy</button><button class="context-menu-item" role="menuitem">Paste</button></div>
+  </div>
+</Example>
+
 <StatesSection>
   <p class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
   <ul class="text-sm text-muted-foreground" style="margin:0 0 0.75rem;padding-left:1.25rem;">

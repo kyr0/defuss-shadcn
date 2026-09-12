@@ -341,6 +341,23 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <ExampleCode>{"<li class=\"step\" data-status=\"complete\" data-clickable>\n  <div class=\"step-indicator\" role=\"button\" tabindex=\"0\"\n       aria-label=\"Go to step 1: Account\">1</div>\n  <div class=\"step-content\"><p class=\"step-title\">Account</p></div>\n</li>"}</ExampleCode>
 </Example>
 
+<Example>
+  <ExampleLabel>Density</ExampleLabel>
+  <ExampleHint>Set <code>data-density</code> on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), typography and fixed dimensions stay identical. <code>comfortable</code> matches the unsized default.</ExampleHint>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:7.5rem;margin:0;">Compact</span>
+    <ol class="steps" data-density="compact" style="max-width:20rem;width:100%;flex:1;"><li class="step" data-status="complete"><div class="step-indicator"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg></div><div class="step-content"><p class="step-title">Account</p><p class="step-description">Credentials</p></div></li><li class="step" data-status="current" aria-current="step"><div class="step-indicator">2</div><div class="step-content"><p class="step-title">Profile</p><p class="step-description">Details</p></div></li><li class="step"><div class="step-indicator">3</div><div class="step-content"><p class="step-title">Done</p><p class="step-description">Confirm</p></div></li></ol>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:7.5rem;margin:0;">Comfortable</span>
+    <ol class="steps" data-density="comfortable" style="max-width:20rem;width:100%;flex:1;"><li class="step" data-status="complete"><div class="step-indicator"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg></div><div class="step-content"><p class="step-title">Account</p><p class="step-description">Credentials</p></div></li><li class="step" data-status="current" aria-current="step"><div class="step-indicator">2</div><div class="step-content"><p class="step-title">Profile</p><p class="step-description">Details</p></div></li><li class="step"><div class="step-indicator">3</div><div class="step-content"><p class="step-title">Done</p><p class="step-description">Confirm</p></div></li></ol>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+    <span class="demo-label" style="width:7.5rem;margin:0;">Spacious</span>
+    <ol class="steps" data-density="spacious" style="max-width:20rem;width:100%;flex:1;"><li class="step" data-status="complete"><div class="step-indicator"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg></div><div class="step-content"><p class="step-title">Account</p><p class="step-description">Credentials</p></div></li><li class="step" data-status="current" aria-current="step"><div class="step-indicator">2</div><div class="step-content"><p class="step-title">Profile</p><p class="step-description">Details</p></div></li><li class="step"><div class="step-indicator">3</div><div class="step-content"><p class="step-title">Done</p><p class="step-description">Confirm</p></div></li></ol>
+  </div>
+</Example>
+
 <SourceFiles component="steps" section="css">
   <SourceNote for="css">Styles for the steps component. Uses design tokens for colors, spacing, and radius.</SourceNote>
 </SourceFiles>

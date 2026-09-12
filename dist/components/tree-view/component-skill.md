@@ -63,6 +63,16 @@ document.querySelector('#my-branch').api.getState(); // { name: 'expanded', conf
 
 The registry global is `_defussShadcn.treeViewApi` / `_defussShadcn.treeViewStates` (camelCase).
 
+## Density
+
+Set `data-density` on the `.tree` root; the row `padding-block` scales. The structural indent is never touched.
+
+| Value | Effect |
+| --- | --- |
+| `compact` | Row padding-block 0.125rem |
+| `comfortable` | 0.25rem — identical to the unsized default |
+| `spacious` | 0.375rem |
+
 ## Accessibility
 
 - Root `<ul>` has `role="tree"` and `aria-label`

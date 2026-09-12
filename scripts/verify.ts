@@ -530,20 +530,20 @@ check(
   'restore the changelog data file (entries rendered by lib/components/changelog-entries.tsx)',
 );
 
-// 15. code ↔ skill ↔ docs parity: every variant/size IMPLEMENTED in the
-// component CSS (data-variant/data-size selectors are the source of truth —
-// the CSS ships what works) must be documented in BOTH the component skill
-// and the doc page. Catches the classic drift: CSS gains a variant, docs and
-// skill silently rot. A token counts as documented when it appears quoted
-// ("x"), backticked (`x`), or as a table cell (| x |) — the forms the skill
-// template and doc markup actually use.
+// 15. code ↔ skill ↔ docs parity: every variant/size/density IMPLEMENTED in
+// the component CSS (data-variant/data-size/data-density selectors are the
+// source of truth — the CSS ships what works) must be documented in BOTH the
+// component skill and the doc page. Catches the classic drift: CSS gains a
+// variant, docs and skill silently rot. A token counts as documented when it
+// appears quoted ("x"), backticked (`x`), or as a table cell (| x |) — the
+// forms the skill template and doc markup actually use.
 const skillProblems: string[] = [];
 for (const c of componentDirs) {
   const cssFile = join(COMPS, c, `${c}.css`);
   const skillFile = join(COMPS, c, 'component-skill.md');
   if (!existsSync(cssFile)) continue;
   const tokens = new Set(
-    [...readFileSync(cssFile, 'utf8').matchAll(/data-(?:variant|size)="([a-z0-9-]+)"/g)].map((m) => m[1]),
+    [...readFileSync(cssFile, 'utf8').matchAll(/data-(?:variant|size|density)="([a-z0-9-]+)"/g)].map((m) => m[1]),
   );
   if (tokens.size === 0) continue;
   const skillText = existsSync(skillFile) ? readFileSync(skillFile, 'utf8') : '';

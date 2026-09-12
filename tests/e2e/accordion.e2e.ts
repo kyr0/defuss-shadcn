@@ -218,6 +218,21 @@ try {
     assert.deepEqual(reg.states, ['default', 'all-open', 'all-closed']);
     assert.ok(reg.dollarWorks, 'globalThis.$ query alias missing');
   });
+
+  await check('accordion: density "compact" → padding-top 12px', async () => {
+    const val = await page.$eval('#acc-compact .accordion-trigger', (el) => getComputedStyle(el).paddingTop);
+    assert.equal(val, '12px');
+  });
+
+  await check('accordion: density "comfortable" → padding-top 16px', async () => {
+    const val = await page.$eval('#acc-comfortable .accordion-trigger', (el) => getComputedStyle(el).paddingTop);
+    assert.equal(val, '16px');
+  });
+
+  await check('accordion: density "spacious" → padding-top 20px', async () => {
+    const val = await page.$eval('#acc-spacious .accordion-trigger', (el) => getComputedStyle(el).paddingTop);
+    assert.equal(val, '20px');
+  });
 } finally {
   await browser.close();
   server.stop();

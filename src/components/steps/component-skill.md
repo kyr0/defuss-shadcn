@@ -154,6 +154,16 @@ Connector offsets follow the indicator size in both orientations; `md` equals th
 
 ---
 
+## Density
+
+Set `data-density` on the `.steps` root; the flex gaps scale — the size ladder keeps owning indicator size and typography, so size and density combine freely.
+
+| Value | Effect |
+| --- | --- |
+| `compact` | Step gap 0.375rem, content gap 0.0625rem |
+| `comfortable` | Gaps 0.5rem / 0.125rem — identical to the unsized default |
+| `spacious` | Gaps 0.75rem / 0.25rem |
+
 ## States
 
 | `data-status` | Indicator | Connector |

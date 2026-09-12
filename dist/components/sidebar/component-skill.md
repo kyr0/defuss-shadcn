@@ -94,6 +94,16 @@ supportedStates: default, collapsed
 | *(none)*       | Left (default)                        |
 | `right`        | Right side, border on left            |
 
+## Density
+
+Set `data-density` on the `.app-sidebar` root; link rows and the content frame scale. Independent of `data-state="collapsed"` (the rail keeps its own compact paddings).
+
+| Value | Effect |
+| --- | --- |
+| `compact` | Link padding-block 0.375rem, frame 0.375rem |
+| `comfortable` | 0.5rem — identical to the unsized default |
+| `spacious` | 0.625rem |
+
 ## ARIA
 
 | Attribute        | Element            | Purpose                            |
