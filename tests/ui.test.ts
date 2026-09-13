@@ -398,16 +398,14 @@ test('code collapse-all toggles every snippet block — including the standalone
   const win = doc.defaultView!;
   const allBtn = doc.querySelector('.code-collapse-all-btn')!;
 
-  // collapse all → every wrapper hidden (display:none via .code-collapsed)
-  await clickSelector(doc, '.code-collapse-all-btn');
-  await waitFor(
-    () => wrappers.every((w) => w.classList.contains('code-collapsed')),
-    'all code blocks to collapse',
-  );
+  // default: every block starts COLLAPSED (demos are primary, source opt-in) —
+  // hidden, per-block toggles say "Show", toolbar offers "Expand all"
+  expect(wrappers.every((w) => w.classList.contains('code-collapsed')), 'all blocks collapsed by default').toBe(true);
   wrappers.forEach((w) => expect(win.getComputedStyle(w).display).toBe('none'));
-  expect(allBtn.textContent, 'button offers expand-all afterwards').toContain('Expand all code');
+  expect(toggles.every((t) => t.getAttribute('aria-expanded') === 'false'), 'per-block toggles start collapsed').toBe(true);
+  expect(allBtn.textContent, 'toolbar offers expand-all initially').toContain('Expand all code');
 
-  // expand all → nothing hidden, individual toggles back in sync
+  // expand all → nothing hidden, toggles + toolbar in sync
   await clickSelector(doc, '.code-collapse-all-btn');
   await waitFor(
     () => wrappers.every((w) => !w.classList.contains('code-collapsed')),
@@ -415,6 +413,15 @@ test('code collapse-all toggles every snippet block — including the standalone
   );
   wrappers.forEach((w) => expect(win.getComputedStyle(w).display).not.toBe('none'));
   expect(toggles.every((t) => t.getAttribute('aria-expanded') === 'true'), 'per-block toggles in sync').toBe(true);
+  expect(allBtn.textContent, 'button offers collapse-all afterwards').toContain('Collapse all code');
+
+  // collapse all → every wrapper hidden again (display:none via .code-collapsed)
+  await clickSelector(doc, '.code-collapse-all-btn');
+  await waitFor(
+    () => wrappers.every((w) => w.classList.contains('code-collapsed')),
+    'all code blocks to collapse',
+  );
+  wrappers.forEach((w) => expect(win.getComputedStyle(w).display).toBe('none'));
 });
 
 test('accordion single-open: opening one item closes its siblings', async () => {

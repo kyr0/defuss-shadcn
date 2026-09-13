@@ -134,11 +134,14 @@
             var wrapper = btn.parentElement;
             if (!wrapper || wrapper.tagName !== 'DIV' || !wrapper.querySelector('pre'))
                 return;
-            wrapper.classList.add('code-block-wrapper');
+            // COLLAPSED by default: the demos above each block are the primary
+            // content; the source is opt-in reading. Every block starts hidden and
+            // the toolbar/per-block toggles start in their "Show" affordance.
+            wrapper.classList.add('code-block-wrapper', 'code-collapsed');
             var toggle = document.createElement('button');
             toggle.className = 'code-toggle-btn';
-            toggle.setAttribute('aria-expanded', 'true');
-            toggle.innerHTML = CODE_ICON + ' Hide code';
+            toggle.setAttribute('aria-expanded', 'false');
+            toggle.innerHTML = CODE_ICON + ' Show code';
             wrapper.parentNode.insertBefore(toggle, wrapper);
             toggle.addEventListener('click', function () {
                 var collapsed = wrapper.classList.toggle('code-collapsed');
@@ -157,6 +160,7 @@
         allBtn.className = 'code-collapse-all-btn';
         allBtn.innerHTML = CODE_ICON + ' Collapse all code';
         toolbar.appendChild(allBtn);
+        syncAllBtn(); // blocks start collapsed — the button must offer "Expand all"
         // Place toolbar inside the sticky header (after the last child)
         var pageHeader = main.querySelector('.page-header');
         if (pageHeader) {
