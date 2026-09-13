@@ -40,9 +40,8 @@
             sun.style.display = e.matches ? 'none' : 'block';
         if (moon)
             moon.style.display = e.matches ? 'block' : 'none';
-        if (docs.applyTheme && docs.__activeColorTheme && docs.__activeColorTheme !== 'default') {
-            docs.applyTheme(docs.__activeColorTheme);
-        }
+        /* theme files carry :root + .dark — the class switch re-themes by
+           itself; only the favicon derives from live tokens */
         if (docs.updateFavicon)
             docs.updateFavicon();
     });

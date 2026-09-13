@@ -47,10 +47,12 @@ defuss-shadcn/
 │   ├── SKILL.md                       ← agent entry point (generated from src/SKILL_tpl.md + skill frontmatter)
 │   ├── stats.json                     ← generated size/surface summary (counts per type, JS split, byte sizes; `make stats`)
 │   ├── theme/                        ← design tokens + optional standalone modules
-│   │   ├── default-semantic-tokens.css        ← tokens (source of truth for colors, radius, shadows)
-│   │   ├── sizing.css                         ← opt-in numeric scale (w-4 = 4 base units, --size-* aliases, density)
-│   │   ├── layout.css                         ← opt-in layout surface (flex, grid, stack, container, query, overflow)
-│   │   └── accessibility.css                  ← opt-in screen-reader utilities (.sr-only / .not-sr-only)
+│   │   ├── {preset}.css              ← generated tweakcn presets (43; from themes.ts by build.ts, drop-in companions to the token file; `theme files fresh` gate)
+│   │   └── utils/
+│   │       ├── default-semantic-tokens.css    ← tokens (source of truth for colors, radius, shadows)
+│   │       ├── sizing.css                     ← opt-in numeric scale (w-4 = 4 base units, --size-* aliases, density)
+│   │       ├── layout.css                     ← opt-in layout surface (flex, grid, stack, container, query, overflow)
+│   │       └── accessibility.css              ← opt-in screen-reader utilities (.sr-only / .not-sr-only)
 │   ├── components/                    ← self-contained component folders
 │   │   ├── all.css / all.js          ← generated single-file bundle (scripts/bundle.ts; + .min twins & maps from minify.ts)
 │   │   └── {name}/
@@ -500,7 +502,7 @@ Arcade) and now gated.
 
 ### Tokens are the source of truth for design values
 
-`dist/theme/default-semantic-tokens.css` defines all CSS custom properties. These must match
+`dist/theme/utils/default-semantic-tokens.css` defines all CSS custom properties. These must match
 the shape of tweakcn.com theme exports so themes are drop-in compatible.
 
 The token file provides:
@@ -560,7 +562,7 @@ in component CSS. Use a literal CSS value instead.
 
 ###### Token shape (tweakcn compatible)
 
-`dist/theme/default-semantic-tokens.css` must match the shape of theme exports from tweakcn.com:
+`dist/theme/utils/default-semantic-tokens.css` must match the shape of theme exports from tweakcn.com:
 
 ###### `:root` block provides:
 - Color pairs: `--primary` / `--primary-foreground` (and all other semantic pairs)
@@ -964,7 +966,7 @@ Per-component smoke tests live in `tests/e2e/` and run with **plain Playwright**
 
 - `{name}.e2e-fixture.html` — uses the component **in every configuration** the
   component skill documents (all variants/sizes/states/compositions), linking the
-  real files by absolute path (`/dist/theme/default-semantic-tokens.css`,
+  real files by absolute path (`/dist/theme/utils/default-semantic-tokens.css`,
   `/dist/components/{name}/{name}.css` + `.js`). The fixture is served by
   `server.ts`, a static Bun server rooted at the repo root that exposes only
   `/dist/` and `/tests/e2e/`.
@@ -1154,7 +1156,7 @@ files at docs build time and embeds them (escaped) with copy buttons. There is
 ## Doc-site utility classes
 
 The docs dogfood the product: every page loads the shipped
-`theme/sizing.css` + `theme/layout.css`, and their utilities are used
+`theme/utils/sizing.css` + `theme/utils/layout.css`, and their utilities are used
 DIRECTLY (`flex items-center gap-4 mb-3`, `w-full max-w-80`,
 `overflow-x-auto`, `whitespace-nowrap`, …) — never re-declared in
 `public/css/docs-utilities.css`. The audit gate

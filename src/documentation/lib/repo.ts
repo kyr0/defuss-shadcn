@@ -5,7 +5,7 @@
  * reach the repo — the build runner (scripts/build-docs.ts) pins the real
  * root in DEFUSS_SHADCN_ROOT.
  */
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 export const REPO_ROOT =
@@ -48,6 +48,38 @@ export function readSkillMeta(component: string): SkillMeta | null {
       .map((s) => s.trim())
       .filter(Boolean),
   };
+}
+
+/** One generated theme file (dist/theme/<id>.css). */
+export interface ThemeFile {
+  id: string;
+  label: string;
+  /** Light-mode dot colors (primary…muted) for the swatch UI. */
+  colors: string[];
+}
+
+/**
+ * Why: the generated theme files ARE the manifest — the Theme Switcher demo
+ * enumerates them (build.ts must run before build:docs; dist/ is fresh in
+ * CI/make). Label comes from each file's header comment, dots from the
+ * `:root` block, so the demo can never advertise a theme that doesn't ship.
+ */
+export function themeFiles(): ThemeFile[] {
+  const dir = repoFile('dist', 'theme');
+  if (!existsSync(dir)) return [];
+  const out: ThemeFile[] = [];
+  for (const f of readdirSync(dir).sort()) {
+    if (!f.endsWith('.css') || f.endsWith('.min.css')) continue;
+    const text = readFileSync(join(dir, f), 'utf8');
+    const id = f.replace(/\.css$/, '');
+    const label = text.match(/^\/\* (.+?) theme —/)?.[1] ?? id;
+    const root = text.match(/:root\s*\{([^}]*)\}/)?.[1] ?? '';
+    const colors = ['primary', 'secondary', 'accent', 'destructive', 'muted']
+      .map((t) => root.match(new RegExp(`--${t}:\\s*([^;]+);`))?.[1]?.trim())
+      .filter((c): c is string => !!c);
+    out.push({ id, label, colors });
+  }
+  return out;
 }
 
 /** A component "has JS" when its interaction source exists (.ts in src/). */

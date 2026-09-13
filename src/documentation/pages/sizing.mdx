@@ -175,7 +175,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <h2 id="install" class="h2-display">Install only what you use</h2>
 
 <Demo>
-  <DemoCode>{"<link rel=\"stylesheet\" href=\"../theme/default-semantic-tokens.css\">\n<link rel=\"stylesheet\" href=\"../theme/sizing.css\">\n<link rel=\"stylesheet\" href=\"../theme/layout.css\">\n<link rel=\"stylesheet\" href=\"../theme/accessibility.css\">\n<!-- Load the component stylesheets you actually use next. -->\n<link rel=\"stylesheet\" href=\"../components/button/button.css\">"}</DemoCode>
+  <DemoCode>{"<link rel=\"stylesheet\" href=\"../theme/utils/default-semantic-tokens.css\">\n<link rel=\"stylesheet\" href=\"../theme/utils/sizing.css\">\n<link rel=\"stylesheet\" href=\"../theme/utils/layout.css\">\n<link rel=\"stylesheet\" href=\"../theme/utils/accessibility.css\">\n<!-- Load the component stylesheets you actually use next. -->\n<link rel=\"stylesheet\" href=\"../components/button/button.css\">"}</DemoCode>
 </Demo>
 
 <DocText>The optional modules live beside the theme assets so the existing copy build and CDN mirror work unchanged. They are not part of the replaceable semantic-token export. Both files declare <code>@layer components, utilities</code>; load them before component CSS so that order is established first. A later layer declaration cannot reorder layers that already exist. Normal unlayered application CSS overrides both.</DocText>

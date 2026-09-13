@@ -3,12 +3,12 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 // tests/contrast.test.ts. The two shipped modules are the system under test;
 // injecting their text as <style> tags mirrors how a consumer page loads them
 // (tokens → sizing → layout), layer declarations included.
-import sizingCss from '../src/theme/sizing.css?raw';
-import layoutCss from '../src/theme/layout.css?raw';
-import a11yCss from '../src/theme/accessibility.css?raw';
+import sizingCss from '../src/theme/utils/sizing.css?raw';
+import layoutCss from '../src/theme/utils/layout.css?raw';
+import a11yCss from '../src/theme/utils/accessibility.css?raw';
 
 /**
- * Why: theme/sizing.css + theme/layout.css are shipped as standalone public
+ * Why: theme/utils/sizing.css + theme/utils/layout.css are shipped as standalone public
  * modules whose entire contract is computed CSS — there is no JS to unit
  * test. This suite runs the geometry contracts (scale math, density factors,
  * logical axes, cascade behavior, native hidden/dialog/popover preservation)

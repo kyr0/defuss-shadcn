@@ -3,6 +3,8 @@ import { cpSync, existsSync, readFileSync, readdirSync, rmSync, writeFileSync } 
 import { join, relative } from 'node:path';
 import { SKILL_OUTPUT_FILE } from './lib/skill.ts';
 import { buildSkillText } from './lib/skill-files.ts';
+import { parseThemes } from './lib/contrast.ts';
+import { themeCssText, themeFileName } from './lib/theme-css.ts';
 
 /**
  * Why: the whole build — `bun run build` produces dist/ from src/ 1:1.
@@ -31,6 +33,22 @@ rmSync(DIST, { recursive: true, force: true });
 // component-skill.md frontmatter, BEFORE copying, so dist/SKILL.md (the file
 // agents actually read) can never lag the skills.
 writeFileSync(join(SRC, SKILL_OUTPUT_FILE), buildSkillText(SRC));
+
+// 0b. regenerate one theme stylesheet per tweakcn preset into src/theme/,
+// from the themes.ts dataset (single source). The 1:1 copy below ships them
+// as dist/theme/<id>.css — drop-in companions to utils/default-semantic-
+// tokens.css; the doc site's theme switcher and the theme-switcher component
+// load/unload exactly these files via <link>. verify's `theme files fresh`
+// gate fails if themes.ts and the generated files drift.
+{
+  const themes = parseThemes(readFileSync(join(SRC, 'documentation/runtime/themes.ts'), 'utf8'));
+  for (const t of themes) {
+    const css = themeCssText(t);
+    if (css === null) continue; // `default` == the token file itself
+    writeFileSync(join(SRC, 'theme', themeFileName(t.id)), css);
+  }
+  console.log(`theme-css: ${themes.filter((t) => themeCssText(t) !== null).length} theme files → src/theme/`);
+}
 
 // 1. TypeScript → JavaScript (emits straight into dist/, same structure)
 const tsc = Bun.spawnSync({

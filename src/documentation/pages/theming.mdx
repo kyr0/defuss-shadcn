@@ -233,6 +233,18 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
+<H2>Theme files</H2>
+
+<p class="text-sm text-muted-foreground mb-5">Every <a href="https://tweakcn.com" target="_blank" style="text-decoration:underline;">tweakcn</a> preset ships as a generated stylesheet in <code>{"dist/theme/<id>.css"}</code> — the same <code>:root</code> + <code>.dark</code> token shape as <code>default-semantic-tokens.css</code>. Link one <em>instead of</em> the token file to ship a fixed theme:</p>
+
+<CodeCard lang="html" title="ship a preset">{'<!-- instead of theme/utils/default-semantic-tokens.css -->\n<link rel="stylesheet" href="theme/claude.css" />'}</CodeCard>
+
+<p class="text-sm text-muted-foreground mt-5 mb-5">…or load it at runtime on top of the token file — inserting a <code>{"<link id=\"theme-css\">"}</code> right after it re-themes every component instantly (later source order wins the cascade; the file's own <code>.dark</code> block keeps dark mode working, so no re-apply on toggle). The <DocLink href="theme-switcher.html">Theme Switcher</DocLink> component wraps exactly that mechanism in an accessible dropdown, with <code>localStorage</code> persistence and a State API. On this site the picker in the header does the same.</p>
+
+<p class="text-sm text-muted-foreground mb-5">The preset files are generated from the docs' theme dataset (<code>src/documentation/runtime/themes.ts</code>) by <code>scripts/build.ts</code> — <code>verify</code>'s <code>theme files fresh</code> gate keeps them in lockstep. For your own themes, author a file in the token-file shape (or export one from tweakcn) and link it the same way.</p>
+
+<div class="sep" />
+
 <H2>Dark mode</H2>
 
 <p class="text-sm text-muted-foreground mb-5">The theme file includes both <code>:root</code> (light) and <code>.dark</code> (dark) values. To toggle dark mode, add or remove <code>class="dark"</code> on the <code>&lt;html&gt;</code> element. Every token switches automatically — no per-component overrides needed. See the <a href="dark-mode.html" class="btn" data-variant="link">Dark Mode</a> page for system preference detection, localStorage persistence, and a step-by-step toggle implementation.</p>

@@ -25,6 +25,7 @@ import {
 import { readmeCssOnlyProblems } from './lib/readme.ts';
 import { ariaDescribedByProblems, fieldDescriptionOwnerProblems, fieldFeatureProblems } from './lib/fields.ts';
 import { parseThemes, defaultTokenModes, sidebarContrastProblems, radiusConsistencyProblems } from './lib/contrast.ts';
+import { themeCssText, themeFileName } from './lib/theme-css.ts';
 import { buildSkillText } from './lib/skill-files.ts';
 import { archBodyHtml } from '../src/documentation/lib/arch-md.ts';
 import { typeBadgeHtml, type ComponentType } from './lib/taxonomy.ts';
@@ -106,7 +107,7 @@ check(
 );
 
 // 4. component CSS uses only defined tokens (tweakcn shape) or local defs
-const tokenFile = readFileSync(join(SRC, 'theme/default-semantic-tokens.css'), 'utf8');
+const tokenFile = readFileSync(join(SRC, 'theme/utils/default-semantic-tokens.css'), 'utf8');
 const globalTokens = new Set([...tokenFile.matchAll(/(--[a-z0-9-]+)\s*:/g)].map((m) => m[1]));
 const tokenProblems: string[] = [];
 for (const css of walk(COMPS, ['.css'])) {
@@ -121,7 +122,7 @@ for (const css of walk(COMPS, ['.css'])) {
 check(
   'design tokens',
   tokenProblems,
-  'use an existing token from theme/default-semantic-tokens.css or a literal value (no new tokens)',
+  'use an existing token from theme/utils/default-semantic-tokens.css or a literal value (no new tokens)',
 );
 
 // 5. no undefined utility-shaped classes (components = hard gate, doc pages = info)
@@ -518,6 +519,34 @@ const version = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8')).ver
     'version consistency',
     versionProblems,
     'the badge is stamped from package.json at docs build time — run `bun run build:docs`',
+  );
+}
+
+// 13b. generated theme files must equal a fresh render of the themes.ts
+// dataset: src/theme/<id>.css is build.ts output (regenerated every build,
+// like SKILL.md) and ships 1:1 as dist/theme/<id>.css. The doc-site theme
+// switcher and the theme-switcher component load exactly these files, so
+// stale or missing ones are user-visible breakage.
+{
+  const themeFileProblems: string[] = [];
+  const themesSrc = readFileSync(join(SRC, 'documentation/runtime/themes.ts'), 'utf8');
+  for (const t of parseThemes(themesSrc)) {
+    const expected = themeCssText(t);
+    if (expected === null) continue; // `default` == the token file itself
+    const rel = join('theme', themeFileName(t.id));
+    for (const [where, base] of [['src', SRC], ['dist', DIST]] as const) {
+      const file = join(base, rel);
+      if (!existsSync(file)) {
+        themeFileProblems.push(`${rel} missing (${where}) — run \`bun run build\``);
+      } else if (readFileSync(file, 'utf8') !== expected) {
+        themeFileProblems.push(`${rel} (${where}) is stale vs themes.ts — run \`bun run build\``);
+      }
+    }
+  }
+  check(
+    'theme files fresh',
+    themeFileProblems,
+    'theme files are generated from themes.ts by build.ts — run `bun run build`',
   );
 }
 
@@ -1237,7 +1266,7 @@ check(
   {
     const themes = parseThemes(readFileSync(join(DOCS, 'runtime/themes.ts'), 'utf8'));
     // the "default" theme isn't in themes.ts — fold the shipped token file in
-    const defaultModes = defaultTokenModes(readFileSync(join(SRC, 'theme/default-semantic-tokens.css'), 'utf8'));
+    const defaultModes = defaultTokenModes(readFileSync(join(SRC, 'theme/utils/default-semantic-tokens.css'), 'utf8'));
     const problems = sidebarContrastProblems([
       ...themes,
       { id: 'default', label: 'Default', modes: defaultModes },
@@ -1245,7 +1274,7 @@ check(
     check(
       'theme sidebar contrast',
       problems,
-      'raise the flagged theme token(s) in src/documentation/runtime/themes.ts (or src/theme/default-semantic-tokens.css) until the sidebar text pair reaches WCAG AA (>=4.5) — the measured pairs are pinned by tests/contrast.test.ts',
+      'raise the flagged theme token(s) in src/documentation/runtime/themes.ts (or src/theme/utils/default-semantic-tokens.css) until the sidebar text pair reaches WCAG AA (>=4.5) — the measured pairs are pinned by tests/contrast.test.ts',
     );
     check(
       'theme radius consistency',

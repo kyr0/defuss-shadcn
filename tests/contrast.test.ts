@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 // Vite ?raw imports instead of node:fs — Vitest runs this suite in browser
 // mode (chromium), where the filesystem isn't available.
 import themesSource from '../src/documentation/runtime/themes.ts?raw';
-import tokensSource from '../src/theme/default-semantic-tokens.css?raw';
+import tokensSource from '../src/theme/utils/default-semantic-tokens.css?raw';
 import {
   contrastRatio,
   parseColor,

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>theme-switcher e2e fixture</title>
+    <link id="tokens-css" rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/theme-switcher/theme-switcher.css" />
+  </head>
+  <body style="padding:12rem;">
+    <!-- mirrors the doc demo: full menu (default + presets with dots) -->
+    <div class="theme-switcher">
+      <button class="btn theme-switcher-trigger" id="ts1-trigger" type="button" popovertarget="ts1-menu" aria-expanded="false" aria-haspopup="menu">
+        <span class="theme-switcher-dot" aria-hidden="true"></span>
+        <span class="theme-switcher-label">Default</span>
+        <svg class="theme-switcher-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+      </button>
+      <div id="ts1-menu" class="theme-switcher-menu" popover="auto" role="menu" aria-labelledby="ts1-trigger">
+        <button class="theme-switcher-item" role="menuitemradio" aria-checked="true" data-theme-id="default" data-theme-label="Default" tabindex="-1">
+          <span class="theme-switcher-dots" aria-hidden="true"></span>
+          <span class="theme-switcher-name">Default</span>
+          <svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+        </button>
+        <button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="claude" data-theme-label="Claude" data-theme-colors="#c96442,#e9e6dc,#e9e6dc,#141413,#ede9de" tabindex="-1">
+          <span class="theme-switcher-dots" aria-hidden="true"></span>
+          <span class="theme-switcher-name">Claude</span>
+          <svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+        </button>
+        <button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="vercel" data-theme-label="Vercel" data-theme-colors="#171717,#ededed,#ededed,#000000,#f3f3f3" tabindex="-1">
+          <span class="theme-switcher-dots" aria-hidden="true"></span>
+          <span class="theme-switcher-name">Vercel</span>
+          <svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- second switcher: sync via defuss-theme-change across roots -->
+    <div class="theme-switcher">
+      <button class="btn theme-switcher-trigger" id="ts2-trigger" type="button" popovertarget="ts2-menu" aria-expanded="false" aria-haspopup="menu">
+        <span class="theme-switcher-dot" aria-hidden="true"></span>
+        <span class="theme-switcher-label">Default</span>
+        <svg class="theme-switcher-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+      </button>
+      <div id="ts2-menu" class="theme-switcher-menu" popover="auto" role="menu" aria-labelledby="ts2-trigger">
+        <button class="theme-switcher-item" role="menuitemradio" aria-checked="true" data-theme-id="default" data-theme-label="Default" tabindex="-1">
+          <span class="theme-switcher-dots" aria-hidden="true"></span>
+          <span class="theme-switcher-name">Default</span>
+          <svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+        </button>
+        <button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="claude" data-theme-label="Claude" data-theme-colors="#c96442" tabindex="-1">
+          <span class="theme-switcher-dots" aria-hidden="true"></span>
+          <span class="theme-switcher-name">Claude</span>
+          <svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+        </button>
+      </div>
+    </div>
+
+    <script type="module" src="/dist/components/theme-switcher/theme-switcher.js"></script>
+  </body>
+</html>

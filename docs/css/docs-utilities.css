@@ -8,7 +8,7 @@
    What lives here, and what doesn't:
    - Geometry (display, flex/grid axes, gap/margin/padding scale,
      widths) is NOT duplicated here — every doc page loads the
-     shipped theme/sizing.css + theme/layout.css modules, whose
+     shipped theme/utils/sizing.css + theme/utils/layout.css modules, whose
      utilities are dogfooded directly (scripts/lib/audit.ts counts
      them as defined). Typography can't move there: the sizing
      contract test pins those modules to density/scale only.
@@ -129,5 +129,5 @@
 .swatch-sub { margin: 0; font-size: 0.75rem; color: var(--muted-foreground); font-family: var(--font-mono); }
 .swatch-val { margin-left: auto; font-size: 0.75rem; color: var(--muted-foreground); font-family: var(--font-mono); }
 
-/* Accessibility: `.sr-only` ships in theme/accessibility.css (loaded on every
+/* Accessibility: `.sr-only` ships in theme/utils/accessibility.css (loaded on every
    doc page by DocPage) — dogfooded, not redefined here. */

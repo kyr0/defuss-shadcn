@@ -1,0 +1,73 @@
+/* OpenAI theme — generated from src/documentation/runtime/themes.ts by scripts/build.ts. Edit themes.ts, not this file. */
+
+:root {
+  --background: #f7f7f7;
+  --foreground: #0d0d0d;
+  --card: #ffffff;
+  --card-foreground: #0d0d0d;
+  --popover: #ffffff;
+  --popover-foreground: #0d0d0d;
+  --primary: #0d0d0d;
+  --primary-foreground: #ffffff;
+  --secondary: #ececec;
+  --secondary-foreground: #0d0d0d;
+  --muted: #ececec;
+  --muted-foreground: #6e6e6e;
+  --accent: #efefef;
+  --accent-foreground: #0d0d0d;
+  --destructive: #e02e2a;
+  --destructive-foreground: #ffffff;
+  --border: #e5e5e5;
+  --input: #e5e5e5;
+  --ring: #0d0d0d;
+  --chart-1: #10a37f;
+  --chart-2: #0d0d0d;
+  --chart-3: #efefef;
+  --chart-4: #19c37d;
+  --chart-5: #8f8f8f;
+  --sidebar: #fcfcfc;
+  --sidebar-foreground: #0d0d0d;
+  --sidebar-primary: #0d0d0d;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #efefef;
+  --sidebar-accent-foreground: #0d0d0d;
+  --sidebar-border: #ececec;
+  --sidebar-ring: #c7c7c7;
+  --radius: 1.5rem;
+}
+
+.dark {
+  --background: #2f2f2f;
+  --foreground: #ffffff;
+  --card: #2a2a2a;
+  --card-foreground: #ffffff;
+  --popover: #404040;
+  --popover-foreground: #ffffff;
+  --primary: #ffffff;
+  --primary-foreground: #0d0d0d;
+  --secondary: #2a2a2a;
+  --secondary-foreground: #ffffff;
+  --muted: #2a2a2a;
+  --muted-foreground: #afafaf;
+  --accent: #1a1a1a;
+  --accent-foreground: #ffffff;
+  --destructive: #ff6b6b;
+  --destructive-foreground: #000000;
+  --border: #383838;
+  --input: #383838;
+  --ring: #9b9b9b;
+  --chart-1: #19c37d;
+  --chart-2: #ffffff;
+  --chart-3: #1a1a1a;
+  --chart-4: #10a37f;
+  --chart-5: #8f8f8f;
+  --sidebar: #000000;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #ffffff;
+  --sidebar-primary-foreground: #000000;
+  --sidebar-accent: #1a1a1a;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #1f1f1f;
+  --sidebar-ring: #9b9b9b;
+  --radius: 1.5rem;
+}

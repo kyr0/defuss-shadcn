@@ -1,25 +1,25 @@
 {
-  "total": 71,
+  "total": 72,
   "byType": {
     "ATM": 44,
-    "MOL": 12,
+    "MOL": 13,
     "ORG": 1,
     "BLK": 14,
     "TPL": 0
   },
-  "withJs": 27,
+  "withJs": 28,
   "withoutJs": 44,
-  "totalSize": 452683,
-  "totalSizeMinified": 206482,
-  "totalSizeGz": 148505,
-  "totalSizeGzMinified": 74573,
+  "totalSize": 468626,
+  "totalSizeMinified": 212950,
+  "totalSizeGz": 154033,
+  "totalSizeGzMinified": 77136,
   "bundle": {
-    "jsSize": 102121,
-    "jsSizeMinified": 56163,
-    "cssSize": 246449,
-    "cssSizeMinified": 138401,
-    "totalSizeGz": 60940,
-    "totalSizeGzMinified": 34682
+    "jsSize": 108614,
+    "jsSizeMinified": 60035,
+    "cssSize": 249940,
+    "cssSizeMinified": 140482,
+    "totalSizeGz": 62879,
+    "totalSizeGzMinified": 35934
   },
   "components": {
     "accordion": {
@@ -814,6 +814,19 @@
       "totalSizeGzMinified": 522,
       "totalSize": 1942,
       "totalSizeMinified": 1202
+    },
+    "theme-switcher": {
+      "name": "theme-switcher",
+      "type": "MOL",
+      "withJs": true,
+      "jsSize": 12518,
+      "jsSizeMinified": 4368,
+      "cssSize": 3425,
+      "cssSizeMinified": 2100,
+      "totalSizeGz": 5528,
+      "totalSizeGzMinified": 2563,
+      "totalSize": 15943,
+      "totalSizeMinified": 6468
     },
     "timeline": {
       "name": "timeline",

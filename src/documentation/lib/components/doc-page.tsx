@@ -56,14 +56,20 @@ export function DocPage({ meta, mainStyle, children }: DocPageProps) {
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={meta.description} />
         <title>{title}</title>
+        {/* id="tokens-css": anchor for the runtime theme switcher (and the
+            shipped theme-switcher component) — generated theme files
+            (../theme/<id>.css) are inserted right after this sheet */}
+        <link id="tokens-css" rel="stylesheet" href="../theme/utils/default-semantic-tokens.css" />
+        {/* head scripts load AFTER the token sheet: theme-switcher.js applies
+            a persisted theme synchronously at eval, and its <link> must be
+            inserted after the token chain to win the cascade */}
         <script src="js/themes.js"></script>
         <script src="js/theme-switcher.js"></script>
         <script src="js/layout.js"></script>
         <script src="js/search-index.js"></script>
-        <link rel="stylesheet" href="../theme/default-semantic-tokens.css" />
-        <link rel="stylesheet" href="../theme/sizing.css" />
-        <link rel="stylesheet" href="../theme/layout.css" />
-        <link rel="stylesheet" href="../theme/accessibility.css" />
+        <link rel="stylesheet" href="../theme/utils/sizing.css" />
+        <link rel="stylesheet" href="../theme/utils/layout.css" />
+        <link rel="stylesheet" href="../theme/utils/accessibility.css" />
         <link rel="stylesheet" href="css/docs-theme.css" />
         <link rel="stylesheet" href="css/docs-utilities.css" />
         <link rel="stylesheet" href="css/layout.css" />

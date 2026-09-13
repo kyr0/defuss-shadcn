@@ -12,7 +12,7 @@
 
 ```html
 <!-- 1. theme (design tokens — swap this file to re-theme everything) -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/default-semantic-tokens.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/utils/default-semantic-tokens.css">
 
 <!-- 2. icons -->
 <script src="https://unpkg.com/lucide@1.8.0"></script>
@@ -35,7 +35,7 @@ Then: for every component you use, read its skill file (linked per-component bel
 ## Principles (follow these when generating markup)
 
 - **Native web platform first** — every component builds on a native element or browser API: `<dialog>` for modals, `popover` for menus/tooltips, `<details>` for accordions, CSS anchor positioning instead of Popper, `:has()`/`:user-invalid`/`field-sizing` instead of JS. If you find yourself adding JS behavior, check the skill — the platform probably already provides it.
-- **Tokens are the source of truth** — all colors, radius, shadows, and fonts are CSS custom properties in `theme/default-semantic-tokens.css` (tweakcn-compatible shape). To re-theme, replace that file; never hardcode colors in markup or custom CSS.
+- **Tokens are the source of truth** — all colors, radius, shadows, and fonts are CSS custom properties in `theme/utils/default-semantic-tokens.css` (tweakcn-compatible shape). To re-theme, replace that file; never hardcode colors in markup or custom CSS.
 - **Variants via data attributes, never classes** — `data-variant`, `data-size`, `data-side` on one base class per component (`.btn[data-variant="outline"]`, never `.btn-outline`).
 - **State API on interactive components** — each interactive element exposes `el.api.setState('open')` / `el.api.getState()`; state names are listed per component below. Drive and observe UI state through this API, not by toggling classes.
 - **Accessibility is built in** — WAI-ARIA patterns, keyboard navigation, focus management, and `prefers-reduced-motion` support ship in the files. Don't duplicate or fight them.
@@ -46,7 +46,7 @@ Then: for every component you use, read its skill file (linked per-component bel
 dist/
 ├── SKILL.md                          ← you are here — start every task with this file
 ├── stats.json                        ← component counts (per type, JS/CSS-only) + byte sizes raw/minified/gzipped
-├── theme/default-semantic-tokens.css ← design tokens (the only theme file)
+├── theme/utils/default-semantic-tokens.css ← design tokens (the only theme file)
 ├── components/all.css                ← bundle: every component stylesheet (+ .min twin & map)
 ├── components/all.js                 ← bundle: every component's behavior (+ .min twin & maps)
 ├── components/{name}/
@@ -679,6 +679,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/textarea.png
 **Skill:** [components/textarea/component-skill.md](components/textarea/component-skill.md)
+
+## Theme Switcher
+
+**Type:** MOL
+**Why:** Switches the color theme by loading/unloading ONE generated stylesheet (<link id="theme-css">) — tokens stay static, no JS token objects, dark mode needs no re-apply because each theme file carries :root + .dark.
+**When:** Live theme pickers for docs sites, previews, or settings pages — unless the theme is fixed at deploy time (then just link the file directly).
+**Files:** dist/components/theme-switcher/theme-switcher.css + dist/components/theme-switcher/theme-switcher.js
+**Supported states:** default, open
+**Screenshots:** screenshots/{light,dark}/theme-switcher.png, screenshots/{light,dark}/theme-switcher-open.png
+**Skill:** [components/theme-switcher/component-skill.md](components/theme-switcher/component-skill.md)
 
 ## Timeline
 

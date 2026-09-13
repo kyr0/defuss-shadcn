@@ -105,13 +105,13 @@ describe('renderSkillEntry', () => {
 describe('assembleSkillText', () => {
   // fs-free (Vitest browser mode): the real-tree render is pinned by verify's
   // "SKILL.md ↔ skills" gate, which compares against this same function.
-  const template = `# defuss-shadcn — Agent Skill\n\ntokens in theme/default-semantic-tokens.css\n\n# Components\n\n${SKILL_COMPONENTS_MARKER}\n`;
+  const template = `# defuss-shadcn — Agent Skill\n\ntokens in theme/utils/default-semantic-tokens.css\n\n# Components\n\n${SKILL_COMPONENTS_MARKER}\n`;
 
   it('injects the index in place of the marker, preserving template prose', () => {
     const text = assembleSkillText(template, [entry(), entry({ folder: 'badge', name: 'Badge', supportedStates: 'default' })]);
     expect(text).not.toContain(SKILL_COMPONENTS_MARKER);
     expect(text).toContain('Agent Skill');
-    expect(text).toContain('theme/default-semantic-tokens.css');
+    expect(text).toContain('theme/utils/default-semantic-tokens.css');
     expect(text).toContain('## Dialog');
     expect(text).toContain('## Badge');
     // index blocks render in given order and each link resolves relatively

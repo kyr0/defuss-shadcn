@@ -1,0 +1,97 @@
+---
+title: "Theme Switcher"
+description: "Theme Switcher component — live theme picker that loads/unloads generated theme stylesheets via a single <link>."
+slug: "theme-switcher"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, Demo, DemoCode, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, ApiPill, CodeCard, TableCard } from "../lib/components/index";
+import { ThemeSwitcherDemo } from "../lib/components/theme-switcher-demo";
+import { themeFiles } from "../lib/repo";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="theme-switcher" title="Theme Switcher" component="theme-switcher" crumb="theme-switcher">
+  A dropdown that re-themes the page by loading one generated stylesheet into
+  <code>{"<link id=\"theme-css\">"}</code> — no JS token objects, no inline overrides.
+  Each theme is a <code>.css</code> file with <code>:root</code> + <code>.dark</code>
+  token blocks (the same shape as <code>default-semantic-tokens.css</code>), so dark
+  mode needs no re-apply.
+</PageHeader>
+
+<SkillPanel component="theme-switcher">
+  <SkillField label="Native basis">
+<SkillText><code>popover</code> dropdown (Popover API + CSS anchor positioning) whose selection swaps a <code>{"<link rel=\"stylesheet\">"}</code> — the theme <em>is</em> a file</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link" title="the theme application mechanism: create/remove one link to apply/reset the theme"><code>{"<link rel=\"stylesheet\">"}</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Popover_API" title="dropdown open/close with light-dismiss"><code>Popover API</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning" title="menu placement below the trigger, flip-block fallback"><code>CSS Anchor Positioning</code></ApiPill>
+    <ApiPill href="https://www.w3.org/WAI/ARIA/apg/patterns/menu-button/" title="roving focus, aria-checked, Escape"><code>WAI-ARIA Menu-button</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent" title="defuss-theme-change keeps multiple switchers in sync"><code>CustomEvent</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.theme-switcher</code>
+    <code>.theme-switcher-trigger</code>
+    <code>.theme-switcher-menu</code>
+    <code>.theme-switcher-item</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText>• <code>data-theme-id</code> (item) — theme id; becomes the link's <code>data-theme-id</code> + the filename <code>{"<id>.css"}</code>; <code>default</code> unloads</SkillText>
+  <SkillText>• <code>data-theme-label</code> (item) — trigger label when selected</SkillText>
+  <SkillText>• <code>data-theme-colors</code> (item) — up to 5 colors → swatch dots</SkillText>
+  <SkillText>• <code>data-theme-base</code> (root) — explicit theme-files folder (default: derived from the <code>tokens-css</code> link's href)</SkillText>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• The page must load its token stylesheet with <code>id="tokens-css"</code> — theme files resolve as siblings of that URL</SkillText>
+  <SkillText dense>• Persists to <code>localStorage</code> (<code>defuss-shadcn-color-theme</code>) and dispatches <code>defuss-theme-change</code> (<code>event.detail.id</code>) on every change</SkillText>
+  <SkillText dense>• <code>{"<link>"}</code> loads are async — measure theme tokens after the next frame, not synchronously after selection</SkillText>
+  </SkillField>
+</SkillPanel>
+
+<Example first previewStyle="min-height:14rem;align-items:flex-start;padding-top:3rem;">
+  <ExampleLabel>Live</ExampleLabel>
+  <ExampleHint>Pick any of the {themeFiles().length} tweakcn presets — the whole page re-themes by loading <code>{"../theme/<id>.css"}</code>. Watch the page's stylesheets in DevTools: exactly one <code>{"<link id=\"theme-css\">"}</code> appears and disappears.</ExampleHint>
+  <ThemeSwitcherDemo id="ts-page" />
+  <ExampleCode>{"<div class=\"theme-switcher\">\n  <button class=\"btn theme-switcher-trigger\" id=\"ts-trigger\" popovertarget=\"ts-menu\" aria-expanded=\"false\" aria-haspopup=\"menu\">\n    <span class=\"theme-switcher-dot\" aria-hidden=\"true\"></span>\n    <span class=\"theme-switcher-label\">Default</span>\n    <svg class=\"theme-switcher-chevron\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m6 9 6 6 6-6\" /></svg>\n  </button>\n  <div id=\"ts-menu\" class=\"theme-switcher-menu\" popover=\"auto\" role=\"menu\" aria-labelledby=\"ts-trigger\">\n    <button class=\"theme-switcher-item\" role=\"menuitemradio\" aria-checked=\"true\" data-theme-id=\"default\" data-theme-label=\"Default\" tabindex=\"-1\">\n      <span class=\"theme-switcher-dots\" aria-hidden=\"true\"></span>\n      <span class=\"theme-switcher-name\">Default</span>\n      <svg class=\"theme-switcher-check\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\" /></svg>\n    </button>\n    <!-- …one item per theme file, e.g.: -->\n    <button class=\"theme-switcher-item\" role=\"menuitemradio\" aria-checked=\"false\" data-theme-id=\"claude\" data-theme-label=\"Claude\" data-theme-colors=\"#c96442,#e9e6dc,#e9e6dc,#141413,#ede9de\" tabindex=\"-1\">…</button>\n  </div>\n</div>"}</ExampleCode>
+</Example>
+
+<H2>How the mechanism works</H2>
+
+<p class="text-sm text-muted-foreground mb-5">A theme is a plain CSS file — <code>{"theme/<id>.css"}</code> — generated from the tweakcn presets dataset and shipped next to the token file. Applying it is one DOM operation, no matter which UI triggers it:</p>
+
+<CodeCard lang="js" title="theme in 5 lines">{`// apply
+let link = document.getElementById('theme-css');
+if (!link) {
+  link = Object.assign(document.createElement('link'),
+    { id: 'theme-css', rel: 'stylesheet', href: 'theme/claude.css' });
+  document.getElementById('tokens-css').after(link); // right after the token sheet
+}
+// reset
+link?.remove();`}</CodeCard>
+
+<p class="text-sm text-muted-foreground mt-5 mb-5">This component wraps exactly that: trigger + <code>popover</code> menu + one <code>{"<link>"}</code> swap, plus <code>localStorage</code> persistence, the <code>defuss-theme-change</code> sync event, and a State API for agents/tests. On this repo the files are generated by <code>scripts/build.ts</code> (<code>src/documentation/runtime/themes.ts</code> → <code>dist/theme/*.css</code>); for your own themes, author files in the <code>default-semantic-tokens.css</code> shape (<code>:root</code> + <code>.dark</code> token blocks, tweakcn-compatible) and add one menu item each.</p>
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per menu through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> — closed (the authored state; the trigger toggles it)</li>
+    <li><code>open</code> — shown via the native <code>showPopover()</code>, first theme item focused</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first demo carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/theme-switcher-\{state\}.png</code>.</p>
+</StatesSection>
+
+<SourceFiles component="theme-switcher" section="css" />
+
+<SourceFiles component="theme-switcher" section="js">
+  <SourceNote for="js">Popover wiring (aria-expanded sync, roving focus, selection) + the {"<link>"} swap with localStorage persistence and the defuss-theme-change event.</SourceNote>
+</SourceFiles>
+
+</DocPage>

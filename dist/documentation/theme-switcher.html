@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="color-scheme" content="light dark" /><link rel="icon" href="images/favicon.webp" type="image/webp" /><meta name="description" content="Theme Switcher component — live theme picker that loads/unloads generated theme stylesheets via a single &lt;link&gt;." /><meta property="og:title" content="Theme Switcher — defuss-shadcn" /><meta property="og:description" content="Theme Switcher component — live theme picker that loads/unloads generated theme stylesheets via a single &lt;link&gt;." /><meta property="og:type" content="website" /><meta property="og:url" content="https://kyr0.github.io/defuss-shadcn/documentation/theme-switcher.html" /><meta property="og:site_name" content="defuss-shadcn" /><meta name="twitter:card" content="summary" /><meta name="twitter:title" content="Theme Switcher — defuss-shadcn" /><meta name="twitter:description" content="Theme Switcher component — live theme picker that loads/unloads generated theme stylesheets via a single &lt;link&gt;." /><title>Theme Switcher — defuss-shadcn</title><link id="tokens-css" rel="stylesheet" href="../theme/utils/default-semantic-tokens.css" /><script src="js/themes.js"></script><script src="js/theme-switcher.js"></script><script src="js/layout.js"></script><script src="js/search-index.js"></script><link rel="stylesheet" href="../theme/utils/sizing.css" /><link rel="stylesheet" href="../theme/utils/layout.css" /><link rel="stylesheet" href="../theme/utils/accessibility.css" /><link rel="stylesheet" href="css/docs-theme.css" /><link rel="stylesheet" href="css/docs-utilities.css" /><link rel="stylesheet" href="css/layout.css" /><link rel="stylesheet" href="../components/all.css" /></head><body><header class="site-header"><a href="index.html" class="header-brand"><img src="images/favicon.webp" alt="defuss-shadcn logo" class="header-brand-logo" /><span class="header-brand-name">defuss<em>-shadcn</em></span></a><button class="sidebar-toggle" id="sidebar-toggle" type="button" aria-label="Collapse sidebar" title="Collapse sidebar (⌘B)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg></button><div class="header-search" role="search"><input type="text" class="header-search-input" placeholder="Search docs… (⌘K)" aria-label="Search documentation" autocomplete="off" readonly="" /></div><div style="flex:1;"></div><nav style="display:flex;align-items:center;gap:0.5rem;"><span class="badge header-version" data-variant="outline" style="font-family:var(--font-mono);">v0.8.3</span><span class="separator" data-orientation="vertical" role="none" aria-hidden="true"></span><a href="https://github.com/kyr0/defuss-shadcn" target="_blank" rel="noopener" class="header-action"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg><span class="github-label">GitHub</span><span class="github-stars"></span></a><span class="separator" data-orientation="vertical" role="none" aria-hidden="true"></span><button id="wide-toggle" class="header-action theme-toggle-btn" aria-label="Toggle wide layout" aria-pressed="false"><svg id="icon-wide-expand" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg><svg id="icon-wide-collapse" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/><path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/></svg></button><button id="theme-toggle" class="header-action theme-toggle-btn" aria-label="Toggle dark mode"><svg id="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg><svg id="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button><button id="theme-selector-btn" class="header-action theme-toggle-btn" aria-label="Change color theme" popovertarget="theme-popover"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="0.5" fill="currentColor"/><circle cx="17.5" cy="10.5" r="0.5" fill="currentColor"/><circle cx="8.5" cy="7.5" r="0.5" fill="currentColor"/><circle cx="6.5" cy="12" r="0.5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></button></nav></header><div id="theme-popover" popover="" class="theme-popover"><div class="theme-popover-header"><span class="theme-popover-title">Theme</span><button class="theme-reset-btn" id="theme-reset-btn">Reset</button></div><div class="theme-grid" id="theme-grid"></div></div><dialog id="docs-palette" class="command" aria-label="Search documentation"><div class="command-content"><div class="command-input-wrapper"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input class="command-input" type="text" placeholder="Search documentation…" autocomplete="off" autocorrect="off" spellcheck="false" /></div><div class="command-list" id="docs-palette-list"></div><div class="command-empty" hidden="">No results found.</div></div></dialog><div class="flex" style="margin-top: 3.5rem; min-height: calc(100vh - 3.5rem);"><aside class="app-sidebar site-sidebar" id="docs-sidebar" data-state="expanded"><div class="sidebar-content"><details class="sidebar-group nav-section" open="" data-nav-section="Introduction"><summary><span>Introduction</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="index.html"><span>Getting Started</span></a><a class="nav-link sidebar-link" href="installation.html"><span>Installation</span></a><a class="nav-link sidebar-link" href="how-to-use.html"><span>How to Use</span></a><a class="nav-link sidebar-link" href="component-skills.html"><span>Component Skills</span></a><a class="nav-link sidebar-link" href="changelog.html"><span>Changelog</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Guides"><summary><span>Guides</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="theming.html"><span>Theming</span></a><a class="nav-link sidebar-link" href="dark-mode.html"><span>Dark Mode</span></a><a class="nav-link sidebar-link" href="data-attribute-api.html"><span>Data Attribute API</span></a><a class="nav-link sidebar-link" href="state-api.html"><span>State API</span></a><a class="nav-link sidebar-link" href="architecture.html"><span>Verified Agentic Engineering (VAE)</span></a><a class="nav-link sidebar-link" href="cascade-layers.html"><span>Cascade Layers</span></a><a class="nav-link sidebar-link" href="es-modules.html"><span>JavaScript Modules</span></a><a class="nav-link sidebar-link" href="native-web-apis.html"><span>Native Web APIs</span></a><a class="nav-link sidebar-link" href="animations.html"><span>Animations</span></a><details class="sidebar-submenu"><summary><a class="nav-link sidebar-link" href="sizing.html"><span>Sizing</span></a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="width-height.html"><span>Width &amp; Height</span></a><a class="nav-link sidebar-link" href="spacing.html"><span>Spacing</span></a><a class="nav-link sidebar-link" href="density.html"><span>Density</span></a></nav></details><details class="sidebar-submenu"><summary><a class="nav-link sidebar-link" href="layout.html"><span>Layout</span></a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="container.html"><span>Container</span></a><a class="nav-link sidebar-link" href="flex.html"><span>Flex</span></a><a class="nav-link sidebar-link" href="grid.html"><span>Grid</span></a></nav></details><a class="nav-link sidebar-link" href="accessibility.html"><span>Accessibility</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Primitives"><summary><span>Primitives</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="typography.html"><span>Typography</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="separator.html"><span>Separator</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="icon.html"><span>Icon</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="heading-anchor.html"><span>Heading Anchor</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Actions"><summary><span>Actions</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="button.html"><span>Button</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="toggle.html"><span>Toggle</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="toggle-group.html"><span>Toggle Group</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="button-group.html"><span>Button Group</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="toolbar.html"><span>Toolbar</span><span class="type-badge" data-type="ORG" title="ORG">ORG</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Forms &amp; Inputs"><summary><span>Forms &amp; Inputs</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="label.html"><span>Label</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="input.html"><span>Input</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="textarea.html"><span>Textarea</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="checkbox.html"><span>Checkbox</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="radio.html"><span>Radio Group</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="switch.html"><span>Switch</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="slider.html"><span>Slider</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="select.html"><span>Select</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="number-input.html"><span>Number Input</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="file-input.html"><span>File Input</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="color-picker.html"><span>Color Picker</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="date-picker.html"><span>Date Picker</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="combobox.html"><span>Combobox</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="form.html"><span>Form</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Data Display"><summary><span>Data Display</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="badge.html"><span>Badge</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="type-badge.html"><span>Type Badge</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="avatar.html"><span>Avatar</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="card.html"><span>Card</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="image.html"><span>Image</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="statistic.html"><span>Statistic</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="table.html"><span>Table</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="collapsible.html"><span>Collapsible</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="timeline.html"><span>Timeline</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="tree-view.html"><span>Tree View</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="calendar.html"><span>Calendar</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="carousel.html"><span>Carousel</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="scroll-area.html"><span>Scroll Area</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="sortable.html"><span>Sortable</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Feedback &amp; Status"><summary><span>Feedback &amp; Status</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="spinner.html"><span>Spinner</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="skeleton.html"><span>Skeleton</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="progress.html"><span>Progress</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="alert.html"><span>Alert</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="alert-dialog.html"><span>Alert Dialog</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="toast.html"><span>Toast</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Overlays"><summary><span>Overlays</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="popover.html"><span>Popover</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="tooltip.html"><span>Tooltip</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="context-menu.html"><span>Context Menu</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="dialog.html"><span>Dialog</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="sheet.html"><span>Sheet</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="accordion.html"><span>Accordion</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="command.html"><span>Command</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="sidebar-group nav-section" open="" data-nav-section="Navigation"><summary><span>Navigation</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="breadcrumb.html"><span>Breadcrumb</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="toc.html"><span>Table of Contents</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="pagination.html"><span>Pagination</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="steps.html"><span>Steps</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="tabs.html"><span>Tabs</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="dropdown.html"><span>Dropdown Menu</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="navigation-menu.html"><span>Navigation Menu</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link active" href="theme-switcher.html" aria-current="page"><span>Theme Switcher</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Application"><summary><span>Application</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="sidebar.html"><span>Sidebar</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Marketing"><summary><span>Marketing</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="site-header.html"><span>Site Header</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="hero.html"><span>Hero</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="product-showcase.html"><span>Product Showcase</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="brand-logos.html"><span>Brand Logos</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="feature-details.html"><span>Feature Details</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="testimonials.html"><span>Testimonials</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="stats.html"><span>Stats</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="pricing.html"><span>Pricing</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="blog.html"><span>Blog</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="faq.html"><span>FAQ</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="get-in-touch.html"><span>Get In Touch</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="newsletter.html"><span>Newsletter</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="site-footer.html"><span>Site Footer</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a></nav></details></div></aside><main style="flex: 1; min-width: 0; max-width: 44rem; padding: 2rem 3.5rem 8rem;"><div class="page-header"><div class="flex items-baseline justify-between mb-1"><p class="text-sm text-muted-foreground" style="font-family:var(--font-mono);">defuss-shadcn / theme-switcher</p><div style="display:flex;align-items:baseline;gap:0.375rem;"><span class="text-xs text-muted-foreground" style="font-family:var(--font-mono);white-space:nowrap;">Built with:</span> <a href="#source-css" class="badge built-with-pill" data-variant="outline">CSS</a> <a href="#source-js" class="badge built-with-pill" data-variant="outline">JS</a></div></div><h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">Theme Switcher<span class="type-badge" data-type="MOL" title="Molecule">MOL</span></h1><p class="text-muted-foreground leading-relaxed mb-6">A dropdown that re-themes the page by loading one generated stylesheet into
+<code>&lt;link id="theme-css"&gt;</code> — no JS token objects, no inline overrides.
+Each theme is a <code>.css</code> file with <code>:root</code> + <code>.dark</code>
+token blocks (the same shape as <code>default-semantic-tokens.css</code>), so dark
+mode needs no re-apply.</p></div><details style="margin-bottom:2rem;border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;"><summary style="padding:0.875rem 1.25rem;background:var(--muted);cursor:pointer;font-size:0.8125rem;font-weight:600;font-family:var(--font-mono);color:var(--muted-foreground);list-style:none;display:flex;align-items:center;gap:0.5rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 200ms;"><path d="m9 18 6-6-6-6"/></svg>Component Skill — <span data-spec-href="../components/theme-switcher/component-skill.md" style="text-decoration:underline;text-underline-offset:3px;">components/theme-switcher/component-skill.md</span></summary><div style="padding:1.5rem;font-size:0.875rem;line-height:1.85;"><p class="skill-field-label">Native basis</p><p class="text-muted-foreground" style="margin:0 0 1.25rem;"><code>popover</code> dropdown (Popover API + CSS anchor positioning) whose selection swaps a <code>&lt;link rel="stylesheet"&gt;</code> — the theme <em>is</em> a file</p><p class="skill-field-label">Web Platform APIs</p><div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;"><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link" target="_blank" rel="noopener" title="the theme application mechanism: create/remove one link to apply/reset the theme" class="api-pill"><code>&lt;link rel="stylesheet"&gt;</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/API/Popover_API" target="_blank" rel="noopener" title="dropdown open/close with light-dismiss" class="api-pill"><code>Popover API</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning" target="_blank" rel="noopener" title="menu placement below the trigger, flip-block fallback" class="api-pill"><code>CSS Anchor Positioning</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://www.w3.org/WAI/ARIA/apg/patterns/menu-button/" target="_blank" rel="noopener" title="roving focus, aria-checked, Escape" class="api-pill"><code>WAI-ARIA Menu-button</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent" target="_blank" rel="noopener" title="defuss-theme-change keeps multiple switchers in sync" class="api-pill"><code>CustomEvent</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a></div><p class="skill-field-label">Classes</p><div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;"><code>.theme-switcher</code><code>.theme-switcher-trigger</code><code>.theme-switcher-menu</code><code>.theme-switcher-item</code></div><p class="skill-field-label">Data attributes</p><p class="text-muted-foreground" style="margin:0 0 1.25rem;">• <code>data-theme-id</code> (item) — theme id; becomes the link's <code>data-theme-id</code> + the filename <code>&lt;id&gt;.css</code>; <code>default</code> unloads</p><p class="text-muted-foreground" style="margin:0 0 1.25rem;">• <code>data-theme-label</code> (item) — trigger label when selected</p><p class="text-muted-foreground" style="margin:0 0 1.25rem;">• <code>data-theme-colors</code> (item) — up to 5 colors → swatch dots</p><p class="text-muted-foreground" style="margin:0 0 1.25rem;">• <code>data-theme-base</code> (root) — explicit theme-files folder (default: derived from the <code>tokens-css</code> link's href)</p><p class="skill-field-label">Notes</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• The page must load its token stylesheet with <code>id="tokens-css"</code> — theme files resolve as siblings of that URL</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Persists to <code>localStorage</code> (<code>defuss-shadcn-color-theme</code>) and dispatches <code>defuss-theme-change</code> (<code>event.detail.id</code>) on every change</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>&lt;link&gt;</code> loads are async — measure theme tokens after the next frame, not synchronously after selection</p></div></details><p class="text-sm font-medium mb-2 mt-6" id="toc-live"><a class="heading-anchor" href="#toc-live" aria-label="Link to section: Live">§</a>Live</p><p class="text-xs text-muted-foreground mb-3">Pick any of the 43 tweakcn presets — the whole page re-themes by loading <code>../theme/&lt;id&gt;.css</code>. Watch the page's stylesheets in DevTools: exactly one <code>&lt;link id="theme-css"&gt;</code> appears and disappears.</p><div class="preview" style="min-height:14rem;align-items:flex-start;padding-top:3rem;"><div class="theme-switcher"><button class="btn theme-switcher-trigger" id="ts-page-trigger" type="button" popovertarget="ts-page-menu" aria-expanded="false" aria-haspopup="menu"><span class="theme-switcher-dot" aria-hidden="true"></span><span class="theme-switcher-label">Default</span><svg class="theme-switcher-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div id="ts-page-menu" class="theme-switcher-menu" popover="auto" role="menu" aria-labelledby="ts-page-trigger" data-state-demo=""><button class="theme-switcher-item" role="menuitemradio" aria-checked="true" data-theme-id="default" data-theme-label="Default" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Default</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="amber-minimal" data-theme-label="Amber Minimal" data-theme-colors="#f59e0b,#f3f4f6,#fffbeb,#ef4444,#f9fafb" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Amber Minimal</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="amethyst-haze" data-theme-label="Amethyst Haze" data-theme-colors="#8a79ab,#dfd9ec,#e6a5b8,#d95c5c,#dcd9e3" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Amethyst Haze</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="bold-tech" data-theme-label="Bold Tech" data-theme-colors="#8b5cf6,#f3f0ff,#dbeafe,#ef4444,#f5f3ff" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Bold Tech</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="bubblegum" data-theme-label="Bubblegum" data-theme-colors="#d04f99,#8acfd1,#fbe2a7,#f96f70,#b2e1eb" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Bubblegum</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="caffeine" data-theme-label="Caffeine" data-theme-colors="#644a40,#ffdfb5,#e8e8e8,#e54d2e,#efefef" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Caffeine</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="candyland" data-theme-label="Candyland" data-theme-colors="#ffc0cb,#87ceeb,#ffff00,#ef4444,#ddd9c4" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Candyland</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="catppuccin" data-theme-label="Catppuccin" data-theme-colors="#8839ef,#ccd0da,#04a5e5,#d20f39,#dce0e8" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Catppuccin</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="claude" data-theme-label="Claude" data-theme-colors="#c96442,#e9e6dc,#e9e6dc,#141413,#ede9de" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Claude</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="claymorphism" data-theme-label="Claymorphism" data-theme-colors="#6366f1,#d6d3d1,#f3e5f5,#ef4444,#e7e5e4" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Claymorphism</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="clean-slate" data-theme-label="Clean Slate" data-theme-colors="#6366f1,#e5e7eb,#e0e7ff,#ef4444,#f3f4f6" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Clean Slate</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="cosmic-night" data-theme-label="Cosmic Night" data-theme-colors="#6e56cf,#e4dfff,#d8e6ff,#ff5470,#f0f0fa" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Cosmic Night</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="cyberpunk" data-theme-label="Cyberpunk" data-theme-colors="#ff00c8,#f0f0ff,#00ffcc,#ff3d00,#f0f0ff" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Cyberpunk</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="darkmatter" data-theme-label="Darkmatter" data-theme-colors="#d87943,#527575,#eeeeee,#ef4444,#f3f4f6" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Darkmatter</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="doom-64" data-theme-label="Doom 64" data-theme-colors="#b71c1c,#556b2f,#4682b4,#ff6f00,#b8b8b8" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Doom 64</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="elegant-luxury" data-theme-label="Elegant Luxury" data-theme-colors="#9b2c2c,#fdf2d6,#fef3c7,#991b1b,#f0ebe8" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Elegant Luxury</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="graphite" data-theme-label="Graphite" data-theme-colors="#606060,#e0e0e0,#c0c0c0,#cc3333,#d9d9d9" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Graphite</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="kodama-grove" data-theme-label="Kodama Grove" data-theme-colors="#8d9d4f,#decea0,#dbc894,#d98b7e,#decea0" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Kodama Grove</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="midnight-bloom" data-theme-label="Midnight Bloom" data-theme-colors="#6c5ce7,#a1c9f2,#8b9467,#ef4444,#c9c4b5" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Midnight Bloom</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="mocha-mousse" data-theme-label="Mocha Mousse" data-theme-colors="#A37764,#BAAB92,#E4C7B8,#1f1a17,#E4C7B8" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Mocha Mousse</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="modern-minimal" data-theme-label="Modern Minimal" data-theme-colors="#3b82f6,#f3f4f6,#e0f2fe,#ef4444,#f9fafb" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Modern Minimal</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="mono" data-theme-label="Mono" data-theme-colors="#737373,#f5f5f5,#f5f5f5,#e7000b,#f5f5f5" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Mono</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="nature" data-theme-label="Nature" data-theme-colors="#2e7d32,#e8f5e9,#c8e6c9,#c62828,#f0e9e0" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Nature</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="neo-brutalism" data-theme-label="Neo Brutalism" data-theme-colors="#ff3333,#ffff00,#0066ff,#000000,#f0f0f0" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Neo Brutalism</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="northern-lights" data-theme-label="Northern Lights" data-theme-colors="#34a85a,#6495ed,#66d9ef,#ef4444,#ddd9c4" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Northern Lights</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="notebook" data-theme-label="Notebook" data-theme-colors="#606060,#dedede,#f3eac8,#c87a7a,#e3e3e3" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Notebook</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="ocean-breeze" data-theme-label="Ocean Breeze" data-theme-colors="#22c55e,#e0f2fe,#d1fae5,#ef4444,#f3f4f6" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Ocean Breeze</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="openai" data-theme-label="OpenAI" data-theme-colors="#0d0d0d,#ececec,#efefef,#e02e2a,#ececec" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">OpenAI</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="pastel-dreams" data-theme-label="Pastel Dreams" data-theme-colors="#a78bfa,#e9d8fd,#f3e5f5,#fca5a5,#f3e8ff" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Pastel Dreams</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="perpetuity" data-theme-label="Perpetuity" data-theme-colors="#06858e,#d9eaea,#c9e5e7,#d13838,#e0eaea" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Perpetuity</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="quantum-rose" data-theme-label="Quantum Rose" data-theme-colors="#e6067a,#ffd6ff,#ffc1e3,#d13869,#ffe3f2" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Quantum Rose</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="retro-arcade" data-theme-label="Retro Arcade" data-theme-colors="#d33682,#2aa198,#cb4b16,#dc322f,#93a1a1" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Retro Arcade</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="sage-garden" data-theme-label="Sage Garden" data-theme-colors="#7c9082,#ced4bf,#bfc9bb,#c73e3a,#e8e6e1" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Sage Garden</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="soft-pop" data-theme-label="Soft Pop" data-theme-colors="#4f46e5,#14b8a6,#f59e0b,#ef4444,#f0f0f0" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Soft Pop</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="solar-dusk" data-theme-label="Solar Dusk" data-theme-colors="#B45309,#E4C090,#f2daba,#991B1B,#F1E9DA" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Solar Dusk</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="starry-night" data-theme-label="Starry Night" data-theme-colors="#3a5ba0,#f7c873,#6ea3c1,#2d1e2f,#e5e5df" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Starry Night</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="sunset-horizon" data-theme-label="Sunset Horizon" data-theme-colors="#ff7e5f,#ffedea,#feb47b,#e63946,#fff0eb" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Sunset Horizon</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="supabase" data-theme-label="Supabase" data-theme-colors="#72e3ad,#fdfdfd,#ededed,#ca3214,#ededed" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Supabase</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="t3-chat" data-theme-label="T3 Chat" data-theme-colors="#a84370,#f1c4e6,#f1c4e6,#ab4347,#f6e5f3" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">T3 Chat</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="tangerine" data-theme-label="Tangerine" data-theme-colors="#e05d38,#f3f4f6,#d6e4f0,#ef4444,#f9fafb" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Tangerine</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="twitter" data-theme-label="Twitter" data-theme-colors="#1e9df1,#0f1419,#E3ECF6,#f4212e,#E5E5E6" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Twitter</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="vercel" data-theme-label="Vercel" data-theme-colors="oklch(0 0 0),oklch(0.94 0 0),oklch(0.94 0 0),oklch(0.63 0.19 23.03),oklch(0.97 0 0)" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Vercel</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="vintage-paper" data-theme-label="Vintage Paper" data-theme-colors="#a67c52,#e2d8c3,#d4c8aa,#b54a35,#ece5d8" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Vintage Paper</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="violet-bloom" data-theme-label="Violet Bloom" data-theme-colors="#7033ff,#edf0f4,#e2ebff,#e54b4f,#f5f5f5" tabindex="-1"><span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Violet Bloom</span><svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button></div></div></div><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-markup">&lt;div class="theme-switcher"&gt;
+  &lt;button class="btn theme-switcher-trigger" id="ts-trigger" popovertarget="ts-menu" aria-expanded="false" aria-haspopup="menu"&gt;
+    &lt;span class="theme-switcher-dot" aria-hidden="true"&gt;&lt;/span&gt;
+    &lt;span class="theme-switcher-label"&gt;Default&lt;/span&gt;
+    &lt;svg class="theme-switcher-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"&gt;&lt;path d="m6 9 6 6 6-6" /&gt;&lt;/svg&gt;
+  &lt;/button&gt;
+  &lt;div id="ts-menu" class="theme-switcher-menu" popover="auto" role="menu" aria-labelledby="ts-trigger"&gt;
+    &lt;button class="theme-switcher-item" role="menuitemradio" aria-checked="true" data-theme-id="default" data-theme-label="Default" tabindex="-1"&gt;
+      &lt;span class="theme-switcher-dots" aria-hidden="true"&gt;&lt;/span&gt;
+      &lt;span class="theme-switcher-name"&gt;Default&lt;/span&gt;
+      &lt;svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"&gt;&lt;path d="M20 6 9 17l-5-5" /&gt;&lt;/svg&gt;
+    &lt;/button&gt;
+    &lt;!-- …one item per theme file, e.g.: --&gt;
+    &lt;button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="claude" data-theme-label="Claude" data-theme-colors="#c96442,#e9e6dc,#e9e6dc,#141413,#ede9de" tabindex="-1"&gt;…&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre></div><h2 class="h2-display" id="toc-how-the-mechanism-works"><a class="heading-anchor" href="#toc-how-the-mechanism-works" aria-label="Link to section: How the mechanism works">§</a>How the mechanism works</h2><p class="text-sm text-muted-foreground mb-5">A theme is a plain CSS file — <code>theme/&lt;id&gt;.css</code> — generated from the tweakcn presets dataset and shipped next to the token file. Applying it is one DOM operation, no matter which UI triggers it:</p><div class="code-card" style="margin-bottom:1.5rem;"><div class="code-card-head"><span class="code-card-title">theme in 5 lines</span></div><pre style="border-radius:0;border:none;margin:0;background:transparent;flex:1;overflow:hidden;"><code class="language-js">// apply
+let link = document.getElementById('theme-css');
+if (!link) {
+link = Object.assign(document.createElement('link'),
+  { id: 'theme-css', rel: 'stylesheet', href: 'theme/claude.css' });
+document.getElementById('tokens-css').after(link); // right after the token sheet
+}
+// reset
+link?.remove();</code></pre></div><p class="text-sm text-muted-foreground mt-5 mb-5">This component wraps exactly that: trigger + <code>popover</code> menu + one <code>&lt;link&gt;</code> swap, plus <code>localStorage</code> persistence, the <code>defuss-theme-change</code> sync event, and a State API for agents/tests. On this repo the files are generated by <code>scripts/build.ts</code> (<code>src/documentation/runtime/themes.ts</code> → <code>dist/theme/*.css</code>); for your own themes, author files in the <code>default-semantic-tokens.css</code> shape (<code>:root</code> + <code>.dark</code> token blocks, tweakcn-compatible) and add one menu item each.</p><section style="margin-top:3rem;" id="states"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-states"><a class="heading-anchor" href="#toc-states" aria-label="Link to section: States">§</a>States</h2><p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per menu through the bound <code>api</code>:</p><ul class="text-sm text-muted-foreground m-0 mb-3 ps-5"><li><code>default</code> — closed (the authored state; the trigger toggles it)</li><li><code>open</code> — shown via the native <code>showPopover()</code>, first theme item focused</li></ul><p class="text-sm text-muted-foreground">The first demo carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/{mode}/theme-switcher-{state}.png</code>.</p></section><section style="margin-top:3rem;" id="source-css"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-css"><a class="heading-anchor" href="#toc-css" aria-label="Link to section: CSS">§</a>CSS <a href="../components/theme-switcher/theme-switcher.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-scss">/* -- Theme Switcher component ---------------------------------
+   Dropdown that swaps a &lt;link id="theme-css"&gt; stylesheet. Own popover +
+   anchor rules (self-contained, mirrors .dropdown-content) + menu rows with
+   theme color dots. */
+
+@layer components {
+  .theme-switcher {
+    position: relative;
+    display: inline-flex;
+  }
+
+  .theme-switcher-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    max-width: 14rem;
+
+    &amp; .theme-switcher-dot {
+      width: 0.75rem;
+      height: 0.75rem;
+      border-radius: 9999px;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+      /* the active theme's primary color, set inline by theme-switcher.js */
+      background: var(--primary);
+    }
+
+    &amp; .theme-switcher-label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    &amp; .theme-switcher-chevron {
+      width: 1rem;
+      height: 1rem;
+      margin-inline-start: auto;
+      flex-shrink: 0;
+      opacity: 0.6;
+    }
+  }
+
+  .theme-switcher-menu {
+    background-color: var(--popover);
+    color: var(--popover-foreground);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 0.25rem;
+    min-width: 12rem;
+    max-height: 18rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    box-shadow: 0 4px 16px oklch(0 0 0 / 0.12), 0 0 0 1px var(--border);
+
+    /* Anchor positioning — the trigger names itself, the menu follows */
+    position: fixed;
+    inset: auto;
+    top: anchor(bottom);
+    left: anchor(left);
+    margin: 0;
+    margin-top: 4px;
+    position-try-fallbacks: flip-block;
+
+    /* Enter/exit animation on the discrete display switch */
+    opacity: 0;
+    transform: scale(0.96) translateY(-0.25rem);
+    transition: opacity 150ms ease, transform 150ms ease,
+                display 150ms allow-discrete;
+
+    &amp;:popover-open {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  @starting-style {
+    .theme-switcher-menu:popover-open {
+      opacity: 0;
+      transform: scale(0.96) translateY(-0.25rem);
+    }
+  }
+
+  .theme-switcher-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.375rem 0.5rem;
+    border-radius: calc(var(--radius) * 0.6);
+    font-size: 0.875rem;
+    border: none;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    text-align: start;
+
+    &amp;:hover,
+    &amp;:focus-visible,
+    &amp;[data-highlighted] {
+      background: var(--accent);
+      color: var(--accent-foreground);
+      outline: none;
+    }
+
+    &amp;[aria-checked='true'] {
+      font-weight: 500;
+
+      &amp; .theme-switcher-check {
+        visibility: visible;
+      }
+    }
+
+    &amp; .theme-switcher-dots {
+      display: inline-flex;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    &amp; .theme-switcher-dots span {
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 9999px;
+    }
+
+    &amp; .theme-switcher-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    &amp; .theme-switcher-check {
+      width: 1rem;
+      height: 1rem;
+      margin-inline-start: auto;
+      visibility: hidden;
+      flex-shrink: 0;
+    }
+  }
+
+  /* Accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .theme-switcher-menu {
+      transition: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .theme-switcher-menu {
+      border: 1px solid CanvasText;
+    }
+  }
+}
+</code></pre></div></section><section style="margin-top:3rem;" id="source-js"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-javascript"><a class="heading-anchor" href="#toc-javascript" aria-label="Link to section: JavaScript">§</a>JavaScript <a href="../components/theme-switcher/theme-switcher.js" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2><p class="text-muted-foreground text-sm mb-4">Popover wiring (aria-expanded sync, roving focus, selection) + the &lt;link&gt; swap with localStorage persistence and the defuss-theme-change event.</p><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-javascript">// -- Theme Switcher --------------------------------------------
+// Dropdown that switches the color theme by swapping ONE stylesheet:
+// a &lt;link id="theme-css"&gt; pointing at a generated theme file
+// (theme/&lt;id&gt;.css — same token shape as default-semantic-tokens.css).
+// That is the entire mechanism: no JS token objects, no inline overrides —
+// consumers ship theme files and this component loads/unloads them. Each
+// theme file carries `:root` + `.dark` blocks, so dark-mode toggling needs
+// no re-apply.
+
+// Shared preamble (AGENTS.md "State API"); build.ts inlines it into the
+// shipped .js, so this import never appears in dist/.
+import { defussGlobals, safeShowPopover } from '../../shared/state-api.js';
+
+const _defussShadcn = defussGlobals();
+
+const themeSwitcherStates = ['default', 'open'];
+
+const STORAGE_KEY = 'defuss-shadcn-color-theme';
+const LINK_ID = 'theme-css';
+const THEME_EVENT = 'defuss-theme-change';
+
+/** Safe in private mode (storage can throw on write). */
+function store(key?: string, value?: string) {
+  try {
+    if (key === undefined) return localStorage.getItem(STORAGE_KEY);
+    if (value === null) localStorage.removeItem(key);
+    else localStorage.setItem(key, value);
+  } catch {
+    /* private mode — theme just won't persist */
+  }
+}
+
+/**
+ * Why: where theme files live is derived, not configured — the shipped
+ * layout puts them one folder ABOVE the token file (dist/theme/&lt;id&gt;.css
+ * beside dist/theme/utils/default-semantic-tokens.css), so they resolve as
+ * `&lt;tokens-dir&gt;/../&lt;id&gt;.css` relative to the loaded token sheet.
+ * `data-theme-base` on the .theme-switcher root overrides (explicit folder).
+ */
+function themeHref(root: HTMLElement, id: string): string {
+  if (root.dataset.themeBase) return `${root.dataset.themeBase}/${id}.css`;
+  const tokens = document.getElementById('tokens-css') ||
+    document.querySelector('link[href*="default-semantic-tokens.css"]');
+  // link.href (the property) is absolute → URL resolution is exact, incl.
+  // the jsDelivr CDN URLs the docs mirror rewrites to
+  if (tokens) return new URL(`../${id}.css`, (tokens as HTMLLinkElement).href).href;
+  return `${id}.css`;
+}
+
+/** Apply a theme id by (re)loading its stylesheet. 'default' unloads it. */
+function applyThemeId(root: HTMLElement, id: string) {
+  let link = document.getElementById(LINK_ID);
+  if (!id || id === 'default') {
+    link?.remove();
+    store(STORAGE_KEY, null);
+    syncTrigger(root, 'default');
+    document.dispatchEvent(new CustomEvent(THEME_EVENT, { detail: { id: 'default' } }));
+    return;
+  }
+  store(STORAGE_KEY, id);
+  if (link &amp;&amp; link.dataset.themeId === id) {
+    syncTrigger(root, id); // already loaded — idempotent
+    return;
+  }
+  link?.remove();
+  link = document.createElement('link');
+  link.id = LINK_ID;
+  link.rel = 'stylesheet';
+  link.dataset.themeId = id;
+  link.href = themeHref(root, id);
+  const tokens = document.getElementById('tokens-css') ||
+    document.querySelector('link[href*="default-semantic-tokens.css"]');
+  // insert right after the token sheet (later source order ⇒ the theme
+  // overrides it); without a token sheet, append at the end of &lt;head&gt;
+  if (tokens) tokens.insertAdjacentElement('afterend', link);
+  else document.head.appendChild(link);
+  syncTrigger(root, id);
+  document.dispatchEvent(new CustomEvent(THEME_EVENT, { detail: { id } }));
+}
+
+/** Reflect the active id in trigger dot/label + aria-checked across items. */
+function syncTrigger(root: HTMLElement, id: string) {
+  const trigger = root.querySelector&lt;HTMLElement&gt;('.theme-switcher-trigger');
+  const items = Array.from(root.querySelectorAll&lt;HTMLElement&gt;('.theme-switcher-item'));
+  const active = items.find((i) =&gt; i.dataset.themeId === id);
+  items.forEach((i) =&gt; i.setAttribute('aria-checked', i === active ? 'true' : 'false'));
+  if (!trigger) return;
+  const dot = trigger.querySelector&lt;HTMLElement&gt;('.theme-switcher-dot');
+  const label = trigger.querySelector&lt;HTMLElement&gt;('.theme-switcher-label');
+  const first = active?.dataset.themeColors?.split(',')[0]?.trim();
+  // 'default' (or unknown): no inline dot color — the CSS default IS --primary
+  if (dot) dot.style.background = first || '';
+  if (label &amp;&amp; (active || id === 'default')) label.textContent = active?.dataset.themeLabel || 'Default';
+  root.dataset.themeId = id;
+}
+
+/**
+ * UI side of setState: 'default' hides the menu, 'open' shows it.
+ * Open/close mechanics stay native (Popover API).
+ */
+function triggerStateChange(menu: HTMLElement, stateName: string, _config?: Record&lt;string, unknown&gt;) {
+  switch (stateName) {
+    case 'default':
+      try { menu.hidePopover(); } catch { /* already closed */ }
+      break;
+    case 'open':
+      // deferred show (safeShowPopover): showPopover() mid-exit crashes the
+      // headless renderer (same guard as dropdown)
+      safeShowPopover(menu);
+      break;
+  }
+}
+
+/** Registry-level API; pass the menu element explicitly. Unknown names throw. */
+export const themeSwitcherApi = {
+  setState(menu: HTMLElement, stateName: string, config: Record&lt;string, unknown&gt; = {}) {
+    if (!themeSwitcherStates.includes(stateName)) {
+      throw new Error(`theme-switcher: unknown state "${stateName}" (supported: ${themeSwitcherStates.join(', ')})`);
+    }
+    triggerStateChange(menu, stateName, config);
+    // state lives on the ELEMENT, not the module (multiple switchers per page)
+    menu.dataset.stateName = stateName;
+    menu._stateConfig = config;
+  },
+  getState(menu: HTMLElement) {
+    return { name: menu.dataset.stateName || 'default', config: menu._stateConfig ?? {} };
+  },
+  /** Apply a theme on the switcher owning `menu` (link swap, see above). */
+  select(menu: HTMLElement, id: string) {
+    const root = menu.closest('.theme-switcher') as HTMLElement | null;
+    if (!root) throw new Error('theme-switcher: menu is not inside a .theme-switcher root');
+    applyThemeId(root, id);
+  },
+};
+
+_defussShadcn.themeSwitcherApi = themeSwitcherApi;
+_defussShadcn.themeSwitcherStates = themeSwitcherStates;
+
+function init() {
+  document.querySelectorAll&lt;HTMLElement&gt;('.theme-switcher-menu:not([data-init])').forEach((menu) =&gt; {
+    menu.dataset.init = '';
+    const root = menu.closest('.theme-switcher') as HTMLElement | null;
+    // trigger = inside the root, or the declarative popovertarget owner
+    const trigger = (root?.querySelector('.theme-switcher-trigger') ??
+      (menu.id &amp;&amp; document.querySelector(`[popovertarget="${menu.id}"]`))) as HTMLElement | null;
+    const getItems = () =&gt; Array.from(menu.querySelectorAll&lt;HTMLElement&gt;('.theme-switcher-item'));
+
+    // CSS anchor positioning — trigger names itself, menu follows
+    if (trigger) {
+      const anchorId = `--theme-switcher-${menu.id || 'menu'}`;
+      trigger.style.anchorName = anchorId;
+      menu.style.positionAnchor = anchorId;
+    }
+
+    // aria-expanded rides the popover's own toggle event
+    menu.addEventListener('toggle', () =&gt; {
+      trigger?.setAttribute('aria-expanded', menu.matches(':popover-open') ? 'true' : 'false');
+      if (menu.matches(':popover-open')) {
+        const first = getItems()[0];
+        first?.focus();
+        // the native popover show-command re-focuses the anchor AFTER this
+        // handler; one rAF re-focus if it (or a sibling menu's light-dismiss
+        // restore) won the race — guarded so a quick Tab-away isn't stolen
+        if (first)
+          requestAnimationFrame(() =&gt; {
+            if (menu.matches(':popover-open') &amp;&amp; document.activeElement === trigger) first.focus();
+          });
+      }
+    });
+
+    // dots visualized from data-theme-colors (keeps authored markup lean)
+    getItems().forEach((item) =&gt; {
+      const holder = item.querySelector('.theme-switcher-dots');
+      if (holder &amp;&amp; !holder.childElementCount) {
+        for (const c of (item.dataset.themeColors || '').split(',').slice(0, 5)) {
+          if (!c.trim()) continue;
+          const s = document.createElement('span');
+          s.style.background = c.trim();
+          holder.appendChild(s);
+        }
+      }
+    });
+
+    // selection: click / Enter (buttons dispatch click natively for both)
+    menu.addEventListener('click', (e) =&gt; {
+      const item = (e.target as HTMLElement).closest&lt;HTMLElement&gt;('.theme-switcher-item');
+      if (!item || !root) return;
+      applyThemeId(root, item.dataset.themeId || 'default');
+      menu.hidePopover();
+      trigger?.focus();
+    });
+
+    // WAI-ARIA menu pattern: roving arrows, Home/End, Escape is native
+    menu.addEventListener('keydown', (e) =&gt; {
+      const items = getItems();
+      const idx = items.indexOf(document.activeElement as HTMLElement);
+      let next = -1;
+      if (e.key === 'ArrowDown') next = idx &lt; 0 ? 0 : (idx + 1) % items.length;
+      else if (e.key === 'ArrowUp') next = idx &lt; 0 ? 0 : (idx - 1 + items.length) % items.length;
+      else if (e.key === 'Home') next = 0;
+      else if (e.key === 'End') next = items.length - 1;
+      if (next &gt;= 0) {
+        e.preventDefault();
+        items[next].focus();
+      }
+    });
+
+    // per-instance State API binding (state on the element, AGENTS.md)
+    menu.api = {
+      setState: (stateName, config) =&gt; themeSwitcherApi.setState(menu, stateName, config),
+      getState: () =&gt; themeSwitcherApi.getState(menu),
+    };
+
+    // reflect the theme already active on the page (preloaded link or storage)
+    if (root) {
+      const initial =
+        document.getElementById(LINK_ID)?.dataset.themeId || store() || 'default';
+      if (initial !== 'default' || document.getElementById(LINK_ID)) syncTrigger(root, initial);
+    }
+  });
+}
+
+// one page-wide listener: any switcher (or the doc-site theme grid) may move
+// the active theme — keep every switcher's trigger honest
+document.addEventListener(THEME_EVENT, (e) =&gt; {
+  const id = (e as CustomEvent&lt;{ id?: string }&gt;).detail?.id || 'default';
+  document.querySelectorAll&lt;HTMLElement&gt;('.theme-switcher').forEach((root) =&gt; syncTrigger(root, id));
+});
+
+init();
+new MutationObserver(init).observe(document, { childList: true, subtree: true });
+</code></pre></div></section><nav class="page-nav"><a class="page-nav-link page-nav-prev" href="navigation-menu.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><div><span class="page-nav-label">Previous</span><span class="page-nav-title">Navigation Menu</span></div></a><a class="page-nav-link page-nav-next" href="sidebar.html"><div><span class="page-nav-label">Next</span><span class="page-nav-title">Sidebar</span></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></nav></main><aside class="site-toc"><div class="site-toc-content"><p class="toc-title">On This Page</p><a class="toc-link" href="#toc-live">Live</a><a class="toc-link" href="#toc-how-the-mechanism-works">How the mechanism works</a><a class="toc-link" href="#toc-states">States</a><a class="toc-link" href="#toc-css">CSS</a><a class="toc-link" href="#toc-javascript">JavaScript</a></div></aside></div><script>try {
+  var c = JSON.parse(localStorage.getItem('defuss-shadcn-nav-collapsed') || '{}');
+  if (c && typeof c === 'object' && !Array.isArray(c)) {
+    for (var h in c) {
+      var d = document.querySelector('details[data-nav-section="' + h + '"]');
+      if (!d) continue;
+      if (c[h] === '1') d.open = true;
+      else if (!d.querySelector('a.nav-link.active')) d.open = false;
+    }
+  }
+  if (localStorage.getItem('defuss-shadcn-nav-docked') === '1') {
+    var sb = document.querySelector('.site-sidebar');
+    /* stateName pins it: the sidebar component's auto-collapse treats a
+       set stateName as a deliberate user choice and leaves it alone */
+    if (sb) { sb.dataset.state = 'collapsed'; sb.dataset.stateName = 'collapsed'; }
+  }
+} catch (e) {}</script><footer class="site-footer"><p class="site-footer-tagline">Agentically engineered with local Qwen3.8-Flash-Next/vLLM, quality-gated automatically, and human-reviewed before release.</p><p class="site-footer-tagline" style="margin-top:0;">Reworked, enhanced and maintained by <a href="https://aron-homberg.de" target="_blank" rel="noopener">Aron Homberg</a></p><span class="site-footer-dot"> · </span>MIT Licensed<span class="site-footer-dot"> · </span><a href="https://github.com/kyr0/defuss-shadcn" target="_blank" rel="noopener">Source on GitHub</a></footer><script src="js/site.js" defer=""></script><script type="module" src="js/shiki-highlight.js"></script><script type="module" src="../components/all.js"></script><script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script><script>globalThis.lucide?.createIcons();</script></body></html>

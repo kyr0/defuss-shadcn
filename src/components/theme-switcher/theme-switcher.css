@@ -1,0 +1,152 @@
+/* -- Theme Switcher component ---------------------------------
+   Dropdown that swaps a <link id="theme-css"> stylesheet. Own popover +
+   anchor rules (self-contained, mirrors .dropdown-content) + menu rows with
+   theme color dots. */
+
+@layer components {
+  .theme-switcher {
+    position: relative;
+    display: inline-flex;
+  }
+
+  .theme-switcher-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    max-width: 14rem;
+
+    & .theme-switcher-dot {
+      width: 0.75rem;
+      height: 0.75rem;
+      border-radius: 9999px;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+      /* the active theme's primary color, set inline by theme-switcher.js */
+      background: var(--primary);
+    }
+
+    & .theme-switcher-label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    & .theme-switcher-chevron {
+      width: 1rem;
+      height: 1rem;
+      margin-inline-start: auto;
+      flex-shrink: 0;
+      opacity: 0.6;
+    }
+  }
+
+  .theme-switcher-menu {
+    background-color: var(--popover);
+    color: var(--popover-foreground);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 0.25rem;
+    min-width: 12rem;
+    max-height: 18rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    box-shadow: 0 4px 16px oklch(0 0 0 / 0.12), 0 0 0 1px var(--border);
+
+    /* Anchor positioning — the trigger names itself, the menu follows */
+    position: fixed;
+    inset: auto;
+    top: anchor(bottom);
+    left: anchor(left);
+    margin: 0;
+    margin-top: 4px;
+    position-try-fallbacks: flip-block;
+
+    /* Enter/exit animation on the discrete display switch */
+    opacity: 0;
+    transform: scale(0.96) translateY(-0.25rem);
+    transition: opacity 150ms ease, transform 150ms ease,
+                display 150ms allow-discrete;
+
+    &:popover-open {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  @starting-style {
+    .theme-switcher-menu:popover-open {
+      opacity: 0;
+      transform: scale(0.96) translateY(-0.25rem);
+    }
+  }
+
+  .theme-switcher-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.375rem 0.5rem;
+    border-radius: calc(var(--radius) * 0.6);
+    font-size: 0.875rem;
+    border: none;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    text-align: start;
+
+    &:hover,
+    &:focus-visible,
+    &[data-highlighted] {
+      background: var(--accent);
+      color: var(--accent-foreground);
+      outline: none;
+    }
+
+    &[aria-checked='true'] {
+      font-weight: 500;
+
+      & .theme-switcher-check {
+        visibility: visible;
+      }
+    }
+
+    & .theme-switcher-dots {
+      display: inline-flex;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    & .theme-switcher-dots span {
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 9999px;
+    }
+
+    & .theme-switcher-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    & .theme-switcher-check {
+      width: 1rem;
+      height: 1rem;
+      margin-inline-start: auto;
+      visibility: hidden;
+      flex-shrink: 0;
+    }
+  }
+
+  /* Accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .theme-switcher-menu {
+      transition: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .theme-switcher-menu {
+      border: 1px solid CanvasText;
+    }
+  }
+}

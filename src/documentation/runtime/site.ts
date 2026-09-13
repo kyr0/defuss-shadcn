@@ -76,11 +76,8 @@
     document.getElementById('icon-sun').style.display  = isDark ? 'block' : 'none';
     document.getElementById('icon-moon').style.display = isDark ? 'none'  : 'block';
     localStorage.setItem('defuss-shadcn-theme', isDark ? 'light' : 'dark');
-    // Re-apply color theme for the new mode
-    if (docs.__activeColorTheme && docs.__activeColorTheme !== 'default' && docs.applyTheme) {
-      docs.applyTheme(docs.__activeColorTheme);
-    }
-    // Update favicon for new mode
+    // theme files carry :root + .dark — the class switch re-themes by
+    // itself; only the favicon derives from live tokens
     if (docs.updateFavicon) docs.updateFavicon();
   }
 

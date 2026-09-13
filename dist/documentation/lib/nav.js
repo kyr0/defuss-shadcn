@@ -120,6 +120,7 @@ export const NAV = [
             { label: 'Tabs', href: 'tabs.html' },
             { label: 'Dropdown Menu', href: 'dropdown.html' },
             { label: 'Navigation Menu', href: 'navigation-menu.html' },
+            { label: 'Theme Switcher', href: 'theme-switcher.html' },
         ] },
     { heading: 'Application', items: [
             { label: 'Sidebar', href: 'sidebar.html' },

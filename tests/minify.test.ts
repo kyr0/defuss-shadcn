@@ -22,7 +22,7 @@ describe('isDerivedArtifact', () => {
     'components/dialog/dialog.js',
     'components/dialog/component-skill.md',
     'documentation/index.html',
-    'theme/default-semantic-tokens.css',
+    'theme/utils/default-semantic-tokens.css',
   ])('rejects the shipped file %s', (p) => expect(isDerivedArtifact(p)).toBe(false));
 });
 
@@ -63,7 +63,7 @@ describe('minifyArtifactProblems', () => {
       minifyArtifactProblems(
         new Set([
           'documentation/index.html',
-          'theme/default-semantic-tokens.css',
+          'theme/utils/default-semantic-tokens.css',
           'components/grid/grid-layout.css', // not the {name}/{name}.css shape
           'components/dialog/dialog.min.js', // a twin never demands twins
           'components/dialog/dialog.min.min.js', // nor a twin of a twin

@@ -83,7 +83,7 @@ const TW = new RegExp(
 
 /**
  * Why: every doc page loads the shipped optional modules
- * (theme/sizing.css + theme/layout.css), so their `:where(.…)` utilities are
+ * (theme/utils/sizing.css + theme/utils/layout.css), so their `:where(.…)` utilities are
  * defined *in the page* — doc demos may use them without being flagged as
  * undefined no-ops. Components never get this allowance: they ship standalone
  * and a consumer page might not load the modules (the component scan keeps
@@ -92,7 +92,7 @@ const TW = new RegExp(
 function moduleDefinedClasses(root: string): Set<string> {
   const set = new Set<string>();
   for (const sheet of ['sizing.css', 'layout.css', 'accessibility.css']) {
-    const file = join(root, 'src/theme', sheet);
+    const file = join(root, 'src/theme/utils', sheet);
     if (!existsSync(file)) continue;
     // selectors are escaped CSS (`.w-0\.5` = class "w-0.5", `.w-1\/2` = "w-1/2")
     for (const m of readFileSync(file, 'utf8').matchAll(/:where\(([^)]+)\)/g)) {
@@ -141,7 +141,7 @@ export function auditUtilities(root: string): { docIssues: string[]; compIssues:
       .map(([c, files]) => `${c} (${files.length}× in ${relative(root, files[0])}${files.length > 1 ? ' et al.' : ''})`);
   }
 
-  // The shipped optional modules (theme/sizing.css + theme/layout.css) define
+  // The shipped optional modules (theme/utils/sizing.css + theme/utils/layout.css) define
   // the utility vocabulary every demo and skill sample composes with — the
   // docs pages link them on every page, and component skills/fixtures are
   // documentation too (the scan never covers components' shipped .css/.js,

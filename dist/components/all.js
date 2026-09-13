@@ -2284,10 +2284,189 @@ function init21() {
 init21();
 new MutationObserver(init21).observe(document, { childList: true, subtree: true });
 
-// src/components/toast/toast.ts
+// src/components/theme-switcher/theme-switcher.ts
 var _defussShadcn22 = defussGlobals();
+var themeSwitcherStates = ["default", "open"];
+var STORAGE_KEY = "defuss-shadcn-color-theme";
+var LINK_ID = "theme-css";
+var THEME_EVENT = "defuss-theme-change";
+function store(key, value) {
+  try {
+    if (key === undefined)
+      return localStorage.getItem(STORAGE_KEY);
+    if (value === null)
+      localStorage.removeItem(key);
+    else
+      localStorage.setItem(key, value);
+  } catch {}
+}
+function themeHref(root, id) {
+  if (root.dataset.themeBase)
+    return `${root.dataset.themeBase}/${id}.css`;
+  const tokens = document.getElementById("tokens-css") || document.querySelector('link[href*="default-semantic-tokens.css"]');
+  if (tokens)
+    return new URL(`../${id}.css`, tokens.href).href;
+  return `${id}.css`;
+}
+function applyThemeId(root, id) {
+  let link = document.getElementById(LINK_ID);
+  if (!id || id === "default") {
+    link?.remove();
+    store(STORAGE_KEY, null);
+    syncTrigger(root, "default");
+    document.dispatchEvent(new CustomEvent(THEME_EVENT, { detail: { id: "default" } }));
+    return;
+  }
+  store(STORAGE_KEY, id);
+  if (link && link.dataset.themeId === id) {
+    syncTrigger(root, id);
+    return;
+  }
+  link?.remove();
+  link = document.createElement("link");
+  link.id = LINK_ID;
+  link.rel = "stylesheet";
+  link.dataset.themeId = id;
+  link.href = themeHref(root, id);
+  const tokens = document.getElementById("tokens-css") || document.querySelector('link[href*="default-semantic-tokens.css"]');
+  if (tokens)
+    tokens.insertAdjacentElement("afterend", link);
+  else
+    document.head.appendChild(link);
+  syncTrigger(root, id);
+  document.dispatchEvent(new CustomEvent(THEME_EVENT, { detail: { id } }));
+}
+function syncTrigger(root, id) {
+  const trigger = root.querySelector(".theme-switcher-trigger");
+  const items = Array.from(root.querySelectorAll(".theme-switcher-item"));
+  const active = items.find((i) => i.dataset.themeId === id);
+  items.forEach((i) => i.setAttribute("aria-checked", i === active ? "true" : "false"));
+  if (!trigger)
+    return;
+  const dot = trigger.querySelector(".theme-switcher-dot");
+  const label = trigger.querySelector(".theme-switcher-label");
+  const first = active?.dataset.themeColors?.split(",")[0]?.trim();
+  if (dot)
+    dot.style.background = first || "";
+  if (label && (active || id === "default"))
+    label.textContent = active?.dataset.themeLabel || "Default";
+  root.dataset.themeId = id;
+}
+function triggerStateChange22(menu, stateName, _config) {
+  switch (stateName) {
+    case "default":
+      try {
+        menu.hidePopover();
+      } catch {}
+      break;
+    case "open":
+      safeShowPopover(menu);
+      break;
+  }
+}
+var themeSwitcherApi = {
+  setState(menu, stateName, config = {}) {
+    if (!themeSwitcherStates.includes(stateName)) {
+      throw new Error(`theme-switcher: unknown state "${stateName}" (supported: ${themeSwitcherStates.join(", ")})`);
+    }
+    triggerStateChange22(menu, stateName, config);
+    menu.dataset.stateName = stateName;
+    menu._stateConfig = config;
+  },
+  getState(menu) {
+    return { name: menu.dataset.stateName || "default", config: menu._stateConfig ?? {} };
+  },
+  select(menu, id) {
+    const root = menu.closest(".theme-switcher");
+    if (!root)
+      throw new Error("theme-switcher: menu is not inside a .theme-switcher root");
+    applyThemeId(root, id);
+  }
+};
+_defussShadcn22.themeSwitcherApi = themeSwitcherApi;
+_defussShadcn22.themeSwitcherStates = themeSwitcherStates;
+function init22() {
+  document.querySelectorAll(".theme-switcher-menu:not([data-init])").forEach((menu) => {
+    menu.dataset.init = "";
+    const root = menu.closest(".theme-switcher");
+    const trigger = root?.querySelector(".theme-switcher-trigger") ?? (menu.id && document.querySelector(`[popovertarget="${menu.id}"]`));
+    const getItems = () => Array.from(menu.querySelectorAll(".theme-switcher-item"));
+    if (trigger) {
+      const anchorId = `--theme-switcher-${menu.id || "menu"}`;
+      trigger.style.anchorName = anchorId;
+      menu.style.positionAnchor = anchorId;
+    }
+    menu.addEventListener("toggle", () => {
+      trigger?.setAttribute("aria-expanded", menu.matches(":popover-open") ? "true" : "false");
+      if (menu.matches(":popover-open")) {
+        const first = getItems()[0];
+        first?.focus();
+        if (first)
+          requestAnimationFrame(() => {
+            if (menu.matches(":popover-open") && document.activeElement === trigger)
+              first.focus();
+          });
+      }
+    });
+    getItems().forEach((item) => {
+      const holder = item.querySelector(".theme-switcher-dots");
+      if (holder && !holder.childElementCount) {
+        for (const c of (item.dataset.themeColors || "").split(",").slice(0, 5)) {
+          if (!c.trim())
+            continue;
+          const s = document.createElement("span");
+          s.style.background = c.trim();
+          holder.appendChild(s);
+        }
+      }
+    });
+    menu.addEventListener("click", (e) => {
+      const item = e.target.closest(".theme-switcher-item");
+      if (!item || !root)
+        return;
+      applyThemeId(root, item.dataset.themeId || "default");
+      menu.hidePopover();
+      trigger?.focus();
+    });
+    menu.addEventListener("keydown", (e) => {
+      const items = getItems();
+      const idx = items.indexOf(document.activeElement);
+      let next = -1;
+      if (e.key === "ArrowDown")
+        next = idx < 0 ? 0 : (idx + 1) % items.length;
+      else if (e.key === "ArrowUp")
+        next = idx < 0 ? 0 : (idx - 1 + items.length) % items.length;
+      else if (e.key === "Home")
+        next = 0;
+      else if (e.key === "End")
+        next = items.length - 1;
+      if (next >= 0) {
+        e.preventDefault();
+        items[next].focus();
+      }
+    });
+    menu.api = {
+      setState: (stateName, config) => themeSwitcherApi.setState(menu, stateName, config),
+      getState: () => themeSwitcherApi.getState(menu)
+    };
+    if (root) {
+      const initial = document.getElementById(LINK_ID)?.dataset.themeId || store() || "default";
+      if (initial !== "default" || document.getElementById(LINK_ID))
+        syncTrigger(root, initial);
+    }
+  });
+}
+document.addEventListener(THEME_EVENT, (e) => {
+  const id = e.detail?.id || "default";
+  document.querySelectorAll(".theme-switcher").forEach((root) => syncTrigger(root, id));
+});
+init22();
+new MutationObserver(init22).observe(document, { childList: true, subtree: true });
+
+// src/components/toast/toast.ts
+var _defussShadcn23 = defussGlobals();
 var toastStates = ["default"];
-function triggerStateChange22(container, stateName, _config) {
+function triggerStateChange23(container, stateName, _config) {
   if (stateName !== "default")
     return;
   container.querySelectorAll(".toast").forEach((el) => toastDismiss(el));
@@ -2297,7 +2476,7 @@ var toastApi = {
     if (!toastStates.includes(stateName)) {
       throw new Error(`toast: unknown state "${stateName}" (supported: ${toastStates.join(", ")})`);
     }
-    triggerStateChange22(container, stateName, config);
+    triggerStateChange23(container, stateName, config);
     container.dataset.stateName = stateName;
     container._stateConfig = config;
   },
@@ -2308,8 +2487,8 @@ var toastApi = {
     };
   }
 };
-_defussShadcn22.toastApi = toastApi;
-_defussShadcn22.toastStates = toastStates;
+_defussShadcn23.toastApi = toastApi;
+_defussShadcn23.toastStates = toastStates;
 var DURATION = 4000;
 var MAX_VISIBLE = 3;
 var toastCallbacks = new WeakMap;
@@ -2419,7 +2598,7 @@ var toastCreate = (options) => {
     toastDismiss(toasts[0]);
   return el;
 };
-function init22() {
+function init23() {
   document.querySelectorAll("#toast-container:not([data-init])").forEach((container) => {
     container.dataset.init = "";
     container.api = {
@@ -2443,9 +2622,9 @@ function init22() {
     });
   });
 }
-init22();
-new MutationObserver(init22).observe(document.body, { childList: true, subtree: true });
-_defussShadcn22.toast = {
+init23();
+new MutationObserver(init23).observe(document.body, { childList: true, subtree: true });
+_defussShadcn23.toast = {
   show: toastCreate,
   success: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "success" })),
   warning: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "warning" })),
@@ -2459,9 +2638,9 @@ _defussShadcn22.toast = {
 };
 
 // src/components/toggle/toggle.ts
-var _defussShadcn23 = defussGlobals();
+var _defussShadcn24 = defussGlobals();
 var toggleStates = ["default", "pressed"];
-function triggerStateChange23(toggle, stateName, _config) {
+function triggerStateChange24(toggle, stateName, _config) {
   switch (stateName) {
     case "default":
       toggle.setAttribute("aria-pressed", toggle._defaultPressed ?? "false");
@@ -2476,7 +2655,7 @@ var toggleApi = {
     if (!toggleStates.includes(stateName)) {
       throw new Error(`toggle: unknown state "${stateName}" (supported: ${toggleStates.join(", ")})`);
     }
-    triggerStateChange23(toggle, stateName, config);
+    triggerStateChange24(toggle, stateName, config);
     toggle.dataset.stateName = stateName;
     toggle._stateConfig = config;
   },
@@ -2488,9 +2667,9 @@ var toggleApi = {
     };
   }
 };
-_defussShadcn23.toggleApi = toggleApi;
-_defussShadcn23.toggleStates = toggleStates;
-function init23() {
+_defussShadcn24.toggleApi = toggleApi;
+_defussShadcn24.toggleStates = toggleStates;
+function init24() {
   document.querySelectorAll(".toggle:not([data-init]):not(.toggle-group .toggle)").forEach((toggle) => {
     toggle.dataset.init = "";
     toggle._defaultPressed = toggle.getAttribute("aria-pressed") || "false";
@@ -2505,13 +2684,13 @@ function init23() {
     });
   });
 }
-init23();
-new MutationObserver(init23).observe(document, { childList: true, subtree: true });
+init24();
+new MutationObserver(init24).observe(document, { childList: true, subtree: true });
 
 // src/components/toggle-group/toggle-group.ts
-var _defussShadcn24 = defussGlobals();
+var _defussShadcn25 = defussGlobals();
 var toggleGroupStates = ["default", "disabled"];
-function triggerStateChange24(group, stateName, _config) {
+function triggerStateChange25(group, stateName, _config) {
   switch (stateName) {
     case "default":
       group.removeAttribute("data-disabled");
@@ -2526,7 +2705,7 @@ var toggleGroupApi = {
     if (!toggleGroupStates.includes(stateName)) {
       throw new Error(`toggle-group: unknown state "${stateName}" (supported: ${toggleGroupStates.join(", ")})`);
     }
-    triggerStateChange24(group, stateName, config);
+    triggerStateChange25(group, stateName, config);
     group.dataset.stateName = stateName;
     group._stateConfig = config;
   },
@@ -2537,9 +2716,9 @@ var toggleGroupApi = {
     };
   }
 };
-_defussShadcn24.toggleGroupApi = toggleGroupApi;
-_defussShadcn24.toggleGroupStates = toggleGroupStates;
-function init24() {
+_defussShadcn25.toggleGroupApi = toggleGroupApi;
+_defussShadcn25.toggleGroupStates = toggleGroupStates;
+function init25() {
   document.querySelectorAll(".toggle-group:not([data-init])").forEach((group) => {
     group.dataset.init = "";
     group.api = {
@@ -2607,13 +2786,13 @@ function init24() {
     });
   });
 }
-init24();
-new MutationObserver(init24).observe(document, { childList: true, subtree: true });
+init25();
+new MutationObserver(init25).observe(document, { childList: true, subtree: true });
 
 // src/components/toolbar/toolbar.ts
-var _defussShadcn25 = defussGlobals();
+var _defussShadcn26 = defussGlobals();
 var toolbarStates = ["default"];
-function triggerStateChange25(toolbar, items, stateName, config) {
+function triggerStateChange26(toolbar, items, stateName, config) {
   if (stateName !== "default" || items.length === 0)
     return;
   const target = items[Math.min(Number(config?.focus ?? 0), items.length - 1)] || items[0];
@@ -2627,7 +2806,7 @@ var toolbarApi = {
       throw new Error(`toolbar: unknown state "${stateName}" (supported: ${toolbarStates.join(", ")})`);
     }
     const items = toolbarItems(toolbar);
-    triggerStateChange25(toolbar, items, stateName, config);
+    triggerStateChange26(toolbar, items, stateName, config);
     toolbar.dataset.stateName = stateName;
     toolbar._stateConfig = config;
   },
@@ -2640,10 +2819,10 @@ var toolbarApi = {
     };
   }
 };
-_defussShadcn25.toolbarApi = toolbarApi;
-_defussShadcn25.toolbarStates = toolbarStates;
+_defussShadcn26.toolbarApi = toolbarApi;
+_defussShadcn26.toolbarStates = toolbarStates;
 var toolbarItems = (toolbar) => Array.from(toolbar.querySelectorAll('button:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])'));
-function init25() {
+function init26() {
   document.querySelectorAll('.toolbar[role="toolbar"]:not([data-init])').forEach((toolbar) => {
     toolbar.dataset.init = "";
     toolbar.api = {
@@ -2685,13 +2864,13 @@ function init25() {
     });
   });
 }
-init25();
-new MutationObserver(init25).observe(document, { childList: true, subtree: true });
+init26();
+new MutationObserver(init26).observe(document, { childList: true, subtree: true });
 
 // src/components/tooltip/tooltip.ts
-var _defussShadcn26 = defussGlobals();
+var _defussShadcn27 = defussGlobals();
 var tooltipStates = ["default", "visible"];
-function triggerStateChange26(tip, stateName, _config) {
+function triggerStateChange27(tip, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -2709,7 +2888,7 @@ var tooltipApi = {
     if (!tooltipStates.includes(stateName)) {
       throw new Error(`tooltip: unknown state "${stateName}" (supported: ${tooltipStates.join(", ")})`);
     }
-    triggerStateChange26(tip, stateName, config);
+    triggerStateChange27(tip, stateName, config);
     tip.dataset.stateName = stateName;
     tip._stateConfig = config;
   },
@@ -2717,8 +2896,8 @@ var tooltipApi = {
     return { name: tip.dataset.stateName || "default", config: tip._stateConfig ?? {} };
   }
 };
-_defussShadcn26.tooltipApi = tooltipApi;
-_defussShadcn26.tooltipStates = tooltipStates;
+_defussShadcn27.tooltipApi = tooltipApi;
+_defussShadcn27.tooltipStates = tooltipStates;
 var DELAY_DEFAULT = 700;
 var CLOSE_DELAY_DEFAULT = 0;
 var GROUP_TIMEOUT = 400;
@@ -2734,7 +2913,7 @@ function scheduleGroupReset() {
     groupOpen = false;
   }, GROUP_TIMEOUT);
 }
-function init26() {
+function init27() {
   document.querySelectorAll("[data-tooltip-trigger]:not([data-init])").forEach((trigger) => {
     trigger.dataset.init = "";
     const tip = document.getElementById(trigger.dataset.tooltipTrigger);
@@ -2782,8 +2961,8 @@ function init26() {
     };
   });
 }
-init26();
-new MutationObserver(init26).observe(document, { childList: true, subtree: true });
+init27();
+new MutationObserver(init27).observe(document, { childList: true, subtree: true });
 if (!document.__tooltipScrollInit) {
   document.__tooltipScrollInit = true;
   document.addEventListener("scroll", () => {
@@ -2796,9 +2975,9 @@ if (!document.__tooltipScrollInit) {
 }
 
 // src/components/tree-view/tree-view.ts
-var _defussShadcn27 = defussGlobals();
+var _defussShadcn28 = defussGlobals();
 var treeViewStates = ["default", "expanded"];
-function triggerStateChange27(details, stateName, _config) {
+function triggerStateChange28(details, stateName, _config) {
   switch (stateName) {
     case "default":
       details.open = details._defaultOpen ?? false;
@@ -2813,7 +2992,7 @@ var treeViewApi = {
     if (!treeViewStates.includes(stateName)) {
       throw new Error(`tree-view: unknown state "${stateName}" (supported: ${treeViewStates.join(", ")})`);
     }
-    triggerStateChange27(details, stateName, config);
+    triggerStateChange28(details, stateName, config);
     details.dataset.stateName = stateName;
     details._stateConfig = config;
   },
@@ -2824,9 +3003,9 @@ var treeViewApi = {
     };
   }
 };
-_defussShadcn27.treeViewApi = treeViewApi;
-_defussShadcn27.treeViewStates = treeViewStates;
-function init27() {
+_defussShadcn28.treeViewApi = treeViewApi;
+_defussShadcn28.treeViewStates = treeViewStates;
+function init28() {
   document.querySelectorAll('.tree[role="tree"]:not([data-init])').forEach((tree) => {
     tree.dataset.init = "";
     tree.querySelectorAll(".tree-branch").forEach((details) => {
@@ -2891,8 +3070,8 @@ function init27() {
     });
   });
 }
-init27();
-new MutationObserver(init27).observe(document, { childList: true, subtree: true });
+init28();
+new MutationObserver(init28).observe(document, { childList: true, subtree: true });
 
-//# debugId=C5401EBAD14B3D8364756E2164756E21
+//# debugId=AB92ABB87E0CDC1164756E2164756E21
 //# sourceMappingURL=all.js.map

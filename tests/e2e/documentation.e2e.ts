@@ -245,6 +245,16 @@ try {
         },
         [themeId, mode],
       );
+      // link-based themes: wait for the theme sheet to be inserted AND
+      // parsed (async <link> load) before measuring computed contrast
+      await page.waitForFunction(
+        ([t]) => {
+          const link = document.getElementById('theme-css') as HTMLLinkElement | null;
+          return t === 'default' ? !link : link?.dataset.themeId === t && link.sheet !== null;
+        },
+        [themeId],
+        { timeout: 5000 },
+      );
       await page.waitForTimeout(200); // past `transition: all 120ms`
       const ratio = await page.evaluate(() => {
         const link = document.querySelector('.nav-link.active') as HTMLElement;

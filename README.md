@@ -11,8 +11,8 @@
 
 **A UI component system that scales with _local_ AI.** Themeable components built on semantic HTML, modern CSS, and vanilla JavaScript. No framework. No build step for consumers — `dist/` is committed and ready to use as-is. The simplest possible foundation for AI-driven prototyping.
 
-**71 components — 27 with JavaScript, 44 CSS-only — 72.8 KiB minified + compressed — 33.9 KiB as the all.css/all.js bundle.**
-44 of 71 components need no JavaScript — native HTML and modern CSS cover them entirely.
+**72 components — 28 with JavaScript, 44 CSS-only — 75.3 KiB minified + compressed — 35.1 KiB as the all.css/all.js bundle.**
+44 of 72 components need no JavaScript — native HTML and modern CSS cover them entirely.
 The footprint is measured from the shipped `dist/` files on every build and published as
 [`dist/stats.json`](dist/stats.json); `verify` fails the build if this sentence and that file disagree.
 
@@ -38,7 +38,7 @@ A portable UI component system built on the [shadcn/ui](https://ui.shadcn.com) t
 
 ```html
 <!-- 1. Add a theme -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/default-semantic-tokens.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/utils/default-semantic-tokens.css">
 
 <!-- 2. Add the icons -->
 <script src="https://unpkg.com/lucide@1.8.0"></script>
@@ -89,19 +89,19 @@ Some components — like Button and Badge — are CSS-only. No JavaScript needed
 
 ## Theming
 
-Tokens are compatible with [tweakcn.com](https://tweakcn.com) theme exports. To switch themes, you just switch the token file — that's all the theme selector in the documentation site is doing.
+Tokens are compatible with [tweakcn.com](https://tweakcn.com) theme exports. A theme is one plain stylesheet with `:root` + `.dark` token blocks — switching themes means switching that file.
 
-1. Export a theme from tweakcn.com
-2. Replace the `:root` and `.dark` blocks in `dist/theme/default-semantic-tokens.css`
-3. Everything updates automatically — all components, the doc site, dark mode
+1. **Ship it at build time** — link a theme file instead of the token file: every [tweakcn](https://tweakcn.com) preset ships generated in [`dist/theme/`](dist/theme/) (`claude.css`, `vercel.css`, …, 43 presets; regenerate with `bun run build`, gated by `verify`). Or export your own from tweakcn and replace `dist/theme/utils/default-semantic-tokens.css` — components see the same tokens either way.
+2. **Switch it at runtime** — the [Theme Switcher](https://kyr0.github.io/defuss-shadcn/theme-switcher.html) component loads/unloads one `<link id="theme-css">` (the theme rides on top of the token file; no JS token objects). That's exactly what the theme picker on the documentation site does.
+3. Everything updates automatically — all components, the doc site, dark mode (each theme file carries both palettes).
 
 ## Optional modules
 
 Three standalone stylesheets live beside the token file and are opt-in — no component depends on them, and the token export stays tweakcn-pure:
 
-- [`dist/theme/sizing.css`](dist/theme/sizing.css) — one numeric scale (`w-4` = four base units, `--size-*` aliases, density-aware spacing)
-- [`dist/theme/layout.css`](dist/theme/layout.css) — small layout surface (`flex`, `grid`, `stack`, `container`, named `query` boundaries, overflow + text-flow helpers)
-- [`dist/theme/accessibility.css`](dist/theme/accessibility.css) — screen-reader-only content (`.sr-only` / `.not-sr-only`, the clip pattern)
+- [`dist/theme/utils/sizing.css`](dist/theme/utils/sizing.css) — one numeric scale (`w-4` = four base units, `--size-*` aliases, density-aware spacing)
+- [`dist/theme/utils/layout.css`](dist/theme/utils/layout.css) — small layout surface (`flex`, `grid`, `stack`, `container`, named `query` boundaries, overflow + text-flow helpers)
+- [`dist/theme/utils/accessibility.css`](dist/theme/utils/accessibility.css) — screen-reader-only content (`.sr-only` / `.not-sr-only`, the clip pattern)
 
 Load them after the tokens, before component CSS. Docs: [Sizing](https://kyr0.github.io/defuss-shadcn/sizing.html) · [Layout](https://kyr0.github.io/defuss-shadcn/layout.html) · [Accessibility](https://kyr0.github.io/defuss-shadcn/accessibility.html)
 
