@@ -261,12 +261,26 @@ test('TOC links land their heading below the fixed AND sticky headers (issue #2)
   await waitFor(() => doc.querySelector('.toc-link'), 'TOC to build');
   const win = doc.defaultView!;
   // --anchor-pad must clear BOTH bars: 3.5rem fixed site header + the sticky page header
-  const pad = padPx(win);
-  expect(pad).toBeGreaterThan(64);
+  expect(padPx(win)).toBeGreaterThan(64);
+
+  // regression: the pad must match the SETTLED header stack. The Fraunces
+  // web-font swap reflows .page-header taller (~50px) AFTER init; with the
+  // old one-shot measurement the pad stayed stale and every anchor overscrolled
+  // the delta — landing the heading UNDER the sticky bar. The click assertion
+  // below can't catch that (scrollIntoView honors the same stale pad), so pin
+  // the invariant directly: ResizeObserver keeps scroll-padding-top >= stack.
+  const stackPx = () =>
+    (doc.querySelector('.site-header')?.getBoundingClientRect().height ?? 0) +
+    (doc.querySelector('.page-header')?.getBoundingClientRect().height ?? 0);
+  // determinism: the swap is what grows the stack — assert only after it, or
+  // the stale pre-swap pad would satisfy the check with the stale pre-swap stack
+  await doc.fonts.ready;
+  await waitFor(() => padPx(win) >= stackPx(), '--anchor-pad to track the settled header stack');
 
   // clicking a mid-page TOC entry rests the heading exactly at scroll-padding-top
   await clickSelector(doc, '.toc-link[href="#toc-radius-scale"]');
   const heading = doc.getElementById('toc-radius-scale')!;
+  const pad = padPx(win);
   await waitFor(() => Math.abs(heading.getBoundingClientRect().top - pad) <= 2, 'heading to rest at scroll-padding-top');
 });
 

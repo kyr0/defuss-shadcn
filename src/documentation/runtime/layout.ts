@@ -561,7 +561,14 @@
      under the page-header bar (issue #2 follow-up). The true clearance is
      site-header + page-header height + a little breathing room — both
      content-dependent, so the browser measures it and publishes the value
-     as --anchor-pad, which layout.css wires into scroll-padding-top. */
+     as --anchor-pad, which layout.css wires into scroll-padding-top.
+     The measurement goes stale whenever the header RE-FLOWS after init —
+     the Fraunces web font swapping in grows the .page-header h1 by ~50px,
+     skill <details> toggles, breakpoint padding changes. One-shot resize/
+     toggle listeners missed exactly that (regression: every anchor
+     overscrolled by the font-swap delta), so a ResizeObserver on the stack
+     re-measures on any size change (it also fires on init and on window
+     resize-driven width changes, replacing both listeners). */
   function updateAnchorPad() {
     var hdr = document.querySelector('.site-header');
     var ph = document.querySelector('.page-header');
@@ -569,10 +576,16 @@
       (ph ? ph.getBoundingClientRect().height : 0) + 8;
     document.documentElement.style.setProperty('--anchor-pad', Math.round(h) + 'px');
   }
-  addEventListener('resize', updateAnchorPad);
-  /* Component-skill <details> near the page header change its height when
-     toggled; `toggle` bubbles, so one capture listener covers all. */
-  addEventListener('toggle', updateAnchorPad, true);
+  /* Re-created per SPA navigation: .page-header is a fresh element per page. */
+  var padObserver = null;
+  function observeAnchorPad() {
+    if (padObserver) padObserver.disconnect();
+    padObserver = new ResizeObserver(updateAnchorPad);
+    ['.site-header', '.page-header'].forEach(function (sel) {
+      var el = document.querySelector(sel);
+      if (el) padObserver.observe(el);
+    });
+  }
 
   /* -- TOC active tracking ---------------------------------------
      The TOC markup is static (build-time); runtime only highlights the
@@ -610,6 +623,7 @@
   docs.onPageReady(function () {
     initTocTracking();
     updateAnchorPad(); // page header height differs per page — remeasure
+    observeAnchorPad(); // re-attach to this page's .page-header element
     /* A fresh load landed with the 4rem fallback padding (this script measured
        the real clearance only now) — re-align the initial fragment once. */
     if (location.hash.length > 1 && docs.realignWhenSettled) {
