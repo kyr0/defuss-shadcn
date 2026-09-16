@@ -39,7 +39,8 @@
         "fix(button): secondary hover faded towards the page background — darken via color-mix instead of opacity",
         "fix(purge-cdn): purge the @latest package-root entry before the files",
         "fix(purge-cdn): fail fast when jsDelivr cannot serve the new tag yet"
-      ]
+      ],
+      "hash": "1b92912"
     },
     {
       "version": "v0.8.3",
