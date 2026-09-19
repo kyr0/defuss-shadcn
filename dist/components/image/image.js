@@ -104,7 +104,9 @@ function getLightbox() {
     lightbox = document.createElement('dialog');
     lightbox.className = 'image-lightbox';
     lightbox.setAttribute('aria-label', 'Image preview');
-    lightbox.innerHTML = `
+    // trusted static toolbar markup through query's .html() (§5.1: sanctioned
+    // render path — a static singleton template, no user content)
+    dfDollar(lightbox).html(`
     <div class="image-lightbox-content">
       <img src="" alt="" />
     </div>
@@ -127,7 +129,7 @@ function getLightbox() {
       <button class="image-lightbox-btn" data-action="close" aria-label="Close">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
-    </div>`;
+    </div>`);
     lightboxImg = dfDollar(lightbox).find('.image-lightbox-content > img')[0];
     /* Toolbar actions */
     dfDollar(lightbox).find('.image-lightbox-toolbar')[0].addEventListener('click', (e) => {

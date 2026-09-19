@@ -2536,7 +2536,7 @@ function init7() {
     clearBtn.type = "button";
     clearBtn.className = "combobox-clear";
     clearBtn.setAttribute("aria-label", "Clear selection");
-    clearBtn.innerHTML = '<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
+    dfDollar3(clearBtn).html('<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>');
     dfDollar3(clearBtn).css("positionAnchor", anchorId);
     $trigger.after(clearBtn);
     clearBtn.addEventListener("click", () => {
@@ -3219,7 +3219,7 @@ function getLightbox() {
   lightbox = document.createElement("dialog");
   lightbox.className = "image-lightbox";
   lightbox.setAttribute("aria-label", "Image preview");
-  lightbox.innerHTML = `
+  dfDollar5(lightbox).html(`
     <div class="image-lightbox-content">
       <img src="" alt="" />
     </div>
@@ -3242,7 +3242,7 @@ function getLightbox() {
       <button class="image-lightbox-btn" data-action="close" aria-label="Close">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
-    </div>`;
+    </div>`);
   lightboxImg = dfDollar5(lightbox).find(".image-lightbox-content > img")[0];
   dfDollar5(lightbox).find(".image-lightbox-toolbar")[0].addEventListener("click", (e) => {
     const btn = e.target.closest("[data-action]");
@@ -3810,11 +3810,7 @@ function init20() {
       liveRegion.className = "sortable-live";
       liveRegion.setAttribute("aria-live", "assertive");
       liveRegion.setAttribute("role", "status");
-      if (list.parentElement) {
-        list.parentElement.insertBefore(liveRegion, list.nextSibling);
-      } else {
-        list.after(liveRegion);
-      }
+      dfDollar6(list).after(liveRegion);
     }
     function announce(msg) {
       dfDollar6(liveRegion).text("");
@@ -4136,7 +4132,7 @@ function applyThemeId(root, id) {
   link.href = themeHref(root, id);
   const tokens2 = document.getElementById("tokens-css") || document.querySelector('link[href*="default-semantic-tokens.css"]');
   if (tokens2)
-    tokens2.insertAdjacentElement("afterend", link);
+    dfDollar7(tokens2).after(link);
   else
     dfDollar7(document.head).append(link);
   syncTrigger(root, id);
@@ -4303,7 +4299,7 @@ if (!toastContainer) {
   toastContainer.className = "toast-container";
   toastContainer.setAttribute("aria-label", "Notifications");
   toastContainer.setAttribute("data-position", "bottom-right");
-  document.body.appendChild(toastContainer);
+  dfDollar8(document.body).append(toastContainer);
 }
 var stackToasts = (container) => {
   let offset = 0;
@@ -4351,32 +4347,30 @@ var toastCreate = (options) => {
   const contentEl = document.createElement("div");
   contentEl.className = "toast-content";
   if (variant && icons[variant]) {
-    const tmpl = document.createElement("template");
-    tmpl.innerHTML = icons[variant];
-    contentEl.appendChild(tmpl.content);
+    dfDollar8(contentEl).append(dfDollar8(icons[variant]));
   }
   const textDiv = document.createElement("div");
   textDiv.className = "toast-text";
   if (title) {
     const p = document.createElement("p");
     p.className = "toast-title";
-    p.textContent = title;
-    textDiv.appendChild(p);
+    dfDollar8(p).text(title);
+    dfDollar8(textDiv).append(p);
   }
   if (description) {
     const p = document.createElement("p");
     p.className = "toast-description";
-    p.textContent = description;
-    textDiv.appendChild(p);
+    dfDollar8(p).text(description);
+    dfDollar8(textDiv).append(p);
   }
-  contentEl.appendChild(textDiv);
+  dfDollar8(contentEl).append(textDiv);
   const closeBtn = document.createElement("button");
   closeBtn.className = "toast-close";
   closeBtn.setAttribute("aria-label", "Dismiss");
   closeBtn.dataset.toastClose = "";
-  closeBtn.innerHTML = '<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>';
-  contentEl.appendChild(closeBtn);
-  el.appendChild(contentEl);
+  dfDollar8(closeBtn).html('<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>');
+  dfDollar8(contentEl).append(closeBtn);
+  dfDollar8(el).append(contentEl);
   if (action) {
     const actionsDiv = document.createElement("div");
     actionsDiv.className = "toast-actions";
@@ -4385,9 +4379,9 @@ var toastCreate = (options) => {
     actionBtn.setAttribute("data-variant", "outline");
     actionBtn.setAttribute("data-size", "sm");
     actionBtn.dataset.toastAction = "";
-    actionBtn.textContent = action.label;
-    actionsDiv.appendChild(actionBtn);
-    el.appendChild(actionsDiv);
+    dfDollar8(actionBtn).text(action.label);
+    dfDollar8(actionsDiv).append(actionBtn);
+    dfDollar8(el).append(actionsDiv);
   }
   dfDollar8(toastContainer).append(el);
   el.showPopover();
@@ -4877,5 +4871,5 @@ function init28() {
 init28();
 new MutationObserver(init28).observe(document, { childList: true, subtree: true });
 
-//# debugId=F0F9A486E3CC1C5D64756E2164756E21
+//# debugId=A09A506922AC233B64756E2164756E21
 //# sourceMappingURL=all.js.map

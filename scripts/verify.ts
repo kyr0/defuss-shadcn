@@ -1169,6 +1169,63 @@ check(
     );
   }
 
+  // 28b. DOM boundary (plans/defuss-query-morph-integration.md §5.1): component
+  // code that has adopted the core df$ runtime (imports defussQuery) must route
+  // structural writes through the sanctioned query ops (.morph()/.html()/
+  // .append()/.before()/.after()/factory) — native sinks (innerHTML/outerHTML
+  // writes, insertAdjacentHTML, insertAdjacentElement, replaceChildren,
+  // insertBefore, appendChild) and the forbidden .prop() escapes are rejected.
+  // The boundary keeps ONE renderer per collection, so morph can own
+  // reconciliation. Exceptions are file-scoped, reasoned, and stale entries
+  // fail too — they must never grow into fallback renderers (§5.1).
+  {
+    const MIGRATED_RE = /defussQuery/;
+    const BANNED: Array<[RegExp, string]> = [
+      [/\.\s*innerHTML\s*=[^=]/, 'innerHTML = (use .html()/.morph())'],
+      [/\.\s*outerHTML\s*=[^=]/, 'outerHTML = (use .replaceWith())'],
+      [/insertAdjacentHTML\s*\(/, 'insertAdjacentHTML( (use .before()/.after()/.append())'],
+      [/insertAdjacentElement\s*\(/, 'insertAdjacentElement( (use .before()/.after()/.append())'],
+      [/\.replaceChildren\s*\(/, '.replaceChildren( (use .morph()/.empty()+.append())'],
+      [/\.insertBefore\s*\(/, '.insertBefore( (use .before()/.after())'],
+      [/\.appendChild\s*\(/, '.appendChild( (use .append())'],
+      [/\.\s*prop\(\s*['"`](innerHTML|outerHTML|textContent)['"`]/, '.prop("innerHTML"/"outerHTML"/"textContent") (§5.2 runtime-forbidden escape)'],
+    ];
+    // reasoned, file-scoped exceptions (name → justification). Keep EMPTY:
+    // a needed exception must state why it cannot be a query op.
+    const DOM_BOUNDARY_ALLOW: Record<string, string> = {};
+    const problems: string[] = [];
+    for (const c of componentDirs) {
+      const file = join(COMPS, c, `${c}.ts`);
+      if (!existsSync(file)) continue; // CSS-only component
+      const src = readFileSync(file, 'utf8');
+      if (!MIGRATED_RE.test(src)) continue; // not query-adopted yet (pre-baseline)
+      const hitLines = src
+        .split('\n')
+        .map((line, i) => ({ line, n: i + 1 }))
+        .filter(({ line }) => !/^\s*(\/\/|\*|\/\*)/.test(line)) // comments document the rule
+        .filter(({ line }) => BANNED.some(([re]) => re.test(line)));
+      if (DOM_BOUNDARY_ALLOW[c]) {
+        if (hitLines.length === 0)
+          problems.push(`${c}: DOM_BOUNDARY_ALLOW entry is stale (no banned writes left) — remove it`);
+        else {
+          const allowed = DOM_BOUNDARY_ALLOW[c];
+          for (const { n } of hitLines)
+            problems.push(`${c}:${n}: exception ${JSON.stringify(allowed)} — re-check whether a query op covers it now`);
+        }
+        continue;
+      }
+      for (const { line, n } of hitLines) {
+        const label = BANNED.find(([re]) => re.test(line))![1];
+        problems.push(`src/components/${c}/${c}.ts:${n}: ${label}`);
+      }
+    }
+    check(
+      'DOM boundary (migrated components)',
+      problems,
+      'route the write through the core df$ runtime — .morph()/.html() for content, .append()/.before()/.after() for moves/mounts, factory df$("<markup>") for static markup (plans/defuss-query-morph-integration.md §5.1; guide: DOM Querying & Morphing)',
+    );
+  }
+
   // 29. changelog ↔ version: the version COMMITTED in package.json must have an
   // entry in changelog.html — a release cut without a changelog is invisible to
   // readers, which happened to v0.7.14. Each entry carries the commit messages

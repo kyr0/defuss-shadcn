@@ -94,8 +94,9 @@ function init() {
     clearBtn.type = 'button';
     clearBtn.className = 'combobox-clear';
     clearBtn.setAttribute('aria-label', 'Clear selection');
-    clearBtn.innerHTML =
-      '<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
+    dfDollar(clearBtn).html(
+      '<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>',
+    ); // trusted static icon markup (§5.1)
     dfDollar(clearBtn).css('positionAnchor', anchorId);
     $trigger.after(clearBtn);
     clearBtn.addEventListener('click', () => {

@@ -66,7 +66,7 @@ if (!toastContainer) {
   toastContainer.className = 'toast-container';
   toastContainer.setAttribute('aria-label', 'Notifications');
   toastContainer.setAttribute('data-position', 'bottom-right');
-  document.body.appendChild(toastContainer);
+  dfDollar(document.body).append(toastContainer); // query's exact mount op (§5.1)
 }
 
 /** Stack offset for each visible toast: toasts render in the top layer
@@ -111,30 +111,32 @@ const toastCreate = (options) => {
     info: '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>',
     destructive: '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>'
   };
-  // Build toast DOM safely (no innerHTML with user content)
+  // Build toast DOM (§5.1 boundary: static icon markup rides query .html(),
+  // user-supplied title/description stay literal text via .text() — never an
+  // HTML sink, §5.2; insertions go through query's exact .append() ops)
   const contentEl = document.createElement('div');
   contentEl.className = 'toast-content';
   if (variant && icons[variant]) {
-    const tmpl = document.createElement('template');
-    tmpl.innerHTML = icons[variant];
-    contentEl.appendChild(tmpl.content);
+    // the query factory parses a leading-`<` string as markup (§5.2) — the
+    // trusted static icon flows in through one query append op
+    dfDollar(contentEl).append(dfDollar(icons[variant]));
   }
   const textDiv = document.createElement('div');
   textDiv.className = 'toast-text';
-  if (title) { const p = document.createElement('p'); p.className = 'toast-title'; p.textContent = title; textDiv.appendChild(p); }
-  if (description) { const p = document.createElement('p'); p.className = 'toast-description'; p.textContent = description; textDiv.appendChild(p); }
-  contentEl.appendChild(textDiv);
+  if (title) { const p = document.createElement('p'); p.className = 'toast-title'; dfDollar(p).text(title); dfDollar(textDiv).append(p); }
+  if (description) { const p = document.createElement('p'); p.className = 'toast-description'; dfDollar(p).text(description); dfDollar(textDiv).append(p); }
+  dfDollar(contentEl).append(textDiv);
   const closeBtn = document.createElement('button');
   closeBtn.className = 'toast-close'; closeBtn.setAttribute('aria-label', 'Dismiss'); closeBtn.dataset.toastClose = '';
-  closeBtn.innerHTML = '<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>';
-  contentEl.appendChild(closeBtn);
-  el.appendChild(contentEl);
+  dfDollar(closeBtn).html('<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>');
+  dfDollar(contentEl).append(closeBtn);
+  dfDollar(el).append(contentEl);
   if (action) {
     const actionsDiv = document.createElement('div'); actionsDiv.className = 'toast-actions';
     const actionBtn = document.createElement('button'); actionBtn.className = 'btn';
     actionBtn.setAttribute('data-variant', 'outline'); actionBtn.setAttribute('data-size', 'sm'); actionBtn.dataset.toastAction = '';
-    actionBtn.textContent = action.label;
-    actionsDiv.appendChild(actionBtn); el.appendChild(actionsDiv);
+    dfDollar(actionBtn).text(action.label); // literal action label (§5.2)
+    dfDollar(actionsDiv).append(actionBtn); dfDollar(el).append(actionsDiv);
   }
   // mount through query's exact .append() — the node itself is inserted
   // (identity + delegated listeners kept, §3 toast row of the morph plan)

@@ -92,12 +92,8 @@ function init() {
             liveRegion.className = 'sortable-live';
             liveRegion.setAttribute('aria-live', 'assertive');
             liveRegion.setAttribute('role', 'status');
-            if (list.parentElement) {
-                list.parentElement.insertBefore(liveRegion, list.nextSibling);
-            }
-            else {
-                list.after(liveRegion);
-            }
+            // mount right after the list (§5.1: query's exact .after(), one branch)
+            dfDollar(list).after(liveRegion);
         }
         function announce(msg) {
             // double write re-triggers the live region for repeated identical messages

@@ -88,10 +88,11 @@ function applyThemeId(root, id) {
         document.querySelector('link[href*="default-semantic-tokens.css"]');
     // insert right after the token sheet (later source order ⇒ the theme
     // overrides it); without a token sheet, append at the end of <head>
+    // (§5.1: both branches ride query's exact insertion ops)
     if (tokens)
-        tokens.insertAdjacentElement('afterend', link);
+        dfDollar(tokens).after(link);
     else
-        dfDollar(document.head).append(link); // query's exact insertion op
+        dfDollar(document.head).append(link);
     syncTrigger(root, id);
     document.dispatchEvent(new CustomEvent(THEME_EVENT, { detail: { id } }));
 }
