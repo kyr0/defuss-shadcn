@@ -5,9 +5,12 @@
     /* border-box is load-bearing for the shared field ladder: the UA gives
        <input> content-box, so `height` would otherwise exclude the 2px frame
        and render 2px taller than the border-box fields (select, button-based
-       triggers). With it, every declared height IS the rendered box. */
+       triggers). With it, every declared height IS the rendered box.
+       The unsized default IS the ladder's md step (2.25rem = 36px) — same
+       height, padding and font as [data-size="md"] below, so an unlabeled
+       field and an explicit md field are the same control. */
     box-sizing: border-box;
-    height: 2.5rem;
+    height: 2.25rem;
     width: 100%;
     border: 1px solid var(--input);
     border-radius: var(--radius-md);

@@ -39,4 +39,17 @@ await cssSmoke('label', [
       assert.equal(focused, 'in-1', 'for="in-1" must transfer focus to #in-1');
     },
   },
+  {
+    // the required star renders from CSS alone (:has(+ input[required])::after)
+    // — content carries the NBSP + asterisk, destructive color
+    label: ':has(+ input[required]) renders the decorative star via ::after',
+    run: async (page) => {
+      const style = await page.$eval('#lb-required', (el) => {
+        const s = getComputedStyle(el, '::after');
+        return { content: s.content, color: s.color };
+      });
+      assert.match(style.content, /\*/, `::after content should carry the star, got ${style.content}`);
+      assert.notEqual(style.color, 'rgb(0, 0, 0)', 'star uses the destructive token color');
+    },
+  },
 ]);

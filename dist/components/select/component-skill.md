@@ -71,8 +71,7 @@ Set `data-size` on the `.select` trigger button.
 | --- | --- | --- |
 | `xs` | 1.75rem | Dense toolbars |
 | `sm` | 2rem | Dense toolbars |
-| `md` | 2.25rem | Compact forms |
-| (default) | 2.5rem | Standard forms |
+| `md` *(default)* | 2.25rem | Standard forms |
 | `lg` | 2.75rem | Prominent landing/form fields |
 | `xl` | 3.25rem | Touch targets, kiosk UI |
 

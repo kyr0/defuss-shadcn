@@ -1,10 +1,11 @@
 #!/usr/bin/env bun
-import { cpSync, existsSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { SKILL_OUTPUT_FILE } from './lib/skill.ts';
 import { buildSkillText } from './lib/skill-files.ts';
 import { parseThemes } from './lib/contrast.ts';
 import { themeCssText, themeFileName } from './lib/theme-css.ts';
+import { schemaManifestText } from './lib/schema.ts';
 
 /**
  * Why: the whole build — `bun run build` produces dist/ from src/ 1:1.
@@ -95,6 +96,26 @@ cpSync(SRC, DIST, {
     return !s.endsWith('.ts');
   },
 });
+
+// 0c. publish the component schemas (plans/cmp-schemas-and-codeexample.md §24):
+// each src/components/<n>/<n>.schema.json also ships as dist/schemas/<n>.schema.json
+// plus a deterministic manifest, so external agents/tools discover contracts
+// without walking component folders. The sidecars stay in the component folders
+// too (1:1 copy above) — they are documentation data, NEVER imported by runtime
+// JS (verify's `runtime schema-free` gate).
+{
+  const schemasOut = join(DIST, 'schemas');
+  mkdirSync(schemasOut, { recursive: true });
+  const names: string[] = [];
+  for (const dir of readdirSync(join(SRC, 'components'))) {
+    const file = join(SRC, 'components', dir, `${dir}.schema.json`);
+    if (!existsSync(file)) continue;
+    cpSync(file, join(schemasOut, `${dir}.schema.json`));
+    names.push(dir);
+  }
+  writeFileSync(join(schemasOut, 'manifest.json'), schemaManifestText(names));
+  console.log(`schemas: ${names.length} published → dist/schemas/ + manifest`);
+}
 
 // rewrite each component's shared import into the core binding guard, so the
 // shipped files reference the once-installed df$.shadcn.shared functions and

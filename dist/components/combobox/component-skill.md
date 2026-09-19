@@ -118,8 +118,7 @@ Set `data-size` on the `.combobox` wrapper; the trigger (a `.btn`) and the popov
 |-------------|----------------|--------------|----------|
 | `xs` | 1.75rem | 0.75rem | 0.75rem |
 | `sm` | 2rem | 0.8125rem | 0.8125rem |
-| `md` | 2.25rem | 0.875rem | 0.875rem |
-| *(none)* | 2.5rem (`.combobox-trigger` default, = `.input`) | 0.875rem | 0.875rem |
+| `md` *(default)* | 2.25rem (`.combobox-trigger` default, = `.input`) | 0.875rem | 0.875rem |
 | `lg` | 2.75rem | 1rem | 1rem |
 | `xl` | 3.25rem | 1.125rem | 1.125rem |
 

@@ -3,14 +3,14 @@ import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
  * Why: select is CSS-only — the appearance:none + inline-SVG chevron restyle
- * is the whole control. Verify the 40px box with chevron padding, the custom
+ * is the whole control. Verify the 36px md-step box with chevron padding, the custom
  * chevron background, sm/lg sizes, disabled, and the invalid border.
  */
 await cssSmoke('select', [
   {
-    label: '.select is a 40px appearance-none control with chevron room',
+    label: '.select is a 36px appearance-none control (md default) with chevron room',
     selector: '#se-default',
-    css: { appearance: 'none', height: '40px', padding: '0px 32px 0px 12px', cursor: 'pointer' },
+    css: { appearance: 'none', height: '36px', padding: '0px 32px 0px 12px', cursor: 'pointer' },
   },
   {
     label: 'custom chevron drawn via inline-SVG background (right-aligned, 1rem)',

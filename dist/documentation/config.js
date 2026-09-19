@@ -1,6 +1,7 @@
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
 import { docsPlugins } from './lib/plugins.js';
+import { remarkDocExamples } from './lib/mdx-example.js';
 export default {
     pages: 'pages',
     // DOCS_OUTPUT lets scripts/build-docs.ts redirect the build (pilot/diff runs)
@@ -18,6 +19,9 @@ export default {
     remarkPlugins: [
         [remarkFrontmatter, ['yaml', 'toml']],
         [remarkMdxFrontmatter, { name: 'meta' }],
+        // canonical executable-example fences (```… example → CodeExample;
+        // ```states → StatesTable) — the ONE example rendering mechanism
+        remarkDocExamples,
     ],
     rehypePlugins: [],
 };

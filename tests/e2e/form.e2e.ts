@@ -14,9 +14,9 @@ await cssSmoke('form', [
   },
   {
     // the doc page's "Consistent field heights" grid, tested at the family
-    // level: the .input ladder (2.5rem = 40px unsized) must be the real box
+    // level: the .input ladder (md step = 36px unsized) must be the real box
     // of EVERY field control, whichever UA box-sizing it inherits
-    label: 'every field control renders the same 40px box (.input is the standard)',
+    label: 'every field control renders the same 36px md box (.input is the standard)',
     run: async (page) => {
       const heights = await page.evaluate(() =>
         ['#ld-input', '#ld-select', '#ld-number', '#ld-combobox', '#ld-date', '#ld-color', '#ld-file'].map(
@@ -25,8 +25,8 @@ await cssSmoke('form', [
       );
       assert.deepEqual(
         heights,
-        Array(7).fill(40),
-        `mixed field row must sit on the 2.5rem ladder, got ${heights.join('/')}`,
+        Array(7).fill(36),
+        `mixed field row must sit on the md ladder step, got ${heights.join('/')}`,
       );
     },
   },

@@ -3,7 +3,8 @@
 @layer components {
   .select {
     appearance: none;
-    height: 2.5rem;
+    /* the field standard: unsized = md step (see .input) */
+    height: 2.25rem;
     width: 100%;
     border: 1px solid var(--input);
     border-radius: var(--radius-md);

@@ -33,6 +33,15 @@ import { archBodyHtml } from '../src/documentation/lib/arch-md.ts';
 import { typeBadgeHtml, type ComponentType } from './lib/taxonomy.ts';
 import { docsDistToSrc, isDocsSsgAuthoringSrc } from './lib/docs-ssg.ts';
 import { markdownLinkProblems, type MdDoc } from './lib/links.ts';
+import {
+  exampleFences,
+  findStatesTable,
+  isSchemaArtifact,
+  parseComponentSchemaText,
+  schemaManifestText,
+  schemaStatesProblems,
+  type ComponentSchema,
+} from './lib/schema.ts';
 
 /**
  * Why: one static, fast gate that proves the repo is self-consistent after any
@@ -279,7 +288,9 @@ if (!existsSync(DIST)) {
     // scripts/minify.ts + tsc sourceMap write derived twins, scripts/stats.ts
     // writes the generated stats document, scripts/bundle.ts writes the
     // single-file bundle — none of them are orphans
-    if (isDerivedArtifact(rel) || BUNDLE_ARTIFACTS.has(rel) || rel === STATS_FILE) continue;
+    // scripts/build.ts publishes schema sidecars to dist/schemas/ from a
+    // DIFFERENT src path (components/<n>/<n>.schema.json) — allow-listed, not orphans
+    if (isDerivedArtifact(rel) || BUNDLE_ARTIFACTS.has(rel) || rel === STATS_FILE || isSchemaArtifact(rel)) continue;
     if (!srcSet.has(rel)) {
       // docs pages/assets originate from the SSG authoring tree
       // (pages/*.mdx, public/*, runtime/*.ts) — resolve before flagging
@@ -1461,6 +1472,124 @@ check(
       'theme radius consistency',
       radiusConsistencyProblems(themes),
       'declare the same `radius` in BOTH the light and dark block of the flagged theme(s) in src/documentation/runtime/themes.ts (AGENTS.md "Theme radius consistency")',
+    );
+  }
+
+  // 33. component schemas (plans/cmp-schemas-and-codeexample.md §14/§25): every
+  // <name>.schema.json beside a component parses under the schema contract
+  // (scripts/lib/schema.ts — the single validator), its `name` matches the
+  // component folder, and the runtime code that ships it imports none of them
+  // (§23: schemas are documentation/tooling data — zero bytes in the bundle).
+  const schemaFiles = componentDirs
+    .map((d) => join(COMPS, d, `${d}.schema.json`))
+    .filter((f) => existsSync(f));
+  const schemaByName = new Map<string, ComponentSchema>();
+  {
+    const problems: string[] = [];
+    for (const f of schemaFiles) {
+      const dir = relative(COMPS, f).split(sep)[0];
+      const rel = relative(ROOT, f);
+      const { schema, problems: p } = parseComponentSchemaText(readFileSync(f, 'utf8'), rel);
+      problems.push(...p);
+      if (schema) {
+        if (schema.name !== dir) problems.push(`${rel}: name "${schema.name}" ≠ component folder "${dir}"`);
+        schemaByName.set(dir, schema);
+      }
+    }
+    // runtime schema-free: no shipped runtime source references a schema file
+    for (const f of walk(SRC, ['.ts'])) {
+      const rel = relative(SRC, f);
+      if (isDocsSsgAuthoringSrc(rel)) continue; // docs tooling MAY read schemas (§23)
+      if (/schema\.json/.test(readFileSync(f, 'utf8'))) problems.push(`${rel} references a *.schema.json — runtime code must be schema-free (plan §23)`);
+    }
+    check(
+      'component schemas',
+      problems,
+      'fix the flagged *.schema.json against the contract in scripts/lib/schema.ts / keep runtime sources schema-free (plan §14/§23)',
+    );
+  }
+
+  // 34. schema publication freshness (§24): dist/schemas/ must carry a byte-exact
+  // copy of every sidecar + the deterministic manifest scripts/build.ts writes.
+  {
+    const pub = join(DIST, 'schemas');
+    const problems: string[] = [];
+    const manifest = join(pub, 'manifest.json');
+    if (!existsSync(manifest)) problems.push('dist/schemas/manifest.json missing — run `bun run build`');
+    else if (readFileSync(manifest, 'utf8') !== schemaManifestText([...schemaByName.keys()]))
+      problems.push('dist/schemas/manifest.json is stale — run `bun run build`');
+    for (const [name] of schemaByName) {
+      const published = join(pub, `${name}.schema.json`);
+      if (!existsSync(published)) problems.push(`dist/schemas/${name}.schema.json missing — run \`bun run build\``);
+      else if (!readFileSync(published).equals(readFileSync(join(COMPS, name, `${name}.schema.json`))))
+        problems.push(`dist/schemas/${name}.schema.json differs from the src sidecar — run \`bun run build\``);
+    }
+    check('schemas published', problems, 'run `bun run build` (build.ts copies schemas + writes the sorted manifest)');
+  }
+
+  // 35. schema ↔ docs States-table parity (§13–§18/§25): every schema'd component
+  // page carries the canonical contract table and matches the schema in BOTH
+  // directions — every schema state documented, no phantom states, types /
+  // enum values / defaults matching verbatim.
+  {
+    const problems: string[] = [];
+    for (const [name, schema] of schemaByName) {
+      const page = join(DOCS_PAGES, `${name}.mdx`);
+      if (!existsSync(page)) {
+        problems.push(`component "${name}" has a schema but no pages/${name}.mdx — every schema needs its documentation page (plan §25.4)`);
+        continue;
+      }
+      const mdx = readFileSync(page, 'utf8');
+      const t = findStatesTable(mdx);
+      if (!t.found)
+        problems.push(`pages/${name}.mdx: canonical ## States contract table missing (plan §13 — ## States / <StatesSection> + a \`\`\`states fence)`);
+      else problems.push(...schemaStatesProblems(`pages/${name}.mdx`, schema, t.rows, t.problems));
+    }
+    check(
+      'schema ↔ States docs',
+      problems,
+      "fix the Markdown States table so it matches the schema — do NOT loosen the schema to pass (plan §20); parse/compare lives in scripts/lib/schema.ts, pinned by tests/component-schema.test.ts",
+    );
+    // migration ratchet (plan §26 phase 4): interactive components without a
+    // schema yet — shrink toward zero, same path STATE_API_LEGACY took
+    const pending = componentDirs.filter((d) => !schemaByName.has(d) && existsSync(join(COMPS, d, `${d}.ts`)));
+    check(
+      'component schema coverage',
+      pending.map((d) => `${d}: no ${d}.schema.json yet`),
+      'audit the runtime and add <name>.schema.json beside the component + a ## States contract table on its page (plan §26 phase 4)',
+      true,
+    );
+  }
+
+  // 36. executable-example verification (§21/§22/§27): every example fence is a
+  // non-empty source bound to a real component (its schema); CodeExample usage
+  // stays source-only (the §5 regression: no dual-source props / children);
+  // the retired dual-render mechanism stays gone.
+  {
+    const problems: string[] = [];
+    const docsCfg = readFileSync(join(DOCS, 'config.ts'), 'utf8');
+    if (!docsCfg.includes('remarkDocExamples'))
+      problems.push('documentation/config.ts does not wire remarkDocExamples — example fences would render as plain code blocks (§22)');
+    for (const file of readdirSync(DOCS_PAGES).filter((f) => f.endsWith('.mdx'))) {
+      const mdx = readFileSync(join(DOCS_PAGES, file), 'utf8');
+      const page = file.replace(/\.mdx$/, '');
+      for (const ex of exampleFences(mdx)) {
+        if (ex.body.trim() === '') problems.push(`pages/${file}:${ex.line} empty example fence (plan §21)`);
+        const comp = ex.component ?? page;
+        if (!existsSync(join(COMPS, comp)))
+          problems.push(`pages/${file}:${ex.line} example schema component "${comp}" is not a shipped component (pages/${page}.mdx → add component="…" or ship the component)`);
+      }
+      for (const m of mdx.matchAll(/<CodeExample[^>]*?\s(code|preview|previewSource)=/g))
+        problems.push(`pages/${file}: CodeExample received \`${m[1]}\` — dual-source prop, source={fence} only (plan §5)`);
+      if (mdx.includes('</CodeExample>'))
+        problems.push(`pages/${file}: CodeExample with children — the fence body is the ONLY source (plan §5)`);
+    }
+    const codePreviewHits = walk(SRC, ['.mdx', '.tsx', '.ts']).filter((f) => /CodePreview/.test(readFileSync(f, 'utf8')));
+    for (const f of codePreviewHits) problems.push(`${relative(ROOT, f)} mentions CodePreview — the dual-render mechanism stays removed (plan §21)`);
+    check(
+      'example fences',
+      problems,
+      'one source per example: fix the fence/props on the flagged page (plan §21/§22); empty examples and dual-source props are rejected',
     );
   }
 

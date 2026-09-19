@@ -36,7 +36,7 @@ export function docsDistToSrc(relFromDistDocumentation: string): string | null {
   const js = r.match(/^js\/(.+)\.js$/);
   if (js) return `documentation/runtime/${js[1]}.ts`;
   // static assets live in public/ (mirrored to output root by defuss-ssg)
-  if (/^(css|fonts|images|videos)\//.test(r)) return `documentation/public/${r}`;
+  if (/^(css|fonts|images|videos|templates)\//.test(r)) return `documentation/public/${r}`;
   // pages: {n}.html ← pages/{n}.mdx
   if (r.endsWith('.html')) return `documentation/pages/${r.replace(/\.html$/, '')}.mdx`;
   return null;

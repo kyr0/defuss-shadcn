@@ -62,12 +62,12 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <Example>
   <ExampleLabel>Required</ExampleLabel>
-  <ExampleHint>Required indicator using a red asterisk.</ExampleHint>
+  <ExampleHint>The red asterisk renders automatically from <code>:has(+ input[required])</code> — no markup to add or forget.</ExampleHint>
   <div class="w-full max-w-80">
-    <label class="label" for="demo-name"> Name <span aria-hidden="true" class="text-destructive">\*</span></label>
+    <label class="label" for="demo-name">Name</label>
     <input class="input" type="text" id="demo-name" required placeholder="Jane Doe" />
   </div>
-  <ExampleCode>{"<label class=\"label\" for=\"name\">\n  Name <span aria-hidden=\"true\" class=\"text-destructive\">*</span>\n</label>\n<input class=\"input\" type=\"text\" id=\"name\" required>"}</ExampleCode>
+  <ExampleCode>{"<label class=\"label\" for=\"name\">Name</label>\n<input class=\"input\" type=\"text\" id=\"name\" required>"}</ExampleCode>
 </Example>
 
 <Example>

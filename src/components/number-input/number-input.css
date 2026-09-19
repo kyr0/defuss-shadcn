@@ -15,9 +15,9 @@
        auto height (children drive it), so this changes nothing today. */
     box-sizing: border-box;
     /* explicit default box height (the size ladder below does the rest): an
-       auto-height box let the UA-padding children overshoot to 44px, 4px off
-       the field standard (.input renders exactly 2.5rem = 40px) */
-    height: 2.5rem;
+       auto-height box let the UA-padding children overshoot to 44px. The
+       unsized default IS the ladder's md step — field standard, see .input */
+    height: 2.25rem;
 
     & input {
       border: none;

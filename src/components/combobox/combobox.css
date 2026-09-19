@@ -33,9 +33,10 @@
   .combobox-trigger {
     width: 100%;
     justify-content: space-between;
-    /* the field standard for the unsized default (see .input; a bare .btn
-       trigger would render 2.25rem = 36px, 4px below its input siblings) */
-    height: 2.5rem;
+    /* the field standard for the unsized default (see .input): the ladder's
+       md step — identical to what a bare .btn renders, so no override is
+       needed beyond pinning it explicitly against .btn base drift */
+    height: 2.25rem;
   }
 
   .combobox-value {

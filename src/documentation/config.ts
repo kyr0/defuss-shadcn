@@ -2,6 +2,7 @@ import remarkFrontmatter from 'remark-frontmatter';
 import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
 import type { SsgConfig } from 'defuss-ssg';
 import { docsPlugins } from './lib/plugins.js';
+import { remarkDocExamples } from './lib/mdx-example.js';
 
 export default {
   pages: 'pages',
@@ -20,6 +21,9 @@ export default {
   remarkPlugins: [
     [remarkFrontmatter, ['yaml', 'toml']],
     [remarkMdxFrontmatter, { name: 'meta' }],
+    // canonical executable-example fences (```… example → CodeExample;
+    // ```states → StatesTable) — the ONE example rendering mechanism
+    remarkDocExamples,
   ],
   rehypePlugins: [],
 } satisfies SsgConfig;

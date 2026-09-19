@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "name": "input",
+  "states": {
+    "value": {
+      "type": "string",
+      "default": "Hello world",
+      "target": { "kind": "root" },
+      "mutation": { "kind": "property", "name": "value" },
+      "observation": { "kind": "property", "name": "value" },
+      "editor": { "component": "text" }
+    },
+    "disabled": {
+      "type": "boolean",
+      "default": false,
+      "target": { "kind": "root" },
+      "mutation": { "kind": "property", "name": "disabled" },
+      "observation": { "kind": "property", "name": "disabled" },
+      "editor": { "component": "checkbox" }
+    },
+    "readonly": {
+      "type": "boolean",
+      "default": false,
+      "target": { "kind": "root" },
+      "mutation": { "kind": "attribute", "name": "readonly" },
+      "observation": { "kind": "attribute", "name": "readonly" },
+      "editor": { "component": "checkbox" }
+    },
+    "required": {
+      "type": "boolean",
+      "default": false,
+      "target": { "kind": "root" },
+      "mutation": { "kind": "attribute", "name": "required" },
+      "observation": { "kind": "attribute", "name": "required" },
+      "editor": { "component": "checkbox" }
+    },
+    "invalid": {
+      "type": "boolean",
+      "default": false,
+      "target": { "kind": "root" },
+      "mutation": { "kind": "attribute", "name": "aria-invalid" },
+      "observation": { "kind": "attribute", "name": "aria-invalid" },
+      "editor": { "component": "checkbox" }
+    },
+    "type": {
+      "type": "enum",
+      "values": ["text", "email", "password", "search", "number"],
+      "default": "text",
+      "target": { "kind": "root" },
+      "mutation": { "kind": "attribute", "name": "type" },
+      "observation": { "kind": "attribute", "name": "type" },
+      "editor": { "component": "select" }
+    },
+    "size": {
+      "type": "enum",
+      "values": ["xs", "sm", "md", "lg", "xl"],
+      "default": "md",
+      "target": { "kind": "root" },
+      "mutation": { "kind": "attribute", "name": "data-size" },
+      "observation": { "kind": "attribute", "name": "data-size" },
+      "editor": { "component": "select" }
+    }
+  },
+  "actions": {
+    "focus": {
+      "operation": { "kind": "method", "name": "focus" }
+    },
+    "blur": {
+      "operation": { "kind": "method", "name": "blur" }
+    }
+  }
+}

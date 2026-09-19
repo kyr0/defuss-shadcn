@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!--CE_STYLES-->
+    <style data-ce-chrome>
+      /* sandbox chrome: the preview needs breathing room — same rhythm as the
+         host's .preview stage (layout.css: padding 2.5rem 1.5rem) so examples
+         never touch the frame edge; token surface keeps dark mode correct.
+         flow-root: child margins can't collapse through the body, so the
+         bridge's content-height measurement stays exact and stable. */
+      body {
+        display: flow-root;
+        margin: 2.5rem 1.5rem;
+        background: var(--background);
+        color: var(--foreground);
+      }
+    </style>
+  </head>
+  <body>
+    <!--CE_SOURCE-->
+    <script id="ce-bootstrap" data-ce-chrome>
+      globalThis.__CE_CH = <!--CE_CH-->;
+      globalThis.__CE_SCHEMA = <!--CE_SCHEMA-->;
+    </script>
+    <!--CE_BRIDGE-->
+  </body>
+</html>

@@ -53,6 +53,7 @@ defuss-shadcn/
 │   │       ├── sizing.css                     ← opt-in numeric scale (w-4 = 4 base units, --size-* aliases, density)
 │   │       ├── layout.css                     ← opt-in layout surface (flex, grid, stack, container, query, overflow)
 │   │       └── accessibility.css              ← opt-in screen-reader utilities (.sr-only / .not-sr-only)
+│   ├── schemas/                       ← published machine contracts (from src/components/*/*.schema.json; manifest.json lists them)
 │   ├── components/                    ← self-contained component folders
 │   │   ├── all.css / all.js          ← generated single-file bundle (scripts/bundle.ts; + .min twins & maps from minify.ts)
 │   │   └── {name}/
@@ -71,16 +72,20 @@ defuss-shadcn/
 │   │   ├── nav.ts                     ← the sidebar NAV data (single source for nav, prev/next, search index)
 │   │   ├── arch-md.ts                 ← ARCH.md → .arch-prose renderer (shared by component + verify gate)
 │   │   ├── plugins.ts                 ← SSG plugins: doctype, static TOC injection, search-index generation
+│   │   ├── mdx-example.ts             ← remark plugin: ```html example fences → <CodeExample>, ```states fences → contract table
 │   │   └── components/*.tsx           ← the docs design system: DocPage, SiteHeader, SiteNav, PageHeader,
-│   │                                     SkillPanel, Example(+Label/Hint/Code), Demo(+DemoCode), SourceFiles
-│   │                                     (+SourceNote), StatesSection, ChangelogEntries, StatsClaim/Cards,
-│   │                                     PrevNext, SiteFooter, ArchBody, PageOverlay — static, no hydration
+│   │                                     SkillPanel, CodeExample (executable example, SSR shell — no dual source),
+│   │                                     Example(+Label/Hint/Code), Demo(+DemoCode), SourceFiles (+SourceNote),
+│   │                                     StatesSection, ChangelogEntries, StatsClaim/Cards, PrevNext, SiteFooter,
+│   │                                     ArchBody, PageOverlay — static, no hydration
 │   ├── runtime/*.ts                   ← client JS (tsc → public/js): layout.ts (pre-paint dark/wide, SPA router,
 │   │                                     palette, nav persistence, TOC tracking), site.ts (copy, code collapse,
-│   │                                     viewport toolbar, tabs, swatches), themes.ts, theme-switcher.ts,
-│   │                                     shiki-highlight.ts
+│   │                                     viewport toolbar, tabs, swatches), code-example.ts (CodeExample host:
+│   │                                     srcdoc sandbox, schema-driven editors, state mirror), themes.ts,
+│   │                                     theme-switcher.ts, shiki-highlight.ts
 │   ├── data/changelog.json            ← release entries (deploy.sh writes via scripts/changelog-entry.ts)
 │   └── public/                        ← copied verbatim to dist/documentation/: css/ fonts/ images/ videos/
+│                                         templates/ (sandbox-doc.html + sandbox-bridge.js — CodeExample sandbox)
 │
 ├── .github/
 │   ├── instructions/                  ← auto-attached instruction files for Copilot
@@ -109,12 +114,15 @@ defuss-shadcn/
 │   ├── lib/audit.ts                   ← undefined-utility audit (used by verify)
 │   ├── lib/links.ts                   ← markdown link checker (verify markdown link integrity gate; pure)
 │   ├── lib/minify.ts                  ← derived-artifact recognition (verify 1:1 allow-list + min-twin gate; pure)
+│   ├── lib/schema.ts                  ← component schema contract: validator + ## States table parser + CodeExample rules (pure)
 │   ├── push.sh                        ← commit + push dev → main (non-release)
 │   ├── deploy.sh                      ← release: version bump, changelog, tag, GitHub release
 │   └── purge-cdn.ts                   ← purge jsDelivr @latest cache for all dist assets (run after deploy)
 ├── tests/                             ← UI tests (Vitest browser mode + Playwright)
 │   ├── helpers.ts                     ← loads real doc pages in a same-origin iframe
 │   ├── ui.test.ts                     ← end-to-end tests of the actual site UI
+│   ├── component-schema.test.ts       ← schema contract tests (validator, States parity, fence rules, real files)
+│   ├── code-example.test.ts           ← CodeExample browser tests (sandbox round-trips, editors, isolation)
 │   └── e2e/                           ← per-component smoke tests (plain Playwright)
 │       ├── run.ts                    ← `bun run e2e` runner: every *.e2e.ts file
 │       ├── server.ts                 ← Bun static server exposing /dist and /tests/e2e
@@ -492,6 +500,59 @@ contract grows; never re-declare the globals inside a component file.
 `scripts/verify.ts` checks all markers for every new JS component (hard fail).
 Legacy components in its `STATE_API_LEGACY` list warn only until migrated —
 remove a name from the list in the same commit that migrates the component.
+
+### Component schemas (machine contracts, REQUIRED)
+
+Every documented component owns a `src/components/{name}/{name}.schema.json` —
+the machine-readable twin of its State API: `states` (name → type
+`string|number|boolean|enum`, optional `values`/`default`, how to `mutate` and
+`observe` the DOM, which `target`, which `editor` hint) and `actions` (named
+operations: a method call or event dispatch). The file is **derived from the
+runtime** (the `.ts` is authoritative when authoring it), then becomes the
+contract that keeps everything else honest.
+
+- **Zero runtime weight** — schemas live beside components but build.ts copies
+  them only into `dist/schemas/` (never into `all.js`/`.js`); the shipped
+  component `.js` files contain no schema bytes (`verify`'s `runtime schema-free`
+  gate). `dist/schemas/manifest.json` (sorted, written by build.ts) is the
+  discovery index; `schemas` is in verify's dist allow-list.
+- **The validator** is `scripts/lib/schema.ts` (`parseComponentSchema`, pure) —
+  pinned by `tests/component-schema.test.ts`. Every failure message names the
+  file + JSON path so an agent can repair it blind.
+- **Docs parity** — a page's `## States` section IS the contract table: it
+  carries a fenced ` ```states ` markdown table (columns `State`/`Type`/
+  `Values`/`Default`/`Description`) that `verify`'s `schema ↔ States docs` gate
+  compares row-for-row against the schema (missing/phantom states, type, values,
+  default mismatches all fail). The table must mirror the schema — never
+  loosen a schema just to pass.
+- **CodeExample** (`lib/components/code-example.tsx` + `runtime/code-example.ts`
+  + `public/templates/sandbox-*`) replaces every dual-source demo: the page
+  authors write a ` ```html example ` fence whose body is BOTH the shown source
+  and the executed source — one string, no `code=` prop to drift (the old
+  divergence bug is structurally impossible; `FORBIDDEN_CODE_EXAMPLE_PROPS` +
+  the `example fence rules` verify gate enforce it). The fence renders an SSR
+  card; the runtime boots a sandboxed iframe (`srcdoc`, `sandbox="allow-scripts"`,
+  per-example channel id) that loads the real token CSS + all.js + lucide, runs
+  the example verbatim, and bridges state both ways: the State tab's editors are
+  generated **exclusively** from the schema (editorFor in scripts/lib/schema.ts),
+  and observed DOM values (never defaults) mirror back onto
+  `data-state-values` — the assertable state contract. The bridge syncs on
+  `setTimeout`, never rAF (rAF freezes for off-screen iframes); text/number
+  editors sync on `keyup` with a 250 ms debounce. **The source is the single
+  truth — there is no state overlay.** Every mutation (panel edit, action,
+  preview typing) makes the bridge serialize the live DOM (state attrs +
+  reflected form values) back into the editor, and every rebuild materializes
+  from the editor's code — so code ⇄ render ⇄ panel stay in sync in all three
+  directions and a code edit is never stomped. The editor is only written when
+  it still holds exactly the bytes the running sandbox was built from (never
+  mid-typing or over an un-run edit). Frame height is the true content height
+  (body flow-root box + margins), never `documentElement.scrollHeight` (that is
+  max(content, viewport) — a +2px growth ratchet per sync).
+  Three-way sync is pinned e2e: `tests/e2e/code-example.e2e.ts`.
+- **Migration status**: `input` and `dialog` carry audited schemas; every other
+  documented component is listed by `verify`'s warn-only `component schema
+  coverage` ratchet until its schema lands (plan Phase 4 — audit the runtime,
+  don't guess from docs). A schema without its `## States` table fails hard.
 
 ### Theme radius consistency (REQUIRED)
 

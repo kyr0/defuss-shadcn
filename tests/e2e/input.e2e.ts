@@ -2,15 +2,16 @@ import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: input is CSS-only — verify the 40px control box geometry plus the
+ * Why: input is CSS-only — verify the control box geometry (unsized default =
+ * the ladder's md step, 36px) plus the
  * four native pseudo-states the sheet styles: disabled (0.5), readonly
  * (muted bg), aria-invalid (destructive border), focus (ring border).
  */
 await cssSmoke('input', [
   {
-    label: '.input is a 40px control with 12px inline padding, 14px text',
+    label: '.input is the md step by default (36px, 12px inline padding, 14px text)',
     selector: '#in-default',
-    css: { height: '40px', padding: '0px 12px', 'font-size': '14px', 'border-top-width': '1px' },
+    css: { height: '36px', padding: '0px 12px', 'font-size': '14px', 'border-top-width': '1px' },
   },
   {
     label: 'data-size="sm" shrinks to 32px/10px/13px',

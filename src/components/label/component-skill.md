@@ -35,10 +35,10 @@ only because of it.
 ```
 
 ### With required indicator
+The red star renders automatically whenever the adjacent control is `required`
+(`:has()` in the component CSS) — no span markup needed:
 ```html
-<label class="label" for="name">
-  Name <span aria-hidden="true" class="text-destructive">*</span>
-</label>
+<label class="label" for="name">Name</label>
 <input class="input" id="name" type="text" required>
 ```
 
@@ -98,7 +98,7 @@ The label auto-dims when the adjacent control is disabled — no `data-disabled`
 
 - **One value, written twice:** the label's `for` and the control's `id` must be the exact same string. A mismatch fails silently — the label renders and styles normally but no longer focuses the field or names it for assistive technology. When renaming a control's `id`, update every `for` that pointed at it.
 - Clicking the label focuses the associated input — native `<label>` behavior, and the practical proof the pairing is intact.
-- The required indicator `*` uses `aria-hidden="true"` since the `required` attribute on the input already conveys the requirement to assistive technology.
+- The required star is rendered by CSS (`:has(+ input[required])::after`) and is decorative — the native `required` attribute already conveys the requirement to assistive technology, so nothing is announced twice.
 - Do not use `<label>` without a `for` attribute or a nested input.
 - A `.field-description` next to the field is only visible proximity — add `aria-describedby` on the control pointing to the description's `id` so assistive tech announces it with the field.
 - In `forced-colors` mode, label text maps to system `LinkText` color.

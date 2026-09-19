@@ -73,6 +73,7 @@ export function DocPage({ meta, mainStyle, children }: DocPageProps) {
         <link rel="stylesheet" href="css/docs-theme.css" />
         <link rel="stylesheet" href="css/docs-utilities.css" />
         <link rel="stylesheet" href="css/layout.css" />
+        <link rel="stylesheet" href="css/code-example.css" />
         <link rel="stylesheet" href="../components/all.css" />
       </head>
       <body>
@@ -114,6 +115,9 @@ export function DocPage({ meta, mainStyle, children }: DocPageProps) {
         <SiteFooter />
         {overlays.length ? overlays : null}
         <script src="js/site.js" defer></script>
+        {/* CodeExample host: fetches the sandbox template/bridge + drives each
+            .code-example card (docs runtime, compiled from runtime/code-example.ts) */}
+        <script src="js/code-example.js" defer></script>
         <script type="module" src="js/shiki-highlight.js"></script>
         <script type="module" src="../components/all.js"></script>
         <script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script>

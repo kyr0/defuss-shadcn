@@ -2,15 +2,15 @@ import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: file-input is CSS-only — verify the 40px control frame and that the
+ * Why: file-input is CSS-only — verify the 36px (md-step) control frame and that the
  * ::file-selector-button pseudo-element gets the muted fill + divider the
  * sheet defines, plus disabled dimming.
  */
 await cssSmoke('file-input', [
   {
-    label: '.file-input is a 40px bordered control',
+    label: '.file-input is a 36px bordered control (md default)',
     selector: '#fi-default',
-    css: { height: '40px', 'border-top-width': '1px', 'font-size': '14px', padding: '0px', cursor: 'pointer' },
+    css: { height: '36px', 'border-top-width': '1px', 'font-size': '14px', padding: '0px', cursor: 'pointer' },
   },
   {
     label: '::file-selector-button is full-height, muted, right-divided',
@@ -20,8 +20,8 @@ await cssSmoke('file-input', [
         return { height: s.height, 'border-right-width': s.borderRightWidth, cursor: s.cursor };
       });
       // computed style resolves the author's `height: calc(100% + 2px)` to the
-      // 40px border-box (flush with the frame, no 1px gaps above/below)
-      assert.equal(btn.height, '40px', 'button fills the control height');
+      // 36px border-box (flush with the frame, no 1px gaps above/below)
+      assert.equal(btn.height, '36px', 'button fills the control height');
       assert.equal(btn['border-right-width'], '1px', 'divider between button and file name');
       assert.equal(btn.cursor, 'pointer');
     },
