@@ -1,8 +1,18 @@
 # Core Bundle Plan — `core.js` / `core.css` for the modularized path
 
-> Status: proposal (not implemented). Companion: [defuss-query-morph-integration.md](defuss-query-morph-integration.md)
-> (morph plan; its §2.1 "df$ is host-provided" is the premise this plan completes —
-> `core.js` **is** the df$ provider for hosts that don't load defuss themselves).
+> Status: **implemented** (2026-09-19; core.js landed earlier via
+> [defuss-query-morph-integration.md](defuss-query-morph-integration.md) §2.6; core.css +
+> stats + e2e + docs complete this revision).
+> **Divergence from §5:** the pair ships inside `dist/components/` (next to `all.*` +
+> `NOTICE.txt`), NOT in a `dist/core/` folder — one install folder, and the README/
+> Installation quick starts already referenced `components/core.js`; a folder move would
+> only churn every existing URL. `core.css` = concat of the four theme util sheets (fixed
+> order: tokens → sizing → layout → accessibility), min twin + map enforced by the
+> `minified artifacts` gate, orphan-gate allow-listed in BUNDLE_ARTIFACTS; measured into
+> `stats.json`'s `core` block (`measureCore` now carries the CSS sizes) and shown by the
+> Getting Started "Core runtime" card. `tests/e2e/core.e2e.ts` proves the path standalone
+> (no all.css/all.js on the page: tokens, .flex/.w-4/.sr-only, callable `df$` + morph,
+> badge + dialog init + State API). Companion: the morph plan's §2.1 premise, completed.
 >
 > **Idea:** today consumers pick one of two extremes — the fat `all.css`/`all.js`
 > bundle, or per-component files PLUS four separate theme stylesheets PLUS their own
