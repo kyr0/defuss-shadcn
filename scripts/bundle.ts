@@ -1,6 +1,8 @@
 #!/usr/bin/env bun
 import { mkdirSync, readdirSync, readFileSync, existsSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { provenanceNotice, provenancePointer } from './lib/provenance.ts';
+import { collectProvenance } from './lib/provenance-files.ts';
 
 /**
  * Why: doc pages (and CDN consumers who want everything) used to carry 68
@@ -41,6 +43,21 @@ const SRC_COMPONENTS = join(ROOT, 'src', 'components');
 const DIST_COMPONENTS = join(ROOT, 'dist', 'components');
 const TMP = join(ROOT, 'tmp');
 
+// per-release provenance (§6): the core artifacts embed defuss-morph +
+// defuss-query, so the MIT attribution ships INSIDE them — a pointer comment
+// (versions + LICENSE hashes) before the source-map line, and the full
+// notice as NOTICE.txt beside them.
+const PROVENANCE = collectProvenance(ROOT);
+const PROVENANCE_POINTER = provenancePointer(PROVENANCE);
+
+/** Insert the provenance pointer before the file's final sourceMappingURL line. */
+function stampProvenance(file: string): void {
+  const src = readFileSync(file, 'utf8');
+  const at = src.lastIndexOf('//# sourceMappingURL=');
+  if (at === -1) throw new Error(`bundle: ${file} lost its sourceMappingURL line`);
+  writeFileSync(file, `${src.slice(0, at).trimEnd()}\n${PROVENANCE_POINTER}\n${src.slice(at)}`);
+}
+
 const names = readdirSync(SRC_COMPONENTS, { withFileTypes: true })
   .filter((d) => d.isDirectory())
   .map((d) => d.name)
@@ -73,6 +90,7 @@ if (!core.success) {
   process.exit(1);
 }
 linkSourceMap(join(DIST_COMPONENTS, 'core.js'), 'core.js.map');
+stampProvenance(join(DIST_COMPONENTS, 'core.js')); // §6 provenance pointer
 
 // 2. JS bundle: core payload first (its module body installs df$ +
 //    df$.shadcn.shared before any component evaluates — §2.6 step 4), then
@@ -104,6 +122,10 @@ if (!result.success) {
 // Bun.build writes all.js.map but only stamps a debugId comment — link the map
 // explicitly (must be the LAST line of the file)
 linkSourceMap(join(DIST_COMPONENTS, 'all.js'), 'all.js.map');
+stampProvenance(join(DIST_COMPONENTS, 'all.js')); // §6 provenance pointer
+
+// NOTICE.txt: the human-readable per-release provenance notice (§6)
+writeFileSync(join(DIST_COMPONENTS, 'NOTICE.txt'), provenanceNotice(PROVENANCE));
 
 // 2. CSS bundle: every component stylesheet, alphabetical, with a header per
 //    section so the readable file stays navigable.

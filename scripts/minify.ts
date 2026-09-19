@@ -1,5 +1,7 @@
 #!/usr/bin/env bun
 import { readFileSync, writeFileSync } from 'node:fs';
+import { provenancePointer } from './lib/provenance.ts';
+import { collectProvenance } from './lib/provenance-files.ts';
 import { join, relative } from 'node:path';
 import { minifySync } from 'oxc-minify';
 import { transform } from 'lightningcss';
@@ -29,6 +31,11 @@ const COMPONENTS = join(ROOT, 'dist', 'components');
 // Derived twins are skipped so re-running `make minify` stays idempotent
 // (never re-minifies a .min.js into a .min.min.js).
 const jsFiles = walk(COMPONENTS, ['.js']).filter((f) => !isDerivedArtifact(f));
+// §6 provenance: oxc drops comments, so the min twins of the two RUNTIME
+// bundles (they embed defuss-morph + defuss-query) get the pointer re-stamped
+// after minification — every shipped copy of the runtime carries its notice.
+const RUNTIME_MIN = new Set([join(COMPONENTS, 'core.min.js'), join(COMPONENTS, 'all.min.js')]);
+const PROVENANCE_POINTER = provenancePointer(collectProvenance(ROOT));
 for (const file of jsFiles) {
   const source = readFileSync(file, 'utf8');
   const minName = file.slice(file.lastIndexOf('/') + 1, -3);
@@ -48,7 +55,8 @@ for (const file of jsFiles) {
   const map = { ...result.map, file: `${minName}.min.js`, sources: [`${minName}.js`] };
   // the comment must START a line — oxc's codegen may omit the trailing newline
   const code = result.code.endsWith('\n') ? result.code : `${result.code}\n`;
-  writeFileSync(minPath, `${code}//# sourceMappingURL=${minName}.min.js.map\n`);
+  const provenance = RUNTIME_MIN.has(minPath) ? `${PROVENANCE_POINTER}\n` : '';
+  writeFileSync(minPath, `${code}${provenance}//# sourceMappingURL=${minName}.min.js.map\n`);
   writeFileSync(`${minPath}.map`, JSON.stringify(map));
 }
 

@@ -6,6 +6,8 @@ import { parseHTML } from 'linkedom';
 import { auditUtilities, walk } from './lib/audit.ts';
 import { componentFingerprints, declaredStates } from './lib/inputs.ts';
 import { BUNDLE_ARTIFACTS, isDerivedArtifact, minifyArtifactProblems } from './lib/minify.ts';
+import { provenanceNotice, provenancePointer } from './lib/provenance.ts';
+import { collectProvenance } from './lib/provenance-files.ts';
 import { STATS_FILE, statsClaimProblems, type StatsDoc } from './lib/stats.ts';
 import { buildStatsFileText } from './lib/stats-files.ts';
 import { mirrorHashes } from './lib/mirror.ts';
@@ -1223,6 +1225,45 @@ check(
       'DOM boundary (migrated components)',
       problems,
       'route the write through the core df$ runtime — .morph()/.html() for content, .append()/.before()/.after() for moves/mounts, factory df$("<markup>") for static markup (plans/defuss-query-morph-integration.md §5.1; guide: DOM Querying & Morphing)',
+    );
+  }
+
+  // 28c. runtime provenance (§6): core.js/all.js embed defuss-morph +
+  // defuss-query, so EVERY shipped copy (readable + minified twins) must carry
+  // the per-release pointer (version + pinned versions + LICENSE hashes), and
+  // NOTICE.txt must equal a fresh render. Like stats.json freshness: the
+  // provenance of a release is data, and data goes stale silently.
+  {
+    const problems: string[] = [];
+    let expectedPointer: string | null = null;
+    let expectedNotice: string | null = null;
+    try {
+      const input = collectProvenance(ROOT);
+      expectedPointer = provenancePointer(input);
+      expectedNotice = provenanceNotice(input);
+    } catch (e) {
+      problems.push(`provenance unresolvable: ${(e as Error).message} — run \`bun install\``);
+    }
+    if (expectedPointer) {
+      for (const artifact of ['core.js', 'core.min.js', 'all.js', 'all.min.js']) {
+        const f = join(DIST, 'components', artifact); // the SHIPPED copies carry the notice
+        if (!existsSync(f)) {
+          problems.push(`dist/components/${artifact} missing — rebuild`);
+        } else if (!readFileSync(f, 'utf8').includes(expectedPointer)) {
+          problems.push(
+            `dist/components/${artifact} lacks the current provenance pointer (embedded upstreams changed, or the artifact predates the last bundle/minify) — rebuild`,
+          );
+        }
+      }
+      const notice = join(DIST, 'components/NOTICE.txt');
+      if (!existsSync(notice)) problems.push('dist/components/NOTICE.txt missing — rebuild');
+      else if (expectedNotice && readFileSync(notice, 'utf8') !== expectedNotice)
+        problems.push('dist/components/NOTICE.txt is stale vs. installed upstreams — rebuild');
+    }
+    check(
+      'runtime provenance',
+      problems,
+      'run `bun run build` — bundle.ts stamps the pointer into core/all (+ min twins) and writes NOTICE.txt (plans/defuss-query-morph-integration.md §6)',
     );
   }
 
