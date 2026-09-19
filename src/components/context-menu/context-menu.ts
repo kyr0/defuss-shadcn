@@ -3,11 +3,11 @@
 // API bound per menu popover, so agents/tests can open it without a real
 // right-click (AGENTS.md "State API").
 
-// Shared preamble (AGENTS.md "State API"); build.ts inlines it into the
-// shipped .js, so this import never appears in dist/.
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 import { defussGlobals, safeShowPopover } from '../../shared/state-api.js';
 
-const _defussShadcn = defussGlobals();
+const df$ = defussGlobals();
 
 const contextMenuStates = ['default', 'open'];
 
@@ -55,8 +55,8 @@ export const contextMenuApi = {
   },
 };
 
-_defussShadcn.contextMenuApi = contextMenuApi;
-_defussShadcn.contextMenuStates = contextMenuStates;
+df$.contextMenuApi = contextMenuApi;
+df$.contextMenuStates = contextMenuStates;
 
 /* One pending open across all triggers: { menu, x, y } captured on the
    contextmenu event, consumed on the right-button pointerup. */

@@ -57,7 +57,7 @@ document.querySelector('#theme-color').api.getState(); // { name: 'default', con
 ```
 
 The api is bound per wrapper; the registry global is
-`_defussShadcn.colorPickerApi` / `_defussShadcn.colorPickerStates` (camelCase).
+`df$.shadcn.colorPickerApi` / `df$.shadcn.colorPickerStates` (camelCase).
 
 ## Notes
 

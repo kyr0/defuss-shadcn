@@ -4,11 +4,11 @@
 // chrome — the browser draws everything once the video is visible.
 // State API per AGENTS.md: 'default' (poster) | 'playing' (video).
 
-// Shared preamble (AGENTS.md "State API"); build.ts inlines it into the
-// shipped .js, so this import never appears in dist/.
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 import { defussGlobals } from '../../shared/state-api.js';
 
-const _defussShadcn = defussGlobals();
+const df$ = defussGlobals();
 
 const productShowcaseStates = ['default', 'playing'];
 
@@ -62,8 +62,8 @@ export const productShowcaseApi = {
   },
 };
 
-_defussShadcn.productShowcaseApi = productShowcaseApi;
-_defussShadcn.productShowcaseStates = productShowcaseStates;
+df$.productShowcaseApi = productShowcaseApi;
+df$.productShowcaseStates = productShowcaseStates;
 
 function init() {
   document.querySelectorAll('.mk-showcase:not([data-init])').forEach((showcase) => {

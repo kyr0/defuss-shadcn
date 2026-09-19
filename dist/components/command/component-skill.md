@@ -107,7 +107,7 @@ document.querySelector('#cmd').api.getState(); // { name: 'open', config: {} }
 ```
 
 The api is bound per palette dialog; the registry global is
-`_defussShadcn.commandApi` / `_defussShadcn.commandStates`.
+`df$.shadcn.commandApi` / `df$.shadcn.commandStates`.
 
 ## Notes
 

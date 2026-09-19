@@ -186,11 +186,11 @@ try {
 
   await check('state API: registry globals expose api + declared states (camelCase)', async () => {
     const reg = await page.evaluate(() => ({
-      hasApi: typeof globalThis._defussShadcn?.treeViewApi?.setState === 'function',
-      states: globalThis._defussShadcn?.treeViewStates,
+      hasApi: typeof globalThis.df$?.shadcn?.treeViewApi?.setState === 'function',
+      states: globalThis.df$?.shadcn?.treeViewStates,
       dollarWorks: typeof globalThis.$ === 'function' && !!globalThis.$('#tv-src'),
     }));
-    assert.ok(reg.hasApi, '_defussShadcn.treeViewApi.setState missing');
+    assert.ok(reg.hasApi, 'df$.treeViewApi.setState missing');
     assert.deepEqual(reg.states, ['default', 'expanded']);
     assert.ok(reg.dollarWorks, 'globalThis.$ query alias missing');
   });

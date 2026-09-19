@@ -93,11 +93,11 @@ try {
 
   await check('state API: registry globals expose api + declared states (camelCase)', async () => {
     const reg = await page.evaluate(() => ({
-      hasApi: typeof globalThis._defussShadcn?.colorPickerApi?.setState === 'function',
-      states: globalThis._defussShadcn?.colorPickerStates,
+      hasApi: typeof globalThis.df$?.shadcn?.colorPickerApi?.setState === 'function',
+      states: globalThis.df$?.shadcn?.colorPickerStates,
       dollarWorks: typeof globalThis.$ === 'function' && !!globalThis.$('#cp-default'),
     }));
-    assert.ok(reg.hasApi, '_defussShadcn.colorPickerApi.setState missing');
+    assert.ok(reg.hasApi, 'df$.colorPickerApi.setState missing');
     assert.deepEqual(reg.states, ['default']);
     assert.ok(reg.dollarWorks, 'globalThis.$ query alias missing');
   });

@@ -174,7 +174,7 @@ document.querySelector('#cb-framework-popover').api.setState('open');
 document.querySelector('#cb-framework-popover').api.getState(); // { name: 'open', config: { value: '' } }
 ```
 
-The registry global is `_defussShadcn.comboboxApi` / `_defussShadcn.comboboxStates`.
+The registry global is `df$.shadcn.comboboxApi` / `df$.shadcn.comboboxStates`.
 
 ## Notes
 

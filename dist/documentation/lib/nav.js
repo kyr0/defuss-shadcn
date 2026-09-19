@@ -25,6 +25,7 @@ export const NAV = [
             { label: 'Dark Mode', href: 'dark-mode.html' },
             { label: 'Data Attribute API', href: 'data-attribute-api.html' },
             { label: 'State API', href: 'state-api.html' },
+            { label: 'DOM Querying & Morphing', href: 'dom-querying.html' },
             { label: 'Verified Agentic Engineering (VAE)', href: 'architecture.html' },
             { label: 'Cascade Layers', href: 'cascade-layers.html' },
             { label: 'JavaScript Modules', href: 'es-modules.html' },

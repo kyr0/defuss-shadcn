@@ -3,11 +3,11 @@
 // CSS anchor positioning, and scroll dismiss, plus the named-state API
 // so agents/tests can drive visibility by name (AGENTS.md "State API").
 
-// Shared preamble (AGENTS.md "State API"); build.ts inlines it into the
-// shipped .js, so this import never appears in dist/.
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 import { defussGlobals, safeShowPopover } from '../../shared/state-api.js';
 
-const _defussShadcn = defussGlobals();
+const df$ = defussGlobals();
 
 const tooltipStates = ['default', 'visible'];
 
@@ -45,8 +45,8 @@ export const tooltipApi = {
   },
 };
 
-_defussShadcn.tooltipApi = tooltipApi;
-_defussShadcn.tooltipStates = tooltipStates;
+df$.tooltipApi = tooltipApi;
+df$.tooltipStates = tooltipStates;
 
 const DELAY_DEFAULT = 700;      // ms before first tooltip opens
 const CLOSE_DELAY_DEFAULT = 0;  // ms before tooltip closes

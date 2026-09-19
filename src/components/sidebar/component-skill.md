@@ -133,7 +133,7 @@ document.querySelector('#my-sidebar').api.getState(); // { name: 'collapsed', co
 ```
 
 Trigger clicks and Cmd/Ctrl+B keep `getState()` honest automatically.
-The registry global is `_defussShadcn.sidebarApi` / `_defussShadcn.sidebarStates`.
+The registry global is `df$.shadcn.sidebarApi` / `df$.shadcn.sidebarStates`.
 
 ## Notes
 

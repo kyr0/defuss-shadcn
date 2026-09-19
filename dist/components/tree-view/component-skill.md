@@ -61,7 +61,7 @@ document.querySelector('#my-branch').api.setState('expanded');
 document.querySelector('#my-branch').api.getState(); // { name: 'expanded', config: {} }
 ```
 
-The registry global is `_defussShadcn.treeViewApi` / `_defussShadcn.treeViewStates` (camelCase).
+The registry global is `df$.shadcn.treeViewApi` / `df$.shadcn.treeViewStates` (camelCase).
 
 ## Density
 

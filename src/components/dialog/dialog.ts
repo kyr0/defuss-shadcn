@@ -2,11 +2,11 @@
 // Wires [data-dialog-trigger] buttons to <dialog> elements, plus the
 // named-state API so agents/tests can drive states by name (AGENTS.md "State API").
 
-// Shared preamble (AGENTS.md "State API"); build.ts inlines it into the
-// shipped .js, so this import never appears in dist/.
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 import { defussGlobals } from '../../shared/state-api.js';
 
-const _defussShadcn = defussGlobals();
+const df$ = defussGlobals();
 
 const dialogStates = ['default', 'open'];
 
@@ -42,8 +42,8 @@ export const dialogApi = {
   },
 };
 
-_defussShadcn.dialogApi = dialogApi;
-_defussShadcn.dialogStates = dialogStates;
+df$.dialogApi = dialogApi;
+df$.dialogStates = dialogStates;
 
 function init() {
   document.querySelectorAll('[data-dialog-trigger]:not([data-init])').forEach((trigger) => {

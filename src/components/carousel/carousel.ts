@@ -5,11 +5,11 @@
 // showing, so 'default' carries an optional { index } preset (0 = first) and
 // getState().config.index reports the live slide index.
 
-// Shared preamble (AGENTS.md "State API"); build.ts inlines it into the
-// shipped .js, so this import never appears in dist/.
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 import { defussGlobals } from '../../shared/state-api.js';
 
-const _defussShadcn = defussGlobals();
+const df$ = defussGlobals();
 
 const carouselStates = ['default'];
 
@@ -42,8 +42,8 @@ export const carouselApi = {
   },
 };
 
-_defussShadcn.carouselApi = carouselApi;
-_defussShadcn.carouselStates = carouselStates;
+df$.carouselApi = carouselApi;
+df$.carouselStates = carouselStates;
 
 function init() {
 document.querySelectorAll('.carousel:not([data-init])').forEach((carousel) => {

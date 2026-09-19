@@ -159,11 +159,11 @@ try {
 
   await check('state API: registry globals expose api + declared states', async () => {
     const reg = await page.evaluate(() => ({
-      hasApi: typeof globalThis._defussShadcn?.tooltipApi?.setState === 'function',
-      states: globalThis._defussShadcn?.tooltipStates,
+      hasApi: typeof globalThis.df$?.shadcn?.tooltipApi?.setState === 'function',
+      states: globalThis.df$?.shadcn?.tooltipStates,
       dollarWorks: typeof globalThis.$ === 'function' && !!globalThis.$('#tip-default'),
     }));
-    assert.ok(reg.hasApi, '_defussShadcn.tooltipApi.setState missing');
+    assert.ok(reg.hasApi, 'df$.tooltipApi.setState missing');
     assert.deepEqual(reg.states, ['default', 'visible']);
     assert.ok(reg.dollarWorks, 'globalThis.$ query alias missing');
   });

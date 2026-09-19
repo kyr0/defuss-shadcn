@@ -1,7 +1,7 @@
 ---
 name: Toast
 type: MOL
-why: Transient notification via the Popover API plus the _defussShadcn.toast factory — auto-dismisses.
+why: Transient notification via the Popover API plus the df$.shadcn.toast factory — auto-dismisses.
 when: Post-action feedback that must not interrupt the user.
 where: dist/components/toast/toast.css + dist/components/toast/toast.js
 supportedStates: default
@@ -149,7 +149,7 @@ Set `data-variant` on the `.toast` element.
 
 The api is bound to the **region container** (`#toast-container`). Its
 observable state is which toasts are visible. Declared states: `default`
-(dismisses every visible toast — the same path as `_defussShadcn.toast.dismiss()`).
+(dismisses every visible toast — the same path as `df$.shadcn.toast.dismiss()`).
 `getState().config.count` reports the live number of visible toasts.
 
 ```js
@@ -157,12 +157,16 @@ document.querySelector('#toast-container').api.setState('default');
 document.querySelector('#toast-container').api.getState(); // { name: 'default', config: { count: 0 } }
 ```
 
-The registry global is `_defussShadcn.toastApi` / `_defussShadcn.toastStates`.
+The registry global is `df$.shadcn.toastApi` / `df$.shadcn.toastStates`.
 
 ## Notes
 
 - The toast container should be a direct child of `<body>`
 - Toasts use `popover="manual"` so they don't auto-dismiss on outside click
+- Lifecycle runs through the core `df$` runtime (see the "DOM Querying &
+  Morphing" guide): toasts mount via `df$(container).append(el)` and dismiss
+  via `df$(el).remove()` after the exit animation — exact operations that
+  keep node identity and the container's delegated listeners intact
 - Because `popover="manual"` renders each toast in the top layer (outside the
   container's flex flow), CSS pins each toast to its container's corner and the
   component JS sets a `--toast-stack` offset per toast — order stays newest-on-top

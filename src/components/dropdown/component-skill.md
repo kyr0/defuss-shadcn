@@ -174,7 +174,7 @@ document.querySelector('#my-menu').api.getState(); // { name: 'open', config: {}
 ```
 
 The api is bound per menu element; the registry global is
-`_defussShadcn.dropdownApi` / `_defussShadcn.dropdownStates`.
+`df$.shadcn.dropdownApi` / `df$.shadcn.dropdownStates`.
 
 ## Notes
 

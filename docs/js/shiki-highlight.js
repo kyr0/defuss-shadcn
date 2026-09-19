@@ -1,7 +1,18 @@
-// Single-namespace globals (AGENTS.md "No window globals"): this file's
-// globals live under globalThis._defussShadcn — never on window.
-globalThis._defussShadcn = globalThis._defussShadcn || {};
-const docs = (globalThis._defussShadcn.docs = globalThis._defussShadcn.docs || {});
+// Single-namespace globals (AGENTS.md "No window globals"): docs data
+// lives under df$.shadcn.docs — never on window. This module runs BEFORE
+// all.js installs df$ (document order), so `docs` stages locally and
+// merges into the live namespace on DOMContentLoaded.
+var docs = {};
+document.addEventListener('DOMContentLoaded', function () {
+    var ns = globalThis.df$ && globalThis.df$.shadcn;
+    if (!ns)
+        return;
+    var live = (ns.docs = ns.docs || {});
+    for (var k in docs)
+        if (!(k in live))
+            live[k] = docs[k];
+    docs = live;
+});
 // -- shiki-highlight.js ----------------------------------------
 // Doc-site syntax highlighting via Shiki CDN.
 // Loaded as <script type="module"> — highlights all <pre><code> blocks.
@@ -61,9 +72,13 @@ async function highlightAll() {
 highlightAll();
 // Expose globally for spec modal and SPA re-init
 docs.__shikiHighlightAll = highlightAll;
-// Re-highlight after SPA navigation
-if (docs.onPageReady) {
-    docs.onPageReady(function () {
-        highlightAll();
-    });
-}
+// Re-highlight after SPA navigation. onPageReady joins the live namespace
+// at DOMContentLoaded (this module runs before all.js installs df$), so
+// the registration waits for it.
+document.addEventListener('DOMContentLoaded', function () {
+    if (docs.onPageReady) {
+        docs.onPageReady(function () {
+            highlightAll();
+        });
+    }
+});

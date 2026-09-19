@@ -54,7 +54,7 @@ document.querySelector('#my-alert').api.getState(); // { name: 'open', config: {
 ```
 
 The api is bound per dialog; the registry global is
-`_defussShadcn.alertDialogApi` / `_defussShadcn.alertDialogStates` (camelCase).
+`df$.shadcn.alertDialogApi` / `df$.shadcn.alertDialogStates` (camelCase).
 
 
 ## Density

@@ -11,12 +11,20 @@ import { join } from 'node:path';
  * bundle includes on every doc page.
  *
  * JS: bundled from the src/*.ts modules with Bun.build (NOT string
- * concatenation — every component module redeclares `const _defussShadcn`,
+ * concatenation — every component module redeclares `const df$`,
  * `function init()`, etc., which only stays valid inside real module scopes;
- * bundling from src/ also keeps one shared copy of state-api.ts instead of 27
- * inlined ones). The readable all.js + all.js.map maps back to the .ts
- * sources; minify.ts then derives all.min.js + all.min.js.map like for any
- * other dist/components/*.js.
+ * bundling from src/ also keeps one shared copy of the shared layer instead
+ * of one per component). The readable all.js + all.js.map maps back to the
+ * .ts sources; minify.ts then derives all.min.js + all.min.js.map like for
+ * any other dist/components/*.js.
+ *
+ * core.js (plans/defuss-query-morph-integration.md §2.3/§2.6): the same inputs as
+ * all.js minus the components — one defuss-morph + one defuss-query + the
+ * defuss-shadcn-shared layer behind the guarded bootstrap of src/core/
+ * index.ts. all.js embeds the SAME core payload first (its entry imports
+ * src/core/index.ts before any component), so "all alone" and "core +
+ * selected components" run byte-identical runtime code; a second copy never
+ * loads (the bootstrap rejects an existing df$).
  *
  * CSS: concatenation is safe because every component stylesheet lives in
  * `@layer components` with flat-specificity, prefixed class selectors and
@@ -42,14 +50,41 @@ if (names.length === 0) {
   process.exit(1);
 }
 
-// 1. JS bundle: one side-effect import per interactive component (each module
+/** stamp the sourceMappingURL comment — must be the LAST line of the file */
+function linkSourceMap(file: string, mapName: string): void {
+  writeFileSync(file, `${readFileSync(file, 'utf8').trimEnd()}\n//# sourceMappingURL=${mapName}\n`);
+}
+
+// 1. core bundle: morph + query + shared behind the guarded bootstrap — the
+//    runtime every component binds to, shipped as its own artifact AND
+//    embedded first inside all.js below (§2.6 step 1 + step 3).
+const core = await Bun.build({
+  entrypoints: [join(ROOT, 'src', 'core', 'index.ts')],
+  outdir: DIST_COMPONENTS,
+  naming: 'core.js',
+  format: 'esm',
+  target: 'browser',
+  sourcemap: 'external',
+  minify: false,
+});
+if (!core.success) {
+  console.error('bundle: core Bun.build failed:');
+  for (const log of core.logs) console.error(`  ${log}`);
+  process.exit(1);
+}
+linkSourceMap(join(DIST_COMPONENTS, 'core.js'), 'core.js.map');
+
+// 2. JS bundle: core payload first (its module body installs df$ +
+//    df$.shadcn.shared before any component evaluates — §2.6 step 4), then
+//    one side-effect import per interactive component (each module
 //    self-initializes + registers its own MutationObserver on import).
 const jsNames = names.filter((n) => existsSync(join(SRC_COMPONENTS, n, `${n}.ts`)));
 mkdirSync(TMP, { recursive: true });
 const entry = join(TMP, 'all-entry.ts');
 writeFileSync(
   entry,
-  jsNames.map((n) => `import '../src/components/${n}/${n}.ts';`).join('\n') + '\n',
+  [`import '../src/core/index.ts';`, ...jsNames.map((n) => `import '../src/components/${n}/${n}.ts';`)].join('\n') +
+    '\n',
 );
 
 const result = await Bun.build({
@@ -68,11 +103,7 @@ if (!result.success) {
 }
 // Bun.build writes all.js.map but only stamps a debugId comment — link the map
 // explicitly (must be the LAST line of the file)
-const allJs = join(DIST_COMPONENTS, 'all.js');
-writeFileSync(
-  allJs,
-  `${readFileSync(allJs, 'utf8').trimEnd()}\n//# sourceMappingURL=all.js.map\n`,
-);
+linkSourceMap(join(DIST_COMPONENTS, 'all.js'), 'all.js.map');
 
 // 2. CSS bundle: every component stylesheet, alphabetical, with a header per
 //    section so the readable file stays navigable.
@@ -86,4 +117,6 @@ const css = names
   .join('\n\n');
 writeFileSync(join(DIST_COMPONENTS, 'all.css'), `${css}\n`);
 
-console.log(`bundle: ${jsNames.length} JS modules → all.js (+ map), ${names.length} CSS → all.css`);
+console.log(
+  `bundle: core.js (+ map, morph+query+shared), ${jsNames.length} component JS modules → all.js (+ map, core first), ${names.length} CSS → all.css`,
+);

@@ -162,7 +162,7 @@ document.querySelector('#gallery').api.getState(); // { name: 'default', config:
 ```
 
 The api is bound per carousel; the registry global is
-`_defussShadcn.carouselApi` / `_defussShadcn.carouselStates`.
+`df$.shadcn.carouselApi` / `df$.shadcn.carouselStates`.
 
 ## Notes
 

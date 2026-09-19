@@ -95,7 +95,7 @@ document.querySelector('#formatting').api.getState(); // { name: 'default', conf
 ```
 
 The api is bound per toolbar; the registry global is
-`_defussShadcn.toolbarApi` / `_defussShadcn.toolbarStates`.
+`df$.shadcn.toolbarApi` / `df$.shadcn.toolbarStates`.
 
 ## Notes
 

@@ -17,23 +17,24 @@
          values inside single-quoted attributes so each variant token appears
          literally in the fixture (verify fixture↔CSS parity). -->
     <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
-      <button class="btn" id="t-show" onclick="_defussShadcn.toast.show({ title: 'Event created', description: 'Monday, January 3rd at 6:00pm' })">Show</button>
-      <button class="btn" id="t-success" onclick='_defussShadcn.toast.show({ variant: "success", title: "Saved" })'>Success</button>
-      <button class="btn" id="t-warning" onclick='_defussShadcn.toast.show({ variant: "warning", title: "Heads up" })'>Warning</button>
-      <button class="btn" id="t-info" onclick='_defussShadcn.toast.show({ variant: "info", title: "FYI" })'>Info</button>
-      <button class="btn" id="t-destructive" onclick='_defussShadcn.toast.show({ variant: "destructive", title: "Something broke" })'>Destructive</button>
+      <button class="btn" id="t-show" onclick="df$.shadcn.toast.show({ title: 'Event created', description: 'Monday, January 3rd at 6:00pm' })">Show</button>
+      <button class="btn" id="t-success" onclick='df$.shadcn.toast.show({ variant: "success", title: "Saved" })'>Success</button>
+      <button class="btn" id="t-warning" onclick='df$.shadcn.toast.show({ variant: "warning", title: "Heads up" })'>Warning</button>
+      <button class="btn" id="t-info" onclick='df$.shadcn.toast.show({ variant: "info", title: "FYI" })'>Info</button>
+      <button class="btn" id="t-destructive" onclick='df$.shadcn.toast.show({ variant: "destructive", title: "Something broke" })'>Destructive</button>
     </div>
 
     <!-- size + density: forwarded as data attributes on the generated toast -->
     <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.75rem;">
-      <button class="btn" id="t-size-sm" onclick='_defussShadcn.toast.show({ title: "Size sm", size: "sm" })'>Size sm</button>
-      <button class="btn" id="t-size-md" onclick='_defussShadcn.toast.show({ title: "Size md", size: "md" })'>Size md</button>
-      <button class="btn" id="t-size-lg" onclick='_defussShadcn.toast.show({ title: "Size lg", size: "lg" })'>Size lg</button>
-      <button class="btn" id="t-density-compact" onclick='_defussShadcn.toast.show({ title: "Density compact", density: "compact" })'>Density compact</button>
-      <button class="btn" id="t-density-comfortable" onclick='_defussShadcn.toast.show({ title: "Density comfortable", density: "comfortable" })'>Density comfortable</button>
-      <button class="btn" id="t-density-spacious" onclick='_defussShadcn.toast.show({ title: "Density spacious", density: "spacious" })'>Density spacious</button>
+      <button class="btn" id="t-size-sm" onclick='df$.shadcn.toast.show({ title: "Size sm", size: "sm" })'>Size sm</button>
+      <button class="btn" id="t-size-md" onclick='df$.shadcn.toast.show({ title: "Size md", size: "md" })'>Size md</button>
+      <button class="btn" id="t-size-lg" onclick='df$.shadcn.toast.show({ title: "Size lg", size: "lg" })'>Size lg</button>
+      <button class="btn" id="t-density-compact" onclick='df$.shadcn.toast.show({ title: "Density compact", density: "compact" })'>Density compact</button>
+      <button class="btn" id="t-density-comfortable" onclick='df$.shadcn.toast.show({ title: "Density comfortable", density: "comfortable" })'>Density comfortable</button>
+      <button class="btn" id="t-density-spacious" onclick='df$.shadcn.toast.show({ title: "Density spacious", density: "spacious" })'>Density spacious</button>
     </div>
 
+    <script type="module" src="/dist/components/core.js"></script>
     <script type="module" src="/dist/components/toast/toast.js"></script>
   </body>
 </html>

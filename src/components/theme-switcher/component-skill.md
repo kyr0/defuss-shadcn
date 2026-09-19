@@ -99,7 +99,7 @@ Sizes follow the trigger's own `data-size` (the trigger is a `.btn`).
 ```js
 document.querySelector('#ts-menu').api.setState('open');
 // select a theme programmatically (link swap + storage + event):
-globalThis._defussShadcn.themeSwitcherApi.select(document.querySelector('#ts-menu'), 'claude');
+globalThis.df$.shadcn.themeSwitcherApi.select(document.querySelector('#ts-menu'), 'claude');
 ```
 
 ## Notes

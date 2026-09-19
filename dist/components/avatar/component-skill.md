@@ -75,7 +75,7 @@ document.querySelector('#my-avatar').api.setState('error');
 document.querySelector('#my-avatar').api.getState(); // { name: 'error', config: {} }
 ```
 
-The registry global is `_defussShadcn.avatarApi` / `_defussShadcn.avatarStates`.
+The registry global is `df$.shadcn.avatarApi` / `df$.shadcn.avatarStates`.
 
 ## Accessibility
 

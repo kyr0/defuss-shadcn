@@ -4,6 +4,10 @@
   "workspaces": {
     "": {
       "name": "defuss-shadcn",
+      "dependencies": {
+        "defuss-morph": "0.1.1",
+        "defuss-query": "0.1.0",
+      },
       "devDependencies": {
         "@types/bun": "^1.4.1",
         "@types/node": "^26.4.1",
@@ -491,7 +495,11 @@
 
     "defuss-express": ["defuss-express@0.3.5", "", { "dependencies": { "defuss-open-telemetry": "^0.1.0", "ultimate-express": "^2.0.17" } }, "sha512-juonuu2/TpSmDmSXQbeYMYMG2u5a+yTLtY1GzR3kBDzcLPkvS7ZkG3Jk+rfmRIJycQNsZ/1p0tdSALGlfFRpDw=="],
 
+    "defuss-morph": ["defuss-morph@0.1.1", "", {}, "sha512-mAIL1Mqbvlr6+AMJohM1FRRn8k3m6G+bn0L6G2K00ZKIcPxPidiiJdhJAEewyZDHNbElbP+txSTr9i4Z1pEbWg=="],
+
     "defuss-open-telemetry": ["defuss-open-telemetry@0.1.2", "", {}, "sha512-isAHlfF89nb7SBHv20i9moSCeHM08jjC59HVQPdDsYDhu6FmuzsxLx+JBVNYDtKo6NUll9nAn+Fxhy8N/T3XFg=="],
+
+    "defuss-query": ["defuss-query@0.1.0", "", { "peerDependencies": { "defuss-morph": "^0.1.1" } }, "sha512-siwnM1kgqj+y5zFNV1fNn2XFoUbQWoJkg93Hq1BZFL7YIwTvc/EduetIkvR4WepJQF/UmR6oRz5RaLY1zx2fNA=="],
 
     "defuss-rpc": ["defuss-rpc@1.6.2", "", { "dependencies": { "defuss-dson": "^1.1.2" }, "peerDependencies": { "astro": "*", "defuss-express": ">=0.1.0", "vite": ">=5.0.0" }, "optionalPeers": ["astro", "defuss-express", "vite"] }, "sha512-CvebS8rvue3RLDKvqFNXijVmr6eZfqE6Hah2wq+eyZVavimXyLMRI0F/7TxJRkVlecnRAODZ/M0dD8i2Rw1rxw=="],
 

@@ -3,11 +3,11 @@
 // the named-state API bound per dropdown popover, so agents/tests can open
 // and close it by name (AGENTS.md "State API").
 
-// Shared preamble (AGENTS.md "State API"); build.ts inlines it into the
-// shipped .js, so this import never appears in dist/.
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 import { defussGlobals, safeShowPopover } from '../../shared/state-api.js';
 
-const _defussShadcn = defussGlobals();
+const df$ = defussGlobals();
 
 const comboboxStates = ['default', 'open'];
 
@@ -48,8 +48,8 @@ export const comboboxApi = {
   },
 };
 
-_defussShadcn.comboboxApi = comboboxApi;
-_defussShadcn.comboboxStates = comboboxStates;
+df$.comboboxApi = comboboxApi;
+df$.comboboxStates = comboboxStates;
 
 function init() {
   document.querySelectorAll('.combobox:not([data-init])').forEach((wrapper) => {

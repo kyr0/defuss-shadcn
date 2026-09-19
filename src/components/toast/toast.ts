@@ -1,17 +1,20 @@
 // -- Toast -----------------------------------------------------
 // Programmatic toast notification API.
-// Exposes _defussShadcn.toast with show/success/warning/info/error/dismiss
+// Exposes df$.toast with show/success/warning/info/error/dismiss
 // (AGENTS.md "No window globals" — everything lives under the one namespace).
 // Named-state API (AGENTS.md "State API") bound to the region container:
 // its observable state is which toasts are visible, so 'default' clears the
 // region (same code path as toast.dismiss()) and getState() reports
 // the live toast count.
 
-// Shared preamble (AGENTS.md "State API"); build.ts inlines it into the
-// shipped .js, so this import never appears in dist/.
-import { defussGlobals } from '../../shared/state-api.js';
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
+// defussQuery: the callable runtime for toast mounting/lifecycle (§3 of the
+// morph integration plan — mount via query .append(), dismiss via .remove()).
+import { defussGlobals, defussQuery } from '../../shared/state-api.js';
 
-const _defussShadcn = defussGlobals();
+const df$ = defussGlobals();
+const dfDollar = defussQuery();
 
 const toastStates = ['default'];
 
@@ -39,14 +42,14 @@ export const toastApi = {
   getState(container) {
     return {
       name: container.dataset.stateName || 'default',
-      // live count — reflects _defussShadcn.toast.show() and auto-dismiss, not just setState
+      // live count — reflects df$.toast.show() and auto-dismiss, not just setState
       config: { ...container._stateConfig, count: container.querySelectorAll('.toast').length },
     };
   },
 };
 
-_defussShadcn.toastApi = toastApi;
-_defussShadcn.toastStates = toastStates;
+df$.toastApi = toastApi;
+df$.toastStates = toastStates;
 
 const DURATION = 4000;
 const MAX_VISIBLE = 3;
@@ -84,7 +87,9 @@ const toastDismiss = (el, callback) => {
   el.animate(
     [{ opacity: 1, transform: 'translateY(0)' }, { opacity: 0, transform: 'translateY(0.5rem)' }],
     { duration: 200, easing: 'ease', fill: 'forwards' }
-  ).finished.then(() => { try { el.hidePopover(); } catch {} el.remove(); stackToasts(container); if (callback) callback(); });
+  // dismissal through query's exact .remove() — AFTER the exit animation and
+  // popover teardown (§5.2: removal still disposes owned state first)
+  ).finished.then(() => { try { el.hidePopover(); } catch {} dfDollar(el).remove(); stackToasts(container); if (callback) callback(); });
 };
 
 const toastCreate = (options) => {
@@ -131,7 +136,9 @@ const toastCreate = (options) => {
     actionBtn.textContent = action.label;
     actionsDiv.appendChild(actionBtn); el.appendChild(actionsDiv);
   }
-  toastContainer.appendChild(el); el.showPopover();
+  // mount through query's exact .append() — the node itself is inserted
+  // (identity + delegated listeners kept, §3 toast row of the morph plan)
+  dfDollar(toastContainer).append(el); el.showPopover();
   stackToasts(toastContainer);
   toastCallbacks.set(el, { onDismiss, action });
   if (duration !== Infinity) setTimeout(() => { toastDismiss(el, onDismiss); }, duration);
@@ -167,7 +174,7 @@ function init() {
 init();
 new MutationObserver(init).observe(document.body, { childList: true, subtree: true });
 
-_defussShadcn.toast = {
+df$.toast = {
   show: toastCreate,
   success: (o) => toastCreate(Object.assign(typeof o === 'string' ? { title: o } : o, { variant: 'success' })),
   warning: (o) => toastCreate(Object.assign(typeof o === 'string' ? { title: o } : o, { variant: 'warning' })),

@@ -1,6 +1,6 @@
 # Core Bundle Plan — `core.js` / `core.css` for the modularized path
 
-> Status: proposal (not implemented). Companion: [defuss-morph-integration.md](defuss-morph-integration.md)
+> Status: proposal (not implemented). Companion: [defuss-query-morph-integration.md](defuss-query-morph-integration.md)
 > (morph plan; its §2.1 "df$ is host-provided" is the premise this plan completes —
 > `core.js` **is** the df$ provider for hosts that don't load defuss themselves).
 >

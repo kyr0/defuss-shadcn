@@ -9,10 +9,22 @@
 // No ES modules — works with file:// protocol.
 (function () {
     'use strict';
-    // Single-namespace globals (AGENTS.md "No window globals"): this file's
-    // globals live under globalThis._defussShadcn — never on window.
-    globalThis._defussShadcn = globalThis._defussShadcn || {};
-    const docs = (globalThis._defussShadcn.docs = globalThis._defussShadcn.docs || {});
+    // Single-namespace globals (AGENTS.md "No window globals"): docs data
+    // lives under df$.shadcn.docs — never on window. This classic script runs
+    // BEFORE the library runtime (all.js, a deferred module, installs the
+    // callable df$), so `docs` stages locally here and merges into the live
+    // namespace on DOMContentLoaded — after every module has executed.
+    var docs = {};
+    document.addEventListener('DOMContentLoaded', function () {
+        var ns = globalThis.df$ && globalThis.df$.shadcn;
+        if (!ns)
+            return; // library failed to load — docs chrome degrades
+        var live = (ns.docs = ns.docs || {});
+        for (var k in docs)
+            if (!(k in live))
+                live[k] = docs[k];
+        docs = live;
+    });
     /* -- Wide mode (must run before first paint, like dark mode) ---
        Strips the content max-width so wide layouts (the marketing blocks)
        render at full width. Persisted per-origin, same key discipline as
@@ -182,27 +194,36 @@
         var trigger = document.querySelector('.header-search-input');
         var searchWrap = document.querySelector('.header-search');
         if (list && dialog && trigger && searchWrap && !list.hasChildNodes()) {
-            var index = docs.searchIndex || [];
+            // build lazily on first open: search-index.js (a later head script)
+            // merges its staged data into df$.shadcn.docs on DOMContentLoaded —
+            // after this file's own DCL listeners — so reading it here at
+            // initChrome time would see an empty index
             var esc = function (s) { return s.replace(/&/g, '&').replace(/</g, '<').replace(/"/g, '"'); };
-            var html = '';
-            var group = null;
-            index.forEach(function (e) {
-                if (e.s !== group) {
-                    if (group !== null)
-                        html += '</div>';
-                    group = e.s;
-                    html += '<div class="command-group"><p class="command-group-heading">' + esc(group) + '</p>';
-                }
-                // e.d = the component's taxonomy type (page entries only)
-                html += '<button class="command-item" type="button" data-href="' + esc(e.h) + '">' + esc(e.t) +
-                    (e.d ? typeBadge(e.d) : '') + '</button>';
-            });
-            if (group !== null)
-                html += '</div>';
-            list.innerHTML = html;
+            var buildList = function () {
+                if (list.hasChildNodes())
+                    return;
+                var index = docs.searchIndex || [];
+                var html = '';
+                var group = null;
+                index.forEach(function (e) {
+                    if (e.s !== group) {
+                        if (group !== null)
+                            html += '</div>';
+                        group = e.s;
+                        html += '<div class="command-group"><p class="command-group-heading">' + esc(group) + '</p>';
+                    }
+                    // e.d = the component's taxonomy type (page entries only)
+                    html += '<button class="command-item" type="button" data-href="' + esc(e.h) + '">' + esc(e.t) +
+                        (e.d ? typeBadge(e.d) : '') + '</button>';
+                });
+                if (group !== null)
+                    html += '</div>';
+                list.innerHTML = html;
+            };
             var openPalette = function () {
                 if (dialog.open)
                     return;
+                buildList();
                 dialog.showModal();
                 var cmdInput = dialog.querySelector('.command-input');
                 if (cmdInput)

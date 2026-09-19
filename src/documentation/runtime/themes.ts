@@ -1,9 +1,17 @@
-// Single-namespace globals (AGENTS.md "No window globals"): this file's
-// globals live under globalThis._defussShadcn — never on window. Classic
-// script, so no `const docs` alias here (that would create a global lexical
-// binding); assign through the namespace directly.
-globalThis._defussShadcn = globalThis._defussShadcn || {};
-globalThis._defussShadcn.docs = globalThis._defussShadcn.docs || {};
+// -- themes.js — theme data for the doc-site theme switcher ----------
+// Classic head script: runs BEFORE the library runtime (all.js, a deferred
+// module, installs the callable df$), so the data stages in this IIFE and
+// merges into df$.shadcn.docs on DOMContentLoaded.
+(function () {
+  'use strict';
+  var docs = {};
+  document.addEventListener('DOMContentLoaded', function () {
+    var ns = globalThis.df$ && globalThis.df$.shadcn;
+    if (!ns) return; // library failed to load — theme UI degrades
+    var live = (ns.docs = ns.docs || {});
+    for (var k in docs) if (!(k in live)) live[k] = docs[k];
+    docs = live;
+  });
 
 // -- themes.js -----------------------------------------------
 // All available themes from tweakcn.com built-in presets.
@@ -15,7 +23,7 @@ globalThis._defussShadcn.docs = globalThis._defussShadcn.docs || {};
 // Explicit global (not `var`): consumed as docs.THEMES by theme-switcher.js
 // and layout.js; the assignment keeps the cross-file contract while satisfying
 // oxlint's no-unused-vars.
-globalThis._defussShadcn.docs.THEMES = [
+docs.THEMES = [
   {
     id: "default",
     label: "Default"
@@ -1746,3 +1754,4 @@ globalThis._defussShadcn.docs.THEMES = [
     }
   }
 ];
+})();

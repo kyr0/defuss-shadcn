@@ -6,11 +6,11 @@
 // its item order + active item, so 'default' restores the authored order
 // (optional { index } activates one item) and getState() reports both live.
 
-// Shared preamble (AGENTS.md "State API"); build.ts inlines it into the
-// shipped .js, so this import never appears in dist/.
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 import { defussGlobals } from '../../shared/state-api.js';
 
-const _defussShadcn = defussGlobals();
+const df$ = defussGlobals();
 
 const sortableStates = ['default'];
 
@@ -57,8 +57,8 @@ export const sortableApi = {
   },
 };
 
-_defussShadcn.sortableApi = sortableApi;
-_defussShadcn.sortableStates = sortableStates;
+df$.sortableApi = sortableApi;
+df$.sortableStates = sortableStates;
 
 function init() {
 document.querySelectorAll('.sortable:not([data-init])').forEach((list) => {

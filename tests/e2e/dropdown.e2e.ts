@@ -207,11 +207,11 @@ try {
 
   await check('state API: registry globals expose api + declared states', async () => {
     const reg = await page.evaluate(() => ({
-      hasApi: typeof globalThis._defussShadcn?.dropdownApi?.setState === 'function',
-      states: globalThis._defussShadcn?.dropdownStates,
+      hasApi: typeof globalThis.df$?.shadcn?.dropdownApi?.setState === 'function',
+      states: globalThis.df$?.shadcn?.dropdownStates,
       dollarWorks: typeof globalThis.$ === 'function' && !!globalThis.$('#demo-dropdown'),
     }));
-    assert.ok(reg.hasApi, '_defussShadcn.dropdownApi.setState missing');
+    assert.ok(reg.hasApi, 'df$.dropdownApi.setState missing');
     assert.deepEqual(reg.states, ['default', 'open']);
     assert.ok(reg.dollarWorks, 'globalThis.$ query alias missing');
   });

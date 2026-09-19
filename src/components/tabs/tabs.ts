@@ -3,11 +3,11 @@
 // named-state API bound per tab trigger, so agents/tests can activate a
 // specific tab by name (AGENTS.md "State API").
 
-// Shared preamble (AGENTS.md "State API"); build.ts inlines it into the
-// shipped .js, so this import never appears in dist/.
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 import { defussGlobals } from '../../shared/state-api.js';
 
-const _defussShadcn = defussGlobals();
+const df$ = defussGlobals();
 
 // 'default' = this tab's authored selected state, 'active' = this tab selected
 const tabsStates = ['default', 'active'];
@@ -67,8 +67,8 @@ export const tabsApi = {
   },
 };
 
-_defussShadcn.tabsApi = tabsApi;
-_defussShadcn.tabsStates = tabsStates;
+df$.tabsApi = tabsApi;
+df$.tabsStates = tabsStates;
 
 function init() {
 document.querySelectorAll('[role="tablist"]:not([data-init])').forEach((tablist) => {

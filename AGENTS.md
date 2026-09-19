@@ -384,29 +384,37 @@ if (!document.__myComponentInit) {
 
 ### No window globals (REQUIRED)
 
-Never define or read application globals on `window` — use `globalThis`, and keep
-every name under the single namespace `globalThis._defussShadcn`:
+Never define or read application globals on `window` — use `globalThis`.
+`df$` itself is the **callable query runtime** (defuss-query + defuss-morph)
+installed ONCE by core's guarded bootstrap (`dist/components/core.js`, embedded
+first inside `all.js`) — nothing else may create, replace, or extend it. Our
+names live in the **`df$.shadcn`** sub-namespace core prepares:
 
 ```js
-globalThis._defussShadcn = globalThis._defussShadcn || {};   // idempotent bootstrap
-globalThis._defussShadcn.toast = { show, success, dismiss }; // public imperative API
+// installed by core.js / all.js — never hand-written:
+// df$ = callable factory (df$(sel) selects) + morph API + df$.shadcn namespace
+df$.shadcn.toast = { show, success, dismiss };  // public imperative API
 ```
 
-- Components expose their State API as `_defussShadcn.{name}Api` / `{name}States`
-  (see "State API" below); a component's additional public imperative API lives
-  under `_defussShadcn.{name}` — never as a bare global. Example: the toast
-  factory is `_defussShadcn.toast.show(...)`, **not** `window.toast = { … }`.
+- Components expose their State API as `df$.shadcn.{name}Api` /
+  `df$.shadcn.{name}States` (see "State API" below); a component's additional
+  public imperative API lives under `df$.shadcn.{name}` — never as a bare
+  global. Example: the toast factory is `df$.shadcn.toast.show(...)`, **not**
+  `window.toast = { … }`.
 - Doc-site-only scripts (not shipped) share the same discipline under
-  `_defussShadcn.docs` (theme registry, SPA hooks: `THEMES`, `applyTheme`,
-  `onPageReady`, …).
+  `df$.shadcn.docs` (theme registry, SPA hooks: `THEMES`, `applyTheme`,
+  `onPageReady`, …). Classic head scripts run before the library runtime
+  installs `df$`, so they stage their data locally and merge it into
+  `df$.shadcn.docs` on DOMContentLoaded.
 - Third-party CDN globals (`lucide`, `marked`) are owned by their vendors — read
   them via `globalThis.*`; never assign to `window`.
 
 **Why:** `window` is a browser-only alias; `globalThis` is the one canonical
 global object and works unchanged in Workers and other runtimes (see the
-isomorphic rule). Scoping everything under `_defussShadcn` keeps a
-copy-paste/CDN-shipped system collision-free on hosts we do not control.
-`scripts/verify.ts` fails the build on any `window.x =` assignment in `src/`.
+isomorphic rule). One runtime installed only by core, one nested namespace,
+keeps a copy-paste/CDN-shipped system collision-free on hosts we do not
+control. `scripts/verify.ts` fails the build on any `window.x =` assignment in
+`src/`. Full contract: [plans/defuss-query-morph-integration.md](plans/defuss-query-morph-integration.md) §2.
 
 ### Each component is a self-contained folder
 
@@ -433,11 +441,12 @@ document.querySelector('#x').api.getState(); // → { name: 'open', config: { �
 `accordion.ts` and `dialog.ts` are the reference implementations):
 
 1. **Preamble** — import the shared helper (single source in
-   `src/shared/state-api.ts`; `build.ts` inlines it into the shipped `.js`,
-   so dist components stay isolated single files):
+   `src/shared/state-api.ts`; its implementation is emitted once inside
+   `core.js` and each shipped component `.js` binds to the installed
+   `df$.shadcn.shared` functions — components require core/all loaded first):
    ```js
    import { defussGlobals } from '../../shared/state-api.js';
-   const _defussShadcn = defussGlobals();
+   const df$ = defussGlobals(); // local df$ IS the df$.shadcn registry namespace
    ```
 2. **State list** — `const {name}States = ['default', …]` — `'default'` must be
    the first entry and always be one of the declared states. Every component
@@ -446,10 +455,11 @@ document.querySelector('#x').api.getState(); // → { name: 'open', config: { �
    touches the DOM for a state change; `switch`/dispatch over the declared states.
 4. **Registry API** — `export const {name}Api = { setState(el, name, config), getState(el) }`
    with the element passed explicitly; reject unknown state names by throwing.
-   Register both globals:
+   Register both globals (the local `df$` from the preamble IS
+   `df$.shadcn`, so these land at `df$.shadcn.{name}Api`):
    ```js
-   globalThis._defussShadcn.{name}Api = {name}Api;
-   globalThis._defussShadcn.{name}States = {name}States;
+   df$.{name}Api = {name}Api;
+   df$.{name}States = {name}States;
    ```
 5. **Per-instance binding** inside `init()`, on each element the component
    initializes (state lives **on the element** — `dataset.stateName` +

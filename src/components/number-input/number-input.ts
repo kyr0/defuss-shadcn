@@ -4,11 +4,11 @@
 // state is the number itself, so 'default' carries an optional { value }
 // preset and getState().config.value reports the live value.
 
-// Shared preamble (AGENTS.md "State API"); build.ts inlines it into the
-// shipped .js, so this import never appears in dist/.
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 import { defussGlobals } from '../../shared/state-api.js';
 
-const _defussShadcn = defussGlobals();
+const df$ = defussGlobals();
 
 const numberInputStates = ['default'];
 
@@ -47,8 +47,8 @@ export const numberInputApi = {
   },
 };
 
-_defussShadcn.numberInputApi = numberInputApi;
-_defussShadcn.numberInputStates = numberInputStates;
+df$.numberInputApi = numberInputApi;
+df$.numberInputStates = numberInputStates;
 
 function init() {
   document.querySelectorAll('.number-input:not([data-init])').forEach((wrapper) => {

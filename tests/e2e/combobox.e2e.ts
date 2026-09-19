@@ -279,11 +279,11 @@ try {
 
   await check('state API: registry globals expose api + declared states', async () => {
     const reg = await page.evaluate(() => ({
-      hasApi: typeof globalThis._defussShadcn?.comboboxApi?.setState === 'function',
-      states: globalThis._defussShadcn?.comboboxStates,
+      hasApi: typeof globalThis.df$?.shadcn?.comboboxApi?.setState === 'function',
+      states: globalThis.df$?.shadcn?.comboboxStates,
       dollarWorks: typeof globalThis.$ === 'function' && !!globalThis.$('#cb-framework-popover'),
     }));
-    assert.ok(reg.hasApi, '_defussShadcn.comboboxApi.setState missing');
+    assert.ok(reg.hasApi, 'df$.comboboxApi.setState missing');
     assert.deepEqual(reg.states, ['default', 'open']);
     assert.ok(reg.dollarWorks, 'globalThis.$ query alias missing');
   });

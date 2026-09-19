@@ -54,7 +54,7 @@ document.querySelector('#qty').api.getState(); // { name: 'default', config: { v
 ```
 
 The api is bound per wrapper; the registry global is
-`_defussShadcn.numberInputApi` / `_defussShadcn.numberInputStates` (camelCase).
+`df$.shadcn.numberInputApi` / `df$.shadcn.numberInputStates` (camelCase).
 
 ## Notes
 

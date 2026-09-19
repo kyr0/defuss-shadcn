@@ -69,13 +69,13 @@ try {
 
   await check('registry globals from several bundled modules are present', async () => {
     const reg = await page.evaluate(() => ({
-      accordion: typeof globalThis._defussShadcn?.accordionApi?.setState === 'function',
-      dialog: typeof globalThis._defussShadcn?.dialogApi?.setState === 'function',
-      toast: typeof globalThis._defussShadcn?.toast?.show === 'function',
+      accordion: typeof globalThis.df$?.shadcn?.accordionApi?.setState === 'function',
+      dialog: typeof globalThis.df$?.shadcn?.dialogApi?.setState === 'function',
+      toast: typeof globalThis.df$?.shadcn?.toast?.show === 'function',
     }));
-    assert.ok(reg.accordion, '_defussShadcn.accordionApi missing — accordion module not bundled');
-    assert.ok(reg.dialog, '_defussShadcn.dialogApi missing — dialog module not bundled');
-    assert.ok(reg.toast, '_defussShadcn.toast missing — toast module not bundled');
+    assert.ok(reg.accordion, 'df$.accordionApi missing — accordion module not bundled');
+    assert.ok(reg.dialog, 'df$.dialogApi missing — dialog module not bundled');
+    assert.ok(reg.toast, 'df$.shadcn.toast missing — toast module not bundled');
   });
 } finally {
   await browser.close();

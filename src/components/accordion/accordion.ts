@@ -2,11 +2,11 @@
 // Single-open accordion behavior using native <details> elements, plus the
 // named-state API so agents/tests can drive states by name (AGENTS.md "State API").
 
-// Shared preamble (AGENTS.md "State API"); build.ts inlines it into the
-// shipped .js, so this import never appears in dist/.
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 import { defussGlobals } from '../../shared/state-api.js';
 
-const _defussShadcn = defussGlobals();
+const df$ = defussGlobals();
 
 const accordionStates = ['default', 'all-open', 'all-closed'];
 
@@ -59,8 +59,8 @@ export const accordionApi = {
   },
 };
 
-_defussShadcn.accordionApi = accordionApi;
-_defussShadcn.accordionStates = accordionStates;
+df$.accordionApi = accordionApi;
+df$.accordionStates = accordionStates;
 
 function init() {
   document.querySelectorAll('.accordion[data-type="single"]:not([data-init])').forEach((accordion) => {

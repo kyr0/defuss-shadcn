@@ -74,7 +74,7 @@ document.querySelector('#my-calendar').api.getState(); // { name: 'default', con
 ```
 
 The api is bound per calendar; the registry global is
-`_defussShadcn.calendarApi` / `_defussShadcn.calendarStates`.
+`df$.shadcn.calendarApi` / `df$.shadcn.calendarStates`.
 
 
 ## Density

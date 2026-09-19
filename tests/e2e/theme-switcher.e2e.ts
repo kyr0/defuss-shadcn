@@ -68,7 +68,13 @@ try {
 
   await check('trigger click opens menu (popover) + aria-expanded sync', async () => {
     await page.click('#ts1-trigger');
-    await page.waitForFunction(() => document.querySelector('#ts1-menu')!.matches(':popover-open'));
+    // the popover's `toggle` event (which syncs aria-expanded) fires async
+    // after the open state flips — wait for BOTH, not just the open flag
+    await page.waitForFunction(
+      () =>
+        document.querySelector('#ts1-menu')!.matches(':popover-open') &&
+        document.querySelector('#ts1-trigger')!.getAttribute('aria-expanded') === 'true',
+    );
     assert.equal(await page.getAttribute('#ts1-trigger', 'aria-expanded'), 'true');
     // menu placed under the trigger by CSS anchor positioning — after the
     // 150ms scale() enter transition (getBoundingClientRect includes transforms)
@@ -163,7 +169,7 @@ try {
 
   await check('registry API select() drives the theme without a click', async () => {
     await page.evaluate(() =>
-      (globalThis as any)._defussShadcn.themeSwitcherApi.select(document.querySelector('#ts1-menu'), 'vercel'),
+      (globalThis as any).df$.shadcn.themeSwitcherApi.select(document.querySelector('#ts1-menu'), 'vercel'),
     );
     const link = await themeLink(page);
     assert.equal(link?.themeId, 'vercel');

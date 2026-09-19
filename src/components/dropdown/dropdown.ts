@@ -3,11 +3,11 @@
 // full keyboard navigation and ARIA support, plus the named-state API
 // so agents/tests can drive open/closed by name (AGENTS.md "State API").
 
-// Shared preamble (AGENTS.md "State API"); build.ts inlines it into the
-// shipped .js, so this import never appears in dist/.
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 import { defussGlobals, safeShowPopover } from '../../shared/state-api.js';
 
-const _defussShadcn = defussGlobals();
+const df$ = defussGlobals();
 
 const dropdownStates = ['default', 'open'];
 
@@ -45,8 +45,8 @@ export const dropdownApi = {
   },
 };
 
-_defussShadcn.dropdownApi = dropdownApi;
-_defussShadcn.dropdownStates = dropdownStates;
+df$.dropdownApi = dropdownApi;
+df$.dropdownStates = dropdownStates;
 
 function init() {
   document.querySelectorAll('[data-dropdown-trigger]:not([data-init])').forEach((trigger) => {

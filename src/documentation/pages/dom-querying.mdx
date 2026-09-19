@@ -1,0 +1,52 @@
+---
+title: "DOM Querying & Morphing"
+description: "The df$ runtime shipped in core.js — defuss-query for selection, traversal, scalar writes and events; defuss-morph for key-aware DOM reconciliation. One callable, no framework."
+slug: "dom-querying"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="dom-querying" title="DOM Querying & Morphing" introStyle="max-width:38rem;">
+  Every interactive component runs on one runtime: the callable <code>df$</code>, installed once by <code>core.js</code> (or embedded first inside <code>all.js</code>). It is <strong>defuss-query</strong> — a small jQuery-shaped, native-DOM facade — over <strong>defuss-morph</strong>, a key/id-aware DOM reconciler. Select and mutate through it; keep native browser protocols native.
+</PageHeader>
+
+<H2>The one runtime</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> <code>core.js</code> bundles defuss-morph + defuss-query + the shared component layer, and is the <em>only</em> thing that installs <code>globalThis.df$</code>. Component scripts bind to it — load core before them, or load <code>all.js</code> alone. A missing or mismatched core fails fast with one actionable load-order error, before anything renders: </p>
+
+<CodeCard title="loading the runtime" lang="markup" mb="1.5rem">{"<!-- modular: core first, then the components you use -->\n<script type=\"module\" src=\"/dist/components/core.min.js\"></script>\n<script type=\"module\" src=\"/dist/components/dialog/dialog.min.js\"></script>\n\n<!-- or everything at once (all.js embeds the same core payload) -->\n<script type=\"module\" src=\"/dist/components/all.min.js\"></script>"}</CodeCard>
+
+<CodeCard title="what core installs (never hand-written)" lang="javascript" mb="2.5rem">{"typeof df$;                  // 'function' — df$('button') selects\ndf$.queryVersion;             // the shipped query version\ndf$.morph(el, html, opts);    // the morph API surface\ndf$.shadcn.shared.abi;        // the release stamp components guard on\ndf$.shadcn.dialogApi;         // component registries (State API)\ndf$.shadcn.toast;             // imperative APIs (toast.show, …)"}</CodeCard>
+
+<H2>Select, traverse, write scalars</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> Selections are <strong>snapshot arrays</strong>, not live queries: retain stable roots and re-query after structural changes. Scalar setters write flags, attributes, classes and values — exactly what native-state components need, without a subtree re-render: </p>
+
+<CodeCard title="query basics — selection, traversal, scalar writes" lang="javascript" mb="2.5rem">{"// select (CSS selectors, scoped to a root)\nconst tabs = df$('.tab', root);            // DfQuery — an Array subclass\ntabs.length;                                // snapshot size\n\n// traverse — each hop returns a NEW selection\ntabs.children('.tab-label');\ndf$('#trigger').closest('.field');\n\n// scalar writes (mutators return the selection for chaining)\ndf$(trigger).prop('disabled', true);         // native boolean/IDL property\ndf$(opt).attr('aria-selected', 'false');     // explicit ARIA false string\ndf$(opt).attr('aria-expanded', null);        // null REMOVES the attribute\ndf$(input).val('');                          // live control value\ndf$(el).addClass('open').removeClass('closed');\ndf$(label).text('Saved.');                   // literal user-facing text"}</CodeCard>
+
+<TableCard title="mode selection — which operation goes where" mb="2.5rem" rows={[
+  ['Required operation', 'Sanctioned path'],
+  ['Full next subtree, including deletions / reordering', 'df$(container).morph(nextContent)'],
+  ['Addressed partial updates / upserts, retaining unmentioned siblings', "df$(container).morph(changeSet, { diff: true })"],
+  ['Exact insertion, move, or removal', "df$(x).append() / .prepend() / .before() / .after() / .remove()"],
+  ['Native flag, ARIA attribute, class, or control value', "df$(x).prop() / .attr() / class methods / .val()"],
+  ['Literal user-facing text', "df$(x).text(value)"],
+]} />
+
+<H2>Reconciliation for structure</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> <code>df$(container).morph(next)</code> (aliased as <code>.html(next)</code>) replaces the container's children through a keyed DOM diff instead of <code>innerHTML</code> replacement — matched nodes are <strong>moved, never replaced</strong>, so listeners, focus, selection and live form values survive. Keys must represent identity (a date, an option value), not the current filtered position: </p>
+
+<CodeCard title="keyed full render vs addressed diff upsert" lang="javascript" mb="1.5rem">{"// full render: nodes missing from `next` are removed, order is reconciled\ndf$(grid).morph(nextGridHtml);            // stable ids: <td id=\"d2026-09-13\">\n\n// diff: upserts the addressed items, keeps unmentioned siblings\ndf$(list).morph({ tag: 'ul', children: [\n  { tag: 'li', key: 'opt-2', attrs: { 'aria-selected': 'true' }, children: ['Second'] },\n] }, { diff: true });"}</CodeCard>
+
+<p class="text-sm text-muted-foreground mb-5"> Two limits to code around: HTML strings cannot express <em>explicitly unchecked</em> or <em>cleared</em> uncontrolled inputs — write those as scalars (<code>.prop('checked', false)</code>, <code>.val('')</code>) — and <code>diff: true</code> is an upsert, never a deletion or reorder operation. Without a transition, <code>.morph()</code> returns the selection synchronously; with one it returns a Promise — await it before dependent operations. </p>
+
+<H2>Events, teardown, and safety</H2>
+
+<CodeCard title="delegated events and exact lifecycle operations" lang="javascript" mb="1.5rem">{"// element listeners live in morph's delegated registry — morphing never detaches them\ndf$(region).on('click', function () { /* this === the selected target */ });\ndf$(region).off('click', ownedHandler);     // remove owned handlers only\ndf$(el).trigger('df-custom');               // dispatches CustomEvent — not .click()\n\n// exact lifecycle: mount / update / dismiss through query's structural adapter\ndf$(host).append(toastEl);                  // inserts the node itself (identity kept)\ndf$(toastEl).morph(nextToastHtml);          // reconciles owned content\ndf$(toastEl).remove();                      // removes after your own teardown"}</CodeCard>
+
+<p class="text-sm text-muted-foreground mb-5"> Treat every string input as an HTML sink, not a sanitizer: use <code>.text()</code> for untrusted labels, never pass user text where markup is parsed (including the markup form of the factory call — a string starting with a less-than sign). Keep native protocols native — <code>showModal()</code>, <code>showPopover()</code>, <code>focus()</code>, <code>once</code>/<code>passive</code>/<code>signal</code> listeners stay on the platform APIs; component teardown still owns its timers and observers. Full behavioral contract: <code>dist/components/core.js</code> + the <a href="state-api.html" style="text-decoration:underline;text-underline-offset:3px;">State API</a> guide. </p>
+
+</DocPage>

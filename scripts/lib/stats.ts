@@ -75,6 +75,8 @@ export type StatsDoc = {
   totalSizeGz: number;
   totalSizeGzMinified: number;
   bundle: BundleStats;
+  /** core.js + core.min.js (morph + query + shared) — the modular path's fixed cost */
+  core: BundleStats;
   components: Record<string, ComponentStats>;
 };
 
@@ -92,6 +94,7 @@ export type StatsDoc = {
 export function aggregateStats(
   components: readonly ComponentMeasure[],
   bundle: BundleStats = EMPTY_BUNDLE,
+  core: BundleStats = EMPTY_BUNDLE,
 ): StatsDoc {
   const doc: StatsDoc = {
     total: components.length,
@@ -103,6 +106,7 @@ export function aggregateStats(
     totalSizeGz: 0,
     totalSizeGzMinified: 0,
     bundle,
+    core,
     components: {},
   };
   for (const c of components) {
@@ -134,8 +138,9 @@ export function aggregateStats(
 export function buildStatsText(
   components: readonly ComponentMeasure[],
   bundle: BundleStats = EMPTY_BUNDLE,
+  core: BundleStats = EMPTY_BUNDLE,
 ): string {
-  return `${JSON.stringify(aggregateStats(components, bundle), null, 2)}\n`;
+  return `${JSON.stringify(aggregateStats(components, bundle, core), null, 2)}\n`;
 }
 
 /**

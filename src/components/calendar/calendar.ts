@@ -5,11 +5,11 @@
 // today (or navigates/selects via { year, month, day }) and getState()
 // reports the live view.
 
-// Shared preamble (AGENTS.md "State API"); build.ts inlines it into the
-// shipped .js, so this import never appears in dist/.
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 import { defussGlobals } from '../../shared/state-api.js';
 
-const _defussShadcn = defussGlobals();
+const df$ = defussGlobals();
 
 const calendarStates = ['default'];
 
@@ -54,8 +54,8 @@ export const calendarApi = {
   },
 };
 
-_defussShadcn.calendarApi = calendarApi;
-_defussShadcn.calendarStates = calendarStates;
+df$.calendarApi = calendarApi;
+df$.calendarStates = calendarStates;
 
 const DAYS = Array.from({ length: 7 }, (_, i) =>
   new Intl.DateTimeFormat(undefined, { weekday: 'short' }).format(new Date(2024, 0, i))

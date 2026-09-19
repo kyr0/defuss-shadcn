@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>core runtime e2e fixture — all-in-one mode (all.js alone)</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/all.css" />
+  </head>
+  <body>
+    <button class="btn" id="trigger" data-dialog-trigger="demo-dialog" aria-haspopup="dialog">Open dialog</button>
+    <dialog id="demo-dialog" class="dialog" role="dialog" aria-modal="true">
+      <div class="dialog-content"><p id="demo-body">all.js alone</p></div>
+    </dialog>
+    <button class="btn" id="toast-btn">Toast</button>
+
+    <!-- all.js alone: embeds core first, then every component — no separate
+         core/query/morph request, no per-component scripts -->
+    <script type="module" src="/dist/components/all.js"></script>
+  </body>
+</html>

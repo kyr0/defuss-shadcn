@@ -4,11 +4,11 @@
 // The component's own data-state attribute ("expanded"/"collapsed") is the
 // observable state; 'default' means the authored expanded view.
 
-// Shared preamble (AGENTS.md "State API"); build.ts inlines it into the
-// shipped .js, so this import never appears in dist/.
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 import { defussGlobals } from '../../shared/state-api.js';
 
-const _defussShadcn = defussGlobals();
+const df$ = defussGlobals();
 
 const sidebarStates = ['default', 'collapsed'];
 
@@ -48,8 +48,8 @@ export const sidebarApi = {
   },
 };
 
-_defussShadcn.sidebarApi = sidebarApi;
-_defussShadcn.sidebarStates = sidebarStates;
+df$.sidebarApi = sidebarApi;
+df$.sidebarStates = sidebarStates;
 
 function init() {
 document.querySelectorAll('.app-sidebar:not([data-init])').forEach((sidebar) => {

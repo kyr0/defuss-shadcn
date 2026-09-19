@@ -4,11 +4,11 @@
 // so 'default' carries an optional { value } preset and getState().config
 // reports the live value.
 
-// Shared preamble (AGENTS.md "State API"); build.ts inlines it into the
-// shipped .js, so this import never appears in dist/.
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 import { defussGlobals } from '../../shared/state-api.js';
 
-const _defussShadcn = defussGlobals();
+const df$ = defussGlobals();
 
 const colorPickerStates = ['default'];
 
@@ -46,8 +46,8 @@ export const colorPickerApi = {
   },
 };
 
-_defussShadcn.colorPickerApi = colorPickerApi;
-_defussShadcn.colorPickerStates = colorPickerStates;
+df$.colorPickerApi = colorPickerApi;
+df$.colorPickerStates = colorPickerStates;
 
 function init() {
   document.querySelectorAll('.color-picker:not([data-init])').forEach((picker) => {

@@ -102,7 +102,7 @@ document.querySelector('#my-tip').api.getState(); // { name: 'visible', config: 
 ```
 
 The api is bound per tooltip element; the registry global is
-`_defussShadcn.tooltipApi` / `_defussShadcn.tooltipStates`.
+`df$.shadcn.tooltipApi` / `df$.shadcn.tooltipStates`.
 
 ## Notes
 

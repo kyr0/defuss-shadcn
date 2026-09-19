@@ -112,7 +112,7 @@ document.querySelector('#my-menu').api.getState(); // { name: 'open', config: {}
 ```
 
 The api is bound per `.nav-menu-content` element; the registry global is
-`_defussShadcn.navigationMenuApi` / `_defussShadcn.navigationMenuStates` (camelCase).
+`df$.shadcn.navigationMenuApi` / `df$.shadcn.navigationMenuStates` (camelCase).
 
 ## Notes
 

@@ -255,8 +255,9 @@ if (!existsSync(DIST)) {
   for (const f of walk(SRC, [''])) {
     const rel = relative(SRC, f);
     // ambient type declarations compile nothing and ship nothing; src/shared
-    // is a build-time-only helper (inlined into dist component .js files)
-    if (rel.endsWith('.d.ts') || rel.startsWith(`shared${sep}`)) continue;
+    // + src/core are build-time-only (bundled once into core.js, never
+    // shipped as loose module trees)
+    if (rel.endsWith('.d.ts') || rel.startsWith(`shared${sep}`) || rel.startsWith(`core${sep}`)) continue;
     // docs SSG authoring inputs (pages/, lib/, runtime/, data/, config.ts)
     // are consumed by defuss-ssg, never copied 1:1
     if (isDocsSsgAuthoringSrc(rel)) continue;
@@ -361,11 +362,11 @@ if (statsProblems.length === 0) {
 // keep this list empty as the ratchet (new components must comply from day one).
 const STATE_API_LEGACY: string[] = [];
 const STATE_API_PATTERNS: Array<[string, RegExp]> = [
-  // preamble comes from the shared helper (build inlines it into dist .js);
-  // inline globals still accepted so hand-rolled/legacy styles pass too
-  ['defussGlobals() preamble', /(defussGlobals\(\)|globalThis\._defussShadcn\s*=)/],
-  ['registry api assignment', /(_defussShadcn|defussGlobals\(\))\.\w+Api\s*=/],
-  ['registry states assignment', /(_defussShadcn|defussGlobals\(\))\.\w+States\s*=/],
+  // preamble comes from the shared layer (emitted once in core.js; the
+  // component build binds dist .js to df$.shadcn.shared — verify 10c)
+  ['defussGlobals() preamble', /(defussGlobals\(\)|globalThis\.df\$\s*=)/],
+  ['registry api assignment', /(df\$|defussGlobals\(\))\.\w+Api\s*=/],
+  ['registry states assignment', /(df\$|defussGlobals\(\))\.\w+States\s*=/],
   ['states array declares default', /\w+States\s*=\s*\[[^\]]*['"]default['"]/],
   ['setState implementation', /\bsetState\s*\(/],
   ['getState implementation', /\bgetState\s*\(/],
@@ -400,10 +401,11 @@ check(
   true,
 );
 
-// 10c. shipped JS must contain the inlined preamble: every component whose
-// src/ .ts uses defussGlobals() must ship a .js that CALLS it — build.ts is
-// responsible for the inlining; if someone edits dist/ or breaks the build
-// post-pass, the registry globals silently vanish at runtime.
+// 10c. shipped JS must carry the core binding guard: every component whose
+// src/ .ts imports defussGlobals() must ship a .js whose shared import was
+// rewritten into the generated df$.shadcn.shared bindings (build.ts +
+// scripts/templates/component-shared-binding.js). If someone edits dist/ or
+// breaks the post-pass, the registry globals silently vanish at runtime.
 const inlineProblems: string[] = [];
 for (const name of componentDirs) {
   const tsFile = join(COMPS, name, `${name}.ts`);
@@ -411,17 +413,98 @@ for (const name of componentDirs) {
   const distJs = join(DIST, 'components', name, `${name}.js`);
   if (!existsSync(distJs)) continue; // already reported by dist 1:1
   const shipped = readFileSync(distJs, 'utf8');
-  if (!shipped.includes('defussGlobals()')) {
-    inlineProblems.push(`${name}.js missing defussGlobals() call — run \`bun run build\` or add the import in src`);
-  } else if (shipped.includes('_shared/state-api') || shipped.includes('../../shared/')) {
-    inlineProblems.push(`${name}.js still imports _shared — build post-pass failed to inline`);
+  if (!shipped.includes('__df$shared')) {
+    inlineProblems.push(`${name}.js missing the df$.shadcn.shared binding guard — run \`bun run build\``);
+  } else if (/(^|\n)\s*import[\s({]|import\(/.test(shipped)) {
+    inlineProblems.push(`${name}.js still has a live module import — build post-pass failed to bind`);
   }
 }
 check(
-  'inlined preamble (dist)',
+  'core bindings (dist)',
   inlineProblems,
   'run `bun run build`; never edit dist/ directly',
 );
+
+// 10f. artifact contract (plans/defuss-query-morph-integration.md §2.3 + §5.1):
+// core.js carries exactly morph+query+shared (no component code, no docs
+// data, no runtime imports); all.js embeds the same runtime first plus every
+// shipping JS component once. Membership markers, not byte hashes — the
+// generated-code exemption minification would otherwise hide.
+{
+  const artifactProblems: string[] = [];
+  const readDist = (rel: string): string =>
+    existsSync(join(DIST, rel)) ? readFileSync(join(DIST, rel), 'utf8') : '';
+  const coreJs = readDist('components/core.js');
+  const allJs = readDist('components/all.js');
+  /** component identifiers are camelCased (number-input → numberInputStates) */
+  const camel = (c: string): string => c.replace(/-([a-z])/g, (_m, ch: string) => ch.toUpperCase());
+
+  if (!coreJs) artifactProblems.push('dist/components/core.js missing — run `bun run build`');
+  else {
+    for (const marker of ['queryVersion', 'htmlStringToVNodes', 'defussGlobals'])
+      if (!coreJs.includes(marker)) artifactProblems.push(`core.js lacks runtime marker "${marker}"`);
+    for (const c of componentDirs) {
+      if (!existsSync(join(COMPS, c, `${c}.ts`))) continue;
+      const id = camel(c);
+      if (new RegExp(`\\b${id}States\\s*=`).test(coreJs))
+        artifactProblems.push(`core.js embeds component "${c}" — core must stay component-free`);
+    }
+    for (const marker of ['searchIndex', 'onPageReady', 'realignWhenSettled'])
+      if (coreJs.includes(marker)) artifactProblems.push(`core.js contains docs-only marker "${marker}"`);
+    if (/(^|\n)\s*import[\s({]|import\(/.test(coreJs))
+      artifactProblems.push('core.js contains a runtime import — the payload must be self-contained');
+  }
+
+  if (!allJs) artifactProblems.push('dist/components/all.js missing — run `bun run build`');
+  else {
+    if (!allJs.includes('queryVersion') || !allJs.includes('htmlStringToVNodes'))
+      artifactProblems.push('all.js does not embed the core runtime (morph + query)');
+    for (const c of componentDirs) {
+      if (!existsSync(join(COMPS, c, `${c}.ts`))) continue;
+      if (!new RegExp(`\\b${camel(c)}States\\s*=`).test(allJs))
+        artifactProblems.push(`all.js is missing component "${c}" (bundle ≠ shipping manifest)`);
+    }
+    if (/(^|\n)\s*import[\s({]|import\(/.test(allJs))
+      artifactProblems.push('all.js contains a runtime import — the payload must be self-contained');
+  }
+  check(
+    'artifact contract (core/all)',
+    artifactProblems,
+    'run `bun run build` — core = morph+query+shared only; all = core first + every shipping component, both import-free (see plans/defuss-query-morph-integration.md §2.3)',
+  );
+}
+
+// 10g. legacy runtime namespace: the pre-migration registry name must be gone
+// from every authored surface (plans §2.1 — the namespace is df$.shadcn).
+// Historical prose inside plans/ and compiled public/js output are exempt
+// (the latter is regenerated by build:docs). The marker is assembled at
+// runtime so this gate's own source text never trips it.
+{
+  const legacyMarker = ['_defuss', 'Shadcn'].join('');
+  const legacyProblems: string[] = [];
+  for (const f of [
+    ...walk(SRC, ['.ts']),
+    ...walk(join(ROOT, 'tests'), ['.ts']),
+    ...walk(join(ROOT, 'scripts'), ['.ts']),
+  ]) {
+    if (readFileSync(f, 'utf8').includes(legacyMarker))
+      legacyProblems.push(`${relative(ROOT, f)} still uses the legacy runtime namespace`);
+  }
+  check('legacy namespace', legacyProblems, 'migrate to df$.shadcn (AGENTS.md "No window globals")');
+}
+
+// 10h. shared ABI stamp: core publishes df$.shadcn.shared.abi and every
+// emitted component guards on it — core and components must qualify from the
+// SAME release, so src/shared/version.ts must equal package.json's version.
+{
+  const pkgVersion = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8')).version as string;
+  const abi = readFileSync(join(SRC, 'shared', 'version.ts'), 'utf8').match(/SHARED_ABI = '([^']+)'/)?.[1];
+  check(
+    'shared ABI',
+    abi === pkgVersion ? [] : [`src/shared/version.ts says ${abi} but package.json says ${pkgVersion}`],
+    'bump SHARED_ABI in src/shared/version.ts with the release (same-release core/components guard on it)',
+  );
+}
 
 // 11. every component doc page exposes a default-state .preview block — the
 //     contract create-screenshots.ts (and the agent's eye) relies on
@@ -984,7 +1067,7 @@ check(
 );
 
 // 25. no window globals (AGENTS.md "No window globals"): application globals
-// live on globalThis under _defussShadcn — window is the browser-only alias
+// live on globalThis under df$ — window is the browser-only alias
 // (breaks isomorphic runtimes) and a collision magnet on hosts we don't own.
 // Vendor globals (lucide, marked, …) are owned by their vendors: reads via
 // globalThis.* are fine; assignments to window.* anywhere in src/ are not.
@@ -999,7 +1082,7 @@ for (const f of walk(SRC, ['.ts', '.js'])) {
 check(
   'no window globals',
   windowProblems,
-  'use globalThis and scope the name under globalThis._defussShadcn (AGENTS.md "No window globals")',
+  'use globalThis and scope the name under globalThis.df$ (AGENTS.md "No window globals")',
 );
 
 // 26. README ↔ index page parity: the intro pillar lists must say the same

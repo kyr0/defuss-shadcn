@@ -3,11 +3,11 @@
 // buttons, plus the named-state API bound per group, so agents/tests can
 // enable/disable a whole group by name (AGENTS.md "State API").
 
-// Shared preamble (AGENTS.md "State API"); build.ts inlines it into the
-// shipped .js, so this import never appears in dist/.
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 import { defussGlobals } from '../../shared/state-api.js';
 
-const _defussShadcn = defussGlobals();
+const df$ = defussGlobals();
 
 const toggleGroupStates = ['default', 'disabled'];
 
@@ -45,8 +45,8 @@ export const toggleGroupApi = {
   },
 };
 
-_defussShadcn.toggleGroupApi = toggleGroupApi;
-_defussShadcn.toggleGroupStates = toggleGroupStates;
+df$.toggleGroupApi = toggleGroupApi;
+df$.toggleGroupStates = toggleGroupStates;
 
 function init() {
   document.querySelectorAll('.toggle-group:not([data-init])').forEach((group) => {

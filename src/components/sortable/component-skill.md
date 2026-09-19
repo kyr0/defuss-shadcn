@@ -108,7 +108,7 @@ document.querySelector('#tasks').api.getState(); // { name: 'default', config: {
 ```
 
 The api is bound per list; the registry global is
-`_defussShadcn.sortableApi` / `_defussShadcn.sortableStates`.
+`df$.shadcn.sortableApi` / `df$.shadcn.sortableStates`.
 
 ## Keyboard
 

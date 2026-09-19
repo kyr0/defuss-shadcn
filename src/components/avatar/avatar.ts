@@ -3,11 +3,11 @@
 // API bound per .avatar wrapper, so agents/tests can show the fallback
 // without a network failure (AGENTS.md "State API").
 
-// Shared preamble (AGENTS.md "State API"); build.ts inlines it into the
-// shipped .js, so this import never appears in dist/.
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 import { defussGlobals } from '../../shared/state-api.js';
 
-const _defussShadcn = defussGlobals();
+const df$ = defussGlobals();
 
 const avatarStates = ['default', 'error'];
 
@@ -53,8 +53,8 @@ export const avatarApi = {
   },
 };
 
-_defussShadcn.avatarApi = avatarApi;
-_defussShadcn.avatarStates = avatarStates;
+df$.avatarApi = avatarApi;
+df$.avatarStates = avatarStates;
 
 function init() {
   document.querySelectorAll('.avatar:not([data-init])').forEach((wrapper) => {

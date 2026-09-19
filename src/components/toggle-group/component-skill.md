@@ -162,7 +162,7 @@ document.querySelector('#alignment').api.getState(); // { name: 'disabled', conf
 ```
 
 The api is bound per group; the registry global is
-`_defussShadcn.toggleGroupApi` / `_defussShadcn.toggleGroupStates` (camelCase).
+`df$.shadcn.toggleGroupApi` / `df$.shadcn.toggleGroupStates` (camelCase).
 
 ## Notes
 

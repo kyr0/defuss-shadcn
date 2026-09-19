@@ -3,11 +3,11 @@
 // Unlike regular dialogs: no backdrop-close, Escape key blocked. Named-state
 // API per AGENTS.md "State API" (camelCase alert-dialog → alertDialogApi).
 
-// Shared preamble (AGENTS.md "State API"); build.ts inlines it into the
-// shipped .js, so this import never appears in dist/.
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 import { defussGlobals } from '../../shared/state-api.js';
 
-const _defussShadcn = defussGlobals();
+const df$ = defussGlobals();
 
 const alertDialogStates = ['default', 'open'];
 
@@ -43,8 +43,8 @@ export const alertDialogApi = {
   },
 };
 
-_defussShadcn.alertDialogApi = alertDialogApi;
-_defussShadcn.alertDialogStates = alertDialogStates;
+df$.alertDialogApi = alertDialogApi;
+df$.alertDialogStates = alertDialogStates;
 
 function init() {
 /* Wire triggers */

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>core runtime e2e fixture — bootstrap conflicts are rejected, state preserved</title>
+    <script>
+      // module evaluation errors surface here — the asserts read this array
+      window.__errs = [];
+      addEventListener('error', function (e) { window.__errs.push(String((e && e.message) || e)); });
+      // a pre-existing FOREIGN df$ runtime: core must reject it, never adopt
+      var foreign = function () { return 'foreign'; };
+      foreign.__isForeign = true;
+      globalThis.df$ = foreign;
+    </script>
+  </head>
+  <body>
+    <div id="probe">probe</div>
+    <!-- rejected: a foreign df$ function is already installed -->
+    <script type="module" src="/dist/components/core.js"></script>
+    <!-- rejected too: readable + minified twins are distinct URLs, so the
+         minified copy re-executes the bootstrap against the winner and must
+         throw without corrupting it (duplicate-load semantics) -->
+    <script type="module" src="/dist/components/core.min.js"></script>
+  </body>
+</html>

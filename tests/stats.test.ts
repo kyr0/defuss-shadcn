@@ -119,6 +119,27 @@ describe('statsClaimText / statsClaimProblems', () => {
     expect(withBundle.totalSizeGzMinified).toBe(4);
   });
 
+  it('measures core as its own block (modular fixed cost), outside the claim and totals', () => {
+    const withCore = aggregateStats(
+      [comp({ name: 'badge', type: 'ATM' })],
+      undefined,
+      {
+        jsSize: 2000,
+        jsSizeMinified: 1000,
+        cssSize: 0,
+        cssSizeMinified: 0,
+        totalSizeGz: 800,
+        totalSizeGzMinified: 512,
+      },
+    );
+    expect(withCore.core.totalSizeGzMinified).toBe(512);
+    // core never leaks into the component totals or the claim sentence
+    expect(withCore.totalSizeGzMinified).toBe(4);
+    expect(statsClaimText(withCore)).not.toContain('core');
+    // absent core measurement keeps the document shape stable (EMPTY default)
+    expect(aggregateStats([]).core.totalSizeGzMinified).toBe(0);
+  });
+
   it('passes when the file states the claim (markup and bold allowed)', () => {
     const claim = statsClaimText(doc);
     expect(statsClaimProblems(`<p><strong>${claim}.</strong></p>`, 'x', doc)).toEqual([]);

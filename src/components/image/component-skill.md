@@ -137,7 +137,7 @@ document.querySelector('#hero-figure').api.setState('error');
 document.querySelector('#hero-figure').api.getState(); // { name: 'error', config: {} }
 ```
 
-The registry global is `_defussShadcn.imageApi` / `_defussShadcn.imageStates`.
+The registry global is `df$.shadcn.imageApi` / `df$.shadcn.imageStates`.
 
 ## Notes
 

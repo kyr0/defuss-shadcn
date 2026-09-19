@@ -174,7 +174,7 @@
         "index.html dogfoods the CDN install; README↔index parity rule + gate; docs e2e",
         "docs/ publishes only the documentation site (no more full dist/ copy)",
         "README: credits — forked from codylindley/shadcn-html (original idea and implementation by Cody Lindley); the Author line conflated the two people (kyr0.com is Aron Homberg)",
-        "no window globals: everything lives under globalThis._defussShadcn (AGENTS.md)",
+        "no window globals: everything lives under globalThis.df$ (AGENTS.md)",
         "README: point to ARCH.md, drop stale rollout-gap note (ratchets now empty)",
         "ARCH.md: the self-verification proof loop, documented",
         "e2e coverage for all 29 CSS-only components (rollout complete)",

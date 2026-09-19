@@ -4,11 +4,11 @@
 /* the fallback without a network failure (AGENTS.md "State     */
 /* API").                                                        */
 
-// Shared preamble (AGENTS.md "State API"); build.ts inlines it into the
-// shipped .js, so this import never appears in dist/.
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 import { defussGlobals } from '../../shared/state-api.js';
 
-const _defussShadcn = defussGlobals();
+const df$ = defussGlobals();
 
 const imageStates = ['default', 'error'];
 
@@ -50,8 +50,8 @@ export const imageApi = {
   },
 };
 
-_defussShadcn.imageApi = imageApi;
-_defussShadcn.imageStates = imageStates;
+df$.imageApi = imageApi;
+df$.imageStates = imageStates;
 
 function init() {
 /* -- Fallback: mark images that fail to load ----------------- */

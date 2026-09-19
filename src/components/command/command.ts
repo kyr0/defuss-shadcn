@@ -3,11 +3,11 @@
 // Cmd/Ctrl+K shortcut, plus the named-state API so agents/tests can drive
 // open/closed by name (AGENTS.md "State API").
 
-// Shared preamble (AGENTS.md "State API"); build.ts inlines it into the
-// shipped .js, so this import never appears in dist/.
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 import { defussGlobals } from '../../shared/state-api.js';
 
-const _defussShadcn = defussGlobals();
+const df$ = defussGlobals();
 
 const commandStates = ['default', 'open'];
 
@@ -46,8 +46,8 @@ export const commandApi = {
   },
 };
 
-_defussShadcn.commandApi = commandApi;
-_defussShadcn.commandStates = commandStates;
+df$.commandApi = commandApi;
+df$.commandStates = commandStates;
 
 /* Cmd/Ctrl+K handler — added once at module level */
 let commandKeydownAdded = false;

@@ -179,7 +179,7 @@ document.querySelector('#settings-tab-2').api.setState('active');
 document.querySelector('#settings-tab-2').api.getState(); // { name: 'active', config: {} }
 ```
 
-The registry global is `_defussShadcn.tabsApi` / `_defussShadcn.tabsStates`.
+The registry global is `df$.shadcn.tabsApi` / `df$.shadcn.tabsStates`.
 
 ## Notes
 

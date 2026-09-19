@@ -22,6 +22,9 @@ export const BUNDLE_ARTIFACTS: ReadonlySet<string> = new Set([
   'components/all.css',
   'components/all.js',
   'components/all.min.css.map',
+  // core.js = morph + query + shared, built by bundle.ts from src/core (§2.3);
+  // its .js.map / .min.* twins are DERIVED_ARTIFACT matches already
+  'components/core.js',
 ]);
 
 /** True for `x.min.css`, `x.min.js`, `x.js.map` and `x.min.js.map`. */
@@ -48,6 +51,13 @@ export function minifyArtifactProblems(present: ReadonlySet<string>): string[] {
         ? [`${base}.min.css`]
         : [`${base}.min.js`, `${base}.js.map`, `${base}.min.js.map`];
     for (const need of required) if (!present.has(need)) problems.push(`dist/${need} missing`);
+  }
+  // core.js is a top-level bundle artifact (no component folder) but ships
+  // the same min twins — consumers load core.min.js exactly like all.min.js
+  if (present.has('components/core.js')) {
+    for (const need of ['components/core.min.js', 'components/core.js.map', 'components/core.min.js.map']) {
+      if (!present.has(need)) problems.push(`dist/${need} missing`);
+    }
   }
   return problems.sort();
 }

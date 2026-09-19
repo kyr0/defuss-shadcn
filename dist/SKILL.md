@@ -703,7 +703,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 ## Toast
 
 **Type:** MOL
-**Why:** Transient notification via the Popover API plus the _defussShadcn.toast factory — auto-dismisses.
+**Why:** Transient notification via the Popover API plus the df$.shadcn.toast factory — auto-dismisses.
 **When:** Post-action feedback that must not interrupt the user.
 **Files:** dist/components/toast/toast.css + dist/components/toast/toast.js
 **Supported states:** default

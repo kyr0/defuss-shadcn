@@ -241,7 +241,7 @@ try {
       await page.evaluate(
         ([t, m]) => {
           document.documentElement.classList.toggle('dark', m === 'dark');
-          (globalThis as any)._defussShadcn.docs.applyTheme(t);
+          (globalThis as any).df$.shadcn.docs.applyTheme(t);
         },
         [themeId, mode],
       );
@@ -287,7 +287,7 @@ try {
     }
     assert.deepEqual(bad, [], `active nav link contrast below WCAG AA: ${bad.join(', ')}`);
     await page.evaluate(() => {
-      (globalThis as any)._defussShadcn.docs.applyTheme('default');
+      (globalThis as any).df$.shadcn.docs.applyTheme('default');
       document.documentElement.classList.remove('dark');
     });
   });

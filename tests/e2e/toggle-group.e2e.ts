@@ -171,11 +171,11 @@ try {
 
   await check('state API: registry globals expose api + declared states (camelCase)', async () => {
     const reg = await page.evaluate(() => ({
-      hasApi: typeof globalThis._defussShadcn?.toggleGroupApi?.setState === 'function',
-      states: globalThis._defussShadcn?.toggleGroupStates,
+      hasApi: typeof globalThis.df$?.shadcn?.toggleGroupApi?.setState === 'function',
+      states: globalThis.df$?.shadcn?.toggleGroupStates,
       dollarWorks: typeof globalThis.$ === 'function' && !!globalThis.$('#group-single'),
     }));
-    assert.ok(reg.hasApi, '_defussShadcn.toggleGroupApi.setState missing');
+    assert.ok(reg.hasApi, 'df$.toggleGroupApi.setState missing');
     assert.deepEqual(reg.states, ['default', 'disabled']);
     assert.ok(reg.dollarWorks, 'globalThis.$ query alias missing');
   });

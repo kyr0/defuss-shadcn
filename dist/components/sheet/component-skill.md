@@ -131,7 +131,7 @@ document.querySelector('#sheet-right').api.getState(); // { name: 'open', config
 ```
 
 The api is bound per sheet element; the registry global is
-`_defussShadcn.sheetApi` / `_defussShadcn.sheetStates`.
+`df$.shadcn.sheetApi` / `df$.shadcn.sheetStates`.
 
 ## Notes
 

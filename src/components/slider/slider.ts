@@ -3,11 +3,11 @@
 // agents/tests can enable/disable (and preset) a slider by name (AGENTS.md
 // "State API").
 
-// Shared preamble (AGENTS.md "State API"); build.ts inlines it into the
-// shipped .js, so this import never appears in dist/.
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 import { defussGlobals } from '../../shared/state-api.js';
 
-const _defussShadcn = defussGlobals();
+const df$ = defussGlobals();
 
 const sliderStates = ['default', 'disabled'];
 
@@ -57,8 +57,8 @@ export const sliderApi = {
   },
 };
 
-_defussShadcn.sliderApi = sliderApi;
-_defussShadcn.sliderStates = sliderStates;
+df$.sliderApi = sliderApi;
+df$.sliderStates = sliderStates;
 
 function init() {
   document.querySelectorAll('.slider:not([data-init])').forEach((el) => {

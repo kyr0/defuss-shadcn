@@ -3,11 +3,11 @@
 // API bound per branch (<details class="tree-branch">), so agents/tests can
 // expand branches by name (AGENTS.md "State API").
 
-// Shared preamble (AGENTS.md "State API"); build.ts inlines it into the
-// shipped .js, so this import never appears in dist/.
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 import { defussGlobals } from '../../shared/state-api.js';
 
-const _defussShadcn = defussGlobals();
+const df$ = defussGlobals();
 
 const treeViewStates = ['default', 'expanded'];
 
@@ -47,8 +47,8 @@ export const treeViewApi = {
   },
 };
 
-_defussShadcn.treeViewApi = treeViewApi;
-_defussShadcn.treeViewStates = treeViewStates;
+df$.treeViewApi = treeViewApi;
+df$.treeViewStates = treeViewStates;
 
 function init() {
   document.querySelectorAll('.tree[role="tree"]:not([data-init])').forEach((tree) => {

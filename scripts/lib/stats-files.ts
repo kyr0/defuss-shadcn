@@ -77,10 +77,32 @@ export function measureBundle(componentsDir: string): BundleStats {
   };
 }
 
+/**
+ * Why: measure the core runtime artifact (morph + query + shared) — the fixed
+ * cost every modular consumer pays once (§6 of the morph integration plan).
+ * all.js embeds the same payload, so its bundle figure already carries core.
+ */
+export function measureCore(componentsDir: string): BundleStats {
+  const js = bytesOf(join(componentsDir, 'core.js'));
+  const jsMin = bytesOf(join(componentsDir, 'core.min.js'));
+  return {
+    jsSize: sizeOf(js),
+    jsSizeMinified: sizeOf(jsMin),
+    cssSize: 0,
+    cssSizeMinified: 0,
+    totalSizeGz: gzOf(js),
+    totalSizeGzMinified: gzOf(jsMin),
+  };
+}
+
 /** The full stats.json text for one dist/ tree — writer and gate share this. */
 export function buildStatsFileText(distDir: string): string {
   const componentsDir = join(distDir, 'components');
-  return buildStatsText(measureComponents(componentsDir), measureBundle(componentsDir));
+  return buildStatsText(
+    measureComponents(componentsDir),
+    measureBundle(componentsDir),
+    measureCore(componentsDir),
+  );
 }
 
 /** Write dist/stats.json and return the document (for the CLI summary line). */
@@ -88,6 +110,7 @@ export function writeStatsFile(distDir: string): StatsDoc {
   const componentsDir = join(distDir, 'components');
   const measures = measureComponents(componentsDir);
   const bundle = measureBundle(componentsDir);
-  writeFileSync(join(distDir, STATS_FILE), buildStatsText(measures, bundle));
-  return aggregateStats(measures, bundle);
+  const core = measureCore(componentsDir);
+  writeFileSync(join(distDir, STATS_FILE), buildStatsText(measures, bundle, core));
+  return aggregateStats(measures, bundle, core);
 }

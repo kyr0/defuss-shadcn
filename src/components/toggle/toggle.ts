@@ -3,11 +3,11 @@
 // agents/tests can drive the pressed state by name (AGENTS.md "State API").
 // Skips toggles inside .toggle-group — those are managed by toggle-group.js.
 
-// Shared preamble (AGENTS.md "State API"); build.ts inlines it into the
-// shipped .js, so this import never appears in dist/.
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 import { defussGlobals } from '../../shared/state-api.js';
 
-const _defussShadcn = defussGlobals();
+const df$ = defussGlobals();
 
 const toggleStates = ['default', 'pressed'];
 
@@ -47,8 +47,8 @@ export const toggleApi = {
   },
 };
 
-_defussShadcn.toggleApi = toggleApi;
-_defussShadcn.toggleStates = toggleStates;
+df$.toggleApi = toggleApi;
+df$.toggleStates = toggleStates;
 
 function init() {
   document.querySelectorAll('.toggle:not([data-init]):not(.toggle-group .toggle)').forEach((toggle) => {

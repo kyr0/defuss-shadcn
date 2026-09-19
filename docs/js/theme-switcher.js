@@ -8,10 +8,22 @@
 // Loaded synchronously so a persisted theme applies before first paint.
 (function () {
     'use strict';
-    // Single-namespace globals (AGENTS.md "No window globals"): this file's
-    // globals live under globalThis._defussShadcn — never on window.
-    globalThis._defussShadcn = globalThis._defussShadcn || {};
-    const docs = (globalThis._defussShadcn.docs = globalThis._defussShadcn.docs || {});
+    // Single-namespace globals (AGENTS.md "No window globals"): docs data
+    // lives under df$.shadcn.docs — never on window. This classic script runs
+    // BEFORE the library runtime (all.js, a deferred module, installs the
+    // callable df$), so `docs` stages locally here and merges into the live
+    // namespace on DOMContentLoaded — after every module has executed.
+    var docs = {};
+    document.addEventListener('DOMContentLoaded', function () {
+        var ns = globalThis.df$ && globalThis.df$.shadcn;
+        if (!ns)
+            return; // library failed to load — docs chrome degrades
+        var live = (ns.docs = ns.docs || {});
+        for (var k in docs)
+            if (!(k in live))
+                live[k] = docs[k];
+        docs = live;
+    });
     var STORAGE_KEY = 'defuss-shadcn-color-theme';
     var THEME_LINK_ID = 'theme-css';
     function getThemeById(id) {

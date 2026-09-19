@@ -126,11 +126,11 @@ try {
 
   await check('state API: registry globals expose api + declared states', async () => {
     const reg = await page.evaluate(() => ({
-      hasApi: typeof globalThis._defussShadcn?.commandApi?.setState === 'function',
-      states: globalThis._defussShadcn?.commandStates,
+      hasApi: typeof globalThis.df$?.shadcn?.commandApi?.setState === 'function',
+      states: globalThis.df$?.shadcn?.commandStates,
       dollarWorks: typeof globalThis.$ === 'function' && !!globalThis.$('#demo-cmd'),
     }));
-    assert.ok(reg.hasApi, '_defussShadcn.commandApi.setState missing');
+    assert.ok(reg.hasApi, 'df$.commandApi.setState missing');
     assert.deepEqual(reg.states, ['default', 'open']);
     assert.ok(reg.dollarWorks, 'globalThis.$ query alias missing');
   });

@@ -2,8 +2,8 @@ import { expect, test } from 'vitest';
 import { clickSelector, openDocPage, waitFor } from './helpers.ts';
 import { statsClaimText, type StatsDoc } from '../scripts/lib/stats.ts';
 
-/** site.js/layout.js expose their globals under `_defussShadcn` (no window globals). */
-type DocsGlobal = Window & { _defussShadcn: { docs: { realignWhenSettled?: (id: string) => void } } };
+/** site.js/layout.js expose their globals under `df$` (no window globals). */
+type DocsGlobal = Window & { df$: { shadcn: { docs: { realignWhenSettled?: (id: string) => void } } } };
 
 /**
  * Why: end-to-end checks that the real doc-site UI — web components, SPA
@@ -318,9 +318,9 @@ test('realignWhenSettled corrects a stale landing and respects reader input (iss
   const { doc } = await openDocPage('theming.html');
   await waitFor(() => doc.querySelector('.toc-link'), 'TOC to build');
   const win = doc.defaultView as DocsGlobal;
-  expect(typeof win._defussShadcn.docs.realignWhenSettled).toBe('function');
+  expect(typeof win.df$.shadcn.docs.realignWhenSettled).toBe('function');
   const heading = doc.getElementById('toc-chart-tokens')!;
-  const realign = win._defussShadcn.docs.realignWhenSettled!;
+  const realign = win.df$.shadcn.docs.realignWhenSettled!;
 
   const pad = padPx(win);
   // simulate the issue-#2 outcome: scrolling ended 150px short of the heading

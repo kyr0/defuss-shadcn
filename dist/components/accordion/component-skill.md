@@ -18,7 +18,7 @@ document.querySelector('.accordion[data-type="single"]').api.setState('all-open'
 document.querySelector('.accordion[data-type="single"]').api.getState(); // { name: 'all-open', config: {} }
 ```
 
-Unknown state names throw. `globalThis._defussShadcn.accordionStates` lists them.
+Unknown state names throw. `globalThis.df$.shadcn.accordionStates` lists them.
 
 ## Native basis
 `<details>` / `<summary>` elements. The browser provides:

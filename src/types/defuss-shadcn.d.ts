@@ -26,7 +26,7 @@ interface DefussShadcnToastOptions {
   onDismiss?: () => void;
 }
 
-/** Public imperative API a component may expose as `_defussShadcn.{name}`. */
+/** Public imperative API a component may expose as `df$.{name}`. */
 interface DefussShadcnToastApi {
   show(options: string | DefussShadcnToastOptions): HTMLElement;
   success(options: string | DefussShadcnToastOptions): HTMLElement;
@@ -54,18 +54,41 @@ interface DefussShadcnDocsNamespace {
   [key: string]: unknown;
 }
 
-/** Registry populated by components: `_defussShadcn.dialogApi`, `_defussShadcn.toast`, … */
+/**
+ * The component-shared layer core installs at `df$.shadcn.shared` (§2.2 of
+ * plans/defuss-query-morph-integration.md) — the functions every emitted component
+ * binds to instead of inlining copies. `abi` is the release stamp components
+ * guard on (src/shared/version.ts).
+ */
+interface DefussShadcnShared {
+  abi: string;
+  defussGlobals(): DefussShadcnRegistry;
+  safeShowPopover(el: HTMLElement): void;
+  /** the installed callable query factory (typed via defuss-query/core) */
+  defussQuery(): import('defuss-query/core').DfDollar;
+}
+
+/**
+ * Registry populated by components: `df$.shadcn.dialogApi`,
+ * `df$.shadcn.toast`, … — the namespace core prepares and components own.
+ */
 interface DefussShadcnRegistry {
   [key: `${string}Api`]: DefussShadcnComponentApi | undefined;
   [key: `${string}States`]: readonly string[] | undefined;
   toast?: DefussShadcnToastApi;
   docs?: DefussShadcnDocsNamespace;
+  shared?: DefussShadcnShared;
   [key: string]: unknown;
 }
 
-/** `document.querySelector` alias — defined once, by the shared preamble helper. */
+/** `document.querySelector` alias — defined once, by the shared layer. */
 declare var $: typeof document.querySelector;
-declare var _defussShadcn: DefussShadcnRegistry;
+/**
+ * The callable query runtime (defuss-query + defuss-morph) installed ONCE by
+ * core's guarded bootstrap (dist/components/core.js, embedded first in all.js)
+ * — typed with query's own exported types, never re-declared by hand.
+ */
+declare var df$: import('defuss-query/core').DfDollar & { shadcn: DefussShadcnRegistry };
 
 interface HTMLElement {
   /** Present on elements whose component bound the state API. */

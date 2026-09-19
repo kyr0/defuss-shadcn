@@ -12,19 +12,40 @@ import { themeCssText, themeFileName } from './lib/theme-css.ts';
  * file type is copied verbatim so the dist shape stays exactly what the
  * CDN/Netlify consumers expect.
  *
- * Special case: components import the shared State API preamble from
- * src/components/_shared/, but shipped .js files must stay isolated
- * copy-paste/CDN-ready single files. A post-pass inlines the compiled helper
- * into each importer (replacing the import statement) and drops _shared/
- * from dist/ — the browser never sees an inter-component module graph.
+ * Special case (plans/defuss-query-morph-integration.md §2.6): components import
+ * the shared State-API helpers from src/shared/, but the shared
+ * IMPLEMENTATION is emitted once inside core.js (scripts/bundle.ts). This
+ * post-pass rewrites each component's shared import into a small entry guard
+ * + direct bindings to df$.shadcn.shared (scripts/templates/
+ * component-shared-binding.js) — no inlined helper copies, no imports in the
+ * shipped single files, and a missing/mismatched core fails before any
+ * registry write or DOM mutation.
  */
 
 const ROOT = join(import.meta.dirname, '..');
 const SRC = join(ROOT, 'src');
 const DIST = join(ROOT, 'dist');
 // any named import from the shared helper file, e.g. `{ defussGlobals }` or
-// `{ defussGlobals, safeShowPopover }` — the whole helper is inlined either way
-const SHARED_IMPORT = /import \{[^}]+\} from '\.\.\/\.\.\/shared\/state-api\.js';\n/;
+// `{ defussGlobals, safeShowPopover }` — the binding block carries the exact
+// imported names either way. An import that does NOT match (unsupported
+// shape) stays as a live import and fails verify's `core bindings (dist)` gate.
+const SHARED_IMPORT = /import \{([^}]+)\} from '\.\.\/\.\.\/shared\/state-api\.js';\n/;
+/** the ABI literal core stamps at df$.shadcn.shared.abi (single source) */
+const SHARED_ABI = readFileSync(join(SRC, 'shared', 'version.ts'), 'utf8').match(
+  /SHARED_ABI = '([^']+)'/,
+)?.[1];
+if (!SHARED_ABI) {
+  console.error('build: cannot read SHARED_ABI from src/shared/version.ts');
+  process.exit(1);
+}
+/** the entry-guard template — external file per the repo's no-inline-template rule */
+const SHARED_BINDING = readFileSync(join(ROOT, 'scripts', 'templates', 'component-shared-binding.js'), 'utf8');
+/** bind the exact names the component imported from shared */
+const sharedBindingFor = (names: string): string =>
+  SHARED_BINDING.replaceAll('__DF_SHADCN_ABI__', SHARED_ABI).replaceAll(
+    '__DF_SHARED_NAMES__',
+    names.replace(/\s+/g, ' ').trim(),
+  );
 
 // fresh tree so deleted sources never linger in dist/
 rmSync(DIST, { recursive: true, force: true });
@@ -75,30 +96,22 @@ cpSync(SRC, DIST, {
   },
 });
 
-// inline the shared preamble into each component .js that imports it, so the
-// shipped files keep zero local module dependencies
-const helperPath = join(DIST, 'shared', 'state-api.js');
-if (existsSync(helperPath)) {
-  // drop `export` — each module gets its own hoisted copy of the functions.
-  // Also drop the helper's own sourceMappingURL comment: dist/shared/ (and its
-  // .map) is deleted below, and tsc appends the comment WITHOUT a trailing
-  // newline — inlining it would comment out the component's first code line.
-  // ponytail: the component's own .js.map was emitted before this insertion,
-  // so mapped lines after the inlined block shift by the helper's height
-  // (debug-quality only). Upgrade path: merge maps with a real remapping lib.
-  const helper = readFileSync(helperPath, 'utf8')
-    .replace(/^export /gm, '')
-    .replace(/\/\/# sourceMappingURL=.*\n?/g, '')
-    .replace(/\n*$/, '\n');
-  for (const dir of readdirSync(join(DIST, 'components'))) {
-    const js = join(DIST, 'components', dir, `${dir}.js`);
-    if (!existsSync(js)) continue;
-    const code = readFileSync(js, 'utf8');
-    // function replacer: the helper's comments contain backtick-$-backtick,
-    // which string replacements would interpret as `$` (pre-match) patterns
-    if (SHARED_IMPORT.test(code)) writeFileSync(js, code.replace(SHARED_IMPORT, () => helper));
-  }
-  rmSync(join(DIST, 'shared'), { recursive: true, force: true });
+// rewrite each component's shared import into the core binding guard, so the
+// shipped files reference the once-installed df$.shadcn.shared functions and
+// keep zero local module dependencies
+let bound = 0;
+for (const dir of readdirSync(join(DIST, 'components'))) {
+  const js = join(DIST, 'components', dir, `${dir}.js`);
+  if (!existsSync(js)) continue;
+  const code = readFileSync(js, 'utf8');
+  const m = code.match(SHARED_IMPORT);
+  if (!m) continue; // no shared import (CSS-only or self-contained) — nothing to bind
+  writeFileSync(js, code.replace(SHARED_IMPORT, () => sharedBindingFor(m[1])));
+  bound++;
 }
+// src/shared + src/core are build-time-only: their implementations are bundled
+// once into core.js by scripts/bundle.ts — never shipped as loose module trees
+rmSync(join(DIST, 'shared'), { recursive: true, force: true });
+rmSync(join(DIST, 'core'), { recursive: true, force: true });
 
-console.log('dist/ built from src/');
+console.log(`dist/ built from src/ (${bound} component files bound to df$.shadcn.shared)`);

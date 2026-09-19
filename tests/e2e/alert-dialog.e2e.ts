@@ -157,11 +157,11 @@ try {
 
   await check('state API: registry globals expose api + declared states (camelCase)', async () => {
     const reg = await page.evaluate(() => ({
-      hasApi: typeof globalThis._defussShadcn?.alertDialogApi?.setState === 'function',
-      states: globalThis._defussShadcn?.alertDialogStates,
+      hasApi: typeof globalThis.df$?.shadcn?.alertDialogApi?.setState === 'function',
+      states: globalThis.df$?.shadcn?.alertDialogStates,
       dollarWorks: typeof globalThis.$ === 'function' && !!globalThis.$('#demo-alert-dialog-1'),
     }));
-    assert.ok(reg.hasApi, '_defussShadcn.alertDialogApi.setState missing');
+    assert.ok(reg.hasApi, 'df$.alertDialogApi.setState missing');
     assert.deepEqual(reg.states, ['default', 'open']);
     assert.ok(reg.dollarWorks, 'globalThis.$ query alias missing');
   });

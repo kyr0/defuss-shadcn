@@ -55,9 +55,9 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <CodeCard title="dialog.js — init() + MutationObserver pattern" lang="javascript" mb="1.5rem">{"// No imports — this component has no dependencies\n// No exports — the side effect IS the module\n\nfunction init() {\n  document.querySelectorAll('[data-dialog-trigger]:not([data-init])').forEach((trigger) => {\n    trigger.dataset.init = '';\n    const dialog = document.getElementById(trigger.dataset.dialogTrigger);\n    if (!dialog) return;\n    trigger.addEventListener('click', () => {\n      dialog._trigger = trigger;\n      dialog.showModal();\n    });\n  });\n}\n\ninit();\nnew MutationObserver(init).observe(document, { childList: true, subtree: true });"}</CodeCard>
 
-<p class="text-sm text-muted-foreground mb-3"> There are no <code>import</code> statements either, because each component is fully self-contained. A dialog doesn't depend on a tooltip. A dropdown doesn't share code with a combobox. Each component works on its own — include only the <code>&lt;script&gt;</code> tags you need. </p>
+<p class="text-sm text-muted-foreground mb-3"> There are no <code>import</code> statements either — components don't depend on each other. A dialog doesn't depend on a tooltip; a dropdown shares no code with a combobox. The ONE shared dependency is the core runtime: <code>core.js</code> installs the callable <code>df$</code> (defuss-query + defuss-morph) and the shared layer at <code>df$.shadcn.shared</code>, and every component script binds to it. Load core first — or <code>all.js</code>, which embeds it — a component without core fails fast with one actionable load-order error. </p>
 
-<p class="text-sm text-muted-foreground mb-5"> This is the key advantage of <em>this self-contained pattern</em>, not ES modules in general: <strong>no bundler, no import maps, no dependency resolution between components</strong>. Drop a <code>&lt;script type="module"&gt;</code> tag onto the page and the component works. Remove it and nothing breaks. You're composing at the HTML level, not the JavaScript level. </p>
+<p class="text-sm text-muted-foreground mb-5"> This is the key advantage of <em>this pattern</em>, not ES modules in general: <strong>no bundler, no import maps, no dependency resolution between components</strong>. Drop module-script tags onto the page in the right order (core, then components) and they work. Remove a component and nothing else breaks. You're composing at the HTML level, not the JavaScript level — and the query/morph runtime you'd otherwise vendor yourself ships once as <code>core.min.js</code>. </p>
 
 <div class="sep" />
 
@@ -145,7 +145,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
       </div>
       <div>
         <div class="group-label">Programmatic API</div>
-        <div class="text-muted-foreground">Toast — exposes <code>\_defussShadcn.toast</code></div>
+        <div class="text-muted-foreground">Toast — exposes <code>\df$.shadcn.toast</code></div>
       </div>
     </div>
   </div>

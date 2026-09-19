@@ -89,9 +89,9 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <CodeCard title="dialog/component-skill.md" lang="markdown" mb="1.5rem">{"---\nname: Dialog\ntype: MOL\n...\nsupportedStates: default, open\n---\n\n## States\n- `default` — closed (authored initial state)\n- `open` — shown modally via showModal()\n\n```js\ndocument.querySelector('#confirm')\n  .api.setState('open');\n```"}</CodeCard>
 
-<p class="text-sm text-muted-foreground mb-5"> The component scripts also register their states and a registry-level API on <code>globalThis._defussShadcn</code> — useful when you have no element handle yet: </p>
+<p class="text-sm text-muted-foreground mb-5"> The component scripts also register their states and a registry-level API on <code>globalThis.df$</code> — useful when you have no element handle yet: </p>
 
-<CodeCard title="registry globals (set by each component .js)" lang="javascript" mb="2.5rem">{"globalThis._defussShadcn.dialogStates;  // ['default', 'open']\n\n// registry form — element passed explicitly, same contract as el.api\nconst { dialogApi } = globalThis._defussShadcn;\ndialogApi.setState(document.querySelector('#confirm'), 'open');\ndialogApi.getState(document.querySelector('#confirm'));\n// → { name: 'open', config: {} }"}</CodeCard>
+<CodeCard title="registry globals (set by each component .js)" lang="javascript" mb="2.5rem">{"globalThis.df$.shadcn.dialogStates;  // ['default', 'open']\n\n// registry form — element passed explicitly, same contract as el.api\nconst { dialogApi } = globalThis.df$;\ndialogApi.setState(document.querySelector('#confirm'), 'open');\ndialogApi.getState(document.querySelector('#confirm'));\n// → { name: 'open', config: {} }"}</CodeCard>
 
 <H2>States across components</H2>
 

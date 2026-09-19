@@ -18,7 +18,7 @@ document.querySelector('#my-dialog').api.setState('open');
 document.querySelector('#my-dialog').api.getState(); // { name: 'open', config: {} }
 ```
 
-Unknown state names throw. `globalThis._defussShadcn.dialogStates` lists them.
+Unknown state names throw. `globalThis.df$.shadcn.dialogStates` lists them.
 
 ## Native basis
 `<dialog>` element + `showModal()`. The browser provides:

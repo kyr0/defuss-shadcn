@@ -102,7 +102,7 @@ document.querySelector('#my-toggle').api.getState(); // { name: 'pressed', confi
 ```
 
 The api is bound per button; the registry global is
-`_defussShadcn.toggleApi` / `_defussShadcn.toggleStates`.
+`df$.shadcn.toggleApi` / `df$.shadcn.toggleStates`.
 
 ## Notes
 

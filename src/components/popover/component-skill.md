@@ -99,7 +99,7 @@ document.querySelector('#my-popover').api.getState(); // { name: 'open', config:
 ```
 
 The api is bound per popover element; the registry global is
-`_defussShadcn.popoverApi` / `_defussShadcn.popoverStates`.
+`df$.shadcn.popoverApi` / `df$.shadcn.popoverStates`.
 
 ## Notes
 

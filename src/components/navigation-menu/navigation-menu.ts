@@ -3,11 +3,11 @@
 // API so agents/tests can drive menus open/closed by name (AGENTS.md
 // "State API").
 
-// Shared preamble (AGENTS.md "State API"); build.ts inlines it into the
-// shipped .js, so this import never appears in dist/.
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 import { defussGlobals, safeShowPopover } from '../../shared/state-api.js';
 
-const _defussShadcn = defussGlobals();
+const df$ = defussGlobals();
 
 const navigationMenuStates = ['default', 'open'];
 
@@ -46,8 +46,8 @@ export const navigationMenuApi = {
   },
 };
 
-_defussShadcn.navigationMenuApi = navigationMenuApi;
-_defussShadcn.navigationMenuStates = navigationMenuStates;
+df$.navigationMenuApi = navigationMenuApi;
+df$.navigationMenuStates = navigationMenuStates;
 
 function init() {
   // Wiring is per trigger→panel PAIR, not per wrapper: a consumer may compose

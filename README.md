@@ -11,7 +11,7 @@
 
 **A UI component system that scales with _local_ AI.** Themeable components built on semantic HTML, modern CSS, and vanilla JavaScript. No framework. No build step for consumers — `dist/` is committed and ready to use as-is. The simplest possible foundation for AI-driven prototyping.
 
-**72 components — 28 with JavaScript, 44 CSS-only — 75.3 KiB minified + compressed — 35.1 KiB as the all.css/all.js bundle.**
+**72 components — 28 with JavaScript, 44 CSS-only — 75.9 KiB minified + compressed — 44.8 KiB as the all.css/all.js bundle.**
 44 of 72 components need no JavaScript — native HTML and modern CSS cover them entirely.
 The footprint is measured from the shipped `dist/` files on every build and published as
 [`dist/stats.json`](dist/stats.json); `verify` fails the build if this sentence and that file disagree.
@@ -44,17 +44,20 @@ A portable UI component system built on the [shadcn/ui](https://ui.shadcn.com) t
 <script src="https://unpkg.com/lucide@1.8.0"></script>
 <script>lucide.createIcons();</script>
 
-<!-- 3. Everything at once: the bundle -->
+<!-- 3a. Everything at once: the bundle (embeds the core runtime) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.css">
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.js"></script>
 
-<!-- …or select only the components you want -->
+<!-- 3b. …or core + only the components you use -->
+<script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/core.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/button/button.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.css">
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.js"></script>
 ```
 
-`all.css` / `all.js` bundle every component (minified twins: `all.min.css` + `all.min.css.map`, `all.min.js` + `all.min.js.map`). The per-component files stay available — include only what you use, they're independent of each other.
+Two delivery modes, one implementation: **load core plus the components you use, or load all alone.** Both modes include defuss-query and defuss-morph through core; documentation code is separate. No framework or jQuery dependency.
+
+`core.js` installs the callable `df$` runtime (query + morph + the shared component layer at `df$.shadcn.shared`) — every component `.js` requires it, loaded first; a missing or mismatched core fails with one actionable load-order error before anything renders. `all.css` / `all.js` bundle the core runtime plus every component (minified twins: `core.min.js`, `all.min.css` + `all.min.css.map`, `all.min.js` + `all.min.js.map`). The per-component files stay available — include only what you use; their stylesheets are independent of each other.
 
 ### Self-hosting
 
@@ -68,12 +71,13 @@ Each component is a self-contained folder with up to five layers:
 
 ```
 components/
+├── core.js               ← the runtime: defuss-morph + defuss-query + shared layer
 ├── all.css               ← generated bundle: every component stylesheet
-├── all.js                ← generated bundle: every component's behavior
+├── all.js                ← generated bundle: core runtime + every component's behavior
 └── dialog/
     ├── component-skill.md    ← structured skill: HTML structure, attributes, ARIA
     ├── dialog.css            ← stylesheet (uses design tokens)
-    └── dialog.js             ← interaction behavior (when needed)
+    └── dialog.js             ← interaction behavior (binds to core, when needed)
 ```
 
 The `all.*` bundle files (with `.min` twins and source maps) are what the

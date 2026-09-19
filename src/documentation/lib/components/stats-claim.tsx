@@ -8,6 +8,7 @@ interface StatsDoc {
   withoutJs: number;
   totalSizeGzMinified: number;
   bundle: { totalSizeGzMinified: number };
+  core: { totalSizeGzMinified: number };
 }
 
 function loadStats(): StatsDoc {
@@ -81,6 +82,13 @@ export function StatsCards(_props: Props) {
         <p class="statistic-value">{formatKiB(s.bundle.totalSizeGzMinified)}</p>
         <p class="statistic-description">
           <code>all.min.css</code> + <code>all.min.js</code>, gzip
+        </p>
+      </div>
+      <div class="statistic">
+        <p class="statistic-title">Core runtime</p>
+        <p class="statistic-value">{formatKiB(s.core.totalSizeGzMinified)}</p>
+        <p class="statistic-description">
+          <code>core.min.js</code> — query + morph + shared, gzip
         </p>
       </div>
     </div>

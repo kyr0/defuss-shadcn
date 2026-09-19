@@ -7,11 +7,11 @@
 // theme file carries `:root` + `.dark` blocks, so dark-mode toggling needs
 // no re-apply.
 
-// Shared preamble (AGENTS.md "State API"); build.ts inlines it into the
-// shipped .js, so this import never appears in dist/.
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 import { defussGlobals, safeShowPopover } from '../../shared/state-api.js';
 
-const _defussShadcn = defussGlobals();
+const df$ = defussGlobals();
 
 const themeSwitcherStates = ['default', 'open'];
 
@@ -133,8 +133,8 @@ export const themeSwitcherApi = {
   },
 };
 
-_defussShadcn.themeSwitcherApi = themeSwitcherApi;
-_defussShadcn.themeSwitcherStates = themeSwitcherStates;
+df$.themeSwitcherApi = themeSwitcherApi;
+df$.themeSwitcherStates = themeSwitcherStates;
 
 function init() {
   document.querySelectorAll<HTMLElement>('.theme-switcher-menu:not([data-init])').forEach((menu) => {

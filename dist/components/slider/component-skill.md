@@ -132,7 +132,7 @@ document.querySelector('#volume').api.getState(); // { name: 'disabled', config:
 ```
 
 The api is bound per input; the registry global is
-`_defussShadcn.sliderApi` / `_defussShadcn.sliderStates`.
+`df$.shadcn.sliderApi` / `df$.shadcn.sliderStates`.
 
 ## Notes
 

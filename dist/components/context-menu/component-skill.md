@@ -50,5 +50,5 @@ document.querySelector('#my-ctx').api.setState('open', { x: 40, y: 40 });
 document.querySelector('#my-ctx').api.getState(); // { name: 'open', config: { x: 40, y: 40 } }
 ```
 
-The registry global is `_defussShadcn.contextMenuApi` / `_defussShadcn.contextMenuStates` (camelCase).
+The registry global is `df$.shadcn.contextMenuApi` / `df$.shadcn.contextMenuStates` (camelCase).
 
