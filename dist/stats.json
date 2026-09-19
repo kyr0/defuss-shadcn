@@ -24,10 +24,10 @@
   "core": {
     "jsSize": 63491,
     "jsSizeMinified": 30837,
-    "cssSize": 0,
-    "cssSizeMinified": 0,
-    "totalSizeGz": 15261,
-    "totalSizeGzMinified": 10611
+    "cssSize": 127923,
+    "cssSizeMinified": 109216,
+    "totalSizeGz": 27027,
+    "totalSizeGzMinified": 20277
   },
   "components": {
     "accordion": {
