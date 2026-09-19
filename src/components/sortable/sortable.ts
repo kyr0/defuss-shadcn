@@ -8,16 +8,21 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals } from '../../shared/state-api.js';
+// defussQuery: the callable runtime — order restoration moves existing nodes
+// through query .append(), drops/reorders through query .before()/.after(),
+// and drag/active flags ride query scalar writes (§3 sortable row: native
+// moves already keep identity; the shared adapter is the win, no morph).
+import { defussGlobals, defussQuery } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 
 const sortableStates = ['default'];
 
 const sortableLabels = (list) =>
-  Array.from(list.querySelectorAll('.sortable-item')).map(
-    (item) => item.querySelector('span:not(.sortable-handle)')?.textContent?.trim() ?? '',
-  );
+  dfDollar(list)
+    .find('.sortable-item')
+    .map((item: HTMLElement) => dfDollar(item).find('span:not(.sortable-handle)').text().trim());
 
 /**
  * UI side of setState: 'default' restores the authored order snapshot (taken
@@ -25,9 +30,11 @@ const sortableLabels = (list) =>
  */
 function triggerStateChange(list, stateName, config) {
   if (stateName !== 'default') return;
-  for (const item of list._defaultOrder ?? []) list.appendChild(item);
+  // one query move of the existing nodes in snapshot order (§3: .append on
+  // one parent — nodes are MOVED, never re-created, handlers survive)
+  dfDollar(list).append(list._defaultOrder ?? []);
   if (config?.index !== undefined) {
-    const item = list.querySelectorAll('.sortable-item')[Number(config.index)];
+    const item = dfDollar(list).find('.sortable-item')[Number(config.index)];
     list._setActive?.(item);
   }
 }
@@ -44,8 +51,8 @@ export const sortableApi = {
     list._stateConfig = config;
   },
   getState(list) {
-    const items = Array.from(list.querySelectorAll('.sortable-item'));
-    const active = list.querySelector('.sortable-item[data-active]');
+    const items = Array.from(dfDollar(list).find('.sortable-item'));
+    const active = dfDollar(list).find('.sortable-item[data-active]')[0];
     return {
       name: list.dataset.stateName || 'default',
       config: {
@@ -91,31 +98,29 @@ document.querySelectorAll('.sortable:not([data-init])').forEach((list) => {
   }
 
   function announce(msg) {
-    liveRegion.textContent = '';
-    requestAnimationFrame(() => { liveRegion.textContent = msg; });
+    // double write re-triggers the live region for repeated identical messages
+    dfDollar(liveRegion).text('');
+    requestAnimationFrame(() => { dfDollar(liveRegion).text(msg); });
   }
 
   function getItems() {
-    return Array.from(list.querySelectorAll('.sortable-item:not([aria-disabled="true"])'));
+    return Array.from(dfDollar(list).find('.sortable-item:not([aria-disabled="true"])'));
   }
 
   function getAllItems() {
-    return Array.from(list.querySelectorAll('.sortable-item'));
+    return Array.from(dfDollar(list).find('.sortable-item'));
   }
 
   function getActiveItem() {
-    return list.querySelector('.sortable-item[data-active]');
+    return dfDollar(list).find('.sortable-item[data-active]')[0];
   }
 
   function setActive(item) {
-    getAllItems().forEach((el) => {
-      el.removeAttribute('data-active');
-      el.setAttribute('tabindex', '-1');
-    });
+    // active flag + roving tabindex through query scalars
+    getAllItems().forEach((el) => { dfDollar(el).data('active', null).attr('tabindex', '-1'); });
     if (item) {
-      item.setAttribute('data-active', '');
-      item.setAttribute('tabindex', '0');
-      item.focus();
+      dfDollar(item).data('active', '').attr('tabindex', '0');
+      item.focus(); // native focus protocol stays native
     }
   }
   // expose for the State API (element member, not module scope)
@@ -136,25 +141,27 @@ document.querySelectorAll('.sortable:not([data-init])').forEach((list) => {
   // -- Initialize tabindex --
   const allItems = getAllItems();
   allItems.forEach((item, i) => {
-    item.setAttribute('tabindex', i === 0 ? '0' : '-1');
+    dfDollar(item).attr('tabindex', i === 0 ? '0' : '-1');
   });
 
   // -- Drag and drop --
   let dragged = null;
 
-  list.querySelectorAll('.sortable-item').forEach((item) => {
+  dfDollar(list).find('.sortable-item').each(function (this: HTMLElement) {
+    // each() binds `this` to the element (forEach is array-style args)
+    const item = this;
     if (item.getAttribute('aria-disabled') === 'true') return;
 
     item.addEventListener('dragstart', (e) => {
       dragged = item;
-      item.setAttribute('data-dragging', '');
+      dfDollar(item).data('dragging', '');
       e.dataTransfer.effectAllowed = 'move';
       e.dataTransfer.setData('text/plain', '');
     });
 
     item.addEventListener('dragend', () => {
-      item.removeAttribute('data-dragging');
-      list.querySelectorAll('[data-over]').forEach((el) => el.removeAttribute('data-over'));
+      dfDollar(item).data('dragging', null);
+      dfDollar(list).find('[data-over]').data('over', null);
       dragged = null;
     });
 
@@ -168,26 +175,27 @@ document.querySelectorAll('.sortable:not([data-init])').forEach((list) => {
         : rect.top + rect.height / 2;
       const pos = isHorizontal ? e.clientX : e.clientY;
       // Clear other indicators
-      list.querySelectorAll('[data-over]').forEach((el) => {
-        if (el !== item) el.removeAttribute('data-over');
+      dfDollar(list).find('[data-over]').each(function (this: HTMLElement) {
+        if (this !== item) dfDollar(this).data('over', null);
       });
-      item.setAttribute('data-over', pos < midpoint ? 'before' : 'after');
+      dfDollar(item).data('over', pos < midpoint ? 'before' : 'after');
     });
 
     item.addEventListener('dragleave', () => {
-      item.removeAttribute('data-over');
+      dfDollar(item).data('over', null);
     });
 
     item.addEventListener('drop', (e) => {
       e.preventDefault();
-      const position = item.getAttribute('data-over');
-      item.removeAttribute('data-over');
+      const position = dfDollar(item).data('over');
+      dfDollar(item).data('over', null);
       if (!dragged || dragged === item) return;
 
+      // query's exact move methods (§5.1: sanctioned structure ops)
       if (position === 'before') {
-        list.insertBefore(dragged, item);
+        dfDollar(item).before(dragged);
       } else {
-        list.insertBefore(dragged, item.nextSibling);
+        dfDollar(item).after(dragged);
       }
 
       const items = getItems();
@@ -204,7 +212,7 @@ document.querySelectorAll('.sortable:not([data-init])').forEach((list) => {
 
   // -- Keyboard navigation --
   list.addEventListener('keydown', (e) => {
-    const active = getActiveItem() || list.querySelector('.sortable-item[tabindex="0"]');
+    const active = getActiveItem() || dfDollar(list).find('.sortable-item[tabindex="0"]')[0];
     if (!active) return;
     const items = getItems();
     const idx = items.indexOf(active);
@@ -230,7 +238,7 @@ document.querySelectorAll('.sortable:not([data-init])').forEach((list) => {
       e.preventDefault();
       if (idx < items.length - 1) {
         const sibling = items[idx + 1];
-        list.insertBefore(active, sibling.nextSibling);
+        dfDollar(sibling).after(active); // query move, node identity preserved
         const newItems = getItems();
         const newIdx = newItems.indexOf(active);
         announce(`${getItemLabel(active)}, moved to position ${newIdx + 1} of ${newItems.length}`);
@@ -244,7 +252,7 @@ document.querySelectorAll('.sortable:not([data-init])').forEach((list) => {
       e.preventDefault();
       if (idx > 0) {
         const sibling = items[idx - 1];
-        list.insertBefore(active, sibling);
+        dfDollar(sibling).before(active); // query move, node identity preserved
         const newItems = getItems();
         const newIdx = newItems.indexOf(active);
         announce(`${getItemLabel(active)}, moved to position ${newIdx + 1} of ${newItems.length}`);

@@ -9,9 +9,14 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals, safeShowPopover } from '../../shared/state-api.js';
+// defussQuery: the callable runtime — trigger/item state reflects through
+// query scalar writes; the theme-sheet link is mounted via query .append(),
+// swatch dots render as markup in one morph pass instead of a
+// createElement+appendChild chain (§3 theme-switcher row).
+import { defussGlobals, defussQuery, safeShowPopover } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 
 const themeSwitcherStates = ['default', 'open'];
 
@@ -73,25 +78,26 @@ function applyThemeId(root: HTMLElement, id: string) {
   // insert right after the token sheet (later source order ⇒ the theme
   // overrides it); without a token sheet, append at the end of <head>
   if (tokens) tokens.insertAdjacentElement('afterend', link);
-  else document.head.appendChild(link);
+  else dfDollar(document.head).append(link); // query's exact insertion op
   syncTrigger(root, id);
   document.dispatchEvent(new CustomEvent(THEME_EVENT, { detail: { id } }));
 }
 
 /** Reflect the active id in trigger dot/label + aria-checked across items. */
 function syncTrigger(root: HTMLElement, id: string) {
-  const trigger = root.querySelector<HTMLElement>('.theme-switcher-trigger');
-  const items = Array.from(root.querySelectorAll<HTMLElement>('.theme-switcher-item'));
-  const active = items.find((i) => i.dataset.themeId === id);
-  items.forEach((i) => i.setAttribute('aria-checked', i === active ? 'true' : 'false'));
+  const $root = dfDollar(root);
+  const trigger = $root.find('.theme-switcher-trigger')[0] as HTMLElement | undefined;
+  const items = Array.from($root.find('.theme-switcher-item'));
+  const active = items.find((i) => (i as HTMLElement).dataset.themeId === id);
+  items.forEach((i) => dfDollar(i).attr('aria-checked', i === active ? 'true' : 'false'));
   if (!trigger) return;
-  const dot = trigger.querySelector<HTMLElement>('.theme-switcher-dot');
-  const label = trigger.querySelector<HTMLElement>('.theme-switcher-label');
+  const dot = dfDollar(trigger).find('.theme-switcher-dot')[0];
+  const label = dfDollar(trigger).find('.theme-switcher-label')[0];
   const first = active?.dataset.themeColors?.split(',')[0]?.trim();
   // 'default' (or unknown): no inline dot color — the CSS default IS --primary
-  if (dot) dot.style.background = first || '';
-  if (label && (active || id === 'default')) label.textContent = active?.dataset.themeLabel || 'Default';
-  root.dataset.themeId = id;
+  if (dot) dfDollar(dot).css('background', first || '');
+  if (label && (active || id === 'default')) dfDollar(label).text(active?.dataset.themeLabel || 'Default');
+  root.dataset.themeId = id; // State API marker stays dataset.*
 }
 
 /**
@@ -148,13 +154,13 @@ function init() {
     // CSS anchor positioning — trigger names itself, menu follows
     if (trigger) {
       const anchorId = `--theme-switcher-${menu.id || 'menu'}`;
-      trigger.style.anchorName = anchorId;
-      menu.style.positionAnchor = anchorId;
+      dfDollar(trigger).css('anchorName', anchorId);
+      dfDollar(menu).css('positionAnchor', anchorId);
     }
 
     // aria-expanded rides the popover's own toggle event
     menu.addEventListener('toggle', () => {
-      trigger?.setAttribute('aria-expanded', menu.matches(':popover-open') ? 'true' : 'false');
+      if (trigger) dfDollar(trigger).attr('aria-expanded', menu.matches(':popover-open') ? 'true' : 'false');
       if (menu.matches(':popover-open')) {
         const first = getItems()[0];
         first?.focus();
@@ -168,16 +174,20 @@ function init() {
       }
     });
 
-    // dots visualized from data-theme-colors (keeps authored markup lean)
+    // dots visualized from data-theme-colors (keeps authored markup lean):
+    // swatches ride IN the item's markup — one morph pass fills the holder
+    // instead of a createElement+appendChild chain (§3 theme-switcher row)
     getItems().forEach((item) => {
       const holder = item.querySelector('.theme-switcher-dots');
       if (holder && !holder.childElementCount) {
-        for (const c of (item.dataset.themeColors || '').split(',').slice(0, 5)) {
-          if (!c.trim()) continue;
-          const s = document.createElement('span');
-          s.style.background = c.trim();
-          holder.appendChild(s);
-        }
+        const spans = (item.dataset.themeColors || '')
+          .split(',')
+          .slice(0, 5)
+          .map((c) => c.trim())
+          .filter(Boolean)
+          .map((c) => `<span style="background:${c}"></span>`) // token colors come from data-theme-colors (consumer-authored, §5.2 sink rule)
+          .join('');
+        dfDollar(holder).html(spans);
       }
     });
 

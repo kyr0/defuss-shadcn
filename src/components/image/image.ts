@@ -6,9 +6,15 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals } from '../../shared/state-api.js';
+// defussQuery: the callable runtime — error flag + lightbox control writes
+// ride query scalars, the sheet mounts through query .append(); the lightbox
+// template is a trusted static markup string (§3 image row, §5.1: lightbox
+// content re-renders are the real morph path when added — the toolbar is a
+// static singleton, so it stays a one-shot render).
+import { defussGlobals, defussQuery } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 
 const imageStates = ['default', 'error'];
 
@@ -17,14 +23,15 @@ const imageStates = ['default', 'error'];
  * would (CSS then reveals .image-fallback); 'default' clears the mark.
  */
 function triggerStateChange(figure, stateName, _config) {
-  const img = figure.querySelector('img');
+  const img = dfDollar(figure).find('img')[0];
   if (!img) return;
+  // data-error is the CSS fallback marker — set/removed via query data scalars
   switch (stateName) {
     case 'default':
-      delete img.dataset.error;
+      dfDollar(img).data('error', null);
       break;
     case 'error':
-      img.dataset.error = '';
+      dfDollar(img).data('error', '');
       break;
   }
 }
@@ -42,9 +49,9 @@ export const imageApi = {
   },
   getState(figure) {
     // reflect reality: load/error events flip it without setState()
-    const img = figure.querySelector('img');
+    const img = dfDollar(figure).find('img')[0];
     return {
-      name: img && img.dataset.error !== undefined ? 'error' : 'default',
+      name: img && dfDollar(img).data('error') !== undefined ? 'error' : 'default',
       config: figure._stateConfig ?? {},
     };
   },
@@ -62,20 +69,20 @@ document.querySelectorAll('.image:not([data-init])').forEach((figure) => {
     setState: (stateName, config) => imageApi.setState(figure, stateName, config),
     getState: () => imageApi.getState(figure),
   };
-  const img = figure.querySelector('img');
+  const img = dfDollar(figure).find('img')[0];
   if (!img) return;
 
   if (img.complete && img.naturalWidth === 0) {
-    img.dataset.error = '';
+    dfDollar(img).data('error', '');
   }
 
   img.addEventListener('error', () => {
-    img.dataset.error = '';
-    figure.dataset.stateName = 'error';
+    dfDollar(img).data('error', '');
+    figure.dataset.stateName = 'error'; // State API marker stays dataset.*
   });
 
   img.addEventListener('load', () => {
-    delete img.dataset.error;
+    dfDollar(img).data('error', null);
     figure.dataset.stateName = 'default';
   });
 });
@@ -122,10 +129,10 @@ function getLightbox() {
       </button>
     </div>`;
 
-  lightboxImg = lightbox.querySelector('.image-lightbox-content > img');
+  lightboxImg = dfDollar(lightbox).find('.image-lightbox-content > img')[0];
 
   /* Toolbar actions */
-  lightbox.querySelector('.image-lightbox-toolbar').addEventListener('click', (e) => {
+  dfDollar(lightbox).find('.image-lightbox-toolbar')[0].addEventListener('click', (e) => {
     const btn = e.target.closest('[data-action]');
     if (!btn) return;
 
@@ -145,13 +152,13 @@ function getLightbox() {
     if (e.target === lightbox) lightbox.close();
   });
 
-  document.body.appendChild(lightbox);
+  dfDollar(document.body).append(lightbox); // query's exact mount op
   return lightbox;
 }
 
 function applyTransform() {
   if (lightboxImg) {
-    lightboxImg.style.transform = `scale(${zoom}) rotate(${rotation}deg)`;
+    dfDollar(lightboxImg).css('transform', `scale(${zoom}) rotate(${rotation}deg)`);
   }
 }
 
@@ -159,10 +166,11 @@ function openLightbox(src, alt) {
   const lb = getLightbox();
   zoom = 1;
   rotation = 0;
-  lightboxImg.src = src;
-  lightboxImg.alt = alt || '';
-  lightboxImg.style.transform = '';
-  lb.showModal();
+  const $img = dfDollar(lightboxImg);
+  // consumer-provided src flows in via <img> attributes already (§5.2: the
+  // figure's own src/alt are the trusted source, attr writes mirror them)
+  $img.attr('src', src).attr('alt', alt || '').css('transform', null);
+  lb.showModal(); // native dialog protocol stays native
 }
 
 /* -- Attach preview click handlers --------------------------- */
@@ -173,8 +181,8 @@ if (!document.__imagePreviewInit) {
     const figure = e.target.closest('.image[data-preview]');
     if (!figure) return;
 
-    const img = figure.querySelector('img');
-    if (!img || img.dataset.error !== undefined) return;
+    const img = dfDollar(figure).find('img')[0];
+    if (!img || dfDollar(img).data('error') !== undefined) return;
 
     openLightbox(img.src, img.alt);
   });

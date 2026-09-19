@@ -2686,6 +2686,7 @@ new MutationObserver(init7).observe(document, { childList: true, subtree: true }
 
 // src/components/command/command.ts
 var df$8 = defussGlobals();
+var dfDollar4 = defussQuery();
 var commandStates = ["default", "open"];
 function triggerStateChange8(dialog, stateName, _config) {
   switch (stateName) {
@@ -2740,15 +2741,15 @@ if (!commandKeydownAdded) {
   });
 }
 function getVisibleItems(list) {
-  return Array.from(list.querySelectorAll('.command-item:not([hidden]):not([aria-disabled="true"])'));
+  return Array.from(dfDollar4(list).find('.command-item:not([hidden]):not([aria-disabled="true"])'));
 }
 function highlightItem(list, index) {
   const visible = getVisibleItems(list);
-  list.querySelectorAll(".command-item[data-highlighted]").forEach((el) => delete el.dataset.highlighted);
+  dfDollar4(list).find(".command-item[data-highlighted]").data("highlighted", null);
   if (visible.length === 0)
     return -1;
   const clamped = (index % visible.length + visible.length) % visible.length;
-  visible[clamped].dataset.highlighted = "";
+  dfDollar4(visible[clamped]).data("highlighted", "");
   visible[clamped].scrollIntoView({ block: "nearest" });
   return clamped;
 }
@@ -2768,20 +2769,19 @@ function init8() {
     const filter = (q) => {
       const query = q.toLowerCase();
       let hasVisible = false;
-      list.querySelectorAll(".command-item").forEach((item) => {
-        const match = !query || item.textContent.toLowerCase().includes(query);
-        item.hidden = !match;
+      const $items = dfDollar4(list).find(".command-item");
+      $items.each(function() {
+        const match = !query || this.textContent.toLowerCase().includes(query);
+        dfDollar4(this).prop("hidden", !match);
         if (match)
           hasVisible = true;
       });
-      list.querySelectorAll(".command-group").forEach((g) => {
-        g.hidden = g.querySelectorAll(".command-item:not([hidden])").length === 0;
+      dfDollar4(list).find(".command-group").each(function() {
+        dfDollar4(this).prop("hidden", dfDollar4(this).find(".command-item:not([hidden])").length === 0);
       });
-      list.querySelectorAll(".command-separator").forEach((s) => {
-        s.hidden = !!query;
-      });
+      dfDollar4(list).find(".command-separator").prop("hidden", !!query);
       if (empty)
-        empty.hidden = hasVisible;
+        dfDollar4(empty).prop("hidden", hasVisible);
       highlightIndex = highlightItem(list, 0);
     };
     input.addEventListener("input", () => {
@@ -2818,9 +2818,9 @@ function init8() {
       if (dialog.open)
         return;
       dialog.dataset.stateName = "default";
-      input.value = "";
+      dfDollar4(input).val("");
       filter("");
-      list.querySelectorAll(".command-item[data-highlighted]").forEach((el) => delete el.dataset.highlighted);
+      dfDollar4(list).find(".command-item[data-highlighted]").data("highlighted", null);
       highlightIndex = -1;
     });
   });
@@ -2831,7 +2831,7 @@ function init8() {
       return;
     trigger.addEventListener("click", () => {
       dialog.showModal();
-      const input = dialog.querySelector(".command-input");
+      const input = dfDollar4(dialog).find(".command-input")[0];
       if (input)
         input.focus();
     });
@@ -3150,17 +3150,18 @@ new MutationObserver(init11).observe(document, { childList: true, subtree: true 
 
 // src/components/image/image.ts
 var df$12 = defussGlobals();
+var dfDollar5 = defussQuery();
 var imageStates = ["default", "error"];
 function triggerStateChange12(figure, stateName, _config) {
-  const img = figure.querySelector("img");
+  const img = dfDollar5(figure).find("img")[0];
   if (!img)
     return;
   switch (stateName) {
     case "default":
-      delete img.dataset.error;
+      dfDollar5(img).data("error", null);
       break;
     case "error":
-      img.dataset.error = "";
+      dfDollar5(img).data("error", "");
       break;
   }
 }
@@ -3174,9 +3175,9 @@ var imageApi = {
     figure._stateConfig = config;
   },
   getState(figure) {
-    const img = figure.querySelector("img");
+    const img = dfDollar5(figure).find("img")[0];
     return {
-      name: img && img.dataset.error !== undefined ? "error" : "default",
+      name: img && dfDollar5(img).data("error") !== undefined ? "error" : "default",
       config: figure._stateConfig ?? {}
     };
   }
@@ -3190,18 +3191,18 @@ function init12() {
       setState: (stateName, config) => imageApi.setState(figure, stateName, config),
       getState: () => imageApi.getState(figure)
     };
-    const img = figure.querySelector("img");
+    const img = dfDollar5(figure).find("img")[0];
     if (!img)
       return;
     if (img.complete && img.naturalWidth === 0) {
-      img.dataset.error = "";
+      dfDollar5(img).data("error", "");
     }
     img.addEventListener("error", () => {
-      img.dataset.error = "";
+      dfDollar5(img).data("error", "");
       figure.dataset.stateName = "error";
     });
     img.addEventListener("load", () => {
-      delete img.dataset.error;
+      dfDollar5(img).data("error", null);
       figure.dataset.stateName = "default";
     });
   });
@@ -3242,8 +3243,8 @@ function getLightbox() {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>`;
-  lightboxImg = lightbox.querySelector(".image-lightbox-content > img");
-  lightbox.querySelector(".image-lightbox-toolbar").addEventListener("click", (e) => {
+  lightboxImg = dfDollar5(lightbox).find(".image-lightbox-content > img")[0];
+  dfDollar5(lightbox).find(".image-lightbox-toolbar")[0].addEventListener("click", (e) => {
     const btn = e.target.closest("[data-action]");
     if (!btn)
       return;
@@ -3269,21 +3270,20 @@ function getLightbox() {
     if (e.target === lightbox)
       lightbox.close();
   });
-  document.body.appendChild(lightbox);
+  dfDollar5(document.body).append(lightbox);
   return lightbox;
 }
 function applyTransform() {
   if (lightboxImg) {
-    lightboxImg.style.transform = `scale(${zoom}) rotate(${rotation}deg)`;
+    dfDollar5(lightboxImg).css("transform", `scale(${zoom}) rotate(${rotation}deg)`);
   }
 }
 function openLightbox(src, alt) {
   const lb = getLightbox();
   zoom = 1;
   rotation = 0;
-  lightboxImg.src = src;
-  lightboxImg.alt = alt || "";
-  lightboxImg.style.transform = "";
+  const $img = dfDollar5(lightboxImg);
+  $img.attr("src", src).attr("alt", alt || "").css("transform", null);
   lb.showModal();
 }
 if (!document.__imagePreviewInit) {
@@ -3292,8 +3292,8 @@ if (!document.__imagePreviewInit) {
     const figure = e.target.closest(".image[data-preview]");
     if (!figure)
       return;
-    const img = figure.querySelector("img");
-    if (!img || img.dataset.error !== undefined)
+    const img = dfDollar5(figure).find("img")[0];
+    if (!img || dfDollar5(img).data("error") !== undefined)
       return;
     openLightbox(img.src, img.alt);
   });
@@ -3758,15 +3758,15 @@ new MutationObserver(init19).observe(document, { childList: true, subtree: true 
 
 // src/components/sortable/sortable.ts
 var df$20 = defussGlobals();
+var dfDollar6 = defussQuery();
 var sortableStates = ["default"];
-var sortableLabels = (list) => Array.from(list.querySelectorAll(".sortable-item")).map((item) => item.querySelector("span:not(.sortable-handle)")?.textContent?.trim() ?? "");
+var sortableLabels = (list) => dfDollar6(list).find(".sortable-item").map((item) => dfDollar6(item).find("span:not(.sortable-handle)").text().trim());
 function triggerStateChange20(list, stateName, config) {
   if (stateName !== "default")
     return;
-  for (const item of list._defaultOrder ?? [])
-    list.appendChild(item);
+  dfDollar6(list).append(list._defaultOrder ?? []);
   if (config?.index !== undefined) {
-    const item = list.querySelectorAll(".sortable-item")[Number(config.index)];
+    const item = dfDollar6(list).find(".sortable-item")[Number(config.index)];
     list._setActive?.(item);
   }
 }
@@ -3780,8 +3780,8 @@ var sortableApi = {
     list._stateConfig = config;
   },
   getState(list) {
-    const items = Array.from(list.querySelectorAll(".sortable-item"));
-    const active = list.querySelector(".sortable-item[data-active]");
+    const items = Array.from(dfDollar6(list).find(".sortable-item"));
+    const active = dfDollar6(list).find(".sortable-item[data-active]")[0];
     return {
       name: list.dataset.stateName || "default",
       config: {
@@ -3817,28 +3817,26 @@ function init20() {
       }
     }
     function announce(msg) {
-      liveRegion.textContent = "";
+      dfDollar6(liveRegion).text("");
       requestAnimationFrame(() => {
-        liveRegion.textContent = msg;
+        dfDollar6(liveRegion).text(msg);
       });
     }
     function getItems() {
-      return Array.from(list.querySelectorAll('.sortable-item:not([aria-disabled="true"])'));
+      return Array.from(dfDollar6(list).find('.sortable-item:not([aria-disabled="true"])'));
     }
     function getAllItems() {
-      return Array.from(list.querySelectorAll(".sortable-item"));
+      return Array.from(dfDollar6(list).find(".sortable-item"));
     }
     function getActiveItem() {
-      return list.querySelector(".sortable-item[data-active]");
+      return dfDollar6(list).find(".sortable-item[data-active]")[0];
     }
     function setActive(item) {
       getAllItems().forEach((el) => {
-        el.removeAttribute("data-active");
-        el.setAttribute("tabindex", "-1");
+        dfDollar6(el).data("active", null).attr("tabindex", "-1");
       });
       if (item) {
-        item.setAttribute("data-active", "");
-        item.setAttribute("tabindex", "0");
+        dfDollar6(item).data("active", "").attr("tabindex", "0");
         item.focus();
       }
     }
@@ -3856,21 +3854,22 @@ function init20() {
     }
     const allItems = getAllItems();
     allItems.forEach((item, i) => {
-      item.setAttribute("tabindex", i === 0 ? "0" : "-1");
+      dfDollar6(item).attr("tabindex", i === 0 ? "0" : "-1");
     });
     let dragged = null;
-    list.querySelectorAll(".sortable-item").forEach((item) => {
+    dfDollar6(list).find(".sortable-item").each(function() {
+      const item = this;
       if (item.getAttribute("aria-disabled") === "true")
         return;
       item.addEventListener("dragstart", (e) => {
         dragged = item;
-        item.setAttribute("data-dragging", "");
+        dfDollar6(item).data("dragging", "");
         e.dataTransfer.effectAllowed = "move";
         e.dataTransfer.setData("text/plain", "");
       });
       item.addEventListener("dragend", () => {
-        item.removeAttribute("data-dragging");
-        list.querySelectorAll("[data-over]").forEach((el) => el.removeAttribute("data-over"));
+        dfDollar6(item).data("dragging", null);
+        dfDollar6(list).find("[data-over]").data("over", null);
         dragged = null;
       });
       item.addEventListener("dragover", (e) => {
@@ -3881,25 +3880,25 @@ function init20() {
         const rect = item.getBoundingClientRect();
         const midpoint = isHorizontal ? rect.left + rect.width / 2 : rect.top + rect.height / 2;
         const pos = isHorizontal ? e.clientX : e.clientY;
-        list.querySelectorAll("[data-over]").forEach((el) => {
-          if (el !== item)
-            el.removeAttribute("data-over");
+        dfDollar6(list).find("[data-over]").each(function() {
+          if (this !== item)
+            dfDollar6(this).data("over", null);
         });
-        item.setAttribute("data-over", pos < midpoint ? "before" : "after");
+        dfDollar6(item).data("over", pos < midpoint ? "before" : "after");
       });
       item.addEventListener("dragleave", () => {
-        item.removeAttribute("data-over");
+        dfDollar6(item).data("over", null);
       });
       item.addEventListener("drop", (e) => {
         e.preventDefault();
-        const position = item.getAttribute("data-over");
-        item.removeAttribute("data-over");
+        const position = dfDollar6(item).data("over");
+        dfDollar6(item).data("over", null);
         if (!dragged || dragged === item)
           return;
         if (position === "before") {
-          list.insertBefore(dragged, item);
+          dfDollar6(item).before(dragged);
         } else {
-          list.insertBefore(dragged, item.nextSibling);
+          dfDollar6(item).after(dragged);
         }
         const items = getItems();
         const newIndex = items.indexOf(dragged);
@@ -3912,7 +3911,7 @@ function init20() {
       });
     });
     list.addEventListener("keydown", (e) => {
-      const active = getActiveItem() || list.querySelector('.sortable-item[tabindex="0"]');
+      const active = getActiveItem() || dfDollar6(list).find('.sortable-item[tabindex="0"]')[0];
       if (!active)
         return;
       const items = getItems();
@@ -3939,7 +3938,7 @@ function init20() {
         e.preventDefault();
         if (idx < items.length - 1) {
           const sibling = items[idx + 1];
-          list.insertBefore(active, sibling.nextSibling);
+          dfDollar6(sibling).after(active);
           const newItems = getItems();
           const newIdx = newItems.indexOf(active);
           announce(`${getItemLabel(active)}, moved to position ${newIdx + 1} of ${newItems.length}`);
@@ -3953,7 +3952,7 @@ function init20() {
         e.preventDefault();
         if (idx > 0) {
           const sibling = items[idx - 1];
-          list.insertBefore(active, sibling);
+          dfDollar6(sibling).before(active);
           const newItems = getItems();
           const newIdx = newItems.indexOf(active);
           announce(`${getItemLabel(active)}, moved to position ${newIdx + 1} of ${newItems.length}`);
@@ -4092,6 +4091,7 @@ new MutationObserver(init21).observe(document, { childList: true, subtree: true 
 
 // src/components/theme-switcher/theme-switcher.ts
 var df$22 = defussGlobals();
+var dfDollar7 = defussQuery();
 var themeSwitcherStates = ["default", "open"];
 var STORAGE_KEY = "defuss-shadcn-color-theme";
 var LINK_ID = "theme-css";
@@ -4138,24 +4138,25 @@ function applyThemeId(root, id) {
   if (tokens2)
     tokens2.insertAdjacentElement("afterend", link);
   else
-    document.head.appendChild(link);
+    dfDollar7(document.head).append(link);
   syncTrigger(root, id);
   document.dispatchEvent(new CustomEvent(THEME_EVENT, { detail: { id } }));
 }
 function syncTrigger(root, id) {
-  const trigger = root.querySelector(".theme-switcher-trigger");
-  const items = Array.from(root.querySelectorAll(".theme-switcher-item"));
+  const $root = dfDollar7(root);
+  const trigger = $root.find(".theme-switcher-trigger")[0];
+  const items = Array.from($root.find(".theme-switcher-item"));
   const active = items.find((i) => i.dataset.themeId === id);
-  items.forEach((i) => i.setAttribute("aria-checked", i === active ? "true" : "false"));
+  items.forEach((i) => dfDollar7(i).attr("aria-checked", i === active ? "true" : "false"));
   if (!trigger)
     return;
-  const dot = trigger.querySelector(".theme-switcher-dot");
-  const label = trigger.querySelector(".theme-switcher-label");
+  const dot = dfDollar7(trigger).find(".theme-switcher-dot")[0];
+  const label = dfDollar7(trigger).find(".theme-switcher-label")[0];
   const first = active?.dataset.themeColors?.split(",")[0]?.trim();
   if (dot)
-    dot.style.background = first || "";
+    dfDollar7(dot).css("background", first || "");
   if (label && (active || id === "default"))
-    label.textContent = active?.dataset.themeLabel || "Default";
+    dfDollar7(label).text(active?.dataset.themeLabel || "Default");
   root.dataset.themeId = id;
 }
 function triggerStateChange22(menu, stateName, _config) {
@@ -4199,11 +4200,12 @@ function init22() {
     const getItems = () => Array.from(menu.querySelectorAll(".theme-switcher-item"));
     if (trigger) {
       const anchorId = `--theme-switcher-${menu.id || "menu"}`;
-      trigger.style.anchorName = anchorId;
-      menu.style.positionAnchor = anchorId;
+      dfDollar7(trigger).css("anchorName", anchorId);
+      dfDollar7(menu).css("positionAnchor", anchorId);
     }
     menu.addEventListener("toggle", () => {
-      trigger?.setAttribute("aria-expanded", menu.matches(":popover-open") ? "true" : "false");
+      if (trigger)
+        dfDollar7(trigger).attr("aria-expanded", menu.matches(":popover-open") ? "true" : "false");
       if (menu.matches(":popover-open")) {
         const first = getItems()[0];
         first?.focus();
@@ -4217,13 +4219,8 @@ function init22() {
     getItems().forEach((item) => {
       const holder = item.querySelector(".theme-switcher-dots");
       if (holder && !holder.childElementCount) {
-        for (const c of (item.dataset.themeColors || "").split(",").slice(0, 5)) {
-          if (!c.trim())
-            continue;
-          const s = document.createElement("span");
-          s.style.background = c.trim();
-          holder.appendChild(s);
-        }
+        const spans = (item.dataset.themeColors || "").split(",").slice(0, 5).map((c) => c.trim()).filter(Boolean).map((c) => `<span style="background:${c}"></span>`).join("");
+        dfDollar7(holder).html(spans);
       }
     });
     menu.addEventListener("click", (e) => {
@@ -4271,7 +4268,7 @@ new MutationObserver(init22).observe(document, { childList: true, subtree: true 
 
 // src/components/toast/toast.ts
 var df$23 = defussGlobals();
-var dfDollar4 = defussQuery();
+var dfDollar8 = defussQuery();
 var toastStates = ["default"];
 function triggerStateChange23(container, stateName, _config) {
   if (stateName !== "default")
@@ -4323,7 +4320,7 @@ var toastDismiss = (el, callback) => {
     try {
       el.hidePopover();
     } catch {}
-    dfDollar4(el).remove();
+    dfDollar8(el).remove();
     stackToasts(container);
     if (callback)
       callback();
@@ -4392,7 +4389,7 @@ var toastCreate = (options) => {
     actionsDiv.appendChild(actionBtn);
     el.appendChild(actionsDiv);
   }
-  dfDollar4(toastContainer).append(el);
+  dfDollar8(toastContainer).append(el);
   el.showPopover();
   stackToasts(toastContainer);
   toastCallbacks.set(el, { onDismiss, action });
@@ -4880,5 +4877,5 @@ function init28() {
 init28();
 new MutationObserver(init28).observe(document, { childList: true, subtree: true });
 
-//# debugId=41E0F5BC78309D1C64756E2164756E21
+//# debugId=F0F9A486E3CC1C5D64756E2164756E21
 //# sourceMappingURL=all.js.map

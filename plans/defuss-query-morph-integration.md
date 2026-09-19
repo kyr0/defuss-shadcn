@@ -1,19 +1,22 @@
 # defuss-query + defuss-morph Integration Plan
 
-> Status: **partially implemented** (revision 2.2, 2026-09-19). Landed: §2 runtime/artifact
+> Status: **substantially implemented** (revision 2.3, 2026-09-19). Landed: §2 runtime/artifact
 > contract (core.js + individual bindings + all = core + components), the §2.2 shared accessor,
 > `df$.shadcn` namespace across components/docs/tests/skills, docs-runtime staging (no early
 > namespace access), §5.1 artifact gates (core allow-list, all composition, core bindings,
 > legacy namespace, shared ABI), §5.3 e2e for both delivery modes + bootstrap failures
 > (tests/e2e/core.e2e.ts), stats core measurement, §5 docs parity (guide page "DOM
-> Querying & Morphing", README/index/installation/es-modules updates), and two §3 Tier-1
-> migrations: toast (query `.append()` mount / `.remove()` dismiss) and calendar
-> (`df$(grid).morph()` keyed by stable ISO-date cell ids replacing `innerHTML` — node
-> identity + focus survive re-renders, identity-tested).
-> **Not yet implemented:** §3 query-baseline + the remaining Tier-1 morph migrations inside
-> the components (combobox/carousel still use direct DOM writes), the §5.1
-> DOM-boundary gate, and per-release provenance notices. Revision 2 baseline text below is
-> retained unchanged.
+> Querying & Morphing", README/index/installation/es-modules updates), **all four §3 Tier-1
+> migrations** (toast: query `.append()`/`.remove()` lifecycle; calendar: `df$(grid).morph()`
+> keyed by stable ISO-date cell ids — identity + focus survive re-renders, identity-tested;
+> combobox: query scalar writes over flag-based filtering — node/caret identity preserved;
+> carousel: keyed dot morph + `.attr()`/`.prop()` flags), and the **§3 Tier-2 query baseline**
+> (command, sortable, theme-switcher, image: scoped `.find()` lookup + `.attr()/.prop()/.data()/
+> .text()/.val()/.css()` scalar writes, `.append()/.before()/.after()` exact moves, `.html()`
+> single-pass swatch render; native protocols — showModal/showPopover/focus/DnD — stay native
+> as named exceptions).
+> **Not yet implemented:** the §5.1 DOM-boundary source gate and per-release provenance
+> notices. Revision 2 baseline text below is retained unchanged.
 >
 > (Original revision-2 header:) proposal; application migration and distribution changes not implemented. Revision 2, 2026-09-17.
 >

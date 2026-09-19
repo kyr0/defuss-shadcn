@@ -185,9 +185,14 @@ Open Spacious palette
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals } from '../../shared/state-api.js';
+// defussQuery: the callable runtime — filtering flags + the move-highlight
+// marker ride query scalar writes; membership stays authored (flag-based
+// filtering, no renderer — §3 command row: keyed morph only once a data
+// source drives the result set, which the docs palette may adopt later).
+import { defussGlobals, defussQuery } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 
 const commandStates = ['default', 'open'];
 
@@ -245,16 +250,16 @@ if (!commandKeydownAdded) {
 }
 
 function getVisibleItems(list) {
-  return Array.from(list.querySelectorAll('.command-item:not([hidden]):not([aria-disabled="true"])'));
+  return Array.from(dfDollar(list).find('.command-item:not([hidden]):not([aria-disabled="true"])'));
 }
 
 function highlightItem(list, index) {
   const visible = getVisibleItems(list);
-  list.querySelectorAll('.command-item[data-highlighted]').forEach((el) =&gt; delete el.dataset.highlighted);
+  dfDollar(list).find('.command-item[data-highlighted]').data('highlighted', null);
   if (visible.length === 0) return -1;
   const clamped = ((index % visible.length) + visible.length) % visible.length;
-  visible[clamped].dataset.highlighted = '';
-  visible[clamped].scrollIntoView({ block: 'nearest' });
+  dfDollar(visible[clamped]).data('highlighted', '');
+  visible[clamped].scrollIntoView({ block: 'nearest' }); // native scroll stays native
   return clamped;
 }
 
@@ -277,17 +282,17 @@ document.querySelectorAll('dialog.command:not([data-init])').forEach((dialog) =&
     // a cached snapshot would silently keep filtering detached nodes
     const filter = (q) =&gt; {
       const query = q.toLowerCase(); let hasVisible = false;
-      list.querySelectorAll('.command-item').forEach((item) =&gt; {
-        const match = !query || item.textContent.toLowerCase().includes(query);
-        item.hidden = !match; if (match) hasVisible = true;
+      const $items = dfDollar(list).find('.command-item');
+      // flag-based filtering through query scalars: nodes keep identity (§3)
+      $items.each(function (this: HTMLElement) {
+        const match = !query || this.textContent.toLowerCase().includes(query);
+        dfDollar(this).prop('hidden', !match); if (match) hasVisible = true;
       });
-      list.querySelectorAll('.command-group').forEach((g) =&gt; {
-        g.hidden = g.querySelectorAll('.command-item:not([hidden])').length === 0;
+      dfDollar(list).find('.command-group').each(function (this: HTMLElement) {
+        dfDollar(this).prop('hidden', dfDollar(this).find('.command-item:not([hidden])').length === 0);
       });
-      list.querySelectorAll('.command-separator').forEach((s) =&gt; {
-        s.hidden = !!query;
-      });
-      if (empty) empty.hidden = hasVisible;
+      dfDollar(list).find('.command-separator').prop('hidden', !!query);
+      if (empty) dfDollar(empty).prop('hidden', hasVisible);
       highlightIndex = highlightItem(list, 0);
     };
 
@@ -324,10 +329,10 @@ document.querySelectorAll('dialog.command:not([data-init])').forEach((dialog) =&
       // the reset on re-open keeps the last query, like macOS Spotlight.)
       if (dialog.open) return;
       // reflect the actual UI state: Escape/item-click/backdrop close = 'default'
-      dialog.dataset.stateName = 'default';
-      input.value = '';
+      dialog.dataset.stateName = 'default'; // State API marker stays dataset.*
+      dfDollar(input).val('');
       filter('');
-      list.querySelectorAll('.command-item[data-highlighted]').forEach((el) =&gt; delete el.dataset.highlighted);
+      dfDollar(list).find('.command-item[data-highlighted]').data('highlighted', null);
       highlightIndex = -1;
     });
   });
@@ -338,8 +343,8 @@ document.querySelectorAll('[data-command-trigger]:not([data-init])').forEach((tr
   if (!dialog) return;
   trigger.addEventListener('click', () =&gt; {
     dialog.showModal();
-    const input = dialog.querySelector('.command-input');
-    if (input) input.focus();
+    const input = dfDollar(dialog).find('.command-input')[0];
+    if (input) (input as HTMLElement).focus(); // native focus protocol stays native
   });
 });
 }
