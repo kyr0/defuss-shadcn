@@ -100,6 +100,41 @@ try {
     assert.equal(await selectedDay(page), String(day), 'data-selected moves to the clicked day');
   });
 
+  // -- morph identity (plans/defuss-query-morph-integration.md §3 Tier-1) ----
+  await check('grid cells carry stable ISO ids + data-cal-date', async () => {
+    const info = await page.evaluate(() => {
+      const grid = document.querySelector('#cal-default .calendar-grid')!;
+      const cell = grid.querySelector('.calendar-day:not([data-outside])')!;
+      return { id: cell.id, iso: cell.getAttribute('data-cal-date'), prefix: cell.id.startsWith('cal-default-') };
+    });
+    assert.ok(info.prefix, `cell id is <calId>-<iso> (got ${info.id})`);
+    assert.equal(info.id, `cal-default-${info.iso}`, 'id suffix === data-cal-date');
+    assert.match(info.iso!, /^\d{4}-\d{2}-\d{2}$/, 'data-cal-date is ISO');
+  });
+
+  await check('selection re-render preserves day-node identity + focus (morph)', async () => {
+    const marked = await page.evaluate(() => {
+      const now = new Date();
+      const iso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-15`;
+      const btn = document.querySelector(`#cal-default-${iso} button`) as HTMLElement;
+      (btn as any).__morphSentinel = 1;
+      btn.focus();
+      btn.click(); // selecting THIS day re-renders the grid (data-selected lands on it)
+      const after = document.querySelector(`#cal-default-${iso} button`) as HTMLElement;
+      return {
+        kept: (after as any)?.__morphSentinel === 1,
+        focused: document.activeElement === after,
+        selected: !!document.querySelector('#cal-default .calendar-day[data-selected]'),
+      };
+    });
+    assert.ok(marked.kept, 'morph reuses the day node across the selection re-render');
+    assert.ok(marked.focused, 'focus stays on the activated day cell (render focus policy)');
+    assert.ok(marked.selected, 'selection landed on the morphed cell');
+    // the grid mirrors the selection as an ISO date for stable reads
+    const selIso = await page.$eval('#cal-default .calendar-grid', (el) => el.getAttribute('data-selected-date'));
+    assert.match(selIso!, /^\d{4}-\d{2}-\d{2}$/, 'grid mirrors data-selected-date (ISO)');
+  });
+
   await check('clicking an outside day navigates to that month', async () => {
     // the spillover marker lives on the <button> (the <td> carries bare
     // data-outside), and clicking it advances the view + selects that day

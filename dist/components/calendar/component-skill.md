@@ -61,6 +61,18 @@ supportedStates: default
 | `data-outside`  | Day from adjacent month            |
 | `data-disabled` | Non-selectable date                |
 
+## Rendering (morph)
+
+The grid renders through the core `df$` runtime: `df$(grid).morph(nextHtml)`
+(see the "DOM Querying & Morphing" guide). Each day `<td>` is generated with a
+stable `id` (`<calendar id>-<ISO date>`, e.g. `cal-1-2026-04-15`) and a
+`data-cal-date` attribute carrying that ISO date — morph matches by id, so
+re-renders move/reuse day nodes instead of replacing them (focus survives a
+selection re-render; a keyboard-activated cell regains focus). The grid
+mirrors the selection as `data-selected-date` (ISO) for a stable read target.
+Outside cells resolve to their real month's date, so keys are identities, not
+positions.
+
 ## States
 
 The calendar's observable state is its view: visible month + selected day.

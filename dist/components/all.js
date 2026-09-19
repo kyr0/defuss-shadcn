@@ -2015,6 +2015,8 @@ new MutationObserver(init3).observe(document, { childList: true, subtree: true }
 
 // src/components/calendar/calendar.ts
 var df$4 = defussGlobals();
+var dfDollar = defussQuery();
+var calSeq = 0;
 var calendarStates = ["default"];
 function triggerStateChange4(cal, stateName, config) {
   const state = cal._calState;
@@ -2026,6 +2028,7 @@ function triggerStateChange4(cal, stateName, config) {
   state.selected = config?.day ?? null;
   renderCalendar(cal, state.year, state.month, state.selected);
 }
+var isoDate = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 var calendarApi = {
   setState(cal, stateName, config = {}) {
     if (!calendarStates.includes(stateName)) {
@@ -2058,16 +2061,10 @@ var isToday = (year, month, day) => {
   const now = new Date;
   return now.getFullYear() === year && now.getMonth() === month && now.getDate() === day;
 };
-var renderCalendar = (el, year, month, selectedDay) => {
+var renderGrid = (year, month, selectedDay, calId) => {
   const total = daysInMonth(year, month);
   const startDay = firstDayOfMonth(year, month);
   const prevTotal = daysInMonth(year, month - 1);
-  const heading = el.querySelector(".calendar-heading");
-  if (heading)
-    heading.textContent = `${MONTHS[month]} ${year}`;
-  const grid = el.querySelector(".calendar-grid");
-  if (!grid)
-    return;
   let html = "<thead><tr>";
   for (let d = 0;d < 7; d++) {
     html += `<th class="calendar-day-label" scope="col">${DAYS[d]}</th>`;
@@ -2082,29 +2079,50 @@ var renderCalendar = (el, year, month, selectedDay) => {
       const cellIndex = r * 7 + c;
       if (cellIndex < startDay) {
         const prevDay = prevTotal - startDay + cellIndex + 1;
-        html += `<td class="calendar-day" data-outside><button tabindex="-1" data-day="${prevDay}" data-outside="prev">${prevDay}</button></td>`;
+        const iso = isoDate(new Date(year, month - 1, prevDay));
+        html += `<td class="calendar-day" data-outside id="${calId}-${iso}" data-cal-date="${iso}"><button tabindex="-1" data-day="${prevDay}" data-outside="prev">${prevDay}</button></td>`;
       } else if (dayNum > total) {
-        html += `<td class="calendar-day" data-outside><button tabindex="-1" data-day="${nextDayNum}" data-outside="next">${nextDayNum}</button></td>`;
+        const iso = isoDate(new Date(year, month + 1, nextDayNum));
+        html += `<td class="calendar-day" data-outside id="${calId}-${iso}" data-cal-date="${iso}"><button tabindex="-1" data-day="${nextDayNum}" data-outside="next">${nextDayNum}</button></td>`;
         nextDayNum++;
       } else {
-        let cls = "calendar-day";
         let attrs = "";
         if (isToday(year, month, dayNum))
           attrs += " data-today";
         if (dayNum === selectedDay)
           attrs += " data-selected";
-        html += `<td class="${cls}"${attrs}><button data-day="${dayNum}">${dayNum}</button></td>`;
+        const iso = isoDate(new Date(year, month, dayNum));
+        html += `<td class="calendar-day"${attrs} id="${calId}-${iso}" data-cal-date="${iso}"><button data-day="${dayNum}">${dayNum}</button></td>`;
         dayNum++;
       }
     }
     html += "</tr>";
   }
   html += "</tbody>";
-  grid.innerHTML = html;
+  return html;
+};
+var renderCalendar = (el, year, month, selectedDay) => {
+  const heading = el.querySelector(".calendar-heading");
+  if (heading)
+    heading.textContent = `${MONTHS[month]} ${year}`;
+  const grid = el.querySelector(".calendar-grid");
+  if (!grid)
+    return;
+  const active = el.ownerDocument.activeElement;
+  const focusKey = active && el.contains(active) ? active.closest(".calendar-day")?.getAttribute("data-cal-date") : null;
+  dfDollar(grid).morph(renderGrid(year, month, selectedDay, el.dataset.calId || ""));
+  if (focusKey)
+    grid.querySelector(`[data-cal-date="${focusKey}"] button`)?.focus();
+  const selDate = el.querySelector(".calendar-day[data-selected]")?.getAttribute("data-cal-date");
+  if (selDate)
+    grid.setAttribute("data-selected-date", selDate);
+  else
+    grid.removeAttribute("data-selected-date");
 };
 function init4() {
   document.querySelectorAll(".calendar:not([data-init])").forEach((cal) => {
     cal.dataset.init = "";
+    cal.dataset.calId = cal.id || `dfsc-${++calSeq}`;
     const now = new Date;
     const state = cal._calState = {
       year: now.getFullYear(),
@@ -4239,7 +4257,7 @@ new MutationObserver(init22).observe(document, { childList: true, subtree: true 
 
 // src/components/toast/toast.ts
 var df$23 = defussGlobals();
-var dfDollar = defussQuery();
+var dfDollar2 = defussQuery();
 var toastStates = ["default"];
 function triggerStateChange23(container, stateName, _config) {
   if (stateName !== "default")
@@ -4291,7 +4309,7 @@ var toastDismiss = (el, callback) => {
     try {
       el.hidePopover();
     } catch {}
-    dfDollar(el).remove();
+    dfDollar2(el).remove();
     stackToasts(container);
     if (callback)
       callback();
@@ -4360,7 +4378,7 @@ var toastCreate = (options) => {
     actionsDiv.appendChild(actionBtn);
     el.appendChild(actionsDiv);
   }
-  dfDollar(toastContainer).append(el);
+  dfDollar2(toastContainer).append(el);
   el.showPopover();
   stackToasts(toastContainer);
   toastCallbacks.set(el, { onDismiss, action });
@@ -4848,5 +4866,5 @@ function init28() {
 init28();
 new MutationObserver(init28).observe(document, { childList: true, subtree: true });
 
-//# debugId=B5406226522AEDBA64756E2164756E21
+//# debugId=E026D8492667326164756E2164756E21
 //# sourceMappingURL=all.js.map

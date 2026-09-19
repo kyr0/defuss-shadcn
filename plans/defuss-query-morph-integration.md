@@ -1,15 +1,17 @@
 # defuss-query + defuss-morph Integration Plan
 
-> Status: **partially implemented** (revision 2.1, 2026-09-19). Landed: §2 runtime/artifact
+> Status: **partially implemented** (revision 2.2, 2026-09-19). Landed: §2 runtime/artifact
 > contract (core.js + individual bindings + all = core + components), the §2.2 shared accessor,
 > `df$.shadcn` namespace across components/docs/tests/skills, docs-runtime staging (no early
 > namespace access), §5.1 artifact gates (core allow-list, all composition, core bindings,
 > legacy namespace, shared ABI), §5.3 e2e for both delivery modes + bootstrap failures
 > (tests/e2e/core.e2e.ts), stats core measurement, §5 docs parity (guide page "DOM
-> Querying & Morphing", README/index/installation/es-modules updates), and the first §3
-> Tier-1 migration (toast: query `.append()` mount / `.remove()` dismiss, e2e-covered).
+> Querying & Morphing", README/index/installation/es-modules updates), and two §3 Tier-1
+> migrations: toast (query `.append()` mount / `.remove()` dismiss) and calendar
+> (`df$(grid).morph()` keyed by stable ISO-date cell ids replacing `innerHTML` — node
+> identity + focus survive re-renders, identity-tested).
 > **Not yet implemented:** §3 query-baseline + the remaining Tier-1 morph migrations inside
-> the components (calendar/combobox/carousel still use direct DOM writes), the §5.1
+> the components (combobox/carousel still use direct DOM writes), the §5.1
 > DOM-boundary gate, and per-release provenance notices. Revision 2 baseline text below is
 > retained unchanged.
 >

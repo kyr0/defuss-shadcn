@@ -9,17 +9,17 @@
   },
   "withJs": 28,
   "withoutJs": 44,
-  "totalSize": 431086,
-  "totalSizeMinified": 211830,
-  "totalSizeGz": 139567,
-  "totalSizeGzMinified": 77761,
+  "totalSize": 434147,
+  "totalSizeMinified": 212593,
+  "totalSizeGz": 140734,
+  "totalSizeGzMinified": 78023,
   "bundle": {
-    "jsSize": 170257,
-    "jsSizeMinified": 90344,
+    "jsSize": 171403,
+    "jsSizeMinified": 91088,
     "cssSize": 249940,
     "cssSizeMinified": 140482,
-    "totalSizeGz": 77365,
-    "totalSizeGzMinified": 45868
+    "totalSizeGz": 77668,
+    "totalSizeGzMinified": 46095
   },
   "core": {
     "jsSize": 63213,
@@ -164,14 +164,14 @@
       "name": "calendar",
       "type": "ATM",
       "withJs": true,
-      "jsSize": 9623,
-      "jsSizeMinified": 3608,
+      "jsSize": 12684,
+      "jsSizeMinified": 4371,
       "cssSize": 5219,
       "cssSizeMinified": 3386,
-      "totalSizeGz": 4212,
-      "totalSizeGzMinified": 2429,
-      "totalSize": 14842,
-      "totalSizeMinified": 6994
+      "totalSizeGz": 5379,
+      "totalSizeGzMinified": 2691,
+      "totalSize": 17903,
+      "totalSizeMinified": 7757
     },
     "card": {
       "name": "card",
