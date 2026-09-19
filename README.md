@@ -11,7 +11,7 @@
 
 **A UI component system that scales with _local_ AI.** Themeable components built on semantic HTML, modern CSS, and vanilla JavaScript. No framework. No build step for consumers — `dist/` is committed and ready to use as-is. The simplest possible foundation for AI-driven prototyping.
 
-**72 components — 28 with JavaScript, 44 CSS-only — 76.5 KiB minified + compressed — 45.4 KiB as the all.css/all.js bundle.**
+**72 components — 28 with JavaScript, 44 CSS-only — 76.5 KiB minified + compressed — 45.5 KiB as the all.css/all.js bundle.**
 44 of 72 components need no JavaScript — native HTML and modern CSS cover them entirely.
 The footprint is measured from the shipped `dist/` files on every build and published as
 [`dist/stats.json`](dist/stats.json); `verify` fails the build if this sentence and that file disagree.
@@ -57,7 +57,7 @@ A portable UI component system built on the [shadcn/ui](https://ui.shadcn.com) t
 
 Two delivery modes, one implementation: **load core plus the components you use, or load all alone.** Both modes include defuss-query and defuss-morph through core; documentation code is separate. No framework or jQuery dependency.
 
-`core.js` installs the callable `df$` runtime (query + morph + the shared component layer at `df$.shadcn.shared`) — every component `.js` requires it, loaded first; a missing or mismatched core fails with one actionable load-order error before anything renders. `all.css` / `all.js` bundle the core runtime plus every component (minified twins: `core.min.js`, `all.min.css` + `all.min.css.map`, `all.min.js` + `all.min.js.map`). The per-component files stay available — include only what you use; their stylesheets are independent of each other.
+`core.js` installs the callable `df$` runtime (query + morph + the shared component layer at `df$.shadcn.shared`) — every component `.js` requires it, loaded first; a missing or mismatched core fails with one actionable load-order error before anything renders. `all.css` / `all.js` bundle the core runtime plus every component (minified twins: `core.min.js`, `all.min.css` + `all.min.css.map`, `all.min.js` + `all.min.js.map`). Every runtime bundle carries a per-release provenance pointer (bundled upstream versions + license hashes; full notice in `components/NOTICE.txt`). The per-component files stay available — include only what you use; their stylesheets are independent of each other.
 
 ### Self-hosting
 

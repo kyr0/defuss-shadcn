@@ -1,6 +1,6 @@
 # defuss-query + defuss-morph Integration Plan
 
-> Status: **substantially implemented** (revision 2.3, 2026-09-19). Landed: §2 runtime/artifact
+> Status: **implemented** (revision 2.4, 2026-09-19). Landed: §2 runtime/artifact
 > contract (core.js + individual bindings + all = core + components), the §2.2 shared accessor,
 > `df$.shadcn` namespace across components/docs/tests/skills, docs-runtime staging (no early
 > namespace access), §5.1 artifact gates (core allow-list, all composition, core bindings,
@@ -15,8 +15,16 @@
 > .text()/.val()/.css()` scalar writes, `.append()/.before()/.after()` exact moves, `.html()`
 > single-pass swatch render; native protocols — showModal/showPopover/focus/DnD — stay native
 > as named exceptions).
-> **Not yet implemented:** the §5.1 DOM-boundary source gate and per-release provenance
-> notices. Revision 2 baseline text below is retained unchanged.
+> **§5.1 DOM boundary** (verify gate `DOM boundary (migrated components)`): component sources
+> that adopted the runtime (import `defussQuery`) may not use native structural sinks
+> (innerHTML/outerHTML assignment, insertAdjacentHTML/Element, replaceChildren, insertBefore,
+> appendChild) nor the §5.2 `.prop(innerHTML|outerHTML|textContent)` escape — the allow-list
+> ships empty (every migrated file uses query ops). **Per-release provenance** (§6): the
+> deterministic stamp (defuss-shadcn version + pinned upstream versions + SHA-256 of each
+> LICENSE) rides inside core.js/core.min.js/all.js/all.min.js as a pointer comment and ships
+> as dist/components/NOTICE.txt (scripts/lib/provenance.ts + provenance-files.ts); verify's
+> `runtime provenance` gate fails on drift, tests/provenance.test.ts pins the contract.
+> Revision 2 baseline text below is retained unchanged.
 >
 > (Original revision-2 header:) proposal; application migration and distribution changes not implemented. Revision 2, 2026-09-17.
 >
