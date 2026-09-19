@@ -2219,6 +2219,8 @@ new MutationObserver(init4).observe(document, { childList: true, subtree: true }
 
 // src/components/carousel/carousel.ts
 var df$5 = defussGlobals();
+var dfDollar2 = defussQuery();
+var carSeq = 0;
 var carouselStates = ["default"];
 function triggerStateChange5(carousel, config) {
   const index = Number(config?.index ?? 0);
@@ -2302,21 +2304,18 @@ function init5() {
       carousel.dataset.currentIndex = String(index);
       if (!isLoop) {
         if (prevBtn)
-          prevBtn.disabled = currentIndex <= 0;
+          dfDollar2(prevBtn).prop("disabled", currentIndex <= 0);
         if (nextBtn)
-          nextBtn.disabled = currentIndex >= allSlides.length - 1;
+          dfDollar2(nextBtn).prop("disabled", currentIndex >= allSlides.length - 1);
       }
-      if (dotsContainer) {
-        const dots = dotsContainer.querySelectorAll(".carousel-dot");
-        dots.forEach((dot, i) => {
-          dot.setAttribute("aria-current", i === currentIndex ? "true" : "false");
+      if (dotsContainer)
+        dfDollar2(dotsContainer).find(".carousel-dot").each(function(i) {
+          dfDollar2(this).attr("aria-current", i === currentIndex ? "true" : "false");
         });
-      }
-      if (counter) {
-        counter.textContent = `Slide ${currentIndex + 1} of ${allSlides.length}`;
-      }
+      if (counter)
+        dfDollar2(counter).text(`Slide ${currentIndex + 1} of ${allSlides.length}`);
       allSlides.forEach((slide, i) => {
-        slide.setAttribute("aria-label", `${i + 1} of ${allSlides.length}`);
+        dfDollar2(slide).attr("aria-label", `${i + 1} of ${allSlides.length}`);
       });
     };
     const observer = new IntersectionObserver((entries) => {
@@ -2336,27 +2335,46 @@ function init5() {
     if (nextBtn)
       nextBtn.addEventListener("click", goNext);
     carousel._goTo = scrollToIndex;
-    if (dotsContainer) {
-      const allSlides = slides();
-      if (!dotsContainer.children.length && allSlides.length) {
-        allSlides.forEach((_, i) => {
-          const dot = document.createElement("button");
-          dot.className = "carousel-dot";
-          dot.setAttribute("aria-label", `Go to slide ${i + 1}`);
-          dot.setAttribute("aria-current", i === 0 ? "true" : "false");
-          dotsContainer.appendChild(dot);
-        });
+    const carId = carousel.dataset.carouselId ||= carousel.id || `dfsc-${++carSeq}`;
+    let dotCount = -1;
+    const renderDots = () => {
+      if (!dotsContainer)
+        return;
+      const n = slides().length;
+      if (dotCount === -1 && dotsContainer.children.length) {
+        dotCount = n;
+        return;
       }
+      if (n === dotCount)
+        return;
+      dotCount = n;
+      const html = Array.from({ length: n }, (_, i) => `<button id="${carId}-dot-${i}" class="carousel-dot" aria-label="Go to slide ${i + 1}" aria-current="${i === currentIndex ? "true" : "false"}"></button>`).join("");
+      dfDollar2(dotsContainer).morph(html);
+    };
+    if (dotsContainer) {
+      renderDots();
       dotsContainer.addEventListener("click", (e) => {
         const dot = e.target.closest(".carousel-dot");
         if (!dot)
           return;
-        const dots = Array.from(dotsContainer.querySelectorAll(".carousel-dot"));
-        const idx = dots.indexOf(dot);
+        const idx = Array.from(dotsContainer.querySelectorAll(".carousel-dot")).indexOf(dot);
         if (idx !== -1)
           scrollToIndex(idx);
       });
     }
+    let lastSlideCount = slides().length;
+    const syncObserver = new MutationObserver(() => {
+      const n = slides().length;
+      if (n !== lastSlideCount) {
+        lastSlideCount = n;
+        renderDots();
+        observer.disconnect();
+        slides().forEach((slide) => observer.observe(slide));
+        updateState(Math.min(currentIndex, Math.max(0, n - 1)));
+      }
+    });
+    if (viewport)
+      syncObserver.observe(viewport, { childList: true });
     carousel.addEventListener("keydown", (e) => {
       const prevKey = isVertical ? "ArrowUp" : "ArrowLeft";
       const nextKey = isVertical ? "ArrowDown" : "ArrowRight";
@@ -2461,7 +2479,7 @@ new MutationObserver(init6).observe(document, { childList: true, subtree: true }
 
 // src/components/combobox/combobox.ts
 var df$7 = defussGlobals();
-var dfDollar2 = defussQuery();
+var dfDollar3 = defussQuery();
 var comboboxStates = ["default", "open"];
 function triggerStateChange7(popover, stateName, _config) {
   switch (stateName) {
@@ -2495,7 +2513,7 @@ df$7.comboboxStates = comboboxStates;
 function init7() {
   document.querySelectorAll(".combobox:not([data-init])").forEach((wrapper) => {
     wrapper.dataset.init = "";
-    const $wrapper = dfDollar2(wrapper);
+    const $wrapper = dfDollar3(wrapper);
     const $trigger = $wrapper.find(".combobox-trigger");
     const $value = $wrapper.find(".combobox-value");
     const $popover = $wrapper.find(".combobox-content");
@@ -2519,7 +2537,7 @@ function init7() {
     clearBtn.className = "combobox-clear";
     clearBtn.setAttribute("aria-label", "Clear selection");
     clearBtn.innerHTML = '<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
-    dfDollar2(clearBtn).css("positionAnchor", anchorId);
+    dfDollar3(clearBtn).css("positionAnchor", anchorId);
     $trigger.after(clearBtn);
     clearBtn.addEventListener("click", () => {
       allItems.attr("aria-selected", "false");
@@ -2553,7 +2571,7 @@ function init7() {
       let hasVisible = false;
       allItems.forEach((item) => {
         const match = !q || item.textContent.trim().toLowerCase().includes(q);
-        dfDollar2(item).prop("hidden", !match);
+        dfDollar3(item).prop("hidden", !match);
         if (match)
           hasVisible = true;
       });
@@ -2566,13 +2584,13 @@ function init7() {
             groupHasVisible = true;
           next = next.nextElementSibling;
         }
-        dfDollar2(label).prop("hidden", !groupHasVisible);
+        dfDollar3(label).prop("hidden", !groupHasVisible);
       });
       $listbox.find(".combobox-separator").each(function() {
         const sep = this;
         const prev = sep.previousElementSibling;
         const next = sep.nextElementSibling;
-        dfDollar2(sep).prop("hidden", Boolean(prev && prev.hidden || next && next.hidden));
+        dfDollar3(sep).prop("hidden", Boolean(prev && prev.hidden || next && next.hidden));
       });
       if ($empty.length)
         $empty.prop("hidden", hasVisible);
@@ -2587,7 +2605,7 @@ function init7() {
       if (index < 0 || index >= items.length)
         return;
       highlighted = index;
-      dfDollar2(items[index]).data("highlighted", "");
+      dfDollar3(items[index]).data("highlighted", "");
       items[index].scrollIntoView({ block: "nearest" });
       $search.attr("aria-activedescendant", items[index].id);
     };
@@ -2595,7 +2613,7 @@ function init7() {
       if (item.getAttribute("aria-disabled") === "true")
         return;
       allItems.attr("aria-selected", "false");
-      dfDollar2(item).attr("aria-selected", "true");
+      dfDollar3(item).attr("aria-selected", "true");
       $value.text(item.textContent.trim()).attr("data-placeholder", null);
       close();
     };
@@ -4253,7 +4271,7 @@ new MutationObserver(init22).observe(document, { childList: true, subtree: true 
 
 // src/components/toast/toast.ts
 var df$23 = defussGlobals();
-var dfDollar3 = defussQuery();
+var dfDollar4 = defussQuery();
 var toastStates = ["default"];
 function triggerStateChange23(container, stateName, _config) {
   if (stateName !== "default")
@@ -4305,7 +4323,7 @@ var toastDismiss = (el, callback) => {
     try {
       el.hidePopover();
     } catch {}
-    dfDollar3(el).remove();
+    dfDollar4(el).remove();
     stackToasts(container);
     if (callback)
       callback();
@@ -4374,7 +4392,7 @@ var toastCreate = (options) => {
     actionsDiv.appendChild(actionBtn);
     el.appendChild(actionsDiv);
   }
-  dfDollar3(toastContainer).append(el);
+  dfDollar4(toastContainer).append(el);
   el.showPopover();
   stackToasts(toastContainer);
   toastCallbacks.set(el, { onDismiss, action });
@@ -4862,5 +4880,5 @@ function init28() {
 init28();
 new MutationObserver(init28).observe(document, { childList: true, subtree: true });
 
-//# debugId=35380EF87B23D6F964756E2164756E21
+//# debugId=41E0F5BC78309D1C64756E2164756E21
 //# sourceMappingURL=all.js.map

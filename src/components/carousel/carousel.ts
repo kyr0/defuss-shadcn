@@ -7,9 +7,15 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals } from '../../shared/state-api.js';
+// defussQuery: the callable runtime — dots are (re)rendered through keyed
+// morph, flags ride .attr()/.prop() (plans/defuss-query-morph-integration.md
+// §3 carousel row).
+import { defussGlobals, defussQuery } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
+// id prefix source for carousels without their own #id (unique per element)
+let carSeq = 0;
 
 const carouselStates = ['default'];
 
@@ -113,29 +119,23 @@ document.querySelectorAll('.carousel:not([data-init])').forEach((carousel) => {
     // state must not live in module scope)
     carousel.dataset.currentIndex = String(index);
 
-    // Prev/next disabled states (non-loop)
+    // Prev/next disabled states (non-loop) — native IDL flags via .prop()
     if (!isLoop) {
-      if (prevBtn) prevBtn.disabled = currentIndex <= 0;
-      if (nextBtn) nextBtn.disabled = currentIndex >= allSlides.length - 1;
+      if (prevBtn) dfDollar(prevBtn).prop('disabled', currentIndex <= 0);
+      if (nextBtn) dfDollar(nextBtn).prop('disabled', currentIndex >= allSlides.length - 1);
     }
 
-    // Dot indicators
-    if (dotsContainer) {
-      const dots = dotsContainer.querySelectorAll('.carousel-dot');
-      dots.forEach((dot, i) => {
-        dot.setAttribute('aria-current', i === currentIndex ? 'true' : 'false');
-      });
-    }
+    // Dot indicators — scalar ARIA flag per dot through query (§3: attr, no re-render)
+    if (dotsContainer)
+      dfDollar(dotsContainer)
+        .find('.carousel-dot')
+        .each(function (this: HTMLElement, i: number) { dfDollar(this).attr('aria-current', i === currentIndex ? 'true' : 'false'); });
 
-    // Counter
-    if (counter) {
-      counter.textContent = `Slide ${currentIndex + 1} of ${allSlides.length}`;
-    }
+    // Counter (literal template text, consumer-visible label)
+    if (counter) dfDollar(counter).text(`Slide ${currentIndex + 1} of ${allSlides.length}`);
 
     // ARIA labels on slides
-    allSlides.forEach((slide, i) => {
-      slide.setAttribute('aria-label', `${i + 1} of ${allSlides.length}`);
-    });
+    allSlides.forEach((slide, i) => { dfDollar(slide).attr('aria-label', `${i + 1} of ${allSlides.length}`); });
   };
 
   // ── IntersectionObserver for current slide ──
@@ -162,28 +162,49 @@ document.querySelectorAll('.carousel:not([data-init])').forEach((carousel) => {
   // expose the closure's scroll-to for the State API (element member, not module)
   carousel._goTo = scrollToIndex;
 
-  // ── Dot click handlers ──────────────────────
+  // ── Dots ─────────────────────────────────────
+  // Dot structure renders through morph with stable id keys (slides are
+  // consumer-authored, fixed order → index ids ARE the identity, §3). An
+  // empty container morphs the initial dot list; when slides change out of
+  // band, a slide-count check short-circuits unless reconciliation is due —
+  // then ONE keyed morph pass reconciles instead of hand-building buttons.
+  // Consumer-provided dots stay consumer-owned (never re-rendered; only
+  // their aria-current flag is maintained).
+  const carId = (carousel.dataset.carouselId ||= carousel.id || `dfsc-${++carSeq}`);
+  let dotCount = -1;
+  const renderDots = () => {
+    if (!dotsContainer) return;
+    const n = slides().length;
+    if (dotCount === -1 && dotsContainer.children.length) { dotCount = n; return; } // consumer dots
+    if (n === dotCount) return; // structure already matches the slide count
+    dotCount = n;
+    const html = Array.from({ length: n }, (_, i) =>
+      `<button id="${carId}-dot-${i}" class="carousel-dot" aria-label="Go to slide ${i + 1}" aria-current="${i === currentIndex ? 'true' : 'false'}"></button>`,
+    ).join('');
+    dfDollar(dotsContainer).morph(html); // trusted static markup (§5.1 sink rule)
+  };
   if (dotsContainer) {
-    const allSlides = slides();
-    // Generate dots if empty
-    if (!dotsContainer.children.length && allSlides.length) {
-      allSlides.forEach((_, i) => {
-        const dot = document.createElement('button');
-        dot.className = 'carousel-dot';
-        dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
-        dot.setAttribute('aria-current', i === 0 ? 'true' : 'false');
-        dotsContainer.appendChild(dot);
-      });
-    }
-
+    renderDots();
     dotsContainer.addEventListener('click', (e) => {
       const dot = e.target.closest('.carousel-dot');
       if (!dot) return;
-      const dots = Array.from(dotsContainer.querySelectorAll('.carousel-dot'));
-      const idx = dots.indexOf(dot);
+      const idx = Array.from(dotsContainer.querySelectorAll('.carousel-dot')).indexOf(dot);
       if (idx !== -1) scrollToIndex(idx);
     });
   }
+  // keep the dot structure in sync when slides change out of band
+  let lastSlideCount = slides().length;
+  const syncObserver = new MutationObserver(() => {
+    const n = slides().length;
+    if (n !== lastSlideCount) {
+      lastSlideCount = n;
+      renderDots();
+      observer.disconnect();
+      slides().forEach((slide) => observer.observe(slide));
+      updateState(Math.min(currentIndex, Math.max(0, n - 1)));
+    }
+  });
+  if (viewport) syncObserver.observe(viewport, { childList: true });
 
   // ── Keyboard navigation ─────────────────────
   carousel.addEventListener('keydown', (e) => {

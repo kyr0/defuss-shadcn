@@ -167,6 +167,12 @@ The api is bound per carousel; the registry global is
 ## Notes
 
 - **No library needed** — built entirely on CSS scroll-snap + IntersectionObserver.
+- **Dots are morph-rendered** (see the "DOM Querying & Morphing" guide): an
+  empty `.carousel-dots` is filled by `df$(dots).morph()` with stable
+  `<carousel id>-dot-<i>` ids; out-of-band slide add/remove reconciles the
+  dot list in one keyed pass (retained dots keep node identity).
+  Consumer-authored dots are never re-rendered — only `aria-current` is
+  flagged.
 - **Slide sizing** — default is `flex: 0 0 100%`. Override `flex` on `.carousel-slide` to show multiple slides (e.g., `calc(33.333% - 0.667rem)` for 3-up).
 - **Gap / spacing** — controlled by the `gap` property on `.carousel-viewport` (default `1rem`).
 - **Dot auto-generation** — if `.carousel-dots` is present but empty, dots are auto-created by JS from the slide count.

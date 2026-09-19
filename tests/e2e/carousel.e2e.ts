@@ -97,6 +97,9 @@ try {
   await check('dots are auto-generated, clickable, and track aria-current', async () => {
     const count = await page.$$eval('#car-dots .carousel-dot', (els) => els.length);
     assert.equal(count, 2, 'one dot per slide');
+    // §3: dots are morph-rendered with stable ids keyed on slide position
+    const ids = await page.$$eval('#car-dots .carousel-dot', (els) => els.map((el) => el.id));
+    assert.deepEqual(ids, ['car-dots-dot-0', 'car-dots-dot-1'], 'dots carry <carouselId>-dot-<i> ids');
     await page.click('#car-dots .carousel-dot:nth-child(2)');
     await waitForIndex(page, 'car-dots', 1);
     const currents = await page.$$eval('#car-dots .carousel-dot', (els) =>
@@ -108,6 +111,35 @@ try {
       'Slide 2 of 2',
       'counter text updated',
     );
+  });
+
+  // -- §3 Tier-1: dot structure morphs when slides change out of band -------
+  await check('adding a slide morphs the dot structure (existing dots keep identity)', async () => {
+    const res = await page.evaluate(async () => {
+      const vp = document.querySelector('#car-dots .carousel-viewport')!;
+      const dot2 = document.querySelector('#car-dots-dot-1') as HTMLElement;
+      (dot2 as any).__dotSentinel = 1;
+      const slide = document.createElement('div');
+      slide.className = 'carousel-slide';
+      slide.textContent = 'third';
+      vp.appendChild(slide); // MutationObserver reconciles the dot list
+      await new Promise((r) => setTimeout(r, 100));
+      const dots = [...document.querySelectorAll('#car-dots .carousel-dot')] as HTMLElement[];
+      // cleanup: drop the slide again (dots reconcile back down)
+      slide.remove();
+      await new Promise((r) => setTimeout(r, 100));
+      const after = document.querySelectorAll('#car-dots .carousel-dot').length;
+      return {
+        grew: dots.length === 3,
+        idsOk: dots.map((d) => d.id).join(',') === 'car-dots-dot-0,car-dots-dot-1,car-dots-dot-2',
+        kept: (document.querySelector('#car-dots-dot-1') as any)?.__dotSentinel === 1,
+        after,
+      };
+    });
+    assert.ok(res.grew, 'third dot appears after a slide is added');
+    assert.ok(res.idsOk, 'dot ids follow the keyed scheme');
+    assert.ok(res.kept, 'retained dot node survives the keyed morph (moved, not replaced)');
+    assert.equal(res.after, 2, 'dot list reconciles back when the slide is removed');
   });
 
   // -- State API (AGENTS.md "State API") -------------------------------------

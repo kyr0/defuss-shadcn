@@ -9,17 +9,17 @@
   },
   "withJs": 28,
   "withoutJs": 44,
-  "totalSize": 435087,
-  "totalSizeMinified": 212474,
-  "totalSizeGz": 141240,
-  "totalSizeGzMinified": 78078,
+  "totalSize": 436981,
+  "totalSizeMinified": 212794,
+  "totalSizeGz": 142005,
+  "totalSizeGzMinified": 78255,
   "bundle": {
-    "jsSize": 171357,
-    "jsSizeMinified": 90970,
+    "jsSize": 172077,
+    "jsSizeMinified": 91276,
     "cssSize": 249940,
     "cssSizeMinified": 140482,
-    "totalSizeGz": 77799,
-    "totalSizeGzMinified": 46195
+    "totalSizeGz": 77995,
+    "totalSizeGzMinified": 46376
   },
   "core": {
     "jsSize": 63213,
@@ -190,14 +190,14 @@
       "name": "carousel",
       "type": "ATM",
       "withJs": true,
-      "jsSize": 11350,
-      "jsSizeMinified": 3748,
+      "jsSize": 13244,
+      "jsSizeMinified": 4068,
       "cssSize": 4409,
       "cssSizeMinified": 2529,
-      "totalSizeGz": 4306,
-      "totalSizeGzMinified": 2459,
-      "totalSize": 15759,
-      "totalSizeMinified": 6277
+      "totalSizeGz": 5071,
+      "totalSizeGzMinified": 2636,
+      "totalSize": 17653,
+      "totalSizeMinified": 6597
     },
     "checkbox": {
       "name": "checkbox",
