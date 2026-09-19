@@ -2,40 +2,23 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>core e2e fixture — the modular path (no all.js)</title>
-    <!-- THE MODULAR PATH (plans/core-bundle.md): exactly two fixed includes —
-         core.css (tokens + sizing + layout + accessibility) and core.js (the
-         df$ runtime) — then only the per-component files used below. The
-         bundle files (all.css / all.js) are deliberately NOT loaded: this
-         fixture is the proof the pick-what-you-need path works standalone. -->
-    <link rel="stylesheet" href="/dist/components/core.css" />
+    <title>core runtime e2e fixture — modular mode (core + selected components)</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
     <link rel="stylesheet" href="/dist/components/badge/badge.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
     <link rel="stylesheet" href="/dist/components/dialog/dialog.css" />
-    <script type="module" src="/dist/components/core.js"></script>
   </head>
-  <!-- plain block flow (a flex body would hide badge's inline-flex) -->
-  <body style="padding:2rem;">
-    <!-- core.css: tokens live, utilities apply -->
-    <div id="probe-tokens" data-probe="tokens">--primary</div>
-    <div id="probe-flex" class="flex" style="width:80px;height:20px;background:skyblue;">
-      <span style="width:40px;height:20px;background:pink;">a</span
-      ><span style="width:40px;height:20px;background=pink;">b</span>
-    </div>
-    <div id="probe-w4" class="w-4" style="height:4px;background:gray;">w-4</div>
-    <span id="probe-sr" class="sr-only">screen-reader only</span>
+  <body>
+    <!-- CSS-only component: proves tokens + component CSS apply without JS -->
+    <span class="badge" id="css-only" data-variant="default">CSS-only</span>
 
-    <!-- CSS-only component: badge (no dialog-less behavior needed) -->
-    <span class="badge" id="b-default" data-variant="default">Default</span>
-
-    <!-- interactive component: dialog — needs core.js, and only core.js -->
-    <button class="btn" id="open-dlg" data-dialog-trigger="dlg" aria-haspopup="dialog">Open</button>
-    <dialog id="dlg" class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-title">
-      <div class="dialog-content">
-        <h2 id="dlg-title" class="dialog-title">Modular dialog</h2>
-        <p class="dialog-description">No all.js was loaded on this page.</p>
-      </div>
+    <!-- interactive component: proves a component bound to core initializes -->
+    <button class="btn" id="trigger" data-dialog-trigger="demo-dialog" aria-haspopup="dialog">Open dialog</button>
+    <dialog id="demo-dialog" class="dialog" role="dialog" aria-modal="true">
+      <div class="dialog-content"><p id="demo-body">core + dialog</p></div>
     </dialog>
 
+    <script type="module" src="/dist/components/core.js"></script>
     <script type="module" src="/dist/components/dialog/dialog.js"></script>
   </body>
 </html>

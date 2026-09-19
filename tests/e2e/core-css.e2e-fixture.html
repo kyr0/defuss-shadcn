@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>core.css e2e fixture — the modular CSS path (no all.css)</title>
+    <!-- THE MODULAR CSS PATH (plans/core-bundle.md): the fixed pair is
+         core.css (tokens + sizing + layout + accessibility) + core.js, then
+         only the per-component files used below. all.css is deliberately NOT
+         loaded — core.css must carry the whole theme base by itself. -->
+    <link rel="stylesheet" href="/dist/components/core.css" />
+    <link rel="stylesheet" href="/dist/components/badge/badge.css" />
+    <link rel="stylesheet" href="/dist/components/dialog/dialog.css" />
+    <script type="module" src="/dist/components/core.js"></script>
+  </head>
+  <!-- plain block flow (a flex body would hide badge's inline-flex) -->
+  <body style="padding:2rem;">
+    <!-- core.css: tokens live, utilities apply -->
+    <div id="probe-tokens">--primary</div>
+    <div id="probe-flex" class="flex" style="width:80px;height:20px;background:skyblue;">
+      <span style="width:40px;height:20px;background:pink;">a</span
+      ><span style="width:40px;height:20px;background:pink;">b</span>
+    </div>
+    <div id="probe-w4" class="w-4" style="height:4px;background:gray;">w-4</div>
+    <span id="probe-sr" class="sr-only">screen-reader only</span>
+
+    <!-- CSS-only component through the same base sheet -->
+    <span class="badge" id="b-default" data-variant="default">Default</span>
+
+    <!-- interactive component: dialog — initialized by core.js alone -->
+    <button class="btn" id="open-dlg" data-dialog-trigger="dlg" aria-haspopup="dialog">Open</button>
+    <dialog id="dlg" class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-title">
+      <div class="dialog-content">
+        <h2 id="dlg-title" class="dialog-title">Modular dialog</h2>
+        <p class="dialog-description">No all.css/all.js was loaded on this page.</p>
+      </div>
+    </dialog>
+
+    <script type="module" src="/dist/components/dialog/dialog.js"></script>
+  </body>
+</html>

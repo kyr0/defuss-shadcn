@@ -10,9 +10,11 @@
 > order: tokens → sizing → layout → accessibility), min twin + map enforced by the
 > `minified artifacts` gate, orphan-gate allow-listed in BUNDLE_ARTIFACTS; measured into
 > `stats.json`'s `core` block (`measureCore` now carries the CSS sizes) and shown by the
-> Getting Started "Core runtime" card. `tests/e2e/core.e2e.ts` proves the path standalone
-> (no all.css/all.js on the page: tokens, .flex/.w-4/.sr-only, callable `df$` + morph,
-> badge + dialog init + State API). Companion: the morph plan's §2.1 premise, completed.
+> Getting Started "Core runtime" card. `tests/e2e/core-css.e2e.ts` proves the CSS half
+> standalone (no all.css/all.js on the page: tokens, .flex/.w-4/.sr-only, badge + dialog
+> init); `tests/e2e/core.e2e.ts` keeps proving the runtime distribution contract (§2.3 +
+> §5.3: modular, all-alone, no-core, conflict fixtures). Companion: the morph plan's §2.1
+> premise, completed.
 >
 > **Idea:** today consumers pick one of two extremes — the fat `all.css`/`all.js`
 > bundle, or per-component files PLUS four separate theme stylesheets PLUS their own
