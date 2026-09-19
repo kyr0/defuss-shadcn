@@ -88,7 +88,8 @@ export function StatsCards(_props: Props) {
         <p class="statistic-title">Core runtime</p>
         <p class="statistic-value">{formatKiB(s.core.totalSizeGzMinified)}</p>
         <p class="statistic-description">
-          <code>core.min.js</code> — query + morph + shared, gzip
+          <code>core.min.js</code> + <code>core.min.css</code> — query + morph +
+          shared + theme utilities, gzip
         </p>
       </div>
     </div>

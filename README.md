@@ -49,13 +49,14 @@ A portable UI component system built on the [shadcn/ui](https://ui.shadcn.com) t
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.js"></script>
 
 <!-- 3b. …or core + only the components you use -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/core.css">
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/core.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/button/button.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.css">
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.js"></script>
 ```
 
-Two delivery modes, one implementation: **load core plus the components you use, or load all alone.** Both modes include defuss-query and defuss-morph through core; documentation code is separate. No framework or jQuery dependency.
+Two delivery modes, one implementation: **load core plus the components you use, or load all alone.** The core pair is `core.css` (tokens + sizing + layout + accessibility utilities) + `core.js` (the `df$` runtime: defuss-query + defuss-morph); documentation code is separate. No framework or jQuery dependency.
 
 `core.js` installs the callable `df$` runtime (query + morph + the shared component layer at `df$.shadcn.shared`) — every component `.js` requires it, loaded first; a missing or mismatched core fails with one actionable load-order error before anything renders. `all.css` / `all.js` bundle the core runtime plus every component (minified twins: `core.min.js`, `all.min.css` + `all.min.css.map`, `all.min.js` + `all.min.js.map`). Every runtime bundle carries a per-release provenance pointer (bundled upstream versions + license hashes; full notice in `components/NOTICE.txt`). The per-component files stay available — include only what you use; their stylesheets are independent of each other.
 
@@ -71,6 +72,7 @@ Each component is a self-contained folder with up to five layers:
 
 ```
 components/
+├── core.css              ← the theme base: tokens + sizing + layout + accessibility
 ├── core.js               ← the runtime: defuss-morph + defuss-query + shared layer
 ├── all.css               ← generated bundle: every component stylesheet
 ├── all.js                ← generated bundle: core runtime + every component's behavior
