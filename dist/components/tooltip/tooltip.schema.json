@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "name": "tooltip",
+  "states": {
+    "visible": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".tooltip"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "visible"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name",
+        "target": {
+          "kind": "selector",
+          "selector": ".tooltip"
+        }
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

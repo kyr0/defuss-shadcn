@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "name": "color-picker",
+  "states": {
+    "value": {
+      "type": "string",
+      "default": "#6366f1",
+      "target": {
+        "kind": "selector",
+        "selector": "input"
+      },
+      "mutation": {
+        "kind": "property",
+        "name": "value"
+      },
+      "observation": {
+        "kind": "property",
+        "name": "value",
+        "target": {
+          "kind": "selector",
+          "selector": "input"
+        }
+      },
+      "editor": {
+        "component": "text"
+      }
+    }
+  },
+  "actions": {}
+}

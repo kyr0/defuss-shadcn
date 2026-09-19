@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "name": "tree-view",
+  "states": {
+    "expanded": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".tree-branch"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "expanded"
+      },
+      "observation": {
+        "kind": "property",
+        "name": "open",
+        "target": {
+          "kind": "selector",
+          "selector": ".tree-branch"
+        }
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

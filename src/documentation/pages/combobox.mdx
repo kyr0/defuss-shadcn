@@ -85,130 +85,119 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first previewStyle="min-height:20rem;align-items:flex-start;padding-top:2rem;">
-  <ExampleLabel>Basic Combobox</ExampleLabel>
-  <ExampleHint>An outline button opens a popover with a search field and selectable options. Click the trigger or use keyboard to interact.</ExampleHint>
-  <div class="combobox" style="width:14rem;">
-    <label class="label" id="cb-framework-label">Framework</label>
-    <button class="btn combobox-trigger" data-variant="outline" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="cb-framework-label" aria-controls="cb-framework-popover">
-      <span class="combobox-value" data-placeholder="Select framework...">Select framework...</span>
-      <svg class="combobox-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="m7 15 5 5 5-5" />
-        <path d="m7 9 5-5 5 5" />
+```html example label="Basic Combobox" hint="An outline button opens a popover with a search field and selectable options. Click the trigger or use keyboard to interact." height="22"
+<div class="combobox" style="width:14rem;">
+  <label class="label" id="cb-framework-label">Framework</label>
+  <button class="btn combobox-trigger" data-variant="outline" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="cb-framework-label" aria-controls="cb-framework-popover">
+    <span class="combobox-value" data-placeholder="Select framework...">Select framework...</span>
+    <svg class="combobox-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="m7 15 5 5 5-5"></path>
+      <path d="m7 9 5-5 5 5"></path>
+    </svg>
+  </button>
+  <div id="cb-framework-popover" class="combobox-content" popover>
+    <div class="combobox-search">
+      <svg class="combobox-search-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.3-4.3"></path>
       </svg>
-    </button>
-    <div id="cb-framework-popover" class="combobox-content" popover data-state-demo>
-      <div class="combobox-search">
-        <svg class="combobox-search-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8" />
-          <path d="m21 21-4.3-4.3" />
-        </svg>
-        <input class="combobox-search-input" type="text" role="combobox" autocomplete="off" aria-expanded="true" aria-controls="cb-framework-listbox" aria-activedescendant aria-autocomplete="list" placeholder="Search..." />
-      </div>
-      <div id="cb-framework-listbox" role="listbox" class="combobox-listbox" aria-label="Frameworks">
-        <div class="combobox-empty" hidden>No results found.</div>
-        <div role="option" id="cb-opt-next" class="combobox-item" data-value="nextjs" aria-selected="false">Next.js</div>
-        <div role="option" id="cb-opt-svelte" class="combobox-item" data-value="sveltekit" aria-selected="false">SvelteKit</div>
-        <div role="option" id="cb-opt-nuxt" class="combobox-item" data-value="nuxt" aria-selected="false">Nuxt</div>
-        <div role="option" id="cb-opt-remix" class="combobox-item" data-value="remix" aria-selected="false">Remix</div>
-        <div role="option" id="cb-opt-astro" class="combobox-item" data-value="astro" aria-selected="false">Astro</div>
-      </div>
+      <input class="combobox-search-input" type="text" role="combobox" autocomplete="off" aria-expanded="true" aria-controls="cb-framework-listbox" aria-activedescendant aria-autocomplete="list" placeholder="Search..."></input>
+    </div>
+    <div id="cb-framework-listbox" role="listbox" class="combobox-listbox" aria-label="Frameworks">
+      <div class="combobox-empty" hidden>No results found.</div>
+      <div role="option" id="cb-opt-next" class="combobox-item" data-value="nextjs" aria-selected="false">Next.js</div>
+      <div role="option" id="cb-opt-svelte" class="combobox-item" data-value="sveltekit" aria-selected="false">SvelteKit</div>
+      <div role="option" id="cb-opt-nuxt" class="combobox-item" data-value="nuxt" aria-selected="false">Nuxt</div>
+      <div role="option" id="cb-opt-remix" class="combobox-item" data-value="remix" aria-selected="false">Remix</div>
+      <div role="option" id="cb-opt-astro" class="combobox-item" data-value="astro" aria-selected="false">Astro</div>
     </div>
   </div>
-  <ExampleCode>{"<div class=\"combobox\" style=\"width:14rem;\">\n  <label class=\"label\" id=\"framework-label\">Framework</label>\n  <button class=\"btn combobox-trigger\" data-variant=\"outline\"\n          aria-haspopup=\"listbox\"\n          aria-expanded=\"false\"\n          aria-labelledby=\"framework-label\"\n          aria-controls=\"framework-popover\">\n    <span class=\"combobox-value\"\n          data-placeholder=\"Select framework...\">\n      Select framework...\n    </span>\n    <svg class=\"combobox-chevron\" aria-hidden=\"true\"\n         width=\"16\" height=\"16\" viewBox=\"0 0 24 24\"\n         fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">\n      <path d=\"m7 15 5 5 5-5\"/>\n      <path d=\"m7 9 5-5 5 5\"/>\n    </svg>\n  </button>\n  <div id=\"framework-popover\"\n       class=\"combobox-content\" popover>\n    <div class=\"combobox-search\">\n      <svg class=\"combobox-search-icon\" ...>...</svg>\n      <input class=\"combobox-search-input\"\n             type=\"text\" role=\"combobox\"\n             autocomplete=\"off\"\n             aria-controls=\"framework-listbox\"\n             aria-autocomplete=\"list\"\n             placeholder=\"Search...\">\n    </div>\n    <div id=\"framework-listbox\"\n         role=\"listbox\" class=\"combobox-listbox\">\n      <div class=\"combobox-empty\" hidden>\n        No results found.\n      </div>\n      <div role=\"option\" class=\"combobox-item\"\n           data-value=\"nextjs\">Next.js</div>\n      <!-- more options... -->\n    </div>\n  </div>\n</div>"}</ExampleCode>
-</Example>
+</div>
+```
 
-<Example first previewStyle="min-height:22rem;align-items:flex-start;padding-top:2rem;">
-  <ExampleLabel>Grouped with Disabled Items</ExampleLabel>
-  <ExampleHint>Combobox with option groups, visual separators, and a disabled option. Use <code>.combobox-group-label</code> for headings and <code>aria-disabled="true"</code> to disable individual items.</ExampleHint>
-  <div class="combobox" style="width:14rem;">
-    <label class="label" id="cb-timezone-label">Timezone</label>
-    <button class="btn combobox-trigger" data-variant="outline" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="cb-timezone-label" aria-controls="cb-timezone-popover">
-      <span class="combobox-value" data-placeholder="Select timezone...">Select timezone...</span>
-      <svg class="combobox-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="m7 15 5 5 5-5" />
-        <path d="m7 9 5-5 5 5" />
+```html example label="Grouped with Disabled Items" hint="Combobox with option groups, visual separators, and a disabled option. Use .combobox-group-label for headings and aria-disabled='true' to disable individual items." height="22"
+<div class="combobox" style="width:14rem;">
+  <label class="label" id="cb-timezone-label">Timezone</label>
+  <button class="btn combobox-trigger" data-variant="outline" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="cb-timezone-label" aria-controls="cb-timezone-popover">
+    <span class="combobox-value" data-placeholder="Select timezone...">Select timezone...</span>
+    <svg class="combobox-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="m7 15 5 5 5-5"></path>
+      <path d="m7 9 5-5 5 5"></path>
+    </svg>
+  </button>
+  <div id="cb-timezone-popover" class="combobox-content" popover>
+    <div class="combobox-search">
+      <svg class="combobox-search-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.3-4.3"></path>
       </svg>
-    </button>
-    <div id="cb-timezone-popover" class="combobox-content" popover>
-      <div class="combobox-search">
-        <svg class="combobox-search-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8" />
-          <path d="m21 21-4.3-4.3" />
-        </svg>
-        <input class="combobox-search-input" type="text" role="combobox" autocomplete="off" aria-expanded="true" aria-controls="cb-timezone-listbox" aria-activedescendant aria-autocomplete="list" placeholder="Search..." />
-      </div>
-      <div id="cb-timezone-listbox" role="listbox" class="combobox-listbox" aria-label="Timezones">
-        <div class="combobox-empty" hidden>No results found.</div>
-        <div class="combobox-group-label">North America</div>
-        <div role="option" id="cb-tz-est" class="combobox-item" data-value="est" aria-selected="false">Eastern (EST)</div>
-        <div role="option" id="cb-tz-cst" class="combobox-item" data-value="cst" aria-selected="false">Central (CST)</div>
-        <div role="option" id="cb-tz-pst" class="combobox-item" data-value="pst" aria-selected="false">Pacific (PST)</div>
-        <div class="combobox-separator" />
-        <div class="combobox-group-label">Europe</div>
-        <div role="option" id="cb-tz-gmt" class="combobox-item" data-value="gmt" aria-selected="false">GMT (London)</div>
-        <div role="option" id="cb-tz-cet" class="combobox-item" data-value="cet" aria-selected="false">CET (Berlin)</div>
-        <div role="option" id="cb-tz-eet" class="combobox-item" data-value="eet" aria-selected="false" aria-disabled="true">EET (Bucharest)</div>
-      </div>
+      <input class="combobox-search-input" type="text" role="combobox" autocomplete="off" aria-expanded="true" aria-controls="cb-timezone-listbox" aria-activedescendant aria-autocomplete="list" placeholder="Search..."></input>
+    </div>
+    <div id="cb-timezone-listbox" role="listbox" class="combobox-listbox" aria-label="Timezones">
+      <div class="combobox-empty" hidden>No results found.</div>
+      <div class="combobox-group-label">North America</div>
+      <div role="option" id="cb-tz-est" class="combobox-item" data-value="est" aria-selected="false">Eastern (EST)</div>
+      <div role="option" id="cb-tz-cst" class="combobox-item" data-value="cst" aria-selected="false">Central (CST)</div>
+      <div role="option" id="cb-tz-pst" class="combobox-item" data-value="pst" aria-selected="false">Pacific (PST)</div>
+      <div class="combobox-separator"></div>
+      <div class="combobox-group-label">Europe</div>
+      <div role="option" id="cb-tz-gmt" class="combobox-item" data-value="gmt" aria-selected="false">GMT (London)</div>
+      <div role="option" id="cb-tz-cet" class="combobox-item" data-value="cet" aria-selected="false">CET (Berlin)</div>
+      <div role="option" id="cb-tz-eet" class="combobox-item" data-value="eet" aria-selected="false" aria-disabled="true">EET (Bucharest)</div>
     </div>
   </div>
-  <ExampleCode>{"<!-- Groups use .combobox-group-label and .combobox-separator -->\n<div class=\"combobox-group-label\">North America</div>\n<div role=\"option\" class=\"combobox-item\"\n     data-value=\"est\">Eastern (EST)</div>\n<div class=\"combobox-separator\"></div>\n<div class=\"combobox-group-label\">Europe</div>\n<div role=\"option\" class=\"combobox-item\"\n     data-value=\"gmt\">GMT (London)</div>\n\n<!-- Disabled option -->\n<div role=\"option\" class=\"combobox-item\"\n     aria-disabled=\"true\">EET (Bucharest)</div>"}</ExampleCode>
-</Example>
+</div>
+```
 
-<Example first previewStyle="min-height:6rem;align-items:flex-start;padding-top:2rem;">
-  <ExampleLabel>Disabled</ExampleLabel>
-  <ExampleHint>Disable the trigger button to prevent interaction.</ExampleHint>
-  <div class="combobox" style="width:14rem;">
-    <label class="label" id="cb-disabled-label">Framework</label>
-    <button class="btn combobox-trigger" data-variant="outline" disabled aria-haspopup="listbox" aria-expanded="false" aria-labelledby="cb-disabled-label" aria-controls="cb-disabled-popover">
-      <span class="combobox-value" data-placeholder="Select framework...">Select framework...</span>
-      <svg class="combobox-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="m7 15 5 5 5-5" />
-        <path d="m7 9 5-5 5 5" />
+```html example label="Disabled" hint="Disable the trigger button to prevent interaction." height="22"
+<div class="combobox" style="width:14rem;">
+  <label class="label" id="cb-disabled-label">Framework</label>
+  <button class="btn combobox-trigger" data-variant="outline" disabled aria-haspopup="listbox" aria-expanded="false" aria-labelledby="cb-disabled-label" aria-controls="cb-disabled-popover">
+    <span class="combobox-value" data-placeholder="Select framework...">Select framework...</span>
+    <svg class="combobox-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="m7 15 5 5 5-5"></path>
+      <path d="m7 9 5-5 5 5"></path>
+    </svg>
+  </button>
+  <div id="cb-disabled-popover" class="combobox-content" popover>
+    <div class="combobox-search">
+      <svg class="combobox-search-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.3-4.3"></path>
       </svg>
-    </button>
-    <div id="cb-disabled-popover" class="combobox-content" popover>
-      <div class="combobox-search">
-        <svg class="combobox-search-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8" />
-          <path d="m21 21-4.3-4.3" />
-        </svg>
-        <input class="combobox-search-input" type="text" role="combobox" autocomplete="off" aria-expanded="true" aria-controls="cb-disabled-listbox" aria-activedescendant aria-autocomplete="list" placeholder="Search..." />
-      </div>
-      <div id="cb-disabled-listbox" role="listbox" class="combobox-listbox" aria-label="Frameworks">
-        <div class="combobox-empty" hidden>No results found.</div>
-        <div role="option" id="cb-dis-next" class="combobox-item" data-value="nextjs" aria-selected="false">Next.js</div>
-        <div role="option" id="cb-dis-svelte" class="combobox-item" data-value="sveltekit" aria-selected="false">SvelteKit</div>
-      </div>
+      <input class="combobox-search-input" type="text" role="combobox" autocomplete="off" aria-expanded="true" aria-controls="cb-disabled-listbox" aria-activedescendant aria-autocomplete="list" placeholder="Search..."></input>
+    </div>
+    <div id="cb-disabled-listbox" role="listbox" class="combobox-listbox" aria-label="Frameworks">
+      <div class="combobox-empty" hidden>No results found.</div>
+      <div role="option" id="cb-dis-next" class="combobox-item" data-value="nextjs" aria-selected="false">Next.js</div>
+      <div role="option" id="cb-dis-svelte" class="combobox-item" data-value="sveltekit" aria-selected="false">SvelteKit</div>
     </div>
   </div>
-  <ExampleCode>{"<!-- Add disabled to the trigger button -->\n<button class=\"btn combobox-trigger\"\n        data-variant=\"outline\" disabled\n        aria-haspopup=\"listbox\"\n        aria-expanded=\"false\">\n  ...\n</button>"}</ExampleCode>
-</Example>
+</div>
+```
 
-<Example>
-  <ExampleLabel>Sizes</ExampleLabel>
-  <ExampleHint>Set <code>data-size</code> on the <code>.combobox</code> wrapper; trigger and list rows scale together — the default equals the <code>.btn</code> md step.</ExampleHint>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Extra small</span>
-    <div class="combobox flex-1" data-size="xs" style="max-width:12rem;"><button class="btn combobox-trigger" data-variant="outline" aria-haspopup="listbox" aria-expanded="false" aria-controls="sz-cb-xs"><span class="combobox-value" data-placeholder="Select…">Select…</span><svg class="combobox-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5" /><path d="m7 9 5-5 5 5" /></svg></button><div id="sz-cb-xs" class="combobox-content" popover><div class="combobox-search"><input class="combobox-search-input" type="text" placeholder="Search..." /></div><div class="combobox-listbox" role="listbox"><div class="combobox-empty" hidden>No results found.</div><div role="option" class="combobox-item" aria-selected="false">Alpha</div><div role="option" class="combobox-item" aria-selected="false">Beta</div></div></div></div>
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Small</span>
-    <div class="combobox flex-1" data-size="sm" style="max-width:12rem;"><button class="btn combobox-trigger" data-variant="outline" aria-haspopup="listbox" aria-expanded="false" aria-controls="sz-cb-sm"><span class="combobox-value" data-placeholder="Select…">Select…</span><svg class="combobox-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5" /><path d="m7 9 5-5 5 5" /></svg></button><div id="sz-cb-sm" class="combobox-content" popover><div class="combobox-search"><input class="combobox-search-input" type="text" placeholder="Search..." /></div><div class="combobox-listbox" role="listbox"><div class="combobox-empty" hidden>No results found.</div><div role="option" class="combobox-item" aria-selected="false">Alpha</div><div role="option" class="combobox-item" aria-selected="false">Beta</div></div></div></div>
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Medium</span>
-    <div class="combobox flex-1" data-size="md" style="max-width:12rem;"><button class="btn combobox-trigger" data-variant="outline" aria-haspopup="listbox" aria-expanded="false" aria-controls="sz-cb-md"><span class="combobox-value" data-placeholder="Select…">Select…</span><svg class="combobox-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5" /><path d="m7 9 5-5 5 5" /></svg></button><div id="sz-cb-md" class="combobox-content" popover><div class="combobox-search"><input class="combobox-search-input" type="text" placeholder="Search..." /></div><div class="combobox-listbox" role="listbox"><div class="combobox-empty" hidden>No results found.</div><div role="option" class="combobox-item" aria-selected="false">Alpha</div><div role="option" class="combobox-item" aria-selected="false">Beta</div></div></div></div>
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Large</span>
-    <div class="combobox flex-1" data-size="lg" style="max-width:12rem;"><button class="btn combobox-trigger" data-variant="outline" aria-haspopup="listbox" aria-expanded="false" aria-controls="sz-cb-lg"><span class="combobox-value" data-placeholder="Select…">Select…</span><svg class="combobox-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5" /><path d="m7 9 5-5 5 5" /></svg></button><div id="sz-cb-lg" class="combobox-content" popover><div class="combobox-search"><input class="combobox-search-input" type="text" placeholder="Search..." /></div><div class="combobox-listbox" role="listbox"><div class="combobox-empty" hidden>No results found.</div><div role="option" class="combobox-item" aria-selected="false">Alpha</div><div role="option" class="combobox-item" aria-selected="false">Beta</div></div></div></div>
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Extra large</span>
-    <div class="combobox flex-1" data-size="xl" style="max-width:12rem;"><button class="btn combobox-trigger" data-variant="outline" aria-haspopup="listbox" aria-expanded="false" aria-controls="sz-cb-xl"><span class="combobox-value" data-placeholder="Select…">Select…</span><svg class="combobox-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5" /><path d="m7 9 5-5 5 5" /></svg></button><div id="sz-cb-xl" class="combobox-content" popover><div class="combobox-search"><input class="combobox-search-input" type="text" placeholder="Search..." /></div><div class="combobox-listbox" role="listbox"><div class="combobox-empty" hidden>No results found.</div><div role="option" class="combobox-item" aria-selected="false">Alpha</div><div role="option" class="combobox-item" aria-selected="false">Beta</div></div></div></div>
-  </div>
-</Example>
+```html example label="Sizes" hint="Set data-size on the .combobox wrapper; trigger and list rows scale together — the default equals the .btn md step." height="22"
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Extra small</span>
+  <div class="combobox flex-1" data-size="xs" style="max-width:12rem;"><button class="btn combobox-trigger" data-variant="outline" aria-haspopup="listbox" aria-expanded="false" aria-controls="sz-cb-xs"><span class="combobox-value" data-placeholder="Select…">Select…</span><svg class="combobox-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5"></path><path d="m7 9 5-5 5 5"></path></svg></button><div id="sz-cb-xs" class="combobox-content" popover><div class="combobox-search"><input class="combobox-search-input" type="text" placeholder="Search..."></input></div><div class="combobox-listbox" role="listbox"><div class="combobox-empty" hidden>No results found.</div><div role="option" class="combobox-item" aria-selected="false">Alpha</div><div role="option" class="combobox-item" aria-selected="false">Beta</div></div></div></div>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Small</span>
+  <div class="combobox flex-1" data-size="sm" style="max-width:12rem;"><button class="btn combobox-trigger" data-variant="outline" aria-haspopup="listbox" aria-expanded="false" aria-controls="sz-cb-sm"><span class="combobox-value" data-placeholder="Select…">Select…</span><svg class="combobox-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5"></path><path d="m7 9 5-5 5 5"></path></svg></button><div id="sz-cb-sm" class="combobox-content" popover><div class="combobox-search"><input class="combobox-search-input" type="text" placeholder="Search..."></input></div><div class="combobox-listbox" role="listbox"><div class="combobox-empty" hidden>No results found.</div><div role="option" class="combobox-item" aria-selected="false">Alpha</div><div role="option" class="combobox-item" aria-selected="false">Beta</div></div></div></div>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Medium</span>
+  <div class="combobox flex-1" data-size="md" style="max-width:12rem;"><button class="btn combobox-trigger" data-variant="outline" aria-haspopup="listbox" aria-expanded="false" aria-controls="sz-cb-md"><span class="combobox-value" data-placeholder="Select…">Select…</span><svg class="combobox-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5"></path><path d="m7 9 5-5 5 5"></path></svg></button><div id="sz-cb-md" class="combobox-content" popover><div class="combobox-search"><input class="combobox-search-input" type="text" placeholder="Search..."></input></div><div class="combobox-listbox" role="listbox"><div class="combobox-empty" hidden>No results found.</div><div role="option" class="combobox-item" aria-selected="false">Alpha</div><div role="option" class="combobox-item" aria-selected="false">Beta</div></div></div></div>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Large</span>
+  <div class="combobox flex-1" data-size="lg" style="max-width:12rem;"><button class="btn combobox-trigger" data-variant="outline" aria-haspopup="listbox" aria-expanded="false" aria-controls="sz-cb-lg"><span class="combobox-value" data-placeholder="Select…">Select…</span><svg class="combobox-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5"></path><path d="m7 9 5-5 5 5"></path></svg></button><div id="sz-cb-lg" class="combobox-content" popover><div class="combobox-search"><input class="combobox-search-input" type="text" placeholder="Search..."></input></div><div class="combobox-listbox" role="listbox"><div class="combobox-empty" hidden>No results found.</div><div role="option" class="combobox-item" aria-selected="false">Alpha</div><div role="option" class="combobox-item" aria-selected="false">Beta</div></div></div></div>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Extra large</span>
+  <div class="combobox flex-1" data-size="xl" style="max-width:12rem;"><button class="btn combobox-trigger" data-variant="outline" aria-haspopup="listbox" aria-expanded="false" aria-controls="sz-cb-xl"><span class="combobox-value" data-placeholder="Select…">Select…</span><svg class="combobox-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5"></path><path d="m7 9 5-5 5 5"></path></svg></button><div id="sz-cb-xl" class="combobox-content" popover><div class="combobox-search"><input class="combobox-search-input" type="text" placeholder="Search..."></input></div><div class="combobox-listbox" role="listbox"><div class="combobox-empty" hidden>No results found.</div><div role="option" class="combobox-item" aria-selected="false">Alpha</div><div role="option" class="combobox-item" aria-selected="false">Beta</div></div></div></div>
+</div>
+```
 
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
@@ -217,6 +206,15 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <li><code>open</code> — listbox shown via <code>showPopover()</code> with the search input focused; <code>getState().config.value</code> reports the selected option</li>
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/combobox-\{state\}.png</code>.</p>
+
+Machine contract — verified against <a href="../schemas/combobox.schema.json"><code>combobox.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `open` | `boolean` | `true`, `false` | `false` | Listbox shown — runtime `_open()` highlights the first option and anchors the panel. |
+```
+
 </StatesSection>
 
 <SourceFiles component="combobox" section="css" />

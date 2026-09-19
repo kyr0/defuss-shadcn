@@ -48,6 +48,24 @@
 
   function applyMop(el, mop, value) {
     if (!el) return;
+    if (mop.kind === 'api') {
+      // drive the component's OWN State API (AGENTS.md contract): composite
+      // states (accordion batch, tabs activation, popover open-with-side-
+      // effects) are only expressible through the runtime that owns them.
+      if (!el.api || !el.api.setState) return;
+      // name '*' ⇒ the editor VALUE is the state name (enum across distinct
+      // runtime states, e.g. accordion all-open/all-closed); a falsy value
+      // (or a fixed name toggled off) returns to the authored 'default'.
+      if (mop.name === '*') {
+        if (value === true || value === false || value === null || value === undefined || value === '') el.api.setState('default');
+        else el.api.setState(String(value));
+        return;
+      }
+      if (value === false || value === null || value === undefined) el.api.setState('default');
+      else if (typeof value === 'object') el.api.setState(mop.name, value);
+      else el.api.setState(mop.name, { value: value });
+      return;
+    }
     if (mop.kind === 'property') {
       el[mop.name] = value;
       return;
@@ -105,8 +123,22 @@
       var el = resolve(spec.target);
       var obs = spec.observation || spec.mutation;
       if (!el || !obs) continue;
-      var v = readMop(el, obs);
+      // an observation may address a different element than the mutation
+      // (e.g. the wrapper owns the State API while the inner <input> carries
+      // the value) — honor its own target when declared
+      var oel = spec.observation && spec.observation.target ? resolve(spec.observation.target) : el;
+      if (!oel) continue;
+      var v = readMop(oel, obs);
       if (typeof v === 'string' && /^(true|false)$/.test(v)) v = v === 'true'; // attribute booleans normalize
+      // boolean states read through an ATTRIBUTE observation are true when the
+      // attribute exists and is not the literal "false" (data-error="" → true,
+      // aria-pressed="false" → false); one keyed on a state-NAME attribute
+      // (data-state-name — every State API writes it) are true exactly when the
+      // written name equals the runtime state this row drives
+      if (spec.type === 'boolean' && obs.kind === 'attribute' && typeof v === 'string') {
+        var rn = spec.mutation && spec.mutation.kind === 'api' ? spec.mutation.name : name;
+        v = v !== 'false' && (v === '' || v === 'true' || v === rn);
+      }
       // §11: observable DOM value wins; when the observation is NOT available
       // (missing attribute) fall back to the schema default — never invent one
       if (v === null || v === undefined) v = 'default' in spec ? spec.default : null;

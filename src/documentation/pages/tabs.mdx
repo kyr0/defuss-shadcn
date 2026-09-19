@@ -66,159 +66,148 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first previewStyle="flex-direction:column;align-items:stretch;padding:2rem 2.5rem;">
-  <ExampleLabel>Pill Variant (Default)</ExampleLabel>
-  <ExampleHint>Default style with <code>--muted</code> background. Active tab gets <code>--background</code> fill and shadow.</ExampleHint>
-  <div class="tabs">
-    <div class="tab-list" role="tablist" aria-label="Account settings" id="demo-tablist-pill">
-      <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="pill-panel-account" id="pill-tab-account">Account</button>
-      <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="pill-panel-password" id="pill-tab-password" tabindex="-1" data-state-demo>Password</button>
-    </div>
-    <div class="tab-content" role="tabpanel" id="pill-panel-account" aria-labelledby="pill-tab-account" tabindex="0">
-      <div class="card" style="max-width:24rem;">
-        <div class="card-header">
-          <h3 class="card-title" style="font-size:1rem;">Account</h3>
-          <p class="card-description">Make changes to your account here.</p>
+```html example label="Pill Variant (Default)" hint="Default style with --muted background. Active tab gets --background fill and shadow." height="16"
+<div class="tabs">
+  <div class="tab-list" role="tablist" aria-label="Account settings" id="demo-tablist-pill">
+    <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="pill-panel-account" id="pill-tab-account">Account</button>
+    <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="pill-panel-password" id="pill-tab-password" tabindex="-1">Password</button>
+  </div>
+  <div class="tab-content" role="tabpanel" id="pill-panel-account" aria-labelledby="pill-tab-account" tabindex="0">
+    <div class="card" style="max-width:24rem;">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size:1rem;">Account</h3>
+        <p class="card-description">Make changes to your account here.</p>
+      </div>
+      <div class="card-content" style="display:flex;flex-direction:column;gap:0.75rem;">
+        <div>
+          <label class="label" for="demo-tab-name">Name</label>
+          <input class="input" id="demo-tab-name" type="text" value="Cody Lindley"></input>
         </div>
-        <div class="card-content" style="display:flex;flex-direction:column;gap:0.75rem;">
-          <div>
-            <label class="label" for="demo-tab-name">Name</label>
-            <input class="input" id="demo-tab-name" type="text" value="Cody Lindley" />
-          </div>
-          <div>
-            <label class="label" for="demo-tab-user">Username</label>
-            <input class="input" id="demo-tab-user" type="text" value="@kyr0" />
-          </div>
-        </div>
-        <div class="card-footer">
-          <button class="btn" data-variant="default">Save changes</button>
+        <div>
+          <label class="label" for="demo-tab-user">Username</label>
+          <input class="input" id="demo-tab-user" type="text" value="@kyr0"></input>
         </div>
       </div>
-    </div>
-    <div class="tab-content" role="tabpanel" id="pill-panel-password" aria-labelledby="pill-tab-password" tabindex="0" hidden>
-      <div class="card" style="max-width:24rem;">
-        <div class="card-header">
-          <h3 class="card-title" style="font-size:1rem;">Password</h3>
-          <p class="card-description">Change your password here.</p>
-        </div>
-        <div class="card-content" style="display:flex;flex-direction:column;gap:0.75rem;">
-          <div>
-            <label class="label" for="demo-tab-current">Current password</label>
-            <input class="input" id="demo-tab-current" type="password" />
-          </div>
-          <div>
-            <label class="label" for="demo-tab-new">New password</label>
-            <input class="input" id="demo-tab-new" type="password" />
-          </div>
-        </div>
-        <div class="card-footer">
-          <button class="btn" data-variant="default">Save password</button>
-        </div>
+      <div class="card-footer">
+        <button class="btn" data-variant="default">Save changes</button>
       </div>
     </div>
   </div>
-  <ExampleCode>{"<div class=\"tabs\">\n  <div class=\"tab-list\" role=\"tablist\" aria-label=\"Account settings\">\n    <button class=\"tab-trigger\" role=\"tab\"\n            aria-selected=\"true\"\n            aria-controls=\"pill-panel-account\"\n            id=\"pill-tab-account\">Account</button>\n    <button class=\"tab-trigger\" role=\"tab\"\n            aria-selected=\"false\"\n            aria-controls=\"pill-panel-password\"\n            id=\"pill-tab-password\"\n            tabindex=\"-1\">Password</button>\n  </div>\n\n  <div class=\"tab-content\" role=\"tabpanel\"\n       id=\"pill-panel-account\"\n       aria-labelledby=\"pill-tab-account\"\n       tabindex=\"0\">\n    <div class=\"card\" style=\"max-width:24rem;\">\n      <div class=\"card-header\">\n        <h3 class=\"card-title\" style=\"font-size:1rem;\">Account</h3>\n        <p class=\"card-description\">Make changes to your account here.</p>\n      </div>\n      <div class=\"card-content\" style=\"display:flex;flex-direction:column;gap:0.75rem;\">\n        <div>\n          <label class=\"label\" for=\"demo-tab-name\">Name</label>\n          <input class=\"input\" id=\"demo-tab-name\" type=\"text\" value=\"Cody Lindley\">\n        </div>\n        <div>\n          <label class=\"label\" for=\"demo-tab-user\">Username</label>\n          <input class=\"input\" id=\"demo-tab-user\" type=\"text\" value=\"@kyr0\">\n        </div>\n      </div>\n      <div class=\"card-footer\">\n        <button class=\"btn\" data-variant=\"default\">Save changes</button>\n      </div>\n    </div>\n  </div>\n\n  <div class=\"tab-content\" role=\"tabpanel\"\n       id=\"pill-panel-password\"\n       aria-labelledby=\"pill-tab-password\"\n       tabindex=\"0\" hidden>\n    <div class=\"card\" style=\"max-width:24rem;\">\n      <div class=\"card-header\">\n        <h3 class=\"card-title\" style=\"font-size:1rem;\">Password</h3>\n        <p class=\"card-description\">Change your password here.</p>\n      </div>\n      <div class=\"card-content\" style=\"display:flex;flex-direction:column;gap:0.75rem;\">\n        <div>\n          <label class=\"label\" for=\"demo-tab-current\">Current password</label>\n          <input class=\"input\" id=\"demo-tab-current\" type=\"password\">\n        </div>\n        <div>\n          <label class=\"label\" for=\"demo-tab-new\">New password</label>\n          <input class=\"input\" id=\"demo-tab-new\" type=\"password\">\n        </div>\n      </div>\n      <div class=\"card-footer\">\n        <button class=\"btn\" data-variant=\"default\">Save password</button>\n      </div>\n    </div>\n  </div>\n</div>"}</ExampleCode>
-</Example>
+  <div class="tab-content" role="tabpanel" id="pill-panel-password" aria-labelledby="pill-tab-password" tabindex="0" hidden>
+    <div class="card" style="max-width:24rem;">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size:1rem;">Password</h3>
+        <p class="card-description">Change your password here.</p>
+      </div>
+      <div class="card-content" style="display:flex;flex-direction:column;gap:0.75rem;">
+        <div>
+          <label class="label" for="demo-tab-current">Current password</label>
+          <input class="input" id="demo-tab-current" type="password"></input>
+        </div>
+        <div>
+          <label class="label" for="demo-tab-new">New password</label>
+          <input class="input" id="demo-tab-new" type="password"></input>
+        </div>
+      </div>
+      <div class="card-footer">
+        <button class="btn" data-variant="default">Save password</button>
+      </div>
+    </div>
+  </div>
+</div>
+```
 
-<Example previewStyle="flex-direction:column;align-items:stretch;padding:2rem 2.5rem;">
-  <ExampleLabel>Line Variant with Disabled Tab</ExampleLabel>
-  <ExampleHint>Add <code>data-variant="line"</code> to the <code>.tab-list</code> for an underline style. Disabled tabs use the native <code>disabled</code> attribute.</ExampleHint>
-  <div class="tabs">
-    <div class="tab-list" role="tablist" aria-label="Dashboard" data-variant="line" id="demo-tablist-line">
-      <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="line-panel-overview" id="line-tab-overview">Overview</button>
-      <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="line-panel-analytics" id="line-tab-analytics" tabindex="-1">Analytics</button>
-      <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="line-panel-reports" id="line-tab-reports" tabindex="-1" disabled>Reports</button>
-    </div>
-    <div class="tab-content" role="tabpanel" id="line-panel-overview" aria-labelledby="line-tab-overview" tabindex="0">
-      <p class="text-muted-foreground" style="font-size:0.875rem;padding:1rem 0;">Overview dashboard content goes here. This is the default active panel.</p>
-    </div>
-    <div class="tab-content" role="tabpanel" id="line-panel-analytics" aria-labelledby="line-tab-analytics" tabindex="0" hidden>
-      <p class="text-muted-foreground" style="font-size:0.875rem;padding:1rem 0;">Analytics panel with charts and metrics.</p>
-    </div>
-    <div class="tab-content" role="tabpanel" id="line-panel-reports" aria-labelledby="line-tab-reports" tabindex="0" hidden>
-      <p class="text-muted-foreground" style="font-size:0.875rem;padding:1rem 0;">Reports panel with exportable data tables.</p>
-    </div>
+```html example label="Line Variant with Disabled Tab" hint="Add data-variant='line' to the .tab-list for an underline style. Disabled tabs use the native disabled attribute." height="16"
+<div class="tabs">
+  <div class="tab-list" role="tablist" aria-label="Dashboard" data-variant="line" id="demo-tablist-line">
+    <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="line-panel-overview" id="line-tab-overview">Overview</button>
+    <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="line-panel-analytics" id="line-tab-analytics" tabindex="-1">Analytics</button>
+    <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="line-panel-reports" id="line-tab-reports" tabindex="-1" disabled>Reports</button>
   </div>
-  <ExampleCode>{"<div class=\"tabs\">\n  <div class=\"tab-list\" role=\"tablist\" aria-label=\"Dashboard\"\n       data-variant=\"line\">\n    <button class=\"tab-trigger\" role=\"tab\"\n            aria-selected=\"true\"\n            aria-controls=\"line-panel-overview\"\n            id=\"line-tab-overview\">Overview</button>\n    <button class=\"tab-trigger\" role=\"tab\"\n            aria-selected=\"false\"\n            aria-controls=\"line-panel-analytics\"\n            id=\"line-tab-analytics\"\n            tabindex=\"-1\">Analytics</button>\n    <button class=\"tab-trigger\" role=\"tab\"\n            aria-selected=\"false\"\n            aria-controls=\"line-panel-reports\"\n            id=\"line-tab-reports\"\n            tabindex=\"-1\"\n            disabled>Reports</button>\n  </div>\n\n  <div class=\"tab-content\" role=\"tabpanel\"\n       id=\"line-panel-overview\"\n       aria-labelledby=\"line-tab-overview\"\n       tabindex=\"0\">\n    <p class=\"text-muted-foreground\" style=\"font-size:0.875rem;\" style=\"padding:1rem 0;\">\n      Overview dashboard content goes here.\n    </p>\n  </div>\n  <div class=\"tab-content\" role=\"tabpanel\"\n       id=\"line-panel-analytics\"\n       aria-labelledby=\"line-tab-analytics\"\n       tabindex=\"0\" hidden>\n    <p class=\"text-muted-foreground\" style=\"font-size:0.875rem;\" style=\"padding:1rem 0;\">\n      Analytics panel with charts and metrics.\n    </p>\n  </div>\n  <div class=\"tab-content\" role=\"tabpanel\"\n       id=\"line-panel-reports\"\n       aria-labelledby=\"line-tab-reports\"\n       tabindex=\"0\" hidden>\n    <p class=\"text-muted-foreground\" style=\"font-size:0.875rem;\" style=\"padding:1rem 0;\">\n      Reports panel with exportable data tables.\n    </p>\n  </div>\n</div>"}</ExampleCode>
-</Example>
+  <div class="tab-content" role="tabpanel" id="line-panel-overview" aria-labelledby="line-tab-overview" tabindex="0">
+    <p class="text-muted-foreground" style="font-size:0.875rem;padding:1rem 0;">Overview dashboard content goes here. This is the default active panel.</p>
+  </div>
+  <div class="tab-content" role="tabpanel" id="line-panel-analytics" aria-labelledby="line-tab-analytics" tabindex="0" hidden>
+    <p class="text-muted-foreground" style="font-size:0.875rem;padding:1rem 0;">Analytics panel with charts and metrics.</p>
+  </div>
+  <div class="tab-content" role="tabpanel" id="line-panel-reports" aria-labelledby="line-tab-reports" tabindex="0" hidden>
+    <p class="text-muted-foreground" style="font-size:0.875rem;padding:1rem 0;">Reports panel with exportable data tables.</p>
+  </div>
+</div>
+```
 
-<Example previewStyle="flex-direction:column;align-items:stretch;padding:2rem 2.5rem;">
-  <ExampleLabel>Vertical Orientation</ExampleLabel>
-  <ExampleHint>Set <code>aria-orientation="vertical"</code> on the tablist. CSS uses <code>:has()</code> to switch to a side-by-side layout automatically.</ExampleHint>
-  <div class="tabs">
-    <div class="tab-list" role="tablist" aria-label="Settings" aria-orientation="vertical" id="demo-tablist-vert">
-      <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="vert-panel-general" id="vert-tab-general">General</button>
-      <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="vert-panel-security" id="vert-tab-security" tabindex="-1">Security</button>
-      <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="vert-panel-notif" id="vert-tab-notif" tabindex="-1">Notifications</button>
-    </div>
-    <div class="tab-content" role="tabpanel" id="vert-panel-general" aria-labelledby="vert-tab-general" tabindex="0">
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title" style="font-size:1rem;">General Settings</h3>
-          <p class="card-description">Manage your general account preferences.</p>
-        </div>
-        <div class="card-content" style="display:flex;flex-direction:column;gap:0.75rem;">
-          <div>
-            <label class="label" for="vert-display">Display name</label>
-            <input class="input" id="vert-display" type="text" value="Cody Lindley" />
-          </div>
-          <div>
-            <label class="label" for="vert-email">Email</label>
-            <input class="input" id="vert-email" type="email" value="cody@example.com" />
-          </div>
-        </div>
+```html example label="Vertical Orientation" hint="Set aria-orientation='vertical' on the tablist. CSS uses :has() to switch to a side-by-side layout automatically." height="16"
+<div class="tabs">
+  <div class="tab-list" role="tablist" aria-label="Settings" aria-orientation="vertical" id="demo-tablist-vert">
+    <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="vert-panel-general" id="vert-tab-general">General</button>
+    <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="vert-panel-security" id="vert-tab-security" tabindex="-1">Security</button>
+    <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="vert-panel-notif" id="vert-tab-notif" tabindex="-1">Notifications</button>
+  </div>
+  <div class="tab-content" role="tabpanel" id="vert-panel-general" aria-labelledby="vert-tab-general" tabindex="0">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size:1rem;">General Settings</h3>
+        <p class="card-description">Manage your general account preferences.</p>
       </div>
-    </div>
-    <div class="tab-content" role="tabpanel" id="vert-panel-security" aria-labelledby="vert-tab-security" tabindex="0" hidden>
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title" style="font-size:1rem;">Security</h3>
-          <p class="card-description">Configure your security settings.</p>
+      <div class="card-content" style="display:flex;flex-direction:column;gap:0.75rem;">
+        <div>
+          <label class="label" for="vert-display">Display name</label>
+          <input class="input" id="vert-display" type="text" value="Cody Lindley"></input>
         </div>
-        <div class="card-content">
-          <p class="text-muted-foreground" style="font-size:0.875rem;">Two-factor authentication, session management, and login history.</p>
-        </div>
-      </div>
-    </div>
-    <div class="tab-content" role="tabpanel" id="vert-panel-notif" aria-labelledby="vert-tab-notif" tabindex="0" hidden>
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title" style="font-size:1rem;">Notifications</h3>
-          <p class="card-description">Choose what you want to be notified about.</p>
-        </div>
-        <div class="card-content">
-          <p class="text-muted-foreground" style="font-size:0.875rem;">Email notifications, push alerts, and digest preferences.</p>
+        <div>
+          <label class="label" for="vert-email">Email</label>
+          <input class="input" id="vert-email" type="email" value="cody@example.com"></input>
         </div>
       </div>
     </div>
   </div>
-  <ExampleCode>{"<div class=\"tabs\">\n  <div class=\"tab-list\" role=\"tablist\"\n       aria-label=\"Settings\"\n       aria-orientation=\"vertical\">\n    <button class=\"tab-trigger\" role=\"tab\"\n            aria-selected=\"true\"\n            aria-controls=\"vert-panel-general\"\n            id=\"vert-tab-general\">General</button>\n    <button class=\"tab-trigger\" role=\"tab\"\n            aria-selected=\"false\"\n            aria-controls=\"vert-panel-security\"\n            id=\"vert-tab-security\"\n            tabindex=\"-1\">Security</button>\n    <button class=\"tab-trigger\" role=\"tab\"\n            aria-selected=\"false\"\n            aria-controls=\"vert-panel-notif\"\n            id=\"vert-tab-notif\"\n            tabindex=\"-1\">Notifications</button>\n  </div>\n\n  <div class=\"tab-content\" role=\"tabpanel\"\n       id=\"vert-panel-general\"\n       aria-labelledby=\"vert-tab-general\"\n       tabindex=\"0\">\n    <div class=\"card\">\n      <div class=\"card-header\">\n        <h3 class=\"card-title\" style=\"font-size:1rem;\">General Settings</h3>\n        <p class=\"card-description\">Manage your general account preferences.</p>\n      </div>\n      <div class=\"card-content\" style=\"display:flex;flex-direction:column;gap:0.75rem;\">\n        <div>\n          <label class=\"label\" for=\"vert-display\">Display name</label>\n          <input class=\"input\" id=\"vert-display\" type=\"text\" value=\"Cody Lindley\">\n        </div>\n        <div>\n          <label class=\"label\" for=\"vert-email\">Email</label>\n          <input class=\"input\" id=\"vert-email\" type=\"email\" value=\"cody@example.com\">\n        </div>\n      </div>\n    </div>\n  </div>\n\n  <div class=\"tab-content\" role=\"tabpanel\"\n       id=\"vert-panel-security\"\n       aria-labelledby=\"vert-tab-security\"\n       tabindex=\"0\" hidden>\n    <div class=\"card\">\n      <div class=\"card-header\">\n        <h3 class=\"card-title\" style=\"font-size:1rem;\">Security</h3>\n        <p class=\"card-description\">Configure your security settings.</p>\n      </div>\n      <div class=\"card-content\">\n        <p class=\"text-muted-foreground\" style=\"font-size:0.875rem;\">Two-factor authentication, session management, and login history.</p>\n      </div>\n    </div>\n  </div>\n\n  <div class=\"tab-content\" role=\"tabpanel\"\n       id=\"vert-panel-notif\"\n       aria-labelledby=\"vert-tab-notif\"\n       tabindex=\"0\" hidden>\n    <div class=\"card\">\n      <div class=\"card-header\">\n        <h3 class=\"card-title\" style=\"font-size:1rem;\">Notifications</h3>\n        <p class=\"card-description\">Choose what you want to be notified about.</p>\n      </div>\n      <div class=\"card-content\">\n        <p class=\"text-muted-foreground\" style=\"font-size:0.875rem;\">Email notifications, push alerts, and digest preferences.</p>\n      </div>\n    </div>\n  </div>\n</div>"}</ExampleCode>
-</Example>
+  <div class="tab-content" role="tabpanel" id="vert-panel-security" aria-labelledby="vert-tab-security" tabindex="0" hidden>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size:1rem;">Security</h3>
+        <p class="card-description">Configure your security settings.</p>
+      </div>
+      <div class="card-content">
+        <p class="text-muted-foreground" style="font-size:0.875rem;">Two-factor authentication, session management, and login history.</p>
+      </div>
+    </div>
+  </div>
+  <div class="tab-content" role="tabpanel" id="vert-panel-notif" aria-labelledby="vert-tab-notif" tabindex="0" hidden>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size:1rem;">Notifications</h3>
+        <p class="card-description">Choose what you want to be notified about.</p>
+      </div>
+      <div class="card-content">
+        <p class="text-muted-foreground" style="font-size:0.875rem;">Email notifications, push alerts, and digest preferences.</p>
+      </div>
+    </div>
+  </div>
+</div>
+```
 
-<Example>
-  <ExampleLabel>Sizes</ExampleLabel>
-  <ExampleHint>Set <code>data-size</code> on the <code>.tab-list</code>; triggers scale with it — the default equals <code>md</code>.</ExampleHint>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Extra small</span>
-    <div class="tab-list" role="tablist" aria-label="Demo xs" data-size="xs"><button class="tab-trigger" role="tab" aria-selected="true" id="sz-xs-a">Account</button><button class="tab-trigger" role="tab" id="sz-xs-b" tabindex="-1">Password</button></div>
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Small</span>
-    <div class="tab-list" role="tablist" aria-label="Demo sm" data-size="sm"><button class="tab-trigger" role="tab" aria-selected="true" id="sz-sm-a">Account</button><button class="tab-trigger" role="tab" id="sz-sm-b" tabindex="-1">Password</button></div>
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Medium</span>
-    <div class="tab-list" role="tablist" aria-label="Demo md" data-size="md"><button class="tab-trigger" role="tab" aria-selected="true" id="sz-md-a">Account</button><button class="tab-trigger" role="tab" id="sz-md-b" tabindex="-1">Password</button></div>
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Large</span>
-    <div class="tab-list" role="tablist" aria-label="Demo lg" data-size="lg"><button class="tab-trigger" role="tab" aria-selected="true" id="sz-lg-a">Account</button><button class="tab-trigger" role="tab" id="sz-lg-b" tabindex="-1">Password</button></div>
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Extra large</span>
-    <div class="tab-list" role="tablist" aria-label="Demo xl" data-size="xl"><button class="tab-trigger" role="tab" aria-selected="true" id="sz-xl-a">Account</button><button class="tab-trigger" role="tab" id="sz-xl-b" tabindex="-1">Password</button></div>
-  </div>
-</Example>
+```html example label="Sizes" hint="Set data-size on the .tab-list; triggers scale with it — the default equals md." height="16"
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Extra small</span>
+  <div class="tab-list" role="tablist" aria-label="Demo xs" data-size="xs"><button class="tab-trigger" role="tab" aria-selected="true" id="sz-xs-a">Account</button><button class="tab-trigger" role="tab" id="sz-xs-b" tabindex="-1">Password</button></div>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Small</span>
+  <div class="tab-list" role="tablist" aria-label="Demo sm" data-size="sm"><button class="tab-trigger" role="tab" aria-selected="true" id="sz-sm-a">Account</button><button class="tab-trigger" role="tab" id="sz-sm-b" tabindex="-1">Password</button></div>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Medium</span>
+  <div class="tab-list" role="tablist" aria-label="Demo md" data-size="md"><button class="tab-trigger" role="tab" aria-selected="true" id="sz-md-a">Account</button><button class="tab-trigger" role="tab" id="sz-md-b" tabindex="-1">Password</button></div>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Large</span>
+  <div class="tab-list" role="tablist" aria-label="Demo lg" data-size="lg"><button class="tab-trigger" role="tab" aria-selected="true" id="sz-lg-a">Account</button><button class="tab-trigger" role="tab" id="sz-lg-b" tabindex="-1">Password</button></div>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Extra large</span>
+  <div class="tab-list" role="tablist" aria-label="Demo xl" data-size="xl"><button class="tab-trigger" role="tab" aria-selected="true" id="sz-xl-a">Account</button><button class="tab-trigger" role="tab" id="sz-xl-b" tabindex="-1">Password</button></div>
+</div>
+```
 
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
@@ -227,6 +216,15 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <li><code>active</code> — this tab is selected and its panel visible (per-tab API; selection stays exclusive)</li>
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/tabs-\{state\}.png</code>.</p>
+
+Machine contract — verified against <a href="../schemas/tabs.schema.json"><code>tabs.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `active` | `boolean` | `true`, `false` | `false` | The demo’s second tab activated (its panel shown, others `hidden`) — the State API binds per `.tab-trigger`. |
+```
+
 </StatesSection>
 
 <SourceFiles component="tabs" section="css" />

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "name": "image",
+  "states": {
+    "error": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": "img"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "data-error"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-error",
+        "target": {
+          "kind": "selector",
+          "selector": "img"
+        }
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

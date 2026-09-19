@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "name": "product-showcase",
+  "states": {
+    "playing": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".mk-showcase"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "playing"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state",
+        "target": {
+          "kind": "selector",
+          "selector": ".mk-showcase"
+        }
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

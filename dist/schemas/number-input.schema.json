@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "name": "number-input",
+  "states": {
+    "value": {
+      "type": "number",
+      "default": 3,
+      "target": {
+        "kind": "selector",
+        "selector": "input"
+      },
+      "mutation": {
+        "kind": "property",
+        "name": "value"
+      },
+      "observation": {
+        "kind": "property",
+        "name": "value",
+        "target": {
+          "kind": "selector",
+          "selector": "input"
+        }
+      },
+      "editor": {
+        "component": "number"
+      }
+    }
+  },
+  "actions": {}
+}

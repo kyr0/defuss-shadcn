@@ -28,6 +28,9 @@ export interface CodeExampleProps {
   label?: string;
   /** demo hint (rendered like <ExampleHint>) */
   hint?: string;
+  /** min frame height in rem (fence attr height="N") — floors the sandbox while
+   * the true content height arrives (mirrors the old previewStyle min-height) */
+  height?: string;
   /** children etc. — forbidden (§5); typed unknown so the guard, not TS, reports them */
   children?: unknown;
   code?: unknown;
@@ -56,16 +59,23 @@ function readSchema(component: string | undefined): string | null {
 const H2_LABEL = 'text-sm font-medium mb-2';
 const H2_HINT = 'text-xs text-muted-foreground mb-3';
 
-export function CodeExample({ source, component, label, hint, children, code, preview, previewSource }: CodeExampleProps) {
+export function CodeExample({ source, component, label, hint, height, children, code, preview, previewSource }: CodeExampleProps) {
   const problems = codeExampleProblems({ source, children, code, preview, previewSource });
   if (problems.length) throw new Error(`CodeExample: ${problems.join(' | ')}`);
   const schemaText = readSchema(component);
   const name = label ?? `${component ?? 'Example'} example`;
+  // State-capture anchor (AGENTS.md "State API" rule 7): the card owns the
+  // state demo now — its sandbox runs the one true source and the host api on
+  // the card drives it, so create-screenshots captures the live sandbox
+  // instead of a second hand-written demo tree. Schema'd cards only: the
+  // driver's setState contract is exactly the schema's state list.
   return (
     <div
       class="code-example"
       {...(component ? { 'data-component': component } : {})}
       {...(schemaText ? { 'data-schema': schemaText } : {})}
+      {...(schemaText ? { 'data-state-demo': '' } : {})}
+      {...(height ? { 'data-height': height } : {})}
     >
       {label ? <p class={H2_LABEL}>{label}</p> : null}
       {hint ? <p class={H2_HINT}>{hint}</p> : null}
@@ -109,6 +119,13 @@ export interface StatesRow {
  * fenced rows — the rendered page and the verified source are the same bytes,
  * and the docs pipeline (no remark-gfm) still shows a real <table>.
  */
+/** Render a table cell's inline `code` spans — the fence body is markdown, but
+ * the docs pipeline (no remark-gfm inside JSX text) hands us raw bytes, so the
+ * backticks are interpreted here: every odd segment becomes a <code> chip. */
+function inlineCode(v: string) {
+  return v.split('`').map((seg, i) => (i % 2 === 1 ? <code>{seg}</code> : seg));
+}
+
 export function StatesTable({ rows }: { rows: string }) {
   let data: StatesRow[];
   try {
@@ -133,9 +150,10 @@ export function StatesTable({ rows }: { rows: string }) {
           <tr>
             <td><code>{r.name}</code></td>
             <td><code>{r.type}</code></td>
-            <td>{r.values}</td>
+            {/* Values may hold several backticked tokens — render each as a chip */}
+            <td>{inlineCode(cell(r.values))}</td>
             <td><code>{cell(r.def)}</code></td>
-            <td>{r.desc}</td>
+            <td>{inlineCode(r.desc)}</td>
           </tr>
         ))}
       </tbody>

@@ -37,20 +37,17 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first previewStyle="align-items:stretch;">
-  <ExampleLabel>Default</ExampleLabel>
-  <ExampleHint>The play button is a real <code>&lt;button&gt;</code>; one click reveals <code>&lt;video controls&gt;</code>.</ExampleHint>
-  <figure class="mk-showcase" data-state-demo style="width:100%">
-    <img class="mk-showcase-poster" alt="Product showcase" src="images/mk-wide2.png" />
-    <video controls preload="metadata" playsinline><source src="videos/demo.webm" type="video/webm" /><source src="videos/demo.mp4" type="video/mp4" /> Your browser does not support embedded video. </video>
-    <button type="button" class="mk-showcase-play" aria-label="Play video">
-      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <polygon points="6 3 20 12 6 21 6 3" />
-      </svg>
-    </button>
-  </figure>
-  <ExampleCode>{"<figure class=\"mk-showcase\" data-state-demo style=\"width:100%\">\n  <img class=\"mk-showcase-poster\" alt=\"Product showcase\" src=\"images/mk-wide2.png\" />\n  <video controls preload=\"metadata\" playsinline>\n    <source src=\"videos/demo.webm\" type=\"video/webm\" />\n    <source src=\"videos/demo.mp4\" type=\"video/mp4\" />\n    Your browser does not support embedded video.\n  </video>\n  <button type=\"button\" class=\"mk-showcase-play\" aria-label=\"Play video\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><polygon points=\"6 3 20 12 6 21 6 3\"/></svg></button>\n</figure>"}</ExampleCode>
-</Example>
+```html example label="Default" hint="The play button is a real &lt;button&gt;; one click reveals &lt;video controls&gt;." height="24"
+<figure class="mk-showcase" style="width:100%">
+  <img class="mk-showcase-poster" alt="Product showcase" src="images/mk-wide2.png"></img>
+  <video controls preload="metadata" playsinline><source src="videos/demo.webm" type="video/webm"></source><source src="videos/demo.mp4" type="video/mp4"></source> Your browser does not support embedded video. </video>
+  <button type="button" class="mk-showcase-play" aria-label="Play video">
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polygon points="6 3 20 12 6 21 6 3"></polygon>
+    </svg>
+  </button>
+</figure>
+```
 
 <SourceFiles component="product-showcase" section="css" />
 
@@ -61,6 +58,15 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <li><code>playing</code> — the poster and button hide (CSS via <code>data-state</code>), the video plays muted; pausing returns to the poster</li>
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/product-showcase-\{state\}.png</code>.</p>
+
+Machine contract — verified against <a href="../schemas/product-showcase.schema.json"><code>product-showcase.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `playing` | `boolean` | `true`, `false` | `false` | Video playback (muted when driven headlessly); `default` pauses and rewinds. |
+```
+
 </StatesSection>
 
 <SourceFiles component="product-showcase" section="js" />

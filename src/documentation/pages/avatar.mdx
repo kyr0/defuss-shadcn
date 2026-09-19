@@ -56,109 +56,94 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first>
-  <ExampleLabel>Basic</ExampleLabel>
-  <ExampleHint>Avatar with image and fallback.</ExampleHint>
-  <div style="display:flex;gap:1.0rem;align-items:center;">
-    <span class="avatar" data-state-demo>
-      <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn" />
-      <span class="avatar-fallback">CN</span>
-    </span>
-    <span class="avatar">
-      <span class="avatar-fallback">JD</span>
-    </span>
-  </div>
-  <ExampleCode>{"<span class=\"avatar\">\n  <img class=\"avatar-image\" src=\"...\" alt=\"@shadcn\" />\n  <span class=\"avatar-fallback\">CN</span>\n</span>"}</ExampleCode>
-</Example>
+```html example label="Basic" hint="Avatar with image and fallback."
+<div style="display:flex;gap:1.0rem;align-items:center;">
+  <span class="avatar">
+    <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn"></img>
+    <span class="avatar-fallback">CN</span>
+  </span>
+  <span class="avatar">
+    <span class="avatar-fallback">JD</span>
+  </span>
+</div>
+```
 
-<Example>
-  <ExampleLabel>Sizes</ExampleLabel>
-  <ExampleHint>The full five-step scale via <code>data-size</code> — the default equals <code>md</code>.</ExampleHint>
-  <div style="display:flex;gap:1.0rem;align-items:center;">
-    <span class="avatar" data-size="xs">
-      <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn" />
-      <span class="avatar-fallback">CN</span>
-    </span>
-    <span class="avatar" data-size="sm">
-      <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn" />
-      <span class="avatar-fallback">CN</span>
-    </span>
-    <span class="avatar" data-size="md">
-      <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn" />
-      <span class="avatar-fallback">CN</span>
-    </span>
-    <span class="avatar" data-size="lg">
-      <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn" />
-      <span class="avatar-fallback">CN</span>
-    </span>
-    <span class="avatar" data-size="xl">
-      <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn" />
-      <span class="avatar-fallback">CN</span>
-    </span>
-  </div>
-  <ExampleCode>{"<span class=\"avatar\" data-size=\"xs\">...</span>\n<span class=\"avatar\" data-size=\"sm\">...</span>\n<span class=\"avatar\" data-size=\"md\">...</span>\n<span class=\"avatar\" data-size=\"lg\">...</span>\n<span class=\"avatar\" data-size=\"xl\">...</span>"}</ExampleCode>
-</Example>
+```html example label="Sizes" hint="The full five-step scale via data-size — the default equals md."
+<div style="display:flex;gap:1.0rem;align-items:center;">
+  <span class="avatar" data-size="xs">
+    <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn"></img>
+    <span class="avatar-fallback">CN</span>
+  </span>
+  <span class="avatar" data-size="sm">
+    <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn"></img>
+    <span class="avatar-fallback">CN</span>
+  </span>
+  <span class="avatar" data-size="md">
+    <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn"></img>
+    <span class="avatar-fallback">CN</span>
+  </span>
+  <span class="avatar" data-size="lg">
+    <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn"></img>
+    <span class="avatar-fallback">CN</span>
+  </span>
+  <span class="avatar" data-size="xl">
+    <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn"></img>
+    <span class="avatar-fallback">CN</span>
+  </span>
+</div>
+```
 
-<Example>
-  <ExampleLabel>With Badge</ExampleLabel>
-  <ExampleHint>Status indicator badge positioned at the bottom-right.</ExampleHint>
-  <div style="display:flex;gap:1.0rem;align-items:center;">
-    <span class="avatar">
-      <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn" />
-      <span class="avatar-fallback">CN</span>
-      <span class="avatar-badge" />
-    </span>
-    <span class="avatar">
-      <span class="avatar-fallback">JD</span>
-      <span class="avatar-badge" />
-    </span>
-  </div>
-  <ExampleCode>{"<span class=\"avatar\">\n  <img class=\"avatar-image\" src=\"...\" alt=\"@shadcn\" />\n  <span class=\"avatar-fallback\">CN</span>\n  <span class=\"avatar-badge\"></span>\n</span>"}</ExampleCode>
-</Example>
+```html example label="With Badge" hint="Status indicator badge positioned at the bottom-right."
+<div style="display:flex;gap:1.0rem;align-items:center;">
+  <span class="avatar">
+    <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn"></img>
+    <span class="avatar-fallback">CN</span>
+    <span class="avatar-badge"></span>
+  </span>
+  <span class="avatar">
+    <span class="avatar-fallback">JD</span>
+    <span class="avatar-badge"></span>
+  </span>
+</div>
+```
 
-<Example>
-  <ExampleLabel>Avatar Group</ExampleLabel>
-  <ExampleHint>Overlapping avatars with an optional count.</ExampleHint>
-  <div class="avatar-group">
-    <span class="avatar">
-      <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn" />
-      <span class="avatar-fallback">CN</span>
-    </span>
-    <span class="avatar">
-      <img class="avatar-image" src="https://github.com/maxleiter.png" alt="@maxleiter" />
-      <span class="avatar-fallback">ML</span>
-    </span>
-    <span class="avatar">
-      <img class="avatar-image" src="https://github.com/evilrabbit.png" alt="@evilrabbit" />
-      <span class="avatar-fallback">ER</span>
-    </span>
-    <span class="avatar-group-count">+3</span>
-  </div>
-  <ExampleCode>{"<div class=\"avatar-group\">\n  <span class=\"avatar\">\n    <img class=\"avatar-image\" src=\"...\" alt=\"...\" />\n    <span class=\"avatar-fallback\">CN</span>\n  </span>\n  <span class=\"avatar\">...</span>\n  <span class=\"avatar\">...</span>\n  <span class=\"avatar-group-count\">+3</span>\n</div>"}</ExampleCode>
-</Example>
+```html example label="Avatar Group" hint="Overlapping avatars with an optional count."
+<div class="avatar-group">
+  <span class="avatar">
+    <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn"></img>
+    <span class="avatar-fallback">CN</span>
+  </span>
+  <span class="avatar">
+    <img class="avatar-image" src="https://github.com/maxleiter.png" alt="@maxleiter"></img>
+    <span class="avatar-fallback">ML</span>
+  </span>
+  <span class="avatar">
+    <img class="avatar-image" src="https://github.com/evilrabbit.png" alt="@evilrabbit"></img>
+    <span class="avatar-fallback">ER</span>
+  </span>
+  <span class="avatar-group-count">+3</span>
+</div>
+```
 
-<Example>
-  <ExampleLabel>In a Card</ExampleLabel>
-  <ExampleHint>Avatar composed with <code>.card</code>, <code>.badge</code>, and <code>.btn</code> for a user profile pattern.</ExampleHint>
-  <article class="card" style="width:18rem;">
-    <div class="card-header" style="display:flex;flex-direction:row;align-items:center;gap:0.75rem;">
-      <span class="avatar">
-        <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn" />
-        <span class="avatar-fallback">CN</span>
-        <span class="avatar-badge" />
-      </span>
-      <div style="flex:1;min-width:0;">
-        <p style="margin:0;font-weight:500;font-size:0.875rem;">Cody Lindley</p>
-        <p style="margin:0;font-size:0.75rem;color:var(--muted-foreground);">cody@example.com</p>
-      </div>
-      <span class="badge" data-variant="secondary">Admin</span>
+```html example label="In a Card" hint="Avatar composed with .card, .badge, and .btn for a user profile pattern."
+<article class="card" style="width:18rem;">
+  <div class="card-header" style="display:flex;flex-direction:row;align-items:center;gap:0.75rem;">
+    <span class="avatar">
+      <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn"></img>
+      <span class="avatar-fallback">CN</span>
+      <span class="avatar-badge"></span>
+    </span>
+    <div style="flex:1;min-width:0;">
+      <p style="margin:0;font-weight:500;font-size:0.875rem;">Cody Lindley</p>
+      <p style="margin:0;font-size:0.75rem;color:var(--muted-foreground);">cody@example.com</p>
     </div>
-    <div class="card-footer mt-1">
-      <button class="btn" data-variant="outline" data-size="sm" style="width:100%;">View Profile</button>
-    </div>
-  </article>
-  <ExampleCode>{"<article class=\"card\">\n  <div class=\"card-header\">\n    <span class=\"avatar\">...</span>\n    <div>Name / Email</div>\n    <span class=\"badge\" data-variant=\"secondary\">Admin</span>\n  </div>\n  <div class=\"card-footer\">\n    <button class=\"btn\" data-variant=\"outline\">View Profile</button>\n  </div>\n</article>"}</ExampleCode>
-</Example>
+    <span class="badge" data-variant="secondary">Admin</span>
+  </div>
+  <div class="card-footer mt-1">
+    <button class="btn" data-variant="outline" data-size="sm" style="width:100%;">View Profile</button>
+  </div>
+</article>
+```
 
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
@@ -167,6 +152,15 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <li><code>error</code> — the broken-image look, forced without a network failure (same DOM changes a real <code>error</code> event makes)</li>
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/avatar-\{state\}.png</code>.</p>
+
+Machine contract — verified against <a href="../schemas/avatar.schema.json"><code>avatar.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `error` | `boolean` | `true`, `false` | `false` | Image load failure → initials fallback (the runtime marks `.avatar-image` with `data-error`). |
+```
+
 </StatesSection>
 
 <SourceFiles component="avatar" section="css">

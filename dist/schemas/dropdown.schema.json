@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "name": "dropdown",
+  "states": {
+    "open": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".dropdown-content"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "open"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name",
+        "target": {
+          "kind": "selector",
+          "selector": ".dropdown-content"
+        }
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

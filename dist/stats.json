@@ -9,17 +9,17 @@
   },
   "withJs": 28,
   "withoutJs": 44,
-  "totalSize": 441278,
-  "totalSizeMinified": 212479,
-  "totalSizeGz": 143888,
-  "totalSizeGzMinified": 78387,
+  "totalSize": 441714,
+  "totalSizeMinified": 212610,
+  "totalSizeGz": 144004,
+  "totalSizeGzMinified": 78407,
   "bundle": {
-    "jsSize": 172452,
-    "jsSizeMinified": 91074,
+    "jsSize": 172638,
+    "jsSizeMinified": 91205,
     "cssSize": 250809,
     "cssSizeMinified": 140613,
-    "totalSizeGz": 78446,
-    "totalSizeGzMinified": 46674
+    "totalSizeGz": 78469,
+    "totalSizeGzMinified": 46691
   },
   "core": {
     "jsSize": 63491,
@@ -34,14 +34,14 @@
       "name": "accordion",
       "type": "ATM",
       "withJs": true,
-      "jsSize": 6084,
-      "jsSizeMinified": 1677,
+      "jsSize": 6520,
+      "jsSizeMinified": 1808,
       "cssSize": 3042,
       "cssSizeMinified": 1523,
-      "totalSizeGz": 3405,
-      "totalSizeGzMinified": 1457,
-      "totalSize": 9126,
-      "totalSizeMinified": 3200
+      "totalSizeGz": 3521,
+      "totalSizeGzMinified": 1477,
+      "totalSize": 9562,
+      "totalSizeMinified": 3331
     },
     "alert": {
       "name": "alert",

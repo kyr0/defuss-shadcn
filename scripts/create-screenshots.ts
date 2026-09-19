@@ -128,6 +128,16 @@ async function shoot(
     for (const state of stateNames(name)) {
       const anchor = page.locator('[data-state-demo]').first();
       if ((await anchor.count()) === 0) continue; // verify.ts reports the missing anchor
+      // the anchor is typically a CodeExample card now: its host .api appears
+      // only after the sandbox bridge reports ready — wait for it before driving
+      await page.waitForFunction(
+        () => {
+          const el = document.querySelector('[data-state-demo]') as (HTMLElement & { api?: unknown }) | null;
+          return !!el?.api;
+        },
+        undefined,
+        { timeout: PAGE_TIMEOUT_MS },
+      );
       await anchor.evaluate((el, s) => {
         // structural type (page context can't import the repo's .d.ts)
         const target = el as HTMLElement & { api?: { setState(name: string, config?: Record<string, unknown>): void } };

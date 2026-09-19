@@ -57,81 +57,72 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first>
-  <ExampleLabel>Basic</ExampleLabel>
-  <ExampleHint>Confirm/cancel pattern with title and description.</ExampleHint>
-  <button class="btn" data-variant="outline" data-alert-dialog-trigger="demo-alert-dialog-1">Delete Account</button>
-  <dialog id="demo-alert-dialog-1" class="alert-dialog" data-state-demo role="alertdialog" aria-modal="true" aria-labelledby="ad1-title" aria-describedby="ad1-desc">
-    <div class="alert-dialog-content">
-      <div class="alert-dialog-header">
-        <h2 class="alert-dialog-title" id="ad1-title">Are you absolutely sure?</h2>
-        <p class="alert-dialog-description" id="ad1-desc">This action cannot be undone. This will permanently delete your account and remove your data from our servers.</p>
-      </div>
-      <div class="alert-dialog-footer">
-        <button class="btn" data-variant="outline" data-alert-dialog-close>Cancel</button>
-        <button class="btn" data-variant="destructive" data-alert-dialog-close>Delete</button>
-      </div>
+```html example label="Basic" hint="Confirm/cancel pattern with title and description."
+<button class="btn" data-variant="outline" data-alert-dialog-trigger="demo-alert-dialog-1">Delete Account</button>
+<dialog id="demo-alert-dialog-1" class="alert-dialog" role="alertdialog" aria-modal="true" aria-labelledby="ad1-title" aria-describedby="ad1-desc">
+  <div class="alert-dialog-content">
+    <div class="alert-dialog-header">
+      <h2 class="alert-dialog-title" id="ad1-title">Are you absolutely sure?</h2>
+      <p class="alert-dialog-description" id="ad1-desc">This action cannot be undone. This will permanently delete your account and remove your data from our servers.</p>
     </div>
-  </dialog>
-  <ExampleCode>{"<button class=\"btn\" data-variant=\"outline\"\n        data-alert-dialog-trigger=\"my-alert\">\n  Delete Account\n</button>\n\n<dialog id=\"my-alert\" class=\"alert-dialog\"\n        role=\"alertdialog\" aria-modal=\"true\"\n        aria-labelledby=\"ad-title\" aria-describedby=\"ad-desc\">\n  <div class=\"alert-dialog-content\">\n    <div class=\"alert-dialog-header\">\n      <h2 class=\"alert-dialog-title\" id=\"ad-title\">\n        Are you absolutely sure?\n      </h2>\n      <p class=\"alert-dialog-description\" id=\"ad-desc\">\n        This action cannot be undone.\n      </p>\n    </div>\n    <div class=\"alert-dialog-footer\">\n      <button class=\"btn\" data-variant=\"outline\"\n              data-alert-dialog-close>Cancel</button>\n      <button class=\"btn\" data-variant=\"destructive\"\n              data-alert-dialog-close>Delete</button>\n    </div>\n  </div>\n</dialog>"}</ExampleCode>
-</Example>
-
-<Example>
-  <ExampleLabel>Confirmation</ExampleLabel>
-  <ExampleHint>Non-destructive confirmation with standard action button.</ExampleHint>
-  <button class="btn" data-variant="default" data-alert-dialog-trigger="demo-alert-dialog-2">Publish Post</button>
-  <dialog id="demo-alert-dialog-2" class="alert-dialog" role="alertdialog" aria-modal="true" aria-labelledby="ad2-title" aria-describedby="ad2-desc">
-    <div class="alert-dialog-content">
-      <div class="alert-dialog-header">
-        <h2 class="alert-dialog-title" id="ad2-title">Publish this post?</h2>
-        <p class="alert-dialog-description" id="ad2-desc">Once published, this post will be visible to all users. You can unpublish it later from the dashboard.</p>
-      </div>
-      <div class="alert-dialog-footer">
-        <button class="btn" data-variant="outline" data-alert-dialog-close>Cancel</button>
-        <button class="btn" data-variant="default" data-alert-dialog-close>Publish</button>
-      </div>
+    <div class="alert-dialog-footer">
+      <button class="btn" data-variant="outline" data-alert-dialog-close>Cancel</button>
+      <button class="btn" data-variant="destructive" data-alert-dialog-close>Delete</button>
     </div>
-  </dialog>
-  <ExampleCode>{"<button class=\"btn\" data-alert-dialog-trigger=\"publish-dialog\">\n  Publish Post\n</button>\n\n<dialog id=\"publish-dialog\" class=\"alert-dialog\" role=\"alertdialog\"\n        aria-modal=\"true\" aria-labelledby=\"...\" aria-describedby=\"...\">\n  ...\n</dialog>"}</ExampleCode>
-</Example>
-
-<Example>
-  <ExampleLabel>Density</ExampleLabel>
-  <ExampleHint>Set <code>data-density</code> on the <code>{"<dialog>"}</code> root to scale the content padding. A whitespace policy, not a zoom: only padding scales (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), typography stays identical. <code>comfortable</code> matches the unsized default.</ExampleHint>
-  <div class="flex flex-wrap gap-2">
-    <button class="btn" data-variant="outline" data-alert-dialog-trigger="density-ad-compact">Compact</button>
-    <dialog id="density-ad-compact" class="alert-dialog" data-density="compact" role="alertdialog" aria-modal="true" aria-labelledby="dac-title">
-      <div class="alert-dialog-content">
-        <div class="alert-dialog-header">
-          <h2 class="alert-dialog-title" id="dac-title">Compact density</h2>
-          <p class="alert-dialog-description">Content padding is 1rem instead of the default 1.5rem.</p>
-        </div>
-        <div class="alert-dialog-footer"><button class="btn" data-variant="outline" data-alert-dialog-close>Close</button></div>
-      </div>
-    </dialog>
-    <button class="btn" data-variant="outline" data-alert-dialog-trigger="density-ad-comfortable">Comfortable</button>
-    <dialog id="density-ad-comfortable" class="alert-dialog" data-density="comfortable" role="alertdialog" aria-modal="true" aria-labelledby="dacm-title">
-      <div class="alert-dialog-content">
-        <div class="alert-dialog-header">
-          <h2 class="alert-dialog-title" id="dacm-title">Comfortable density</h2>
-          <p class="alert-dialog-description">Identical to the unsized default — 1.5rem content padding.</p>
-        </div>
-        <div class="alert-dialog-footer"><button class="btn" data-variant="outline" data-alert-dialog-close>Close</button></div>
-      </div>
-    </dialog>
-    <button class="btn" data-variant="outline" data-alert-dialog-trigger="density-ad-spacious">Spacious</button>
-    <dialog id="density-ad-spacious" class="alert-dialog" data-density="spacious" role="alertdialog" aria-modal="true" aria-labelledby="das-title">
-      <div class="alert-dialog-content">
-        <div class="alert-dialog-header">
-          <h2 class="alert-dialog-title" id="das-title">Spacious density</h2>
-          <p class="alert-dialog-description">Content padding grows to 2rem.</p>
-        </div>
-        <div class="alert-dialog-footer"><button class="btn" data-variant="outline" data-alert-dialog-close>Close</button></div>
-      </div>
-    </dialog>
   </div>
-  <ExampleCode>{"<dialog class=\"alert-dialog\" data-density=\"compact\" ...>\n  <div class=\"alert-dialog-content\">…</div>\n</dialog>\n\n<!-- compact → 1rem · comfortable → 1.5rem · spacious → 2rem content padding -->"}</ExampleCode>
-</Example>
+</dialog>
+```
+
+```html example label="Confirmation" hint="Non-destructive confirmation with standard action button."
+<button class="btn" data-variant="default" data-alert-dialog-trigger="demo-alert-dialog-2">Publish Post</button>
+<dialog id="demo-alert-dialog-2" class="alert-dialog" role="alertdialog" aria-modal="true" aria-labelledby="ad2-title" aria-describedby="ad2-desc">
+  <div class="alert-dialog-content">
+    <div class="alert-dialog-header">
+      <h2 class="alert-dialog-title" id="ad2-title">Publish this post?</h2>
+      <p class="alert-dialog-description" id="ad2-desc">Once published, this post will be visible to all users. You can unpublish it later from the dashboard.</p>
+    </div>
+    <div class="alert-dialog-footer">
+      <button class="btn" data-variant="outline" data-alert-dialog-close>Cancel</button>
+      <button class="btn" data-variant="default" data-alert-dialog-close>Publish</button>
+    </div>
+  </div>
+</dialog>
+```
+
+```html example label="Density" hint="Set data-density on the {''} root to scale the content padding. A whitespace policy, not a zoom: only padding scales (ratio 0.75 / 1 / 1.25), typography stays identical. comfortable matches the unsized default."
+<div class="flex flex-wrap gap-2">
+  <button class="btn" data-variant="outline" data-alert-dialog-trigger="density-ad-compact">Compact</button>
+  <dialog id="density-ad-compact" class="alert-dialog" data-density="compact" role="alertdialog" aria-modal="true" aria-labelledby="dac-title">
+    <div class="alert-dialog-content">
+      <div class="alert-dialog-header">
+        <h2 class="alert-dialog-title" id="dac-title">Compact density</h2>
+        <p class="alert-dialog-description">Content padding is 1rem instead of the default 1.5rem.</p>
+      </div>
+      <div class="alert-dialog-footer"><button class="btn" data-variant="outline" data-alert-dialog-close>Close</button></div>
+    </div>
+  </dialog>
+  <button class="btn" data-variant="outline" data-alert-dialog-trigger="density-ad-comfortable">Comfortable</button>
+  <dialog id="density-ad-comfortable" class="alert-dialog" data-density="comfortable" role="alertdialog" aria-modal="true" aria-labelledby="dacm-title">
+    <div class="alert-dialog-content">
+      <div class="alert-dialog-header">
+        <h2 class="alert-dialog-title" id="dacm-title">Comfortable density</h2>
+        <p class="alert-dialog-description">Identical to the unsized default — 1.5rem content padding.</p>
+      </div>
+      <div class="alert-dialog-footer"><button class="btn" data-variant="outline" data-alert-dialog-close>Close</button></div>
+    </div>
+  </dialog>
+  <button class="btn" data-variant="outline" data-alert-dialog-trigger="density-ad-spacious">Spacious</button>
+  <dialog id="density-ad-spacious" class="alert-dialog" data-density="spacious" role="alertdialog" aria-modal="true" aria-labelledby="das-title">
+    <div class="alert-dialog-content">
+      <div class="alert-dialog-header">
+        <h2 class="alert-dialog-title" id="das-title">Spacious density</h2>
+        <p class="alert-dialog-description">Content padding grows to 2rem.</p>
+      </div>
+      <div class="alert-dialog-footer"><button class="btn" data-variant="outline" data-alert-dialog-close>Close</button></div>
+    </div>
+  </dialog>
+</div>
+```
 
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
@@ -140,6 +131,15 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <li><code>open</code> — shown modally via <code>showModal()</code></li>
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/alert-dialog-\{state\}.png</code>.</p>
+
+Machine contract — verified against <a href="../schemas/alert-dialog.schema.json"><code>alert-dialog.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `open` | `boolean` | `true`, `false` | `false` | Shown via `showModal()`; hidden via `close()` (native `open` property). |
+```
+
 </StatesSection>
 
 <SourceFiles component="alert-dialog" section="css">

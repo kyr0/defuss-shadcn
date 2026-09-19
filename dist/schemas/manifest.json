@@ -1,7 +1,34 @@
 {
   "schemaVersion": 1,
   "components": {
+    "accordion": "./accordion.schema.json",
+    "alert-dialog": "./alert-dialog.schema.json",
+    "avatar": "./avatar.schema.json",
+    "calendar": "./calendar.schema.json",
+    "carousel": "./carousel.schema.json",
+    "color-picker": "./color-picker.schema.json",
+    "combobox": "./combobox.schema.json",
+    "command": "./command.schema.json",
+    "context-menu": "./context-menu.schema.json",
     "dialog": "./dialog.schema.json",
-    "input": "./input.schema.json"
+    "dropdown": "./dropdown.schema.json",
+    "image": "./image.schema.json",
+    "input": "./input.schema.json",
+    "navigation-menu": "./navigation-menu.schema.json",
+    "number-input": "./number-input.schema.json",
+    "popover": "./popover.schema.json",
+    "product-showcase": "./product-showcase.schema.json",
+    "sheet": "./sheet.schema.json",
+    "sidebar": "./sidebar.schema.json",
+    "slider": "./slider.schema.json",
+    "sortable": "./sortable.schema.json",
+    "tabs": "./tabs.schema.json",
+    "theme-switcher": "./theme-switcher.schema.json",
+    "toast": "./toast.schema.json",
+    "toggle": "./toggle.schema.json",
+    "toggle-group": "./toggle-group.schema.json",
+    "toolbar": "./toolbar.schema.json",
+    "tooltip": "./tooltip.schema.json",
+    "tree-view": "./tree-view.schema.json"
   }
 }

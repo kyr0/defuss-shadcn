@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "name": "command",
+  "states": {
+    "open": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "root"
+      },
+      "mutation": {
+        "kind": "property",
+        "name": "open"
+      },
+      "observation": {
+        "kind": "property",
+        "name": "open"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {
+    "showModal": {
+      "target": {
+        "kind": "root"
+      },
+      "operation": {
+        "kind": "method",
+        "name": "showModal"
+      }
+    },
+    "close": {
+      "target": {
+        "kind": "root"
+      },
+      "operation": {
+        "kind": "method",
+        "name": "close"
+      }
+    }
+  }
+}

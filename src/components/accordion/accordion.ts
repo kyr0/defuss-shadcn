@@ -63,10 +63,12 @@ df$.accordionApi = accordionApi;
 df$.accordionStates = accordionStates;
 
 function init() {
-  document.querySelectorAll('.accordion[data-type="single"]:not([data-init])').forEach((accordion) => {
-    accordion.dataset.init = '';
+  // the State API binds to EVERY accordion — all-open/all-closed are generic
+  // batch states independent of the single-open behavior below; data-api is
+  // this loop's own marker so data-init stays the exclusive-toggle marker
+  document.querySelectorAll('.accordion:not([data-api])').forEach((accordion) => {
+    accordion.dataset.api = '';
     const items = accordion.querySelectorAll('.accordion-item');
-    const collapsible = accordion.hasAttribute('data-collapsible');
     // snapshot the authored markup — that is the 'default' state to return to
     accordion._defaultOpen = Array.from(items).map((item) => item.open);
     // bind-scope the api per instance: `$('#x').api.setState('all-open')`
@@ -74,6 +76,11 @@ function init() {
       setState: (stateName, config) => accordionApi.setState(accordion, stateName, config),
       getState: () => accordionApi.getState(accordion),
     };
+  });
+  document.querySelectorAll('.accordion[data-type="single"]:not([data-init])').forEach((accordion) => {
+    accordion.dataset.init = '';
+    const items = accordion.querySelectorAll('.accordion-item');
+    const collapsible = accordion.hasAttribute('data-collapsible');
     items.forEach((item) => {
       // Cancellable pre-event: closing the LAST open item of a non-collapsible
       // single accordion is denied here, before the DOM changes. Reopening it

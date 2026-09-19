@@ -1846,15 +1846,19 @@ var accordionApi = {
 df$.accordionApi = accordionApi;
 df$.accordionStates = accordionStates;
 function init() {
-  document.querySelectorAll('.accordion[data-type="single"]:not([data-init])').forEach((accordion) => {
-    accordion.dataset.init = "";
+  document.querySelectorAll(".accordion:not([data-api])").forEach((accordion) => {
+    accordion.dataset.api = "";
     const items = accordion.querySelectorAll(".accordion-item");
-    const collapsible = accordion.hasAttribute("data-collapsible");
     accordion._defaultOpen = Array.from(items).map((item) => item.open);
     accordion.api = {
       setState: (stateName, config) => accordionApi.setState(accordion, stateName, config),
       getState: () => accordionApi.getState(accordion)
     };
+  });
+  document.querySelectorAll('.accordion[data-type="single"]:not([data-init])').forEach((accordion) => {
+    accordion.dataset.init = "";
+    const items = accordion.querySelectorAll(".accordion-item");
+    const collapsible = accordion.hasAttribute("data-collapsible");
     items.forEach((item) => {
       item.addEventListener("beforetoggle", (e) => {
         if (accordion._applying)
@@ -4871,6 +4875,6 @@ function init28() {
 init28();
 new MutationObserver(init28).observe(document, { childList: true, subtree: true });
 
-//# debugId=A09A506922AC233B64756E2164756E21
+//# debugId=F88A5FB8CA4AB8BF64756E2164756E21
 /* defuss-shadcn v0.9.0 runtime provenance: bundles defuss-morph@0.1.1 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.1.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=all.js.map

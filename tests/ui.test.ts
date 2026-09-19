@@ -387,7 +387,10 @@ test('code collapse-all toggles every snippet block — including the standalone
   const wrappers = [...main.querySelectorAll('.code-block-wrapper')];
   const toggles = [...main.querySelectorAll('.code-toggle-btn')];
   // every snippet wrapper (copy-btn + <pre> div) on the page got a toggle...
-  expect(wrappers.length).toBeGreaterThanOrEqual(6); // 4 examples + CSS + JS
+  // (examples are CodeExample fences now — their source lives in the card's
+  // textarea, not a .code-block-wrapper — so this page's wrappers are the
+  // two standalone source sections)
+  expect(wrappers.length).toBeGreaterThanOrEqual(2); // CSS + JS
   expect(toggles.length).toBe(wrappers.length);
   // ...including the two standalone source sections (old bug: these were missed)
   const cssWrapper = doc.querySelector('#source-css .copy-btn')!.parentElement!;
@@ -424,18 +427,23 @@ test('code collapse-all toggles every snippet block — including the standalone
   wrappers.forEach((w) => expect(win.getComputedStyle(w).display).toBe('none'));
 });
 
-test('accordion single-open: opening one item closes its siblings', async () => {
+test('accordion state contract: the CodeExample card exposes the schema State API end to end', async () => {
+  // the doc demos are executable CodeExample fences now — the sandbox is an
+  // opaque-origin iframe (sandbox="allow-scripts"), so the host-side contract
+  // is the card's bound api + its mirrored data-state-values (§11). The
+  // single-open click behavior itself is pinned in tests/e2e/accordion.e2e.ts.
   const { doc } = await openDocPage('accordion.html');
 
-  const single = doc.querySelector('.accordion[data-type="single"]') as HTMLElement;
-  const items = [...single.querySelectorAll('.accordion-item')] as HTMLDetailsElement[];
-  expect(items.length).toBe(3);
+  const card = doc.querySelector('.code-example[data-component="accordion"]') as HTMLElement & {
+    api?: { setState(name: string, config?: Record<string, unknown>): void; getState(): { name: Record<string, unknown> } };
+  };
+  await waitFor(() => card?.api, 'accordion example card to boot its sandbox');
 
-  // first item is open by default; click the second item's summary
-  expect(items[0].open).toBe(true);
-  await clickSelector(doc, '.accordion[data-type="single"] .accordion-item:nth-of-type(2) > summary');
+  const mirrored = (): Record<string, unknown> => JSON.parse(card.dataset.stateValues || '{}') as Record<string, unknown>;
+  card.api!.setState('all-open');
+  await waitFor(() => mirrored()['all-open'] === true, 'all-open to mirror onto the card');
+  expect(mirrored()['all-closed'], 'all-closed is false while all-open').toBe(false);
 
-  await waitFor(() => items[1].open, 'second item to open');
-  // accordion.js single-open handler must have closed the first item
-  await waitFor(() => !items[0].open, 'first item to close');
+  card.api!.setState('default');
+  await waitFor(() => mirrored()['all-open'] === false, 'default clears all-open');
 });

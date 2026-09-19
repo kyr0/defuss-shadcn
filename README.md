@@ -11,7 +11,7 @@
 
 **A UI component system that scales with _local_ AI.** Themeable components built on semantic HTML, modern CSS, and vanilla JavaScript. No framework. No build step for consumers — `dist/` is committed and ready to use as-is. The simplest possible foundation for AI-driven prototyping.
 
-**72 components — 28 with JavaScript, 44 CSS-only — 76.5 KiB minified + compressed — 45.6 KiB as the all.css/all.js bundle.**
+**72 components — 28 with JavaScript, 44 CSS-only — 76.6 KiB minified + compressed — 45.6 KiB as the all.css/all.js bundle.**
 44 of 72 components need no JavaScript — native HTML and modern CSS cover them entirely.
 The footprint is measured from the shipped `dist/` files on every build and published as
 [`dist/stats.json`](dist/stats.json); `verify` fails the build if this sentence and that file disagree.
@@ -27,7 +27,7 @@ Why this system exists, from the agents who built it: [ARCH.md](ARCH.md).
 A portable UI component system built on the [shadcn/ui](https://ui.shadcn.com) token model.
 
 - **Themeable** — full shadcn semantic token model. 43 [tweakcn](https://tweakcn.com) presets ship as drop-in theme files — swap one and every component updates instantly
-- **Component Skills** — every component includes a structured skill — markup, variants, sizes, density, named states, ARIA, and wiring conventions — grounded in web standards
+- **Component Skills** — every component includes a structured skill — markup, variants, sizes, density, named states, ARIA, and wiring conventions — grounded in web standards; every interactive component also ships a machine-readable `*.schema.json` contract (states, types, defaults, actions) that drives its docs controls and is verifier-enforced
 - **Observable state** — interactive components expose a State API (`el.api.setState('open')`, `el.api.getState()`), so agents and tests can drive every documented state by name without knowing the implementation
 - **Accessible** — built on native HTML elements and WAI-ARIA patterns. Keyboard navigation, focus management, and screen reader support by default
 - **Framework Free** — runs in any browser, zero dependencies, no build pipeline required

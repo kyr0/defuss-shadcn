@@ -49,135 +49,132 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-muted-foreground text-sm mb-4">Click the trigger to open a popover below (default side). Uses native Popover API — no JS for open/close.</p>
 
-<Example>
-  <button class="btn" data-variant="outline" popovertarget="demo-popover">Open Popover</button>
-  <div class="popover" id="demo-popover" popover data-state-demo>
-    <div class="popover-header">
-      <p class="popover-title">Dimensions</p>
-      <p class="popover-description">Set the dimensions for the layer.</p>
-    </div>
-    <div class="popover-content">
-      <p style="margin:0;font-size:0.8125rem;color:var(--muted-foreground);">Width: 100% • Height: auto</p>
-    </div>
+```html example height="14"
+<button class="btn" data-variant="outline" popovertarget="demo-popover">Open Popover</button>
+<div class="popover" id="demo-popover" popover>
+  <div class="popover-header">
+    <p class="popover-title">Dimensions</p>
+    <p class="popover-description">Set the dimensions for the layer.</p>
   </div>
-  <ExampleCode>{"<button class=\"btn\" data-variant=\"outline\" popovertarget=\"my-popover\">Open Popover</button>\n\n<div class=\"popover\" id=\"my-popover\" popover>\n  <div class=\"popover-header\">\n    <p class=\"popover-title\">Dimensions</p>\n    <p class=\"popover-description\">Set the dimensions for the layer.</p>\n  </div>\n  <div class=\"popover-content\">...</div>\n</div>"}</ExampleCode>
-</Example>
+  <div class="popover-content">
+    <p style="margin:0;font-size:0.8125rem;color:var(--muted-foreground);">Width: 100% • Height: auto</p>
+  </div>
+</div>
+```
 
 <p class="text-sm font-medium mb-2 mt-8">With Form</p>
 
 <p class="text-muted-foreground text-sm mb-4">Popover containing form fields — the canonical shadcn popover pattern.</p>
 
-<Example noCode>
-  <button class="btn" data-variant="outline" popovertarget="demo-popover-form">Open Popover</button>
-  <div class="popover" id="demo-popover-form" popover style="width:20rem;">
-    <div class="popover-header">
-      <p class="popover-title">Dimensions</p>
-      <p class="popover-description">Set the dimensions for the layer.</p>
-    </div>
-    <div class="popover-content">
-      <div style="display:grid;gap:0.5rem;">
-        <div style="display:grid;grid-template-columns:1fr 2fr;align-items:center;gap:1rem;">
-          <label class="label" for="pop-width" style="text-align:right;">Width</label>
-          <input class="input" id="pop-width" type="text" value="100%" style="height:2rem;font-size:0.8125rem;" />
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 2fr;align-items:center;gap:1rem;">
-          <label class="label" for="pop-max-width" style="text-align:right;">Max. width</label>
-          <input class="input" id="pop-max-width" type="text" value="300px" style="height:2rem;font-size:0.8125rem;" />
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 2fr;align-items:center;gap:1rem;">
-          <label class="label" for="pop-height" style="text-align:right;">Height</label>
-          <input class="input" id="pop-height" type="text" value="25px" style="height:2rem;font-size:0.8125rem;" />
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 2fr;align-items:center;gap:1rem;">
-          <label class="label" for="pop-max-height" style="text-align:right;">Max. height</label>
-          <input class="input" id="pop-max-height" type="text" value="none" style="height:2rem;font-size:0.8125rem;" />
-        </div>
+```html example height="14"
+<button class="btn" data-variant="outline" popovertarget="demo-popover-form">Open Popover</button>
+<div class="popover" id="demo-popover-form" popover style="width:20rem;">
+  <div class="popover-header">
+    <p class="popover-title">Dimensions</p>
+    <p class="popover-description">Set the dimensions for the layer.</p>
+  </div>
+  <div class="popover-content">
+    <div style="display:grid;gap:0.5rem;">
+      <div style="display:grid;grid-template-columns:1fr 2fr;align-items:center;gap:1rem;">
+        <label class="label" for="pop-width" style="text-align:right;">Width</label>
+        <input class="input" id="pop-width" type="text" value="100%" style="height:2rem;font-size:0.8125rem;"></input>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 2fr;align-items:center;gap:1rem;">
+        <label class="label" for="pop-max-width" style="text-align:right;">Max. width</label>
+        <input class="input" id="pop-max-width" type="text" value="300px" style="height:2rem;font-size:0.8125rem;"></input>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 2fr;align-items:center;gap:1rem;">
+        <label class="label" for="pop-height" style="text-align:right;">Height</label>
+        <input class="input" id="pop-height" type="text" value="25px" style="height:2rem;font-size:0.8125rem;"></input>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 2fr;align-items:center;gap:1rem;">
+        <label class="label" for="pop-max-height" style="text-align:right;">Max. height</label>
+        <input class="input" id="pop-max-height" type="text" value="none" style="height:2rem;font-size:0.8125rem;"></input>
       </div>
     </div>
   </div>
-</Example>
+</div>
+```
 
 <p class="text-sm font-medium mb-2 mt-8">Align</p>
 
 <p class="text-muted-foreground text-sm mb-4">Use <code>data-align</code> on the popover to control horizontal alignment: <code>start</code>, <code>center</code> (default), or <code>end</code>.</p>
 
-<Example noCode previewStyle="display:flex;gap:0.5rem;justify-content:center;">
-  <button class="btn" data-variant="outline" popovertarget="demo-pop-start">Start</button>
-  <div class="popover" id="demo-pop-start" popover data-align="start">
-    <div class="popover-header">
-      <p class="popover-title">Start aligned</p>
-      <p class="popover-description">Popover aligned to the start edge.</p>
-    </div>
+```html example height="14"
+<button class="btn" data-variant="outline" popovertarget="demo-pop-start">Start</button>
+<div class="popover" id="demo-pop-start" popover data-align="start">
+  <div class="popover-header">
+    <p class="popover-title">Start aligned</p>
+    <p class="popover-description">Popover aligned to the start edge.</p>
   </div>
-  <button class="btn" data-variant="outline" popovertarget="demo-pop-center">Center</button>
-  <div class="popover" id="demo-pop-center" popover>
-    <div class="popover-header">
-      <p class="popover-title">Center aligned</p>
-      <p class="popover-description">Default center alignment.</p>
-    </div>
+</div>
+<button class="btn" data-variant="outline" popovertarget="demo-pop-center">Center</button>
+<div class="popover" id="demo-pop-center" popover>
+  <div class="popover-header">
+    <p class="popover-title">Center aligned</p>
+    <p class="popover-description">Default center alignment.</p>
   </div>
-  <button class="btn" data-variant="outline" popovertarget="demo-pop-end">End</button>
-  <div class="popover" id="demo-pop-end" popover data-align="end">
-    <div class="popover-header">
-      <p class="popover-title">End aligned</p>
-      <p class="popover-description">Popover aligned to the end edge.</p>
-    </div>
+</div>
+<button class="btn" data-variant="outline" popovertarget="demo-pop-end">End</button>
+<div class="popover" id="demo-pop-end" popover data-align="end">
+  <div class="popover-header">
+    <p class="popover-title">End aligned</p>
+    <p class="popover-description">Popover aligned to the end edge.</p>
   </div>
-</Example>
+</div>
+```
 
 <p class="text-sm font-medium mb-2 mt-8">Side</p>
 
 <p class="text-muted-foreground text-sm mb-4">Use <code>data-side</code> to position the popover on a specific side of the trigger: <code>top</code>, <code>right</code>, <code>bottom</code> (default), or <code>left</code>.</p>
 
-<Example noCode previewStyle="display:flex;gap:0.5rem;flex-wrap:wrap;justify-content:center;">
-  <button class="btn" data-variant="outline" popovertarget="demo-pop-top">Top</button>
-  <div class="popover" id="demo-pop-top" popover data-side="top">
-    <div class="popover-header">
-      <p class="popover-title">Top side</p>
-      <p class="popover-description">Positioned above the trigger.</p>
-    </div>
+```html example height="14"
+<button class="btn" data-variant="outline" popovertarget="demo-pop-top">Top</button>
+<div class="popover" id="demo-pop-top" popover data-side="top">
+  <div class="popover-header">
+    <p class="popover-title">Top side</p>
+    <p class="popover-description">Positioned above the trigger.</p>
   </div>
-  <button class="btn" data-variant="outline" popovertarget="demo-pop-right">Right</button>
-  <div class="popover" id="demo-pop-right" popover data-side="right">
-    <div class="popover-header">
-      <p class="popover-title">Right side</p>
-      <p class="popover-description">Positioned to the right.</p>
-    </div>
+</div>
+<button class="btn" data-variant="outline" popovertarget="demo-pop-right">Right</button>
+<div class="popover" id="demo-pop-right" popover data-side="right">
+  <div class="popover-header">
+    <p class="popover-title">Right side</p>
+    <p class="popover-description">Positioned to the right.</p>
   </div>
-  <button class="btn" data-variant="outline" popovertarget="demo-pop-bottom">Bottom</button>
-  <div class="popover" id="demo-pop-bottom" popover>
-    <div class="popover-header">
-      <p class="popover-title">Bottom side</p>
-      <p class="popover-description">Default bottom positioning.</p>
-    </div>
+</div>
+<button class="btn" data-variant="outline" popovertarget="demo-pop-bottom">Bottom</button>
+<div class="popover" id="demo-pop-bottom" popover>
+  <div class="popover-header">
+    <p class="popover-title">Bottom side</p>
+    <p class="popover-description">Default bottom positioning.</p>
   </div>
-  <button class="btn" data-variant="outline" popovertarget="demo-pop-left">Left</button>
-  <div class="popover" id="demo-pop-left" popover data-side="left">
-    <div class="popover-header">
-      <p class="popover-title">Left side</p>
-      <p class="popover-description">Positioned to the left.</p>
-    </div>
+</div>
+<button class="btn" data-variant="outline" popovertarget="demo-pop-left">Left</button>
+<div class="popover" id="demo-pop-left" popover data-side="left">
+  <div class="popover-header">
+    <p class="popover-title">Left side</p>
+    <p class="popover-description">Positioned to the left.</p>
   </div>
-</Example>
+</div>
+```
 
-<Example previewStyle="align-items:flex-start;flex-direction:column;gap:1rem;">
-  <ExampleLabel>Density</ExampleLabel>
-  <ExampleHint>Set <code>data-density</code> on the component root to scale its content padding. A whitespace policy, not a zoom: only padding scales (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), typography stays identical. <code>comfortable</code> matches the unsized default.</ExampleHint>
-  <div class="flex flex-wrap gap-2">
-    <button class="btn" data-variant="outline" popovertarget="density-popover-compact">Compact</button>
-    <div class="popover" id="density-popover-compact" popover data-density="compact">
-      <div class="popover-header"><p class="popover-title">Compact density</p><p class="popover-description">Content padding 0.75rem.</p></div>
-    </div>
-    <button class="btn" data-variant="outline" popovertarget="density-popover-comfortable">Comfortable</button>
-    <div class="popover" id="density-popover-comfortable" popover data-density="comfortable">
-      <div class="popover-header"><p class="popover-title">Comfortable density</p><p class="popover-description">Identical to the unsized default — 1rem.</p></div>
-    </div>
-    <button class="btn" data-variant="outline" popovertarget="density-popover-spacious">Spacious</button>
-    <div class="popover" id="density-popover-spacious" popover data-density="spacious">
-      <div class="popover-header"><p class="popover-title">Spacious density</p><p class="popover-description">Content padding 1.25rem.</p></div>
-    </div>
+```html example label="Density" hint="Set data-density on the component root to scale its content padding. A whitespace policy, not a zoom: only padding scales (ratio 0.75 / 1 / 1.25), typography stays identical. comfortable matches the unsized default." height="14"
+<div class="flex flex-wrap gap-2">
+  <button class="btn" data-variant="outline" popovertarget="density-popover-compact">Compact</button>
+  <div class="popover" id="density-popover-compact" popover data-density="compact">
+    <div class="popover-header"><p class="popover-title">Compact density</p><p class="popover-description">Content padding 0.75rem.</p></div>
   </div>
-</Example>
+  <button class="btn" data-variant="outline" popovertarget="density-popover-comfortable">Comfortable</button>
+  <div class="popover" id="density-popover-comfortable" popover data-density="comfortable">
+    <div class="popover-header"><p class="popover-title">Comfortable density</p><p class="popover-description">Identical to the unsized default — 1rem.</p></div>
+  </div>
+  <button class="btn" data-variant="outline" popovertarget="density-popover-spacious">Spacious</button>
+  <div class="popover" id="density-popover-spacious" popover data-density="spacious">
+    <div class="popover-header"><p class="popover-title">Spacious density</p><p class="popover-description">Content padding 1.25rem.</p></div>
+  </div>
+</div>
+```
 
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per popover through the bound <code>api</code>:</p>
@@ -186,6 +183,15 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <li><code>open</code> — shown via the native <code>showPopover()</code></li>
   </ul>
   <p class="text-sm text-muted-foreground">The first demo carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/popover-\{state\}.png</code>.</p>
+
+Machine contract — verified against <a href="../schemas/popover.schema.json"><code>popover.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `open` | `boolean` | `true`, `false` | `false` | Shown — driven through the component's own State API. |
+```
+
 </StatesSection>
 
 <SourceFiles component="popover" section="css">

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "name": "theme-switcher",
+  "states": {
+    "open": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".theme-switcher-menu"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "open"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name",
+        "target": {
+          "kind": "selector",
+          "selector": ".theme-switcher-menu"
+        }
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

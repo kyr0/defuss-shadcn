@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "name": "combobox",
+  "states": {
+    "open": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".combobox-content"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "open"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name",
+        "target": {
+          "kind": "selector",
+          "selector": ".combobox-content"
+        }
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

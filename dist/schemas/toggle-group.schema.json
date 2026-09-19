@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "name": "toggle-group",
+  "states": {
+    "disabled": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "root"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "data-disabled"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-disabled"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

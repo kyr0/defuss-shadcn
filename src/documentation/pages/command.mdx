@@ -60,56 +60,51 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first>
-  <ExampleLabel>Default</ExampleLabel>
-  <ExampleHint>Click the button or press <kbd>⌘K</kbd> to open. Use Arrow keys to navigate, Enter to select, Escape to close.</ExampleHint>
-  <button class="btn" data-variant="outline" data-command-trigger="demo-cmd">Open Command Menu</button>
-  <dialog id="demo-cmd" class="command" data-state-demo role="dialog" aria-modal="true" aria-label="Command menu">
-    <div class="command-content">
-      <div class="command-input-wrapper">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8" />
-          <path d="m21 21-4.3-4.3" />
-        </svg>
-        <input class="command-input" type="text" placeholder="Type a command or search..." autocomplete="off" autocorrect="off" spellcheck="false" />
-      </div>
-      <div class="command-list">
-        <div class="command-group">
-          <p class="command-group-heading">Suggestions</p>
-          <button class="command-item">Calendar</button>
-          <button class="command-item">Search Emoji</button>
-          <button class="command-item">Calculator</button>
-        </div>
-        <div class="command-separator" />
-        <div class="command-group">
-          <p class="command-group-heading">Settings</p>
-          <button class="command-item">Profile <span class="command-shortcut">⌘P</span></button>
-          <button class="command-item">Billing <span class="command-shortcut">⌘B</span></button>
-          <button class="command-item">Settings <span class="command-shortcut">⌘S</span></button>
-        </div>
-      </div>
-      <div class="command-empty" hidden>No results found.</div>
+```html example label="Default" hint="Click the button or press ⌘K to open. Use Arrow keys to navigate, Enter to select, Escape to close."
+<button class="btn" data-variant="outline" data-command-trigger="demo-cmd">Open Command Menu</button>
+<dialog id="demo-cmd" class="command" role="dialog" aria-modal="true" aria-label="Command menu">
+  <div class="command-content">
+    <div class="command-input-wrapper">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.3-4.3"></path>
+      </svg>
+      <input class="command-input" type="text" placeholder="Type a command or search..." autocomplete="off" autocorrect="off" spellcheck="false"></input>
     </div>
-  </dialog>
-  <ExampleCode>{"<button class=\"btn\" data-command-trigger=\"cmd\">Open</button>\n<dialog id=\"cmd\" class=\"command\" role=\"dialog\" aria-modal=\"true\">\n  <div class=\"command-content\">\n    <div class=\"command-input-wrapper\">\n      <svg>...search...</svg>\n      <input class=\"command-input\" type=\"text\" placeholder=\"Type a command...\">\n    </div>\n    <div class=\"command-list\">\n      <div class=\"command-group\">\n        <p class=\"command-group-heading\">Suggestions</p>\n        <button class=\"command-item\">Calendar</button>\n      </div>\n    </div>\n  </div>\n</dialog>"}</ExampleCode>
-</Example>
+    <div class="command-list">
+      <div class="command-group">
+        <p class="command-group-heading">Suggestions</p>
+        <button class="command-item">Calendar</button>
+        <button class="command-item">Search Emoji</button>
+        <button class="command-item">Calculator</button>
+      </div>
+      <div class="command-separator"></div>
+      <div class="command-group">
+        <p class="command-group-heading">Settings</p>
+        <button class="command-item">Profile <span class="command-shortcut">⌘P</span></button>
+        <button class="command-item">Billing <span class="command-shortcut">⌘B</span></button>
+        <button class="command-item">Settings <span class="command-shortcut">⌘S</span></button>
+      </div>
+    </div>
+    <div class="command-empty" hidden>No results found.</div>
+  </div>
+</dialog>
+```
 
-<Example>
-  <ExampleLabel>Density</ExampleLabel>
-  <ExampleHint>Set <code>data-density</code> on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), typography and fixed dimensions stay identical. <code>comfortable</code> matches the unsized default.</ExampleHint>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w75">Compact</span>
-    <button class="btn" data-variant="outline" data-command-trigger="density-cmd-compact">Open Compact palette</button><dialog id="density-cmd-compact" class="command" data-density="compact" role="dialog" aria-modal="true" aria-label="Compact command palette"><div class="command-content"><div class="command-input-wrapper"><input class="command-input" type="text" placeholder="Type a command or search..." autocomplete="off" /></div><div class="command-list"><div class="command-group"><p class="command-group-heading">Suggestions</p><button class="command-item">Calendar</button><button class="command-item">Search Emoji</button><button class="command-item">Calculator</button></div></div></div></dialog>
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w75">Comfortable</span>
-    <button class="btn" data-variant="outline" data-command-trigger="density-cmd-comfortable">Open Comfortable palette</button><dialog id="density-cmd-comfortable" class="command" data-density="comfortable" role="dialog" aria-modal="true" aria-label="Comfortable command palette"><div class="command-content"><div class="command-input-wrapper"><input class="command-input" type="text" placeholder="Type a command or search..." autocomplete="off" /></div><div class="command-list"><div class="command-group"><p class="command-group-heading">Suggestions</p><button class="command-item">Calendar</button><button class="command-item">Search Emoji</button><button class="command-item">Calculator</button></div></div></div></dialog>
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w75">Spacious</span>
-    <button class="btn" data-variant="outline" data-command-trigger="density-cmd-spacious">Open Spacious palette</button><dialog id="density-cmd-spacious" class="command" data-density="spacious" role="dialog" aria-modal="true" aria-label="Spacious command palette"><div class="command-content"><div class="command-input-wrapper"><input class="command-input" type="text" placeholder="Type a command or search..." autocomplete="off" /></div><div class="command-list"><div class="command-group"><p class="command-group-heading">Suggestions</p><button class="command-item">Calendar</button><button class="command-item">Search Emoji</button><button class="command-item">Calculator</button></div></div></div></dialog>
-  </div>
-</Example>
+```html example label="Density" hint="Set data-density on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25), typography and fixed dimensions stay identical. comfortable matches the unsized default."
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w75">Compact</span>
+  <button class="btn" data-variant="outline" data-command-trigger="density-cmd-compact">Open Compact palette</button><dialog id="density-cmd-compact" class="command" data-density="compact" role="dialog" aria-modal="true" aria-label="Compact command palette"><div class="command-content"><div class="command-input-wrapper"><input class="command-input" type="text" placeholder="Type a command or search..." autocomplete="off"></input></div><div class="command-list"><div class="command-group"><p class="command-group-heading">Suggestions</p><button class="command-item">Calendar</button><button class="command-item">Search Emoji</button><button class="command-item">Calculator</button></div></div></div></dialog>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w75">Comfortable</span>
+  <button class="btn" data-variant="outline" data-command-trigger="density-cmd-comfortable">Open Comfortable palette</button><dialog id="density-cmd-comfortable" class="command" data-density="comfortable" role="dialog" aria-modal="true" aria-label="Comfortable command palette"><div class="command-content"><div class="command-input-wrapper"><input class="command-input" type="text" placeholder="Type a command or search..." autocomplete="off"></input></div><div class="command-list"><div class="command-group"><p class="command-group-heading">Suggestions</p><button class="command-item">Calendar</button><button class="command-item">Search Emoji</button><button class="command-item">Calculator</button></div></div></div></dialog>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w75">Spacious</span>
+  <button class="btn" data-variant="outline" data-command-trigger="density-cmd-spacious">Open Spacious palette</button><dialog id="density-cmd-spacious" class="command" data-density="spacious" role="dialog" aria-modal="true" aria-label="Spacious command palette"><div class="command-content"><div class="command-input-wrapper"><input class="command-input" type="text" placeholder="Type a command or search..." autocomplete="off"></input></div><div class="command-list"><div class="command-group"><p class="command-group-heading">Suggestions</p><button class="command-item">Calendar</button><button class="command-item">Search Emoji</button><button class="command-item">Calculator</button></div></div></div></dialog>
+</div>
+```
 
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
@@ -118,6 +113,15 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <li><code>open</code> — shown modally with the search input focused</li>
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/command-\{state\}.png</code>.</p>
+
+Machine contract — verified against <a href="../schemas/command.schema.json"><code>command.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `open` | `boolean` | `true`, `false` | `false` | Shown via `showModal()`; hidden via `close()` (native `open` property). |
+```
+
 </StatesSection>
 
 <SourceFiles component="command" section="css">

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "name": "avatar",
+  "states": {
+    "error": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "root"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "error"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-error",
+        "target": {
+          "kind": "selector",
+          "selector": ".avatar-image"
+        }
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

@@ -56,12 +56,9 @@ import { themeFiles } from "../lib/repo";
   </SkillField>
 </SkillPanel>
 
-<Example first previewStyle="min-height:14rem;align-items:flex-start;padding-top:3rem;">
-  <ExampleLabel>Live</ExampleLabel>
-  <ExampleHint>Pick any of the {themeFiles().length} tweakcn presets — the whole page re-themes by loading <code>{"../theme/<id>.css"}</code>. Watch the page's stylesheets in DevTools: exactly one <code>{"<link id=\"theme-css\">"}</code> appears and disappears.</ExampleHint>
-  <ThemeSwitcherDemo id="ts-page" />
-  <ExampleCode>{"<div class=\"theme-switcher\">\n  <button class=\"btn theme-switcher-trigger\" id=\"ts-trigger\" popovertarget=\"ts-menu\" aria-expanded=\"false\" aria-haspopup=\"menu\">\n    <span class=\"theme-switcher-dot\" aria-hidden=\"true\"></span>\n    <span class=\"theme-switcher-label\">Default</span>\n    <svg class=\"theme-switcher-chevron\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m6 9 6 6 6-6\" /></svg>\n  </button>\n  <div id=\"ts-menu\" class=\"theme-switcher-menu\" popover=\"auto\" role=\"menu\" aria-labelledby=\"ts-trigger\">\n    <button class=\"theme-switcher-item\" role=\"menuitemradio\" aria-checked=\"true\" data-theme-id=\"default\" data-theme-label=\"Default\" tabindex=\"-1\">\n      <span class=\"theme-switcher-dots\" aria-hidden=\"true\"></span>\n      <span class=\"theme-switcher-name\">Default</span>\n      <svg class=\"theme-switcher-check\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\" /></svg>\n    </button>\n    <!-- …one item per theme file, e.g.: -->\n    <button class=\"theme-switcher-item\" role=\"menuitemradio\" aria-checked=\"false\" data-theme-id=\"claude\" data-theme-label=\"Claude\" data-theme-colors=\"#c96442,#e9e6dc,#e9e6dc,#141413,#ede9de\" tabindex=\"-1\">…</button>\n  </div>\n</div>"}</ExampleCode>
-</Example>
+```html example label="Live" hint="Pick any of the {themeFiles().length} tweakcn presets — the whole page re-themes by loading {'../theme/.css'}. Watch the page's stylesheets in DevTools: exactly one {''} appears and disappears." height="16"
+<ThemeSwitcherDemo id="ts-page"></ThemeSwitcherDemo>
+```
 
 <H2>How the mechanism works</H2>
 
@@ -86,6 +83,15 @@ link?.remove();`}</CodeCard>
     <li><code>open</code> — shown via the native <code>showPopover()</code>, first theme item focused</li>
   </ul>
   <p class="text-sm text-muted-foreground">The first demo carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/theme-switcher-\{state\}.png</code>.</p>
+
+Machine contract — verified against <a href="../schemas/theme-switcher.schema.json"><code>theme-switcher.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `open` | `boolean` | `true`, `false` | `false` | Shown — driven through the component's own State API. The listbox lists every tweakcn preset. |
+```
+
 </StatesSection>
 
 <SourceFiles component="theme-switcher" section="css" />

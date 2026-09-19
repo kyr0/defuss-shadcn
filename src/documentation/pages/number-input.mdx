@@ -41,57 +41,50 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first>
-  <ExampleLabel>Default</ExampleLabel>
-  <ExampleHint>Number input with +/- buttons.</ExampleHint>
-  <div>
-    <label class="label" for="d-qty">Quantity</label>
-    <div class="number-input" data-state-demo>
-      <button data-action="decrement" aria-label="Decrease">−</button>
-      <input type="number" id="d-qty" value="1" min="0" max="99" step="1" />
-      <button data-action="increment" aria-label="Increase">+</button>
-    </div>
+```html example label="Default" hint="Number input with +/- buttons."
+<div>
+  <label class="label" for="d-qty">Quantity</label>
+  <div class="number-input">
+    <button data-action="decrement" aria-label="Decrease">−</button>
+    <input type="number" id="d-qty" value="1" min="0" max="99" step="1"></input>
+    <button data-action="increment" aria-label="Increase">+</button>
   </div>
-  <ExampleCode>{"<div class=\"number-input\">\n  <button data-action=\"decrement\">−</button>\n  <input type=\"number\" value=\"1\" min=\"0\" max=\"99\" step=\"1\">\n  <button data-action=\"increment\">+</button>\n</div>"}</ExampleCode>
-</Example>
+</div>
+```
 
-<Example>
-  <ExampleLabel>With step</ExampleLabel>
-  <div>
-    <label class="label" for="d-temp">Temperature</label>
-    <div class="number-input">
-      <button data-action="decrement" aria-label="Decrease">−</button>
-      <input type="number" id="d-temp" value="20.0" min="-40" max="60" step="0.5" />
-      <button data-action="increment" aria-label="Increase">+</button>
-    </div>
+```html example label="With step"
+<div>
+  <label class="label" for="d-temp">Temperature</label>
+  <div class="number-input">
+    <button data-action="decrement" aria-label="Decrease">−</button>
+    <input type="number" id="d-temp" value="20.0" min="-40" max="60" step="0.5"></input>
+    <button data-action="increment" aria-label="Increase">+</button>
   </div>
-  <ExampleCode>{"<input type=\"number\" value=\"20.0\" min=\"-40\" max=\"60\" step=\"0.5\">"}</ExampleCode>
-</Example>
+</div>
+```
 
-<Example>
-  <ExampleLabel>Sizes</ExampleLabel>
-  <ExampleHint>The stepper follows the shared input ladder via <code>data-size</code> — <code>md</code> is 2.25rem like every other form control.</ExampleHint>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Extra small</span>
-    <div class="number-input" data-size="xs"><button data-action="decrement" aria-label="Decrease">−</button><input type="number" value="1" min="0" max="99" step="1" aria-label="Quantity xs" /><button data-action="increment" aria-label="Increase">+</button></div>
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Small</span>
-    <div class="number-input" data-size="sm"><button data-action="decrement" aria-label="Decrease">−</button><input type="number" value="1" min="0" max="99" step="1" aria-label="Quantity sm" /><button data-action="increment" aria-label="Increase">+</button></div>
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Medium</span>
-    <div class="number-input" data-size="md"><button data-action="decrement" aria-label="Decrease">−</button><input type="number" value="1" min="0" max="99" step="1" aria-label="Quantity md" /><button data-action="increment" aria-label="Increase">+</button></div>
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Large</span>
-    <div class="number-input" data-size="lg"><button data-action="decrement" aria-label="Decrease">−</button><input type="number" value="1" min="0" max="99" step="1" aria-label="Quantity lg" /><button data-action="increment" aria-label="Increase">+</button></div>
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Extra large</span>
-    <div class="number-input" data-size="xl"><button data-action="decrement" aria-label="Decrease">−</button><input type="number" value="1" min="0" max="99" step="1" aria-label="Quantity xl" /><button data-action="increment" aria-label="Increase">+</button></div>
-  </div>
-</Example>
+```html example label="Sizes" hint="The stepper follows the shared input ladder via data-size — md is 2.25rem like every other form control."
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Extra small</span>
+  <div class="number-input" data-size="xs"><button data-action="decrement" aria-label="Decrease">−</button><input type="number" value="1" min="0" max="99" step="1" aria-label="Quantity xs"></input><button data-action="increment" aria-label="Increase">+</button></div>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Small</span>
+  <div class="number-input" data-size="sm"><button data-action="decrement" aria-label="Decrease">−</button><input type="number" value="1" min="0" max="99" step="1" aria-label="Quantity sm"></input><button data-action="increment" aria-label="Increase">+</button></div>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Medium</span>
+  <div class="number-input" data-size="md"><button data-action="decrement" aria-label="Decrease">−</button><input type="number" value="1" min="0" max="99" step="1" aria-label="Quantity md"></input><button data-action="increment" aria-label="Increase">+</button></div>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Large</span>
+  <div class="number-input" data-size="lg"><button data-action="decrement" aria-label="Decrease">−</button><input type="number" value="1" min="0" max="99" step="1" aria-label="Quantity lg"></input><button data-action="increment" aria-label="Increase">+</button></div>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Extra large</span>
+  <div class="number-input" data-size="xl"><button data-action="decrement" aria-label="Decrease">−</button><input type="number" value="1" min="0" max="99" step="1" aria-label="Quantity xl"></input><button data-action="increment" aria-label="Increase">+</button></div>
+</div>
+```
 
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
@@ -99,6 +92,15 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <li><code>default</code> — enabled; <code>setState('default', \{ value \})</code> presets the number through the native input (events fire), and <code>getState().config.value</code> reports the live value</li>
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/number-input-\{state\}.png</code>.</p>
+
+Machine contract — verified against <a href="../schemas/number-input.schema.json"><code>number-input.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `value` | `number` | `—` | `3` | Current value — step buttons, typing, and the panel all drive the native input. |
+```
+
 </StatesSection>
 
 <SourceFiles component="number-input" section="css" />

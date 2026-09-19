@@ -411,6 +411,40 @@
           // fresh DOM parsed from the (possibly edited) source → observe it;
           // code is truth, so NOTHING is replayed over the new instance
           api.send('read-state', {});
+          // State-API-style handle on the host element (AGENTS.md "State API"):
+          // create-screenshots.ts and tests drive [data-state-demo] via api.setState.
+          // Installed ONLY on ready: the bridge's message listener exists from
+          // this moment, so every setState round-trip is guaranteed to land (an
+          // earlier postMessage to a not-yet-listening iframe vanishes silently).
+          root.api = {
+            setState: function (name, config) {
+              var spec = schema && schema.states[name];
+              if (spec) {
+                var value =
+                  config && 'value' in config
+                    ? config.value
+                    : spec.type === 'boolean'
+                      ? true
+                      : 'default' in spec
+                        ? spec.default
+                        : null;
+                api.send('set-state', { state: name, value: value });
+                return;
+              }
+              if (name === 'default') {
+                Object.keys((schema && schema.states) || {}).forEach(function (k) {
+                  if ('default' in schema.states[k]) api.send('set-state', { state: k, value: schema.states[k].default });
+                });
+                return;
+              }
+              throw new Error(
+                'CodeExample: unknown state "' + name + '" (schema states: ' + Object.keys((schema && schema.states) || {}).join(', ') + ')',
+              );
+            },
+            getState: function () {
+              return { name: JSON.parse(root.dataset.stateValues || '{}'), config: {} };
+            },
+          };
         } else if (d.kind === 'state') {
           observed = d.values || {};
           root.dataset.stateValues = JSON.stringify(observed); // §11 mirror, assertable
@@ -437,40 +471,7 @@
     };
     registry[ch] = api;
 
-    // State-API-style handle on the host element (AGENTS.md "State API"):
-    // create-screenshots.ts and tests drive [data-state-demo] via api.setState;
-    // a schema state maps to a sandbox mutation and 'default' resets every
-    // state to its schema default. The bridge mirrors observed values onto
-    // data-state-values, so getState() works from outside the opaque frame.
-    root.api = {
-      setState: function (name, config) {
-        var spec = schema && schema.states[name];
-        if (spec) {
-          var value =
-            config && 'value' in config
-              ? config.value
-              : spec.type === 'boolean'
-                ? true
-                : 'default' in spec
-                  ? spec.default
-                  : null;
-          api.send('set-state', { state: name, value: value });
-          return;
-        }
-        if (name === 'default') {
-          Object.keys((schema && schema.states) || {}).forEach(function (k) {
-            if ('default' in schema.states[k]) api.send('set-state', { state: k, value: schema.states[k].default });
-          });
-          return;
-        }
-        throw new Error(
-          'CodeExample: unknown state "' + name + '" (schema states: ' + Object.keys((schema && schema.states) || {}).join(', ') + ')',
-        );
-      },
-      getState: function () {
-        return { name: JSON.parse(root.dataset.stateValues || '{}'), config: {} };
-      },
-    };
+    // (root.api is installed inside onMessage on the bridge's 'ready' — see above)
 
     // -- toolbar -------------------------------------------------------------
     root.querySelectorAll('.code-example-tab').forEach(function (tab) {

@@ -61,44 +61,29 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first>
-  <ExampleLabel>Right</ExampleLabel>
-  <ExampleHint>Default side. The sheet slides in from the right edge — commonly used for edit-profile or settings panels.</ExampleHint>
-  <button class="btn" data-variant="outline" data-sheet-trigger="sheet-right" aria-haspopup="dialog">Open Right Sheet</button>
-  <ExampleCode>{"<!-- Trigger -->\n<button class=\"btn\" data-variant=\"outline\"\n        data-sheet-trigger=\"sheet-right\"\n        aria-haspopup=\"dialog\">Open Right Sheet</button>\n\n<!-- Sheet (place as direct child of body) -->\n<dialog id=\"sheet-right\" class=\"sheet\" data-side=\"right\"\n        role=\"dialog\" aria-modal=\"true\"\n        aria-labelledby=\"sheet-right-title\">\n  <div class=\"sheet-content\">\n    <div class=\"sheet-header\">\n      <h2 class=\"sheet-title\" id=\"sheet-right-title\">Edit Profile</h2>\n      <p class=\"sheet-description\">Make changes to your profile here. Click save when you're done.</p>\n    </div>\n    <div class=\"sheet-body\">\n      <div style=\"display:flex;flex-direction:column;gap:1rem;\">\n        <div>\n          <label class=\"label\" for=\"sheet-name\">Name</label>\n          <input id=\"sheet-name\" class=\"input\" type=\"text\" value=\"Cody Lindley\">\n        </div>\n        <div>\n          <label class=\"label\" for=\"sheet-username\">Username</label>\n          <input id=\"sheet-username\" class=\"input\" type=\"text\" value=\"@kyr0\">\n        </div>\n      </div>\n    </div>\n    <div class=\"sheet-footer\">\n      <button class=\"btn\" data-variant=\"outline\" data-sheet-close>Cancel</button>\n      <button class=\"btn\" data-variant=\"default\" data-sheet-close>Save changes</button>\n    </div>\n  </div>\n  <button class=\"sheet-close-x\" data-sheet-close aria-label=\"Close\">\n    <svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\"\n         stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">\n      <path d=\"M18 6 6 18M6 6l12 12\"/>\n    </svg>\n  </button>\n</dialog>"}</ExampleCode>
-</Example>
+```html example label="Right" hint="Default side. The sheet slides in from the right edge — commonly used for edit-profile or settings panels."
+<button class="btn" data-variant="outline" data-sheet-trigger="sheet-right" aria-haspopup="dialog">Open Right Sheet</button>
+```
 
-<Example first>
-  <ExampleLabel>Left</ExampleLabel>
-  <ExampleHint>Slides in from the left edge — ideal for navigation menus or sidebar-style panels.</ExampleHint>
-  <button class="btn" data-variant="outline" data-sheet-trigger="sheet-left" aria-haspopup="dialog">Open Left Sheet</button>
-  <ExampleCode>{"<!-- Trigger -->\n<button class=\"btn\" data-variant=\"outline\"\n        data-sheet-trigger=\"sheet-left\"\n        aria-haspopup=\"dialog\">Open Left Sheet</button>\n\n<!-- Sheet -->\n<dialog id=\"sheet-left\" class=\"sheet\" data-side=\"left\"\n        role=\"dialog\" aria-modal=\"true\"\n        aria-labelledby=\"sheet-left-title\">\n  <div class=\"sheet-content\">\n    <div class=\"sheet-header\">\n      <h2 class=\"sheet-title\" id=\"sheet-left-title\">Navigation</h2>\n      <p class=\"sheet-description\">Browse sections of the application.</p>\n    </div>\n    <div class=\"sheet-body\">\n      <nav style=\"display:flex;flex-direction:column;gap:0.25rem;\">\n        <a href=\"#\" style=\"display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0.75rem;border-radius:var(--radius-lg);font-size:0.875rem;text-decoration:none;color:var(--foreground);transition:background 150ms;\" onmouseover=\"this.style.background='var(--accent)'\" onmouseout=\"this.style.background=''\">Home</a>\n        <a href=\"#\" style=\"display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0.75rem;border-radius:var(--radius-lg);font-size:0.875rem;text-decoration:none;color:var(--foreground);transition:background 150ms;\" onmouseover=\"this.style.background='var(--accent)'\" onmouseout=\"this.style.background=''\">Dashboard</a>\n        <a href=\"#\" style=\"display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0.75rem;border-radius:var(--radius-lg);font-size:0.875rem;text-decoration:none;color:var(--foreground);transition:background 150ms;\" onmouseover=\"this.style.background='var(--accent)'\" onmouseout=\"this.style.background=''\">Settings</a>\n        <a href=\"#\" style=\"display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0.75rem;border-radius:var(--radius-lg);font-size:0.875rem;text-decoration:none;color:var(--foreground);transition:background 150ms;\" onmouseover=\"this.style.background='var(--accent)'\" onmouseout=\"this.style.background=''\">Help</a>\n      </nav>\n    </div>\n  </div>\n  <button class=\"sheet-close-x\" data-sheet-close aria-label=\"Close\">\n    <svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\"\n         stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">\n      <path d=\"M18 6 6 18M6 6l12 12\"/>\n    </svg>\n  </button>\n</dialog>"}</ExampleCode>
-</Example>
+```html example label="Left" hint="Slides in from the left edge — ideal for navigation menus or sidebar-style panels."
+<button class="btn" data-variant="outline" data-sheet-trigger="sheet-left" aria-haspopup="dialog">Open Left Sheet</button>
+```
 
-<Example first>
-  <ExampleLabel>Top</ExampleLabel>
-  <ExampleHint>Slides down from the top edge — useful for notifications or announcement banners.</ExampleHint>
-  <button class="btn" data-variant="outline" data-sheet-trigger="sheet-top" aria-haspopup="dialog">Open Top Sheet</button>
-  <ExampleCode>{"<!-- Trigger -->\n<button class=\"btn\" data-variant=\"outline\"\n        data-sheet-trigger=\"sheet-top\"\n        aria-haspopup=\"dialog\">Open Top Sheet</button>\n\n<!-- Sheet -->\n<dialog id=\"sheet-top\" class=\"sheet\" data-side=\"top\"\n        role=\"dialog\" aria-modal=\"true\"\n        aria-labelledby=\"sheet-top-title\">\n  <div class=\"sheet-content\">\n    <div class=\"sheet-header\">\n      <h2 class=\"sheet-title\" id=\"sheet-top-title\">Notifications</h2>\n      <p class=\"sheet-description\">You have 3 unread messages.</p>\n    </div>\n    <div class=\"sheet-body\">\n      <div style=\"display:flex;flex-direction:column;gap:0.75rem;\">\n        <div style=\"display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem;border-radius:var(--radius-lg);background:color-mix(in oklch, var(--muted), transparent 50%);\">\n          <div style=\"width:0.5rem;height:0.5rem;border-radius:9999px;background:var(--primary);margin-top:0.375rem;flex-shrink:0;\"></div>\n          <div><p style=\"font-size:0.875rem;font-weight:500;\">New comment on your post</p><p style=\"font-size:0.75rem;color:var(--muted-foreground);margin-top:0.125rem;\">2 minutes ago</p></div>\n        </div>\n        <div style=\"display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem;border-radius:var(--radius-lg);background:color-mix(in oklch, var(--muted), transparent 50%);\">\n          <div style=\"width:0.5rem;height:0.5rem;border-radius:9999px;background:var(--primary);margin-top:0.375rem;flex-shrink:0;\"></div>\n          <div><p style=\"font-size:0.875rem;font-weight:500;\">Deployment successful</p><p style=\"font-size:0.75rem;color:var(--muted-foreground);margin-top:0.125rem;\">15 minutes ago</p></div>\n        </div>\n        <div style=\"display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem;border-radius:var(--radius-lg);background:color-mix(in oklch, var(--muted), transparent 50%);\">\n          <div style=\"width:0.5rem;height:0.5rem;border-radius:9999px;background:var(--muted-foreground);margin-top:0.375rem;flex-shrink:0;\"></div>\n          <div><p style=\"font-size:0.875rem;font-weight:500;\">Team invitation accepted</p><p style=\"font-size:0.75rem;color:var(--muted-foreground);margin-top:0.125rem;\">1 hour ago</p></div>\n        </div>\n      </div>\n    </div>\n    <div class=\"sheet-footer\">\n      <button class=\"btn\" data-variant=\"outline\" data-size=\"sm\" data-sheet-close>Dismiss all</button>\n    </div>\n  </div>\n  <button class=\"sheet-close-x\" data-sheet-close aria-label=\"Close\">\n    <svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\"\n         stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">\n      <path d=\"M18 6 6 18M6 6l12 12\"/>\n    </svg>\n  </button>\n</dialog>"}</ExampleCode>
-</Example>
+```html example label="Top" hint="Slides down from the top edge — useful for notifications or announcement banners."
+<button class="btn" data-variant="outline" data-sheet-trigger="sheet-top" aria-haspopup="dialog">Open Top Sheet</button>
+```
 
-<Example first>
-  <ExampleLabel>Bottom</ExampleLabel>
-  <ExampleHint>Slides up from the bottom edge — great for cookie consent, action sheets, or preference panels.</ExampleHint>
-  <button class="btn" data-variant="outline" data-sheet-trigger="sheet-bottom" aria-haspopup="dialog">Open Bottom Sheet</button>
-  <ExampleCode>{"<!-- Trigger -->\n<button class=\"btn\" data-variant=\"outline\"\n        data-sheet-trigger=\"sheet-bottom\"\n        aria-haspopup=\"dialog\">Open Bottom Sheet</button>\n\n<!-- Sheet -->\n<dialog id=\"sheet-bottom\" class=\"sheet\" data-side=\"bottom\"\n        role=\"dialog\" aria-modal=\"true\"\n        aria-labelledby=\"sheet-bottom-title\">\n  <div class=\"sheet-content\">\n    <div class=\"sheet-header\">\n      <h2 class=\"sheet-title\" id=\"sheet-bottom-title\">Cookie Preferences</h2>\n      <p class=\"sheet-description\">Manage your cookie settings. You can enable or disable different types of cookies below.</p>\n    </div>\n    <div class=\"sheet-body\">\n      <div style=\"display:flex;flex-direction:column;gap:1rem;\">\n        <div style=\"display:flex;align-items:center;justify-content:space-between;\">\n          <div><p style=\"font-size:0.875rem;font-weight:500;\">Essential Cookies</p><p style=\"font-size:0.75rem;color:var(--muted-foreground);margin-top:0.125rem;\">Required for the website to function.</p></div>\n          <span style=\"font-size:0.75rem;color:var(--muted-foreground);\">Always on</span>\n        </div>\n        <div style=\"display:flex;align-items:center;justify-content:space-between;gap:1rem;\">\n          <div><p style=\"font-size:0.875rem;font-weight:500;\" id=\"cookie-analytics-label\">Analytics Cookies</p><p style=\"font-size:0.75rem;color:var(--muted-foreground);margin-top:0.125rem;\">Help us improve our website.</p></div>\n          <input class=\"checkbox\" type=\"checkbox\" id=\"cookie-analytics\" aria-labelledby=\"cookie-analytics-label\" checked>\n        </div>\n        <div style=\"display:flex;align-items:center;justify-content:space-between;gap:1rem;\">\n          <div><p style=\"font-size:0.875rem;font-weight:500;\" id=\"cookie-marketing-label\">Marketing Cookies</p><p style=\"font-size:0.75rem;color:var(--muted-foreground);margin-top:0.125rem;\">Used for targeted advertising.</p></div>\n          <input class=\"checkbox\" type=\"checkbox\" id=\"cookie-marketing\" aria-labelledby=\"cookie-marketing-label\">\n        </div>\n      </div>\n    </div>\n    <div class=\"sheet-footer\">\n      <button class=\"btn\" data-variant=\"outline\" data-sheet-close>Cancel</button>\n      <button class=\"btn\" data-variant=\"default\" data-sheet-close>Save preferences</button>\n    </div>\n  </div>\n  <button class=\"sheet-close-x\" data-sheet-close aria-label=\"Close\">\n    <svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\"\n         stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">\n      <path d=\"M18 6 6 18M6 6l12 12\"/>\n    </svg>\n  </button>\n</dialog>"}</ExampleCode>
-</Example>
+```html example label="Bottom" hint="Slides up from the bottom edge — great for cookie consent, action sheets, or preference panels."
+<button class="btn" data-variant="outline" data-sheet-trigger="sheet-bottom" aria-haspopup="dialog">Open Bottom Sheet</button>
+```
 
-<Example>
-  <ExampleLabel>Density</ExampleLabel>
-  <ExampleHint>Set <code>data-density</code> on the <code>{"<dialog>"}</code> root to scale the content padding. A whitespace policy, not a zoom: only padding scales (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), the slide-in width and typography stay identical. <code>comfortable</code> matches the unsized default.</ExampleHint>
-  <div class="flex flex-wrap gap-2">
-    <button class="btn" data-variant="outline" data-sheet-trigger="density-sheet-compact" aria-haspopup="dialog">Compact</button>
-    <button class="btn" data-variant="outline" data-sheet-trigger="density-sheet-comfortable" aria-haspopup="dialog">Comfortable</button>
-    <button class="btn" data-variant="outline" data-sheet-trigger="density-sheet-spacious" aria-haspopup="dialog">Spacious</button>
-  </div>
-  <ExampleCode>{"<dialog id=\"my-sheet\" class=\"sheet\" data-density=\"compact\" ...>\n  <div class=\"sheet-content\">…</div>\n</dialog>\n\n<!-- compact → 1rem · comfortable → 1.5rem · spacious → 2rem content padding -->"}</ExampleCode>
-</Example>
+```html example label="Density" hint="Set data-density on the {''} root to scale the content padding. A whitespace policy, not a zoom: only padding scales (ratio 0.75 / 1 / 1.25), the slide-in width and typography stay identical. comfortable matches the unsized default."
+<div class="flex flex-wrap gap-2">
+  <button class="btn" data-variant="outline" data-sheet-trigger="density-sheet-compact" aria-haspopup="dialog">Compact</button>
+  <button class="btn" data-variant="outline" data-sheet-trigger="density-sheet-comfortable" aria-haspopup="dialog">Comfortable</button>
+  <button class="btn" data-variant="outline" data-sheet-trigger="density-sheet-spacious" aria-haspopup="dialog">Spacious</button>
+</div>
+```
 
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
@@ -107,6 +92,15 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <li><code>open</code> — shown modally via <code>showModal()</code>, slid in from its side</li>
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/sheet-\{state\}.png</code>.</p>
+
+Machine contract — verified against <a href="../schemas/sheet.schema.json"><code>sheet.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `open` | `boolean` | `true`, `false` | `false` | Shown via `showModal()`; hidden via `close()` (native `open` property). |
+```
+
 </StatesSection>
 
 <SourceFiles component="sheet" section="css" />

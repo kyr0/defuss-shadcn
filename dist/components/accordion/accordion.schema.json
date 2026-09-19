@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "name": "accordion",
+  "states": {
+    "all-open": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".accordion"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "all-open"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name",
+        "target": {
+          "kind": "selector",
+          "selector": ".accordion"
+        }
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "all-closed": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".accordion"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "all-closed"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name",
+        "target": {
+          "kind": "selector",
+          "selector": ".accordion"
+        }
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

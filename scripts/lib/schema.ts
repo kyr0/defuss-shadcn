@@ -13,7 +13,7 @@ export const SCHEMA_VERSION = 1;
 export const STATE_TYPES = ['string', 'number', 'boolean', 'enum'] as const;
 export type StateType = (typeof STATE_TYPES)[number];
 export const TARGET_KINDS = ['root', 'selector'] as const;
-export const MUTATION_KINDS = ['property', 'attribute', 'class'] as const;
+export const MUTATION_KINDS = ['property', 'attribute', 'class', 'api'] as const;
 /** plan §4: fixed method allow-list, expand only when a component demands it. */
 export const ACTION_METHODS = ['focus', 'blur', 'click', 'showModal', 'close'] as const;
 /** Suggested editors (plan §3); an unknown value falls back by type at runtime. */
@@ -85,7 +85,9 @@ export function parseComponentSchema(raw: unknown, source: string): { schema?: C
   }
   const states: Record<string, StateSpec> = {};
   for (const [key, spec] of Object.entries(raw.states)) {
-    if (!/^[a-z][a-zA-Z0-9]*$/.test(key)) err(`states.${key}`, 'key must be a lowerCamelCase identifier');
+    // lowerCamelCase, optionally kebab-segmented: runtime state names are the
+    // contract (accordion declares all-open/all-closed) and schemas mirror them
+    if (!/^[a-z][a-zA-Z0-9]*(-[a-z][a-zA-Z0-9]*)*$/.test(key)) err(`states.${key}`, 'key must be a lowerCamelCase (optionally kebab-cased) identifier');
     if (!isObj(spec)) {
       err(`states.${key}`, 'must be an object');
       continue;
@@ -290,8 +292,11 @@ export function findStatesTable(src: string): { rows: DocsStateRow[]; problems: 
       found: true,
     };
   const pipeRows = table.filter(({ l }) => /^\s*\|/.test(l));
-  if (pipeRows.length < 3)
-    return { rows: [], problems: ['the ```states fence must contain a Markdown table (header + separator + rows)'], found: true };
+  // header + separator is a VALID empty contract: schemas may legitimately
+  // declare zero observable states (behavior-only components driven through
+  // actions); the fence still proves the section was verified
+  if (pipeRows.length < 2)
+    return { rows: [], problems: ['the ```states fence must contain a Markdown table (header + separator, rows optional)'], found: true };
   // strip every backtick per cell (plan §13 style: `text`, `email` cells carry
   // inline backticks; the contract is the bare text inside them)
   const cells = (l: string) =>

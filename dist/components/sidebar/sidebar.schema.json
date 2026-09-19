@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "name": "sidebar",
+  "states": {
+    "collapsed": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".app-sidebar"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "collapsed"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state",
+        "target": {
+          "kind": "selector",
+          "selector": ".app-sidebar"
+        }
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

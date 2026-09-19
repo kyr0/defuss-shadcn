@@ -40,7 +40,7 @@ export function parseStatesTable(body: string): Array<{ name: string; type: stri
     .split('\n')
     .map((l) => l.trim())
     .filter((l) => l.startsWith('|'));
-  if (rows.length < 3) return [];
+  if (rows.length < 2) return []; // header + separator = a valid empty contract
   const cells = (l: string) =>
     l
       .replace(/^\|/, '')

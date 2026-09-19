@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "name": "tabs",
+  "states": {
+    "active": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".tab-list .tab-trigger:nth-of-type(2)"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "active"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name",
+        "target": {
+          "kind": "selector",
+          "selector": ".tab-list .tab-trigger:nth-of-type(2)"
+        }
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

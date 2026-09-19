@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "name": "slider",
+  "states": {
+    "disabled": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "root"
+      },
+      "mutation": {
+        "kind": "property",
+        "name": "disabled"
+      },
+      "observation": {
+        "kind": "property",
+        "name": "disabled"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

@@ -45,100 +45,91 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first>
-  <ExampleLabel>Text formatting toolbar</ExampleLabel>
-  <ExampleHint>Combines toggle groups with separators and a link button.</ExampleHint>
-  <div class="toolbar" role="toolbar" aria-label="Formatting" aria-orientation="horizontal" data-state-demo>
-    <div class="toggle-group" role="group" aria-label="Text style" data-type="multiple">
-      <button class="toggle" aria-pressed="false">
-        <i data-lucide="bold" />
-      </button>
-      <button class="toggle" aria-pressed="false">
-        <i data-lucide="italic" />
-      </button>
-      <button class="toggle" aria-pressed="false">
-        <i data-lucide="underline" />
-      </button>
-    </div>
-    <div class="separator" data-orientation="vertical" role="separator" />
-    <div class="toggle-group" role="group" aria-label="Alignment" data-type="single">
-      <button class="toggle" aria-pressed="true">
-        <i data-lucide="align-left" />
-      </button>
-      <button class="toggle" aria-pressed="false">
-        <i data-lucide="align-center" />
-      </button>
-      <button class="toggle" aria-pressed="false">
-        <i data-lucide="align-right" />
-      </button>
-    </div>
-    <div class="separator" data-orientation="vertical" role="separator" />
-    <button class="btn" data-variant="ghost" data-size="sm"><i data-lucide="link-2" /> Link </button>
+```html example label="Text formatting toolbar" hint="Combines toggle groups with separators and a link button."
+<div class="toolbar" role="toolbar" aria-label="Formatting" aria-orientation="horizontal">
+  <div class="toggle-group" role="group" aria-label="Text style" data-type="multiple">
+    <button class="toggle" aria-pressed="false">
+      <i data-lucide="bold"></i>
+    </button>
+    <button class="toggle" aria-pressed="false">
+      <i data-lucide="italic"></i>
+    </button>
+    <button class="toggle" aria-pressed="false">
+      <i data-lucide="underline"></i>
+    </button>
   </div>
-  <ExampleCode>{"<div class=\"toolbar\" role=\"toolbar\" aria-label=\"Formatting\">\n  <div class=\"toggle-group\" data-type=\"multiple\" ...>\n    <button class=\"toggle\" aria-pressed=\"false\">...</button>\n    ...\n  </div>\n  <div class=\"separator\" data-orientation=\"vertical\" role=\"separator\"></div>\n  <div class=\"toggle-group\" data-type=\"single\" ...>...</div>\n  <div class=\"separator\" data-orientation=\"vertical\" role=\"separator\"></div>\n  <button class=\"btn\" data-variant=\"ghost\">Link</button>\n</div>"}</ExampleCode>
-</Example>
+  <div class="separator" data-orientation="vertical" role="separator"></div>
+  <div class="toggle-group" role="group" aria-label="Alignment" data-type="single">
+    <button class="toggle" aria-pressed="true">
+      <i data-lucide="align-left"></i>
+    </button>
+    <button class="toggle" aria-pressed="false">
+      <i data-lucide="align-center"></i>
+    </button>
+    <button class="toggle" aria-pressed="false">
+      <i data-lucide="align-right"></i>
+    </button>
+  </div>
+  <div class="separator" data-orientation="vertical" role="separator"></div>
+  <button class="btn" data-variant="ghost" data-size="sm"><i data-lucide="link-2"></i> Link </button>
+</div>
+```
 
-<Example>
-  <ExampleLabel>Simple toolbar</ExampleLabel>
-  <ExampleHint>Quick actions with icon buttons.</ExampleHint>
-  <div class="toolbar" role="toolbar" aria-label="Actions" aria-orientation="horizontal">
-    <button class="btn" data-variant="ghost" data-size="icon" aria-label="Undo">
-      <i data-lucide="undo-2" />
-    </button>
-    <button class="btn" data-variant="ghost" data-size="icon" aria-label="Redo">
-      <i data-lucide="redo-2" />
-    </button>
-    <div class="separator" data-orientation="vertical" role="separator" />
-    <button class="btn" data-variant="ghost" data-size="icon" aria-label="Copy">
-      <i data-lucide="copy" />
-    </button>
-    <button class="btn" data-variant="ghost" data-size="icon" aria-label="Cut">
-      <i data-lucide="scissors" />
-    </button>
-    <button class="btn" data-variant="ghost" data-size="icon" aria-label="Paste">
-      <i data-lucide="clipboard-paste" />
-    </button>
-  </div>
-  <ExampleCode>{"<div class=\"toolbar\" role=\"toolbar\" aria-label=\"Actions\">\n  <button class=\"btn\" data-variant=\"ghost\" data-size=\"icon\" aria-label=\"Undo\">\n    <i data-lucide=\"undo-2\"></i>\n  </button>\n  <button class=\"btn\" data-variant=\"ghost\" data-size=\"icon\" aria-label=\"Redo\">\n    <i data-lucide=\"redo-2\"></i>\n  </button>\n  <div class=\"separator\" data-orientation=\"vertical\" role=\"separator\"></div>\n  <button class=\"btn\" data-variant=\"ghost\" data-size=\"icon\" aria-label=\"Copy\">...</button>\n  <button class=\"btn\" data-variant=\"ghost\" data-size=\"icon\" aria-label=\"Cut\">...</button>\n  <button class=\"btn\" data-variant=\"ghost\" data-size=\"icon\" aria-label=\"Paste\">...</button>\n</div>"}</ExampleCode>
-</Example>
+```html example label="Simple toolbar" hint="Quick actions with icon buttons."
+<div class="toolbar" role="toolbar" aria-label="Actions" aria-orientation="horizontal">
+  <button class="btn" data-variant="ghost" data-size="icon" aria-label="Undo">
+    <i data-lucide="undo-2"></i>
+  </button>
+  <button class="btn" data-variant="ghost" data-size="icon" aria-label="Redo">
+    <i data-lucide="redo-2"></i>
+  </button>
+  <div class="separator" data-orientation="vertical" role="separator"></div>
+  <button class="btn" data-variant="ghost" data-size="icon" aria-label="Copy">
+    <i data-lucide="copy"></i>
+  </button>
+  <button class="btn" data-variant="ghost" data-size="icon" aria-label="Cut">
+    <i data-lucide="scissors"></i>
+  </button>
+  <button class="btn" data-variant="ghost" data-size="icon" aria-label="Paste">
+    <i data-lucide="clipboard-paste"></i>
+  </button>
+</div>
+```
 
-<Example previewStyle="align-items:flex-start;flex-direction:column;gap:1rem;">
-  <ExampleLabel>Sizes</ExampleLabel>
-  <ExampleHint>Set <code>data-size</code> on the <code>.toolbar</code> root and the chrome plus its <code>.btn</code> / <code>.toggle</code> controls scale together — the ladder mirrors the button sizes (<code>md</code> matches the unsized default).</ExampleHint>
-  <div class="flex flex-wrap gap-4" style="align-items:flex-start;">
-    <div class="toolbar" role="toolbar" aria-label="Size xs" data-size="xs">
-      <button class="btn" type="button">xs</button>
-      <div class="separator" data-orientation="vertical" role="separator" />
-      <button class="toggle" type="button" aria-pressed="false"><i data-lucide="bold" /></button>
-      <button class="toggle" type="button" aria-pressed="false"><i data-lucide="italic" /></button>
-    </div>
-    <div class="toolbar" role="toolbar" aria-label="Size sm" data-size="sm">
-      <button class="btn" type="button">sm</button>
-      <div class="separator" data-orientation="vertical" role="separator" />
-      <button class="toggle" type="button" aria-pressed="false"><i data-lucide="bold" /></button>
-      <button class="toggle" type="button" aria-pressed="false"><i data-lucide="italic" /></button>
-    </div>
-    <div class="toolbar" role="toolbar" aria-label="Size md" data-size="md">
-      <button class="btn" type="button">md</button>
-      <div class="separator" data-orientation="vertical" role="separator" />
-      <button class="toggle" type="button" aria-pressed="false"><i data-lucide="bold" /></button>
-      <button class="toggle" type="button" aria-pressed="false"><i data-lucide="italic" /></button>
-    </div>
-    <div class="toolbar" role="toolbar" aria-label="Size lg" data-size="lg">
-      <button class="btn" type="button">lg</button>
-      <div class="separator" data-orientation="vertical" role="separator" />
-      <button class="toggle" type="button" aria-pressed="false"><i data-lucide="bold" /></button>
-      <button class="toggle" type="button" aria-pressed="false"><i data-lucide="italic" /></button>
-    </div>
-    <div class="toolbar" role="toolbar" aria-label="Size xl" data-size="xl">
-      <button class="btn" type="button">xl</button>
-      <div class="separator" data-orientation="vertical" role="separator" />
-      <button class="toggle" type="button" aria-pressed="false"><i data-lucide="bold" /></button>
-      <button class="toggle" type="button" aria-pressed="false"><i data-lucide="italic" /></button>
-    </div>
+```html example label="Sizes" hint="Set data-size on the .toolbar root and the chrome plus its .btn / .toggle controls scale together — the ladder mirrors the button sizes (md matches the unsized default)."
+<div class="flex flex-wrap gap-4" style="align-items:flex-start;">
+  <div class="toolbar" role="toolbar" aria-label="Size xs" data-size="xs">
+    <button class="btn" type="button">xs</button>
+    <div class="separator" data-orientation="vertical" role="separator"></div>
+    <button class="toggle" type="button" aria-pressed="false"><i data-lucide="bold"></i></button>
+    <button class="toggle" type="button" aria-pressed="false"><i data-lucide="italic"></i></button>
   </div>
-  <ExampleCode>{"<div class=\"toolbar\" role=\"toolbar\" data-size=\"sm\">\n  <button class=\"btn\" type=\"button\">…</button>\n  <div class=\"separator\" data-orientation=\"vertical\" role=\"separator\" />\n  <button class=\"toggle\" type=\"button\" aria-pressed=\"false\">…</button>\n</div>\n\n<!-- xs 1.75rem · sm 2rem · md 2.25rem (default) · lg 2.75rem · xl 3.25rem controls -->"}</ExampleCode>
-</Example>
+  <div class="toolbar" role="toolbar" aria-label="Size sm" data-size="sm">
+    <button class="btn" type="button">sm</button>
+    <div class="separator" data-orientation="vertical" role="separator"></div>
+    <button class="toggle" type="button" aria-pressed="false"><i data-lucide="bold"></i></button>
+    <button class="toggle" type="button" aria-pressed="false"><i data-lucide="italic"></i></button>
+  </div>
+  <div class="toolbar" role="toolbar" aria-label="Size md" data-size="md">
+    <button class="btn" type="button">md</button>
+    <div class="separator" data-orientation="vertical" role="separator"></div>
+    <button class="toggle" type="button" aria-pressed="false"><i data-lucide="bold"></i></button>
+    <button class="toggle" type="button" aria-pressed="false"><i data-lucide="italic"></i></button>
+  </div>
+  <div class="toolbar" role="toolbar" aria-label="Size lg" data-size="lg">
+    <button class="btn" type="button">lg</button>
+    <div class="separator" data-orientation="vertical" role="separator"></div>
+    <button class="toggle" type="button" aria-pressed="false"><i data-lucide="bold"></i></button>
+    <button class="toggle" type="button" aria-pressed="false"><i data-lucide="italic"></i></button>
+  </div>
+  <div class="toolbar" role="toolbar" aria-label="Size xl" data-size="xl">
+    <button class="btn" type="button">xl</button>
+    <div class="separator" data-orientation="vertical" role="separator"></div>
+    <button class="toggle" type="button" aria-pressed="false"><i data-lucide="bold"></i></button>
+    <button class="toggle" type="button" aria-pressed="false"><i data-lucide="italic"></i></button>
+  </div>
+</div>
+```
 
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
@@ -146,6 +137,16 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <li><code>default</code> — roving tabindex at the authored position (first item); <code>setState('default', \{ focus: n \})</code> parks the roving stop on item <em>n</em> instead, and <code>getState().config.rovingIndex</code> reports where it currently is</li>
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/toolbar-\{state\}.png</code>.</p>
+
+Machine contract — verified against <a href="../schemas/toolbar.schema.json"><code>toolbar.schema.json</code></a> by <code>bun run verify</code>:
+
+This component exposes no observable states — it is driven through its runtime API and native behavior.
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+```
+
 </StatesSection>
 
 <SourceFiles component="toolbar" section="css" />

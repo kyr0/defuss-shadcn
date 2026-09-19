@@ -41,120 +41,111 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first>
-  <ExampleLabel>Default</ExampleLabel>
-  <nav class="nav-menu" aria-label="Main">
-    <ul class="nav-menu-list">
-      <li class="nav-menu-item">
-        <a class="nav-menu-link" href="#">Home</a>
-      </li>
-      <li class="nav-menu-item">
-        <a class="nav-menu-link" href="#">About</a>
-      </li>
-      <li class="nav-menu-item">
-        <a class="nav-menu-link" href="#">Contact</a>
-      </li>
-    </ul>
-  </nav>
-  <ExampleCode>{"<nav class=\"nav-menu\" aria-label=\"Main\">\n  <ul class=\"nav-menu-list\">\n    <li class=\"nav-menu-item\"><a class=\"nav-menu-link\" href=\"#\">Home</a></li>\n    <li class=\"nav-menu-item\">\n      <button class=\"nav-menu-trigger\" popovertarget=\"dd\">Products</button>\n      <div class=\"nav-menu-content\" id=\"dd\" popover>...</div>\n    </li>\n  </ul>\n</nav>"}</ExampleCode>
-</Example>
+```html example label="Default" height="16"
+<nav class="nav-menu" aria-label="Main">
+  <ul class="nav-menu-list">
+    <li class="nav-menu-item">
+      <a class="nav-menu-link" href="#">Home</a>
+    </li>
+    <li class="nav-menu-item">
+      <a class="nav-menu-link" href="#">About</a>
+    </li>
+    <li class="nav-menu-item">
+      <a class="nav-menu-link" href="#">Contact</a>
+    </li>
+  </ul>
+</nav>
+```
 
-<Example previewStyle="min-height: 14rem;">
-  <ExampleLabel>With dropdowns</ExampleLabel>
-  <ExampleHint>Triggers open anchor-positioned content panels. Chevron rotates when open.</ExampleHint>
-  <nav class="nav-menu" aria-label="Site navigation">
-    <ul class="nav-menu-list">
-      <li class="nav-menu-item">
-        <button class="nav-menu-trigger" popovertarget="nav-products"> Products <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg></button>
-        <div class="nav-menu-content" id="nav-products" popover data-state-demo>
-          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">
-            <strong>Analytics</strong>
-            <p>View your dashboard and metrics</p>
-          </a>
-          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">
-            <strong>Automation</strong>
-            <p>Build workflows and integrations</p>
-          </a>
-          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">
-            <strong>Reports</strong>
-            <p>Generate custom data reports</p>
-          </a>
-        </div>
-      </li>
-      <li class="nav-menu-item">
-        <button class="nav-menu-trigger" popovertarget="nav-resources"> Resources <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg></button>
-        <div class="nav-menu-content" id="nav-resources" popover>
-          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">
-            <strong>Documentation</strong>
-            <p>Guides and API reference</p>
-          </a>
-          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">
-            <strong>Blog</strong>
-            <p>Latest news and updates</p>
-          </a>
-        </div>
-      </li>
-      <li class="nav-menu-item">
-        <a class="nav-menu-link" href="#" onclick="event.preventDefault()">Pricing</a>
-      </li>
-      <li class="nav-menu-item">
-        <a class="nav-menu-link" href="#" onclick="event.preventDefault()">Contact</a>
-      </li>
-    </ul>
-  </nav>
-  <ExampleCode>{"<nav class=\"nav-menu\" aria-label=\"Site navigation\">\n  <ul class=\"nav-menu-list\">\n    <li class=\"nav-menu-item\">\n      <button class=\"nav-menu-trigger\" popovertarget=\"nav-products\">\n        Products\n        <svg aria-hidden=\"true\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\"\n             fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">\n          <path d=\"m6 9 6 6 6-6\"/>\n        </svg>\n      </button>\n      <div class=\"nav-menu-content\" id=\"nav-products\" popover>\n        <a class=\"nav-menu-content-link\" href=\"#\">\n          <strong>Analytics</strong>\n          <p>View your dashboard and metrics</p>\n        </a>\n        <a class=\"nav-menu-content-link\" href=\"#\">...</a>\n      </div>\n    </li>\n    <li class=\"nav-menu-item\">\n      <a class=\"nav-menu-link\" href=\"#\">Pricing</a>\n    </li>\n  </ul>\n</nav>"}</ExampleCode>
-</Example>
+```html example label="With dropdowns" hint="Triggers open anchor-positioned content panels. Chevron rotates when open." height="16"
+<nav class="nav-menu" aria-label="Site navigation">
+  <ul class="nav-menu-list">
+    <li class="nav-menu-item">
+      <button class="nav-menu-trigger" popovertarget="nav-products"> Products <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg></button>
+      <div class="nav-menu-content" id="nav-products" popover>
+        <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">
+          <strong>Analytics</strong>
+          <p>View your dashboard and metrics</p>
+        </a>
+        <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">
+          <strong>Automation</strong>
+          <p>Build workflows and integrations</p>
+        </a>
+        <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">
+          <strong>Reports</strong>
+          <p>Generate custom data reports</p>
+        </a>
+      </div>
+    </li>
+    <li class="nav-menu-item">
+      <button class="nav-menu-trigger" popovertarget="nav-resources"> Resources <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg></button>
+      <div class="nav-menu-content" id="nav-resources" popover>
+        <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">
+          <strong>Documentation</strong>
+          <p>Guides and API reference</p>
+        </a>
+        <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">
+          <strong>Blog</strong>
+          <p>Latest news and updates</p>
+        </a>
+      </div>
+    </li>
+    <li class="nav-menu-item">
+      <a class="nav-menu-link" href="#" onclick="event.preventDefault()">Pricing</a>
+    </li>
+    <li class="nav-menu-item">
+      <a class="nav-menu-link" href="#" onclick="event.preventDefault()">Contact</a>
+    </li>
+  </ul>
+</nav>
+```
 
-<Example>
-  <ExampleLabel>Sizes</ExampleLabel>
-  <ExampleHint>Set <code>data-size</code> on the <code>.nav-menu</code> nav; links, triggers and popover rows scale together.</ExampleHint>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Extra small</span>
-    <nav class="nav-menu" data-size="xs" aria-label="Site xs"><ul class="nav-menu-list"><li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li><li class="nav-menu-item"><button class="nav-menu-trigger" popovertarget="sz-nav-xs">Products</button><div class="nav-menu-content" id="sz-nav-xs" popover><a class="nav-menu-content-link" href="#">Analytics</a></div></li></ul></nav>
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Small</span>
-    <nav class="nav-menu" data-size="sm" aria-label="Site sm"><ul class="nav-menu-list"><li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li><li class="nav-menu-item"><button class="nav-menu-trigger" popovertarget="sz-nav-sm">Products</button><div class="nav-menu-content" id="sz-nav-sm" popover><a class="nav-menu-content-link" href="#">Analytics</a></div></li></ul></nav>
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Medium</span>
-    <nav class="nav-menu" data-size="md" aria-label="Site md"><ul class="nav-menu-list"><li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li><li class="nav-menu-item"><button class="nav-menu-trigger" popovertarget="sz-nav-md">Products</button><div class="nav-menu-content" id="sz-nav-md" popover><a class="nav-menu-content-link" href="#">Analytics</a></div></li></ul></nav>
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Large</span>
-    <nav class="nav-menu" data-size="lg" aria-label="Site lg"><ul class="nav-menu-list"><li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li><li class="nav-menu-item"><button class="nav-menu-trigger" popovertarget="sz-nav-lg">Products</button><div class="nav-menu-content" id="sz-nav-lg" popover><a class="nav-menu-content-link" href="#">Analytics</a></div></li></ul></nav>
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Extra large</span>
-    <nav class="nav-menu" data-size="xl" aria-label="Site xl"><ul class="nav-menu-list"><li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li><li class="nav-menu-item"><button class="nav-menu-trigger" popovertarget="sz-nav-xl">Products</button><div class="nav-menu-content" id="sz-nav-xl" popover><a class="nav-menu-content-link" href="#">Analytics</a></div></li></ul></nav>
-  </div>
-</Example>
+```html example label="Sizes" hint="Set data-size on the .nav-menu nav; links, triggers and popover rows scale together." height="16"
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Extra small</span>
+  <nav class="nav-menu" data-size="xs" aria-label="Site xs"><ul class="nav-menu-list"><li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li><li class="nav-menu-item"><button class="nav-menu-trigger" popovertarget="sz-nav-xs">Products</button><div class="nav-menu-content" id="sz-nav-xs" popover><a class="nav-menu-content-link" href="#">Analytics</a></div></li></ul></nav>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Small</span>
+  <nav class="nav-menu" data-size="sm" aria-label="Site sm"><ul class="nav-menu-list"><li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li><li class="nav-menu-item"><button class="nav-menu-trigger" popovertarget="sz-nav-sm">Products</button><div class="nav-menu-content" id="sz-nav-sm" popover><a class="nav-menu-content-link" href="#">Analytics</a></div></li></ul></nav>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Medium</span>
+  <nav class="nav-menu" data-size="md" aria-label="Site md"><ul class="nav-menu-list"><li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li><li class="nav-menu-item"><button class="nav-menu-trigger" popovertarget="sz-nav-md">Products</button><div class="nav-menu-content" id="sz-nav-md" popover><a class="nav-menu-content-link" href="#">Analytics</a></div></li></ul></nav>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Large</span>
+  <nav class="nav-menu" data-size="lg" aria-label="Site lg"><ul class="nav-menu-list"><li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li><li class="nav-menu-item"><button class="nav-menu-trigger" popovertarget="sz-nav-lg">Products</button><div class="nav-menu-content" id="sz-nav-lg" popover><a class="nav-menu-content-link" href="#">Analytics</a></div></li></ul></nav>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Extra large</span>
+  <nav class="nav-menu" data-size="xl" aria-label="Site xl"><ul class="nav-menu-list"><li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li><li class="nav-menu-item"><button class="nav-menu-trigger" popovertarget="sz-nav-xl">Products</button><div class="nav-menu-content" id="sz-nav-xl" popover><a class="nav-menu-content-link" href="#">Analytics</a></div></li></ul></nav>
+</div>
+```
 
-<Example previewStyle="align-items:flex-start;gap:1.5rem;flex-direction:column;">
-  <ExampleLabel>Density</ExampleLabel>
-  <ExampleHint>Set <code>data-density</code> on the <code>.nav-menu</code> nav to scale the gap between top-level items. A whitespace policy, not a zoom: only the row gap scales; link padding belongs to <code>data-size</code>. <code>comfortable</code> matches the unsized default.</ExampleHint>
-  <nav class="nav-menu" aria-label="Compact" data-density="compact">
-    <ul class="nav-menu-list">
-      <li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li>
-      <li class="nav-menu-item"><a class="nav-menu-link" href="#">About</a></li>
-      <li class="nav-menu-item"><a class="nav-menu-link" href="#">Contact</a></li>
-    </ul>
-  </nav>
-  <nav class="nav-menu" aria-label="Comfortable" data-density="comfortable">
-    <ul class="nav-menu-list">
-      <li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li>
-      <li class="nav-menu-item"><a class="nav-menu-link" href="#">About</a></li>
-      <li class="nav-menu-item"><a class="nav-menu-link" href="#">Contact</a></li>
-    </ul>
-  </nav>
-  <nav class="nav-menu" aria-label="Spacious" data-density="spacious">
-    <ul class="nav-menu-list">
-      <li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li>
-      <li class="nav-menu-item"><a class="nav-menu-link" href="#">About</a></li>
-      <li class="nav-menu-item"><a class="nav-menu-link" href="#">Contact</a></li>
-    </ul>
-  </nav>
-</Example>
+```html example label="Density" hint="Set data-density on the .nav-menu nav to scale the gap between top-level items. A whitespace policy, not a zoom: only the row gap scales; link padding belongs to data-size. comfortable matches the unsized default." height="16"
+<nav class="nav-menu" aria-label="Compact" data-density="compact">
+  <ul class="nav-menu-list">
+    <li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li>
+    <li class="nav-menu-item"><a class="nav-menu-link" href="#">About</a></li>
+    <li class="nav-menu-item"><a class="nav-menu-link" href="#">Contact</a></li>
+  </ul>
+</nav>
+<nav class="nav-menu" aria-label="Comfortable" data-density="comfortable">
+  <ul class="nav-menu-list">
+    <li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li>
+    <li class="nav-menu-item"><a class="nav-menu-link" href="#">About</a></li>
+    <li class="nav-menu-item"><a class="nav-menu-link" href="#">Contact</a></li>
+  </ul>
+</nav>
+<nav class="nav-menu" aria-label="Spacious" data-density="spacious">
+  <ul class="nav-menu-list">
+    <li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li>
+    <li class="nav-menu-item"><a class="nav-menu-link" href="#">About</a></li>
+    <li class="nav-menu-item"><a class="nav-menu-link" href="#">Contact</a></li>
+  </ul>
+</nav>
+```
 
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
@@ -163,6 +154,15 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <li><code>open</code> — shown via the native <code>showPopover()</code>, anchored below its trigger</li>
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/navigation-menu-\{state\}.png</code>.</p>
+
+Machine contract — verified against <a href="../schemas/navigation-menu.schema.json"><code>navigation-menu.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `open` | `boolean` | `true`, `false` | `false` | Shown — driven through the component's own State API. |
+```
+
 </StatesSection>
 
 <SourceFiles component="navigation-menu" section="css">

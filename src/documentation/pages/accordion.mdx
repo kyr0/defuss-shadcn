@@ -64,106 +64,98 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first previewStyle="flex-direction:column;align-items:stretch;padding:2rem 2.5rem;">
-  <ExampleLabel>Multi-open</ExampleLabel>
-  <ExampleHint>Default behavior — multiple items can be open simultaneously. Uses native <code>&lt;details&gt;</code>/<code>&lt;summary&gt;</code> with zero JavaScript.</ExampleHint>
-  <div class="accordion" style="max-width:28rem;width:100%;">
-    <details class="accordion-item" open>
-      <summary class="accordion-trigger">
-        <span>Is it accessible?</span>
-        <svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="m6 9 6 6 6-6" />
-        </svg>
-      </summary>
-      <div class="accordion-content">
-        <p>Yes. It uses native HTML details/summary elements which are fully accessible by default. Screen reader and keyboard support are built in.</p>
-      </div>
-    </details>
-    <details class="accordion-item" open>
-      <summary class="accordion-trigger">
-        <span>Is it styled?</span>
-        <svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="m6 9 6 6 6-6" />
-        </svg>
-      </summary>
-      <div class="accordion-content">
-        <p>Yes. It follows the shadcn/ui token system for consistent theming across light and dark modes.</p>
-      </div>
-    </details>
-    <details class="accordion-item">
-      <summary class="accordion-trigger">
-        <span>Is it animated?</span>
-        <svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="m6 9 6 6 6-6" />
-        </svg>
-      </summary>
-      <div class="accordion-content">
-        <p>Yes. Uses <code>::details-content</code> with <code>calc-size(auto, size)</code> for smooth height animation. The chevron rotates via CSS transition.</p>
-      </div>
-    </details>
-  </div>
-  <ExampleCode>{"<div class=\"accordion\">\n  <details class=\"accordion-item\" open>\n    <summary class=\"accordion-trigger\">\n      <span>Is it accessible?</span>\n      <svg class=\"accordion-chevron\" aria-hidden=\"true\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"m6 9 6 6 6-6\"/></svg>\n    </summary>\n    <div class=\"accordion-content\">\n      <p>Yes. It uses native HTML details/summary elements which are fully accessible by default. Screen reader and keyboard support are built in.</p>\n    </div>\n  </details>\n  <details class=\"accordion-item\" open>\n    <summary class=\"accordion-trigger\">\n      <span>Is it styled?</span>\n      <svg class=\"accordion-chevron\" aria-hidden=\"true\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"m6 9 6 6 6-6\"/></svg>\n    </summary>\n    <div class=\"accordion-content\">\n      <p>Yes. It follows the shadcn/ui token system for consistent theming across light and dark modes.</p>\n    </div>\n  </details>\n  <details class=\"accordion-item\">\n    <summary class=\"accordion-trigger\">\n      <span>Is it animated?</span>\n      <svg class=\"accordion-chevron\" aria-hidden=\"true\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"m6 9 6 6 6-6\"/></svg>\n    </summary>\n    <div class=\"accordion-content\">\n      <p>Yes. Uses ::details-content with calc-size(auto, size) for smooth height animation. The chevron rotates via CSS transition.</p>\n    </div>\n  </details>\n</div>"}</ExampleCode>
-</Example>
+```html example label="Multi-open" hint="Default behavior — multiple items can be open simultaneously. Uses native &lt;details&gt;/&lt;summary&gt; with zero JavaScript." height="20"
+<div class="accordion" style="max-width:28rem;width:100%;">
+  <details class="accordion-item" open>
+    <summary class="accordion-trigger">
+      <span>Is it accessible?</span>
+      <svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="m6 9 6 6 6-6"></path>
+      </svg>
+    </summary>
+    <div class="accordion-content">
+      <p>Yes. It uses native HTML details/summary elements which are fully accessible by default. Screen reader and keyboard support are built in.</p>
+    </div>
+  </details>
+  <details class="accordion-item" open>
+    <summary class="accordion-trigger">
+      <span>Is it styled?</span>
+      <svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="m6 9 6 6 6-6"></path>
+      </svg>
+    </summary>
+    <div class="accordion-content">
+      <p>Yes. It follows the shadcn/ui token system for consistent theming across light and dark modes.</p>
+    </div>
+  </details>
+  <details class="accordion-item">
+    <summary class="accordion-trigger">
+      <span>Is it animated?</span>
+      <svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="m6 9 6 6 6-6"></path>
+      </svg>
+    </summary>
+    <div class="accordion-content">
+      <p>Yes. Uses <code>::details-content</code> with <code>calc-size(auto, size)</code> for smooth height animation. The chevron rotates via CSS transition.</p>
+    </div>
+  </details>
+</div>
+```
 
-<Example first previewStyle="flex-direction:column;align-items:stretch;padding:2rem 2.5rem;">
-  <ExampleLabel>Single-open</ExampleLabel>
-  <ExampleHint>Only one item can be open at a time. Add <code>data-type="single"</code> to the wrapper — a small JS handler closes siblings on toggle.</ExampleHint>
-  <div class="accordion" data-type="single" data-state-demo style="max-width:28rem;width:100%;">
-    <details class="accordion-item" open>
-      <summary class="accordion-trigger">
-        <span>What payment methods do you accept?</span>
-        <svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="m6 9 6 6 6-6" />
-        </svg>
-      </summary>
-      <div class="accordion-content">
-        <p>We accept all major credit cards (Visa, Mastercard, AmEx), PayPal, and bank transfers for annual plans.</p>
-      </div>
-    </details>
-    <details class="accordion-item">
-      <summary class="accordion-trigger">
-        <span>Can I cancel my subscription?</span>
-        <svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="m6 9 6 6 6-6" />
-        </svg>
-      </summary>
-      <div class="accordion-content">
-        <p>Yes, you can cancel at any time from your account settings. Your access continues until the end of the current billing period.</p>
-      </div>
-    </details>
-    <details class="accordion-item">
-      <summary class="accordion-trigger">
-        <span>Do you offer team pricing?</span>
-        <svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="m6 9 6 6 6-6" />
-        </svg>
-      </summary>
-      <div class="accordion-content">
-        <p>Yes. Teams of 5 or more get a 20% discount. Contact our sales team for custom enterprise plans with dedicated support.</p>
-      </div>
-    </details>
-  </div>
-  <ExampleCode>{"<div class=\"accordion\" data-type=\"single\">\n  <details class=\"accordion-item\" open>\n    <summary class=\"accordion-trigger\">\n      <span>What payment methods do you accept?</span>\n      <svg class=\"accordion-chevron\" aria-hidden=\"true\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"m6 9 6 6 6-6\"/></svg>\n    </summary>\n    <div class=\"accordion-content\">\n      <p>We accept all major credit cards (Visa, Mastercard, AmEx), PayPal, and bank transfers for annual plans.</p>\n    </div>\n  </details>\n  <details class=\"accordion-item\">\n    <summary class=\"accordion-trigger\">\n      <span>Can I cancel my subscription?</span>\n      <svg class=\"accordion-chevron\" aria-hidden=\"true\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"m6 9 6 6 6-6\"/></svg>\n    </summary>\n    <div class=\"accordion-content\">\n      <p>Yes, you can cancel at any time from your account settings. Your access continues until the end of the current billing period.</p>\n    </div>\n  </details>\n  <details class=\"accordion-item\">\n    <summary class=\"accordion-trigger\">\n      <span>Do you offer team pricing?</span>\n      <svg class=\"accordion-chevron\" aria-hidden=\"true\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"m6 9 6 6 6-6\"/></svg>\n    </summary>\n    <div class=\"accordion-content\">\n      <p>Yes. Teams of 5 or more get a 20% discount. Contact our sales team for custom enterprise plans with dedicated support.</p>\n    </div>\n  </details>\n</div>"}</ExampleCode>
-</Example>
+```html example label="Single-open" hint="Only one item can be open at a time. Add data-type='single' to the wrapper — a small JS handler closes siblings on toggle." height="20"
+<div class="accordion" data-type="single" style="max-width:28rem;width:100%;">
+  <details class="accordion-item" open>
+    <summary class="accordion-trigger">
+      <span>What payment methods do you accept?</span>
+      <svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="m6 9 6 6 6-6"></path>
+      </svg>
+    </summary>
+    <div class="accordion-content">
+      <p>We accept all major credit cards (Visa, Mastercard, AmEx), PayPal, and bank transfers for annual plans.</p>
+    </div>
+  </details>
+  <details class="accordion-item">
+    <summary class="accordion-trigger">
+      <span>Can I cancel my subscription?</span>
+      <svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="m6 9 6 6 6-6"></path>
+      </svg>
+    </summary>
+    <div class="accordion-content">
+      <p>Yes, you can cancel at any time from your account settings. Your access continues until the end of the current billing period.</p>
+    </div>
+  </details>
+  <details class="accordion-item">
+    <summary class="accordion-trigger">
+      <span>Do you offer team pricing?</span>
+      <svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="m6 9 6 6 6-6"></path>
+      </svg>
+    </summary>
+    <div class="accordion-content">
+      <p>Yes. Teams of 5 or more get a 20% discount. Contact our sales team for custom enterprise plans with dedicated support.</p>
+    </div>
+  </details>
+</div>
+```
 
-<Example>
-  <ExampleLabel>Density</ExampleLabel>
-  <ExampleHint>Set <code>data-density</code> on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), typography and fixed dimensions stay identical. <code>comfortable</code> matches the unsized default.</ExampleHint>
-  <div class="flex flex-wrap gap-4">
-    <div class="flex-1 min-w-48">
-      <p class="demo-label">Compact</p>
-      <div class="accordion" data-density="compact"><details class="accordion-item" open><summary class="accordion-trigger"><span>Section compact</span><svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6" /></svg></summary><div class="accordion-content"><p>Trigger and panel padding scale with the density.</p></div></details><details class="accordion-item"><summary class="accordion-trigger"><span>Second section</span><svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6" /></svg></summary><div class="accordion-content"><p>Closed until opened.</p></div></details></div>
-    </div>
-    <div class="flex-1 min-w-48">
-      <p class="demo-label">Comfortable</p>
-      <div class="accordion" data-density="comfortable"><details class="accordion-item" open><summary class="accordion-trigger"><span>Section comfortable</span><svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6" /></svg></summary><div class="accordion-content"><p>Trigger and panel padding scale with the density.</p></div></details><details class="accordion-item"><summary class="accordion-trigger"><span>Second section</span><svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6" /></svg></summary><div class="accordion-content"><p>Closed until opened.</p></div></details></div>
-    </div>
-    <div class="flex-1 min-w-48">
-      <p class="demo-label">Spacious</p>
-      <div class="accordion" data-density="spacious"><details class="accordion-item" open><summary class="accordion-trigger"><span>Section spacious</span><svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6" /></svg></summary><div class="accordion-content"><p>Trigger and panel padding scale with the density.</p></div></details><details class="accordion-item"><summary class="accordion-trigger"><span>Second section</span><svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6" /></svg></summary><div class="accordion-content"><p>Closed until opened.</p></div></details></div>
-    </div>
+```html example label="Density" hint="Set data-density on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25), typography and fixed dimensions stay identical. comfortable matches the unsized default." height="20"
+<div class="flex flex-wrap gap-4">
+  <div class="flex-1 min-w-48">
+    <p class="demo-label">Compact</p>
+    <div class="accordion" data-density="compact"><details class="accordion-item" open><summary class="accordion-trigger"><span>Section compact</span><svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"></path></svg></summary><div class="accordion-content"><p>Trigger and panel padding scale with the density.</p></div></details><details class="accordion-item"><summary class="accordion-trigger"><span>Second section</span><svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"></path></svg></summary><div class="accordion-content"><p>Closed until opened.</p></div></details></div>
   </div>
-</Example>
+  <div class="flex-1 min-w-48">
+    <p class="demo-label">Comfortable</p>
+    <div class="accordion" data-density="comfortable"><details class="accordion-item" open><summary class="accordion-trigger"><span>Section comfortable</span><svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"></path></svg></summary><div class="accordion-content"><p>Trigger and panel padding scale with the density.</p></div></details><details class="accordion-item"><summary class="accordion-trigger"><span>Second section</span><svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"></path></svg></summary><div class="accordion-content"><p>Closed until opened.</p></div></details></div>
+  </div>
+  <div class="flex-1 min-w-48">
+    <p class="demo-label">Spacious</p>
+    <div class="accordion" data-density="spacious"><details class="accordion-item" open><summary class="accordion-trigger"><span>Section spacious</span><svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"></path></svg></summary><div class="accordion-content"><p>Trigger and panel padding scale with the density.</p></div></details><details class="accordion-item"><summary class="accordion-trigger"><span>Second section</span><svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"></path></svg></summary><div class="accordion-content"><p>Closed until opened.</p></div></details></div>
+  </div>
+</div>
+```
 
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
@@ -173,6 +165,16 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <li><code>all-closed</code> — every item collapsed, even without <code>data-collapsible</code></li>
   </ul>
   <p class="text-sm text-muted-foreground">The single-open demo carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/accordion-\{state\}.png</code>.</p>
+
+Machine contract — verified against <a href="../schemas/accordion.schema.json"><code>accordion.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `all-open` | `boolean` | `true`, `false` | `false` | Every `.accordion-item` opened in one batch. |
+| `all-closed` | `boolean` | `true`, `false` | `false` | Every `.accordion-item` closed in one batch. |
+```
+
 </StatesSection>
 
 <SourceFiles component="accordion" section="css" />

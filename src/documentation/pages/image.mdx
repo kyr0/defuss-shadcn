@@ -47,118 +47,97 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first>
-  <ExampleLabel>Default</ExampleLabel>
-  <ExampleHint>Basic image in a figure with rounded corners and cover fit.</ExampleHint>
-  <figure class="image" style="max-width:400px;">
-    <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&amp;h=400&amp;fit=crop" alt="Abstract gradient" />
-  </figure>
-  <ExampleCode>{"<figure class=\"image\">\n  <img src=\"photo.jpg\" alt=\"Description\" />\n</figure>"}</ExampleCode>
-</Example>
+```html example label="Default" hint="Basic image in a figure with rounded corners and cover fit."
+<figure class="image" style="max-width:400px;">
+  <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&amp;h=400&amp;fit=crop" alt="Abstract gradient"></img>
+</figure>
+```
 
-<Example>
-  <ExampleLabel>With Caption</ExampleLabel>
-  <ExampleHint>Semantic <code>&lt;figcaption&gt;</code> for descriptive text below the image.</ExampleHint>
-  <figure class="image" style="max-width:400px;">
-    <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&amp;h=400&amp;fit=crop" alt="Abstract gradient" />
-    <figcaption class="image-caption">Photo by Unsplash — Abstract gradient composition</figcaption>
-  </figure>
-  <ExampleCode>{"<figure class=\"image\">\n  <img src=\"photo.jpg\" alt=\"Description\" />\n  <figcaption class=\"image-caption\">Caption text</figcaption>\n</figure>"}</ExampleCode>
-</Example>
+```html example label="With Caption" hint="Semantic &lt;figcaption&gt; for descriptive text below the image."
+<figure class="image" style="max-width:400px;">
+  <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&amp;h=400&amp;fit=crop" alt="Abstract gradient"></img>
+  <figcaption class="image-caption">Photo by Unsplash — Abstract gradient composition</figcaption>
+</figure>
+```
 
-<Example>
-  <ExampleLabel>Fallback</ExampleLabel>
-  <ExampleHint>Shows a placeholder when the image fails to load. Uses <code>:has()</code> to detect error state.</ExampleHint>
-  <figure class="image" style="max-width:400px;height:200px;" data-state-demo>
-    <img src="https://invalid-url-that-will-fail.example/photo.jpg" alt="Broken image example" />
-    <div class="image-fallback">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
-        <circle cx="9" cy="9" r="2" />
-        <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-      </svg>
-    </div>
-  </figure>
-  <ExampleCode>{"<figure class=\"image\">\n  <img src=\"photo.jpg\" alt=\"Description\" />\n  <div class=\"image-fallback\">\n    <svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\">\n      <rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" ry=\"2\"/>\n      <circle cx=\"9\" cy=\"9\" r=\"2\"/>\n      <path d=\"m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\"/>\n    </svg>\n  </div>\n</figure>"}</ExampleCode>
-</Example>
-
-<Example>
-  <ExampleLabel>Lightbox Preview</ExampleLabel>
-  <ExampleHint>Click the image to open a fullscreen preview with zoom and rotate controls. Uses native <code>&lt;dialog&gt;</code>.</ExampleHint>
-  <figure class="image" data-preview style="max-width:400px;">
-    <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&amp;h=400&amp;fit=crop" alt="Mountain landscape" />
-    <figcaption class="image-caption">Click to preview — Mountain landscape</figcaption>
-  </figure>
-  <ExampleCode>{"<figure class=\"image\" data-preview>\n  <img src=\"photo.jpg\" alt=\"Description\" />\n</figure>"}</ExampleCode>
-</Example>
-
-<Example>
-  <ExampleLabel>Aspect Ratios</ExampleLabel>
-  <ExampleHint>Controlled aspect ratios via <code>data-ratio</code>.</ExampleHint>
-  <div style="display:flex;gap:1.0rem;flex-wrap:wrap;align-items:flex-start;">
-    <figure class="image" data-ratio="1/1" style="width:120px;">
-      <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=400&amp;fit=crop" alt="Square" />
-      <figcaption class="image-caption">1:1</figcaption>
-    </figure>
-    <figure class="image" data-ratio="4/3" style="width:160px;">
-      <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=300&amp;fit=crop" alt="Standard" />
-      <figcaption class="image-caption">4:3</figcaption>
-    </figure>
-    <figure class="image" data-ratio="16/9" style="width:200px;">
-      <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=225&amp;fit=crop" alt="Widescreen" />
-      <figcaption class="image-caption">16:9</figcaption>
-    </figure>
-    <figure class="image" data-ratio="3/4" style="width:120px;">
-      <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=300&amp;h=400&amp;fit=crop" alt="Portrait" />
-      <figcaption class="image-caption">3:4</figcaption>
-    </figure>
+```html example label="Fallback" hint="Shows a placeholder when the image fails to load. Uses :has() to detect error state."
+<figure class="image" style="max-width:400px;height:200px;">
+  <img src="https://invalid-url-that-will-fail.example/photo.jpg" alt="Broken image example"></img>
+  <div class="image-fallback">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect>
+      <circle cx="9" cy="9" r="2"></circle>
+      <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path>
+    </svg>
   </div>
-  <ExampleCode>{"<figure class=\"image\" data-ratio=\"1/1\">...</figure>\n<figure class=\"image\" data-ratio=\"4/3\">...</figure>\n<figure class=\"image\" data-ratio=\"16/9\">...</figure>\n<figure class=\"image\" data-ratio=\"3/4\">...</figure>"}</ExampleCode>
-</Example>
+</figure>
+```
 
-<Example>
-  <ExampleLabel>Object Fit</ExampleLabel>
-  <ExampleHint>Control how the image fills its container via <code>data-fit</code>.</ExampleHint>
-  <div style="display:flex;gap:1.0rem;flex-wrap:wrap;align-items:flex-start;">
-    <figure class="image" data-ratio="4/3" style="width:180px;background:var(--muted);">
-      <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&amp;h=400&amp;fit=crop" alt="Cover (default)" />
-      <figcaption class="image-caption">cover (default)</figcaption>
-    </figure>
-    <figure class="image" data-ratio="4/3" data-fit="contain" style="width:180px;background:var(--muted);">
-      <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&amp;h=400&amp;fit=crop" alt="Contain" />
-      <figcaption class="image-caption">contain</figcaption>
-    </figure>
-    <figure class="image" data-ratio="4/3" data-fit="none" style="width:180px;background:var(--muted);">
-      <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&amp;h=400&amp;fit=crop" alt="None" />
-      <figcaption class="image-caption">none</figcaption>
-    </figure>
-  </div>
-  <ExampleCode>{"<!-- default: cover -->\n<figure class=\"image\" data-ratio=\"4/3\">...</figure>\n\n<!-- contain -->\n<figure class=\"image\" data-ratio=\"4/3\" data-fit=\"contain\">...</figure>\n\n<!-- none (natural size, clipped) -->\n<figure class=\"image\" data-ratio=\"4/3\" data-fit=\"none\">...</figure>"}</ExampleCode>
-</Example>
+```html example label="Lightbox Preview" hint="Click the image to open a fullscreen preview with zoom and rotate controls. Uses native &lt;dialog&gt;."
+<figure class="image" data-preview style="max-width:400px;">
+  <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&amp;h=400&amp;fit=crop" alt="Mountain landscape"></img>
+  <figcaption class="image-caption">Click to preview — Mountain landscape</figcaption>
+</figure>
+```
 
-<Example>
-  <ExampleLabel>Border Radius</ExampleLabel>
-  <ExampleHint>Control border radius via <code>data-radius</code>.</ExampleHint>
-  <div style="display:flex;gap:1.0rem;flex-wrap:wrap;align-items:flex-start;">
-    <figure class="image" data-radius="none" data-ratio="1/1" style="width:100px;">
-      <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=400&amp;fit=crop" alt="No radius" />
-      <figcaption class="image-caption">none</figcaption>
-    </figure>
-    <figure class="image" data-radius="sm" data-ratio="1/1" style="width:100px;">
-      <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=400&amp;fit=crop" alt="Small radius" />
-      <figcaption class="image-caption">sm</figcaption>
-    </figure>
-    <figure class="image" data-ratio="1/1" style="width:100px;">
-      <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=400&amp;fit=crop" alt="Default radius" />
-      <figcaption class="image-caption">default (lg)</figcaption>
-    </figure>
-    <figure class="image" data-radius="full" data-ratio="1/1" style="width:100px;">
-      <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=400&amp;fit=crop" alt="Full radius" />
-      <figcaption class="image-caption">full</figcaption>
-    </figure>
-  </div>
-  <ExampleCode>{"<figure class=\"image\" data-radius=\"none\">...</figure>\n<figure class=\"image\" data-radius=\"sm\">...</figure>\n<figure class=\"image\">...</figure>  <!-- default: lg -->\n<figure class=\"image\" data-radius=\"full\">...</figure>"}</ExampleCode>
-</Example>
+```html example label="Aspect Ratios" hint="Controlled aspect ratios via data-ratio."
+<div style="display:flex;gap:1.0rem;flex-wrap:wrap;align-items:flex-start;">
+  <figure class="image" data-ratio="1/1" style="width:120px;">
+    <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=400&amp;fit=crop" alt="Square"></img>
+    <figcaption class="image-caption">1:1</figcaption>
+  </figure>
+  <figure class="image" data-ratio="4/3" style="width:160px;">
+    <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=300&amp;fit=crop" alt="Standard"></img>
+    <figcaption class="image-caption">4:3</figcaption>
+  </figure>
+  <figure class="image" data-ratio="16/9" style="width:200px;">
+    <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=225&amp;fit=crop" alt="Widescreen"></img>
+    <figcaption class="image-caption">16:9</figcaption>
+  </figure>
+  <figure class="image" data-ratio="3/4" style="width:120px;">
+    <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=300&amp;h=400&amp;fit=crop" alt="Portrait"></img>
+    <figcaption class="image-caption">3:4</figcaption>
+  </figure>
+</div>
+```
+
+```html example label="Object Fit" hint="Control how the image fills its container via data-fit."
+<div style="display:flex;gap:1.0rem;flex-wrap:wrap;align-items:flex-start;">
+  <figure class="image" data-ratio="4/3" style="width:180px;background:var(--muted);">
+    <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&amp;h=400&amp;fit=crop" alt="Cover (default)"></img>
+    <figcaption class="image-caption">cover (default)</figcaption>
+  </figure>
+  <figure class="image" data-ratio="4/3" data-fit="contain" style="width:180px;background:var(--muted);">
+    <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&amp;h=400&amp;fit=crop" alt="Contain"></img>
+    <figcaption class="image-caption">contain</figcaption>
+  </figure>
+  <figure class="image" data-ratio="4/3" data-fit="none" style="width:180px;background:var(--muted);">
+    <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&amp;h=400&amp;fit=crop" alt="None"></img>
+    <figcaption class="image-caption">none</figcaption>
+  </figure>
+</div>
+```
+
+```html example label="Border Radius" hint="Control border radius via data-radius."
+<div style="display:flex;gap:1.0rem;flex-wrap:wrap;align-items:flex-start;">
+  <figure class="image" data-radius="none" data-ratio="1/1" style="width:100px;">
+    <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=400&amp;fit=crop" alt="No radius"></img>
+    <figcaption class="image-caption">none</figcaption>
+  </figure>
+  <figure class="image" data-radius="sm" data-ratio="1/1" style="width:100px;">
+    <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=400&amp;fit=crop" alt="Small radius"></img>
+    <figcaption class="image-caption">sm</figcaption>
+  </figure>
+  <figure class="image" data-ratio="1/1" style="width:100px;">
+    <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=400&amp;fit=crop" alt="Default radius"></img>
+    <figcaption class="image-caption">default (lg)</figcaption>
+  </figure>
+  <figure class="image" data-radius="full" data-ratio="1/1" style="width:100px;">
+    <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=400&amp;fit=crop" alt="Full radius"></img>
+    <figcaption class="image-caption">full</figcaption>
+  </figure>
+</div>
+```
 
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
@@ -167,6 +146,15 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <li><code>error</code> — <code>.image-fallback</code> revealed (the same state a failed network load produces)</li>
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/image-\{state\}.png</code>.</p>
+
+Machine contract — verified against <a href="../schemas/image.schema.json"><code>image.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `error` | `boolean` | `true`, `false` | `false` | Broken-image fallback styling (`img[data-error]`). |
+```
+
 </StatesSection>
 
 <SourceFiles component="image" section="css">

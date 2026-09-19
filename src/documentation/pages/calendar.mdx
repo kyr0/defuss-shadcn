@@ -49,106 +49,99 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first>
-  <ExampleLabel>Basic Calendar</ExampleLabel>
-  <ExampleHint>Interactive calendar with month navigation and date selection.</ExampleHint>
-  <div class="calendar" data-state-demo>
+```html example label="Basic Calendar" hint="Interactive calendar with month navigation and date selection." height="24"
+<div class="calendar">
+  <div class="calendar-header">
+    <button class="calendar-nav" data-action="prev-month" aria-label="Previous month">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m15 18-6-6 6-6"></path>
+      </svg>
+    </button>
+    <span class="calendar-heading" aria-live="polite"></span>
+    <button class="calendar-nav" data-action="next-month" aria-label="Next month">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m9 18 6-6-6-6"></path>
+      </svg>
+    </button>
+  </div>
+  <table class="calendar-grid" role="grid"></table>
+</div>
+```
+
+```html example label="Side by Side" hint="Place multiple calendars side-by-side for range selection patterns." height="24"
+<div style="display:flex;gap:1.0rem;flex-wrap:wrap;">
+  <div class="calendar">
     <div class="calendar-header">
       <button class="calendar-nav" data-action="prev-month" aria-label="Previous month">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m15 18-6-6 6-6" />
+          <path d="m15 18-6-6 6-6"></path>
         </svg>
       </button>
-      <span class="calendar-heading" aria-live="polite" />
+      <span class="calendar-heading" aria-live="polite"></span>
       <button class="calendar-nav" data-action="next-month" aria-label="Next month">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m9 18 6-6-6-6" />
+          <path d="m9 18 6-6-6-6"></path>
         </svg>
       </button>
     </div>
-    <table class="calendar-grid" role="grid" />
+    <table class="calendar-grid" role="grid"></table>
   </div>
-  <ExampleCode>{"<div class=\"calendar\">\n  <div class=\"calendar-header\">\n    <button class=\"calendar-nav\" data-action=\"prev-month\"\n            aria-label=\"Previous month\">\n      <svg>...chevron left...</svg>\n    </button>\n    <span class=\"calendar-heading\" aria-live=\"polite\"></span>\n    <button class=\"calendar-nav\" data-action=\"next-month\"\n            aria-label=\"Next month\">\n      <svg>...chevron right...</svg>\n    </button>\n  </div>\n  <table class=\"calendar-grid\" role=\"grid\"></table>\n</div>"}</ExampleCode>
-</Example>
+  <div class="calendar">
+    <div class="calendar-header">
+      <button class="calendar-nav" data-action="prev-month" aria-label="Previous month">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m15 18-6-6 6-6"></path>
+        </svg>
+      </button>
+      <span class="calendar-heading" aria-live="polite"></span>
+      <button class="calendar-nav" data-action="next-month" aria-label="Next month">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m9 18 6-6-6-6"></path>
+        </svg>
+      </button>
+    </div>
+    <table class="calendar-grid" role="grid"></table>
+  </div>
+</div>
+```
 
-<Example noCode>
-  <ExampleLabel>Side by Side</ExampleLabel>
-  <ExampleHint>Place multiple calendars side-by-side for range selection patterns.</ExampleHint>
-  <div style="display:flex;gap:1.0rem;flex-wrap:wrap;">
-    <div class="calendar">
+```html example label="Density" hint="Set data-density on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only the frame padding and the day hit-areas scale (typography stays identical). comfortable matches the unsized default." height="24"
+<div class="flex flex-wrap gap-4" style="align-items:flex-start;">
+  <div>
+    <p class="demo-label">Compact</p>
+    <div class="calendar" data-density="compact">
       <div class="calendar-header">
-        <button class="calendar-nav" data-action="prev-month" aria-label="Previous month">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m15 18-6-6 6-6" />
-          </svg>
-        </button>
-        <span class="calendar-heading" aria-live="polite" />
-        <button class="calendar-nav" data-action="next-month" aria-label="Next month">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m9 18 6-6-6-6" />
-          </svg>
-        </button>
+        <button class="calendar-nav" data-action="prev-month" aria-label="Previous month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button>
+        <span class="calendar-heading" aria-live="polite"></span>
+        <button class="calendar-nav" data-action="next-month" aria-label="Next month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button>
       </div>
-      <table class="calendar-grid" role="grid" />
-    </div>
-    <div class="calendar">
-      <div class="calendar-header">
-        <button class="calendar-nav" data-action="prev-month" aria-label="Previous month">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m15 18-6-6 6-6" />
-          </svg>
-        </button>
-        <span class="calendar-heading" aria-live="polite" />
-        <button class="calendar-nav" data-action="next-month" aria-label="Next month">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m9 18 6-6-6-6" />
-          </svg>
-        </button>
-      </div>
-      <table class="calendar-grid" role="grid" />
+      <table class="calendar-grid" role="grid"></table>
     </div>
   </div>
-</Example>
-
-<Example previewStyle="align-items:flex-start;gap:1.5rem;">
-  <ExampleLabel>Density</ExampleLabel>
-  <ExampleHint>Set <code>data-density</code> on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only the frame padding and the day hit-areas scale (typography stays identical). <code>comfortable</code> matches the unsized default.</ExampleHint>
-  <div class="flex flex-wrap gap-4" style="align-items:flex-start;">
-    <div>
-      <p class="demo-label">Compact</p>
-      <div class="calendar" data-density="compact">
-        <div class="calendar-header">
-          <button class="calendar-nav" data-action="prev-month" aria-label="Previous month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg></button>
-          <span class="calendar-heading" aria-live="polite" />
-          <button class="calendar-nav" data-action="next-month" aria-label="Next month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg></button>
-        </div>
-        <table class="calendar-grid" role="grid" />
+  <div>
+    <p class="demo-label">Comfortable</p>
+    <div class="calendar" data-density="comfortable">
+      <div class="calendar-header">
+        <button class="calendar-nav" data-action="prev-month" aria-label="Previous month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button>
+        <span class="calendar-heading" aria-live="polite"></span>
+        <button class="calendar-nav" data-action="next-month" aria-label="Next month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button>
       </div>
-    </div>
-    <div>
-      <p class="demo-label">Comfortable</p>
-      <div class="calendar" data-density="comfortable">
-        <div class="calendar-header">
-          <button class="calendar-nav" data-action="prev-month" aria-label="Previous month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg></button>
-          <span class="calendar-heading" aria-live="polite" />
-          <button class="calendar-nav" data-action="next-month" aria-label="Next month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg></button>
-        </div>
-        <table class="calendar-grid" role="grid" />
-      </div>
-    </div>
-    <div>
-      <p class="demo-label">Spacious</p>
-      <div class="calendar" data-density="spacious">
-        <div class="calendar-header">
-          <button class="calendar-nav" data-action="prev-month" aria-label="Previous month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg></button>
-          <span class="calendar-heading" aria-live="polite" />
-          <button class="calendar-nav" data-action="next-month" aria-label="Next month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg></button>
-        </div>
-        <table class="calendar-grid" role="grid" />
-      </div>
+      <table class="calendar-grid" role="grid"></table>
     </div>
   </div>
-</Example>
+  <div>
+    <p class="demo-label">Spacious</p>
+    <div class="calendar" data-density="spacious">
+      <div class="calendar-header">
+        <button class="calendar-nav" data-action="prev-month" aria-label="Previous month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button>
+        <span class="calendar-heading" aria-live="polite"></span>
+        <button class="calendar-nav" data-action="next-month" aria-label="Next month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button>
+      </div>
+      <table class="calendar-grid" role="grid"></table>
+    </div>
+  </div>
+</div>
+```
 
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
@@ -156,6 +149,16 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <li><code>default</code> — reset to today's month with no selection; <code>setState('default', \{ year, month, day \})</code> (0-based month) navigates and optionally selects, and <code>getState().config</code> reports the live view</li>
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/calendar-\{state\}.png</code>.</p>
+
+Machine contract — verified against <a href="../schemas/calendar.schema.json"><code>calendar.schema.json</code></a> by <code>bun run verify</code>:
+
+This component exposes no observable states — it is driven through its runtime API and native behavior.
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+```
+
 </StatesSection>
 
 <SourceFiles component="calendar" section="css">

@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "name": "toggle",
+  "states": {
+    "pressed": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "root"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "aria-pressed"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "aria-pressed"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

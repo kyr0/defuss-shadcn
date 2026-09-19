@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "name": "context-menu",
+  "states": {
+    "open": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".context-menu"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "open"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name",
+        "target": {
+          "kind": "selector",
+          "selector": ".context-menu"
+        }
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}
