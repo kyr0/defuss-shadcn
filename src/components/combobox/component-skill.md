@@ -178,6 +178,10 @@ The registry global is `df$.shadcn.comboboxApi` / `df$.shadcn.comboboxStates`.
 
 ## Notes
 
+- Filtering toggles option `hidden` flags **in place** through the core `df$`
+  runtime (see the "DOM Querying & Morphing" guide) — consumer-authored
+  options keep node identity across filtering (caret/selection survive);
+  only membership/order changes would justify a keyed `df$(listbox).morph()`
 - The trigger is a `.btn[data-variant="outline"]` — styled by the button system
 - When the popover opens, focus moves to the search input inside
 - When the popover closes, focus returns to the trigger button

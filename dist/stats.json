@@ -9,17 +9,17 @@
   },
   "withJs": 28,
   "withoutJs": 44,
-  "totalSize": 434147,
-  "totalSizeMinified": 212593,
-  "totalSizeGz": 140734,
-  "totalSizeGzMinified": 78023,
+  "totalSize": 435087,
+  "totalSizeMinified": 212474,
+  "totalSizeGz": 141240,
+  "totalSizeGzMinified": 78078,
   "bundle": {
-    "jsSize": 171403,
-    "jsSizeMinified": 91088,
+    "jsSize": 171357,
+    "jsSizeMinified": 90970,
     "cssSize": 249940,
     "cssSizeMinified": 140482,
-    "totalSizeGz": 77668,
-    "totalSizeGzMinified": 46095
+    "totalSizeGz": 77799,
+    "totalSizeGzMinified": 46195
   },
   "core": {
     "jsSize": 63213,
@@ -242,14 +242,14 @@
       "name": "combobox",
       "type": "MOL",
       "withJs": true,
-      "jsSize": 10783,
-      "jsSizeMinified": 4214,
+      "jsSize": 11723,
+      "jsSizeMinified": 4095,
       "cssSize": 7391,
       "cssSizeMinified": 4121,
-      "totalSizeGz": 5685,
-      "totalSizeGzMinified": 3145,
-      "totalSize": 18174,
-      "totalSizeMinified": 8335
+      "totalSizeGz": 6191,
+      "totalSizeGzMinified": 3200,
+      "totalSize": 19114,
+      "totalSizeMinified": 8216
     },
     "command": {
       "name": "command",

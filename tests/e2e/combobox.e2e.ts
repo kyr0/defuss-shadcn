@@ -79,6 +79,33 @@ try {
     assert.equal(emptyShown, false, '.combobox-empty shows when nothing matches');
   });
 
+  // -- §3 direct integration: flag-based filtering keeps NODE identity ------
+  await check('filtering flags options in place (same node survives hide+show; caret untouched)', async () => {
+    const res = await page.evaluate(async () => {
+      const input = document.querySelector('#cb-demo .combobox-search-input') as HTMLInputElement;
+      const opt = document.querySelector('#cb-opt-next') as HTMLElement;
+      (opt as any).__cbSentinel = 1;
+      // caret into the middle of the query: filtering must not touch the input node
+      input.value = 'next';
+      input.setSelectionRange(2, 2);
+      input.dispatchEvent(new Event('input', { bubbles: true })); // hides non-matches
+      const hiddenKept = (opt as any).__cbSentinel === 1; // staying hidden kept the node
+      // caret must be exactly where we put it — flag writes never touch the input
+      const caret = [input.selectionStart, input.selectionEnd].join(',');
+      input.value = '';
+      input.dispatchEvent(new Event('input', { bubbles: true })); // re-shows everything
+      const again = document.querySelector('#cb-opt-next') as HTMLElement;
+      return {
+        kept: hiddenKept && (again as any)?.__cbSentinel === 1,
+        visible: !again.hidden,
+        caret,
+      };
+    });
+    assert.ok(res.kept, 'hidden/shown option is the SAME node (flag toggle, no re-render)');
+    assert.ok(res.visible, 'option visible again after clearing');
+    assert.equal(res.caret, '2,2', 'caret survived filtering (input untouched by flag writes)');
+  });
+
   await check('clearing filters and ArrowDown/ArrowUp move the highlight + activedescendant', async () => {
     // clearing re-filters and auto-highlights the first match (component's input handler)
     await page.fill('#cb-demo .combobox-search-input', '');

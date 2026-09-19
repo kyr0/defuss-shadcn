@@ -5,9 +5,14 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals, safeShowPopover } from '../../shared/state-api.js';
+// defussQuery: the callable runtime for scoped lookup + scalar writes
+// (plans/defuss-query-morph-integration.md §3 combobox row: filtering an
+// existing consumer-authored list is flag-based — NO full renderer; options
+// keep node identity, only hidden/aria flags change).
+import { defussGlobals, defussQuery, safeShowPopover } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 
 const comboboxStates = ['default', 'open'];
 
@@ -54,43 +59,51 @@ df$.comboboxStates = comboboxStates;
 function init() {
   document.querySelectorAll('.combobox:not([data-init])').forEach((wrapper) => {
     wrapper.dataset.init = '';
-    const trigger = wrapper.querySelector('.combobox-trigger');
-    const valueEl = wrapper.querySelector('.combobox-value');
-    const popover = wrapper.querySelector('.combobox-content');
-    const searchInput = wrapper.querySelector('.combobox-search-input');
-    const listbox = wrapper.querySelector('[role="listbox"]');
-    const empty = wrapper.querySelector('.combobox-empty');
+    // scoped lookup through query (§3 direct integration); raw refs below are
+    // kept only for native protocols (showPopover/focus/anchor wiring)
+    const $wrapper = dfDollar(wrapper);
+    const $trigger = $wrapper.find('.combobox-trigger');
+    const $value = $wrapper.find('.combobox-value');
+    const $popover = $wrapper.find('.combobox-content');
+    const $search = $wrapper.find('.combobox-search-input');
+    const $listbox = $wrapper.find('[role="listbox"]');
+    const $empty = $wrapper.find('.combobox-empty');
+    const trigger = $trigger[0] as HTMLElement | undefined;
+    const popover = $popover[0] as HTMLElement | undefined;
+    const searchInput = $search[0] as HTMLInputElement | undefined;
+    const listbox = $listbox[0] as HTMLElement | undefined;
     if (!trigger || !popover || !searchInput || !listbox) return;
 
-    const allItems = Array.from(listbox.querySelectorAll('[role="option"]'));
+    // options are consumer-authored: a snapshot selection, flagged in place
+    const allItems = $listbox.find('[role="option"]');
     let highlighted = -1;
 
     // CSS anchor positioning - unique name per trigger-popover pair
     const anchorId = `--combobox-${popover.id}`;
-    trigger.style.anchorName = anchorId;
-    popover.style.positionAnchor = anchorId;
+    $trigger.css('anchorName', anchorId);
+    $popover.css('positionAnchor', anchorId);
 
     // Clear button - injected so consumer markup stays minimal (and the
     // button can't be nested in the trigger's <button>). Visibility is pure
     // CSS: .combobox-clear shows exactly while data-placeholder is absent
     // (combobox.css :has() rule); JS only wires the click and focus.
-    const placeholder = valueEl?.dataset.placeholder ?? '';
+    // Trusted static icon markup (sanctioned §5.1 exception); inserted via
+    // query's exact .after() so lifecycle goes through one adapter.
+    const placeholder = $value.data('placeholder') ?? '';
     const clearBtn = document.createElement('button');
     clearBtn.type = 'button';
     clearBtn.className = 'combobox-clear';
     clearBtn.setAttribute('aria-label', 'Clear selection');
     clearBtn.innerHTML =
       '<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
-    clearBtn.style.positionAnchor = anchorId;
-    trigger.after(clearBtn);
+    dfDollar(clearBtn).css('positionAnchor', anchorId);
+    $trigger.after(clearBtn);
     clearBtn.addEventListener('click', () => {
-      allItems.forEach((i) => { i.setAttribute('aria-selected', 'false'); });
-      if (valueEl) {
-        valueEl.textContent = placeholder;
-        // re-declare data-placeholder: selectItem removed it, and it is the
-        // very marker the CSS :has() rule keys off to hide this button again
-        valueEl.setAttribute('data-placeholder', placeholder);
-      }
+      allItems.attr('aria-selected', 'false');
+      // literal placeholder text + re-declare data-placeholder: selectItem
+      // removed it, and it is the very marker the CSS :has() rule keys off
+      // to hide this button again
+      $value.text(placeholder).attr('data-placeholder', placeholder);
       // the button goes display:none with the selection - keep focus usable
       trigger.focus();
     });
@@ -100,15 +113,15 @@ function init() {
       // deferred show (safeShowPopover): showPopover() mid-exit crashes the
       // headless renderer; hide-then-show is deterministic everywhere.
       safeShowPopover(popover);
-      trigger.setAttribute('aria-expanded', 'true');
-      searchInput.value = '';
+      $trigger.attr('aria-expanded', 'true');
+      $search.val('');
       filter('');
       searchInput.focus();
     };
     const close = () => {
       popover.hidePopover();
-      trigger.setAttribute('aria-expanded', 'false');
-      searchInput.setAttribute('aria-activedescendant', '');
+      $trigger.attr('aria-expanded', 'false');
+      $search.attr('aria-activedescendant', '');
       clearHighlight();
       trigger.focus();
     };
@@ -121,32 +134,36 @@ function init() {
       getState: () => comboboxApi.getState(popover),
     };
     const isOpen = () => popover.matches(':popover-open');
+    // flag-based filtering: hidden props toggle IN PLACE (nodes are never
+    // replaced — identity, focus and caret survive), per §3's no-renderer rule
     const filter = (query) => {
       const q = query.toLowerCase(); let hasVisible = false;
-      allItems.forEach((item) => { const match = !q || item.textContent.trim().toLowerCase().includes(q); item.hidden = !match; if (match) hasVisible = true; });
-      listbox.querySelectorAll('.combobox-group-label').forEach((label) => {
+      allItems.forEach((item) => { const match = !q || item.textContent.trim().toLowerCase().includes(q); dfDollar(item).prop('hidden', !match); if (match) hasVisible = true; });
+      $listbox.find('.combobox-group-label').each(function (this: HTMLElement) {
+        const label = this;
         let next = label.nextElementSibling; let groupHasVisible = false;
         while (next && !next.classList.contains('combobox-group-label') && !next.classList.contains('combobox-separator')) {
           if (next.getAttribute('role') === 'option' && !next.hidden) groupHasVisible = true; next = next.nextElementSibling;
         }
-        label.hidden = !groupHasVisible;
+        dfDollar(label).prop('hidden', !groupHasVisible);
       });
-      listbox.querySelectorAll('.combobox-separator').forEach((sep) => { const prev = sep.previousElementSibling; const next = sep.nextElementSibling; sep.hidden = (prev && prev.hidden) || (next && next.hidden); });
-      if (empty) empty.hidden = hasVisible;
+      $listbox.find('.combobox-separator').each(function (this: HTMLElement) { const sep = this; const prev = sep.previousElementSibling; const next = sep.nextElementSibling; dfDollar(sep).prop('hidden', Boolean((prev && prev.hidden) || (next && next.hidden))); });
+      if ($empty.length) $empty.prop('hidden', hasVisible);
     };
-    const clearHighlight = () => { allItems.forEach((item) => { delete item.dataset.highlighted; }); highlighted = -1; };
+    const clearHighlight = () => { allItems.data('highlighted', null); highlighted = -1; };
     const doHighlight = (index) => {
       const items = getVisibleItems(); clearHighlight();
       if (index < 0 || index >= items.length) return;
-      highlighted = index; items[index].dataset.highlighted = '';
+      highlighted = index; dfDollar(items[index]).data('highlighted', '');
       items[index].scrollIntoView({ block: 'nearest' });
-      searchInput.setAttribute('aria-activedescendant', items[index].id);
+      $search.attr('aria-activedescendant', items[index].id);
     };
     const selectItem = (item) => {
       if (item.getAttribute('aria-disabled') === 'true') return;
-      allItems.forEach((i) => { i.setAttribute('aria-selected', 'false'); });
-      item.setAttribute('aria-selected', 'true');
-      if (valueEl) { valueEl.textContent = item.textContent.trim(); valueEl.removeAttribute('data-placeholder'); }
+      allItems.attr('aria-selected', 'false');
+      dfDollar(item).attr('aria-selected', 'true');
+      // trigger label mirrors the option's literal text (§3: query .text())
+      $value.text(item.textContent.trim()).attr('data-placeholder', null);
       close();
     };
     trigger.addEventListener('click', () => { if (isOpen()) { close(); } else { open(); } });
@@ -165,7 +182,7 @@ function init() {
     });
     listbox.addEventListener('click', (e) => { const item = e.target.closest('[role="option"]'); if (item && !item.hidden && item.getAttribute('aria-disabled') !== 'true') selectItem(item); });
     listbox.addEventListener('mousemove', (e) => { const item = e.target.closest('[role="option"]'); if (item && !item.hidden) { const items = getVisibleItems(); doHighlight(items.indexOf(item)); } });
-    popover.addEventListener('toggle', (e) => { if (e.newState === 'closed') { trigger.setAttribute('aria-expanded', 'false'); clearHighlight(); } });
+    popover.addEventListener('toggle', (e) => { if (e.newState === 'closed') { $trigger.attr('aria-expanded', 'false'); clearHighlight(); } });
   });
 }
 

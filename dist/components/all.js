@@ -2461,6 +2461,7 @@ new MutationObserver(init6).observe(document, { childList: true, subtree: true }
 
 // src/components/combobox/combobox.ts
 var df$7 = defussGlobals();
+var dfDollar2 = defussQuery();
 var comboboxStates = ["default", "open"];
 function triggerStateChange7(popover, stateName, _config) {
   switch (stateName) {
@@ -2494,49 +2495,49 @@ df$7.comboboxStates = comboboxStates;
 function init7() {
   document.querySelectorAll(".combobox:not([data-init])").forEach((wrapper) => {
     wrapper.dataset.init = "";
-    const trigger = wrapper.querySelector(".combobox-trigger");
-    const valueEl = wrapper.querySelector(".combobox-value");
-    const popover = wrapper.querySelector(".combobox-content");
-    const searchInput = wrapper.querySelector(".combobox-search-input");
-    const listbox = wrapper.querySelector('[role="listbox"]');
-    const empty = wrapper.querySelector(".combobox-empty");
+    const $wrapper = dfDollar2(wrapper);
+    const $trigger = $wrapper.find(".combobox-trigger");
+    const $value = $wrapper.find(".combobox-value");
+    const $popover = $wrapper.find(".combobox-content");
+    const $search = $wrapper.find(".combobox-search-input");
+    const $listbox = $wrapper.find('[role="listbox"]');
+    const $empty = $wrapper.find(".combobox-empty");
+    const trigger = $trigger[0];
+    const popover = $popover[0];
+    const searchInput = $search[0];
+    const listbox = $listbox[0];
     if (!trigger || !popover || !searchInput || !listbox)
       return;
-    const allItems = Array.from(listbox.querySelectorAll('[role="option"]'));
+    const allItems = $listbox.find('[role="option"]');
     let highlighted = -1;
     const anchorId = `--combobox-${popover.id}`;
-    trigger.style.anchorName = anchorId;
-    popover.style.positionAnchor = anchorId;
-    const placeholder = valueEl?.dataset.placeholder ?? "";
+    $trigger.css("anchorName", anchorId);
+    $popover.css("positionAnchor", anchorId);
+    const placeholder = $value.data("placeholder") ?? "";
     const clearBtn = document.createElement("button");
     clearBtn.type = "button";
     clearBtn.className = "combobox-clear";
     clearBtn.setAttribute("aria-label", "Clear selection");
     clearBtn.innerHTML = '<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
-    clearBtn.style.positionAnchor = anchorId;
-    trigger.after(clearBtn);
+    dfDollar2(clearBtn).css("positionAnchor", anchorId);
+    $trigger.after(clearBtn);
     clearBtn.addEventListener("click", () => {
-      allItems.forEach((i) => {
-        i.setAttribute("aria-selected", "false");
-      });
-      if (valueEl) {
-        valueEl.textContent = placeholder;
-        valueEl.setAttribute("data-placeholder", placeholder);
-      }
+      allItems.attr("aria-selected", "false");
+      $value.text(placeholder).attr("data-placeholder", placeholder);
       trigger.focus();
     });
     const getVisibleItems = () => allItems.filter((item) => !item.hidden && item.getAttribute("aria-disabled") !== "true");
     const open = () => {
       safeShowPopover(popover);
-      trigger.setAttribute("aria-expanded", "true");
-      searchInput.value = "";
+      $trigger.attr("aria-expanded", "true");
+      $search.val("");
       filter("");
       searchInput.focus();
     };
     const close = () => {
       popover.hidePopover();
-      trigger.setAttribute("aria-expanded", "false");
-      searchInput.setAttribute("aria-activedescendant", "");
+      $trigger.attr("aria-expanded", "false");
+      $search.attr("aria-activedescendant", "");
       clearHighlight();
       trigger.focus();
     };
@@ -2552,11 +2553,12 @@ function init7() {
       let hasVisible = false;
       allItems.forEach((item) => {
         const match = !q || item.textContent.trim().toLowerCase().includes(q);
-        item.hidden = !match;
+        dfDollar2(item).prop("hidden", !match);
         if (match)
           hasVisible = true;
       });
-      listbox.querySelectorAll(".combobox-group-label").forEach((label) => {
+      $listbox.find(".combobox-group-label").each(function() {
+        const label = this;
         let next = label.nextElementSibling;
         let groupHasVisible = false;
         while (next && !next.classList.contains("combobox-group-label") && !next.classList.contains("combobox-separator")) {
@@ -2564,20 +2566,19 @@ function init7() {
             groupHasVisible = true;
           next = next.nextElementSibling;
         }
-        label.hidden = !groupHasVisible;
+        dfDollar2(label).prop("hidden", !groupHasVisible);
       });
-      listbox.querySelectorAll(".combobox-separator").forEach((sep) => {
+      $listbox.find(".combobox-separator").each(function() {
+        const sep = this;
         const prev = sep.previousElementSibling;
         const next = sep.nextElementSibling;
-        sep.hidden = prev && prev.hidden || next && next.hidden;
+        dfDollar2(sep).prop("hidden", Boolean(prev && prev.hidden || next && next.hidden));
       });
-      if (empty)
-        empty.hidden = hasVisible;
+      if ($empty.length)
+        $empty.prop("hidden", hasVisible);
     };
     const clearHighlight = () => {
-      allItems.forEach((item) => {
-        delete item.dataset.highlighted;
-      });
+      allItems.data("highlighted", null);
       highlighted = -1;
     };
     const doHighlight = (index) => {
@@ -2586,21 +2587,16 @@ function init7() {
       if (index < 0 || index >= items.length)
         return;
       highlighted = index;
-      items[index].dataset.highlighted = "";
+      dfDollar2(items[index]).data("highlighted", "");
       items[index].scrollIntoView({ block: "nearest" });
-      searchInput.setAttribute("aria-activedescendant", items[index].id);
+      $search.attr("aria-activedescendant", items[index].id);
     };
     const selectItem = (item) => {
       if (item.getAttribute("aria-disabled") === "true")
         return;
-      allItems.forEach((i) => {
-        i.setAttribute("aria-selected", "false");
-      });
-      item.setAttribute("aria-selected", "true");
-      if (valueEl) {
-        valueEl.textContent = item.textContent.trim();
-        valueEl.removeAttribute("data-placeholder");
-      }
+      allItems.attr("aria-selected", "false");
+      dfDollar2(item).attr("aria-selected", "true");
+      $value.text(item.textContent.trim()).attr("data-placeholder", null);
       close();
     };
     trigger.addEventListener("click", () => {
@@ -2661,7 +2657,7 @@ function init7() {
     });
     popover.addEventListener("toggle", (e) => {
       if (e.newState === "closed") {
-        trigger.setAttribute("aria-expanded", "false");
+        $trigger.attr("aria-expanded", "false");
         clearHighlight();
       }
     });
@@ -4257,7 +4253,7 @@ new MutationObserver(init22).observe(document, { childList: true, subtree: true 
 
 // src/components/toast/toast.ts
 var df$23 = defussGlobals();
-var dfDollar2 = defussQuery();
+var dfDollar3 = defussQuery();
 var toastStates = ["default"];
 function triggerStateChange23(container, stateName, _config) {
   if (stateName !== "default")
@@ -4309,7 +4305,7 @@ var toastDismiss = (el, callback) => {
     try {
       el.hidePopover();
     } catch {}
-    dfDollar2(el).remove();
+    dfDollar3(el).remove();
     stackToasts(container);
     if (callback)
       callback();
@@ -4378,7 +4374,7 @@ var toastCreate = (options) => {
     actionsDiv.appendChild(actionBtn);
     el.appendChild(actionsDiv);
   }
-  dfDollar2(toastContainer).append(el);
+  dfDollar3(toastContainer).append(el);
   el.showPopover();
   stackToasts(toastContainer);
   toastCallbacks.set(el, { onDismiss, action });
@@ -4866,5 +4862,5 @@ function init28() {
 init28();
 new MutationObserver(init28).observe(document, { childList: true, subtree: true });
 
-//# debugId=E026D8492667326164756E2164756E21
+//# debugId=35380EF87B23D6F964756E2164756E21
 //# sourceMappingURL=all.js.map
