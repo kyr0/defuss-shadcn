@@ -78,20 +78,23 @@ export function measureBundle(componentsDir: string): BundleStats {
 }
 
 /**
- * Why: measure the core runtime artifact (morph + query + shared) — the fixed
- * cost every modular consumer pays once (§6 of the morph integration plan).
- * all.js embeds the same payload, so its bundle figure already carries core.
+ * Why: measure the core runtime pair (core.js: morph + query + shared;
+ * core.css: the four theme utility sheets — plans/core-bundle.md) — the fixed
+ * cost every modular consumer pays once. all.js/all.css embed/carry the same
+ * payload, so the bundle figures already include core.
  */
 export function measureCore(componentsDir: string): BundleStats {
   const js = bytesOf(join(componentsDir, 'core.js'));
   const jsMin = bytesOf(join(componentsDir, 'core.min.js'));
+  const css = bytesOf(join(componentsDir, 'core.css'));
+  const cssMin = bytesOf(join(componentsDir, 'core.min.css'));
   return {
     jsSize: sizeOf(js),
     jsSizeMinified: sizeOf(jsMin),
-    cssSize: 0,
-    cssSizeMinified: 0,
-    totalSizeGz: gzOf(js),
-    totalSizeGzMinified: gzOf(jsMin),
+    cssSize: sizeOf(css),
+    cssSizeMinified: sizeOf(cssMin),
+    totalSizeGz: gzOf(js) + gzOf(css),
+    totalSizeGzMinified: gzOf(jsMin) + gzOf(cssMin),
   };
 }
 

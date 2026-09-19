@@ -63,10 +63,13 @@ for (const file of jsFiles) {
 // 2. CSS: lightningcss minify — no lowering targets given, so modern author
 //    features (@layer, nesting, anchor positioning) pass through untouched.
 const cssFiles = walk(COMPONENTS, ['.css']).filter((f) => !isDerivedArtifact(f));
+// the generated bundles (all.css, core.css) also ship a CSS source map —
+// they're the files consumers debug in production (permissive map: the
+// concat has no own map; lightningcss maps minified→concat, which is the
+// readable bundle shipped next to it)
+const MAPPED_BUNDLES = new Set([join(COMPONENTS, 'all.css'), join(COMPONENTS, 'core.css')]);
 for (const file of cssFiles) {
-  // the single-file bundle (bundle.ts) is the one artifact that also ships a
-  // CSS source map — it's the file consumers debug in production
-  const withMap = file === join(COMPONENTS, 'all.css');
+  const withMap = MAPPED_BUNDLES.has(file);
   const { code, map } = transform({
     filename: relative(ROOT, file),
     code: Buffer.from(readFileSync(file)),
@@ -74,10 +77,8 @@ for (const file of cssFiles) {
     sourceMap: withMap,
   });
   const minPath = file.replace(/\.css$/, '.min.css');
-  writeFileSync(
-    minPath,
-    withMap ? `${code}/*# sourceMappingURL=all.min.css.map */` : code,
-  );
+  const mapName = `${file.slice(file.lastIndexOf('/') + 1, -4)}.min.css.map`;
+  writeFileSync(minPath, withMap ? `${code}/*# sourceMappingURL=${mapName} */` : code);
   if (withMap && map) writeFileSync(`${minPath}.map`, map);
 }
 

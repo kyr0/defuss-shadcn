@@ -127,6 +127,27 @@ stampProvenance(join(DIST_COMPONENTS, 'all.js')); // §6 provenance pointer
 // NOTICE.txt: the human-readable per-release provenance notice (§6)
 writeFileSync(join(DIST_COMPONENTS, 'NOTICE.txt'), provenanceNotice(PROVENANCE));
 
+// 1b. core.css (plans/core-bundle.md): the modular path's fixed CSS cost —
+//     the four theme utility sheets a pick-what-you-need consumer otherwise
+//     links individually, concatenated in FIXED order (tokens first: every
+//     later sheet reads var(--*); sizing → layout → accessibility). Concat is
+//     safe for the same reasons all.css is: @layer + flat specificity +
+//     runtime token resolution. Lives beside core.js (not dist/core/): the
+//     two are one install pair and the docs/README already reference
+//     components/core.js — divergence recorded in the plan.
+const CORE_CSS_SHEETS = [
+  'default-semantic-tokens.css',
+  'sizing.css',
+  'layout.css',
+  'accessibility.css',
+] as const;
+const coreCss = CORE_CSS_SHEETS.map(
+  (f) =>
+    `/* ── theme/utils/${f} ── */\n` +
+    readFileSync(join(ROOT, 'src', 'theme', 'utils', f), 'utf8').trimEnd(),
+).join('\n\n');
+writeFileSync(join(DIST_COMPONENTS, 'core.css'), `${coreCss}\n`);
+
 // 2. CSS bundle: every component stylesheet, alphabetical, with a header per
 //    section so the readable file stays navigable.
 const css = names
@@ -140,5 +161,5 @@ const css = names
 writeFileSync(join(DIST_COMPONENTS, 'all.css'), `${css}\n`);
 
 console.log(
-  `bundle: core.js (+ map, morph+query+shared), ${jsNames.length} component JS modules → all.js (+ map, core first), ${names.length} CSS → all.css`,
+  `bundle: core.js (+ map, morph+query+shared) + core.css (${CORE_CSS_SHEETS.length} theme sheets) → all.js (+ map, core first) + all.css (${names.length} component CSS)`,
 );
