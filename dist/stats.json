@@ -14,20 +14,20 @@
   "totalSizeGz": 143519,
   "totalSizeGzMinified": 78335,
   "bundle": {
-    "jsSize": 172174,
-    "jsSizeMinified": 90796,
+    "jsSize": 172452,
+    "jsSizeMinified": 91074,
     "cssSize": 249940,
     "cssSizeMinified": 140482,
-    "totalSizeGz": 78040,
-    "totalSizeGzMinified": 46485
+    "totalSizeGz": 78196,
+    "totalSizeGzMinified": 46637
   },
   "core": {
-    "jsSize": 63213,
-    "jsSizeMinified": 30559,
+    "jsSize": 63491,
+    "jsSizeMinified": 30837,
     "cssSize": 0,
     "cssSizeMinified": 0,
-    "totalSizeGz": 15116,
-    "totalSizeGzMinified": 10465
+    "totalSizeGz": 15261,
+    "totalSizeGzMinified": 10611
   },
   "components": {
     "accordion": {

@@ -1801,4 +1801,5 @@ var shadcn = df.shadcn ??= {};
 shadcn.shared = { abi: SHARED_ABI, defussGlobals, safeShowPopover, defussQuery };
 
 //# debugId=E357BE4CC63EF23C64756E2164756E21
+/* defuss-shadcn v0.9.0 runtime provenance: bundles defuss-morph@0.1.1 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.1.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=core.js.map
