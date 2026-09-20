@@ -4,7 +4,7 @@ description: "Select component — native <select> dropdowns with custom styling
 slug: "select"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -54,64 +54,61 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first>
-  <ExampleLabel>Default</ExampleLabel>
-  <ExampleHint>Native select with a clearable placeholder — re-choose "Select a fruit" to empty it again.</ExampleHint>
-  <div style="width:100%;max-width:16rem;">
-    <label class="label" for="d-fruit">Fruit</label>
-    <select class="select" id="d-fruit">
-      <option value selected>Select a fruit</option>
-      <option value="apple">Apple</option>
-      <option value="banana">Banana</option>
-      <option value="cherry">Cherry</option>
-      <option value="grape">Grape</option>
-    </select>
-  </div>
-  <ExampleCode>{"<select class=\"select\">\n  <option value=\"\" selected>Select a fruit</option>\n  <option value=\"apple\">Apple</option>\n  ...\n</select>"}</ExampleCode>
-</Example>
+```html example label="Default" hint="Native select with a clearable placeholder — re-choose 'Select a fruit' to empty it again."
+<select class="select">
+  <option value="" selected>Select a fruit</option>
+  <option value="apple">Apple</option>
+  ...
+</select>
+```
 
-<Example>
-  <ExampleLabel>With groups</ExampleLabel>
-  <div style="width:100%;max-width:16rem;">
-    <select class="select">
-      <option value selected>Select timezone</option>
-      <optgroup label="Americas">
-        <option>New York</option>
-        <option>Los Angeles</option>
-        <option>Chicago</option>
-      </optgroup>
-      <optgroup label="Europe">
-        <option>London</option>
-        <option>Paris</option>
-        <option>Berlin</option>
-      </optgroup>
-    </select>
-  </div>
-  <ExampleCode>{"<select class=\"select\">\n  <optgroup label=\"Americas\">\n    <option>New York</option>\n    ...\n  </optgroup>\n</select>"}</ExampleCode>
-</Example>
+```html example label="With groups"
+<select class="select">
+  <optgroup label="Americas">
+    <option>New York</option>
+    ...
+  </optgroup>
+</select>
+```
 
-<Example>
-  <ExampleLabel>Disabled</ExampleLabel>
-  <div style="width:100%;max-width:16rem;">
-    <select class="select" disabled>
-      <option>Cannot change</option>
-    </select>
-  </div>
-  <ExampleCode>{"<select class=\"select\" disabled>...</select>"}</ExampleCode>
-</Example>
+```html example label="Disabled"
+<select class="select" disabled>...</select>
+```
 
-<Example>
-  <ExampleLabel>Sizes</ExampleLabel>
-  <ExampleHint>The full five-step scale via <code>data-size</code> — the unlabeled default IS <code>md</code> (2.25rem).</ExampleHint>
-  <div style="display:flex;flex-direction:column;gap:0.75rem;width:100%;max-width:16rem;">
-    <select class="select" data-size="xs"><option>Extra small</option></select>
-    <select class="select" data-size="sm"><option>Small</option></select>
-    <select class="select" data-size="md"><option>Medium</option></select>
-    <select class="select" data-size="lg"><option>Large</option></select>
-    <select class="select" data-size="xl"><option>Extra large</option></select>
-  </div>
-  <ExampleCode>{"<select class=\"select\" data-size=\"xs\">\n  <option>Extra small</option>\n</select>\n\n<select class=\"select\" data-size=\"sm\">\n  <option>Small</option>\n</select>\n\n<select class=\"select\" data-size=\"md\">\n  <option>Medium</option>\n</select>\n\n<select class=\"select\" data-size=\"lg\">\n  <option>Large</option>\n</select>\n\n<select class=\"select\" data-size=\"xl\">\n  <option>Extra large</option>\n</select>"}</ExampleCode>
-</Example>
+```html example label="Sizes" hint="The full five-step scale via data-size — the unlabeled default IS md (2.25rem)."
+<select class="select" data-size="xs">
+  <option>Extra small</option>
+</select>
+
+<select class="select" data-size="sm">
+  <option>Small</option>
+</select>
+
+<select class="select" data-size="md">
+  <option>Medium</option>
+</select>
+
+<select class="select" data-size="lg">
+  <option>Large</option>
+</select>
+
+<select class="select" data-size="xl">
+  <option>Extra large</option>
+</select>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground">Machine contract — verified against <a href="../schemas/select.schema.json"><code>select.schema.json</code></a> by <code>bun run verify</code>:</p>
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `value` | `string` | `—` | `"apple"` | Selected option (`select.value`), changed by panel or by picking. |
+| `disabled` | `boolean` | `true`, `false` | `false` | Interaction off (native `disabled` attribute). |
+| `required` | `boolean` | `true`, `false` | `false` | Post-validation marks the field invalid (`:user-invalid`). |
+```
+
+</StatesSection>
 
 <SourceFiles component="select" section="css" />
 

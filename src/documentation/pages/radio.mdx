@@ -4,7 +4,7 @@ description: "Radio Group component — native radio buttons with card and butto
 slug: "radio"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -67,156 +67,134 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first>
-  <ExampleLabel>Default</ExampleLabel>
-  <ExampleHint>Radio group with fieldset and legend.</ExampleHint>
-  <fieldset class="radio-group">
-    <legend class="label">Choose a plan</legend>
-    <div class="radio-item">
-      <input class="radio" type="radio" name="d-plan" id="d-free" value="free" checked />
-      <label for="d-free">Free</label>
-    </div>
-    <div class="radio-item">
-      <input class="radio" type="radio" name="d-plan" id="d-pro" value="pro" />
-      <label for="d-pro">Pro</label>
-    </div>
-    <div class="radio-item">
-      <input class="radio" type="radio" name="d-plan" id="d-ent" value="enterprise" />
-      <label for="d-ent">Enterprise</label>
-    </div>
-  </fieldset>
-  <ExampleCode>{"<fieldset class=\"radio-group\">\n  <legend class=\"label\">Choose a plan</legend>\n  <div class=\"radio-item\">\n    <input class=\"radio\" type=\"radio\" name=\"plan\" id=\"free\" value=\"free\" checked>\n    <label for=\"free\">Free</label>\n  </div>\n  <div class=\"radio-item\">\n    <input class=\"radio\" type=\"radio\" name=\"plan\" id=\"pro\" value=\"pro\">\n    <label for=\"pro\">Pro</label>\n  </div>\n  <div class=\"radio-item\">\n    <input class=\"radio\" type=\"radio\" name=\"plan\" id=\"ent\" value=\"enterprise\">\n    <label for=\"ent\">Enterprise</label>\n  </div>\n</fieldset>"}</ExampleCode>
-</Example>
-
-<Example>
-  <ExampleLabel>With Description</ExampleLabel>
-  <ExampleHint>Radio items with label and description text using <code>.radio-item-block</code>.</ExampleHint>
-  <fieldset class="radio-group" style="max-width:22rem;">
-    <legend class="label">Spacing</legend>
-    <div class="radio-item-block">
-      <input class="radio" type="radio" name="d-spacing" id="d-sp-default" value="default" checked />
-      <label for="d-sp-default">Default</label>
-      <span class="radio-description">Standard spacing for most use cases.</span>
-    </div>
-    <div class="radio-item-block">
-      <input class="radio" type="radio" name="d-spacing" id="d-sp-comfortable" value="comfortable" />
-      <label for="d-sp-comfortable">Comfortable</label>
-      <span class="radio-description">More space between elements.</span>
-    </div>
-    <div class="radio-item-block">
-      <input class="radio" type="radio" name="d-spacing" id="d-sp-compact" value="compact" />
-      <label for="d-sp-compact">Compact</label>
-      <span class="radio-description">Minimal spacing for dense layouts.</span>
-    </div>
-  </fieldset>
-  <ExampleCode>{"<fieldset class=\"radio-group\">\n  <legend class=\"label\">Spacing</legend>\n  <div class=\"radio-item-block\">\n    <input class=\"radio\" type=\"radio\" name=\"spacing\" id=\"sp-default\" value=\"default\" checked>\n    <label for=\"sp-default\">Default</label>\n    <span class=\"radio-description\">Standard spacing for most use cases.</span>\n  </div>\n  <div class=\"radio-item-block\">\n    <input class=\"radio\" type=\"radio\" name=\"spacing\" id=\"sp-comfortable\" value=\"comfortable\">\n    <label for=\"sp-comfortable\">Comfortable</label>\n    <span class=\"radio-description\">More space between elements.</span>\n  </div>\n</fieldset>"}</ExampleCode>
-</Example>
-
-<Example>
-  <ExampleLabel>Choice Card</ExampleLabel>
-  <ExampleHint>Card-style radios using <code>.radio-card</code> with <code>:has()</code> for checked highlight.</ExampleHint>
-  <fieldset class="radio-group" style="max-width:22rem;">
-    <legend class="label">Select a plan</legend>
-    <label class="radio-card" for="d-c-plus">
-      <input class="radio" type="radio" name="d-card" id="d-c-plus" value="plus" />
-      <label for="d-c-plus">Plus</label>
-      <span class="radio-description">For individuals and small teams.</span>
-    </label>
-    <label class="radio-card" for="d-c-pro">
-      <input class="radio" type="radio" name="d-card" id="d-c-pro" value="pro" checked />
-      <label for="d-c-pro">Pro</label>
-      <span class="radio-description">For growing businesses.</span>
-    </label>
-    <label class="radio-card" for="d-c-ent">
-      <input class="radio" type="radio" name="d-card" id="d-c-ent" value="enterprise" />
-      <label for="d-c-ent">Enterprise</label>
-      <span class="radio-description">For large teams and enterprises.</span>
-    </label>
-  </fieldset>
-  <ExampleCode>{"<fieldset class=\"radio-group\">\n  <legend class=\"label\">Select a plan</legend>\n  <label class=\"radio-card\" for=\"c-plus\">\n    <input class=\"radio\" type=\"radio\" name=\"card\" id=\"c-plus\" value=\"plus\">\n    <label for=\"c-plus\">Plus</label>\n    <span class=\"radio-description\">For individuals and small teams.</span>\n  </label>\n  <label class=\"radio-card\" for=\"c-pro\">\n    <input class=\"radio\" type=\"radio\" name=\"card\" id=\"c-pro\" value=\"pro\" checked>\n    <label for=\"c-pro\">Pro</label>\n    <span class=\"radio-description\">For growing businesses.</span>\n  </label>\n</fieldset>"}</ExampleCode>
-</Example>
-
-<Example>
-  <ExampleLabel>Horizontal</ExampleLabel>
-  <ExampleHint>Horizontal layout with <code>data-orientation="horizontal"</code>.</ExampleHint>
-  <fieldset class="radio-group" data-orientation="horizontal">
-    <legend class="label">Alignment</legend>
-    <div class="radio-item">
-      <input class="radio" type="radio" name="d-align" id="d-al-left" value="left" checked />
-      <label for="d-al-left">Left</label>
-    </div>
-    <div class="radio-item">
-      <input class="radio" type="radio" name="d-align" id="d-al-center" value="center" />
-      <label for="d-al-center">Center</label>
-    </div>
-    <div class="radio-item">
-      <input class="radio" type="radio" name="d-align" id="d-al-right" value="right" />
-      <label for="d-al-right">Right</label>
-    </div>
-  </fieldset>
-  <ExampleCode>{"<fieldset class=\"radio-group\" data-orientation=\"horizontal\">\n  <legend class=\"label\">Alignment</legend>\n  <div class=\"radio-item\">\n    <input class=\"radio\" type=\"radio\" name=\"align\" id=\"left\" value=\"left\" checked>\n    <label for=\"left\">Left</label>\n  </div>\n  <div class=\"radio-item\">\n    <input class=\"radio\" type=\"radio\" name=\"align\" id=\"center\" value=\"center\">\n    <label for=\"center\">Center</label>\n  </div>\n  <div class=\"radio-item\">\n    <input class=\"radio\" type=\"radio\" name=\"align\" id=\"right\" value=\"right\">\n    <label for=\"right\">Right</label>\n  </div>\n</fieldset>"}</ExampleCode>
-</Example>
-
-<Example>
-  <ExampleLabel>Disabled</ExampleLabel>
-  <ExampleHint>Individual or group-level disabling via <code>disabled</code> attribute.</ExampleHint>
-  <fieldset class="radio-group">
-    <legend class="label">Disabled group</legend>
-    <div class="radio-item">
-      <input class="radio" type="radio" name="d-dis" id="d-d1" disabled checked />
-      <label for="d-d1">Option A</label>
-    </div>
-    <div class="radio-item">
-      <input class="radio" type="radio" name="d-dis" id="d-d2" disabled />
-      <label for="d-d2">Option B</label>
-    </div>
-  </fieldset>
-  <ExampleCode>{"<fieldset class=\"radio-group\">\n  <legend class=\"label\">Disabled group</legend>\n  <div class=\"radio-item\">\n    <input class=\"radio\" type=\"radio\" name=\"dis\" id=\"d1\" disabled checked>\n    <label for=\"d1\">Option A</label>\n  </div>\n  <div class=\"radio-item\">\n    <input class=\"radio\" type=\"radio\" name=\"dis\" id=\"d2\" disabled>\n    <label for=\"d2\">Option B</label>\n  </div>\n</fieldset>"}</ExampleCode>
-</Example>
-
-<Example>
-  <ExampleLabel>Invalid</ExampleLabel>
-  <ExampleHint>Validation error state with <code>aria-invalid="true"</code>.</ExampleHint>
-  <fieldset class="radio-group" style="max-width:22rem;">
-    <legend class="label">Notification Preferences</legend>
-    <p class="radio-group-description">Choose how you want to receive notifications.</p>
-    <div class="radio-item">
-      <input class="radio" type="radio" name="d-inv" id="d-inv1" value="email" aria-invalid="true" />
-      <label for="d-inv1">Email only</label>
-    </div>
-    <div class="radio-item">
-      <input class="radio" type="radio" name="d-inv" id="d-inv2" value="sms" aria-invalid="true" />
-      <label for="d-inv2">SMS only</label>
-    </div>
-    <div class="radio-item">
-      <input class="radio" type="radio" name="d-inv" id="d-inv3" value="both" aria-invalid="true" />
-      <label for="d-inv3">Both Email &amp; SMS</label>
-    </div>
-  </fieldset>
-  <ExampleCode>{"<fieldset class=\"radio-group\">\n  <legend class=\"label\">Notification Preferences</legend>\n  <p class=\"radio-group-description\">Choose how you want to receive notifications.</p>\n  <div class=\"radio-item\">\n    <input class=\"radio\" type=\"radio\" name=\"notif\" id=\"inv1\" value=\"email\" aria-invalid=\"true\">\n    <label for=\"inv1\">Email only</label>\n  </div>\n  <div class=\"radio-item\">\n    <input class=\"radio\" type=\"radio\" name=\"notif\" id=\"inv2\" value=\"sms\" aria-invalid=\"true\">\n    <label for=\"inv2\">SMS only</label>\n  </div>\n</fieldset>"}</ExampleCode>
-</Example>
-
-<Example>
-  <ExampleLabel>Density</ExampleLabel>
-  <ExampleHint>Set <code>data-density</code> on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), typography and fixed dimensions stay identical. <code>comfortable</code> matches the unsized default.</ExampleHint>
-  <div class="flex flex-wrap gap-8">
-    <fieldset class="radio-group" data-density="compact">
-      <legend class="label">Compact</legend>
-      <div class="radio-item"><input class="radio" type="radio" name="den-a" id="den-a1" checked /><label for="den-a1">Free</label></div>
-      <div class="radio-item"><input class="radio" type="radio" name="den-a" id="den-a2" /><label for="den-a2">Pro</label></div>
-    </fieldset>
-    <fieldset class="radio-group" data-density="comfortable">
-      <legend class="label">Comfortable</legend>
-      <div class="radio-item"><input class="radio" type="radio" name="den-b" id="den-b1" checked /><label for="den-b1">Free</label></div>
-      <div class="radio-item"><input class="radio" type="radio" name="den-b" id="den-b2" /><label for="den-b2">Pro</label></div>
-    </fieldset>
-    <fieldset class="radio-group" data-density="spacious">
-      <legend class="label">Spacious</legend>
-      <div class="radio-item"><input class="radio" type="radio" name="den-c" id="den-c1" checked /><label for="den-c1">Free</label></div>
-      <div class="radio-item"><input class="radio" type="radio" name="den-c" id="den-c2" /><label for="den-c2">Pro</label></div>
-    </fieldset>
+```html example label="Default" hint="Radio group with fieldset and legend."
+<fieldset class="radio-group">
+  <legend class="label">Choose a plan</legend>
+  <div class="radio-item">
+    <input class="radio" type="radio" name="plan" id="free" value="free" checked>
+    <label for="free">Free</label>
   </div>
-</Example>
+  <div class="radio-item">
+    <input class="radio" type="radio" name="plan" id="pro" value="pro">
+    <label for="pro">Pro</label>
+  </div>
+  <div class="radio-item">
+    <input class="radio" type="radio" name="plan" id="ent" value="enterprise">
+    <label for="ent">Enterprise</label>
+  </div>
+</fieldset>
+```
+
+```html example label="With Description" hint="Radio items with label and description text using .radio-item-block."
+<fieldset class="radio-group">
+  <legend class="label">Spacing</legend>
+  <div class="radio-item-block">
+    <input class="radio" type="radio" name="spacing" id="sp-default" value="default" checked>
+    <label for="sp-default">Default</label>
+    <span class="radio-description">Standard spacing for most use cases.</span>
+  </div>
+  <div class="radio-item-block">
+    <input class="radio" type="radio" name="spacing" id="sp-comfortable" value="comfortable">
+    <label for="sp-comfortable">Comfortable</label>
+    <span class="radio-description">More space between elements.</span>
+  </div>
+</fieldset>
+```
+
+```html example label="Choice Card" hint="Card-style radios using .radio-card with :has() for checked highlight."
+<fieldset class="radio-group">
+  <legend class="label">Select a plan</legend>
+  <label class="radio-card" for="c-plus">
+    <input class="radio" type="radio" name="card" id="c-plus" value="plus">
+    <label for="c-plus">Plus</label>
+    <span class="radio-description">For individuals and small teams.</span>
+  </label>
+  <label class="radio-card" for="c-pro">
+    <input class="radio" type="radio" name="card" id="c-pro" value="pro" checked>
+    <label for="c-pro">Pro</label>
+    <span class="radio-description">For growing businesses.</span>
+  </label>
+</fieldset>
+```
+
+```html example label="Horizontal" hint="Horizontal layout with data-orientation='horizontal'."
+<fieldset class="radio-group" data-orientation="horizontal">
+  <legend class="label">Alignment</legend>
+  <div class="radio-item">
+    <input class="radio" type="radio" name="align" id="left" value="left" checked>
+    <label for="left">Left</label>
+  </div>
+  <div class="radio-item">
+    <input class="radio" type="radio" name="align" id="center" value="center">
+    <label for="center">Center</label>
+  </div>
+  <div class="radio-item">
+    <input class="radio" type="radio" name="align" id="right" value="right">
+    <label for="right">Right</label>
+  </div>
+</fieldset>
+```
+
+```html example label="Disabled" hint="Individual or group-level disabling via disabled attribute."
+<fieldset class="radio-group">
+  <legend class="label">Disabled group</legend>
+  <div class="radio-item">
+    <input class="radio" type="radio" name="dis" id="d1" disabled checked>
+    <label for="d1">Option A</label>
+  </div>
+  <div class="radio-item">
+    <input class="radio" type="radio" name="dis" id="d2" disabled>
+    <label for="d2">Option B</label>
+  </div>
+</fieldset>
+```
+
+```html example label="Invalid" hint="Validation error state with aria-invalid='true'."
+<fieldset class="radio-group">
+  <legend class="label">Notification Preferences</legend>
+  <p class="radio-group-description">Choose how you want to receive notifications.</p>
+  <div class="radio-item">
+    <input class="radio" type="radio" name="notif" id="inv1" value="email" aria-invalid="true">
+    <label for="inv1">Email only</label>
+  </div>
+  <div class="radio-item">
+    <input class="radio" type="radio" name="notif" id="inv2" value="sms" aria-invalid="true">
+    <label for="inv2">SMS only</label>
+  </div>
+</fieldset>
+```
+
+```html example label="Density" hint="Set data-density on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25), typography and fixed dimensions stay identical. comfortable matches the unsized default."
+<div class="flex flex-wrap gap-8">
+  <fieldset class="radio-group" data-density="compact">
+    <legend class="label">Compact</legend>
+    <div class="radio-item"><input class="radio" type="radio" name="den-a" id="den-a1" checked ></input><label for="den-a1">Free</label></div>
+    <div class="radio-item"><input class="radio" type="radio" name="den-a" id="den-a2" ></input><label for="den-a2">Pro</label></div>
+  </fieldset>
+  <fieldset class="radio-group" data-density="comfortable">
+    <legend class="label">Comfortable</legend>
+    <div class="radio-item"><input class="radio" type="radio" name="den-b" id="den-b1" checked ></input><label for="den-b1">Free</label></div>
+    <div class="radio-item"><input class="radio" type="radio" name="den-b" id="den-b2" ></input><label for="den-b2">Pro</label></div>
+  </fieldset>
+  <fieldset class="radio-group" data-density="spacious">
+    <legend class="label">Spacious</legend>
+    <div class="radio-item"><input class="radio" type="radio" name="den-c" id="den-c1" checked ></input><label for="den-c1">Free</label></div>
+    <div class="radio-item"><input class="radio" type="radio" name="den-c" id="den-c2" ></input><label for="den-c2">Pro</label></div>
+  </fieldset>
+</div>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground">Machine contract — verified against <a href="../schemas/radio.schema.json"><code>radio.schema.json</code></a> by <code>bun run verify</code>:</p>
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `disabled` | `boolean` | `true`, `false` | `false` | Interaction off for the first option (native `disabled` attribute). |
+| `invalid` | `boolean` | `true`, `false` | `false` | Manual invalid flag (`aria-invalid="true"`). |
+```
+
+</StatesSection>
 
 <SourceFiles component="radio" section="css" />
 

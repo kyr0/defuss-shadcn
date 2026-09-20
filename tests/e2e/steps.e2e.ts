@@ -62,4 +62,25 @@ await cssSmoke('steps', [
   { label: 'steps: density "compact" → row-gap 6px', selector: '#st-compact .step', css: { 'row-gap': '6px' } },
   { label: 'steps: density "comfortable" → row-gap 8px', selector: '#st-comfortable .step', css: { 'row-gap': '8px' } },
   { label: 'steps: density "spacious" → row-gap 12px', selector: '#st-spacious .step', css: { 'row-gap': '12px' } },
+
+  // steps gained a runtime (steps.ts): the statuses of #st-live are MAPPED from
+  // data-active-step (2 → complete, current, none) rather than authored.
+  {
+    label: 'runtime: data-active-step=2 maps statuses complete/current/none + one aria-current',
+    run: async (page) => {
+      await page.waitForFunction(() => !!document.querySelector('#st-live[data-init]'));
+      const st = await page.$$eval('#st-live .step', (els) => els.map((e) => e.getAttribute('data-status') ?? ''));
+      assert.deepEqual(st, ['complete', 'current', ''], 'positional statuses');
+      assert.equal(await page.$$eval('#st-live .step[aria-current="step"]', (els) => els.length), 1);
+    },
+  },
+  {
+    label: "state API: getState().name === 'default'; errorStep=2 paints the current step destructive",
+    run: async (page) => {
+      assert.equal(await page.$eval('#st-live', (el) => (el as any).api.getState().name), 'default', "declared state 'default'");
+      await page.$eval('#st-live', (el) => (el as any).api.setState('default', { errorStep: 2 }));
+      assert.equal(await page.$eval('#st-live .step:nth-child(2)', (el) => el.getAttribute('data-status')), 'error');
+    },
+  },
 ]);
+void assert;

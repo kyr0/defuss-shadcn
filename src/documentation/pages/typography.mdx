@@ -4,7 +4,7 @@ description: "Typography utilities — headings, paragraphs, lists, and inline s
 slug: "typography"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -70,112 +70,65 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first previewClass="preview preview-left">
-  <ExampleLabel>Headings</ExampleLabel>
-  <ExampleHint>Four heading levels — h1 is extrabold, h2 includes a bottom border, h3 and h4 are semibold.</ExampleHint>
-  <div style="max-width:32rem;margin:0 auto;display:flex;flex-direction:column;gap:1.5rem;">
-    <h1 class="h1">h1 — Taxing Laughter</h1>
-    <h2 class="h2" style="margin:0;">h2 — The People of the Kingdom</h2>
-    <h3 class="h3">h3 — The Joke Tax</h3>
-    <h4 class="h4">h4 — People stopped telling jokes</h4>
-  </div>
-  <ExampleCode>{"<h1 class=\"h1\">Taxing Laughter</h1>\n<h2 class=\"h2\">The People of the Kingdom</h2>\n<h3 class=\"h3\">The Joke Tax</h3>\n<h4 class=\"h4\">People stopped telling jokes</h4>"}</ExampleCode>
-</Example>
+```html example label="Headings" hint="Four heading levels — h1 is extrabold, h2 includes a bottom border, h3 and h4 are semibold." previewStyle="justify-content:flex-start;text-align:left;"
+<h1 class="h1">Taxing Laughter</h1>
+<h2 class="h2">The People of the Kingdom</h2>
+<h3 class="h3">The Joke Tax</h3>
+<h4 class="h4">People stopped telling jokes</h4>
+```
 
-<Example previewClass="preview preview-left">
-  <ExampleLabel>Paragraph</ExampleLabel>
-  <ExampleHint>Standard body text with generous line height.</ExampleHint>
-  <p class="p" style="max-width:32rem;margin:0 auto;">The king, seeing how much happier his subjects were, realized the error of his ways and repealed the joke tax.</p>
-  <ExampleCode>{"<p class=\"p\">The king, seeing how much happier his subjects were, realized the error of his ways and repealed the joke tax.</p>"}</ExampleCode>
-</Example>
+```html example label="Paragraph" hint="Standard body text with generous line height." previewStyle="justify-content:flex-start;text-align:left;"
+<p class="p">The king, seeing how much happier his subjects were, realized the error of his ways and repealed the joke tax.</p>
+```
 
-<Example previewClass="preview preview-left">
-  <ExampleLabel>Lead</ExampleLabel>
-  <ExampleHint>Larger, muted intro paragraph.</ExampleHint>
-  <p class="lead" style="max-width:32rem;margin:0 auto;">A modal dialog that interrupts the user with important content and expects a response.</p>
-  <ExampleCode>{"<p class=\"lead\">A modal dialog that interrupts the user...</p>"}</ExampleCode>
-</Example>
+```html example label="Lead" hint="Larger, muted intro paragraph." previewStyle="justify-content:flex-start;text-align:left;"
+<p class="lead">A modal dialog that interrupts the user...</p>
+```
 
-<Example>
-  <ExampleLabel>Large / Small / Muted</ExampleLabel>
-  <ExampleHint>Text size variations.</ExampleHint>
-  <div style="display:flex;flex-direction:column;gap:0.75rem;align-items:center;">
-    <div class="large">Are you absolutely sure?</div>
-    <small class="small">Email address</small>
-    <p class="muted m-0">>Enter your email address.</p>
-  </div>
-  <ExampleCode>{"<div class=\"large\">Are you absolutely sure?</div>\n<small class=\"small\">Email address</small>\n<p class=\"muted\">Enter your email address.</p>"}</ExampleCode>
-</Example>
+```html example label="Large / Small / Muted" hint="Text size variations."
+<div class="large">Are you absolutely sure?</div>
+<small class="small">Email address</small>
+<p class="muted">Enter your email address.</p>
+```
 
-<Example previewClass="preview preview-left">
-  <ExampleLabel>Blockquote</ExampleLabel>
-  <ExampleHint>Quoted block with left border and italic style.</ExampleHint>
-  <blockquote class="blockquote" style="max-width:32rem;margin:0 auto;">
-    <p>"After all," he said, "everyone enjoys a good joke, so it's only fair that they should pay for the privilege."</p>
+```html example label="Blockquote" hint="Quoted block with left border and italic style." previewStyle="justify-content:flex-start;text-align:left;"
+<blockquote class="blockquote">
+  <p>"After all," he said, "everyone enjoys a good joke..."</p>
+</blockquote>
+```
+
+```html example label="Inline code" hint="Monospace code snippet within text."
+<code class="inline-code">default-semantic-tokens.css</code>
+```
+
+```html example label="Font stacks" hint="Three token-driven stacks — components reference the tokens, never a hardcoded family."
+<p style="font-family:var(--font-serif)">Display headings</p>
+```
+
+```html example label="Prose Composition" hint="All typography classes combined in a full prose layout — matching the shadcn/ui demo." previewStyle="justify-content:flex-start;text-align:left;"
+<h1 class="h1" style="text-align:center;">Taxing Laughter</h1>
+<p class="p">Once upon a time...</p>
+<h2 class="h2">The King's Plan</h2>
+<p class="p">The king thought long and hard...</p>
+<blockquote class="blockquote">
+  <p>"After all," he said...</p>
+</blockquote>
+<h3 class="h3">The Joke Tax</h3>
+<ul class="list">
+  <li>1st level of puns: 5 gold coins</li>
+  <li>2nd level of jokes: 10 gold coins</li>
+</ul>
+```
+
+```html example label="RTL support" hint="Blockquotes use logical properties (border-inline-start, padding-inline-start) — they flip automatically in RTL contexts." previewStyle="justify-content:flex-start;text-align:left;"
+<div dir="rtl">
+  <h3 class="h3">ضريبة النكتة</h3>
+  <p class="p">فكر الملك طويلاً وبجد...</p>
+  <blockquote class="blockquote">
+    <p>"في النهاية،" قال...</p>
   </blockquote>
-  <ExampleCode>{"<blockquote class=\"blockquote\">\n  <p>\"After all,\" he said, \"everyone enjoys a good joke...\"</p>\n</blockquote>"}</ExampleCode>
-</Example>
-
-<Example>
-  <ExampleLabel>Inline code</ExampleLabel>
-  <ExampleHint>Monospace code snippet within text.</ExampleHint>
-  <p>Edit the <code class="inline-code">default-semantic-tokens.css</code> file to customize your theme.</p>
-  <ExampleCode>{"<code class=\"inline-code\">default-semantic-tokens.css</code>"}</ExampleCode>
-</Example>
-
-<Example>
-  <ExampleLabel>Font stacks</ExampleLabel>
-  <ExampleHint>Three token-driven stacks — components reference the tokens, never a hardcoded family.</ExampleHint>
-  <div style="display:flex;flex-direction:column;gap:0.5rem;">
-    <p style="font-family:var(--font-sans);margin:0;">var(--font-sans) — UI and body text</p>
-    <p style="font-family:var(--font-serif);margin:0;">var(--font-serif) — display headings</p>
-    <p style="font-family:var(--font-mono);margin:0;">var(--font-mono) — code and chips</p>
-  </div>
-  <ExampleCode>{"<p style=\"font-family:var(--font-serif)\">Display headings</p>"}</ExampleCode>
-</Example>
-
-<Example previewClass="preview preview-left">
-  <ExampleLabel>Prose Composition</ExampleLabel>
-  <ExampleHint>All typography classes combined in a full prose layout — matching the shadcn/ui demo.</ExampleHint>
-  <div style="max-width:38rem;margin:0 auto;">
-    <h1 class="h1" style="text-align:center;">Taxing Laughter: The Joke Tax Chronicles</h1>
-    <p class="p">Once upon a time, in a far-off land, there was a very lazy king who spent all day lounging on his throne. One day, his advisors came to him with a problem: the kingdom was running out of money.</p>
-    <h2 class="h2">The King's Plan</h2>
-    <p class="p">The king thought long and hard, and finally came up with <a href="#" style="text-decoration:underline;text-underline-offset:4px;">a brilliant plan</a>: he would tax the jokes in the kingdom.</p>
-    <blockquote class="blockquote">
-      <p>"After all," he said, "everyone enjoys a good joke, so it's only fair that they should pay for the privilege."</p>
-    </blockquote>
-    <h3 class="h3">The Joke Tax</h3>
-    <p class="p">The king's subjects were not amused. They grumbled and complained, but the king was firm:</p>
-    <ul class="list" style="margin:1.5rem 0 1.5rem 1.5rem;list-style:disc;">
-      <li style="margin-top:0.5rem;">1st level of puns: 5 gold coins</li>
-      <li style="margin-top:0.5rem;">2nd level of jokes: 10 gold coins</li>
-      <li style="margin-top:0.5rem;">3rd level of one-liners: 20 gold coins</li>
-    </ul>
-    <p class="p">As a result, people stopped telling jokes, and the kingdom fell into a gloom. But there was one person who refused to let the king's foolishness get him down: a court jester named Jokester.</p>
-    <h3 class="h3">Jokester's Revolt</h3>
-    <p class="p">Jokester began sneaking into the castle in the middle of the night and leaving jokes all over the place: under the king's pillow, in his soup, even in the royal toilet. The king was furious, but he couldn't seem to stop Jokester.</p>
-    <p class="p">And then, one day, the people of the kingdom discovered that the jokes left by Jokester were so funny that they couldn't help but laugh. And once they started laughing, they couldn't stop.</p>
-    <h3 class="h3">The People's Rebellion</h3>
-    <p class="p">The people of the kingdom, feeling uplifted by the laughter, started to tell jokes and puns again, and soon the entire kingdom was in on the joke.</p>
-    <p class="p">The king, seeing how much happier his subjects were, realized the error of his ways and repealed the joke tax. Jokester was declared a hero, and the kingdom lived happily ever after.</p>
-    <p class="p">The moral of the story is: never underestimate the power of a good laugh and always be careful of bad ideas.</p>
-  </div>
-  <ExampleCode>{"<h1 class=\"h1\" style=\"text-align:center;\">Taxing Laughter</h1>\n<p class=\"p\">Once upon a time...</p>\n<h2 class=\"h2\">The King's Plan</h2>\n<p class=\"p\">The king thought long and hard...</p>\n<blockquote class=\"blockquote\">\n  <p>\"After all,\" he said...</p>\n</blockquote>\n<h3 class=\"h3\">The Joke Tax</h3>\n<ul class=\"list\">\n  <li>1st level of puns: 5 gold coins</li>\n  <li>2nd level of jokes: 10 gold coins</li>\n</ul>"}</ExampleCode>
-</Example>
-
-<Example previewClass="preview preview-left">
-  <ExampleLabel>RTL support</ExampleLabel>
-  <ExampleHint>Blockquotes use logical properties (<code>border-inline-start</code>, <code>padding-inline-start</code>) — they flip automatically in RTL contexts.</ExampleHint>
-  <div dir="rtl" style="max-width:32rem;margin:0 auto;">
-    <h3 class="h3" style="margin-bottom:0.75rem;">ضريبة النكتة</h3>
-    <p class="p" style="margin-top:0;">فكر الملك طويلاً وبجد، وأخيراً توصل إلى خطة عبقرية: سيفرض ضريبة على النكات في المملكة.</p>
-    <blockquote class="blockquote">
-      <p>"في النهاية،" قال، "الجميع يستمتع بنكتة جيدة، لذا من العدل أن يدفعوا مقابل هذا الامتياز."</p>
-    </blockquote>
-  </div>
-  <ExampleCode>{"<div dir=\"rtl\">\n  <h3 class=\"h3\">ضريبة النكتة</h3>\n  <p class=\"p\">فكر الملك طويلاً وبجد...</p>\n  <blockquote class=\"blockquote\">\n    <p>\"في النهاية،\" قال...</p>\n  </blockquote>\n</div>"}</ExampleCode>
-</Example>
+</div>
+```
 
 <SourceFiles component="typography" section="css" />
 

@@ -26,5 +26,10 @@
     <nav class="pagination" id="pg-compact" data-density="compact" aria-label="Density compact" style="margin-top:1rem;"><ol class="pagination-list"><li><a class="pagination-link" href="#">1</a></li><li><a class="pagination-link pagination-active" aria-current="page" href="#">2</a></li><li><a class="pagination-link" href="#">3</a></li></ol></nav>
     <nav class="pagination" id="pg-comfortable" data-density="comfortable" aria-label="Density comfortable" style="margin-top:1rem;"><ol class="pagination-list"><li><a class="pagination-link" href="#">1</a></li><li><a class="pagination-link pagination-active" aria-current="page" href="#">2</a></li><li><a class="pagination-link" href="#">3</a></li></ol></nav>
     <nav class="pagination" id="pg-spacious" data-density="spacious" aria-label="Density spacious" style="margin-top:1rem;"><ol class="pagination-list"><li><a class="pagination-link" href="#">1</a></li><li><a class="pagination-link pagination-active" aria-current="page" href="#">2</a></li><li><a class="pagination-link" href="#">3</a></li></ol></nav>
+    <!-- data-driven live demo for the runtime (pagination.ts): the window is
+         rendered by the script from these attributes -->
+    <nav class="pagination" id="pg-live" data-active-page="3" data-min-page="1" data-max-page="20" data-page-display-count="3" aria-label="Live pagination" style="margin-top:1.5rem;"><ul class="pagination-list"><li><a class="pagination-prev" href="#" aria-label="Go to previous page">Previous</a></li><li><a class="pagination-next" href="#" aria-label="Go to next page">Next</a></li></ul></nav>
+  <script type="module" src="/dist/components/core.js"></script>
+  <script type="module" src="/dist/components/pagination/pagination.js"></script>
 </body>
 </html>

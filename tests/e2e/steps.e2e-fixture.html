@@ -44,5 +44,10 @@
     <ol class="steps" id="st-compact" data-density="compact" style="max-width:24rem;margin-top:1rem;"><li class="step" data-status="complete"><div class="step-indicator">1</div><div class="step-content"><p class="step-title">One</p><p class="step-description">d</p></div></li><li class="step" data-status="current" aria-current="step"><div class="step-indicator">2</div><div class="step-content"><p class="step-title">Two</p><p class="step-description">d</p></div></li></ol>
     <ol class="steps" id="st-comfortable" data-density="comfortable" style="max-width:24rem;margin-top:1rem;"><li class="step" data-status="complete"><div class="step-indicator">1</div><div class="step-content"><p class="step-title">One</p><p class="step-description">d</p></div></li><li class="step" data-status="current" aria-current="step"><div class="step-indicator">2</div><div class="step-content"><p class="step-title">Two</p><p class="step-description">d</p></div></li></ol>
     <ol class="steps" id="st-spacious" data-density="spacious" style="max-width:24rem;margin-top:1rem;"><li class="step" data-status="complete"><div class="step-indicator">1</div><div class="step-content"><p class="step-title">One</p><p class="step-description">d</p></div></li><li class="step" data-status="current" aria-current="step"><div class="step-indicator">2</div><div class="step-content"><p class="step-title">Two</p><p class="step-description">d</p></div></li></ol>
+    <!-- data-driven live demo for the runtime (steps.ts): statuses are mapped
+         from data-active-step -->
+    <ol class="steps" id="st-live" data-active-step="2" style="max-width:24rem;margin-top:1.5rem;"><li class="step"><div class="step-indicator">1</div><div class="step-content"><p class="step-title">One</p></div></li><li class="step"><div class="step-indicator">2</div><div class="step-content"><p class="step-title">Two</p></div></li><li class="step"><div class="step-indicator">3</div><div class="step-content"><p class="step-title">Three</p></div></li></ol>
+  <script type="module" src="/dist/components/core.js"></script>
+  <script type="module" src="/dist/components/steps/steps.js"></script>
 </body>
 </html>

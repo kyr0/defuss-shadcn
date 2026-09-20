@@ -203,6 +203,9 @@
     var statePanel = root.querySelector('[data-panel="state"]');
     var codePanel = root.querySelector('[data-panel="code"]');
     var minHeight = Math.max(MIN_FRAME_HEIGHT, Number(root.dataset.height) || 0);
+    // stage chrome from the fence (previewStyle="…"): body-level layout for the
+    // demo area (flex centering, padding…) — chrome, never part of the source
+    var previewStyle = root.dataset.previewStyle || '';
     var original = src.value;
     var schema = null;
     try {
@@ -231,6 +234,10 @@
             return '<link rel="stylesheet" href="' + u + '" />';
           })
           .join('\n');
+        // previewStyle (the old <Example previewStyle>) rides INSIDE the chrome
+        // body rule (marker below) — same rule, later declarations win, so
+        // display:flex overrides the chrome's flow-root. The old .preview div
+        // was the demo stage; the sandbox body IS the stage.
         // all.js ships import-free (plan §2.3); it runs as a CLASSIC inline
         // script at END OF BODY in the opaque-origin sandbox — a module src=
         // would need CORS headers static hosts don't send, and in <head> the
@@ -250,6 +257,7 @@
             dark ? '<html lang="en" class="dark" style="color-scheme:dark">' : '<html lang="en">',
           )
           .replace('<!--CE_STYLES-->', () => styles)
+          .replace('/*CE_BODY_STYLE*/', () => previewStyle.replace(/\s*[{}]\s*/g, ''))
           .replace('<!--CE_SOURCE-->', () => source)
           .replace('<!--CE_CH-->', () => JSON.stringify(ch))
           .replace('<!--CE_SCHEMA-->', () => (schema ? JSON.stringify(schema).replace(/</g, '\\u003c') : '{}'))
@@ -278,6 +286,9 @@
 
     // -- state controls (generated from schema ONLY — plan §10) -------------
     function buildControls() {
+      // no State tab for this card (no schema / no states / stateTab:false) —
+      // the SSR shell simply omits the panel
+      if (!statePanel) return;
       statePanel.textContent = '';
       if (!schema || !Object.keys(schema.states).length) {
         var p = document.createElement('p');
@@ -487,7 +498,7 @@
           t.setAttribute('aria-pressed', String(t === tab));
         });
         codePanel.hidden = which !== 'code';
-        statePanel.hidden = which !== 'state';
+        if (statePanel) statePanel.hidden = which !== 'state';
         if (which === 'state') api.send('read-state', {});
       });
     });

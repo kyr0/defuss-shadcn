@@ -4,7 +4,7 @@ description: "Badge, headline, description and CTAs — a centered copy block; p
 slug: "hero"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -36,21 +36,16 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first previewStyle="align-items:stretch;">
-  <ExampleLabel>Default</ExampleLabel>
-  <ExampleHint>Copy-only block; the title steps up to 60px at wide container widths.</ExampleHint>
-  <section class="mk-hero" style="width:100%">
-    <div class="mk-hero-copy">
-      <span class="mk-hero-badge">New features released</span>
-      <h1 class="mk-hero-title">Make Better Decisions, With Ease</h1>
-      <p class="mk-hero-desc">Acme's personal AI helps you cut through the noise, speed up delivery, and stay focused without switching contexts.</p>
-      <div class="mk-hero-actions">
-        <button type="button" class="btn">Get Started</button>
-      </div>
-    </div>
-  </section>
-  <ExampleCode>{"<section class=\"mk-hero\" style=\"width:100%\">\n  <div class=\"mk-hero-copy\">\n    <span class=\"mk-hero-badge\">New features released</span>\n    <h1 class=\"mk-hero-title\">Make Better Decisions, With Ease</h1>\n    <p class=\"mk-hero-desc\">Acme's personal AI helps you cut through the noise, speed up delivery, and stay focused without switching contexts.</p>\n    <div class=\"mk-hero-actions\"><button type=\"button\" class=\"btn\" >Get Started</button></div>\n  </div>\n</section>"}</ExampleCode>
-</Example>
+```html example label="Default" hint="Copy-only block; the title steps up to 60px at wide container widths." previewStyle="align-items:stretch;"
+<section class="mk-hero" style="width:100%">
+  <div class="mk-hero-copy">
+    <span class="mk-hero-badge">New features released</span>
+    <h1 class="mk-hero-title">Make Better Decisions, With Ease</h1>
+    <p class="mk-hero-desc">Acme's personal AI helps you cut through the noise, speed up delivery, and stay focused without switching contexts.</p>
+    <div class="mk-hero-actions"><button type="button" class="btn" >Get Started</button></div>
+  </div>
+</section>
+```
 
 <SourceFiles component="hero" section="css" />
 

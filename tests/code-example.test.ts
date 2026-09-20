@@ -102,7 +102,7 @@ describe('CodeExample (input page)', () => {
       '<input data-example-root class="input" value="initial" />\n' +
         '<script type="module">\n' +
         "  document.querySelector('[data-example-root]').value = 'js-edited';\n" +
-        '<\/script>',
+        '</script>',
     );
     await waitForObserved(card, 'value', 'js-edited');
   });

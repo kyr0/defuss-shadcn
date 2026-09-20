@@ -4,7 +4,7 @@ description: "Insights teasers: 3:2 media, category + read-time meta, clamped ex
 slug: "blog"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -51,95 +51,53 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first previewStyle="align-items:stretch;">
-  <ExampleLabel>Default</ExampleLabel>
-  <ExampleHint>Each card is one link; the whole card is clickable.</ExampleHint>
-  <section class="mk-blog" style="width:100%">
-    <div class="mk-blog-head">
-      <div class="mk-blog-head-copy">
-        <span class="mk-blog-eyebrow">Blog</span>
-        <h2 class="mk-blog-title">Acme Insights</h2>
-        <p class="mk-blog-desc">Insights, tips, and stories to help you work smarter and finish faster.</p>
+```html example label="Default" hint="Each card is one link; the whole card is clickable." previewStyle="align-items:stretch;"
+<section class="mk-blog" style="width:100%">
+  <div class="mk-blog-head">
+    <div class="mk-blog-head-copy">
+      <span class="mk-blog-eyebrow">Blog</span>
+      <h2 class="mk-blog-title">Acme Insights</h2>
+      <p class="mk-blog-desc">Insights, tips, and stories to help you work smarter and finish faster.</p>
+    </div>
+    <a href="#" class="btn mk-blog-see-all" data-variant="secondary">See all</a>
+  </div>
+  <div class="mk-blog-grid">
+    <a href="#" class="mk-blog-card">
+      <figure class="mk-blog-media"><img alt="Team in flow at a whiteboard" src="images/mk-wide.png" ></img></figure>
+      <div class="mk-blog-body">
+        <div class="mk-blog-meta"><span class="mk-blog-category">Productivity</span><span class="mk-blog-read">8 min read</span></div>
+        <div class="mk-blog-copy">
+          <h3 class="mk-blog-card-title">5 Ways AI Helps Teams Stay in Flow</h3>
+          <p class="mk-blog-excerpt">Discover simple ways to cut distractions and keep your team focused on meaningful work.</p>
+        </div>
+        <div class="mk-blog-author"><span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt="" ></img></span><div class="flex flex-col"><span class="mk-blog-author-name">Sophie Tan</span><time class="mk-blog-author-date" datetime="2025-09-04">4 Sept, 2025</time></div></div>
       </div>
-      <a href="#" class="btn mk-blog-see-all" data-variant="secondary">See all</a>
-    </div>
-    <div class="mk-blog-grid">
-      <a href="#" class="mk-blog-card">
-        <figure class="mk-blog-media">
-          <img alt="Team in flow at a whiteboard" src="images/mk-wide.png" />
-        </figure>
-        <div class="mk-blog-body">
-          <div class="mk-blog-meta">
-            <span class="mk-blog-category">Productivity</span>
-            <span class="mk-blog-read">8 min read</span>
-          </div>
-          <div class="mk-blog-copy">
-            <h3 class="mk-blog-card-title">5 Ways AI Helps Teams Stay in Flow</h3>
-            <p class="mk-blog-excerpt">Discover simple ways to cut distractions and keep your team focused on meaningful work.</p>
-          </div>
-          <div class="mk-blog-author">
-            <span class="avatar">
-              <img class="avatar-image" src="images/mk-portrait.png" alt />
-            </span>
-            <div class="flex flex-col">
-              <span class="mk-blog-author-name">Sophie Tan</span>
-              <time class="mk-blog-author-date" datetime="2025-09-04">4 Sept, 2025</time>
-            </div>
-          </div>
+    </a>
+    <a href="#" class="mk-blog-card">
+      <figure class="mk-blog-media"><img alt="Focus and context switching illustration" src="images/mk-wide2.png" ></img></figure>
+      <div class="mk-blog-body">
+        <div class="mk-blog-meta"><span class="mk-blog-category">Workflow</span><span class="mk-blog-read">7 min read</span></div>
+        <div class="mk-blog-copy">
+          <h3 class="mk-blog-card-title">The End of Context Switching</h3>
+          <p class="mk-blog-excerpt">How AI keeps your focus where it matters and removes the friction between your tools.</p>
         </div>
-      </a>
-      <a href="#" class="mk-blog-card">
-        <figure class="mk-blog-media">
-          <img alt="Focus and context switching illustration" src="images/mk-wide2.png" />
-        </figure>
-        <div class="mk-blog-body">
-          <div class="mk-blog-meta">
-            <span class="mk-blog-category">Workflow</span>
-            <span class="mk-blog-read">7 min read</span>
-          </div>
-          <div class="mk-blog-copy">
-            <h3 class="mk-blog-card-title">The End of Context Switching</h3>
-            <p class="mk-blog-excerpt">How AI keeps your focus where it matters and removes the friction between your tools.</p>
-          </div>
-          <div class="mk-blog-author">
-            <span class="avatar">
-              <img class="avatar-image" src="images/mk-portrait2.png" alt />
-            </span>
-            <div class="flex flex-col">
-              <span class="mk-blog-author-name">Hannah Lee</span>
-              <time class="mk-blog-author-date" datetime="2025-09-04">4 Sept, 2025</time>
-            </div>
-          </div>
+        <div class="mk-blog-author"><span class="avatar"><img class="avatar-image" src="images/mk-portrait2.png" alt="" ></img></span><div class="flex flex-col"><span class="mk-blog-author-name">Hannah Lee</span><time class="mk-blog-author-date" datetime="2025-09-04">4 Sept, 2025</time></div></div>
+      </div>
+    </a>
+    <a href="#" class="mk-blog-card">
+      <figure class="mk-blog-media"><img alt="Small team winning with AI" src="images/mk-wide3.png" ></img></figure>
+      <div class="mk-blog-body">
+        <div class="mk-blog-meta"><span class="mk-blog-category">Startups</span><span class="mk-blog-read">3 min read</span></div>
+        <div class="mk-blog-copy">
+          <h3 class="mk-blog-card-title">Why Small Teams Win Big with AI</h3>
+          <p class="mk-blog-excerpt">Lean setups, smarter workflows, and faster delivery for teams that punch above their weight.</p>
         </div>
-      </a>
-      <a href="#" class="mk-blog-card">
-        <figure class="mk-blog-media">
-          <img alt="Small team winning with AI" src="images/mk-wide3.png" />
-        </figure>
-        <div class="mk-blog-body">
-          <div class="mk-blog-meta">
-            <span class="mk-blog-category">Startups</span>
-            <span class="mk-blog-read">3 min read</span>
-          </div>
-          <div class="mk-blog-copy">
-            <h3 class="mk-blog-card-title">Why Small Teams Win Big with AI</h3>
-            <p class="mk-blog-excerpt">Lean setups, smarter workflows, and faster delivery for teams that punch above their weight.</p>
-          </div>
-          <div class="mk-blog-author">
-            <span class="avatar">
-              <img class="avatar-image" src="images/mk-portrait.png" alt />
-            </span>
-            <div class="flex flex-col">
-              <span class="mk-blog-author-name">Alex Morgan</span>
-              <time class="mk-blog-author-date" datetime="2025-09-04">4 Sept, 2025</time>
-            </div>
-          </div>
-        </div>
-      </a>
-    </div>
-  </section>
-  <ExampleCode>{"<section class=\"mk-blog\" style=\"width:100%\">\n  <div class=\"mk-blog-head\">\n    <div class=\"mk-blog-head-copy\">\n      <span class=\"mk-blog-eyebrow\">Blog</span>\n      <h2 class=\"mk-blog-title\">Acme Insights</h2>\n      <p class=\"mk-blog-desc\">Insights, tips, and stories to help you work smarter and finish faster.</p>\n    </div>\n    <a href=\"#\" class=\"btn mk-blog-see-all\" data-variant=\"secondary\">See all</a>\n  </div>\n  <div class=\"mk-blog-grid\">\n    <a href=\"#\" class=\"mk-blog-card\">\n      <figure class=\"mk-blog-media\"><img alt=\"Team in flow at a whiteboard\" src=\"images/mk-wide.png\" /></figure>\n      <div class=\"mk-blog-body\">\n        <div class=\"mk-blog-meta\"><span class=\"mk-blog-category\">Productivity</span><span class=\"mk-blog-read\">8 min read</span></div>\n        <div class=\"mk-blog-copy\">\n          <h3 class=\"mk-blog-card-title\">5 Ways AI Helps Teams Stay in Flow</h3>\n          <p class=\"mk-blog-excerpt\">Discover simple ways to cut distractions and keep your team focused on meaningful work.</p>\n        </div>\n        <div class=\"mk-blog-author\"><span class=\"avatar\"><img class=\"avatar-image\" src=\"images/mk-portrait.png\" alt=\"\" /></span><div class=\"flex flex-col\"><span class=\"mk-blog-author-name\">Sophie Tan</span><time class=\"mk-blog-author-date\" datetime=\"2025-09-04\">4 Sept, 2025</time></div></div>\n      </div>\n    </a>\n    <a href=\"#\" class=\"mk-blog-card\">\n      <figure class=\"mk-blog-media\"><img alt=\"Focus and context switching illustration\" src=\"images/mk-wide2.png\" /></figure>\n      <div class=\"mk-blog-body\">\n        <div class=\"mk-blog-meta\"><span class=\"mk-blog-category\">Workflow</span><span class=\"mk-blog-read\">7 min read</span></div>\n        <div class=\"mk-blog-copy\">\n          <h3 class=\"mk-blog-card-title\">The End of Context Switching</h3>\n          <p class=\"mk-blog-excerpt\">How AI keeps your focus where it matters and removes the friction between your tools.</p>\n        </div>\n        <div class=\"mk-blog-author\"><span class=\"avatar\"><img class=\"avatar-image\" src=\"images/mk-portrait2.png\" alt=\"\" /></span><div class=\"flex flex-col\"><span class=\"mk-blog-author-name\">Hannah Lee</span><time class=\"mk-blog-author-date\" datetime=\"2025-09-04\">4 Sept, 2025</time></div></div>\n      </div>\n    </a>\n    <a href=\"#\" class=\"mk-blog-card\">\n      <figure class=\"mk-blog-media\"><img alt=\"Small team winning with AI\" src=\"images/mk-wide3.png\" /></figure>\n      <div class=\"mk-blog-body\">\n        <div class=\"mk-blog-meta\"><span class=\"mk-blog-category\">Startups</span><span class=\"mk-blog-read\">3 min read</span></div>\n        <div class=\"mk-blog-copy\">\n          <h3 class=\"mk-blog-card-title\">Why Small Teams Win Big with AI</h3>\n          <p class=\"mk-blog-excerpt\">Lean setups, smarter workflows, and faster delivery for teams that punch above their weight.</p>\n        </div>\n        <div class=\"mk-blog-author\"><span class=\"avatar\"><img class=\"avatar-image\" src=\"images/mk-portrait.png\" alt=\"\" /></span><div class=\"flex flex-col\"><span class=\"mk-blog-author-name\">Alex Morgan</span><time class=\"mk-blog-author-date\" datetime=\"2025-09-04\">4 Sept, 2025</time></div></div>\n      </div>\n    </a>\n  </div>\n</section>"}</ExampleCode>
-</Example>
+        <div class="mk-blog-author"><span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt="" ></img></span><div class="flex flex-col"><span class="mk-blog-author-name">Alex Morgan</span><time class="mk-blog-author-date" datetime="2025-09-04">4 Sept, 2025</time></div></div>
+      </div>
+    </a>
+  </div>
+</section>
+```
 
 <SourceFiles component="blog" section="css" />
 

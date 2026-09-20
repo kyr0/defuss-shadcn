@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "name": "radio",
+  "states": {
+    "disabled": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".radio"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "disabled"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "disabled"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "invalid": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".radio"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "aria-invalid"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "aria-invalid"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

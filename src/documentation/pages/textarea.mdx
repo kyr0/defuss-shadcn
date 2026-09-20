@@ -4,7 +4,7 @@ description: "Textarea component — multi-line text input with auto-growing via
 slug: "textarea"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -37,35 +37,33 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first>
-  <ExampleLabel>Default</ExampleLabel>
-  <ExampleHint>Auto-growing textarea with placeholder.</ExampleHint>
-  <div style="width:100%;max-width:24rem;">
-    <label class="label" for="d-msg">Message</label>
-    <textarea class="textarea" id="d-msg" placeholder="Type your message here...">{""}</textarea>
-  </div>
-  <ExampleCode>{"<textarea class=\"textarea\" placeholder=\"Type your message...\"></textarea>"}</ExampleCode>
-</Example>
+```html example label="Default" hint="Auto-growing textarea with placeholder."
+<textarea class="textarea" placeholder="Type your message..."></textarea>
+```
 
-<Example>
-  <ExampleLabel>Disabled</ExampleLabel>
-  <ExampleHint>Non-interactive textarea.</ExampleHint>
-  <div style="width:100%;max-width:24rem;">
-    <textarea class="textarea" disabled placeholder="Disabled textarea">{""}</textarea>
-  </div>
-  <ExampleCode>{"<textarea class=\"textarea\" disabled></textarea>"}</ExampleCode>
-</Example>
+```html example label="Disabled" hint="Non-interactive textarea."
+<textarea class="textarea" disabled></textarea>
+```
 
-<Example>
-  <ExampleLabel>With description</ExampleLabel>
-  <ExampleHint>Textarea with label and helper text.</ExampleHint>
-  <div style="width:100%;max-width:24rem;">
-    <label class="label" for="d-bio">Bio</label>
-    <textarea class="textarea" id="d-bio" placeholder="Tell us about yourself..." aria-describedby="d-bio-desc">{""}</textarea>
-    <p class="field-description" id="d-bio-desc">You can use markdown in your bio.</p>
-  </div>
-  <ExampleCode>{"<label class=\"label\" for=\"bio\">Bio</label>\n<textarea class=\"textarea\" id=\"bio\" placeholder=\"Tell us...\" aria-describedby=\"bio-desc\"></textarea>\n<p class=\"field-description\" id=\"bio-desc\">You can use markdown.</p>"}</ExampleCode>
-</Example>
+```html example label="With description" hint="Textarea with label and helper text."
+<label class="label" for="bio">Bio</label>
+<textarea class="textarea" id="bio" placeholder="Tell us..." aria-describedby="bio-desc"></textarea>
+<p class="field-description" id="bio-desc">You can use markdown.</p>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground">Machine contract — verified against <a href="../schemas/textarea.schema.json"><code>textarea.schema.json</code></a> by <code>bun run verify</code>:</p>
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `value` | `string` | `—` | `""` | Live textarea content (`input.value`), typed or edited from the panel. |
+| `disabled` | `boolean` | `true`, `false` | `false` | Interaction off (native `disabled` attribute). |
+| `required` | `boolean` | `true`, `false` | `false` | Post-validation marks the field invalid (`:user-invalid`). |
+| `invalid` | `boolean` | `true`, `false` | `false` | Manual invalid flag (`aria-invalid="true"`). |
+```
+
+</StatesSection>
 
 <SourceFiles component="textarea" section="css" />
 

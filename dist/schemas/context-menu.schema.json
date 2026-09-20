@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "name": "context-menu",
+  "stateTab": false,
   "states": {
     "open": {
       "type": "boolean",

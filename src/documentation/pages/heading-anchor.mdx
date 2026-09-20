@@ -4,7 +4,7 @@ description: "Heading Anchor component — a quiet § permalink before or after 
 slug: "heading-anchor"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -45,32 +45,23 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first>
-  <ExampleLabel>Before the heading (default)</ExampleLabel>
-  <ExampleHint>The anchor rides the heading's baseline, quiet until hovered.</ExampleHint>
-  <h3 id="ha-demo-before" style="font-family:var(--font-display);font-size:1.25rem;margin:0;"><a class="heading-anchor" href="#ha-demo-before" aria-label="Link to section: Deep-linkable heading">§</a> Deep-linkable heading</h3>
-  <ExampleCode>{"<h3 id=\"tokens\">\n  <a class=\"heading-anchor\" href=\"#tokens\" aria-label=\"Link to section: Tokens\">§</a>\n  Tokens\n</h3>"}</ExampleCode>
-</Example>
+```html example label="Before the heading (default)" hint="The anchor rides the heading's baseline, quiet until hovered."
+<h3 id="tokens">
+  <a class="heading-anchor" href="#tokens" aria-label="Link to section: Tokens">§</a>
+  Tokens
+</h3>
+```
 
-<Example>
-  <ExampleLabel>After the heading</ExampleLabel>
-  <ExampleHint><code>data-placement="after"</code> swaps the margin side.</ExampleHint>
-  <h3 id="ha-demo-after" style="font-family:var(--font-display);font-size:1.25rem;margin:0;">Deep-linkable heading <a class="heading-anchor" href="#ha-demo-after" data-placement="after" aria-label="Link to section: Deep-linkable heading">§</a></h3>
-  <ExampleCode>{"<h3 id=\"tokens\">\n  Tokens\n  <a class=\"heading-anchor\" href=\"#tokens\" data-placement=\"after\" aria-label=\"Link to section: Tokens\">§</a>\n</h3>"}</ExampleCode>
-</Example>
+```html example label="After the heading" hint="data-placement='after' swaps the margin side."
+<h3 id="tokens">
+  Tokens
+  <a class="heading-anchor" href="#tokens" data-placement="after" aria-label="Link to section: Tokens">§</a>
+</h3>
+```
 
-<Example>
-  <ExampleLabel>Sizes</ExampleLabel>
-  <ExampleHint><code>data-size</code> pins the glyph size explicitly; without it the glyph inherits the heading's own font size (recommended — it then tracks the heading automatically). The glyph always inherits the heading's font family — <code>var(--font-sans)</code>, <code>var(--font-serif)</code> and <code>var(--font-mono)</code> all work.</ExampleHint>
-  <div style="display:flex;flex-direction:column;gap:0.5rem;">
-    <p style="font-size:0.75rem;margin:0;"><a class="heading-anchor" data-size="xs" href="#ha-size-xs" id="ha-size-xs" aria-label="Link to section: xs">§</a> xs — caption heading</p>
-    <p style="font-size:0.875rem;margin:0;"><a class="heading-anchor" data-size="sm" href="#ha-size-sm" id="ha-size-sm" aria-label="Link to section: sm">§</a> sm — small heading</p>
-    <p style="font-size:1rem;margin:0;"><a class="heading-anchor" data-size="md" href="#ha-size-md" id="ha-size-md" aria-label="Link to section: md">§</a> md — default heading</p>
-    <p style="font-size:1.125rem;margin:0;"><a class="heading-anchor" data-size="lg" href="#ha-size-lg" id="ha-size-lg" aria-label="Link to section: lg">§</a> lg — section heading</p>
-    <p style="font-size:1.25rem;margin:0;"><a class="heading-anchor" data-size="xl" href="#ha-size-xl" id="ha-size-xl" aria-label="Link to section: xl">§</a> xl — page title</p>
-  </div>
-  <ExampleCode>{"<a class=\"heading-anchor\" data-size=\"sm\" href=\"#intro\" aria-label=\"Link to section: Intro\">§</a>"}</ExampleCode>
-</Example>
+```html example label="Sizes" hint="data-size pins the glyph size explicitly; without it the glyph inherits the heading's own font size (recommended — it then tracks the heading automatically). The glyph always inherits the heading's font family — var(--font-sans), var(--font-serif) and var(--font-mono) all work."
+<a class="heading-anchor" data-size="sm" href="#intro" aria-label="Link to section: Intro">§</a>
+```
 
 <SourceFiles component="heading-anchor" />
 

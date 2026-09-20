@@ -4,7 +4,7 @@ description: "Switch component — toggle switches built on native checkboxes."
 slug: "switch"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -65,69 +65,63 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first>
-  <ExampleLabel>Default</ExampleLabel>
-  <ExampleHint>Toggle switch with label.</ExampleHint>
-  <div class="switch-item">
-    <input class="switch" type="checkbox" role="switch" id="d-airplane" />
-    <label for="d-airplane">Airplane Mode</label>
-  </div>
-  <ExampleCode>{"<div class=\"switch-item\">\n  <input class=\"switch\" type=\"checkbox\" role=\"switch\" id=\"airplane\">\n  <label for=\"airplane\">Airplane Mode</label>\n</div>"}</ExampleCode>
-</Example>
+```html example label="Default" hint="Toggle switch with label."
+<div class="switch-item">
+  <input class="switch" type="checkbox" role="switch" id="airplane">
+  <label for="airplane">Airplane Mode</label>
+</div>
+```
 
-<Example>
-  <ExampleLabel>With Description</ExampleLabel>
-  <ExampleHint>Switch with label and description text using <code>.switch-item-block</code>.</ExampleHint>
-  <div class="switch-item-block" style="max-width:22rem;">
-    <label for="d-share">Share across devices</label>
-    <input class="switch" type="checkbox" role="switch" id="d-share" checked />
-    <span class="switch-description">Focus is shared across devices, and turns off when you leave the app.</span>
-  </div>
-  <ExampleCode>{"<div class=\"switch-item-block\">\n  <label for=\"share\">Share across devices</label>\n  <input class=\"switch\" type=\"checkbox\" role=\"switch\" id=\"share\" checked>\n  <span class=\"switch-description\">Focus is shared across devices.</span>\n</div>"}</ExampleCode>
-</Example>
+```html example label="With Description" hint="Switch with label and description text using .switch-item-block."
+<div class="switch-item-block">
+  <label for="share">Share across devices</label>
+  <input class="switch" type="checkbox" role="switch" id="share" checked>
+  <span class="switch-description">Focus is shared across devices.</span>
+</div>
+```
 
-<Example>
-  <ExampleLabel>Sizes</ExampleLabel>
-  <ExampleHint>The full five-step scale via <code>data-size</code> — the default equals <code>md</code>.</ExampleHint>
-  <div style="display:flex;flex-direction:column;gap:0.75rem;align-items:flex-start;">
-    <div class="switch-item"><input class="switch" type="checkbox" role="switch" id="d-xs-sw" data-size="xs" /><label for="d-xs-sw" style="font-size:0.75rem;">Extra small</label></div>
-    <div class="switch-item"><input class="switch" type="checkbox" role="switch" id="d-sm-sw" data-size="sm" /><label for="d-sm-sw" style="font-size:0.8125rem;">Small</label></div>
-    <div class="switch-item"><input class="switch" type="checkbox" role="switch" id="d-md-sw" data-size="md" checked /><label for="d-md-sw" style="font-size:0.875rem;">Medium (default)</label></div>
-    <div class="switch-item"><input class="switch" type="checkbox" role="switch" id="d-lg-sw" data-size="lg" /><label for="d-lg-sw" style="font-size:1rem;">Large</label></div>
-    <div class="switch-item"><input class="switch" type="checkbox" role="switch" id="d-xl-sw" data-size="xl" /><label for="d-xl-sw" style="font-size:1.125rem;">Extra large</label></div>
-  </div>
-  <ExampleCode>{"<input class=\"switch\" data-size=\"xs\" type=\"checkbox\" role=\"switch\">\n<input class=\"switch\" data-size=\"sm\" type=\"checkbox\" role=\"switch\">\n<input class=\"switch\" data-size=\"md\" type=\"checkbox\" role=\"switch\">\n<input class=\"switch\" data-size=\"lg\" type=\"checkbox\" role=\"switch\">\n<input class=\"switch\" data-size=\"xl\" type=\"checkbox\" role=\"switch\">"}</ExampleCode>
-</Example>
+```html example label="Sizes" hint="The full five-step scale via data-size — the default equals md."
+<input class="switch" data-size="xs" type="checkbox" role="switch">
+<input class="switch" data-size="sm" type="checkbox" role="switch">
+<input class="switch" data-size="md" type="checkbox" role="switch">
+<input class="switch" data-size="lg" type="checkbox" role="switch">
+<input class="switch" data-size="xl" type="checkbox" role="switch">
+```
 
-<Example>
-  <ExampleLabel>Checked by default</ExampleLabel>
-  <div class="switch-item">
-    <input class="switch" type="checkbox" role="switch" id="d-notif" checked />
-    <label for="d-notif">Notifications</label>
-  </div>
-  <ExampleCode>{"<div class=\"switch-item\">\n  <input class=\"switch\" type=\"checkbox\" role=\"switch\" checked>\n  <label>Notifications</label>\n</div>"}</ExampleCode>
-</Example>
+```html example label="Checked by default"
+<div class="switch-item">
+  <input class="switch" type="checkbox" role="switch" checked>
+  <label>Notifications</label>
+</div>
+```
 
-<Example>
-  <ExampleLabel>Disabled</ExampleLabel>
-  <ExampleHint>Disabled state — <code>.switch-item</code> auto-dims the label via <code>:has()</code>.</ExampleHint>
-  <div class="switch-item">
-    <input class="switch" type="checkbox" role="switch" id="d-dis-sw" disabled />
-    <label for="d-dis-sw">Disabled</label>
-  </div>
-  <ExampleCode>{"<div class=\"switch-item\">\n  <input class=\"switch\" type=\"checkbox\" role=\"switch\" disabled>\n  <label>Disabled</label>\n</div>"}</ExampleCode>
-</Example>
+```html example label="Disabled" hint="Disabled state — .switch-item auto-dims the label via :has()."
+<div class="switch-item">
+  <input class="switch" type="checkbox" role="switch" disabled>
+  <label>Disabled</label>
+</div>
+```
 
-<Example>
-  <ExampleLabel>Invalid</ExampleLabel>
-  <ExampleHint>Validation error state with <code>aria-invalid="true"</code>.</ExampleHint>
-  <div class="switch-item-block" style="max-width:22rem;">
-    <label for="d-terms">Accept terms and conditions</label>
-    <input class="switch" type="checkbox" role="switch" id="d-terms" aria-invalid="true" />
-    <span class="switch-description" style="color:var(--destructive);">You must accept the terms and conditions to continue.</span>
-  </div>
-  <ExampleCode>{"<div class=\"switch-item-block\">\n  <label for=\"terms\">Accept terms and conditions</label>\n  <input class=\"switch\" type=\"checkbox\" role=\"switch\" id=\"terms\" aria-invalid=\"true\">\n  <span class=\"switch-description\" style=\"color:var(--destructive);\">You must accept the terms.</span>\n</div>"}</ExampleCode>
-</Example>
+```html example label="Invalid" hint="Validation error state with aria-invalid='true'."
+<div class="switch-item-block">
+  <label for="terms">Accept terms and conditions</label>
+  <input class="switch" type="checkbox" role="switch" id="terms" aria-invalid="true">
+  <span class="switch-description" style="color:var(--destructive);">You must accept the terms.</span>
+</div>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground">Machine contract — verified against <a href="../schemas/switch.schema.json"><code>switch.schema.json</code></a> by <code>bun run verify</code>:</p>
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `checked` | `boolean` | `true`, `false` | `false` | Native checked state (`role="switch"` ⇄ panel checkbox). |
+| `disabled` | `boolean` | `true`, `false` | `false` | Interaction off (native `disabled` attribute). |
+| `size` | `enum` | `xs`, `sm`, `md`, `lg`, `xl` | `"md"` | Control scale (display sizes). |
+```
+
+</StatesSection>
 
 <SourceFiles component="switch" section="css" />
 

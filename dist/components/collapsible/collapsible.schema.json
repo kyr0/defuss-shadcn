@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "name": "collapsible",
+  "states": {
+    "open": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": "details.collapsible"
+      },
+      "mutation": {
+        "kind": "property",
+        "name": "open"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "open"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

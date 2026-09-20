@@ -4,7 +4,7 @@ description: "Skeleton component — placeholder loading states with pulse anima
 slug: "skeleton"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -37,47 +37,28 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first>
-  <ExampleLabel>Avatar + Text</ExampleLabel>
-  <ExampleHint>Common pattern for user profile loading states.</ExampleHint>
-  <div style="display:flex;align-items:center;gap:1rem;">
-    <div class="skeleton skeleton-round" style="width:2.5rem;height:2.5rem;" />
-    <div style="display:flex;flex-direction:column;gap:0.5rem;">
-      <div class="skeleton" style="height:0.875rem;width:10rem;" />
-      <div class="skeleton" style="height:0.875rem;width:7rem;" />
-    </div>
+```html example label="Avatar + Text" hint="Common pattern for user profile loading states."
+<div style="display:flex;align-items:center;gap:1rem;">
+  <div class="skeleton skeleton-round" style="width:2.5rem;height:2.5rem;"></div>
+  <div style="display:flex;flex-direction:column;gap:0.5rem;">
+    <div class="skeleton" style="height:0.875rem;width:10rem;"></div>
+    <div class="skeleton" style="height:0.875rem;width:7rem;"></div>
   </div>
-  <ExampleCode>{"<div style=\"display:flex;align-items:center;gap:1rem;\">\n  <div class=\"skeleton skeleton-round\" style=\"width:2.5rem;height:2.5rem;\"></div>\n  <div style=\"display:flex;flex-direction:column;gap:0.5rem;\">\n    <div class=\"skeleton\" style=\"height:0.875rem;width:10rem;\"></div>\n    <div class=\"skeleton\" style=\"height:0.875rem;width:7rem;\"></div>\n  </div>\n</div>"}</ExampleCode>
-</Example>
+</div>
+```
 
-<Example>
-  <ExampleLabel>Card</ExampleLabel>
-  <ExampleHint>Skeleton inside a card container.</ExampleHint>
-  <article class="card" style="width:20rem;">
-    <div class="card-header">
-      <div class="skeleton" style="height:1rem;width:60%;" />
-      <div class="skeleton" style="height:0.75rem;width:40%;margin-top:0.5rem;" />
-    </div>
-    <div class="card-content">
-      <div style="display:flex;flex-direction:column;gap:0.5rem;">
-        <div class="skeleton" style="height:0.75rem;width:100%;" />
-        <div class="skeleton" style="height:0.75rem;width:90%;" />
-        <div class="skeleton" style="height:0.75rem;width:70%;" />
-      </div>
-    </div>
-  </article>
-  <ExampleCode>{"<div class=\"skeleton skeleton-round\" style=\"width:2.5rem;height:2.5rem;\"></div>\n<div class=\"skeleton\" style=\"height:0.875rem;width:10rem;\"></div>"}</ExampleCode>
-</Example>
+```html example label="Card" hint="Skeleton inside a card container."
+<div class="skeleton skeleton-round" style="width:2.5rem;height:2.5rem;"></div>
+<div class="skeleton" style="height:0.875rem;width:10rem;"></div>
+```
 
-<Example noCode>
-  <ExampleLabel>Text Lines</ExampleLabel>
-  <ExampleHint>Paragraph placeholder.</ExampleHint>
-  <div style="display:flex;flex-direction:column;gap:0.5rem;width:20rem;">
-    <div class="skeleton" style="height:0.875rem;width:100%;" />
-    <div class="skeleton" style="height:0.875rem;width:100%;" />
-    <div class="skeleton" style="height:0.875rem;width:80%;" />
-  </div>
-</Example>
+```html example label="Text Lines" hint="Paragraph placeholder."
+<div style="display:flex;flex-direction:column;gap:0.5rem;width:20rem;">
+  <div class="skeleton" style="height:0.875rem;width:100%;" />
+  <div class="skeleton" style="height:0.875rem;width:100%;" />
+  <div class="skeleton" style="height:0.875rem;width:80%;" />
+</div>
+```
 
 <SourceFiles component="skeleton" section="css">
   <SourceNote for="css">Styles for the skeleton component. Uses design tokens for colors, spacing, and radius.</SourceNote>

@@ -51,5 +51,44 @@ await cssSmoke('pagination', [
   { label: 'pagination: density "compact" → gap 2px', selector: '#pg-compact .pagination-list', css: { 'gap': '2px' } },
   { label: 'pagination: density "comfortable" → gap 4px', selector: '#pg-comfortable .pagination-list', css: { 'gap': '4px' } },
   { label: 'pagination: density "spacious" → gap 8px', selector: '#pg-spacious .pagination-list', css: { 'gap': '8px' } },
+
+  // the component gained a runtime (pagination.ts): window math + interaction.
+  // The nav is data-driven: it renders its link window from data-active-page /
+  // -min-page / -max-page / -page-display-count (see the #pg-live demo).
+  {
+    label: "runtime: init marker + data-driven window (3 links around page 3, both ellipses)",
+    run: async (page) => {
+      await page.waitForFunction(() => !!document.querySelector('#pg-live[data-init]'));
+      const links = await page.$$eval('#pg-live .pagination-link[data-page]', (els) => els.map((e) => e.textContent));
+      assert.deepEqual(links, ['2', '3', '4'], 'window = 3 pages around the active one');
+      assert.equal(await page.$eval('#pg-live .pagination-link[aria-current="page"]', (e) => e.textContent), '3');
+      assert.equal(await page.$$eval('#pg-live .pagination-ellipsis', (els) => els.length), 2, 'ellipsis both sides');
+    },
+  },
+  {
+    label: 'runtime: clicking page link 4 moves aria-current to 4',
+    run: async (page) => {
+      await page.click('#pg-live .pagination-link[data-page="4"]');
+      await page.waitForFunction(() => document.querySelector('#pg-live')!.getAttribute('data-active-page') === '4');
+      assert.equal(await page.$eval('#pg-live .pagination-link[aria-current="page"]', (e) => e.textContent), '4');
+    },
+  },
+  {
+    label: 'runtime: pagination-next/pagination-prev action events step the page',
+    run: async (page) => {
+      await page.$eval('#pg-live', (el) => el.dispatchEvent(new Event('pagination-next', { bubbles: true })));
+      assert.equal(await page.$eval('#pg-live', (el) => el.getAttribute('data-active-page')), '5');
+      await page.$eval('#pg-live', (el) => el.dispatchEvent(new Event('pagination-prev', { bubbles: true })));
+      assert.equal(await page.$eval('#pg-live', (el) => el.getAttribute('data-active-page')), '4');
+    },
+  },
+  {
+    label: "state API: getState().name === 'default'; setState('default', { page: 9 }) re-renders the window",
+    run: async (page) => {
+      assert.equal(await page.$eval('#pg-live', (el) => (el as any).api.getState().name), 'default', "declared state 'default'");
+      await page.$eval('#pg-live', (el) => (el as any).api.setState('default', { page: 9 }));
+      assert.equal(await page.$eval('#pg-live .pagination-link[aria-current="page"]', (e) => e.textContent), '9');
+    },
+  },
 ]);
 void assert;

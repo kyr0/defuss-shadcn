@@ -187,8 +187,10 @@ check(
 // dialog shipped exactly that — the parser then swallows real DOM and site.js
 // mis-pairs code toggles); duplicate real-DOM ids mean a whole section was
 // duplicated (both pages also shipped that, breaking `built with` anchors and
-// any getElementById consumer). Ids quoted inside <pre>/inline <code> are
-// prose, not DOM, so both are stripped before the duplicate scan.
+// any getElementById consumer). Ids quoted inside <pre>/inline <code>/the
+// CodeExample <textarea> source panes are prose, not DOM (each fence runs in
+// its own sandbox where it IS unique), so all three are stripped before the
+// duplicate scan.
 const codeBlockProblems: string[] = [];
 for (const [page, html] of docHtml) {
   const opens = html.match(/<pre[\s>]/g)?.length ?? 0;
@@ -199,7 +201,10 @@ for (const [page, html] of docHtml) {
     );
     continue;
   }
-  const realDom = html.replace(/<pre[\s>][\s\S]*?<\/pre>/g, '').replace(/<code[\s>][\s\S]*?<\/code>/g, '');
+  const realDom = html
+    .replace(/<pre[\s>][\s\S]*?<\/pre>/g, '')
+    .replace(/<textarea[\s>][\s\S]*?<\/textarea>/g, '')
+    .replace(/<code[\s>][\s\S]*?<\/code>/g, '');
   const ids: string[] = [];
   for (const m of realDom.matchAll(/(?<![\w-])id="([^"]+)"/g)) ids.push(m[1]);
   const dupes = [...new Set(ids.filter((id, i) => ids.indexOf(id) !== i))];

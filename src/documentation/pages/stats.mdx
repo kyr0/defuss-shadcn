@@ -4,7 +4,7 @@ description: "A metric band: rule-led numbers with tabular digits beside a squar
 slug: "stats"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -42,46 +42,41 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first previewStyle="align-items:stretch;">
-  <ExampleLabel>Default</ExampleLabel>
-  <ExampleHint>Four metrics + link CTAs, photo right at wide widths.</ExampleHint>
-  <section class="mk-stats" style="width:100%">
-    <div class="mk-stats-layout">
-      <div class="mk-stats-copy">
-        <div class="mk-stats-head">
-          <h2 class="mk-stats-title">Trusted by Teams Everywhere</h2>
-          <p class="mk-stats-desc">Acme is helping thousands of creators and companies move faster, work smarter, and deliver with confidence.</p>
-        </div>
-        <div class="mk-stats-grid">
-          <div class="mk-stat">
-            <span class="mk-stat-value">12,500+</span>
-            <span class="mk-stat-label">Projects completed</span>
-            <a href="#" class="btn mk-stat-link" data-variant="link" data-size="default">Our clients</a>
-          </div>
-          <div class="mk-stat">
-            <span class="mk-stat-value">38% faster</span>
-            <span class="mk-stat-label">Delivery across teams</span>
-            <a href="#" class="btn mk-stat-link" data-variant="link" data-size="default">Learn more</a>
-          </div>
-          <div class="mk-stat">
-            <span class="mk-stat-value">94%</span>
-            <span class="mk-stat-label">User satisfaction</span>
-            <a href="#" class="btn mk-stat-link" data-variant="link" data-size="default">See feedback</a>
-          </div>
-          <div class="mk-stat">
-            <span class="mk-stat-value">8 zones</span>
-            <span class="mk-stat-label">With active customers</span>
-            <a href="#" class="btn mk-stat-link" data-variant="link" data-size="default">Our users</a>
-          </div>
-        </div>
-      </div>
-      <figure class="mk-stats-media">
-        <img alt="Team at work" src="images/mk-wide.png" />
-      </figure>
+```html example label="Default" hint="Four metrics + link CTAs, photo right at wide widths." previewStyle="align-items:stretch;"
+<section class="mk-stats" style="width:100%">
+  <div class="mk-stats-layout">
+  <div class="mk-stats-copy">
+    <div class="mk-stats-head">
+      <h2 class="mk-stats-title">Trusted by Teams Everywhere</h2>
+      <p class="mk-stats-desc">Acme is helping thousands of creators and companies move faster, work smarter, and deliver with confidence.</p>
     </div>
-  </section>
-  <ExampleCode>{"<section class=\"mk-stats\" style=\"width:100%\">\n  <div class=\"mk-stats-layout\">\n  <div class=\"mk-stats-copy\">\n    <div class=\"mk-stats-head\">\n      <h2 class=\"mk-stats-title\">Trusted by Teams Everywhere</h2>\n      <p class=\"mk-stats-desc\">Acme is helping thousands of creators and companies move faster, work smarter, and deliver with confidence.</p>\n    </div>\n    <div class=\"mk-stats-grid\">\n      <div class=\"mk-stat\">\n        <span class=\"mk-stat-value\">12,500+</span>\n        <span class=\"mk-stat-label\">Projects completed</span>\n        <a href=\"#\" class=\"btn mk-stat-link\" data-variant=\"link\" data-size=\"default\">Our clients</a>\n      </div>\n      <div class=\"mk-stat\">\n        <span class=\"mk-stat-value\">38% faster</span>\n        <span class=\"mk-stat-label\">Delivery across teams</span>\n        <a href=\"#\" class=\"btn mk-stat-link\" data-variant=\"link\" data-size=\"default\">Learn more</a>\n      </div>\n      <div class=\"mk-stat\">\n        <span class=\"mk-stat-value\">94%</span>\n        <span class=\"mk-stat-label\">User satisfaction</span>\n        <a href=\"#\" class=\"btn mk-stat-link\" data-variant=\"link\" data-size=\"default\">See feedback</a>\n      </div>\n      <div class=\"mk-stat\">\n        <span class=\"mk-stat-value\">8 zones</span>\n        <span class=\"mk-stat-label\">With active customers</span>\n        <a href=\"#\" class=\"btn mk-stat-link\" data-variant=\"link\" data-size=\"default\">Our users</a>\n      </div>\n    </div>\n  </div>\n  <figure class=\"mk-stats-media\"><img alt=\"Team at work\" src=\"images/mk-wide.png\" /></figure>\n  </div>\n</section>"}</ExampleCode>
-</Example>
+    <div class="mk-stats-grid">
+      <div class="mk-stat">
+        <span class="mk-stat-value">12,500+</span>
+        <span class="mk-stat-label">Projects completed</span>
+        <a href="#" class="btn mk-stat-link" data-variant="link" data-size="default">Our clients</a>
+      </div>
+      <div class="mk-stat">
+        <span class="mk-stat-value">38% faster</span>
+        <span class="mk-stat-label">Delivery across teams</span>
+        <a href="#" class="btn mk-stat-link" data-variant="link" data-size="default">Learn more</a>
+      </div>
+      <div class="mk-stat">
+        <span class="mk-stat-value">94%</span>
+        <span class="mk-stat-label">User satisfaction</span>
+        <a href="#" class="btn mk-stat-link" data-variant="link" data-size="default">See feedback</a>
+      </div>
+      <div class="mk-stat">
+        <span class="mk-stat-value">8 zones</span>
+        <span class="mk-stat-label">With active customers</span>
+        <a href="#" class="btn mk-stat-link" data-variant="link" data-size="default">Our users</a>
+      </div>
+    </div>
+  </div>
+  <figure class="mk-stats-media"><img alt="Team at work" src="images/mk-wide.png" ></img></figure>
+  </div>
+</section>
+```
 
 <SourceFiles component="stats" section="css" />
 

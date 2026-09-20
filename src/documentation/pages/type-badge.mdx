@@ -4,7 +4,7 @@ description: "Type Badge component — a mono chip marking a component's atomic-
 slug: "type-badge"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -49,31 +49,14 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first>
-  <ExampleLabel>All types</ExampleLabel>
-  <ExampleHint>The code is the type; the <code>title</code> tooltip spells it out. Colors are hardcoded per taxonomy identity — a type looks the same under every theme.</ExampleHint>
-  <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
-    <span class="type-badge" data-type="ATM" title="Atom">ATM</span>
-    <span class="type-badge" data-type="MOL" title="Molecule">MOL</span>
-    <span class="type-badge" data-type="ORG" title="Organism">ORG</span>
-    <span class="type-badge" data-type="BLK" title="Block">BLK</span>
-    <span class="type-badge" data-type="TPL" title="Template">TPL</span>
-  </div>
-  <ExampleCode>{"<span class=\"type-badge\" data-type=\"ATM\" title=\"Atom\">ATM</span>\n<span class=\"type-badge\" data-type=\"MOL\" title=\"Molecule\">MOL</span>"}</ExampleCode>
-</Example>
+```html example label="All types" hint="The code is the type; the title tooltip spells it out. Colors are hardcoded per taxonomy identity — a type looks the same under every theme."
+<span class="type-badge" data-type="ATM" title="Atom">ATM</span>
+<span class="type-badge" data-type="MOL" title="Molecule">MOL</span>
+```
 
-<Example>
-  <ExampleLabel>Sizes</ExampleLabel>
-  <ExampleHint><code>data-size</code> scales the chip from the xs default up to xl.</ExampleHint>
-  <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
-    <span class="type-badge" data-type="MOL" data-size="xs" title="Molecule">MOL</span>
-    <span class="type-badge" data-type="MOL" data-size="sm" title="Molecule">MOL</span>
-    <span class="type-badge" data-type="MOL" data-size="md" title="Molecule">MOL</span>
-    <span class="type-badge" data-type="MOL" data-size="lg" title="Molecule">MOL</span>
-    <span class="type-badge" data-type="MOL" data-size="xl" title="Molecule">MOL</span>
-  </div>
-  <ExampleCode>{"<span class=\"type-badge\" data-type=\"MOL\" data-size=\"lg\" title=\"Molecule\">MOL</span>"}</ExampleCode>
-</Example>
+```html example label="Sizes" hint="data-size scales the chip from the xs default up to xl."
+<span class="type-badge" data-type="MOL" data-size="lg" title="Molecule">MOL</span>
+```
 
 <SourceFiles component="type-badge" />
 

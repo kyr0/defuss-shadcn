@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "name": "select",
+  "states": {
+    "value": {
+      "type": "string",
+      "default": "apple",
+      "target": {
+        "kind": "selector",
+        "selector": ".select"
+      },
+      "mutation": {
+        "kind": "property",
+        "name": "value"
+      },
+      "observation": {
+        "kind": "property",
+        "name": "value"
+      },
+      "editor": {
+        "component": "text"
+      }
+    },
+    "disabled": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".select"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "disabled"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "disabled"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "required": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".select"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "required"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "required"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

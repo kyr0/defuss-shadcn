@@ -25,5 +25,26 @@
       }
     }
   },
-  "actions": {}
+  "actions": {
+    "next": {
+      "target": {
+        "kind": "selector",
+        "selector": ".carousel-next"
+      },
+      "operation": {
+        "kind": "event",
+        "name": "click"
+      }
+    },
+    "back": {
+      "target": {
+        "kind": "selector",
+        "selector": ".carousel-prev"
+      },
+      "operation": {
+        "kind": "event",
+        "name": "click"
+      }
+    }
+  }
 }

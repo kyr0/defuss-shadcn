@@ -83,6 +83,9 @@ export function parseComponentSchema(raw: unknown, source: string): { schema?: C
   if (!isObj(raw)) return { problems: [`${source}: schema root must be an object`] };
   if (raw.schemaVersion !== SCHEMA_VERSION) err('schemaVersion', `must be ${SCHEMA_VERSION}`);
   if (!isNonEmptyStr(raw.name)) err('name', 'must be a non-empty string');
+  // optional: opt the CodeExample State tab off (panel can't express the
+  // component's interaction, e.g. context-menu's right-click gesture)
+  if ('stateTab' in raw && typeof raw.stateTab !== 'boolean') err('stateTab', 'must be a boolean');
   if (!isObj(raw.states)) {
     return { problems: [...problems, `${source}: states: must be an object`] };
   }

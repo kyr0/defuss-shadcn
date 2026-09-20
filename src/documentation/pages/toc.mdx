@@ -4,7 +4,7 @@ description: "Table of Contents component — a section-nav block of heading lin
 slug: "toc"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -34,56 +34,47 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first>
-  <ExampleLabel>Default</ExampleLabel>
-  <ExampleHint>A section nav with the current section marked via <code>aria-current="location"</code> — the host moves the marker as the reader scrolls (the docs' own runtime does exactly that). Try the links: they jump between the two mini sections in the card.</ExampleHint>
-  <div class="card" style="padding:1rem;width:16rem;">
-    <nav class="toc" aria-label="On this page">
-      <p class="toc-title">On This Page</p>
-      <a class="toc-link" href="#toc-demo-install">Installation</a>
-      <a class="toc-link" href="#toc-demo-api" aria-current="location">API</a>
-    </nav>
-    <h3 id="toc-demo-install" class="h3-demo">Installation</h3>
-    <p class="text-sm text-muted-foreground m-0">Drop the stylesheet in, link the sections.</p>
-    <h3 id="toc-demo-api" class="h3-demo">API</h3>
-    <p class="text-sm text-muted-foreground m-0">Three classes: <code>.toc</code>, <code>.toc-title</code>, <code>.toc-link</code>.</p>
-  </div>
-  <ExampleCode>{"<nav class=\"toc\" aria-label=\"On this page\">\n  <p class=\"toc-title\">On This Page</p>\n  <a class=\"toc-link\" href=\"#installation\">Installation</a>\n  <a class=\"toc-link\" href=\"#usage\">Usage</a>\n  <a class=\"toc-link\" href=\"#api\" aria-current=\"location\">API</a>\n  <a class=\"toc-link\" href=\"#faq\">FAQ</a>\n</nav>"}</ExampleCode>
-</Example>
+```html example label="Default" hint="A section nav with the current section marked via aria-current='location' — the host moves the marker as the reader scrolls (the docs' own runtime does exactly that). Try the links: they jump between the two mini sections in the card."
+<nav class="toc" aria-label="On this page">
+  <p class="toc-title">On This Page</p>
+  <a class="toc-link" href="#installation">Installation</a>
+  <a class="toc-link" href="#usage">Usage</a>
+  <a class="toc-link" href="#api" aria-current="location">API</a>
+  <a class="toc-link" href="#faq">FAQ</a>
+</nav>
+```
 
-<Example previewStyle="align-items:flex-start;gap:1.5rem;">
-  <ExampleLabel>Density</ExampleLabel>
-  <ExampleHint>Set <code>data-density</code> on the component root to scale the link rows' vertical rhythm. A whitespace policy, not a zoom: only the block padding scales (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), font size stays identical. <code>comfortable</code> matches the unsized default.</ExampleHint>
-  <div class="flex flex-wrap gap-4" style="align-items:flex-start;">
-    <div class="card" style="padding:1rem;width:14rem;">
-      <p class="demo-label">Compact</p>
-      <nav class="toc" aria-label="Compact density" data-density="compact">
-        <p class="toc-title">On This Page</p>
-        <a class="toc-link" href="#">Installation</a>
-        <a class="toc-link" href="#">Usage</a>
-        <a class="toc-link" href="#">API</a>
-      </nav>
-    </div>
-    <div class="card" style="padding:1rem;width:14rem;">
-      <p class="demo-label">Comfortable</p>
-      <nav class="toc" aria-label="Comfortable density" data-density="comfortable">
-        <p class="toc-title">On This Page</p>
-        <a class="toc-link" href="#">Installation</a>
-        <a class="toc-link" href="#">Usage</a>
-        <a class="toc-link" href="#">API</a>
-      </nav>
-    </div>
-    <div class="card" style="padding:1rem;width:14rem;">
-      <p class="demo-label">Spacious</p>
-      <nav class="toc" aria-label="Spacious density" data-density="spacious">
-        <p class="toc-title">On This Page</p>
-        <a class="toc-link" href="#">Installation</a>
-        <a class="toc-link" href="#">Usage</a>
-        <a class="toc-link" href="#">API</a>
-      </nav>
-    </div>
+```html example label="Density" hint="Set data-density on the component root to scale the link rows' vertical rhythm. A whitespace policy, not a zoom: only the block padding scales (ratio 0.75 / 1 / 1.25), font size stays identical. comfortable matches the unsized default." previewStyle="align-items:flex-start;gap:1.5rem;"
+<div class="flex flex-wrap gap-4" style="align-items:flex-start;">
+  <div class="card" style="padding:1rem;width:14rem;">
+    <p class="demo-label">Compact</p>
+    <nav class="toc" aria-label="Compact density" data-density="compact">
+      <p class="toc-title">On This Page</p>
+      <a class="toc-link" href="#">Installation</a>
+      <a class="toc-link" href="#">Usage</a>
+      <a class="toc-link" href="#">API</a>
+    </nav>
   </div>
-</Example>
+  <div class="card" style="padding:1rem;width:14rem;">
+    <p class="demo-label">Comfortable</p>
+    <nav class="toc" aria-label="Comfortable density" data-density="comfortable">
+      <p class="toc-title">On This Page</p>
+      <a class="toc-link" href="#">Installation</a>
+      <a class="toc-link" href="#">Usage</a>
+      <a class="toc-link" href="#">API</a>
+    </nav>
+  </div>
+  <div class="card" style="padding:1rem;width:14rem;">
+    <p class="demo-label">Spacious</p>
+    <nav class="toc" aria-label="Spacious density" data-density="spacious">
+      <p class="toc-title">On This Page</p>
+      <a class="toc-link" href="#">Installation</a>
+      <a class="toc-link" href="#">Usage</a>
+      <a class="toc-link" href="#">API</a>
+    </nav>
+  </div>
+</div>
+```
 
 <SourceFiles component="toc" />
 

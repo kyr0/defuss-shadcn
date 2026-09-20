@@ -7,19 +7,19 @@
     "BLK": 14,
     "TPL": 0
   },
-  "withJs": 28,
-  "withoutJs": 44,
-  "totalSize": 444913,
-  "totalSizeMinified": 213684,
-  "totalSizeGz": 144955,
-  "totalSizeGzMinified": 78767,
+  "withJs": 30,
+  "withoutJs": 42,
+  "totalSize": 464135,
+  "totalSizeMinified": 220186,
+  "totalSizeGz": 151719,
+  "totalSizeGzMinified": 81456,
   "bundle": {
-    "jsSize": 174405,
-    "jsSizeMinified": 92284,
+    "jsSize": 184297,
+    "jsSizeMinified": 98259,
     "cssSize": 250809,
     "cssSizeMinified": 140613,
-    "totalSizeGz": 78942,
-    "totalSizeGzMinified": 47034
+    "totalSizeGz": 80934,
+    "totalSizeGzMinified": 48462
   },
   "core": {
     "jsSize": 63491,
@@ -501,15 +501,15 @@
     "pagination": {
       "name": "pagination",
       "type": "MOL",
-      "withJs": false,
-      "jsSize": 0,
-      "jsSizeMinified": 0,
+      "withJs": true,
+      "jsSize": 11689,
+      "jsSizeMinified": 3992,
       "cssSize": 4187,
       "cssSizeMinified": 2834,
-      "totalSizeGz": 1188,
-      "totalSizeGzMinified": 783,
-      "totalSize": 4187,
-      "totalSizeMinified": 2834
+      "totalSizeGz": 5174,
+      "totalSizeGzMinified": 2372,
+      "totalSize": 15876,
+      "totalSizeMinified": 6826
     },
     "popover": {
       "name": "popover",
@@ -748,15 +748,15 @@
     "steps": {
       "name": "steps",
       "type": "ATM",
-      "withJs": false,
-      "jsSize": 0,
-      "jsSizeMinified": 0,
+      "withJs": true,
+      "jsSize": 7533,
+      "jsSizeMinified": 2510,
       "cssSize": 6949,
       "cssSizeMinified": 4848,
-      "totalSizeGz": 1661,
-      "totalSizeGzMinified": 1144,
-      "totalSize": 6949,
-      "totalSizeMinified": 4848
+      "totalSizeGz": 4439,
+      "totalSizeGzMinified": 2244,
+      "totalSize": 14482,
+      "totalSizeMinified": 7358
     },
     "switch": {
       "name": "switch",

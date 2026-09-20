@@ -4,7 +4,7 @@ description: "File Input component — styled file upload inputs with drag-and-d
 slug: "file-input"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -37,58 +37,52 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first>
-  <ExampleLabel>Default</ExampleLabel>
-  <ExampleHint>Single file selection.</ExampleHint>
-  <div class="w-full max-w-80">
-    <label class="label" for="d-avatar">Picture</label>
-    <input class="file-input" type="file" id="d-avatar" />
-  </div>
-  <ExampleCode>{"<input class=\"file-input\" type=\"file\" id=\"avatar\">"}</ExampleCode>
-</Example>
+```html example label="Default" hint="Single file selection."
+<input class="file-input" type="file" id="avatar">
+```
 
-<Example>
-  <ExampleLabel>Multiple files</ExampleLabel>
-  <div class="w-full max-w-80">
-    <label class="label" for="d-docs">Documents</label>
-    <input class="file-input" type="file" id="d-docs" multiple />
-  </div>
-  <ExampleCode>{"<input class=\"file-input\" type=\"file\" multiple>"}</ExampleCode>
-</Example>
+```html example label="Multiple files"
+<input class="file-input" type="file" multiple>
+```
 
-<Example>
-  <ExampleLabel>Accept filter</ExampleLabel>
-  <div class="w-full max-w-80">
-    <label class="label" for="d-img">Image only</label>
-    <input class="file-input" type="file" id="d-img" accept="image/*" />
-  </div>
-  <ExampleCode>{"<input class=\"file-input\" type=\"file\" accept=\"image/*\">"}</ExampleCode>
-</Example>
+```html example label="Accept filter"
+<input class="file-input" type="file" accept="image/*">
+```
 
-<Example>
-  <ExampleLabel>Sizes</ExampleLabel>
-  <ExampleHint>The control follows the shared input ladder via <code>data-size</code> — <code>md</code> is 2.25rem, matching <code>.input</code>.</ExampleHint>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Extra small</span>
-    <input class="file-input flex-1" type="file" data-size="xs" aria-label="Upload xs" style="max-width:16rem;" />
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Small</span>
-    <input class="file-input flex-1" type="file" data-size="sm" aria-label="Upload sm" style="max-width:16rem;" />
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Medium</span>
-    <input class="file-input flex-1" type="file" data-size="md" aria-label="Upload md" style="max-width:16rem;" />
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Large</span>
-    <input class="file-input flex-1" type="file" data-size="lg" aria-label="Upload lg" style="max-width:16rem;" />
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Extra large</span>
-    <input class="file-input flex-1" type="file" data-size="xl" aria-label="Upload xl" style="max-width:16rem;" />
-  </div>
-</Example>
+```html example label="Sizes" hint="The control follows the shared input ladder via data-size — md is 2.25rem, matching .input."
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Extra small</span>
+  <input class="file-input flex-1" type="file" data-size="xs" aria-label="Upload xs" style="max-width:16rem;" ></input>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Small</span>
+  <input class="file-input flex-1" type="file" data-size="sm" aria-label="Upload sm" style="max-width:16rem;" ></input>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Medium</span>
+  <input class="file-input flex-1" type="file" data-size="md" aria-label="Upload md" style="max-width:16rem;" ></input>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Large</span>
+  <input class="file-input flex-1" type="file" data-size="lg" aria-label="Upload lg" style="max-width:16rem;" ></input>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Extra large</span>
+  <input class="file-input flex-1" type="file" data-size="xl" aria-label="Upload xl" style="max-width:16rem;" ></input>
+</div>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground">Machine contract — verified against <a href="../schemas/file-input.schema.json"><code>file-input.schema.json</code></a> by <code>bun run verify</code>:</p>
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `disabled` | `boolean` | `true`, `false` | `false` | Picker off (native `disabled` attribute). |
+| `size` | `enum` | `sm`, `md`, `lg` | `"md"` | Control scale (display sizes). |
+```
+
+</StatesSection>
 
 <SourceFiles component="file-input" section="css" />
 

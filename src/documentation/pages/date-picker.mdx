@@ -4,7 +4,7 @@ description: "Date Picker component — native date inputs with calendar popover
 slug: "date-picker"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -39,58 +39,54 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first>
-  <ExampleLabel>Date</ExampleLabel>
-  <ExampleHint>Native date picker.</ExampleHint>
-  <div style="width:100%;max-width:16rem;">
-    <label class="label" for="d-bday">Birthday</label>
-    <input class="date-input" type="date" id="d-bday" />
-  </div>
-  <ExampleCode>{"<input class=\"date-input\" type=\"date\" id=\"birthday\">"}</ExampleCode>
-</Example>
+```html example label="Date" hint="Native date picker."
+<input class="date-input" type="date" id="birthday">
+```
 
-<Example>
-  <ExampleLabel>Date and time</ExampleLabel>
-  <div style="width:100%;max-width:16rem;">
-    <label class="label" for="d-meet">Meeting</label>
-    <input class="date-input" type="datetime-local" id="d-meet" />
-  </div>
-  <ExampleCode>{"<input class=\"date-input\" type=\"datetime-local\" id=\"meeting\">"}</ExampleCode>
-</Example>
+```html example label="Date and time"
+<input class="date-input" type="datetime-local" id="meeting">
+```
 
-<Example>
-  <ExampleLabel>With constraints</ExampleLabel>
-  <div style="width:100%;max-width:16rem;">
-    <label class="label" for="d-start">Start date</label>
-    <input class="date-input" type="date" id="d-start" min="2024-01-01" max="2026-12-31" />
-  </div>
-  <ExampleCode>{"<input class=\"date-input\" type=\"date\" min=\"2024-01-01\" max=\"2026-12-31\">"}</ExampleCode>
-</Example>
+```html example label="With constraints"
+<input class="date-input" type="date" min="2024-01-01" max="2026-12-31">
+```
 
-<Example>
-  <ExampleLabel>Sizes</ExampleLabel>
-  <ExampleHint>Same ladder as <code>.input</code> via <code>data-size</code> — <code>md</code> is 2.25rem, so date fields row-align with text inputs.</ExampleHint>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Extra small</span>
-    <input class="date-input flex-1" type="date" value="2026-09-12" data-size="xs" aria-label="Date xs" style="max-width:12rem;" />
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Small</span>
-    <input class="date-input flex-1" type="date" value="2026-09-12" data-size="sm" aria-label="Date sm" style="max-width:12rem;" />
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Medium</span>
-    <input class="date-input flex-1" type="date" value="2026-09-12" data-size="md" aria-label="Date md" style="max-width:12rem;" />
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Large</span>
-    <input class="date-input flex-1" type="date" value="2026-09-12" data-size="lg" aria-label="Date lg" style="max-width:12rem;" />
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Extra large</span>
-    <input class="date-input flex-1" type="date" value="2026-09-12" data-size="xl" aria-label="Date xl" style="max-width:12rem;" />
-  </div>
-</Example>
+```html example label="Sizes" hint="Same ladder as .input via data-size — md is 2.25rem, so date fields row-align with text inputs."
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Extra small</span>
+  <input class="date-input flex-1" type="date" value="2026-09-12" data-size="xs" aria-label="Date xs" style="max-width:12rem;" ></input>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Small</span>
+  <input class="date-input flex-1" type="date" value="2026-09-12" data-size="sm" aria-label="Date sm" style="max-width:12rem;" ></input>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Medium</span>
+  <input class="date-input flex-1" type="date" value="2026-09-12" data-size="md" aria-label="Date md" style="max-width:12rem;" ></input>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Large</span>
+  <input class="date-input flex-1" type="date" value="2026-09-12" data-size="lg" aria-label="Date lg" style="max-width:12rem;" ></input>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Extra large</span>
+  <input class="date-input flex-1" type="date" value="2026-09-12" data-size="xl" aria-label="Date xl" style="max-width:12rem;" ></input>
+</div>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground">Machine contract — verified against <a href="../schemas/date-picker.schema.json"><code>date-picker.schema.json</code></a> by <code>bun run verify</code>:</p>
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `value` | `string` | `—` | `""` | Selected date (`input.value`, ISO `YYYY-MM-DD`; empty = none). |
+| `minDate` | `string` | `—` | `""` | Lower bound of the picked range (native `min` attribute, ISO `YYYY-MM-DD`; empty clears). |
+| `maxDate` | `string` | `—` | `""` | Upper bound of the picked range (native `max` attribute). |
+| `disabled` | `boolean` | `true`, `false` | `false` | Interaction off (native `disabled` attribute). |
+```
+
+</StatesSection>
 
 <SourceFiles component="date-picker" section="css" />
 

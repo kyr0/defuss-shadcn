@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "name": "progress",
+  "states": {
+    "value": {
+      "type": "number",
+      "default": 66,
+      "target": {
+        "kind": "selector",
+        "selector": "progress.progress"
+      },
+      "mutation": {
+        "kind": "property",
+        "name": "value"
+      },
+      "observation": {
+        "kind": "property",
+        "name": "value"
+      },
+      "editor": {
+        "component": "number",
+        "props": {
+          "min": 0,
+          "max": 100
+        }
+      }
+    },
+    "size": {
+      "type": "enum",
+      "values": [
+        "sm",
+        "md",
+        "lg",
+        "xl"
+      ],
+      "default": "md",
+      "target": {
+        "kind": "selector",
+        "selector": "progress.progress"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "data-size"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-size"
+      },
+      "editor": {
+        "component": "radio"
+      }
+    }
+  },
+  "actions": {}
+}

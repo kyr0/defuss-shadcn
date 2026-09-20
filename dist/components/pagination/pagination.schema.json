@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "name": "pagination",
+  "states": {
+    "activePage": {
+      "type": "number",
+      "default": 3,
+      "target": {
+        "kind": "selector",
+        "selector": ".pagination"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "data-active-page"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-active-page"
+      },
+      "editor": {
+        "component": "number"
+      }
+    },
+    "minPage": {
+      "type": "number",
+      "default": 1,
+      "target": {
+        "kind": "selector",
+        "selector": ".pagination"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "data-min-page"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-min-page"
+      },
+      "editor": {
+        "component": "number"
+      }
+    },
+    "maxPage": {
+      "type": "number",
+      "default": 20,
+      "target": {
+        "kind": "selector",
+        "selector": ".pagination"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "data-max-page"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-max-page"
+      },
+      "editor": {
+        "component": "number"
+      }
+    },
+    "pageDisplayCount": {
+      "type": "number",
+      "default": 3,
+      "target": {
+        "kind": "selector",
+        "selector": ".pagination"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "data-page-display-count"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-page-display-count"
+      },
+      "editor": {
+        "component": "number"
+      }
+    },
+    "size": {
+      "type": "enum",
+      "values": [
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl"
+      ],
+      "default": "md",
+      "target": {
+        "kind": "selector",
+        "selector": ".pagination"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "data-size"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-size"
+      },
+      "editor": {
+        "component": "radio"
+      }
+    }
+  },
+  "actions": {
+    "next": {
+      "target": {
+        "kind": "selector",
+        "selector": ".pagination"
+      },
+      "operation": {
+        "kind": "event",
+        "name": "pagination-next"
+      }
+    },
+    "prev": {
+      "target": {
+        "kind": "selector",
+        "selector": ".pagination"
+      },
+      "operation": {
+        "kind": "event",
+        "name": "pagination-prev"
+      }
+    }
+  }
+}

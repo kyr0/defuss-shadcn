@@ -140,3 +140,14 @@ All links are native `<a>` elements — keyboard navigation works automatically.
 - Chevron SVG icons are preferred over text arrows for visual consistency.
 - CSS uses logical properties (`padding-inline`) for automatic RTL support.
 - No JavaScript required — this is a purely CSS component.
+
+## States
+
+The runtime declares the single `default` state (AGENTS.md "State API"); the visible UI contract lives on the element as data attributes, which `setState('default', { … })` applies and re-renders:
+
+```js
+pager.api.setState('default', { page: 4 });
+paginationApi.getState(el); // { name: 'default', config: { … current attributes … } }
+```
+
+The registry global is `df$.shadcn.paginationApi` / `df$.shadcn.PaginationStates` (camelCase).

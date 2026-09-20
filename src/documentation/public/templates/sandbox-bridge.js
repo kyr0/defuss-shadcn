@@ -264,7 +264,8 @@
   // next sync serializes them into the editor — code stays the single truth.
   // (click excluded: it only mirrors state; a click that changes something
   // fires change/close/toggle too — no spurious editor rewrites on focus clicks)
-  ['input', 'change', 'close', 'toggle'].forEach(function (ev) {
+  // scroll: the scroll-area component's observable state IS the scroll position
+  ['input', 'change', 'close', 'toggle', 'scroll'].forEach(function (ev) {
     document.addEventListener(ev, function () {
       sourceDirty = true;
       sync();

@@ -31,6 +31,10 @@ export interface CodeExampleProps {
   /** min frame height in rem (fence attr height="N") — floors the sandbox while
    * the true content height arrives (mirrors the old previewStyle min-height) */
   height?: string;
+  /** stage styles for the sandbox body (fence attr previewStyle="…") — mirrors
+   * the old <Example previewStyle>: flex/gap/centering chrome of the demo area,
+   * never part of the example source */
+  previewStyle?: string;
   /** children etc. — forbidden (§5); typed unknown so the guard, not TS, reports them */
   children?: unknown;
   code?: unknown;
@@ -56,13 +60,28 @@ function readSchema(component: string | undefined): string | null {
   return text;
 }
 
+/**
+ * Why: the State tab is a CONTRACT preview, not chrome — it renders only when
+ * the schema actually offers something to edit (≥1 state) and the schema hasn't
+ * opted out via `"stateTab": false` (context-menu: the panel can't express a
+ * right-click gesture, so its card ships the editor only). The schema itself
+ * still rides on the card either way: the state-capture anchor and the runtime
+ * api keep working for screenshots.
+ */
+function showsStateTab(schemaText: string | null): boolean {
+  if (!schemaText) return false;
+  const s = JSON.parse(schemaText) as { states?: Record<string, unknown>; stateTab?: unknown };
+  return s.stateTab !== false && Object.keys(s.states ?? {}).length > 0;
+}
+
 const H2_LABEL = 'text-sm font-medium mb-2';
 const H2_HINT = 'text-xs text-muted-foreground mb-3';
 
-export function CodeExample({ source, component, label, hint, height, children, code, preview, previewSource }: CodeExampleProps) {
+export function CodeExample({ source, component, label, hint, height, previewStyle, children, code, preview, previewSource }: CodeExampleProps) {
   const problems = codeExampleProblems({ source, children, code, preview, previewSource });
   if (problems.length) throw new Error(`CodeExample: ${problems.join(' | ')}`);
   const schemaText = readSchema(component);
+  const stateTab = showsStateTab(schemaText);
   const name = label ?? `${component ?? 'Example'} example`;
   // State-capture anchor (AGENTS.md "State API" rule 7): the card owns the
   // state demo now — its sandbox runs the one true source and the host api on
@@ -76,6 +95,9 @@ export function CodeExample({ source, component, label, hint, height, children, 
       {...(schemaText ? { 'data-schema': schemaText } : {})}
       {...(schemaText ? { 'data-state-demo': '' } : {})}
       {...(height ? { 'data-height': height } : {})}
+      // previewStyle = stage chrome for the sandbox body (mirrors the old
+      // <Example previewStyle>): layout of the demo area, never source bytes
+      {...(previewStyle ? { 'data-preview-style': previewStyle } : {})}
     >
       {label ? <p class={H2_LABEL}>{label}</p> : null}
       {hint ? <p class={H2_HINT}>{hint}</p> : null}
@@ -87,7 +109,9 @@ export function CodeExample({ source, component, label, hint, height, children, 
       </div>
       <div class="code-example-toolbar">
         <button class="code-example-tab" data-tab="code" aria-pressed="true">Code</button>
-        <button class="code-example-tab" data-tab="state" aria-pressed="false" {...(schemaText ? {} : { disabled: true })}>State</button>
+        {/* State tab renders ONLY when the schema offers editable states — an
+            empty contract (or stateTab:false) means no tab: editor stands alone. */}
+        {stateTab ? <button class="code-example-tab" data-tab="state" aria-pressed="false">State</button> : null}
         <span class="code-example-spacer"></span>
         <button class="code-example-copy">Copy</button>
         <button class="code-example-reset" title="Restore the original source and rerun">Reset</button>
@@ -100,7 +124,7 @@ export function CodeExample({ source, component, label, hint, height, children, 
           rows="10"
         >{source}</textarea>
       </div>
-      <div class="code-example-panel" data-panel="state" hidden></div>
+      {stateTab ? <div class="code-example-panel" data-panel="state" hidden></div> : null}
     </div>
   );
 }

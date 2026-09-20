@@ -4,7 +4,7 @@ description: "Collapsible component — expandable content sections using <detai
 slug: "collapsible"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -42,106 +42,93 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first>
-  <ExampleLabel>Basic</ExampleLabel>
-  <ExampleHint>Simple collapsible with a trigger and content.</ExampleHint>
-  <div style="width:100%;max-width:24rem;">
-    <details class="collapsible">
-      <summary class="collapsible-trigger">
-        <span>Can I use this in my project?</span>
-        <svg xmlns="http://www.w3.org/2000/svg" class="collapsible-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m6 9 6 6 6-6" />
-        </svg>
-      </summary>
-      <div class="collapsible-content">
-        <p class="m-0">Yes. Free to use for personal and commercial projects. No attribution required.</p>
-      </div>
-    </details>
+```html example label="Basic" hint="Simple collapsible with a trigger and content."
+<details class="collapsible">
+  <summary class="collapsible-trigger">
+    <span>Can I use this?</span>
+    <svg class="collapsible-chevron">...</svg>
+  </summary>
+  <div class="collapsible-content">
+    <p>Yes, it's free to use.</p>
   </div>
-  <ExampleCode>{"<details class=\"collapsible\">\n  <summary class=\"collapsible-trigger\">\n    <span>Can I use this?</span>\n    <svg class=\"collapsible-chevron\">...</svg>\n  </summary>\n  <div class=\"collapsible-content\">\n    <p>Yes, it's free to use.</p>\n  </div>\n</details>"}</ExampleCode>
-</Example>
+</details>
+```
 
-<Example>
-  <ExampleLabel>Open by Default</ExampleLabel>
-  <ExampleHint>Use the <code>open</code> attribute to start expanded.</ExampleHint>
-  <div style="width:100%;max-width:24rem;">
-    <details class="collapsible" open>
-      <summary class="collapsible-trigger">
-        <span>Product details</span>
-        <svg xmlns="http://www.w3.org/2000/svg" class="collapsible-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m6 9 6 6 6-6" />
-        </svg>
-      </summary>
-      <div class="collapsible-content">
-        <p style="margin:0 0 0.5rem;">This component uses the native <code>&lt;details&gt;</code> element with CSS animations for smooth expand/collapse transitions.</p>
-        <p class="m-0">No JavaScript required for the basic functionality — the browser handles the toggle natively.</p>
-      </div>
-    </details>
-  </div>
-  <ExampleCode>{"<details class=\"collapsible\" open>\n  <summary class=\"collapsible-trigger\">...</summary>\n  <div class=\"collapsible-content\">...</div>\n</details>"}</ExampleCode>
-</Example>
+```html example label="Open by Default" hint="Use the open attribute to start expanded."
+<details class="collapsible" open>
+  <summary class="collapsible-trigger">...</summary>
+  <div class="collapsible-content">...</div>
+</details>
+```
 
-<Example noCode>
-  <ExampleLabel>Multiple Sections</ExampleLabel>
-  <ExampleHint>Stack multiple collapsibles for a settings-style panel.</ExampleHint>
-  <div style="width:100%;max-width:24rem;display:flex;flex-direction:column;gap:0.5rem;">
-    <details class="collapsible">
-      <summary class="collapsible-trigger">
-        <span>Appearance</span>
-        <svg xmlns="http://www.w3.org/2000/svg" class="collapsible-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m6 9 6 6 6-6" />
-        </svg>
-      </summary>
-      <div class="collapsible-content">
-        <p class="m-0">Customize the look and feel of your workspace.</p>
-      </div>
-    </details>
-    <details class="collapsible">
-      <summary class="collapsible-trigger">
-        <span>Notifications</span>
-        <svg xmlns="http://www.w3.org/2000/svg" class="collapsible-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m6 9 6 6 6-6" />
-        </svg>
-      </summary>
-      <div class="collapsible-content">
-        <p class="m-0">Manage your notification preferences.</p>
-      </div>
-    </details>
-    <details class="collapsible">
-      <summary class="collapsible-trigger">
-        <span>Privacy</span>
-        <svg xmlns="http://www.w3.org/2000/svg" class="collapsible-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m6 9 6 6 6-6" />
-        </svg>
-      </summary>
-      <div class="collapsible-content">
-        <p class="m-0">Control your privacy and data sharing settings.</p>
-      </div>
-    </details>
-  </div>
-</Example>
+```html example label="Multiple Sections" hint="Stack multiple collapsibles for a settings-style panel."
+<div style="width:100%;max-width:24rem;display:flex;flex-direction:column;gap:0.5rem;">
+  <details class="collapsible">
+    <summary class="collapsible-trigger">
+      <span>Appearance</span>
+      <svg xmlns="http://www.w3.org/2000/svg" class="collapsible-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m6 9 6 6 6-6" />
+      </svg>
+    </summary>
+    <div class="collapsible-content">
+      <p class="m-0">Customize the look and feel of your workspace.</p>
+    </div>
+  </details>
+  <details class="collapsible">
+    <summary class="collapsible-trigger">
+      <span>Notifications</span>
+      <svg xmlns="http://www.w3.org/2000/svg" class="collapsible-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m6 9 6 6 6-6" />
+      </svg>
+    </summary>
+    <div class="collapsible-content">
+      <p class="m-0">Manage your notification preferences.</p>
+    </div>
+  </details>
+  <details class="collapsible">
+    <summary class="collapsible-trigger">
+      <span>Privacy</span>
+      <svg xmlns="http://www.w3.org/2000/svg" class="collapsible-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m6 9 6 6 6-6" ></svg>
+      </svg>
+    </summary>
+    <div class="collapsible-content">
+      <p class="m-0">Control your privacy and data sharing settings.</p>
+    </div>
+  </details>
+</div>
+```
 
-<Example previewStyle="flex-direction:column;align-items:stretch;gap:1rem;">
-  <ExampleLabel>Density</ExampleLabel>
-  <ExampleHint>Set <code>data-density</code> on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), typography and fixed dimensions stay identical. <code>comfortable</code> matches the unsized default.</ExampleHint>
-  <div style="width:100%;max-width:24rem;">
-    <p class="demo-label">Compact</p>
-    <details class="collapsible" open data-density="compact">
-      <summary class="collapsible-trigger"><span>Trigger padding shrinks</span><svg class="collapsible-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></summary>
-      <div class="collapsible-content"><p class="m-0">The trigger and content paddings scale — the copy stays exactly the same.</p></div>
-    </details>
-    <p class="demo-label" style="margin-top:1rem;">Comfortable</p>
-    <details class="collapsible" open data-density="comfortable">
-      <summary class="collapsible-trigger"><span>Identical to the default</span><svg class="collapsible-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></summary>
-      <div class="collapsible-content"><p class="m-0">The trigger and content paddings scale — the copy stays exactly the same.</p></div>
-    </details>
-    <p class="demo-label" style="margin-top:1rem;">Spacious</p>
-    <details class="collapsible" open data-density="spacious">
-      <summary class="collapsible-trigger"><span>Trigger padding grows</span><svg class="collapsible-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></summary>
-      <div class="collapsible-content"><p class="m-0">The trigger and content paddings scale — the copy stays exactly the same.</p></div>
-    </details>
-  </div>
-</Example>
+```html example label="Density" hint="Set data-density on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25), typography and fixed dimensions stay identical. comfortable matches the unsized default." previewStyle="flex-direction:column;align-items:stretch;gap:1rem;"
+<div style="width:100%;max-width:24rem;">
+  <p class="demo-label">Compact</p>
+  <details class="collapsible" open data-density="compact">
+    <summary class="collapsible-trigger"><span>Trigger padding shrinks</span><svg class="collapsible-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></summary>
+    <div class="collapsible-content"><p class="m-0">The trigger and content paddings scale — the copy stays exactly the same.</p></div>
+  </details>
+  <p class="demo-label" style="margin-top:1rem;">Comfortable</p>
+  <details class="collapsible" open data-density="comfortable">
+    <summary class="collapsible-trigger"><span>Identical to the default</span><svg class="collapsible-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></summary>
+    <div class="collapsible-content"><p class="m-0">The trigger and content paddings scale — the copy stays exactly the same.</p></div>
+  </details>
+  <p class="demo-label" style="margin-top:1rem;">Spacious</p>
+  <details class="collapsible" open data-density="spacious">
+    <summary class="collapsible-trigger"><span>Trigger padding grows</span><svg class="collapsible-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" ></svg></svg></summary>
+    <div class="collapsible-content"><p class="m-0">The trigger and content paddings scale — the copy stays exactly the same.</p></div>
+  </details>
+</div>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground">Machine contract — verified against <a href="../schemas/collapsible.schema.json"><code>collapsible.schema.json</code></a> by <code>bun run verify</code>:</p>
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `open` | `boolean` | `true`, `false` | `false` | Content revealed — native `<details open>` (panel ⇄ clicking the summary). |
+```
+
+</StatesSection>
 
 <SourceFiles component="collapsible" section="css">
   <SourceNote for="css">Styles for the collapsible component. Uses design tokens for colors, spacing, and radius.</SourceNote>

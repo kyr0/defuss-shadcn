@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "name": "textarea",
+  "states": {
+    "value": {
+      "type": "string",
+      "default": "",
+      "target": {
+        "kind": "selector",
+        "selector": ".textarea"
+      },
+      "mutation": {
+        "kind": "property",
+        "name": "value"
+      },
+      "observation": {
+        "kind": "property",
+        "name": "value"
+      },
+      "editor": {
+        "component": "text"
+      }
+    },
+    "disabled": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".textarea"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "disabled"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "disabled"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "required": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".textarea"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "required"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "required"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "invalid": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".textarea"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "aria-invalid"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "aria-invalid"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

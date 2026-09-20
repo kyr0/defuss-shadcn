@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "name": "file-input",
+  "states": {
+    "disabled": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".file-input"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "disabled"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "disabled"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "size": {
+      "type": "enum",
+      "values": [
+        "sm",
+        "md",
+        "lg"
+      ],
+      "default": "md",
+      "target": {
+        "kind": "selector",
+        "selector": ".file-input"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "data-size"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-size"
+      },
+      "editor": {
+        "component": "radio"
+      }
+    }
+  },
+  "actions": {}
+}

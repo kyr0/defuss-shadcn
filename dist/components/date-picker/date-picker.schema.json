@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "name": "date-picker",
+  "states": {
+    "value": {
+      "type": "string",
+      "default": "",
+      "target": {
+        "kind": "selector",
+        "selector": ".date-input"
+      },
+      "mutation": {
+        "kind": "property",
+        "name": "value"
+      },
+      "observation": {
+        "kind": "property",
+        "name": "value"
+      },
+      "editor": {
+        "component": "text"
+      }
+    },
+    "minDate": {
+      "type": "string",
+      "default": "",
+      "target": {
+        "kind": "selector",
+        "selector": ".date-input"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "min"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "min"
+      },
+      "editor": {
+        "component": "text"
+      }
+    },
+    "maxDate": {
+      "type": "string",
+      "default": "",
+      "target": {
+        "kind": "selector",
+        "selector": ".date-input"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "max"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "max"
+      },
+      "editor": {
+        "component": "text"
+      }
+    },
+    "disabled": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".date-input"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "disabled"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "disabled"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

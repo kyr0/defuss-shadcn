@@ -367,18 +367,25 @@ test('component skill link toggles its <details> natively (no modal intercept)',
 
 test('field description example wires aria-describedby to its input', async () => {
   // regression: doc examples showed a .field-description under the field with
-  // no aria-describedby — sighted users see the hint, screen-reader users
+  // no aria-describedby — sighted users see the hint, screen-runner users
   // heard nothing. The pattern is gated by verify's `field description wiring`;
-  // this proves it in the rendered page.
+  // the demo now runs inside the CodeExample sandbox (opaque origin — the
+  // parent cannot read into it), so this proves the wiring on the fence source
+  // the sandbox renders verbatim: the editable <textarea> IS the executed DOM's
+  // single source (plan §5).
   const { doc } = await openDocPage('label.html');
 
-  const input = doc.querySelector('#demo-username') as HTMLInputElement;
-  const descId = input.getAttribute('aria-describedby');
-  expect(descId, 'input must reference a description id').toBeTruthy();
+  const src = [...doc.querySelectorAll<HTMLTextAreaElement>('textarea.code-example-src')]
+    .map((t) => t.value)
+    .find((v) => v.includes('id="username"'));
+  expect(src, 'the username demo fence exists on the page').toBeTruthy();
 
-  const desc = doc.getElementById(descId!);
-  expect(desc?.classList.contains('field-description'), 'referenced element is the field description').toBe(true);
-  expect(desc?.textContent, 'description carries the help text').toContain('public display name');
+  // the aria-describedby of the input tag itself (attribute order-independent)
+  const inputTag = /<input[^>]*id="username"[^>]*>/.exec(src!)![0];
+  const descId = /aria-describedby="([^"]+)"/.exec(inputTag)?.[1];
+  expect(descId, 'input must reference a description id').toBeTruthy();
+  expect(src!, 'referenced element is the field description').toContain(`class="field-description" id="${descId}"`);
+  expect(src!, 'description carries the help text').toContain('public display name');
 });
 
 test('code collapse-all toggles every snippet block — including the standalone CSS/JS source sections', async () => {

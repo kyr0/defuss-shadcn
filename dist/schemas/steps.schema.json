@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "name": "steps",
+  "states": {
+    "activeStep": {
+      "type": "number",
+      "default": 2,
+      "target": {
+        "kind": "selector",
+        "selector": ".steps"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "data-active-step"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-active-step"
+      },
+      "editor": {
+        "component": "number"
+      }
+    },
+    "errorStep": {
+      "type": "number",
+      "default": 0,
+      "target": {
+        "kind": "selector",
+        "selector": ".steps"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "data-error-step"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-error-step"
+      },
+      "editor": {
+        "component": "number"
+      }
+    },
+    "size": {
+      "type": "enum",
+      "values": [
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl"
+      ],
+      "default": "md",
+      "target": {
+        "kind": "selector",
+        "selector": ".steps"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "data-size"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-size"
+      },
+      "editor": {
+        "component": "radio"
+      }
+    },
+    "activeStepError": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".steps"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "data-error-step"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-error-step"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "name": "scroll-area",
+  "states": {
+    "scrollTop": {
+      "type": "number",
+      "default": 0,
+      "target": {
+        "kind": "selector",
+        "selector": ".scroll-area"
+      },
+      "mutation": {
+        "kind": "property",
+        "name": "scrollTop"
+      },
+      "observation": {
+        "kind": "property",
+        "name": "scrollTop"
+      },
+      "editor": {
+        "component": "number"
+      }
+    }
+  },
+  "actions": {}
+}

@@ -4,7 +4,7 @@ description: "Icon component — Lucide icons sized and colored with CSS custom 
 slug: "icon"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -46,123 +46,74 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first previewStyle="gap:1.5rem;">
-  <ExampleLabel>Basic usage</ExampleLabel>
-  <ExampleHint>Use <code>data-lucide</code> with any icon name from <DocLink href="https://lucide.dev/icons/" target="_blank">lucide.dev/icons</DocLink>.</ExampleHint>
-  <i data-lucide="home" />
-  <i data-lucide="settings" />
-  <i data-lucide="user" />
-  <i data-lucide="search" />
-  <i data-lucide="bell" />
-  <i data-lucide="mail" />
-  <i data-lucide="heart" />
-  <i data-lucide="star" />
-  <ExampleCode>{"<i data-lucide=\"home\"></i>\n<i data-lucide=\"settings\"></i>\n<i data-lucide=\"user\"></i>\n<i data-lucide=\"search\"></i>"}</ExampleCode>
-</Example>
+```html example label="Basic usage" hint="Use data-lucide with any icon name from lucide.dev/icons." previewStyle="gap:1.5rem;"
+<i data-lucide="home"></i>
+<i data-lucide="settings"></i>
+<i data-lucide="user"></i>
+<i data-lucide="search"></i>
+```
 
-<Example first previewStyle="gap:2rem;align-items:center;">
-  <ExampleLabel>Sizes</ExampleLabel>
-  <ExampleHint>Use <code>data-size</code> to control icon size.</ExampleHint>
-  <div class="flex flex-col items-center gap-2">
-    <i data-lucide="star" data-size="xs" />
-    <span class="mono-meta">xs (12px)</span>
-  </div>
-  <div class="flex flex-col items-center gap-2">
-    <i data-lucide="star" data-size="sm" />
-    <span class="mono-meta">sm (14px)</span>
-  </div>
-  <div class="flex flex-col items-center gap-2">
-    <i data-lucide="star" />
-    <span class="mono-meta">default (16px)</span>
-  </div>
-  <div class="flex flex-col items-center gap-2">
-    <i data-lucide="star" data-size="md" />
-    <span class="mono-meta">md (20px)</span>
-  </div>
-  <div class="flex flex-col items-center gap-2">
-    <i data-lucide="star" data-size="lg" />
-    <span class="mono-meta">lg (24px)</span>
-  </div>
-  <div class="flex flex-col items-center gap-2">
-    <i data-lucide="star" data-size="xl" />
-    <span class="mono-meta">xl (32px)</span>
-  </div>
-  <ExampleCode>{"<i data-lucide=\"star\" data-size=\"xs\"></i>\n<i data-lucide=\"star\" data-size=\"sm\"></i>\n<i data-lucide=\"star\"></i>\n<i data-lucide=\"star\" data-size=\"md\"></i>\n<i data-lucide=\"star\" data-size=\"lg\"></i>\n<i data-lucide=\"star\" data-size=\"xl\"></i>"}</ExampleCode>
-</Example>
+```html example label="Sizes" hint="Use data-size to control icon size." previewStyle="gap:2rem;align-items:center;"
+<i data-lucide="star" data-size="xs"></i>
+<i data-lucide="star" data-size="sm"></i>
+<i data-lucide="star"></i>
+<i data-lucide="star" data-size="md"></i>
+<i data-lucide="star" data-size="lg"></i>
+<i data-lucide="star" data-size="xl"></i>
+```
 
-<Example first>
-  <ExampleLabel>With buttons</ExampleLabel>
-  <ExampleHint>Icons inside buttons inherit the button's color.</ExampleHint>
-  <button class="btn" data-variant="default"><i data-lucide="save" /> Save </button>
-  <button class="btn" data-variant="outline"><i data-lucide="download" /> Download </button>
-  <button class="btn" data-variant="destructive"><i data-lucide="trash" /> Delete </button>
-  <button class="btn" data-variant="outline" data-size="icon" aria-label="Settings">
-    <i data-lucide="settings" />
-  </button>
-  <ExampleCode>{"<button class=\"btn\" data-variant=\"default\">\n  <i data-lucide=\"save\"></i>\n  Save\n</button>\n\n<button class=\"btn\" data-variant=\"outline\" data-size=\"icon\" aria-label=\"Settings\">\n  <i data-lucide=\"settings\"></i>\n</button>"}</ExampleCode>
-</Example>
+```html example label="With buttons" hint="Icons inside buttons inherit the button's color."
+<button class="btn" data-variant="default">
+  <i data-lucide="save"></i>
+  Save
+</button>
 
-<Example first previewStyle="gap:1.5rem;">
-  <ExampleLabel>Color</ExampleLabel>
-  <ExampleHint>Icons inherit <code>currentColor</code>. Change color with text color utilities.</ExampleHint>
-  <i data-lucide="circle-check" data-size="lg" style="color:oklch(0.72 0.19 142);" />
-  <i data-lucide="alert-triangle" data-size="lg" style="color:oklch(0.77 0.17 75);" />
-  <i data-lucide="x-circle" data-size="lg" style="color:var(--destructive);" />
-  <i data-lucide="info" data-size="lg" style="color:oklch(0.62 0.21 255);" />
-  <ExampleCode>{"<i data-lucide=\"circle-check\" data-size=\"lg\" style=\"color:oklch(0.72 0.19 142);\"></i>\n<i data-lucide=\"alert-triangle\" data-size=\"lg\" style=\"color:oklch(0.77 0.17 75);\"></i>\n<i data-lucide=\"x-circle\" data-size=\"lg\" style=\"color:var(--destructive);\"></i>\n<i data-lucide=\"info\" data-size=\"lg\" style=\"color:oklch(0.62 0.21 255);\"></i>"}</ExampleCode>
-</Example>
+<button class="btn" data-variant="outline" data-size="icon" aria-label="Settings">
+  <i data-lucide="settings"></i>
+</button>
+```
 
-<Example first previewStyle="gap:2rem;align-items:center;">
-  <ExampleLabel>Stroke width</ExampleLabel>
-  <ExampleHint>Adjust line thickness with the <code>stroke-width</code> attribute. Default is <code>2</code>.</ExampleHint>
-  <div class="flex flex-col items-center gap-2">
-    <i data-lucide="heart" data-size="lg" stroke-width="1" />
-    <span class="mono-meta">1</span>
-  </div>
-  <div class="flex flex-col items-center gap-2">
-    <i data-lucide="heart" data-size="lg" stroke-width="1.5" />
-    <span class="mono-meta">1.5</span>
-  </div>
-  <div class="flex flex-col items-center gap-2">
-    <i data-lucide="heart" data-size="lg" stroke-width="2" />
-    <span class="mono-meta">2</span>
-  </div>
-  <div class="flex flex-col items-center gap-2">
-    <i data-lucide="heart" data-size="lg" stroke-width="3" />
-    <span class="mono-meta">3</span>
-  </div>
-  <ExampleCode>{"<i data-lucide=\"heart\" data-size=\"lg\" stroke-width=\"1\"></i>\n<i data-lucide=\"heart\" data-size=\"lg\" stroke-width=\"1.5\"></i>\n<i data-lucide=\"heart\" data-size=\"lg\" stroke-width=\"2\"></i>\n<i data-lucide=\"heart\" data-size=\"lg\" stroke-width=\"3\"></i>"}</ExampleCode>
-</Example>
+```html example label="Color" hint="Icons inherit currentColor. Change color with text color utilities." previewStyle="gap:1.5rem;"
+<i data-lucide="circle-check" data-size="lg" style="color:oklch(0.72 0.19 142);"></i>
+<i data-lucide="alert-triangle" data-size="lg" style="color:oklch(0.77 0.17 75);"></i>
+<i data-lucide="x-circle" data-size="lg" style="color:var(--destructive);"></i>
+<i data-lucide="info" data-size="lg" style="color:oklch(0.62 0.21 255);"></i>
+```
 
-<Example first previewStyle="gap:2rem;align-items:center;">
-  <ExampleLabel>Accessible icon</ExampleLabel>
-  <ExampleHint>For standalone icons that convey meaning, use visually-hidden text or <code>aria-label</code>.</ExampleHint>
-  <span style="display:inline-flex;align-items:center;">
-    <i data-lucide="phone" data-size="md" aria-hidden="true" />
-    <span class="sr-only">Phone number</span>
-  </span>
-  <i data-lucide="alert-triangle" data-size="md" aria-label="Warning" role="img" />
-  <ExampleCode>{"<!-- Preferred: visually-hidden text -->\n<span style=\"display:inline-flex;align-items:center;\">\n  <i data-lucide=\"phone\" aria-hidden=\"true\"></i>\n  <span class=\"sr-only\">Phone number</span>\n</span>\n\n<!-- Alternative: aria-label -->\n<i data-lucide=\"alert-triangle\" aria-label=\"Warning\" role=\"img\"></i>"}</ExampleCode>
-</Example>
+```html example label="Stroke width" hint="Adjust line thickness with the stroke-width attribute. Default is 2." previewStyle="gap:2rem;align-items:center;"
+<i data-lucide="heart" data-size="lg" stroke-width="1"></i>
+<i data-lucide="heart" data-size="lg" stroke-width="1.5"></i>
+<i data-lucide="heart" data-size="lg" stroke-width="2"></i>
+<i data-lucide="heart" data-size="lg" stroke-width="3"></i>
+```
 
-<Example first previewStyle="gap:2rem;align-items:center;">
-  <ExampleLabel>Animated (spinner)</ExampleLabel>
-  <ExampleHint>Add <code>data-animate="spin"</code> for loading indicators. Animation is suppressed when the user has <code>prefers-reduced-motion</code> enabled.</ExampleHint>
-  <i data-lucide="loader-circle" data-size="md" data-animate="spin" />
-  <button class="btn" data-variant="outline" disabled><i data-lucide="loader-circle" data-animate="spin" /> Loading… </button>
-  <ExampleCode>{"<i data-lucide=\"loader-circle\" data-size=\"md\" data-animate=\"spin\"></i>\n\n<button class=\"btn\" data-variant=\"outline\" disabled>\n  <i data-lucide=\"loader-circle\" data-animate=\"spin\"></i>\n  Loading…\n</button>"}</ExampleCode>
-</Example>
+```html example label="Accessible icon" hint="For standalone icons that convey meaning, use visually-hidden text or aria-label." previewStyle="gap:2rem;align-items:center;"
+<!-- Preferred: visually-hidden text -->
+<span style="display:inline-flex;align-items:center;">
+  <i data-lucide="phone" aria-hidden="true"></i>
+  <span class="sr-only">Phone number</span>
+</span>
 
-<Example first previewStyle="gap:1.5rem;align-items:center;">
-  <ExampleLabel>Filled icons</ExampleLabel>
-  <ExampleHint>Use the <code>fill</code> and <code>stroke-width</code> attributes for filled icon variants. Works well with simple shapes.</ExampleHint>
-  <i data-lucide="star" data-size="lg" fill="currentColor" stroke-width="0" />
-  <i data-lucide="heart" data-size="lg" fill="currentColor" stroke-width="0" />
-  <i data-lucide="circle" data-size="lg" fill="currentColor" stroke-width="0" />
-  <i data-lucide="bookmark" data-size="lg" fill="currentColor" stroke-width="0" />
-  <i data-lucide="star" data-size="lg" fill="currentColor" stroke-width="1" style="color:oklch(0.77 0.17 75);" />
-  <ExampleCode>{"<i data-lucide=\"star\" data-size=\"lg\" fill=\"currentColor\" stroke-width=\"0\"></i>\n<i data-lucide=\"heart\" data-size=\"lg\" fill=\"currentColor\" stroke-width=\"0\"></i>\n\n<!-- Filled with stroke outline -->\n<i data-lucide=\"star\" data-size=\"lg\" fill=\"currentColor\" stroke-width=\"1\"></i>"}</ExampleCode>
-</Example>
+<!-- Alternative: aria-label -->
+<i data-lucide="alert-triangle" aria-label="Warning" role="img"></i>
+```
+
+```html example label="Animated (spinner)" hint="Add data-animate='spin' for loading indicators. Animation is suppressed when the user has prefers-reduced-motion enabled." previewStyle="gap:2rem;align-items:center;"
+<i data-lucide="loader-circle" data-size="md" data-animate="spin"></i>
+
+<button class="btn" data-variant="outline" disabled>
+  <i data-lucide="loader-circle" data-animate="spin"></i>
+  Loading…
+</button>
+```
+
+```html example label="Filled icons" hint="Use the fill and stroke-width attributes for filled icon variants. Works well with simple shapes." previewStyle="gap:1.5rem;align-items:center;"
+<i data-lucide="star" data-size="lg" fill="currentColor" stroke-width="0"></i>
+<i data-lucide="heart" data-size="lg" fill="currentColor" stroke-width="0"></i>
+
+<!-- Filled with stroke outline -->
+<i data-lucide="star" data-size="lg" fill="currentColor" stroke-width="1"></i>
+```
 
 <p class="text-sm font-medium mb-2 mt-6">Browse all icons</p>
 

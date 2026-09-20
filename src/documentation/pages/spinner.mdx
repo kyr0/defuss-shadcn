@@ -4,7 +4,7 @@ description: "Spinner component — loading indicators with CSS animations."
 slug: "spinner"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -47,44 +47,28 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first>
-  <ExampleLabel>Default</ExampleLabel>
-  <ExampleHint>Standard spinner at default size.</ExampleHint>
-  <svg class="spinner" role="status" aria-label="Loading" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-  </svg>
-  <ExampleCode>{"<svg class=\"spinner\" role=\"status\" aria-label=\"Loading\" viewBox=\"0 0 24 24\"\n     fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"\n     stroke-linecap=\"round\" stroke-linejoin=\"round\">\n  <path d=\"M21 12a9 9 0 1 1-6.219-8.56\"/>\n</svg>"}</ExampleCode>
-</Example>
+```html example label="Default" hint="Standard spinner at default size."
+<svg class="spinner" role="status" aria-label="Loading" viewBox="0 0 24 24"
+     fill="none" stroke="currentColor" stroke-width="2"
+     stroke-linecap="round" stroke-linejoin="round">
+  <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
+</svg>
+```
 
-<Example>
-  <ExampleLabel>Sizes</ExampleLabel>
-  <ExampleHint>The full five-step scale via <code>data-size</code> — the default is <code>1rem</code>, between <code>sm</code> and <code>md</code>.</ExampleHint>
-  <div style="display:flex;gap:1.5rem;align-items:center;">
-    <svg class="spinner" data-size="xs" role="status" aria-label="Loading" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-    </svg>
-    <svg class="spinner" data-size="sm" role="status" aria-label="Loading" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-    </svg>
-    <svg class="spinner" data-size="md" role="status" aria-label="Loading" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-    </svg>
-    <svg class="spinner" data-size="lg" role="status" aria-label="Loading" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-    </svg>
-    <svg class="spinner" data-size="xl" role="status" aria-label="Loading" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-    </svg>
-  </div>
-  <ExampleCode>{"<svg class=\"spinner\" data-size=\"xs\">...</svg>\n<svg class=\"spinner\" data-size=\"sm\">...</svg>\n<svg class=\"spinner\" data-size=\"md\">...</svg>\n<svg class=\"spinner\" data-size=\"lg\">...</svg>\n<svg class=\"spinner\" data-size=\"xl\">...</svg>"}</ExampleCode>
-</Example>
+```html example label="Sizes" hint="The full five-step scale via data-size — the default is 1rem, between sm and md."
+<svg class="spinner" data-size="xs">...</svg>
+<svg class="spinner" data-size="sm">...</svg>
+<svg class="spinner" data-size="md">...</svg>
+<svg class="spinner" data-size="lg">...</svg>
+<svg class="spinner" data-size="xl">...</svg>
+```
 
-<Example>
-  <ExampleLabel>In Button</ExampleLabel>
-  <ExampleHint>Spinner inside a loading button.</ExampleHint>
-  <button class="btn" data-variant="default" disabled><svg class="spinner" data-size="sm" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg> Loading... </button>
-  <ExampleCode>{"<button class=\"btn\" data-variant=\"default\" disabled>\n  <svg class=\"spinner\" data-size=\"sm\" aria-hidden=\"true\">...</svg>\n  Loading...\n</button>"}</ExampleCode>
-</Example>
+```html example label="In Button" hint="Spinner inside a loading button."
+<button class="btn" data-variant="default" disabled>
+  <svg class="spinner" data-size="sm" aria-hidden="true">...</svg>
+  Loading...
+</button>
+```
 
 <SourceFiles component="spinner" section="css">
   <SourceNote for="css">Styles for the spinner component. Uses design tokens for colors, spacing, and radius.</SourceNote>

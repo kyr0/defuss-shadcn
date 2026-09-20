@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "name": "switch",
+  "states": {
+    "checked": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".switch"
+      },
+      "mutation": {
+        "kind": "property",
+        "name": "checked"
+      },
+      "observation": {
+        "kind": "property",
+        "name": "checked"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "disabled": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".switch"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "disabled"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "disabled"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "size": {
+      "type": "enum",
+      "values": [
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl"
+      ],
+      "default": "md",
+      "target": {
+        "kind": "selector",
+        "selector": ".switch"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "data-size"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-size"
+      },
+      "editor": {
+        "component": "radio"
+      }
+    }
+  },
+  "actions": {}
+}

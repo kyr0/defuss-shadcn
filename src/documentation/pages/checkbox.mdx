@@ -4,7 +4,7 @@ description: "Checkbox component — native checkboxes with custom styling and i
 slug: "checkbox"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -49,101 +49,72 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first>
-  <ExampleLabel>Default</ExampleLabel>
-  <ExampleHint>Basic checkbox with label.</ExampleHint>
+```html example label="Default" hint="Basic checkbox with label."
+<input class="checkbox" type="checkbox" id="terms">
+<label for="terms">Accept terms and conditions</label>
+```
+
+```html example label="With description" hint="Checkbox with helper text."
+<input class="checkbox" type="checkbox" id="notify" aria-describedby="notify-desc">
+<div>
+  <label for="notify">Enable notifications</label>
+  <p class="field-description" id="notify-desc">...</p>
+</div>
+```
+
+```html example label="Disabled"
+<input class="checkbox" type="checkbox" disabled>
+<input class="checkbox" type="checkbox" disabled checked>
+```
+
+```html example label="Checked by default"
+<input class="checkbox" type="checkbox" id="option" checked>
+<label for="option">Pre-checked option</label>
+```
+
+```html example label="Indeterminate" hint="Set via JavaScript: checkbox.indeterminate = true."
+<input class="checkbox" type="checkbox" id="select-all">
+<label for="select-all">Select all</label>
+
+<script>
+  document.getElementById('select-all').indeterminate = true;
+</script>
+```
+
+```html example label="Invalid" hint="Shows destructive border via aria-invalid='true'."
+<input class="checkbox" type="checkbox" aria-invalid="true">
+<label for="terms">Accept terms and conditions</label>
+```
+
+```html example label="Group" hint="Multiple checkboxes in a group using &lt;fieldset&gt; and &lt;legend&gt;."
+<fieldset aria-describedby="grp-desc">
+  <legend>Select items to display on the desktop:</legend>
+  <p class="field-description" id="grp-desc">Choose which items are visible.</p>
   <div class="checkbox-item">
-    <input class="checkbox" type="checkbox" id="d-terms" />
-    <label for="d-terms" style="font-size:0.875rem;">Accept terms and conditions</label>
+    <input class="checkbox" type="checkbox" id="item-1" checked>
+    <label for="item-1">Hard disks</label>
   </div>
-  <ExampleCode>{"<input class=\"checkbox\" type=\"checkbox\" id=\"terms\">\n<label for=\"terms\">Accept terms and conditions</label>"}</ExampleCode>
-</Example>
-
-<Example>
-  <ExampleLabel>With description</ExampleLabel>
-  <ExampleHint>Checkbox with helper text.</ExampleHint>
-  <div class="checkbox-item-block">
-    <input class="checkbox" type="checkbox" id="d-notify" style="margin-top:0.125rem;" aria-describedby="d-notify-desc" />
-    <div>
-      <label for="d-notify" class="item-title">Enable notifications</label>
-      <p class="field-description" id="d-notify-desc">You can enable or disable notifications at any time.</p>
-    </div>
-  </div>
-  <ExampleCode>{"<input class=\"checkbox\" type=\"checkbox\" id=\"notify\" aria-describedby=\"notify-desc\">\n<div>\n  <label for=\"notify\">Enable notifications</label>\n  <p class=\"field-description\" id=\"notify-desc\">...</p>\n</div>"}</ExampleCode>
-</Example>
-
-<Example>
-  <ExampleLabel>Disabled</ExampleLabel>
-  <div style="display:flex;align-items:center;gap:0.75rem;">
-    <div class="checkbox-item">
-      <input class="checkbox" type="checkbox" id="d-dis" disabled />
-      <label for="d-dis">Disabled</label>
-    </div>
-    <div class="checkbox-item">
-      <input class="checkbox" type="checkbox" id="d-dis-checked" disabled checked />
-      <label for="d-dis-checked">Disabled checked</label>
-    </div>
-  </div>
-  <ExampleCode>{"<input class=\"checkbox\" type=\"checkbox\" disabled>\n<input class=\"checkbox\" type=\"checkbox\" disabled checked>"}</ExampleCode>
-</Example>
-
-<Example>
-  <ExampleLabel>Checked by default</ExampleLabel>
   <div class="checkbox-item">
-    <input class="checkbox" type="checkbox" id="d-pre-checked" checked />
-    <label for="d-pre-checked" style="font-size:0.875rem;">Pre-checked option</label>
+    <input class="checkbox" type="checkbox" id="item-2" checked>
+    <label for="item-2">External disks</label>
   </div>
-  <ExampleCode>{"<input class=\"checkbox\" type=\"checkbox\" id=\"option\" checked>\n<label for=\"option\">Pre-checked option</label>"}</ExampleCode>
-</Example>
+  <!-- ... more items -->
+</fieldset>
+```
 
-<Example>
-  <ExampleLabel>Indeterminate</ExampleLabel>
-  <ExampleHint>Set via JavaScript: <code>checkbox.indeterminate = true</code>.</ExampleHint>
-  <div class="checkbox-item">
-    <input class="checkbox" type="checkbox" id="d-indeterminate" />
-    <label for="d-indeterminate" style="font-size:0.875rem;">Select all</label>
-  </div>
-  <script>{"document.getElementById('d-indeterminate').indeterminate = true;"}</script>
-  <ExampleCode>{"<input class=\"checkbox\" type=\"checkbox\" id=\"select-all\">\n<label for=\"select-all\">Select all</label>\n\n<script>\n  document.getElementById('select-all').indeterminate = true;\n</script>"}</ExampleCode>
-</Example>
+<StatesSection>
+  <p class="text-sm text-muted-foreground">Machine contract — verified against <a href="../schemas/checkbox.schema.json"><code>checkbox.schema.json</code></a> by <code>bun run verify</code>:</p>
 
-<Example>
-  <ExampleLabel>Invalid</ExampleLabel>
-  <ExampleHint>Shows destructive border via <code>aria-invalid="true"</code>.</ExampleHint>
-  <div class="checkbox-item">
-    <input class="checkbox" type="checkbox" id="d-invalid" aria-invalid="true" />
-    <label for="d-invalid" style="font-size:0.875rem;">Accept terms and conditions</label>
-  </div>
-  <ExampleCode>{"<input class=\"checkbox\" type=\"checkbox\" aria-invalid=\"true\">\n<label for=\"terms\">Accept terms and conditions</label>"}</ExampleCode>
-</Example>
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `checked` | `boolean` | `true`, `false` | `false` | Native checked state (panel checkbox ⇄ real click, both directions). |
+| `disabled` | `boolean` | `true`, `false` | `false` | Interaction off (native `disabled` attribute). |
+| `required` | `boolean` | `true`, `false` | `false` | Post-validation marks the field invalid (`:user-invalid`). |
+| `invalid` | `boolean` | `true`, `false` | `false` | Manual invalid flag (`aria-invalid="true"`). |
+```
 
-<Example>
-  <ExampleLabel>Group</ExampleLabel>
-  <ExampleHint>Multiple checkboxes in a group using <code>&lt;fieldset&gt;</code> and <code>&lt;legend&gt;</code>.</ExampleHint>
-  <fieldset style="border:none;padding:0;margin:0;" aria-describedby="d-grp-desc">
-    <legend style="font-size:0.875rem;font-weight:500;margin-bottom:0.25rem;">Select items to display on the desktop:</legend>
-    <p class="field-description" id="d-grp-desc" style="margin-bottom:0.75rem;">Choose which items are visible.</p>
-    <div style="display:flex;flex-direction:column;gap:0.5rem;">
-      <div class="checkbox-item">
-        <input class="checkbox" type="checkbox" id="d-grp-1" checked />
-        <label for="d-grp-1" style="font-size:0.875rem;">Hard disks</label>
-      </div>
-      <div class="checkbox-item">
-        <input class="checkbox" type="checkbox" id="d-grp-2" checked />
-        <label for="d-grp-2" style="font-size:0.875rem;">External disks</label>
-      </div>
-      <div class="checkbox-item">
-        <input class="checkbox" type="checkbox" id="d-grp-3" />
-        <label for="d-grp-3" style="font-size:0.875rem;">CDs, DVDs, and iPods</label>
-      </div>
-      <div class="checkbox-item">
-        <input class="checkbox" type="checkbox" id="d-grp-4" />
-        <label for="d-grp-4" style="font-size:0.875rem;">Connected servers</label>
-      </div>
-    </div>
-  </fieldset>
-  <ExampleCode>{"<fieldset aria-describedby=\"grp-desc\">\n  <legend>Select items to display on the desktop:</legend>\n  <p class=\"field-description\" id=\"grp-desc\">Choose which items are visible.</p>\n  <div class=\"checkbox-item\">\n    <input class=\"checkbox\" type=\"checkbox\" id=\"item-1\" checked>\n    <label for=\"item-1\">Hard disks</label>\n  </div>\n  <div class=\"checkbox-item\">\n    <input class=\"checkbox\" type=\"checkbox\" id=\"item-2\" checked>\n    <label for=\"item-2\">External disks</label>\n  </div>\n  <!-- ... more items -->\n</fieldset>"}</ExampleCode>
-</Example>
+</StatesSection>
 
 <SourceFiles component="checkbox" section="css" />
 

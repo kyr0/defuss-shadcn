@@ -4,7 +4,7 @@ description: "Button Group component — group related buttons with shared borde
 slug: "button-group"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -49,98 +49,54 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first>
-  <ExampleLabel>Horizontal</ExampleLabel>
-  <ExampleHint>Default horizontal group with connected outline buttons.</ExampleHint>
-  <div class="btn-group" role="group" aria-label="Actions">
-    <button class="btn" data-variant="outline">Save</button>
-    <button class="btn" data-variant="outline">Edit</button>
-    <button class="btn" data-variant="outline">Delete</button>
-  </div>
-  <ExampleCode>{"<div class=\"btn-group\" role=\"group\" aria-label=\"Actions\">\n  <button class=\"btn\" data-variant=\"outline\">Save</button>\n  <button class=\"btn\" data-variant=\"outline\">Edit</button>\n  <button class=\"btn\" data-variant=\"outline\">Delete</button>\n</div>"}</ExampleCode>
-</Example>
+```html example label="Horizontal" hint="Default horizontal group with connected outline buttons."
+<div class="btn-group" role="group" aria-label="Actions">
+  <button class="btn" data-variant="outline">Save</button>
+  <button class="btn" data-variant="outline">Edit</button>
+  <button class="btn" data-variant="outline">Delete</button>
+</div>
+```
 
-<Example>
-  <ExampleLabel>With icons</ExampleLabel>
-  <ExampleHint>Icon-only button group for compact toolbars.</ExampleHint>
-  <div class="btn-group" role="group" aria-label="Formatting">
-    <button class="btn" data-variant="outline" data-size="icon" aria-label="Bold">
-      <i data-lucide="bold" />
-    </button>
-    <button class="btn" data-variant="outline" data-size="icon" aria-label="Italic">
-      <i data-lucide="italic" />
-    </button>
-    <button class="btn" data-variant="outline" data-size="icon" aria-label="Underline">
-      <i data-lucide="underline" />
-    </button>
-  </div>
-  <ExampleCode>{"<div class=\"btn-group\" role=\"group\" aria-label=\"Formatting\">\n  <button class=\"btn\" data-variant=\"outline\" data-size=\"icon\" aria-label=\"Bold\">...</button>\n  <button class=\"btn\" data-variant=\"outline\" data-size=\"icon\" aria-label=\"Italic\">...</button>\n  <button class=\"btn\" data-variant=\"outline\" data-size=\"icon\" aria-label=\"Underline\">...</button>\n</div>"}</ExampleCode>
-</Example>
+```html example label="With icons" hint="Icon-only button group for compact toolbars."
+<div class="btn-group" role="group" aria-label="Formatting">
+  <button class="btn" data-variant="outline" data-size="icon" aria-label="Bold">...</button>
+  <button class="btn" data-variant="outline" data-size="icon" aria-label="Italic">...</button>
+  <button class="btn" data-variant="outline" data-size="icon" aria-label="Underline">...</button>
+</div>
+```
 
-<Example>
-  <ExampleLabel>Vertical</ExampleLabel>
-  <ExampleHint>Stacked buttons with connected top/bottom borders.</ExampleHint>
-  <div class="btn-group" data-orientation="vertical" role="group" aria-label="Navigation">
-    <button class="btn" data-variant="outline">Top</button>
-    <button class="btn" data-variant="outline">Middle</button>
-    <button class="btn" data-variant="outline">Bottom</button>
-  </div>
-  <ExampleCode>{"<div class=\"btn-group\" data-orientation=\"vertical\" role=\"group\" aria-label=\"Nav\">\n  <button class=\"btn\" data-variant=\"outline\">Top</button>\n  <button class=\"btn\" data-variant=\"outline\">Middle</button>\n  <button class=\"btn\" data-variant=\"outline\">Bottom</button>\n</div>"}</ExampleCode>
-</Example>
+```html example label="Vertical" hint="Stacked buttons with connected top/bottom borders."
+<div class="btn-group" data-orientation="vertical" role="group" aria-label="Nav">
+  <button class="btn" data-variant="outline">Top</button>
+  <button class="btn" data-variant="outline">Middle</button>
+  <button class="btn" data-variant="outline">Bottom</button>
+</div>
+```
 
-<Example>
-  <ExampleLabel>Sizes</ExampleLabel>
-  <ExampleHint>Button size is controlled with <code>data-size</code> on the individual <code>.btn</code> children — group them at any step of the full scale.</ExampleHint>
-  <div style="display:flex;flex-direction:column;gap:1.0rem;align-items:center;">
-    <div class="btn-group" role="group" aria-label="Extra small actions">
-      <button class="btn" data-variant="outline" data-size="xs">Save</button>
-      <button class="btn" data-variant="outline" data-size="xs">Edit</button>
-    </div>
-    <div class="btn-group" role="group" aria-label="Medium actions">
-      <button class="btn" data-variant="outline" data-size="md">Save</button>
-      <button class="btn" data-variant="outline" data-size="md">Edit</button>
-    </div>
-    <div class="btn-group" role="group" aria-label="Extra large actions">
-      <button class="btn" data-variant="outline" data-size="xl">Save</button>
-      <button class="btn" data-variant="outline" data-size="xl">Edit</button>
-    </div>
-    <div class="btn-group" role="group" aria-label="Small actions">
-      <button class="btn" data-variant="outline" data-size="sm">Save</button>
-      <button class="btn" data-variant="outline" data-size="sm">Edit</button>
-      <button class="btn" data-variant="outline" data-size="sm" aria-label="More">
-        <i data-lucide="ellipsis" />
-      </button>
-    </div>
-    <div class="btn-group" role="group" aria-label="Default actions">
-      <button class="btn" data-variant="outline">Save</button>
-      <button class="btn" data-variant="outline">Edit</button>
-      <button class="btn" data-variant="outline" data-size="icon" aria-label="More">
-        <i data-lucide="ellipsis" />
-      </button>
-    </div>
-    <div class="btn-group" role="group" aria-label="Large actions">
-      <button class="btn" data-variant="outline" data-size="lg">Save</button>
-      <button class="btn" data-variant="outline" data-size="lg">Edit</button>
-      <button class="btn" data-variant="outline" data-size="icon-lg" aria-label="More">
-        <i data-lucide="ellipsis" />
-      </button>
-    </div>
-  </div>
-  <ExampleCode>{"<!-- Small -->\n<div class=\"btn-group\" role=\"group\" aria-label=\"Actions\">\n  <button class=\"btn\" data-variant=\"outline\" data-size=\"sm\">Save</button>\n  <button class=\"btn\" data-variant=\"outline\" data-size=\"sm\">Edit</button>\n</div>\n\n<!-- Large -->\n<div class=\"btn-group\" role=\"group\" aria-label=\"Actions\">\n  <button class=\"btn\" data-variant=\"outline\" data-size=\"lg\">Save</button>\n  <button class=\"btn\" data-variant=\"outline\" data-size=\"lg\">Edit</button>\n</div>"}</ExampleCode>
-</Example>
+```html example label="Sizes" hint="Button size is controlled with data-size on the individual .btn children — group them at any step of the full scale."
+<!-- Small -->
+<div class="btn-group" role="group" aria-label="Actions">
+  <button class="btn" data-variant="outline" data-size="sm">Save</button>
+  <button class="btn" data-variant="outline" data-size="sm">Edit</button>
+</div>
 
-<Example>
-  <ExampleLabel>Split button</ExampleLabel>
-  <ExampleHint>A primary action button with a dropdown trigger.</ExampleHint>
-  <div class="btn-group" role="group" aria-label="Split action">
-    <button class="btn" data-variant="outline">Save</button>
-    <hr role="separator" />
-    <button class="btn" data-variant="outline" data-size="icon" aria-label="More options">
-      <i data-lucide="chevron-down" />
-    </button>
-  </div>
-  <ExampleCode>{"<div class=\"btn-group\" role=\"group\" aria-label=\"Split action\">\n  <button class=\"btn\" data-variant=\"outline\">Save</button>\n  <hr role=\"separator\">\n  <button class=\"btn\" data-variant=\"outline\" data-size=\"icon\"\n          aria-label=\"More options\">\n    <i data-lucide=\"chevron-down\"></i>\n  </button>\n</div>"}</ExampleCode>
-</Example>
+<!-- Large -->
+<div class="btn-group" role="group" aria-label="Actions">
+  <button class="btn" data-variant="outline" data-size="lg">Save</button>
+  <button class="btn" data-variant="outline" data-size="lg">Edit</button>
+</div>
+```
+
+```html example label="Split button" hint="A primary action button with a dropdown trigger."
+<div class="btn-group" role="group" aria-label="Split action">
+  <button class="btn" data-variant="outline">Save</button>
+  <hr role="separator">
+  <button class="btn" data-variant="outline" data-size="icon"
+          aria-label="More options">
+    <i data-lucide="chevron-down"></i>
+  </button>
+</div>
+```
 
 <SourceFiles component="button-group" section="css" />
 

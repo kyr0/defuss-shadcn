@@ -4,7 +4,7 @@ description: "Steps component — multi-step progress indicator for workflows."
 slug: "steps"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -39,110 +39,41 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-<Example first>
-  <ExampleLabel>Default</ExampleLabel>
-  <ol class="steps" style="max-width:28rem;width:100%;">
+```html example label="Default"
+<ol class="steps" data-active-step="2">
+  <li class="step" data-status="complete">
+    <div class="step-indicator">1</div>
+    <div class="step-content"><p class="step-title">Account</p></div>
+  </li>
+  <li class="step" data-status="current" aria-current="step">
+    <div class="step-indicator">2</div>
+    <div class="step-content"><p class="step-title">Profile</p></div>
+  </li>
+  <li class="step">
+    <div class="step-indicator">3</div>
+    <div class="step-content"><p class="step-title">Complete</p></div>
+  </li>
+</ol>
+```
+
+```html example label="With Form Content" hint="Steps with descriptions, composed with a .card form panel and .btn navigation." previewStyle="flex-direction:column;align-items:stretch;"
+<div style="max-width:32rem;width:100%;">
+  <ol class="steps" style="margin-bottom:1.5rem;">
     <li class="step" data-status="complete">
       <div class="step-indicator">1</div>
       <div class="step-content">
         <p class="step-title">Account</p>
+        <p class="step-description">Create credentials</p>
       </div>
     </li>
     <li class="step" data-status="current" aria-current="step">
       <div class="step-indicator">2</div>
       <div class="step-content">
         <p class="step-title">Profile</p>
-      </div>
-    </li>
-    <li class="step">
-      <div class="step-indicator">3</div>
-      <div class="step-content">
-        <p class="step-title">Complete</p>
-      </div>
-    </li>
-  </ol>
-  <ExampleCode>{"<ol class=\"steps\">\n  <li class=\"step\" data-status=\"complete\">\n    <div class=\"step-indicator\">1</div>\n    <div class=\"step-content\"><p class=\"step-title\">Account</p></div>\n  </li>\n  <li class=\"step\" data-status=\"current\" aria-current=\"step\">\n    <div class=\"step-indicator\">2</div>\n    <div class=\"step-content\"><p class=\"step-title\">Profile</p></div>\n  </li>\n  <li class=\"step\">\n    <div class=\"step-indicator\">3</div>\n    <div class=\"step-content\"><p class=\"step-title\">Complete</p></div>\n  </li>\n</ol>"}</ExampleCode>
-</Example>
-
-<Example noCode previewStyle="flex-direction:column;align-items:stretch;">
-  <ExampleLabel>With Form Content</ExampleLabel>
-  <ExampleHint>Steps with descriptions, composed with a <code>.card</code> form panel and <code>.btn</code> navigation.</ExampleHint>
-  <div style="max-width:32rem;width:100%;">
-    <ol class="steps" style="margin-bottom:1.5rem;">
-      <li class="step" data-status="complete">
-        <div class="step-indicator">1</div>
-        <div class="step-content">
-          <p class="step-title">Account</p>
-          <p class="step-description">Create credentials</p>
-        </div>
-      </li>
-      <li class="step" data-status="current" aria-current="step">
-        <div class="step-indicator">2</div>
-        <div class="step-content">
-          <p class="step-title">Profile</p>
-          <p class="step-description">Personal details</p>
-        </div>
-      </li>
-      <li class="step">
-        <div class="step-indicator">3</div>
-        <div class="step-content">
-          <p class="step-title">Complete</p>
-          <p class="step-description">Review &amp; confirm</p>
-        </div>
-      </li>
-    </ol>
-    <article class="card">
-      <div class="card-header">
-        <p class="card-title">Profile Information</p>
-        <p class="card-description">Tell us about yourself.</p>
-      </div>
-      <div class="card-content">
-        <div style="display:flex;flex-direction:column;gap:0.75rem;">
-          <div>
-            <label class="label" style="margin-bottom:0.375rem;display:block;">Full Name</label>
-            <input class="input" type="text" placeholder="Jordan Davis" />
-          </div>
-          <div>
-            <label class="label" style="margin-bottom:0.375rem;display:block;">Bio</label>
-            <textarea class="textarea" placeholder="Tell us about yourself..." rows="3">{""}</textarea>
-          </div>
-        </div>
-      </div>
-      <div class="card-footer" style="justify-content:space-between;">
-        <button class="btn" data-variant="outline">Back</button>
-        <button class="btn" data-variant="default">Continue</button>
-      </div>
-    </article>
-  </div>
-</Example>
-
-<Example>
-  <ExampleLabel>With checkmarks</ExampleLabel>
-  <ExampleHint>Complete steps show a checkmark SVG instead of the step number.</ExampleHint>
-  <ol class="steps" style="max-width:32rem;width:100%;">
-    <li class="step" data-status="complete">
-      <div class="step-indicator">
-        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 6 9 17l-5-5" />
-        </svg>
-      </div>
-      <div class="step-content">
-        <p class="step-title">Account</p>
-        <p class="step-description">Create credentials</p>
-      </div>
-    </li>
-    <li class="step" data-status="complete">
-      <div class="step-indicator">
-        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 6 9 17l-5-5" />
-        </svg>
-      </div>
-      <div class="step-content">
-        <p class="step-title">Profile</p>
         <p class="step-description">Personal details</p>
       </div>
     </li>
-    <li class="step" data-status="current" aria-current="step">
+    <li class="step">
       <div class="step-indicator">3</div>
       <div class="step-content">
         <p class="step-title">Complete</p>
@@ -150,213 +81,216 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
       </div>
     </li>
   </ol>
-  <ExampleCode>{"<li class=\"step\" data-status=\"complete\">\n  <div class=\"step-indicator\">\n    <svg aria-hidden=\"true\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\"\n         fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\">\n      <path d=\"M20 6 9 17l-5-5\"/>\n    </svg>\n  </div>\n  <div class=\"step-content\">\n    <p class=\"step-title\">Account</p>\n    <p class=\"step-description\">Create credentials</p>\n  </div>\n</li>"}</ExampleCode>
-</Example>
+  <article class="card">
+    <div class="card-header">
+      <p class="card-title">Profile Information</p>
+      <p class="card-description">Tell us about yourself.</p>
+    </div>
+    <div class="card-content">
+      <div style="display:flex;flex-direction:column;gap:0.75rem;">
+        <div>
+          <label class="label" style="margin-bottom:0.375rem;display:block;">Full Name</label>
+          <input class="input" type="text" placeholder="Jordan Davis" ></input>
+        </div>
+        <div>
+          <label class="label" style="margin-bottom:0.375rem;display:block;">Bio</label>
+          <textarea class="textarea" placeholder="Tell us about yourself..." rows="3"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer" style="justify-content:space-between;">
+      <button class="btn" data-variant="outline">Back</button>
+      <button class="btn" data-variant="default">Continue</button>
+    </div>
+  </article>
+</div>
+```
 
-<Example previewStyle="justify-content:flex-start;padding:2rem 2.5rem;">
-  <ExampleLabel>Vertical</ExampleLabel>
-  <ExampleHint>Add <code>data-orientation="vertical"</code> for a stacked layout with a vertical connector line.</ExampleHint>
-  <ol class="steps" data-orientation="vertical" style="max-width:16rem;">
+```html example label="With checkmarks" hint="Complete steps show a checkmark SVG instead of the step number."
+<li class="step" data-status="complete">
+  <div class="step-indicator">
+    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24"
+         fill="none" stroke="currentColor" stroke-width="3">
+      <path d="M20 6 9 17l-5-5"></path>
+    </svg>
+  </div>
+  <div class="step-content">
+    <p class="step-title">Account</p>
+    <p class="step-description">Create credentials</p>
+  </div>
+</li>
+```
+
+```html example label="Vertical" hint="Add data-orientation='vertical' for a stacked layout with a vertical connector line." previewStyle="justify-content:flex-start;padding:2rem 2.5rem;"
+<ol class="steps" data-orientation="vertical">
+  <li class="step" data-status="complete">
+    <div class="step-indicator">
+      <svg aria-hidden="true" ...><path d="M20 6 9 17l-5-5"></path></svg>
+    </div>
+    <div class="step-content">
+      <p class="step-title">Create account</p>
+      <p class="step-description">Set up your email and password</p>
+    </div>
+  </li>
+  <li class="step" data-status="current" aria-current="step">
+    <div class="step-indicator">2</div>
+    <div class="step-content">
+      <p class="step-title">Set up profile</p>
+    </div>
+  </li>
+  <li class="step">
+    <div class="step-indicator">3</div>
+    <div class="step-content">
+      <p class="step-title">Confirmation</p>
+    </div>
+  </li>
+</ol>
+```
+
+```html example label="Error State" hint="Add data-status='error' and aria-invalid='true' to mark a step with a validation error."
+<li class="step" data-status="error" aria-invalid="true">
+  <div class="step-indicator">
+    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24"
+         fill="none" stroke="currentColor" stroke-width="3">
+      <path d="M18 6 6 18M6 6l12 12"></path>
+    </svg>
+  </div>
+  <div class="step-content">
+    <p class="step-title">Profile</p>
+    <p class="step-description">Please fix the errors</p>
+  </div>
+</li>
+```
+
+```html example label="Sizes" hint="The full five-step scale via data-size on .steps — the default equals md."
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Extra small</span>
+  <ol class="steps" data-size="xs" style="max-width:22rem;width:100%;flex:1;">
     <li class="step" data-status="complete">
-      <div class="step-indicator">
-        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 6 9 17l-5-5" />
-        </svg>
-      </div>
-      <div class="step-content">
-        <p class="step-title">Create account</p>
-        <p class="step-description">Set up your email and password</p>
-      </div>
+      <div class="step-indicator"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" ></path></svg></div>
+      <div class="step-content"><p class="step-title">Account</p></div>
     </li>
     <li class="step" data-status="current" aria-current="step">
       <div class="step-indicator">2</div>
-      <div class="step-content">
-        <p class="step-title">Set up profile</p>
-        <p class="step-description">Add your personal information</p>
-      </div>
+      <div class="step-content"><p class="step-title">Profile</p></div>
     </li>
     <li class="step">
       <div class="step-indicator">3</div>
-      <div class="step-content">
-        <p class="step-title">Confirmation</p>
-        <p class="step-description">Review and submit</p>
-      </div>
+      <div class="step-content"><p class="step-title">Done</p></div>
     </li>
   </ol>
-  <ExampleCode>{"<ol class=\"steps\" data-orientation=\"vertical\">\n  <li class=\"step\" data-status=\"complete\">\n    <div class=\"step-indicator\">\n      <svg aria-hidden=\"true\" ...><path d=\"M20 6 9 17l-5-5\"/></svg>\n    </div>\n    <div class=\"step-content\">\n      <p class=\"step-title\">Create account</p>\n      <p class=\"step-description\">Set up your email and password</p>\n    </div>\n  </li>\n  <li class=\"step\" data-status=\"current\" aria-current=\"step\">\n    <div class=\"step-indicator\">2</div>\n    <div class=\"step-content\">\n      <p class=\"step-title\">Set up profile</p>\n    </div>\n  </li>\n  <li class=\"step\">\n    <div class=\"step-indicator\">3</div>\n    <div class=\"step-content\">\n      <p class=\"step-title\">Confirmation</p>\n    </div>\n  </li>\n</ol>"}</ExampleCode>
-</Example>
-
-<Example>
-  <ExampleLabel>Error State</ExampleLabel>
-  <ExampleHint>Add <code>data-status="error"</code> and <code>aria-invalid="true"</code> to mark a step with a validation error.</ExampleHint>
-  <ol class="steps" style="max-width:28rem;width:100%;">
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Small</span>
+  <ol class="steps" data-size="sm" style="max-width:22rem;width:100%;flex:1;">
     <li class="step" data-status="complete">
-      <div class="step-indicator">
-        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 6 9 17l-5-5" />
-        </svg>
-      </div>
-      <div class="step-content">
-        <p class="step-title">Account</p>
-      </div>
+      <div class="step-indicator"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" ></path></svg></div>
+      <div class="step-content"><p class="step-title">Account</p></div>
     </li>
-    <li class="step" data-status="error" aria-invalid="true">
-      <div class="step-indicator">
-        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M18 6 6 18M6 6l12 12" />
-        </svg>
-      </div>
-      <div class="step-content">
-        <p class="step-title">Profile</p>
-        <p class="step-description">Please fix the errors</p>
-      </div>
+    <li class="step" data-status="current" aria-current="step">
+      <div class="step-indicator">2</div>
+      <div class="step-content"><p class="step-title">Profile</p></div>
     </li>
     <li class="step">
       <div class="step-indicator">3</div>
-      <div class="step-content">
-        <p class="step-title">Complete</p>
-      </div>
+      <div class="step-content"><p class="step-title">Done</p></div>
     </li>
   </ol>
-  <ExampleCode>{"<li class=\"step\" data-status=\"error\" aria-invalid=\"true\">\n  <div class=\"step-indicator\">\n    <svg aria-hidden=\"true\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\"\n         fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\">\n      <path d=\"M18 6 6 18M6 6l12 12\"/>\n    </svg>\n  </div>\n  <div class=\"step-content\">\n    <p class=\"step-title\">Profile</p>\n    <p class=\"step-description\">Please fix the errors</p>\n  </div>\n</li>"}</ExampleCode>
-</Example>
-
-<Example>
-  <ExampleLabel>Sizes</ExampleLabel>
-  <ExampleHint>The full five-step scale via <code>data-size</code> on <code>.steps</code> — the default equals <code>md</code>.</ExampleHint>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Extra small</span>
-    <ol class="steps" data-size="xs" style="max-width:22rem;width:100%;flex:1;">
-      <li class="step" data-status="complete">
-        <div class="step-indicator"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg></div>
-        <div class="step-content"><p class="step-title">Account</p></div>
-      </li>
-      <li class="step" data-status="current" aria-current="step">
-        <div class="step-indicator">2</div>
-        <div class="step-content"><p class="step-title">Profile</p></div>
-      </li>
-      <li class="step">
-        <div class="step-indicator">3</div>
-        <div class="step-content"><p class="step-title">Done</p></div>
-      </li>
-    </ol>
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Small</span>
-    <ol class="steps" data-size="sm" style="max-width:22rem;width:100%;flex:1;">
-      <li class="step" data-status="complete">
-        <div class="step-indicator"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg></div>
-        <div class="step-content"><p class="step-title">Account</p></div>
-      </li>
-      <li class="step" data-status="current" aria-current="step">
-        <div class="step-indicator">2</div>
-        <div class="step-content"><p class="step-title">Profile</p></div>
-      </li>
-      <li class="step">
-        <div class="step-indicator">3</div>
-        <div class="step-content"><p class="step-title">Done</p></div>
-      </li>
-    </ol>
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Medium</span>
-    <ol class="steps" data-size="md" style="max-width:22rem;width:100%;flex:1;">
-      <li class="step" data-status="complete">
-        <div class="step-indicator"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg></div>
-        <div class="step-content"><p class="step-title">Account</p></div>
-      </li>
-      <li class="step" data-status="current" aria-current="step">
-        <div class="step-indicator">2</div>
-        <div class="step-content"><p class="step-title">Profile</p></div>
-      </li>
-      <li class="step">
-        <div class="step-indicator">3</div>
-        <div class="step-content"><p class="step-title">Done</p></div>
-      </li>
-    </ol>
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Large</span>
-    <ol class="steps" data-size="lg" style="max-width:22rem;width:100%;flex:1;">
-      <li class="step" data-status="complete">
-        <div class="step-indicator"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg></div>
-        <div class="step-content"><p class="step-title">Account</p></div>
-      </li>
-      <li class="step" data-status="current" aria-current="step">
-        <div class="step-indicator">2</div>
-        <div class="step-content"><p class="step-title">Profile</p></div>
-      </li>
-      <li class="step">
-        <div class="step-indicator">3</div>
-        <div class="step-content"><p class="step-title">Done</p></div>
-      </li>
-    </ol>
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w5">Extra large</span>
-    <ol class="steps" data-size="xl" style="max-width:22rem;width:100%;flex:1;">
-      <li class="step" data-status="complete">
-        <div class="step-indicator"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg></div>
-        <div class="step-content"><p class="step-title">Account</p></div>
-      </li>
-      <li class="step" data-status="current" aria-current="step">
-        <div class="step-indicator">2</div>
-        <div class="step-content"><p class="step-title">Profile</p></div>
-      </li>
-      <li class="step">
-        <div class="step-indicator">3</div>
-        <div class="step-content"><p class="step-title">Done</p></div>
-      </li>
-    </ol>
-  </div>
-</Example>
-
-<Example>
-  <ExampleLabel>Clickable Steps</ExampleLabel>
-  <ExampleHint>Add <code>data-clickable</code> to individual <code>.step</code> elements to show a pointer cursor and hover affordance on the indicator. Wire up navigation with your own JavaScript.</ExampleHint>
-  <ol class="steps" style="max-width:28rem;width:100%;">
-    <li class="step" data-status="complete" data-clickable>
-      <div class="step-indicator" role="button" tabindex="0" aria-label="Go to step 1: Account">
-        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 6 9 17l-5-5" />
-        </svg>
-      </div>
-      <div class="step-content">
-        <p class="step-title">Account</p>
-      </div>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Medium</span>
+  <ol class="steps" data-size="md" style="max-width:22rem;width:100%;flex:1;">
+    <li class="step" data-status="complete">
+      <div class="step-indicator"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" ></path></svg></div>
+      <div class="step-content"><p class="step-title">Account</p></div>
     </li>
-    <li class="step" data-status="current" aria-current="step" data-clickable>
-      <div class="step-indicator" role="button" tabindex="0" aria-label="Go to step 2: Profile">2</div>
-      <div class="step-content">
-        <p class="step-title">Profile</p>
-      </div>
+    <li class="step" data-status="current" aria-current="step">
+      <div class="step-indicator">2</div>
+      <div class="step-content"><p class="step-title">Profile</p></div>
     </li>
     <li class="step">
       <div class="step-indicator">3</div>
-      <div class="step-content">
-        <p class="step-title">Complete</p>
-      </div>
+      <div class="step-content"><p class="step-title">Done</p></div>
     </li>
   </ol>
-  <ExampleCode>{"<li class=\"step\" data-status=\"complete\" data-clickable>\n  <div class=\"step-indicator\" role=\"button\" tabindex=\"0\"\n       aria-label=\"Go to step 1: Account\">1</div>\n  <div class=\"step-content\"><p class=\"step-title\">Account</p></div>\n</li>"}</ExampleCode>
-</Example>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Large</span>
+  <ol class="steps" data-size="lg" style="max-width:22rem;width:100%;flex:1;">
+    <li class="step" data-status="complete">
+      <div class="step-indicator"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" ></path></svg></div>
+      <div class="step-content"><p class="step-title">Account</p></div>
+    </li>
+    <li class="step" data-status="current" aria-current="step">
+      <div class="step-indicator">2</div>
+      <div class="step-content"><p class="step-title">Profile</p></div>
+    </li>
+    <li class="step">
+      <div class="step-indicator">3</div>
+      <div class="step-content"><p class="step-title">Done</p></div>
+    </li>
+  </ol>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Extra large</span>
+  <ol class="steps" data-size="xl" style="max-width:22rem;width:100%;flex:1;">
+    <li class="step" data-status="complete">
+      <div class="step-indicator"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" ></path></svg></div>
+      <div class="step-content"><p class="step-title">Account</p></div>
+    </li>
+    <li class="step" data-status="current" aria-current="step">
+      <div class="step-indicator">2</div>
+      <div class="step-content"><p class="step-title">Profile</p></div>
+    </li>
+    <li class="step">
+      <div class="step-indicator">3</div>
+      <div class="step-content"><p class="step-title">Done</p></div>
+    </li>
+  </ol>
+</div>
+```
 
-<Example>
-  <ExampleLabel>Density</ExampleLabel>
-  <ExampleHint>Set <code>data-density</code> on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio <code>0.75</code> / <code>1</code> / <code>1.25</code>), typography and fixed dimensions stay identical. <code>comfortable</code> matches the unsized default.</ExampleHint>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w75">Compact</span>
-    <ol class="steps" data-density="compact" style="max-width:20rem;width:100%;flex:1;"><li class="step" data-status="complete"><div class="step-indicator"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg></div><div class="step-content"><p class="step-title">Account</p><p class="step-description">Credentials</p></div></li><li class="step" data-status="current" aria-current="step"><div class="step-indicator">2</div><div class="step-content"><p class="step-title">Profile</p><p class="step-description">Details</p></div></li><li class="step"><div class="step-indicator">3</div><div class="step-content"><p class="step-title">Done</p><p class="step-description">Confirm</p></div></li></ol>
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w75">Comfortable</span>
-    <ol class="steps" data-density="comfortable" style="max-width:20rem;width:100%;flex:1;"><li class="step" data-status="complete"><div class="step-indicator"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg></div><div class="step-content"><p class="step-title">Account</p><p class="step-description">Credentials</p></div></li><li class="step" data-status="current" aria-current="step"><div class="step-indicator">2</div><div class="step-content"><p class="step-title">Profile</p><p class="step-description">Details</p></div></li><li class="step"><div class="step-indicator">3</div><div class="step-content"><p class="step-title">Done</p><p class="step-description">Confirm</p></div></li></ol>
-  </div>
-  <div class="flex items-center gap-4 mb-3">
-    <span class="demo-label demo-label-w75">Spacious</span>
-    <ol class="steps" data-density="spacious" style="max-width:20rem;width:100%;flex:1;"><li class="step" data-status="complete"><div class="step-indicator"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg></div><div class="step-content"><p class="step-title">Account</p><p class="step-description">Credentials</p></div></li><li class="step" data-status="current" aria-current="step"><div class="step-indicator">2</div><div class="step-content"><p class="step-title">Profile</p><p class="step-description">Details</p></div></li><li class="step"><div class="step-indicator">3</div><div class="step-content"><p class="step-title">Done</p><p class="step-description">Confirm</p></div></li></ol>
-  </div>
-</Example>
+```html example label="Clickable Steps" hint="Add data-clickable to individual .step elements to show a pointer cursor and hover affordance on the indicator. Wire up navigation with your own JavaScript."
+<li class="step" data-status="complete" data-clickable>
+  <div class="step-indicator" role="button" tabindex="0"
+       aria-label="Go to step 1: Account">1</div>
+  <div class="step-content"><p class="step-title">Account</p></div>
+</li>
+```
+
+```html example label="Density" hint="Set data-density on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25), typography and fixed dimensions stay identical. comfortable matches the unsized default."
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w75">Compact</span>
+  <ol class="steps" data-density="compact" style="max-width:20rem;width:100%;flex:1;"><li class="step" data-status="complete"><div class="step-indicator"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" ></path></svg></div><div class="step-content"><p class="step-title">Account</p><p class="step-description">Credentials</p></div></li><li class="step" data-status="current" aria-current="step"><div class="step-indicator">2</div><div class="step-content"><p class="step-title">Profile</p><p class="step-description">Details</p></div></li><li class="step"><div class="step-indicator">3</div><div class="step-content"><p class="step-title">Done</p><p class="step-description">Confirm</p></div></li></ol>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w75">Comfortable</span>
+  <ol class="steps" data-density="comfortable" style="max-width:20rem;width:100%;flex:1;"><li class="step" data-status="complete"><div class="step-indicator"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" ></path></svg></div><div class="step-content"><p class="step-title">Account</p><p class="step-description">Credentials</p></div></li><li class="step" data-status="current" aria-current="step"><div class="step-indicator">2</div><div class="step-content"><p class="step-title">Profile</p><p class="step-description">Details</p></div></li><li class="step"><div class="step-indicator">3</div><div class="step-content"><p class="step-title">Done</p><p class="step-description">Confirm</p></div></li></ol>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w75">Spacious</span>
+  <ol class="steps" data-density="spacious" style="max-width:20rem;width:100%;flex:1;"><li class="step" data-status="complete"><div class="step-indicator"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" ></path></svg></div><div class="step-content"><p class="step-title">Account</p><p class="step-description">Credentials</p></div></li><li class="step" data-status="current" aria-current="step"><div class="step-indicator">2</div><div class="step-content"><p class="step-title">Profile</p><p class="step-description">Details</p></div></li><li class="step"><div class="step-indicator">3</div><div class="step-content"><p class="step-title">Done</p><p class="step-description">Confirm</p></div></li></ol>
+</div>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">The runtime declares the single <code>default</code> state; the editable contract below lives on the nav/list as <code>data-*</code> attributes, driven per instance through the bound <code>api</code> or the State tab:</p>
+  <p class="text-sm text-muted-foreground">Machine contract — verified against <a href="../schemas/steps.schema.json"><code>steps.schema.json</code></a> by <code>bun run verify</code>:</p>
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `activeStep` | `number` | `—` | `2` | Index of the current step (1-based); earlier steps render `complete`. Set by the panel or by clicking a clickable step. |
+| `errorStep` | `number` | `—` | `0` | Index rendered with the destructive error status (`0` = none) — mirrors the `activeStepError` intent as an index the CSS can key. |
+| `size` | `enum` | `xs`, `sm`, `md`, `lg`, `xl` | `"md"` | Indicator + type scale (display sizes). |
+| `activeStepError` | `boolean` | `true`, `false` | `false` | Marks the CURRENT step with the destructive error status (true = the active step failed, false clears). Equivalent to setting `errorStep` to the active index. |
+```
+
+</StatesSection>
+
+<SourceFiles component="steps" section="js">
+  <SourceNote for="js">The optional progressive-enhancement layer: a <code>data-active-step="N"</code> list has its item statuses mapped (<code>< N</code> complete, <code>= N</code> current, optional <code>data-error-step</code> destructive — the literal <code>true</code> marks the active step), <code>aria-current="step"</code> follows, and <code>data-clickable</code> steps become real controls (click / Enter / Space). Authored <code>data-status</code> markup without <code>data-active-step</code> renders exactly as written.</SourceNote>
+</SourceFiles>
 
 <SourceFiles component="steps" section="css">
   <SourceNote for="css">Styles for the steps component. Uses design tokens for colors, spacing, and radius.</SourceNote>

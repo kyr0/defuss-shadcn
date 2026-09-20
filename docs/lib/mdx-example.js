@@ -71,6 +71,8 @@ function codeExampleNode(node, pageComponent) {
         attributes.push(jsxAttr('hint', attrs.hint));
     if (attrs.height)
         attributes.push(jsxAttr('height', attrs.height));
+    if (attrs.previewStyle)
+        attributes.push(jsxAttr('previewStyle', attrs.previewStyle));
     return { type: 'mdxJsxFlowElement', name: 'CodeExample', attributes, children: [] };
 }
 function statesTableNode(node) {
