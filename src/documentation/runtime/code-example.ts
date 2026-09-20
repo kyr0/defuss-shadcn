@@ -34,6 +34,9 @@
     'default-semantic-tokens.css',
     'sizing.css',
     'layout.css',
+    // .sr-only lives here — without it, visually-hidden demo text would
+    // render visibly inside the sandbox (icon examples looked broken)
+    'accessibility.css',
     'docs-theme.css',
     'docs-utilities.css',
     'components/all.css',
