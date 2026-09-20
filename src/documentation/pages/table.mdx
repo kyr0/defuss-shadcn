@@ -46,20 +46,66 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </SkillPanel>
 
 ```html example label="Basic Table" hint="Standard table with header and body rows. Uses .badge for status and .avatar for user display."
-<tr class="table-row">
-  <td class="table-cell">
-    <div style="display:flex;align-items:center;gap:0.5rem;">
-      <span class="avatar" data-size="sm">
-        <img class="avatar-image" src="..." alt="..." ></img>
-        <span class="avatar-fallback">CN</span>
-      </span>
-      <span>Cody Lindley</span>
-    </div>
-  </td>
-  <td class="table-cell">
-    <span class="badge" data-variant="default">Paid</span>
-  </td>
-</tr>
+<div class="table-container" style="max-width:42rem;">
+  <table class="table">
+    <thead>
+      <tr class="table-row">
+        <th class="table-head">User</th>
+        <th class="table-head">Status</th>
+        <th class="table-head">Role</th>
+        <th class="table-head" style="text-align:right">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="table-row">
+        <td class="table-cell" style="font-weight:500;">
+          <div style="display:flex;align-items:center;gap:0.5rem;">
+            <span class="avatar" data-size="sm">
+              <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn">
+              <span class="avatar-fallback">CN</span>
+            </span>
+            <span>Cody Lindley</span>
+          </div>
+        </td>
+        <td class="table-cell">
+          <span class="badge" data-variant="default">Paid</span>
+        </td>
+        <td class="table-cell">Admin</td>
+        <td class="table-cell" style="text-align:right">$250.00</td>
+      </tr>
+      <tr class="table-row">
+        <td class="table-cell" style="font-weight:500;">
+          <div style="display:flex;align-items:center;gap:0.5rem;">
+            <span class="avatar" data-size="sm">
+              <span class="avatar-fallback">JD</span>
+            </span>
+            <span>Jordan Davis</span>
+          </div>
+        </td>
+        <td class="table-cell">
+          <span class="badge" data-variant="outline">Pending</span>
+        </td>
+        <td class="table-cell">Editor</td>
+        <td class="table-cell" style="text-align:right">$150.00</td>
+      </tr>
+      <tr class="table-row">
+        <td class="table-cell" style="font-weight:500;">
+          <div style="display:flex;align-items:center;gap:0.5rem;">
+            <span class="avatar" data-size="sm">
+              <span class="avatar-fallback">AS</span>
+            </span>
+            <span>Alex Smith</span>
+          </div>
+        </td>
+        <td class="table-cell">
+          <span class="badge" data-variant="secondary">Unpaid</span>
+        </td>
+        <td class="table-cell">Viewer</td>
+        <td class="table-cell" style="text-align:right">$350.00</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 ```
 
 ```html example label="With Footer" hint="Table with a summary footer row."

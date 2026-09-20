@@ -139,8 +139,8 @@ describe('CodeExample (input page)', () => {
       card.querySelector(`.code-example-row[data-state-name="${state}"] .code-example-control`) as HTMLElement;
     expect((control('value') as HTMLInputElement).type).toBe('text'); // string → text
     expect((control('disabled') as HTMLInputElement).type).toBe('checkbox'); // boolean → checkbox
-    expect(control('type').tagName).toBe('SELECT'); // enum + select hint → select
-    expect(control('size').tagName).toBe('SELECT');
+    expect(control('type').tagName).toBe('SELECT'); // enum + explicit select hint → select
+    expect(control('size').classList.contains('code-example-radio-group')).toBe(true); // enum fallback → radio boxes
     // select options carry the schema's closed value set
     expect([...(control('type') as HTMLSelectElement).options].map((o) => o.value).join()).toContain('password');
   });
@@ -158,9 +158,12 @@ describe('CodeExample (input page)', () => {
     await waitForObserved(card, 'disabled', true);
     // the checkbox stays in sync (observation echoes the DOM, not the input event)
     expect(disabled.checked).toBe(true);
-    const size = card.querySelector('.code-example-row[data-state-name="size"] .code-example-control') as HTMLSelectElement;
-    size.value = 'lg';
-    size.dispatchEvent(new Event('change', { bubbles: true }));
+    // enum fallback is a radio group now: click the lg radio (change bubbles)
+    const sizeRadio = card.querySelector(
+      '.code-example-row[data-state-name="size"] .code-example-radio-group input[value="lg"]',
+    ) as HTMLInputElement;
+    sizeRadio.checked = true;
+    sizeRadio.dispatchEvent(new Event('change', { bubbles: true }));
     await waitForObserved(card, 'size', 'lg');
   });
 

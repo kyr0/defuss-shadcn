@@ -4,13 +4,20 @@
     <meta charset="UTF-8" />
     <!--CE_STYLES-->
     <style data-ce-chrome>
-      /* sandbox chrome: the preview needs breathing room — same rhythm as the
-         host's .preview stage (layout.css: padding 2.5rem 1.5rem) so examples
-         never touch the frame edge; token surface keeps dark mode correct.
-         flow-root: child margins can't collapse through the body, so the
-         bridge's content-height measurement stays exact and stable. */
+      /* sandbox chrome: the body IS the demo stage — it mirrors the host's
+         .preview card (layout.css: flex, centered, wrapped, 0.875rem gap,
+         2.5rem/1.5rem padding) so an example renders identically to the old
+         in-page .preview. Flex matters beyond looks: demos that need a flex
+         parent (vertical separators via align-self:stretch, shrink-wrapped
+         switch rows) only render correctly in flow like this. A flex container
+         never margin-collapses through its body either, so the bridge's
+         content-height measurement stays exact and stable. */
       body {
-        display: flow-root;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 0.875rem;
         margin: 2.5rem 1.5rem;
         background: var(--background);
         color: var(--foreground);

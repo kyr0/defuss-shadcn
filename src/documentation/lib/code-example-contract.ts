@@ -51,8 +51,10 @@ export type EditorKind = (typeof EDITOR_COMPONENTS)[number];
  * runtime (number: min/step/format/currency/locale; select: none needed).
  */
 export function editorFor(spec: EditorStateSpec): { kind: EditorKind; props: Record<string, unknown> } {
+  // enum defaults to radio boxes: the value set is small and closed, and
+  // every option visible beats a dropdown (one glance, no click to reveal)
   const fallback: EditorKind =
-    spec.type === 'boolean' ? 'checkbox' : spec.type === 'number' ? 'number' : spec.type === 'enum' ? 'select' : 'text';
+    spec.type === 'boolean' ? 'checkbox' : spec.type === 'number' ? 'number' : spec.type === 'enum' ? 'radio' : 'text';
   const hint = spec.editor?.component;
   const kind = (EDITOR_COMPONENTS as readonly string[]).includes(String(hint)) ? (hint as EditorKind) : fallback;
   return { kind, props: (spec.editor?.props ?? {}) as Record<string, unknown> };

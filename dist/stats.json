@@ -9,17 +9,17 @@
   },
   "withJs": 30,
   "withoutJs": 42,
-  "totalSize": 464135,
-  "totalSizeMinified": 220186,
-  "totalSizeGz": 151719,
-  "totalSizeGzMinified": 81456,
+  "totalSize": 464653,
+  "totalSizeMinified": 220282,
+  "totalSizeGz": 151962,
+  "totalSizeGzMinified": 81486,
   "bundle": {
     "jsSize": 184297,
     "jsSizeMinified": 98259,
-    "cssSize": 250809,
-    "cssSizeMinified": 140613,
-    "totalSizeGz": 80934,
-    "totalSizeGzMinified": 48462
+    "cssSize": 251327,
+    "cssSizeMinified": 140709,
+    "totalSizeGz": 81156,
+    "totalSizeGzMinified": 48506
   },
   "core": {
     "jsSize": 63491,
@@ -140,12 +140,12 @@
       "withJs": false,
       "jsSize": 0,
       "jsSizeMinified": 0,
-      "cssSize": 4331,
-      "cssSizeMinified": 2689,
-      "totalSizeGz": 1176,
-      "totalSizeGzMinified": 841,
-      "totalSize": 4331,
-      "totalSizeMinified": 2689
+      "cssSize": 4667,
+      "cssSizeMinified": 2768,
+      "totalSizeGz": 1330,
+      "totalSizeGzMinified": 870,
+      "totalSize": 4667,
+      "totalSizeMinified": 2768
     },
     "button-group": {
       "name": "button-group",
@@ -569,12 +569,12 @@
       "withJs": false,
       "jsSize": 0,
       "jsSizeMinified": 0,
-      "cssSize": 4873,
-      "cssSizeMinified": 2738,
-      "totalSizeGz": 1344,
-      "totalSizeGzMinified": 902,
-      "totalSize": 4873,
-      "totalSizeMinified": 2738
+      "cssSize": 5055,
+      "cssSizeMinified": 2755,
+      "totalSizeGz": 1433,
+      "totalSizeGzMinified": 903,
+      "totalSize": 5055,
+      "totalSizeMinified": 2755
     },
     "scroll-area": {
       "name": "scroll-area",

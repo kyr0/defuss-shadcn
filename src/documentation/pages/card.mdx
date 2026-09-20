@@ -70,36 +70,29 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="Metric" hint="Compact card for dashboard stats. Header row with icon." previewStyle="justify-content:center;"
-<div class="card">
-  <div class="card-header"
-       style="flex-direction:row;align-items:center;
-              justify-content:space-between;padding-bottom:0.5rem;">
-    <p class="card-description"
-       style="font-weight:500;color:var(--foreground);
-              font-size:0.8125rem;">Total Revenue</p>
-    <svg width="14" height="14" ...>...</svg>
+<div class="card" style="max-width:16rem;width:100%;">
+  <div class="card-header" style="flex-direction:row;align-items:center;justify-content:space-between;padding-bottom:0.5rem;">
+    <p class="card-description" style="font-weight:500;color:var(--foreground);font-size:0.8125rem;">Total Revenue</p>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted-foreground)">
+      <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+    </svg>
   </div>
   <div class="card-content" style="padding-top:0.25rem;">
-    <p style="font-size:1.625rem;font-weight:700;margin:0;
-              letter-spacing:-0.025em;">$45,231</p>
-    <p class="card-description"
-       style="font-size:0.75rem;margin-top:0.25rem;">+20.1% from last month</p>
+    <p style="font-size:1.625rem;font-weight:700;margin:0;letter-spacing:-0.025em;">$45,231</p>
+    <p class="card-description" style="font-size:0.75rem;margin-top:0.25rem;">+20.1% from last month</p>
   </div>
 </div>
 ```
 
 ```html example label="With Image" hint="Use &lt;article&gt; for standalone content. Image as first child." previewStyle="justify-content:center;"
-<article class="card">
-  <img src="..." alt="..."
-       style="width:100%;aspect-ratio:16/9;
-              object-fit:cover;display:block;">
+<article class="card" style="max-width:20rem;width:100%;">
+  <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=600&h=300&fit=crop" alt="Abstract shapes" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;">
   <div class="card-header">
     <h3 class="card-title">Modern Design</h3>
-    <p class="card-description">Exploring minimal aesthetics.</p>
+    <p class="card-description">Exploring minimal aesthetics through form and color.</p>
   </div>
   <div class="card-content" style="padding-top:0;">
-    <p style="margin:0;font-size:0.875rem;
-              color:var(--muted-foreground);">Body text...</p>
+    <p style="margin:0;font-size:0.875rem;color:var(--muted-foreground);line-height:1.6;">A deep dive into the principles that guide contemporary visual design.</p>
   </div>
   <div class="card-footer">
     <button class="btn" data-variant="default" data-size="sm">Read more</button>
@@ -109,29 +102,38 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="Header Action" hint="Action button in the header for settings or overflow menus." previewStyle="justify-content:center;"
-<div class="card">
-  <div class="card-header"
-       style="flex-direction:row;align-items:center;
-              justify-content:space-between;">
+<div class="card" style="max-width:20rem;width:100%;">
+  <div class="card-header" style="flex-direction:row;align-items:center;justify-content:space-between;">
     <div>
       <h3 class="card-title">Team Members</h3>
       <p class="card-description">Manage who has access.</p>
     </div>
-    <button class="btn" data-variant="ghost" data-size="icon"
-            aria-label="More options">
-      <svg aria-hidden="true" ...>...</svg>
+    <button class="btn" data-variant="ghost" data-size="icon" aria-label="More options">
+      <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="5" r="1" />
+        <circle cx="12" cy="12" r="1" />
+        <circle cx="12" cy="19" r="1" />
+      </svg>
     </button>
   </div>
-  <div class="card-content">
-    <!-- list items -->
+  <div class="card-content" style="display:flex;flex-direction:column;gap:0.75rem;">
+    <div style="display:flex;align-items:center;gap:0.75rem;">
+      <div style="width:2rem;height:2rem;border-radius:9999px;background:var(--primary);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;color:var(--primary-foreground);flex-shrink:0;">CL</div>
+      <div>
+        <p style="margin:0;font-size:0.875rem;font-weight:500;">Cody Lindley</p>
+        <p style="margin:0;font-size:0.75rem;color:var(--muted-foreground);">Owner</p>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:0.75rem;">
+      <div style="width:2rem;height:2rem;border-radius:9999px;background:var(--secondary);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;color:var(--secondary-foreground);flex-shrink:0;">JD</div>
+      <div>
+        <p style="margin:0;font-size:0.875rem;font-weight:500;">Jane Doe</p>
+        <p style="margin:0;font-size:0.75rem;color:var(--muted-foreground);">Editor</p>
+      </div>
+    </div>
   </div>
-  <div class="card-footer"
-       style="padding-top:1rem;border-top:1px solid var(--border);">
-    <button class="btn" data-variant="outline" data-size="sm"
-            style="width:100%;">
-      <svg aria-hidden="true" ...>...</svg>
-      Invite member
-    </button>
+  <div class="card-footer" style="padding-top:1rem;border-top:1px solid var(--border);">
+    <button class="btn" data-variant="outline" data-size="sm" style="width:100%;"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><line x1="19" x2="19" y1="8" y2="14" /><line x1="22" x2="16" y1="11" y2="11" /></svg> Invite member </button>
   </div>
 </div>
 ```

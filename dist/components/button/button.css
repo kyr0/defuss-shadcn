@@ -40,6 +40,14 @@
       opacity: 0.5;
     }
 
+    /* Loading state (aria-busy + a .spinner child): a disabled button must
+       freeze its spinner — "pending" is signaled by the dimming, a frozen
+       wheel is the accepted pattern; only an ENABLED busy button spins. */
+    &:disabled .spinner,
+    &[aria-disabled="true"] .spinner {
+      animation-play-state: paused;
+    }
+
     /* -- Variants -------------------------------------------- */
     &[data-variant="default"] {
       background-color: var(--primary);

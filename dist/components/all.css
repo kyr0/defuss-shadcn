@@ -807,6 +807,14 @@
       opacity: 0.5;
     }
 
+    /* Loading state (aria-busy + a .spinner child): a disabled button must
+       freeze its spinner — "pending" is signaled by the dimming, a frozen
+       wheel is the accepted pattern; only an ENABLED busy button spins. */
+    &:disabled .spinner,
+    &[aria-disabled="true"] .spinner {
+      animation-play-state: paused;
+    }
+
     /* -- Variants -------------------------------------------- */
     &[data-variant="default"] {
       background-color: var(--primary);
@@ -4532,6 +4540,9 @@
     gap: 0.5rem;
 
     & > legend {
+      /* top + bottom breathing room: stacked groups (e.g. a density ladder
+         demo) would otherwise jam each heading against the options above it */
+      margin-top: 0.5rem;
       margin-bottom: 0.375rem;
     }
 

@@ -137,6 +137,26 @@
     height: 1rem;
     justify-self: start;
   }
+  /* enum editor: radio boxes (all values visible at a glance) */
+  .code-example-radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.875rem;
+    font-size: 0.8125rem;
+  }
+  .code-example-radio-group label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    cursor: pointer;
+    color: var(--foreground);
+  }
+  .code-example-radio-group input[type='radio'] {
+    accent-color: var(--primary);
+    width: 0.875rem;
+    height: 0.875rem;
+    margin: 0;
+  }
   .code-example-actions {
     display: flex;
     flex-wrap: wrap;

@@ -214,7 +214,8 @@ describe('CodeExample contract (§5/§10/§27)', () => {
     expect(editorFor({ type: 'string' }).kind).toBe('text');
     expect(editorFor({ type: 'number' }).kind).toBe('number');
     expect(editorFor({ type: 'boolean' }).kind).toBe('checkbox');
-    expect(editorFor({ type: 'enum' }).kind).toBe('select');
+    expect(editorFor({ type: 'enum' }).kind).toBe('radio');
+    expect(editorFor({ type: 'enum', editor: { component: 'select' } }).kind).toBe('select'); // hint wins
   });
   it('editorFor: recognized hints win, unknown hints fall back', () => {
     expect(editorFor({ type: 'enum', editor: { component: 'radio' } }).kind).toBe('radio');

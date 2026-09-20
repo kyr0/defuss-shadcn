@@ -55,16 +55,25 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="With description" hint="Checkbox with helper text."
-<input class="checkbox" type="checkbox" id="notify" aria-describedby="notify-desc">
-<div>
-  <label for="notify">Enable notifications</label>
-  <p class="field-description" id="notify-desc">...</p>
+<div class="checkbox-item-block">
+  <input class="checkbox" type="checkbox" id="d-notify" style="margin-top:0.125rem;" aria-describedby="d-notify-desc">
+  <div>
+    <label for="d-notify" class="item-title">Enable notifications</label>
+    <p class="field-description" id="d-notify-desc">You can enable or disable notifications at any time.</p>
+  </div>
 </div>
 ```
 
 ```html example label="Disabled"
-<input class="checkbox" type="checkbox" disabled>
-<input class="checkbox" type="checkbox" disabled checked>
+<div class="checkbox-item">
+  <input class="checkbox" type="checkbox" id="d-dis" disabled>
+  <label for="d-dis">Disabled</label>
+</div>
+
+<div class="checkbox-item">
+  <input class="checkbox" type="checkbox" id="d-dis-checked" disabled checked>
+  <label for="d-dis-checked">Disabled checked</label>
+</div>
 ```
 
 ```html example label="Checked by default"
@@ -82,23 +91,34 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="Invalid" hint="Shows destructive border via aria-invalid='true'."
-<input class="checkbox" type="checkbox" aria-invalid="true">
-<label for="terms">Accept terms and conditions</label>
+<div class="checkbox-item">
+  <input class="checkbox" type="checkbox" id="d-invalid" aria-invalid="true">
+  <label for="d-invalid">Accept terms and conditions</label>
+</div>
 ```
 
 ```html example label="Group" hint="Multiple checkboxes in a group using &lt;fieldset&gt; and &lt;legend&gt;."
-<fieldset aria-describedby="grp-desc">
-  <legend>Select items to display on the desktop:</legend>
-  <p class="field-description" id="grp-desc">Choose which items are visible.</p>
-  <div class="checkbox-item">
-    <input class="checkbox" type="checkbox" id="item-1" checked>
-    <label for="item-1">Hard disks</label>
+<fieldset style="border:none;padding:0;margin:0;" aria-describedby="d-grp-desc">
+  <legend style="font-size:0.875rem;font-weight:500;margin-bottom:0.25rem;">Select items to display on the desktop:</legend>
+  <p class="field-description" id="d-grp-desc" style="margin-bottom:0.75rem;">Choose which items are visible.</p>
+  <div style="display:flex;flex-direction:column;gap:0.5rem;">
+    <div class="checkbox-item">
+      <input class="checkbox" type="checkbox" id="d-grp-1" checked>
+      <label for="d-grp-1">Hard disks</label>
+    </div>
+    <div class="checkbox-item">
+      <input class="checkbox" type="checkbox" id="d-grp-2" checked>
+      <label for="d-grp-2">External disks</label>
+    </div>
+    <div class="checkbox-item">
+      <input class="checkbox" type="checkbox" id="d-grp-3">
+      <label for="d-grp-3">CDs, DVDs, and iPods</label>
+    </div>
+    <div class="checkbox-item">
+      <input class="checkbox" type="checkbox" id="d-grp-4">
+      <label for="d-grp-4">Connected servers</label>
+    </div>
   </div>
-  <div class="checkbox-item">
-    <input class="checkbox" type="checkbox" id="item-2" checked>
-    <label for="item-2">External disks</label>
-  </div>
-  <!-- ... more items -->
 </fieldset>
 ```
 

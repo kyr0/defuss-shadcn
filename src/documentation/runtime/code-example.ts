@@ -33,6 +33,7 @@
   var STYLE_FRAGMENTS = [
     'default-semantic-tokens.css',
     'sizing.css',
+    'layout.css',
     'docs-theme.css',
     'docs-utilities.css',
     'components/all.css',
@@ -161,7 +162,9 @@
   // schema hint when recognized, generic fallback by type — no branching) ----
   function editorFor(spec) {
     var byType =
-      spec.type === 'boolean' ? 'checkbox' : spec.type === 'number' ? 'number' : spec.type === 'enum' ? 'select' : 'text';
+      // enum defaults to radio boxes: the value set is small and closed, and
+      // every option visible beats a dropdown (one glance, no click to reveal)
+      spec.type === 'boolean' ? 'checkbox' : spec.type === 'number' ? 'number' : spec.type === 'enum' ? 'radio' : 'text';
     var hint = spec.editor && spec.editor.component;
     var known = ['text', 'number', 'checkbox', 'radio', 'select'];
     return { kind: known.indexOf(hint) >= 0 ? hint : byType, props: (spec.editor && spec.editor.props) || {} };
@@ -361,7 +364,12 @@
                   : control.value,
           });
         }
-        control.addEventListener('change', sendControl);
+        // the radio-group container has no `.value` (a DIV) — its inner inputs
+        // send on their own `change`; wiring the container too would double-send
+        // `undefined` right after the good value (the inner change bubbles), and
+        // the bridge's undefined leg REMOVES the attribute — the mutation the
+        // user just made would vanish. So: skip the generic listener for radios.
+        if (ed.kind !== 'radio') control.addEventListener('change', sendControl);
         // text/number fields: `change` fires only on blur/Enter — typing must
         // sync live, debounced so we don't spam the sandbox per keystroke
         if (ed.kind === 'text' || ed.kind === 'number') {

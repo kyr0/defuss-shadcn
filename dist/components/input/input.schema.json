@@ -144,9 +144,6 @@
       "observation": {
         "kind": "attribute",
         "name": "data-size"
-      },
-      "editor": {
-        "component": "select"
       }
     }
   },

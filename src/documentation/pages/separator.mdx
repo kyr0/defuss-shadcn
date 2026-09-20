@@ -74,7 +74,13 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="Vertical" hint="Vertical separator between inline items. Parent must be flex."
-<div class="separator" data-orientation="vertical" role="separator"></div>
+<div style="display:flex;align-items:center;gap:1.0rem;font-size:0.875rem;height:1.25rem;">
+  <span>Blog</span>
+  <div class="separator" data-orientation="vertical" role="separator"></div>
+  <span>Docs</span>
+  <div class="separator" data-orientation="vertical" role="separator"></div>
+  <span>Source</span>
+</div>
 ```
 
 ```html example label="With Label" hint="A separator with centered text label."
