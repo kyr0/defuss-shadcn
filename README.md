@@ -13,6 +13,7 @@
 
 **72 components — 30 with JavaScript, 42 CSS-only — 79.5 KiB minified + compressed — 47.3 KiB as the all.css/all.js bundle.**
 42 of 72 components need no JavaScript — native HTML and modern CSS cover them entirely.
+<!-- parity anchor: README ↔ index (AGENTS.md) — the footprint sentence and pillar set must match src/documentation/pages/index.mdx; commit both files together -->
 The footprint is measured from the shipped `dist/` files on every build and published as
 [`dist/stats.json`](dist/stats.json); `verify` fails the build if this sentence and that file disagree.
 
