@@ -2027,9 +2027,20 @@ function triggerStateChange4(cal, stateName, config) {
   if (!state || stateName !== "default")
     return;
   const now = new Date;
-  state.year = config?.year ?? now.getFullYear();
-  state.month = config?.month ?? now.getMonth();
-  state.selected = config?.day ?? null;
+  if (typeof config?.minDate === "string")
+    state.minDate = config.minDate || null;
+  if (typeof config?.maxDate === "string")
+    state.maxDate = config.maxDate || null;
+  if (typeof config?.date === "string" && /^\d{4}(-\d{2}(-\d{2})?)?$/.test(config.date)) {
+    const [y, m, d] = config.date.split("-").map(Number);
+    state.year = y;
+    state.month = (m ?? now.getMonth() + 1) - 1;
+    state.selected = d ?? null;
+  } else {
+    state.year = config?.year ?? now.getFullYear();
+    state.month = config?.month ?? now.getMonth();
+    state.selected = config?.day ?? null;
+  }
   renderCalendar(cal, state.year, state.month, state.selected);
 }
 var isoDate = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -2050,7 +2061,9 @@ var calendarApi = {
         ...cal._stateConfig,
         year: state.year,
         month: state.month,
-        selected: state.selected
+        selected: state.selected,
+        minDate: state.minDate ?? null,
+        maxDate: state.maxDate ?? null
       }
     };
   }
@@ -2065,7 +2078,8 @@ var isToday = (year, month, day) => {
   const now = new Date;
   return now.getFullYear() === year && now.getMonth() === month && now.getDate() === day;
 };
-var renderGrid = (year, month, selectedDay, calId) => {
+var isoInRange = (iso, min, max) => (!min || iso >= min) && (!max || iso <= max);
+var renderGrid = (year, month, selectedDay, calId, minDate, maxDate) => {
   const total = daysInMonth(year, month);
   const startDay = firstDayOfMonth(year, month);
   const prevTotal = daysInMonth(year, month - 1);
@@ -2084,10 +2098,12 @@ var renderGrid = (year, month, selectedDay, calId) => {
       if (cellIndex < startDay) {
         const prevDay = prevTotal - startDay + cellIndex + 1;
         const iso = isoDate(new Date(year, month - 1, prevDay));
-        html += `<td class="calendar-day" data-outside id="${calId}-${iso}" data-cal-date="${iso}"><button tabindex="-1" data-day="${prevDay}" data-outside="prev">${prevDay}</button></td>`;
+        const off = !isoInRange(iso, minDate, maxDate) ? " data-disabled" : "";
+        html += `<td class="calendar-day" data-outside${off} id="${calId}-${iso}" data-cal-date="${iso}"><button tabindex="-1" data-day="${prevDay}" data-outside="prev">${prevDay}</button></td>`;
       } else if (dayNum > total) {
         const iso = isoDate(new Date(year, month + 1, nextDayNum));
-        html += `<td class="calendar-day" data-outside id="${calId}-${iso}" data-cal-date="${iso}"><button tabindex="-1" data-day="${nextDayNum}" data-outside="next">${nextDayNum}</button></td>`;
+        const off = !isoInRange(iso, minDate, maxDate) ? " data-disabled" : "";
+        html += `<td class="calendar-day" data-outside${off} id="${calId}-${iso}" data-cal-date="${iso}"><button tabindex="-1" data-day="${nextDayNum}" data-outside="next">${nextDayNum}</button></td>`;
         nextDayNum++;
       } else {
         let attrs = "";
@@ -2096,6 +2112,8 @@ var renderGrid = (year, month, selectedDay, calId) => {
         if (dayNum === selectedDay)
           attrs += " data-selected";
         const iso = isoDate(new Date(year, month, dayNum));
+        if (!isoInRange(iso, minDate, maxDate))
+          attrs += " data-disabled";
         html += `<td class="calendar-day"${attrs} id="${calId}-${iso}" data-cal-date="${iso}"><button data-day="${dayNum}">${dayNum}</button></td>`;
         dayNum++;
       }
@@ -2112,9 +2130,19 @@ var renderCalendar = (el, year, month, selectedDay) => {
   const grid = el.querySelector(".calendar-grid");
   if (!grid)
     return;
+  const st = el._calState ?? {};
+  el.dataset.currentDate = selectedDay ? isoDate(new Date(year, month, selectedDay)) : `${year}-${String(month + 1).padStart(2, "0")}-01`;
+  if (st.minDate)
+    el.dataset.minDate = st.minDate;
+  else
+    el.removeAttribute("data-min-date");
+  if (st.maxDate)
+    el.dataset.maxDate = st.maxDate;
+  else
+    el.removeAttribute("data-max-date");
   const active = el.ownerDocument.activeElement;
   const focusKey = active && el.contains(active) ? active.closest(".calendar-day")?.getAttribute("data-cal-date") : null;
-  dfDollar(grid).morph(renderGrid(year, month, selectedDay, el.dataset.calId || ""));
+  dfDollar(grid).morph(renderGrid(year, month, selectedDay, el.dataset.calId || "", st.minDate, st.maxDate));
   if (focusKey)
     grid.querySelector(`[data-cal-date="${focusKey}"] button`)?.focus();
   const selDate = el.querySelector(".calendar-day[data-selected]")?.getAttribute("data-cal-date");
@@ -2131,8 +2159,16 @@ function init4() {
     const state = cal._calState = {
       year: now.getFullYear(),
       month: now.getMonth(),
-      selected: null
+      selected: null,
+      minDate: cal.dataset.minDate || null,
+      maxDate: cal.dataset.maxDate || null
     };
+    if (/^\d{4}(-\d{2}(-\d{2})?)?$/.test(cal.dataset.currentDate ?? "")) {
+      const [y, m, d] = cal.dataset.currentDate.split("-").map(Number);
+      state.year = y;
+      state.month = (m ?? now.getMonth() + 1) - 1;
+      state.selected = d ?? null;
+    }
     cal.api = {
       setState: (stateName, config) => calendarApi.setState(cal, stateName, config),
       getState: () => calendarApi.getState(cal)
@@ -3837,7 +3873,10 @@ function init20() {
       });
       if (item) {
         dfDollar6(item).data("active", "").attr("tabindex", "0");
+        list.dataset.activeIndex = String(getItems().indexOf(item));
         item.focus();
+      } else {
+        list.removeAttribute("data-active-index");
       }
     }
     list._setActive = setActive;
@@ -4875,6 +4914,6 @@ function init28() {
 init28();
 new MutationObserver(init28).observe(document, { childList: true, subtree: true });
 
-//# debugId=F88A5FB8CA4AB8BF64756E2164756E21
+//# debugId=4D143CF79900EB5864756E2164756E21
 /* defuss-shadcn v0.9.0 runtime provenance: bundles defuss-morph@0.1.1 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.1.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=all.js.map

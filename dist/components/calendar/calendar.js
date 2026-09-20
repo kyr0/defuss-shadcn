@@ -31,16 +31,32 @@ const calendarStates = ['default'];
 /**
  * UI side of setState: 'default' (re)renders the view. Without config it
  * resets to today with no selection; { year, month, day } navigates to that
- * month (month is 0-based, like Date) and optionally selects a day.
+ * month (month is 0-based, like Date) and optionally selects a day;
+ * { date: 'YYYY[-MM[-DD]]' } navigates by ISO string (day selects too);
+ * { minDate/maxDate } set the selectable range ('' clears). All ranges are
+ * read live from state in renderGrid, so attribute-style control via the
+ * State API takes effect on the very next render.
  */
 function triggerStateChange(cal, stateName, config) {
     const state = cal._calState;
     if (!state || stateName !== 'default')
         return;
     const now = new Date();
-    state.year = config?.year ?? now.getFullYear();
-    state.month = config?.month ?? now.getMonth();
-    state.selected = config?.day ?? null;
+    if (typeof config?.minDate === 'string')
+        state.minDate = config.minDate || null;
+    if (typeof config?.maxDate === 'string')
+        state.maxDate = config.maxDate || null;
+    if (typeof config?.date === 'string' && /^\d{4}(-\d{2}(-\d{2})?)?$/.test(config.date)) {
+        const [y, m, d] = config.date.split('-').map(Number);
+        state.year = y;
+        state.month = (m ?? now.getMonth() + 1) - 1;
+        state.selected = d ?? null;
+    }
+    else {
+        state.year = config?.year ?? now.getFullYear();
+        state.month = config?.month ?? now.getMonth();
+        state.selected = config?.day ?? null;
+    }
     renderCalendar(cal, state.year, state.month, state.selected);
 }
 // ISO yyyy-mm-dd of a cell's REAL date (outside cells resolve to their own
@@ -67,6 +83,8 @@ export const calendarApi = {
                 year: state.year,
                 month: state.month,
                 selected: state.selected,
+                minDate: state.minDate ?? null,
+                maxDate: state.maxDate ?? null,
             },
         };
     },
@@ -88,7 +106,9 @@ const isToday = (year, month, day) => {
  * also carries the cell's full date, letting consumers (tests, custom
  * state APIs) read the selection as an ISO date via the grid.
  */
-const renderGrid = (year, month, selectedDay, calId) => {
+// ISO strings compare lexicographically — the range check needs no Date math
+const isoInRange = (iso, min, max) => (!min || iso >= min) && (!max || iso <= max);
+const renderGrid = (year, month, selectedDay, calId, minDate, maxDate) => {
     const total = daysInMonth(year, month);
     const startDay = firstDayOfMonth(year, month);
     const prevTotal = daysInMonth(year, month - 1);
@@ -107,11 +127,15 @@ const renderGrid = (year, month, selectedDay, calId) => {
             if (cellIndex < startDay) {
                 const prevDay = prevTotal - startDay + cellIndex + 1;
                 const iso = isoDate(new Date(year, month - 1, prevDay));
-                html += `<td class="calendar-day" data-outside id="${calId}-${iso}" data-cal-date="${iso}"><button tabindex="-1" data-day="${prevDay}" data-outside="prev">${prevDay}</button></td>`;
+                // outside days honor the range too: clicking one selects there, so an
+                // out-of-range preview day must be disabled exactly like an in-month one
+                const off = !isoInRange(iso, minDate, maxDate) ? ' data-disabled' : '';
+                html += `<td class="calendar-day" data-outside${off} id="${calId}-${iso}" data-cal-date="${iso}"><button tabindex="-1" data-day="${prevDay}" data-outside="prev">${prevDay}</button></td>`;
             }
             else if (dayNum > total) {
                 const iso = isoDate(new Date(year, month + 1, nextDayNum));
-                html += `<td class="calendar-day" data-outside id="${calId}-${iso}" data-cal-date="${iso}"><button tabindex="-1" data-day="${nextDayNum}" data-outside="next">${nextDayNum}</button></td>`;
+                const off = !isoInRange(iso, minDate, maxDate) ? ' data-disabled' : '';
+                html += `<td class="calendar-day" data-outside${off} id="${calId}-${iso}" data-cal-date="${iso}"><button tabindex="-1" data-day="${nextDayNum}" data-outside="next">${nextDayNum}</button></td>`;
                 nextDayNum++;
             }
             else {
@@ -121,6 +145,8 @@ const renderGrid = (year, month, selectedDay, calId) => {
                 if (dayNum === selectedDay)
                     attrs += ' data-selected';
                 const iso = isoDate(new Date(year, month, dayNum));
+                if (!isoInRange(iso, minDate, maxDate))
+                    attrs += ' data-disabled';
                 html += `<td class="calendar-day"${attrs} id="${calId}-${iso}" data-cal-date="${iso}"><button data-day="${dayNum}">${dayNum}</button></td>`;
                 dayNum++;
             }
@@ -145,13 +171,28 @@ const renderCalendar = (el, year, month, selectedDay) => {
     const grid = el.querySelector('.calendar-grid');
     if (!grid)
         return;
+    const st = el._calState ?? {};
+    // the view + range mirror onto the ROOT as stable attributes — schema
+    // observations (currentDate/minDate/maxDate) read them from one place, and
+    // they survive grid morphs
+    el.dataset.currentDate = selectedDay
+        ? isoDate(new Date(year, month, selectedDay))
+        : `${year}-${String(month + 1).padStart(2, '0')}-01`;
+    if (st.minDate)
+        el.dataset.minDate = st.minDate;
+    else
+        el.removeAttribute('data-min-date');
+    if (st.maxDate)
+        el.dataset.maxDate = st.maxDate;
+    else
+        el.removeAttribute('data-max-date');
     // capture focus BEFORE the morph: the focused button's day cell carries
     // the ISO key on the <td> (data-cal-date), so walk up to the cell
     const active = el.ownerDocument.activeElement;
     const focusKey = active && el.contains(active)
         ? active.closest('.calendar-day')?.getAttribute('data-cal-date')
         : null;
-    dfDollar(grid).morph(renderGrid(year, month, selectedDay, el.dataset.calId || ''));
+    dfDollar(grid).morph(renderGrid(year, month, selectedDay, el.dataset.calId || '', st.minDate, st.maxDate));
     // refocus the cell's button (the td itself isn't focusable) — morph usually
     // kept it, but after a month change the old cell is gone; stay put then
     if (focusKey)
@@ -176,7 +217,18 @@ function init() {
             year: now.getFullYear(),
             month: now.getMonth(),
             selected: null,
+            // selectable range authored as attributes (ISO substrings — the markup
+            // may carry 'YYYY', 'YYYY-MM' or 'YYYY-MM-DD' bounds, compared as given)
+            minDate: cal.dataset.minDate || null,
+            maxDate: cal.dataset.maxDate || null,
         });
+        // authored view (not just range): data-current-date = 'YYYY-MM' / 'YYYY-MM-DD'
+        if (/^\d{4}(-\d{2}(-\d{2})?)?$/.test(cal.dataset.currentDate ?? '')) {
+            const [y, m, d] = cal.dataset.currentDate.split('-').map(Number);
+            state.year = y;
+            state.month = (m ?? now.getMonth() + 1) - 1;
+            state.selected = d ?? null;
+        }
         // bind-scope the api per instance: `$('#my-calendar').api.setState('default', { year: 2024, month: 0, day: 15 })`
         cal.api = {
             setState: (stateName, config) => calendarApi.setState(cal, stateName, config),

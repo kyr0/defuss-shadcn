@@ -61,6 +61,15 @@
         else el.api.setState(String(value));
         return;
       }
+      // args map: named config keys the runtime's own state contract expects
+      // (slider {value}, calendar {date|minDate|maxDate}, carousel {index}…) —
+      // '@value' substitutes the editor value, anything else passes through
+      if (mop.args) {
+        var cfg = {};
+        for (var k in mop.args) cfg[k] = mop.args[k] === '@value' ? value : mop.args[k];
+        el.api.setState(mop.name, cfg);
+        return;
+      }
       if (value === false || value === null || value === undefined) el.api.setState('default');
       else if (typeof value === 'object') el.api.setState(mop.name, value);
       else el.api.setState(mop.name, { value: value });

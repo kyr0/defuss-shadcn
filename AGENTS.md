@@ -511,6 +511,7 @@ operations: a method call or event dispatch). The file is **derived from the
 runtime** (the `.ts` is authoritative when authoring it), then becomes the
 contract that keeps everything else honest.
 
+- **`api` mutations may carry `args`** — a named setState() config map where the value string `@value` is replaced by the editor value (e.g. slider `value` → `setState('default', { value: 80 })`); the runtime's own state contract stays authoritative.
 - **Zero runtime weight** — schemas live beside components but build.ts copies
   them only into `dist/schemas/` (never into `all.js`/`.js`); the shipped
   component `.js` files contain no schema bytes (`verify`'s `runtime schema-free`

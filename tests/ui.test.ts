@@ -136,24 +136,27 @@ test('dark-mode toggle flips the .dark class on <html>', async () => {
   await waitFor(() => root.classList.contains('dark') === !wasDark, 'dark class to flip');
 });
 
-test('dialog component: trigger opens native <dialog>, close button closes it', async () => {
-  const { frame, doc } = await openDocPage('dialog.html');
+test('dialog component: the CodeExample card drives showModal/close end to end', async () => {
+  // the dialog demos are executable fences — the <dialog> lives inside the
+  // opaque sandbox iframe, so the assertable contract is the card's mirrored
+  // data-state-values (the sandbox observed the real `open` property).
+  const { doc } = await openDocPage('dialog.html');
 
-  await expect.element(frame.getByRole('button', { name: 'Edit Profile' })).toBeInTheDocument();
+  const card = doc.querySelector('.code-example[data-component="dialog"]') as HTMLElement & {
+    api?: { setState(name: string, config?: unknown): void };
+  };
+  await waitFor(() => card?.api, 'dialog example card to boot its sandbox');
 
-  const dialog = doc.getElementById('demo-dialog') as HTMLDialogElement;
-  expect(dialog.open).toBe(false);
-
-  await clickSelector(doc, '[data-dialog-trigger="demo-dialog"]');
-  await waitFor(() => dialog.open, 'dialog to open');
-
-  // Cancel is inside this dialog only — safe to target by data attribute
-  await clickSelector(doc, '#demo-dialog [data-dialog-close]');
-  await waitFor(() => !dialog.open, 'dialog to close');
-  // dialog.js restores focus to the trigger on close
+  card.api!.setState('open', true);
   await waitFor(
-    () => doc.activeElement === doc.querySelector('[data-dialog-trigger="demo-dialog"]'),
-    'focus to return to trigger',
+    () => JSON.parse(card.dataset.stateValues || '{}').open === true,
+    'dialog to open (mirrored)',
+  );
+
+  card.api!.setState('open', false);
+  await waitFor(
+    () => JSON.parse(card.dataset.stateValues || '{}').open === false,
+    'dialog to close (mirrored)',
   );
 });
 
@@ -181,29 +184,32 @@ test('index states the current stats.json footprint and dogfoods the Statistic c
 });
 
 test('SPA router migrates body-level dialogs so triggers work after nav', async () => {
-  // regression: <dialog> demos live OUTSIDE <main> (direct children of body).
-  // The router swaps main.innerHTML only, so without migrating them the
-  // trigger click found no dialog and "nothing happened" after sidebar nav.
+  // regression: PageOverlay dialogs live OUTSIDE <main> (direct children of
+  // body). The router swaps main.innerHTML only, so without migrating them
+  // the trigger click found no dialog and "nothing happened" after nav.
+  // (dialog/sheet moved into self-contained CodeExample fences; the State API
+  // guide page still demos the page-level pattern with a live dialog.)
   const { doc } = await openDocPage('index.html');
   await waitFor(() => doc.querySelector('.site-header button#theme-toggle'), 'shell to render');
 
-  await expandSection(doc, 'Overlays');
-  await clickSelector(doc, '.site-sidebar a[href="dialog.html"]');
-  await waitFor(() => doc.querySelector('main h1')?.textContent?.includes('Dialog'), 'dialog page content');
-  await waitFor(() => doc.getElementById('demo-dialog'), 'migrated dialog in DOM');
+  await expandSection(doc, 'Guides');
+  await clickSelector(doc, '.site-sidebar a[href="state-api.html"]');
+  await waitFor(() => doc.querySelector('main h1')?.textContent?.includes('State API'), 'state-api page content');
+  await waitFor(() => doc.getElementById('state-api-dialog'), 'migrated dialog in DOM');
 
-  const dialog = doc.getElementById('demo-dialog') as HTMLDialogElement;
+  const dialog = doc.getElementById('state-api-dialog') as HTMLDialogElement;
   expect(dialog.closest('main'), 'dialog must be adopted at body level').toBeNull();
 
-  await clickSelector(doc, '[data-dialog-trigger="demo-dialog"]');
+  // plain CSS: the open button is the one whose inline handler names 'open'
+  await clickSelector(doc, "button[onclick*=\"setState('open')\"]");
   await waitFor(() => dialog.open, 'dialog to open after SPA navigation');
-  await clickSelector(doc, '#demo-dialog [data-dialog-close]');
+  await clickSelector(doc, '#state-api-dialog [data-dialog-close]');
   await waitFor(() => !dialog.open, 'dialog to close');
 
   // navigating away must drop the previous page's dialogs (no duplicate ids)
   await clickSelector(doc, '.site-sidebar a[href="sheet.html"]');
   await waitFor(() => doc.querySelector('main h1')?.textContent?.includes('Sheet'), 'sheet page content');
-  expect(doc.getElementById('demo-dialog'), 'dialog of the previous page removed').toBeNull();
+  expect(doc.getElementById('state-api-dialog'), 'dialog of the previous page removed').toBeNull();
 });
 
 test('sidebar sections are collapsible (dogfood of the sidebar-group pattern)', async () => {

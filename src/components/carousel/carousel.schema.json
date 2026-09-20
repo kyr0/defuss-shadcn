@@ -1,6 +1,29 @@
 {
   "schemaVersion": 1,
   "name": "carousel",
-  "states": {},
+  "states": {
+    "activeSlide": {
+      "type": "number",
+      "default": 0,
+      "target": {
+        "kind": "selector",
+        "selector": ".carousel"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "default",
+        "args": {
+          "index": "@value"
+        }
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-current-index"
+      },
+      "editor": {
+        "component": "number"
+      }
+    }
+  },
   "actions": {}
 }

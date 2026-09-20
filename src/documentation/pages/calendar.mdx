@@ -157,6 +157,9 @@ This component exposes no observable states — it is driven through its runtime
 ```states
 | State | Type | Values | Default | Description |
 | --- | --- | --- | --- | --- |
+| `currentDate` | `string` | `—` | `""` | Selected day as ISO `YYYY-MM-DD` (first of the month when nothing is selected); `setState('default', { date })` navigates and selects. Mirrored as `data-current-date`.
+| `minDate` | `string` | `—` | `""` | Lower bound of the selectable range (`YYYY`/`YYYY-MM`/`YYYY-MM-DD`, `""` clears); days outside it render `data-disabled`. Mirrored as `data-min-date`.
+| `maxDate` | `string` | `—` | `""` | Upper bound of the selectable range (same formats, `""` clears). Mirrored as `data-max-date`.
 ```
 
 </StatesSection>

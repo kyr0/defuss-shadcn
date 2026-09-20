@@ -9,17 +9,17 @@
   },
   "withJs": 28,
   "withoutJs": 44,
-  "totalSize": 441714,
-  "totalSizeMinified": 212610,
-  "totalSizeGz": 144004,
-  "totalSizeGzMinified": 78407,
+  "totalSize": 444913,
+  "totalSizeMinified": 213684,
+  "totalSizeGz": 144955,
+  "totalSizeGzMinified": 78767,
   "bundle": {
-    "jsSize": 172638,
-    "jsSizeMinified": 91205,
+    "jsSize": 174405,
+    "jsSizeMinified": 92284,
     "cssSize": 250809,
     "cssSizeMinified": 140613,
-    "totalSizeGz": 78469,
-    "totalSizeGzMinified": 46691
+    "totalSizeGz": 78942,
+    "totalSizeGzMinified": 47034
   },
   "core": {
     "jsSize": 63491,
@@ -164,14 +164,14 @@
       "name": "calendar",
       "type": "ATM",
       "withJs": true,
-      "jsSize": 12684,
-      "jsSizeMinified": 4371,
+      "jsSize": 15480,
+      "jsSizeMinified": 5362,
       "cssSize": 5219,
       "cssSizeMinified": 3386,
-      "totalSizeGz": 5379,
-      "totalSizeGzMinified": 2691,
-      "totalSize": 17903,
-      "totalSizeMinified": 7757
+      "totalSizeGz": 6205,
+      "totalSizeGzMinified": 3019,
+      "totalSize": 20699,
+      "totalSizeMinified": 8748
     },
     "card": {
       "name": "card",
@@ -697,14 +697,14 @@
       "name": "sortable",
       "type": "ATM",
       "withJs": true,
-      "jsSize": 12665,
-      "jsSizeMinified": 4342,
+      "jsSize": 13068,
+      "jsSizeMinified": 4425,
       "cssSize": 3863,
       "cssSizeMinified": 2468,
-      "totalSizeGz": 4767,
-      "totalSizeGzMinified": 2553,
-      "totalSize": 16528,
-      "totalSizeMinified": 6810
+      "totalSizeGz": 4892,
+      "totalSizeGzMinified": 2585,
+      "totalSize": 16931,
+      "totalSizeMinified": 6893
     },
     "spinner": {
       "name": "spinner",

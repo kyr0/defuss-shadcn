@@ -1,6 +1,73 @@
 {
   "schemaVersion": 1,
   "name": "calendar",
-  "states": {},
+  "states": {
+    "currentDate": {
+      "type": "string",
+      "default": "",
+      "target": {
+        "kind": "selector",
+        "selector": ".calendar"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "default",
+        "args": {
+          "date": "@value"
+        }
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-current-date"
+      },
+      "editor": {
+        "component": "text"
+      }
+    },
+    "minDate": {
+      "type": "string",
+      "default": "",
+      "target": {
+        "kind": "selector",
+        "selector": ".calendar"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "default",
+        "args": {
+          "minDate": "@value"
+        }
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-min-date"
+      },
+      "editor": {
+        "component": "text"
+      }
+    },
+    "maxDate": {
+      "type": "string",
+      "default": "",
+      "target": {
+        "kind": "selector",
+        "selector": ".calendar"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "default",
+        "args": {
+          "maxDate": "@value"
+        }
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-max-date"
+      },
+      "editor": {
+        "component": "text"
+      }
+    }
+  },
   "actions": {}
 }

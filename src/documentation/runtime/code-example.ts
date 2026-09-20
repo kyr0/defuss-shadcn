@@ -420,9 +420,15 @@
             setState: function (name, config) {
               var spec = schema && schema.states[name];
               if (spec) {
+                // config arrives as either the raw editor value (boolean/number/
+                // string) or a { value } wrapper — both spellings resolve to the
+                // scalar the sandbox mutation applies; only a missing config
+                // falls back to the schema default
                 var value =
-                  config && 'value' in config
+                  config && typeof config === 'object' && 'value' in config
                     ? config.value
+                    : typeof config === 'boolean' || typeof config === 'number' || typeof config === 'string'
+                      ? config
                     : spec.type === 'boolean'
                       ? true
                       : 'default' in spec

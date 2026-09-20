@@ -26,6 +26,9 @@ export interface SchemaTarget {
 export interface SchemaMutation {
   kind: (typeof MUTATION_KINDS)[number];
   name: string;
+  /** api mutations only: named setState() config keys; the value string
+   * '@value' is replaced by the editor value (bridge applyMop) */
+  args?: Record<string, string | number | boolean>;
 }
 export interface SchemaEditor {
   component?: string;
@@ -129,6 +132,12 @@ export function parseComponentSchema(raw: unknown, source: string): { schema?: C
       if (!isNonEmptyStr(m.name)) {
         err(`${path}.name`, 'requires a non-empty name');
         return false;
+      }
+      // named setState() args ride api mutations only (bridge '@value' map)
+      if ('args' in m) {
+        if (m.kind !== 'api') err(`${path}.args`, 'only api mutations may declare args');
+        else if (!isObj(m.args) || !Object.values(m.args as object).every(isScalar))
+          err(`${path}.args`, 'must be an object of scalar values');
       }
       return true;
     };

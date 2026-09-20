@@ -5,20 +5,43 @@
     "open": {
       "type": "boolean",
       "default": false,
-      "target": { "kind": "root" },
-      "mutation": { "kind": "property", "name": "open" },
-      "observation": { "kind": "property", "name": "open" },
-      "editor": { "component": "checkbox" }
+      "target": {
+        "kind": "selector",
+        "selector": "dialog.dialog"
+      },
+      "mutation": {
+        "kind": "property",
+        "name": "open"
+      },
+      "observation": {
+        "kind": "property",
+        "name": "open"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
     }
   },
   "actions": {
     "showModal": {
-      "target": { "kind": "root" },
-      "operation": { "kind": "method", "name": "showModal" }
+      "target": {
+        "kind": "selector",
+        "selector": "dialog.dialog"
+      },
+      "operation": {
+        "kind": "method",
+        "name": "showModal"
+      }
     },
     "close": {
-      "target": { "kind": "root" },
-      "operation": { "kind": "method", "name": "close" }
+      "target": {
+        "kind": "selector",
+        "selector": "dialog.dialog"
+      },
+      "operation": {
+        "kind": "method",
+        "name": "close"
+      }
     }
   }
 }

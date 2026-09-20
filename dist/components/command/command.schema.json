@@ -6,7 +6,8 @@
       "type": "boolean",
       "default": false,
       "target": {
-        "kind": "root"
+        "kind": "selector",
+        "selector": "dialog.command"
       },
       "mutation": {
         "kind": "property",
@@ -24,7 +25,8 @@
   "actions": {
     "showModal": {
       "target": {
-        "kind": "root"
+        "kind": "selector",
+        "selector": "dialog.command"
       },
       "operation": {
         "kind": "method",
@@ -33,7 +35,8 @@
     },
     "close": {
       "target": {
-        "kind": "root"
+        "kind": "selector",
+        "selector": "dialog.command"
       },
       "operation": {
         "kind": "method",

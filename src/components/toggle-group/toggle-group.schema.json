@@ -6,7 +6,8 @@
       "type": "boolean",
       "default": false,
       "target": {
-        "kind": "root"
+        "kind": "selector",
+        "selector": ".toggle-group"
       },
       "mutation": {
         "kind": "attribute",

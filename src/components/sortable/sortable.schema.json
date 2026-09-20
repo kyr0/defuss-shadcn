@@ -1,6 +1,29 @@
 {
   "schemaVersion": 1,
   "name": "sortable",
-  "states": {},
+  "states": {
+    "activeIndex": {
+      "type": "number",
+      "default": -1,
+      "target": {
+        "kind": "selector",
+        "selector": ".sortable"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "default",
+        "args": {
+          "index": "@value"
+        }
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-active-index"
+      },
+      "editor": {
+        "component": "number"
+      }
+    }
+  },
   "actions": {}
 }

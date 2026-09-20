@@ -117,7 +117,13 @@ document.querySelectorAll('.sortable:not([data-init])').forEach((list) => {
     getAllItems().forEach((el) => { dfDollar(el).data('active', null).attr('tabindex', '-1'); });
     if (item) {
       dfDollar(item).data('active', '').attr('tabindex', '0');
+      // mirror the active position onto the LIST root — the schema's
+      // activeIndex observation reads one stable attribute instead of
+      // scanning children (and survives item reorder/moves)
+      list.dataset.activeIndex = String(getItems().indexOf(item));
       item.focus(); // native focus protocol stays native
+    } else {
+      list.removeAttribute('data-active-index');
     }
   }
   // expose for the State API (element member, not module scope)

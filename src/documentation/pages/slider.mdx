@@ -143,6 +143,7 @@ Machine contract — verified against <a href="../schemas/slider.schema.json"><c
 | State | Type | Values | Default | Description |
 | --- | --- | --- | --- | --- |
 | `disabled` | `boolean` | `true`, `false` | `false` | Native disabled state — interaction off, muted styling. |
+| `value` | `number` | `—` | `50` | Live slider value; set through the State API (`setState('default', { value })`) and read from `input.value`, so dragging updates it too. |
 ```
 
 </StatesSection>
