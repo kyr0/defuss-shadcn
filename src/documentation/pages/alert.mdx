@@ -42,31 +42,31 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </SkillPanel>
 
 ```html example label="Default" hint="Informational alert with icon, title, and description." previewStyle="flex-direction:column;align-items:stretch;"
-<div class="alert" role="alert">
-  <svg class="alert-icon" aria-hidden="true">...</svg>
+<div class="alert" role="alert" style="max-width:32rem;">
+  <svg class="alert-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></svg>
   <div class="alert-content">
-    <h5 class="alert-title">Account updated</h5>
-    <p class="alert-description">Your profile has been saved.</p>
+    <h5 class="alert-title">Account updated successfully</h5>
+    <p class="alert-description">Your profile information has been saved. Changes will be reflected immediately.</p>
   </div>
 </div>
 ```
 
 ```html example label="Destructive" hint="Error or warning variant." previewStyle="flex-direction:column;align-items:stretch;"
-<div class="alert" data-variant="destructive" role="alert">
-  <svg class="alert-icon" aria-hidden="true">...</svg>
+<div class="alert" data-variant="destructive" role="alert" style="max-width:32rem;">
+  <svg class="alert-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="m15 9-6 6" /><path d="m9 9 6 6" /></svg>
   <div class="alert-content">
     <h5 class="alert-title">Payment failed</h5>
-    <p class="alert-description">Please try again.</p>
+    <p class="alert-description">Your payment could not be processed. Please check your payment method and try again.</p>
   </div>
 </div>
 ```
 
 ```html example label="With Action" hint="Alert with an action button." previewStyle="flex-direction:column;align-items:stretch;"
-<div class="alert" role="alert">
-  <svg class="alert-icon" aria-hidden="true">...</svg>
+<div class="alert" role="alert" style="max-width:32rem;">
+  <svg class="alert-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
   <div class="alert-content">
-    <h5 class="alert-title">New feature</h5>
-    <p class="alert-description">Enable it in settings.</p>
+    <h5 class="alert-title">Dark mode is now available</h5>
+    <p class="alert-description">Enable it under your profile settings to get started.</p>
   </div>
   <div class="alert-action">
     <button class="btn" data-variant="outline" data-size="sm">Enable</button>

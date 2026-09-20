@@ -102,6 +102,10 @@
       &amp;:not([class*="size-"]) { width: 1rem; height: 1rem; }
     }
 
+    /* a loading .spinner inside a button takes the button's own text color —
+       spinner.css defaults it to --muted-foreground, invisible on a primary */
+    &amp; .spinner { color: inherit; }
+
     &amp;:focus-visible {
       outline: 2px solid var(--ring);
       outline-offset: 2px;

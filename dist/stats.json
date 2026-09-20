@@ -9,17 +9,17 @@
   },
   "withJs": 30,
   "withoutJs": 42,
-  "totalSize": 464653,
-  "totalSizeMinified": 220282,
-  "totalSizeGz": 151962,
-  "totalSizeGzMinified": 81486,
+  "totalSize": 464849,
+  "totalSizeMinified": 220307,
+  "totalSizeGz": 152043,
+  "totalSizeGzMinified": 81496,
   "bundle": {
     "jsSize": 184297,
     "jsSizeMinified": 98259,
-    "cssSize": 251327,
-    "cssSizeMinified": 140709,
-    "totalSizeGz": 81156,
-    "totalSizeGzMinified": 48506
+    "cssSize": 251523,
+    "cssSizeMinified": 140734,
+    "totalSizeGz": 81218,
+    "totalSizeGzMinified": 48511
   },
   "core": {
     "jsSize": 63491,
@@ -140,12 +140,12 @@
       "withJs": false,
       "jsSize": 0,
       "jsSizeMinified": 0,
-      "cssSize": 4667,
-      "cssSizeMinified": 2768,
-      "totalSizeGz": 1330,
-      "totalSizeGzMinified": 870,
-      "totalSize": 4667,
-      "totalSizeMinified": 2768
+      "cssSize": 4863,
+      "cssSizeMinified": 2793,
+      "totalSizeGz": 1411,
+      "totalSizeGzMinified": 880,
+      "totalSize": 4863,
+      "totalSizeMinified": 2793
     },
     "button-group": {
       "name": "button-group",

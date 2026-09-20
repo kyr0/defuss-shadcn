@@ -35,17 +35,35 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </SkillPanel>
 
 ```html example label="Default"
-<div class="scroll-area" style="height:12rem;">
-  <!-- long content -->
+<div class="scroll-area" style="height:12rem;max-width:20rem;border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem;">
+  <div style="font-size:0.8125rem;color:var(--foreground);">
+    <p style="margin:0 0 0.75rem;font-weight:500;">Release history</p>
+    <p style="margin:0 0 0.5rem;">v1.0.0-alpha</p><p style="margin:0 0 0.5rem;">v0.9.0</p><p style="margin:0 0 0.5rem;">v0.8.2</p><p style="margin:0 0 0.5rem;">v0.8.1</p><p style="margin:0 0 0.5rem;">v0.8.0</p><p style="margin:0 0 0.5rem;">v0.7.0</p><p style="margin:0 0 0.5rem;">v0.6.0</p><p style="margin:0 0 0.5rem;">v0.5.0</p><p style="margin:0 0 0.5rem;">v0.4.0</p><p style="margin:0 0 0.5rem;">v0.3.0</p>
+  </div>
 </div>
 ```
 
 ```html example label="Density" hint="For a scroll area the whitespace policy is the scrollbar gutter: data-density scales the thumb thickness — compact 4px, comfortable 6px (the unsized default), spacious 8px (standard scrollbar-width: medium)." previewStyle="align-items:flex-start;gap:1.5rem;"
-<div class="scroll-area" data-density="compact" style="height:12rem;">
-  <!-- long content -->
+<div class="flex flex-wrap gap-4" style="align-items:flex-start;">
+  <div>
+    <p class="demo-label">Compact</p>
+    <div class="scroll-area" data-density="compact" style="height:9rem;width:14rem;border:1px solid var(--border);border-radius:var(--radius-lg);padding:0.75rem;">
+      <p class="m-0" style="width:28rem;">Overflowing content — the 4px thumb keeps the gutter minimal.</p>
+    </div>
+  </div>
+  <div>
+    <p class="demo-label">Comfortable</p>
+    <div class="scroll-area" data-density="comfortable" style="height:9rem;width:14rem;border:1px solid var(--border);border-radius:var(--radius-lg);padding:0.75rem;">
+      <p class="m-0" style="width:28rem;">Overflowing content — the default 6px thumb.</p>
+    </div>
+  </div>
+  <div>
+    <p class="demo-label">Spacious</p>
+    <div class="scroll-area" data-density="spacious" style="height:9rem;width:14rem;border:1px solid var(--border);border-radius:var(--radius-lg);padding:0.75rem;">
+      <p class="m-0" style="width:28rem;">Overflowing content — an 8px thumb, easier to grab.</p>
+    </div>
+  </div>
 </div>
-
-<!-- compact 4px · comfortable 6px (default) · spacious 8px scrollbar thumb -->
 ```
 
 <StatesSection>
