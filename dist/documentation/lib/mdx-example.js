@@ -27,11 +27,14 @@ export function parseStatesTable(body) {
         .filter((l) => l.startsWith('|'));
     if (rows.length < 2)
         return []; // header + separator = a valid empty contract
+    // backticks are KEPT verbatim: the renderer (StatesTable) turns every
+    // backticked span into a <code> chip — stripping outer backticks here broke
+    // multi-token cells (`true`, `false` → true<code>, </code>false)
     const cells = (l) => l
         .replace(/^\|/, '')
         .replace(/\|$/, '')
         .split('|')
-        .map((c) => c.trim().replace(/^`+|`+$/g, ''));
+        .map((c) => c.trim());
     const header = cells(rows[0]);
     const at = (name) => header.indexOf(name);
     return rows.slice(2).map((r) => {

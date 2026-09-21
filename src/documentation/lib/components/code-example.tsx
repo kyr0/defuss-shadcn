@@ -226,12 +226,14 @@ export function StatesTable({ rows }: { rows: string }) {
       </thead>
       <tbody>
         {data.map((r) => (
+          // every cell keeps its fence backticks (the parser passes them
+          // through) — inlineCode turns each span into a <code> chip, so a
+          // Values cell with several tokens renders one chip per token
           <tr>
-            <td><code>{r.name}</code></td>
-            <td><code>{r.type}</code></td>
-            {/* Values may hold several backticked tokens — render each as a chip */}
+            <td>{inlineCode(r.name)}</td>
+            <td>{inlineCode(r.type)}</td>
             <td>{inlineCode(cell(r.values))}</td>
-            <td><code>{cell(r.def)}</code></td>
+            <td>{inlineCode(cell(r.def))}</td>
             <td>{inlineCode(r.desc)}</td>
           </tr>
         ))}
