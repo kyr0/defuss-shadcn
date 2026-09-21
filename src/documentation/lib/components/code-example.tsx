@@ -227,15 +227,20 @@ export function StatesTable({ rows }: { rows: string }) {
     throw new Error(`StatesTable: malformed rows payload — ${(e as Error).message}`);
   }
   const cell = (v: string) => (v === '—' || v === '' ? '—' : v);
+  // the contract table lives in a scroll container so the fixed metadata columns
+  // never squeeze the Description prose (see .states-table in docs-utilities.css)
   return (
-    <table class="table" data-variant="simple">
+    <div class="states-table-wrap">
+    <table class="table states-table" data-variant="simple">
       <thead>
+        {/* fixed table layout resolves column widths from THIS row — the st-*
+            width classes belong on the header cells, not the body cells */}
         <tr>
-          <th>State</th>
-          <th>Type</th>
-          <th>Values</th>
-          <th>Default</th>
-          <th>Description</th>
+          <th scope="col" class="st-state">State</th>
+          <th scope="col" class="st-type">Type</th>
+          <th scope="col" class="st-values">Values</th>
+          <th scope="col" class="st-default">Default</th>
+          <th scope="col" class="st-desc">Description</th>
         </tr>
       </thead>
       <tbody>
@@ -244,14 +249,15 @@ export function StatesTable({ rows }: { rows: string }) {
           // through) — inlineCode turns each span into a <code> chip, so a
           // Values cell with several tokens renders one chip per token
           <tr>
-            <td>{inlineCode(r.name)}</td>
-            <td>{inlineCode(r.type)}</td>
-            <td>{inlineCode(cell(r.values))}</td>
-            <td>{inlineCode(cell(r.def))}</td>
-            <td>{inlineCode(r.desc)}</td>
+            <td class="st-state">{inlineCode(r.name)}</td>
+            <td class="st-type">{inlineCode(r.type)}</td>
+            <td class="st-values">{inlineCode(cell(r.values))}</td>
+            <td class="st-default">{inlineCode(cell(r.def))}</td>
+            <td class="st-desc">{inlineCode(r.desc)}</td>
           </tr>
         ))}
       </tbody>
     </table>
+    </div>
   );
 }

@@ -108,6 +108,25 @@
 /* Bordered muted content box in composition demos (layout page). */
 .demo-box { border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--muted); color: var(--muted-foreground); padding: 1rem; }
 
+/* §States contract table (StatesTable): raw `.table` markup with five columns
+   of very different content. Without column discipline the fixed metadata
+   columns squeeze against the long Description and the <code> chips collide
+   (reported "very ugly"). Fixed layout + per-column widths + top alignment
+   give every column its own lane; the wrap scrolls on narrow screens. */
+.states-table-wrap { overflow-x: auto; }
+.states-table { table-layout: fixed; min-width: 36rem; }
+.states-table th,
+.states-table td { vertical-align: top; padding: 0.6rem 0.875rem; }
+.states-table th { white-space: nowrap; font-weight: 600; }
+/* metadata columns hold tiny chips → fixed narrow lanes; Description gets
+   everything left over (fixed layout distributes the remainder to it) */
+.states-table .st-state { width: 9rem; }
+.states-table .st-type { width: 4.75rem; }
+.states-table .st-values { width: 7rem; }
+.states-table .st-default { width: 4.75rem; }
+.states-table td code { white-space: nowrap; }
+.states-table td { text-wrap: pretty; } /* prose columns break evenly, no orphans */
+
 /* Visualization helpers for demo CONTENT — moved out of css/layout.css (site
    chrome) so the CodeExample sandbox sees them: the bridge mirrors this sheet
    into every iframe (STYLE_FRAGMENTS), not the chrome sheet. */

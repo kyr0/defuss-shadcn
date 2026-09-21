@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { clickSelector, openDocPage, waitFor } from './helpers';
+import { normalizeFenceHtml } from '../src/documentation/lib/mdx-example';
 
 /**
  * Why: the executable-example mechanism (plans/cmp-schemas-and-codeexample.md
@@ -362,5 +363,24 @@ describe('CodeExample viewport toolbar (device emulation)', () => {
     expect(grip.getAttribute('aria-valuenow')).toBe('1024');
     grip.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true }));
     expect(w.value).toBe('1034');
+  });
+});
+
+describe('normalizeFenceHtml (fence self-closing → HTML-valid)', () => {
+  // root cause of the "Timeline §Activity Feed smashed" bug: JSX-style
+  // self-closing divs are invalid in HTML flow — the parser opens an unclosed
+  // element and nests the whole rest of the fence inside it.
+  it('closes non-void elements', () => {
+    expect(normalizeFenceHtml('<div class="timeline-dot" />')).toBe('<div class="timeline-dot"></div>');
+    expect(normalizeFenceHtml('<span/>')).toBe('<span></span>');
+    expect(normalizeFenceHtml('<li>x</li>\n<div/>')).toBe('<li>x</li>\n<div></div>');
+  });
+  it('keeps void elements and SVG children untouched', () => {
+    const src = '<img src="a.png" /><br /><path d="M0 0h4" />';
+    expect(normalizeFenceHtml(src)).toBe(src);
+  });
+  it('leaves explicit close tags alone', () => {
+    const src = '<div class="x">hi</div>';
+    expect(normalizeFenceHtml(src)).toBe(src);
   });
 });

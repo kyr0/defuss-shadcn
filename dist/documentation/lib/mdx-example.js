@@ -60,9 +60,26 @@ const jsxAttr = (name, value) => ({
     name,
     value: { type: 'mdxJsxAttributeValueExpression', data: { estree: { type: 'Program', body: [{ type: 'ExpressionStatement', expression: { type: 'Literal', value } }] } } },
 });
+/**
+ * HTML void elements close themselves; for everything else self-closing syntax
+ * is only valid in foreign content (inside <svg>/<math>). In HTML flow a fence
+ * line like `<div class="timeline-dot" />` OPENS an unclosed element — the
+ * parser ignores the slash and nests every following sibling inside the dot
+ * (that is the "Activity Feed smashed" bug). Authoring JSX-style fences is
+ * natural, so the plugin normalizes here instead of nagging every page: one
+ * shared transform, and since CodeExample shows exactly this string, shown
+ * source == executed source stays true.
+ */
+const NON_VOID_HTML = 'a|abbr|article|aside|b|bdi|bdo|blockquote|button|canvas|caption|cite|code|colgroup|data|datalist|dd|del|details|dfn|dialog|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h[1-6]|header|i|iframe|ins|kbd|label|legend|li|main|map|mark|menu|nav|noscript|object|ol|option|output|p|picture|pre|progress|q|rp|rt|ruby|s|samp|section|select|slot|small|span|strong|summary|sup|table|tbody|td|template|textarea|tfoot|th|thead|time|tr|u|ul|var|video';
+const SELF_CLOSING_RX = new RegExp(`<(${NON_VOID_HTML})\\b([^>]*?)\\s*/>`, 'g');
+/** `<tag … />` → `<tag …></tag>` for non-void HTML tags (SVG children untouched). */
+export function normalizeFenceHtml(src) {
+    return src.replace(SELF_CLOSING_RX, '<$1$2></$1>');
+}
 function codeExampleNode(node, pageComponent) {
     const attrs = fenceAttrs(node.meta ?? '');
-    const attributes = [jsxAttr('source', node.value + '\n')];
+    // the ONE source (shown + executed) — normalize before it fans out
+    const attributes = [jsxAttr('source', normalizeFenceHtml(node.value) + '\n')];
     // plan §23: the page's component is the default schema — an explicit
     // component="…" only overrides it when a page demonstrates another component.
     // schema="none" opts the card out entirely (guide-page utility demos have no
