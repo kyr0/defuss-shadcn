@@ -76,6 +76,12 @@
     font-size: 0.75rem;
     padding: 0 0.375rem;
   }
+  /* zoom carries a 2–3 digit % — the field can be half as wide (after the
+     generic rule: same specificity, source order wins) */
+  .code-example-size input.code-example-vp-z {
+    width: 3.5rem;
+    margin-left: 0.5rem;
+  }
   .code-example-size input[type='number']:disabled {
     opacity: 0.45;
     cursor: not-allowed;

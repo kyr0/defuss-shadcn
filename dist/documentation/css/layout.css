@@ -359,35 +359,9 @@ pre code { background: none; padding: 0; border: none; font-size: inherit; }
   overflow-x: auto;
 }
 
-/* Visualization helpers for demo content. */
-.demo-tile {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-sm);
-  background: var(--primary);
-  color: var(--primary-foreground);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  line-height: 1.4;
-  overflow: hidden;
-}
-.demo-tile[data-variant="secondary"] { background: var(--secondary); color: var(--secondary-foreground); }
-.demo-tile[data-variant="accent"] { background: var(--accent); color: var(--accent-foreground); }
-.demo-tile[data-variant="muted"] { background: var(--muted); color: var(--muted-foreground); }
-.demo-tile[data-variant="outline"] {
-  background: transparent;
-  border: 1px dashed var(--border);
-  color: var(--muted-foreground);
-}
-.demo-label {
-  margin: 0 0 0.5rem;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: var(--muted-foreground);
-}
-.demo-outline { border: 1px dashed var(--border); border-radius: var(--radius-md); }
-.demo-stripes { background: repeating-linear-gradient(90deg, transparent 0 11px, var(--border) 11px 12px); }
+/* Demo CONTENT helpers (.demo-tile/.demo-label/.demo-outline/.demo-stripes/
+   .demo-box) live in css/docs-utilities.css: the CodeExample sandbox mirrors
+   that sheet (STYLE_FRAGMENTS), not this one — site chrome stays site-only. */
 
 /* Viewport-width toolbar (injected by site.js into .demo[data-viewport]). */
 .vp-toolbar {

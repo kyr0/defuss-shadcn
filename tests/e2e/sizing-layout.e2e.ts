@@ -49,15 +49,20 @@ async function demoBox(pg: import('playwright').Page, name: string, timeoutMs = 
     await pg.waitForTimeout(250);
   }
 }
-/** run fn inside the frame holding the anchor (main doc or sandbox) */
-async function inDemo<T>(pg: import('playwright').Page, name: string, fn: (el: Element) => T): Promise<T> {
-  const local = pg.locator(`[data-demo="${name}"]`);
-  if (await local.count()) return (await local.first().evaluate(fn)) as T;
-  for (const f of pg.frames().filter((x) => x !== pg.mainFrame())) {
-    const el = await f.$(`[data-demo="${name}"]`);
-    if (el) return (await el.evaluate(fn)) as T;
+/** run fn inside the frame holding the anchor (main doc or sandbox); waits
+ * through the card's lazy boot, like demoBox */
+async function inDemo<T>(pg: import('playwright').Page, name: string, fn: (el: Element) => T, timeoutMs = 12000): Promise<T> {
+  const deadline = Date.now() + timeoutMs;
+  for (;;) {
+    const local = pg.locator(`[data-demo="${name}"]`);
+    if (await local.count()) return (await local.first().evaluate(fn)) as T;
+    for (const f of pg.frames().filter((x) => x !== pg.mainFrame())) {
+      const el = await f.$(`[data-demo="${name}"]`);
+      if (el) return (await el.evaluate(fn)) as T;
+    }
+    if (Date.now() > deadline) throw new Error(`demo "${name}" frame not found`);
+    await pg.waitForTimeout(250);
   }
-  throw new Error(`demo "${name}" frame not found`);
 }
 
 const server = startServer();
@@ -122,43 +127,51 @@ try {
 
   await check('grid demo: auto-fit tracks and subgrid footer alignment apply', async () => {
     await page.goto(`${server.url}/dist/documentation/grid.html`, { waitUntil: 'networkidle' });
-    const cols = await page.$eval('[data-demo="grid"]', (el) =>
-      getComputedStyle(el).gridTemplateColumns.split(' ').length);
-    assert.ok(cols >= 2, `auto-fit produced ${cols} columns at 1280px`);
+    const cols = await inDemo(page, 'grid', (el) => getComputedStyle(el).gridTemplateColumns.split(' ').length);
+    assert.ok(cols >= 2, `auto-fit produced ${cols} columns`);
     // both demo cards exist and their footers share the subgrid row
-    const buttons = page.locator('[data-demo="subgrid"] button');
-    assert.equal(await buttons.count(), 2, 'subgrid demo cards');
-    const tops = await buttons.evaluateAll((els) => els.map((el) => el.getBoundingClientRect().top));
+    const tops = await inDemo(page, 'subgrid', (el) =>
+      [...el.querySelectorAll('button')].map((b) => b.getBoundingClientRect().top));
+    assert.equal(tops.length, 2, 'subgrid demo cards');
     assert.ok(Math.abs(tops[0] - tops[1]) < 1, `subgrid footers not aligned: ${JSON.stringify(tops)}`);
   });
 
   await check('density demo: compact gap is 0.75× the comfortable gap', async () => {
     await page.goto(`${server.url}/dist/documentation/density.html`, { waitUntil: 'networkidle' });
-    const gaps = await page.$$eval('[data-demo="density"] .stack', (els) =>
-      els.map((el) => parseFloat(getComputedStyle(el).gap)));
+    const gaps = await inDemo(page, 'density', (el) =>
+      [...el.querySelectorAll('.stack')].map((s) => parseFloat(getComputedStyle(s).gap)));
     assert.equal(gaps.length, 3, 'three density columns');
     assert.ok(Math.abs(gaps[0] - gaps[1] * 0.75) < 0.5, `compact ${gaps[0]} vs comfortable ${gaps[1]}`);
     assert.ok(Math.abs(gaps[2] - gaps[1] * 1.25) < 0.5, `spacious ${gaps[2]} vs comfortable ${gaps[1]}`);
   });
 
-  await check('viewport toolbar resizes a demo stage (container query reacts)', async () => {
+  // the container-query demo now lives in a CodeExample sandbox: the card's
+  // own device toolbar resizes the iframe, so the query reacts for real
+  await check('CodeExample device toolbar drives a container query (Phone stacks, Full rows)', async () => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto(`${server.url}/dist/documentation/container.html`, { waitUntil: 'networkidle' });
-    const demo = page.locator('.demo[data-viewport]:has(.cq-demo-row)').first();
-    assert.ok(await demo.count(), 'the @container demo is resizable');
-    const viewport = demo.locator('.demo-viewport');
-    const wideWidth = (await viewport.boundingBox())?.width ?? 0;
-    assert.ok(wideWidth > 700, `full width stage: ${wideWidth}`);
-    const row = '.demo[data-viewport] .demo-viewport .cq-demo-row';
-    const dirWide = await page.$eval(row, (el) => getComputedStyle(el).flexDirection);
-    assert.equal(dirWide, 'row', `cq-demo-row at full width: ${dirWide}`);
-    await demo.locator('.vp-btn', { hasText: 'Mobile' }).click();
-    const narrowWidth = (await viewport.boundingBox())?.width ?? 0;
-    assert.ok(Math.abs(narrowWidth - 360) < 2, `mobile stage width: ${narrowWidth}`);
-    // the @container demo's row flips back to stacked at 360px
-    const dir = await page.$eval(row, (el) => getComputedStyle(el).flexDirection);
-    assert.equal(dir, 'column', `cq-demo-row at 360px: ${dir}`);
-    await demo.locator('.vp-btn', { hasText: 'Full' }).click();
+    const card = page.locator('.code-example').last(); // the query-boundary card
+    const frameEl = await card.locator('iframe').elementHandle();
+    assert.ok(frameEl, 'the container-query demo renders its own sandbox');
+    const frame = await (frameEl as unknown as { contentFrame(): Promise<import('playwright').Frame | null> }).contentFrame();
+    assert.ok(frame, 'sandbox frame addressable');
+    // the FLUID box's row is the last one (the first sits in the fixed 14rem
+    // narrow demo, which is stacked by design)
+    // wait for the sandbox (and its in-fence <style>) before the first read
+    await frame!.waitForSelector('.cq-demo-row', { timeout: 12000 });
+    const dir = () =>
+      frame!.evaluate(() => {
+        const rows = document.querySelectorAll('.cq-demo-row');
+        return rows.length ? getComputedStyle(rows[rows.length - 1]).flexDirection : 'missing';
+      });
+    // Full: the fluid box clears 24rem → row
+    await card.locator('[data-vp="full"]').click();
+    await page.waitForTimeout(700);
+    assert.equal(await dir(), 'row', 'fluid cq-demo-row at Full width');
+    // Phone: 390px sandbox → below the 24rem threshold → stacked
+    await card.locator('[data-vp="phone"]').click();
+    await page.waitForTimeout(700);
+    assert.equal(await dir(), 'column', 'cq-demo-row stacks in the phone sandbox');
   });
 
   for (const width of [320, 1440]) {

@@ -108,6 +108,38 @@
 /* Bordered muted content box in composition demos (layout page). */
 .demo-box { border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--muted); color: var(--muted-foreground); padding: 1rem; }
 
+/* Visualization helpers for demo CONTENT — moved out of css/layout.css (site
+   chrome) so the CodeExample sandbox sees them: the bridge mirrors this sheet
+   into every iframe (STYLE_FRAGMENTS), not the chrome sheet. */
+.demo-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  overflow: hidden;
+}
+.demo-tile[data-variant="secondary"] { background: var(--secondary); color: var(--secondary-foreground); }
+.demo-tile[data-variant="accent"] { background: var(--accent); color: var(--accent-foreground); }
+.demo-tile[data-variant="muted"] { background: var(--muted); color: var(--muted-foreground); }
+.demo-tile[data-variant="outline"] {
+  background: transparent;
+  border: 1px dashed var(--border);
+  color: var(--muted-foreground);
+}
+.demo-label {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+.demo-outline { border: 1px dashed var(--border); border-radius: var(--radius-md); }
+.demo-stripes { background: repeating-linear-gradient(90deg, transparent 0 11px, var(--border) 11px 12px); }
+
 /* SkillField label (doc-blocks.tsx renders this class). */
 .skill-field-label { margin: 0 0 0.5rem; font-weight: 600; font-size: 0.8125rem; font-family: var(--font-mono); }
 

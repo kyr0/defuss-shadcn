@@ -9,27 +9,27 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <DocPage meta={meta}>
 
 <PageHeader slug="grid" title="Grid" crumb="layout / grid" introStyle="max-width:38rem;">
-  Intrinsic card grids, explicit tracks and aligned subgrids. Responsive to available space without a breakpoint utility generator. Every code block shows exactly the classes that render the demo above it — only the demo's decorative colors are omitted.
+  Intrinsic card grids, explicit tracks and aligned subgrids. Responsive to available space without a breakpoint utility generator. Every code block is the live demo — the shown source is the executed source, and each card carries a device toolbar that really resizes the sandbox.
 </PageHeader>
 
 <h2 id="intrinsic" class="h2-display">Intrinsic columns without breakpoints</h2>
 
 <DocText><code>grid</code> only enables Grid. Add <code>grid-cols-auto</code> for auto-fit columns with a preferred minimum; <code>--layout-min</code> defaults to 16rem. Empty tracks collapse, and populated tracks share spare space. This is the card-wall pattern: team directories, feature matrices and gallery grids that reflow as the page widens — no media queries. Resize the demo with the toolbar and watch tracks appear and collapse.</DocText>
 
-<Demo viewport>
-  <div class="demo-viewport" style="max-inline-size:none;margin-inline:0;">
-    <div class="grid grid-cols-auto gap-4" style="--layout-min:12rem;" data-demo="grid">
-      <div class="demo-tile p-4" data-variant="muted">Research</div>
-      <div class="demo-tile p-4" data-variant="muted">Design</div>
-      <div class="demo-tile p-4" data-variant="muted">Engineering</div>
-    </div>
-  </div>
-  <DemoCode>{"<div class=\"grid grid-cols-auto gap-4\" style=\"--layout-min:12rem;\">\n  <div class=\"p-4\">Research</div>\n  <div class=\"p-4\">Design</div>\n  <div class=\"p-4\">Engineering</div>\n</div>"}</DemoCode>
-</Demo>
+```html example schema="none"
+<div class="grid grid-cols-auto gap-4" style="--layout-min:12rem;" data-demo="grid">
+  <div class="demo-tile p-4" data-variant="muted">Research</div>
+  <div class="demo-tile p-4" data-variant="muted">Design</div>
+  <div class="demo-tile p-4" data-variant="muted">Engineering</div>
+</div>
+```
 
-<Demo>
-  <DemoCode header="CSS" lang="css">{"grid-template-columns:\n  repeat(auto-fit, minmax(min(100%, var(--layout-min)), 1fr));"}</DemoCode>
-</Demo>
+
+```css
+grid-template-columns:
+  repeat(auto-fit, minmax(min(100%, var(--layout-min)), 1fr));
+```
+
 
 <DocText>The inner minimum prevents the preferred track width itself from exceeding a narrow container. It does not wrap long identifiers, shrink arbitrary media or eliminate intrinsic child overflow. Set those policies on the content.</DocText>
 
@@ -76,14 +76,14 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </table>
 </div>
 
-<Demo>
-  <div class="grid grid-cols-3 gap-4">
-    <header class="col-span-full demo-tile p-2">Dashboard — col-span-full</header>
-    <aside class="demo-tile p-2" data-variant="muted">Filters</aside>
-    <section class="col-span-2 demo-tile p-2" data-variant="accent">Results — col-span-2</section>
-  </div>
-  <DemoCode>{"<div class=\"grid grid-cols-3 gap-4\">\n  <header class=\"col-span-full\">Dashboard</header>\n  <aside>Filters</aside>\n  <section class=\"col-span-2\">Results</section>\n</div>"}</DemoCode>
-</Demo>
+```html example schema="none"
+<div class="grid grid-cols-3 gap-4">
+  <header class="col-span-full demo-tile p-2">Dashboard — col-span-full</header>
+  <aside class="demo-tile p-2" data-variant="muted">Filters</aside>
+  <section class="col-span-2 demo-tile p-2" data-variant="accent">Results — col-span-2</section>
+</div>
+```
+
 
 <DocText>A span larger than the available explicit tracks can create implicit columns. Keep spans compatible with every responsive track configuration; do not use a fixed span in a one-column auto-fit layout without an intentional override.</DocText>
 
@@ -93,27 +93,27 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <DocText>Items stretch to fill their track area by default. <code>place-items-\*</code> sets the default for every cell (<code>items-\*</code> and <code>justify-items-\*</code> address the block and inline axes separately); <code>justify-self-\*</code> and <code>place-self-\*</code> override one item — centering an icon in its cell, or pinning an action to the end of a row.</DocText>
 
-<Demo>
-  <div class="stack gap-4">
-    <div>
-      <p class="demo-label">place-items-center on the grid</p>
-      <div class="grid grid-cols-3 gap-2 place-items-center demo-outline" style="grid-auto-rows:4rem;">
-        <div class="demo-tile size-8" />
-        <div class="demo-tile size-8" />
-        <div class="demo-tile size-8" />
-      </div>
-    </div>
-    <div>
-      <p class="demo-label">justify-self-\* / place-self-\* per item</p>
-      <div class="grid grid-cols-3 gap-2 demo-outline" style="grid-auto-rows:4rem;">
-        <div class="demo-tile size-8 justify-self-start" data-variant="accent" />
-        <div class="demo-tile size-8 place-self-center" data-variant="accent" />
-        <div class="demo-tile size-8 justify-self-end" data-variant="accent" />
-      </div>
+```html example schema="none"
+<div class="stack gap-4">
+  <div>
+    <p class="demo-label">place-items-center on the grid</p>
+    <div class="grid grid-cols-3 gap-2 place-items-center demo-outline" style="grid-auto-rows:4rem;">
+      <div class="demo-tile size-8"></div>
+      <div class="demo-tile size-8"></div>
+      <div class="demo-tile size-8"></div>
     </div>
   </div>
-  <DemoCode>{"<div class=\"grid grid-cols-3 gap-2 place-items-center\" style=\"grid-auto-rows:4rem;\">\n  <div class=\"size-8\"></div>\n  <div class=\"size-8\"></div>\n  <div class=\"size-8\"></div>\n</div>\n\n<div class=\"grid grid-cols-3 gap-2\" style=\"grid-auto-rows:4rem;\">\n  <div class=\"size-8 justify-self-start\"></div>\n  <div class=\"size-8 place-self-center\"></div>\n  <div class=\"size-8 justify-self-end\"></div>\n</div>"}</DemoCode>
-</Demo>
+  <div>
+    <p class="demo-label">justify-self-\* / place-self-\* per item</p>
+    <div class="grid grid-cols-3 gap-2 demo-outline" style="grid-auto-rows:4rem;">
+      <div class="demo-tile size-8 justify-self-start" data-variant="accent"></div>
+      <div class="demo-tile size-8 place-self-center" data-variant="accent"></div>
+      <div class="demo-tile size-8 justify-self-end" data-variant="accent"></div>
+    </div>
+  </div>
+</div>
+```
+
 
 <div class="sep" />
 
@@ -121,21 +121,21 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <DocText>Cards in a row usually carry different amounts of body copy, but their footers should still line up — pricing tiers, feature cards, article teasers. Subgrid lets each card adopt the parent's row tracks, so one row height is negotiated across all cards.</DocText>
 
-<Demo>
-  <div class="grid grid-cols-2 gap-4" data-demo="subgrid">
-    <div class="grid row-span-3 grid-rows-subgrid" style="border:1px solid var(--border);border-radius:var(--radius-md);">
-      <h3 style="margin:0.75rem;font-size:1rem;">Card A</h3>
-      <p class="text-sm text-muted-foreground" style="margin:0 0.75rem;">Short body — its footer still aligns with Card B because the row tracks are shared.</p>
-      <button class="btn justify-self-start" type="button" data-variant="outline" data-size="sm" style="margin:0.75rem;">Open</button>
-    </div>
-    <div class="grid row-span-3 grid-rows-subgrid" style="border:1px solid var(--border);border-radius:var(--radius-md);">
-      <h3 style="margin:0.75rem;font-size:1rem;">Card B</h3>
-      <p class="text-sm text-muted-foreground" style="margin:0 0.75rem;">A much longer body that would push a naive footer down. Subgrid keeps both footers on one line.</p>
-      <button class="btn justify-self-start" type="button" data-variant="outline" data-size="sm" style="margin:0.75rem;">Open</button>
-    </div>
+```html example schema="none"
+<div class="grid grid-cols-2 gap-4" data-demo="subgrid">
+  <div class="grid row-span-3 grid-rows-subgrid" style="border:1px solid var(--border);border-radius:var(--radius-md);">
+    <h3 style="margin:0.75rem;font-size:1rem;">Card A</h3>
+    <p class="text-sm text-muted-foreground" style="margin:0 0.75rem;">Short body — its footer still aligns with Card B because the row tracks are shared.</p>
+    <button class="btn justify-self-start" type="button" data-variant="outline" data-size="sm" style="margin:0.75rem;">Open</button>
   </div>
-  <DemoCode>{"<div class=\"grid grid-cols-2 gap-4\">\n  <div class=\"grid row-span-3 grid-rows-subgrid\">\n    <h3>Card A</h3>\n    <p class=\"text-sm text-muted-foreground\">Short body — its footer still aligns with Card B.</p>\n    <button class=\"btn justify-self-start\" type=\"button\" data-variant=\"outline\" data-size=\"sm\">Open</button>\n  </div>\n  <div class=\"grid row-span-3 grid-rows-subgrid\">\n    <h3>Card B</h3>\n    <p class=\"text-sm text-muted-foreground\">A much longer body — subgrid keeps both footers on one line.</p>\n    <button class=\"btn justify-self-start\" type=\"button\" data-variant=\"outline\" data-size=\"sm\">Open</button>\n  </div>\n</div>"}</DemoCode>
-</Demo>
+  <div class="grid row-span-3 grid-rows-subgrid" style="border:1px solid var(--border);border-radius:var(--radius-md);">
+    <h3 style="margin:0.75rem;font-size:1rem;">Card B</h3>
+    <p class="text-sm text-muted-foreground" style="margin:0 0.75rem;">A much longer body that would push a naive footer down. Subgrid keeps both footers on one line.</p>
+    <button class="btn justify-self-start" type="button" data-variant="outline" data-size="sm" style="margin:0.75rem;">Open</button>
+  </div>
+</div>
+```
+
 
 <DocText>Each card spans three parent rows and adopts those rows as its subgrid. Subgrid is a structure contract, not a universal card rule. Without support, the cards retain ordinary independent grids; shared row alignment is the enhancement. CSS Grid is layout, not an ARIA grid widget.</DocText>
 
@@ -145,67 +145,65 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <DocText>The same auto-fit track list drives a typical content listing — article teasers, product cards, team directories. Each card is ordinary component markup (card, title, description, badge); the grid owns the tracks and nothing here measures the viewport. Resize with the toolbar: the wall deals out one, two, three or more columns as the frame widens.</DocText>
 
-<Demo viewport>
-  <div class="demo-viewport" style="max-inline-size:none;margin-inline:0;">
-    <div class="grid grid-cols-auto gap-4" style="--layout-min:10rem;">
-      <article class="card">
-        <div class="card-header">
-          <h3 class="card-title">Getting started</h3>
-          <p class="card-description">Install and render your first component in minutes.</p>
-        </div>
-        <div class="card-footer">
-          <span class="badge" data-variant="secondary">Guide</span>
-        </div>
-      </article>
-      <article class="card">
-        <div class="card-header">
-          <h3 class="card-title">Design tokens</h3>
-          <p class="card-description">One source of truth for color, radius and shadow.</p>
-        </div>
-        <div class="card-footer">
-          <span class="badge" data-variant="secondary">Reference</span>
-        </div>
-      </article>
-      <article class="card">
-        <div class="card-header">
-          <h3 class="card-title">Container queries</h3>
-          <p class="card-description">Components that react to the space they get.</p>
-        </div>
-        <div class="card-footer">
-          <span class="badge" data-variant="secondary">Pattern</span>
-        </div>
-      </article>
-      <article class="card">
-        <div class="card-header">
-          <h3 class="card-title">Theming</h3>
-          <p class="card-description">Drop-in palettes from any tweakcn export.</p>
-        </div>
-        <div class="card-footer">
-          <span class="badge" data-variant="secondary">Guide</span>
-        </div>
-      </article>
-      <article class="card">
-        <div class="card-header">
-          <h3 class="card-title">Grid layouts</h3>
-          <p class="card-description">Intrinsic tracks without breakpoint utilities.</p>
-        </div>
-        <div class="card-footer">
-          <span class="badge" data-variant="secondary">Pattern</span>
-        </div>
-      </article>
-      <article class="card">
-        <div class="card-header">
-          <h3 class="card-title">Dark mode</h3>
-          <p class="card-description">One theme, two palettes, zero flash.</p>
-        </div>
-        <div class="card-footer">
-          <span class="badge" data-variant="secondary">Reference</span>
-        </div>
-      </article>
+```html example schema="none"
+<div class="grid grid-cols-auto gap-4" style="--layout-min:10rem;">
+  <article class="card">
+    <div class="card-header">
+      <h3 class="card-title">Getting started</h3>
+      <p class="card-description">Install and render your first component in minutes.</p>
     </div>
-  </div>
-  <DemoCode>{"<div class=\"grid grid-cols-auto gap-4\" style=\"--layout-min:10rem;\">\n  <article class=\"card\">\n    <div class=\"card-header\">\n      <h3 class=\"card-title\">Getting started</h3>\n      <p class=\"card-description\">Install and render your first component in minutes.</p>\n    </div>\n    <div class=\"card-footer\">\n      <span class=\"badge\" data-variant=\"secondary\">Guide</span>\n    </div>\n  </article>\n  <article class=\"card\">\n    <div class=\"card-header\">\n      <h3 class=\"card-title\">Design tokens</h3>\n      <p class=\"card-description\">One source of truth for color, radius and shadow.</p>\n    </div>\n    <div class=\"card-footer\">\n      <span class=\"badge\" data-variant=\"secondary\">Reference</span>\n    </div>\n  </article>\n  <!-- …four more cards with the same structure… -->\n</div>"}</DemoCode>
-</Demo>
+    <div class="card-footer">
+      <span class="badge" data-variant="secondary">Guide</span>
+    </div>
+  </article>
+  <article class="card">
+    <div class="card-header">
+      <h3 class="card-title">Design tokens</h3>
+      <p class="card-description">One source of truth for color, radius and shadow.</p>
+    </div>
+    <div class="card-footer">
+      <span class="badge" data-variant="secondary">Reference</span>
+    </div>
+  </article>
+  <article class="card">
+    <div class="card-header">
+      <h3 class="card-title">Container queries</h3>
+      <p class="card-description">Components that react to the space they get.</p>
+    </div>
+    <div class="card-footer">
+      <span class="badge" data-variant="secondary">Pattern</span>
+    </div>
+  </article>
+  <article class="card">
+    <div class="card-header">
+      <h3 class="card-title">Theming</h3>
+      <p class="card-description">Drop-in palettes from any tweakcn export.</p>
+    </div>
+    <div class="card-footer">
+      <span class="badge" data-variant="secondary">Guide</span>
+    </div>
+  </article>
+  <article class="card">
+    <div class="card-header">
+      <h3 class="card-title">Grid layouts</h3>
+      <p class="card-description">Intrinsic tracks without breakpoint utilities.</p>
+    </div>
+    <div class="card-footer">
+      <span class="badge" data-variant="secondary">Pattern</span>
+    </div>
+  </article>
+  <article class="card">
+    <div class="card-header">
+      <h3 class="card-title">Dark mode</h3>
+      <p class="card-description">One theme, two palettes, zero flash.</p>
+    </div>
+    <div class="card-footer">
+      <span class="badge" data-variant="secondary">Reference</span>
+    </div>
+  </article>
+</div>
+```
+
 
 <div class="sep" />
 
@@ -213,18 +211,16 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <DocText>When the skeleton is stable — header, nav, main, aside, footer — a fixed 12-track grid with explicit spans states the structure directly: <code>grid grid-cols-12 gap-4</code>, <code>col-span-full</code> for the chrome, <code>col-span-3</code> / <code>col-span-6</code> / <code>col-span-3</code> for the body. The middle spans sum to 12, so every item lands on a declared track and no implicit columns are created. Resize with the toolbar and watch the <code>minmax(0, 1fr)</code> tracks compress while the proportions hold — auto-fit would have reflowed the skeleton; spans keep it.</DocText>
 
-<Demo viewport>
-  <div class="demo-viewport" style="max-inline-size:none;margin-inline:0;">
-    <div class="grid grid-cols-12 gap-4">
-      <header class="col-span-full demo-tile h-12" data-variant="secondary">col-span-full — header</header>
-      <nav class="col-span-3 demo-tile h-32" data-variant="muted">col-span-3 — nav</nav>
-      <main class="col-span-6 demo-tile h-32" data-variant="accent">col-span-6 — main</main>
-      <aside class="col-span-3 demo-tile h-32" data-variant="muted">col-span-3 — aside</aside>
-      <footer class="col-span-full demo-tile h-10" data-variant="secondary">col-span-full — footer</footer>
-    </div>
-  </div>
-  <DemoCode>{"<div class=\"grid grid-cols-12 gap-4\">\n  <header class=\"col-span-full h-12\">col-span-full — header</header>\n  <nav class=\"col-span-3 h-32\">col-span-3 — nav</nav>\n  <main class=\"col-span-6 h-32\">col-span-6 — main</main>\n  <aside class=\"col-span-3 h-32\">col-span-3 — aside</aside>\n  <footer class=\"col-span-full h-10\">col-span-full — footer</footer>\n</div>"}</DemoCode>
-</Demo>
+```html example schema="none"
+<div class="grid grid-cols-12 gap-4">
+  <header class="col-span-full demo-tile h-12" data-variant="secondary">col-span-full — header</header>
+  <nav class="col-span-3 demo-tile h-32" data-variant="muted">col-span-3 — nav</nav>
+  <main class="col-span-6 demo-tile h-32" data-variant="accent">col-span-6 — main</main>
+  <aside class="col-span-3 demo-tile h-32" data-variant="muted">col-span-3 — aside</aside>
+  <footer class="col-span-full demo-tile h-10" data-variant="secondary">col-span-full — footer</footer>
+</div>
+```
+
 
 <div class="sep" />
 

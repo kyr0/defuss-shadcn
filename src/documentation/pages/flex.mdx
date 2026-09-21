@@ -16,22 +16,22 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <DocText>Start with <code>flex</code> or <code>inline-flex</code> — they only select the formatting context; direction, wrapping, alignment and spacing are added explicitly. <code>stack</code> is the convenience column with a default four-unit, density-aware gap. The classic toolbar: title on the start side, actions on the end side.</DocText>
 
-<Demo>
-  <div class="stack gap-6" data-demo="flex">
-    <div class="flex flex-wrap items-center justify-between gap-3">
-      <strong>Workspace</strong>
-      <div class="flex flex-wrap gap-2">
-        <button class="btn" type="button">Save</button>
-        <button class="btn" type="button" data-variant="outline">Cancel</button>
-      </div>
-    </div>
-    <div class="flex gap-4" style="max-width:20rem;">
-      <span class="w-16 shrink-0 badge" data-variant="outline" style="justify-content:center;">Label</span>
-      <div class="flex-1 min-w-0 wrap-anywhere text-sm text-muted-foreground">LongContentCanNowWrapWithoutWideningItsParent</div>
+```html example schema="none"
+<div class="stack gap-6" data-demo="flex">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <strong>Workspace</strong>
+    <div class="flex flex-wrap gap-2">
+      <button class="btn" type="button">Save</button>
+      <button class="btn" type="button" data-variant="outline">Cancel</button>
     </div>
   </div>
-  <DemoCode>{"<div class=\"flex flex-wrap items-center justify-between gap-3\">\n  <strong>Workspace</strong>\n  <div class=\"flex flex-wrap gap-2\">\n    <button class=\"btn\" type=\"button\">Save</button>\n    <button class=\"btn\" type=\"button\" data-variant=\"outline\">Cancel</button>\n  </div>\n</div>\n\n<div class=\"flex gap-4\" style=\"max-width:20rem;\">\n  <span class=\"w-16 shrink-0 badge\" data-variant=\"outline\" style=\"justify-content:center;\">Label</span>\n  <div class=\"flex-1 min-w-0 wrap-anywhere\">\n    LongContentCanNowWrapWithoutWideningItsParent\n  </div>\n</div>"}</DemoCode>
-</Demo>
+  <div class="flex gap-4" style="max-width:20rem;">
+    <span class="w-16 shrink-0 badge" data-variant="outline" style="justify-content:center;">Label</span>
+    <div class="flex-1 min-w-0 wrap-anywhere text-sm text-muted-foreground">LongContentCanNowWrapWithoutWideningItsParent</div>
+  </div>
+</div>
+```
+
 
 <div class="sep" />
 
@@ -39,16 +39,16 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <DocText>The same primitives compose a full application toolbar: identity on the start side, then search and actions on the end side. <code>ms-auto</code> is the flexible spacer — it absorbs the spare inline space and pushes everything after it to the end. When the page gets narrow the row wraps instead of overflowing.</DocText>
 
-<Demo>
-  <div class="flex flex-wrap items-center gap-2">
-    <strong>Projects</strong>
-    <span class="badge" data-variant="secondary">12 active</span>
-    <div class="demo-tile ms-auto w-40 h-8" data-variant="muted">Search…</div>
-    <button class="btn" type="button" data-variant="outline">Filter</button>
-    <button class="btn" type="button">New project</button>
-  </div>
-  <DemoCode>{"<div class=\"flex flex-wrap items-center gap-2\">\n  <strong>Projects</strong>\n  <span class=\"badge\" data-variant=\"secondary\">12 active</span>\n  <div class=\"ms-auto w-40 h-8\">Search…</div> <!-- ms-auto: the flexible spacer -->\n  <button class=\"btn\" type=\"button\" data-variant=\"outline\">Filter</button>\n  <button class=\"btn\" type=\"button\">New project</button>\n</div>"}</DemoCode>
-</Demo>
+```html example schema="none"
+<div class="flex flex-wrap items-center gap-2">
+  <strong>Projects</strong>
+  <span class="badge" data-variant="secondary">12 active</span>
+  <div class="demo-tile ms-auto w-40 h-8" data-variant="muted">Search…</div>
+  <button class="btn" type="button" data-variant="outline">Filter</button>
+  <button class="btn" type="button">New project</button>
+</div>
+```
+
 
 <div class="sep" />
 
@@ -56,45 +56,43 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <DocText><code>justify-\*</code> distributes items on the main axis. <code>justify-between</code> pins the edges, <code>justify-around</code> gives every item equal half-margins, <code>justify-evenly</code> equal full gaps. It distributes spare space — it is not a substitute for a minimum <code>gap-\*</code>. Resize the demo with the toolbar to see the spare space come and go.</DocText>
 
-<Demo viewport>
-  <div class="demo-viewport">
-    <div class="stack gap-4">
-      <div>
-        <p class="demo-label">justify-start</p>
-        <div class="flex justify-start gap-2 demo-outline" style="padding:0.375rem;">
-          <div class="demo-tile size-6" />
-          <div class="demo-tile size-6" />
-          <div class="demo-tile size-6" />
-        </div>
-      </div>
-      <div>
-        <p class="demo-label">justify-center</p>
-        <div class="flex justify-center gap-2 demo-outline" style="padding:0.375rem;">
-          <div class="demo-tile size-6" />
-          <div class="demo-tile size-6" />
-          <div class="demo-tile size-6" />
-        </div>
-      </div>
-      <div>
-        <p class="demo-label">justify-between</p>
-        <div class="flex justify-between gap-2 demo-outline" style="padding:0.375rem;">
-          <div class="demo-tile size-6" />
-          <div class="demo-tile size-6" />
-          <div class="demo-tile size-6" />
-        </div>
-      </div>
-      <div>
-        <p class="demo-label">justify-evenly</p>
-        <div class="flex justify-evenly gap-2 demo-outline" style="padding:0.375rem;">
-          <div class="demo-tile size-6" />
-          <div class="demo-tile size-6" />
-          <div class="demo-tile size-6" />
-        </div>
-      </div>
+```html example schema="none"
+<div class="stack gap-4">
+  <div>
+    <p class="demo-label">justify-start</p>
+    <div class="flex justify-start gap-2 demo-outline" style="padding:0.375rem;">
+      <div class="demo-tile size-6"></div>
+      <div class="demo-tile size-6"></div>
+      <div class="demo-tile size-6"></div>
     </div>
   </div>
-  <DemoCode>{"<div class=\"flex justify-start gap-2\">…</div>\n<div class=\"flex justify-center gap-2\">…</div>\n<div class=\"flex justify-between gap-2\">…</div>\n<div class=\"flex justify-evenly gap-2\">…</div>"}</DemoCode>
-</Demo>
+  <div>
+    <p class="demo-label">justify-center</p>
+    <div class="flex justify-center gap-2 demo-outline" style="padding:0.375rem;">
+      <div class="demo-tile size-6"></div>
+      <div class="demo-tile size-6"></div>
+      <div class="demo-tile size-6"></div>
+    </div>
+  </div>
+  <div>
+    <p class="demo-label">justify-between</p>
+    <div class="flex justify-between gap-2 demo-outline" style="padding:0.375rem;">
+      <div class="demo-tile size-6"></div>
+      <div class="demo-tile size-6"></div>
+      <div class="demo-tile size-6"></div>
+    </div>
+  </div>
+  <div>
+    <p class="demo-label">justify-evenly</p>
+    <div class="flex justify-evenly gap-2 demo-outline" style="padding:0.375rem;">
+      <div class="demo-tile size-6"></div>
+      <div class="demo-tile size-6"></div>
+      <div class="demo-tile size-6"></div>
+    </div>
+  </div>
+</div>
+```
+
 
 <div class="sep" />
 
@@ -102,35 +100,35 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <DocText><code>items-\*</code> aligns the row's children on the cross axis; <code>self-\*</code> overrides one child. <code>items-baseline</code> lines up text, <code>self-stretch</code> lets one panel fill the row's height.</DocText>
 
-<Demo>
-  <div class="stack gap-4">
-    <div>
-      <p class="demo-label">items-start</p>
-      <div class="flex items-start gap-2 demo-outline" style="padding:0.375rem;">
-        <div class="demo-tile w-8 h-6" />
-        <div class="demo-tile w-8 h-12" />
-        <div class="demo-tile w-8 h-8" />
-      </div>
-    </div>
-    <div>
-      <p class="demo-label">items-center</p>
-      <div class="flex items-center gap-2 demo-outline" style="padding:0.375rem;">
-        <div class="demo-tile w-8 h-6" />
-        <div class="demo-tile w-8 h-12" />
-        <div class="demo-tile w-8 h-8" />
-      </div>
-    </div>
-    <div>
-      <p class="demo-label">items-end + self-start on the tall box</p>
-      <div class="flex items-end gap-2 demo-outline" style="padding:0.375rem;">
-        <div class="demo-tile w-8 h-6" />
-        <div class="demo-tile w-8 h-12 self-start" data-variant="accent" />
-        <div class="demo-tile w-8 h-8" />
-      </div>
+```html example schema="none"
+<div class="stack gap-4">
+  <div>
+    <p class="demo-label">items-start</p>
+    <div class="flex items-start gap-2 demo-outline" style="padding:0.375rem;">
+      <div class="demo-tile w-8 h-6"></div>
+      <div class="demo-tile w-8 h-12"></div>
+      <div class="demo-tile w-8 h-8"></div>
     </div>
   </div>
-  <DemoCode>{"<div class=\"flex items-start gap-2\">…</div>\n<div class=\"flex items-center gap-2\">…</div>\n<div class=\"flex items-end gap-2\">\n  <div class=\"w-8 h-6\"></div>\n  <div class=\"w-8 h-12 self-start\"></div> <!-- overrides items-end -->\n  <div class=\"w-8 h-8\"></div>\n</div>"}</DemoCode>
-</Demo>
+  <div>
+    <p class="demo-label">items-center</p>
+    <div class="flex items-center gap-2 demo-outline" style="padding:0.375rem;">
+      <div class="demo-tile w-8 h-6"></div>
+      <div class="demo-tile w-8 h-12"></div>
+      <div class="demo-tile w-8 h-8"></div>
+    </div>
+  </div>
+  <div>
+    <p class="demo-label">items-end + self-start on the tall box</p>
+    <div class="flex items-end gap-2 demo-outline" style="padding:0.375rem;">
+      <div class="demo-tile w-8 h-6"></div>
+      <div class="demo-tile w-8 h-12 self-start" data-variant="accent"></div>
+      <div class="demo-tile w-8 h-8"></div>
+    </div>
+  </div>
+</div>
+```
+
 
 <div class="sep" />
 
@@ -138,22 +136,20 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <DocText><code>flex-1</code> lets an item grow and shrink from a zero basis — the fluid column. <code>flex-none</code> (<code>shrink-0</code> + fixed size) pins an item — the icon, the thumbnail, the sidebar. <code>grow</code> / <code>grow-0</code> and <code>shrink</code> / <code>shrink-0</code> tune the factors individually; <code>basis-0/auto/full</code> sets the starting size. Resize the demo: the <code>flex-1</code> columns absorb whatever the fixed <code>w-24</code> box leaves.</DocText>
 
-<Demo viewport>
-  <div class="demo-viewport">
-    <div class="stack gap-4">
-      <div class="flex gap-2">
-        <div class="demo-tile flex-1 h-8">flex-1</div>
-        <div class="demo-tile flex-1 h-8">flex-1</div>
-        <div class="demo-tile w-24 shrink-0 h-8" data-variant="accent">w-24 shrink-0</div>
-      </div>
-      <div class="flex gap-2">
-        <div class="demo-tile grow h-8">grow</div>
-        <div class="demo-tile grow-0 h-8 px-2" data-variant="secondary">grow-0 keeps content size</div>
-      </div>
-    </div>
+```html example schema="none"
+<div class="stack gap-4">
+  <div class="flex gap-2">
+    <div class="demo-tile flex-1 h-8">flex-1</div>
+    <div class="demo-tile flex-1 h-8">flex-1</div>
+    <div class="demo-tile w-24 shrink-0 h-8" data-variant="accent">w-24 shrink-0</div>
   </div>
-  <DemoCode>{"<div class=\"flex gap-2\">\n  <div class=\"flex-1 h-8\">flex-1</div>\n  <div class=\"flex-1 h-8\">flex-1</div>\n  <div class=\"w-24 shrink-0 h-8\">w-24 shrink-0</div>\n</div>\n\n<div class=\"flex gap-2\">\n  <div class=\"grow h-8\">grow</div>\n  <div class=\"grow-0 h-8 px-2\">grow-0 keeps content size</div>\n</div>"}</DemoCode>
-</Demo>
+  <div class="flex gap-2">
+    <div class="demo-tile grow h-8">grow</div>
+    <div class="demo-tile grow-0 h-8 px-2" data-variant="secondary">grow-0 keeps content size</div>
+  </div>
+</div>
+```
+
 
 <div class="sep" />
 
@@ -161,21 +157,19 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <DocText><code>flex-wrap</code> lets items flow onto new lines following the available width — tag lists, filter chips, card walls. <code>flex-nowrap</code> is the native default; keep it for toolbars that must never break. Resize the demo to watch the chips wrap and unwrap.</DocText>
 
-<Demo viewport>
-  <div class="demo-viewport">
-    <div class="flex flex-wrap gap-2">
-      <span class="badge" data-variant="outline">design</span>
-      <span class="badge" data-variant="outline">research</span>
-      <span class="badge" data-variant="outline">frontend</span>
-      <span class="badge" data-variant="outline">accessibility</span>
-      <span class="badge" data-variant="outline">performance</span>
-      <span class="badge" data-variant="outline">documentation</span>
-      <span class="badge" data-variant="outline">tokens</span>
-      <span class="badge" data-variant="outline">release</span>
-    </div>
-  </div>
-  <DemoCode>{"<div class=\"flex flex-wrap gap-2\">\n  <span class=\"badge\" data-variant=\"outline\">design</span>\n  <span class=\"badge\" data-variant=\"outline\">research</span>\n  <span class=\"badge\" data-variant=\"outline\">frontend</span>\n  <span class=\"badge\" data-variant=\"outline\">accessibility</span>\n  <span class=\"badge\" data-variant=\"outline\">performance</span>\n  <span class=\"badge\" data-variant=\"outline\">documentation</span>\n  <span class=\"badge\" data-variant=\"outline\">tokens</span>\n  <span class=\"badge\" data-variant=\"outline\">release</span>\n</div>"}</DemoCode>
-</Demo>
+```html example schema="none"
+<div class="flex flex-wrap gap-2">
+  <span class="badge" data-variant="outline">design</span>
+  <span class="badge" data-variant="outline">research</span>
+  <span class="badge" data-variant="outline">frontend</span>
+  <span class="badge" data-variant="outline">accessibility</span>
+  <span class="badge" data-variant="outline">performance</span>
+  <span class="badge" data-variant="outline">documentation</span>
+  <span class="badge" data-variant="outline">tokens</span>
+  <span class="badge" data-variant="outline">release</span>
+</div>
+```
+
 
 <div class="sep" />
 
@@ -189,28 +183,26 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <DocText>A messaging panel is a stack of flex rows. Incoming rows pair a pinned avatar (<code>size-8 shrink-0</code>) with a fluid bubble (<code>flex-1 min-w-0 p-3</code>), bottom-aligned with <code>items-end</code>; the outgoing row flips to <code>justify-end</code>; the composer pins its button (<code>shrink-0</code>) against a fluid field (<code>flex-1 min-w-0</code>). The <code>min-w-0</code> is what lets a bubble shrink below its content width — without it, a long unbroken word would stretch the row past the panel instead of wrapping. Resize with the toolbar: the avatars and the Send button hold their size while the bubbles and the field give.</DocText>
 
-<Demo viewport>
-  <div class="demo-viewport">
-    <div class="stack gap-3" style="max-width:24rem;margin-inline:auto;">
-      <div class="flex items-end gap-2">
-        <div class="demo-tile size-8 shrink-0" data-variant="secondary">AL</div>
-        <div class="demo-tile flex-1 min-w-0 p-3" data-variant="muted">Did the layout tokens land on the CDN yet?</div>
-      </div>
-      <div class="flex items-end gap-2">
-        <div class="demo-tile size-8 shrink-0" data-variant="secondary">GH</div>
-        <div class="demo-tile flex-1 min-w-0 p-3 wrap-anywhere" data-variant="muted">Yes — even PneumonoultramicroscopicsilicovolcanoconiosisLongIdentifiers wrap inside the bubble.</div>
-      </div>
-      <div class="flex justify-end">
-        <div class="demo-tile p-3" data-variant="accent" style="max-width:75%;">Shipped this morning — the purge job runs right after the release.</div>
-      </div>
-      <div class="flex items-center gap-2 pt-3" style="border-top:1px solid var(--border);">
-        <div class="demo-tile flex-1 min-w-0 h-10" data-variant="outline">Message…</div>
-        <button class="btn shrink-0" type="button">Send</button>
-      </div>
-    </div>
+```html example schema="none"
+<div class="stack gap-3" style="max-width:24rem;margin-inline:auto;">
+  <div class="flex items-end gap-2">
+    <div class="demo-tile size-8 shrink-0" data-variant="secondary">AL</div>
+    <div class="demo-tile flex-1 min-w-0 p-3" data-variant="muted">Did the layout tokens land on the CDN yet?</div>
   </div>
-  <DemoCode>{"<div class=\"stack gap-3\" style=\"max-width:24rem;\">\n  <div class=\"flex items-end gap-2\">\n    <div class=\"size-8 shrink-0\">AL</div>\n    <div class=\"flex-1 min-w-0 p-3\">Did the layout tokens land on the CDN yet?</div>\n  </div>\n  <div class=\"flex items-end gap-2\">\n    <div class=\"size-8 shrink-0\">GH</div>\n    <div class=\"flex-1 min-w-0 p-3 wrap-anywhere\">Yes — even PneumonoultramicroscopicsilicovolcanoconiosisLongIdentifiers wrap inside the bubble.</div>\n  </div>\n  <div class=\"flex justify-end\">\n    <div class=\"p-3\" style=\"max-width:75%;\">Shipped this morning — the purge job runs right after the release.</div>\n  </div>\n  <div class=\"flex items-center gap-2 pt-3\" style=\"border-top:1px solid var(--border);\">\n    <div class=\"flex-1 min-w-0 h-10\">Message…</div>\n    <button class=\"btn shrink-0\" type=\"button\">Send</button>\n  </div>\n</div>"}</DemoCode>
-</Demo>
+  <div class="flex items-end gap-2">
+    <div class="demo-tile size-8 shrink-0" data-variant="secondary">GH</div>
+    <div class="demo-tile flex-1 min-w-0 p-3 wrap-anywhere" data-variant="muted">Yes — even PneumonoultramicroscopicsilicovolcanoconiosisLongIdentifiers wrap inside the bubble.</div>
+  </div>
+  <div class="flex justify-end">
+    <div class="demo-tile p-3" data-variant="accent" style="max-width:75%;">Shipped this morning — the purge job runs right after the release.</div>
+  </div>
+  <div class="flex items-center gap-2 pt-3" style="border-top:1px solid var(--border);">
+    <div class="demo-tile flex-1 min-w-0 h-10" data-variant="outline">Message…</div>
+    <button class="btn shrink-0" type="button">Send</button>
+  </div>
+</div>
+```
+
 
 <div class="sep" />
 
@@ -287,13 +279,22 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <h2 id="responsive" class="h2-display">Change structure with a named query</h2>
 
-<Demo>
-  <DemoCode>{"<section class=\"query\">\n  <div class=\"flex flex-col gap-4 action-row\">\n    <button class=\"btn\" type=\"button\">First</button>\n    <button class=\"btn\" type=\"button\">Second</button>\n  </div>\n</section>"}</DemoCode>
-</Demo>
+```html
+<section class="query">
+  <div class="flex flex-col gap-4 action-row">
+    <button class="btn" type="button">First</button>
+    <button class="btn" type="button">Second</button>
+  </div>
+</section>
+```
 
-<Demo>
-  <DemoCode header="CSS" lang="css">{"@container layout (inline-size >= 30rem) {\n  .action-row { flex-direction: row; }\n}"}</DemoCode>
-</Demo>
+
+```css
+@container layout (inline-size >= 30rem) {
+  .action-row { flex-direction: row; }
+}
+```
+
 
 <DocText>The custom rule is unlayered, so it overrides the helper intentionally. No reverse-direction or order helpers are shipped: preserve the relationship between visual, reading and keyboard order.</DocText>
 

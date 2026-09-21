@@ -162,6 +162,15 @@ export function CodeExample({ source, component, label, hint, height, mode, prev
           <span class="code-example-vp-x" aria-hidden="true">×</span>
           <input class="code-example-vp-h" type="number" min="240" step="10" inputmode="numeric" placeholder="Full" aria-label="Custom preview height (px)" disabled />
         </span>
+        {/* zoom: empty = auto-fit (shrink the device to the card, never blow
+            the page), 25–100 = manual %. CSS zoom — unlike transform — keeps
+            the iframe's own viewport at the declared width, so media queries
+            inside the sandbox stay honest while it visually shrinks. */}
+        <span class="code-example-sep" aria-hidden="true"></span>
+        <span class="code-example-size">
+          <input class="code-example-vp-z" type="number" min="25" max="100" step="5" inputmode="numeric" placeholder="Auto" aria-label="Preview zoom (%)" />
+          <span class="code-example-vp-x" aria-hidden="true">%</span>
+        </span>
         <span class="code-example-spacer"></span>
         <button class="code-example-tab" data-tab="code" aria-pressed="true">Code</button>
         {/* State tab renders ONLY when the schema offers editable states — an

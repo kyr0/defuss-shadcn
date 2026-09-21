@@ -654,6 +654,7 @@
       var VP_DEVICE_DEFAULTS = { phone: [390, 844], tablet: [834, 1112] };
       var vpW = root.querySelector('.code-example-vp-w');
       var vpH = root.querySelector('.code-example-vp-h');
+      var vpZ = root.querySelector('.code-example-vp-z');
       var vpBtns = root.querySelectorAll('.code-example-vp[data-vp]:not([data-vp="rotate"])');
       var vpRotate = root.querySelector('.code-example-vp[data-vp="rotate"]');
       var grip = null; // SE resize handle (created below; vpApply syncs its aria-valuenow)
@@ -681,6 +682,7 @@
           frame.style.height = ''; // back to measured (the height message lands via measure)
           api.send('measure', {});
         }
+        vpZoomApply(); // may shrink the canvas → the stage checks below read the fresh zoom
         // device box exceeds the stage vertically → overflow visible (before:
         // the phone frame grew past the closed stage); measured canvas wider
         // than the stage → scroll it (desktop/tablet boxes), and stop centering
@@ -690,7 +692,10 @@
         if (stage) {
           stage.style.overflow = dev ? 'visible' : 'auto';
           stage.style.justifyContent =
-            !dev && vpDevice.getBoundingClientRect().width > stage.clientWidth - 24 ? 'flex-start' : '';
+            !dev && vpDevice.getBoundingClientRect().width * ((Number(root.dataset.vpZoom) || 100) / 100) >
+            stage.clientWidth - 24
+              ? 'flex-start'
+              : '';
         }
         root.dataset.vpMode = vpMode;
         vpScreen.dataset.mode = vpMode;
@@ -720,6 +725,38 @@
       });
       // boot in the fence's declared mode (fills fields, aria-pressed, chrome)
       if (bootMode !== 'full') vpSetMode(bootMode);
+      // -- zoom ----------------------------------------------------
+      // CSS `zoom` on the device (not transform): the iframe viewport stays at
+      // its declared width so media queries inside stay honest; only rendering
+      // shrinks. Empty field = auto-fit: shrink-to-card in 5% steps (never
+      // above 100, floored at 25); a manual value (25–100) is honored as-is.
+      function vpZoomApply() {
+        if (!vpZ) return; // card rendered without the field (stale HTML)
+        var manual = clamp(Math.round(Number(vpZ.value) || 0), 0, 100);
+        var z;
+        if (manual >= 25) {
+          z = Math.min(manual, 100);
+        } else {
+          // natural width = unzoomed box (CSS zoom feeds back into layout, so
+          // measure with it cleared, then restore)
+          var prev = vpDevice.style.zoom;
+          vpDevice.style.zoom = '';
+          var stage = root.querySelector('.preview');
+          var natural = vpDevice.getBoundingClientRect().width || 1;
+          var avail = Math.max(stage.clientWidth - 24, 120); // inline padding
+          vpDevice.style.zoom = prev;
+          z = clamp(Math.floor(Math.min(avail / natural, 1) * 20) * 5, 25, 100);
+        }
+        vpDevice.style.zoom = z < 100 ? String(z / 100) : '';
+        root.dataset.vpZoom = String(z);
+      }
+      var vpResizeT;
+      addEventListener('resize', function () {
+        if (!vpZ || vpZ.value) return; // manual zoom is a deliberate choice
+        clearTimeout(vpResizeT);
+        vpResizeT = setTimeout(vpZoomApply, 120);
+      });
+      if (vpZ) vpZ.addEventListener('input', vpZoomApply);
       vpRotate.addEventListener('click', function () {
         if (vpRotate.disabled) return;
         var w = vpW.value;
