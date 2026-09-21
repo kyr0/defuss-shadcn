@@ -38,6 +38,10 @@ export interface CodeExampleProps {
   /** min frame height in rem (fence attr height="N") — floors the sandbox while
    * the true content height arrives (mirrors the old previewStyle min-height) */
   height?: string;
+  /** viewport toolbar boot mode (fence attr mode="phone|tablet|desktop|full"):
+   * media-query components (sidebar) need the sandbox viewport ≥ their
+   * breakpoint — a fence decides what the demo boots as */
+  mode?: string;
   /** stage styles for the sandbox body (fence attr previewStyle="…") — mirrors
    * the old <Example previewStyle>: flex/gap/centering chrome of the demo area,
    * never part of the example source */
@@ -84,7 +88,7 @@ function showsStateTab(schemaText: string | null): boolean {
 const H2_LABEL = 'text-sm font-medium mb-2';
 const H2_HINT = 'text-xs text-muted-foreground mb-3';
 
-export function CodeExample({ source, component, label, hint, height, previewStyle, children, code, preview, previewSource }: CodeExampleProps) {
+export function CodeExample({ source, component, label, hint, height, mode, previewStyle, children, code, preview, previewSource }: CodeExampleProps) {
   const problems = codeExampleProblems({ source, children, code, preview, previewSource });
   if (problems.length) throw new Error(`CodeExample: ${problems.join(' | ')}`);
   const schemaText = readSchema(component);
@@ -102,6 +106,7 @@ export function CodeExample({ source, component, label, hint, height, previewSty
       {...(schemaText ? { 'data-schema': schemaText } : {})}
       {...(schemaText ? { 'data-state-demo': '' } : {})}
       {...(height ? { 'data-height': height } : {})}
+      {...(mode ? { 'data-vp-mode': mode } : {})}
       // previewStyle = stage chrome for the sandbox body (mirrors the old
       // <Example previewStyle>): layout of the demo area, never source bytes
       {...(previewStyle ? { 'data-preview-style': previewStyle } : {})}
@@ -111,10 +116,10 @@ export function CodeExample({ source, component, label, hint, height, previewSty
       {/* class="preview" exactly (verify's `preview blocks` gate + screenshot anchor);
           the iframe is inside it, so the captured default-state PNG shows the live sandbox.
           .ce-screen/.ce-device: the device emulation wrapper — phone/tablet modes put a
-          scaling bezel (border + island + home indicator, pure CSS) around the iframe. */}
-      // padding gives the canvas breathing room inside the card (medium
-      // 0.75rem); overflow hidden keeps wide content clipped until the
-      // viewport toolbar's device modes flip it (code-example.js)
+          scaling bezel (border + island + home indicator, pure CSS) around the iframe.
+          padding gives the canvas breathing room inside the card (medium 0.75rem);
+          overflow hidden keeps wide content clipped until the viewport toolbar's
+          device modes flip it (code-example.js). */}
       <div class="preview" style="padding:0.75rem;overflow:hidden;">
         <div class="ce-screen" data-mode="full">
           <div class="ce-device">

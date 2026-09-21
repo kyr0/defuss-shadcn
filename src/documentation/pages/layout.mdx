@@ -9,7 +9,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <DocPage meta={meta}>
 
 <PageHeader slug="layout" title="Layout" introStyle="max-width:38rem;">
-  Native Grid, Flexbox and container queries with a small, optional class API. Compose layouts without a compiler or runtime. Every code block shows exactly the classes that render the demo above it; demos marked with a width toolbar can be resized between Mobile, Tablet and Desktop.
+  Native Grid, Flexbox and container queries with a small, optional class API. Compose layouts without a compiler or runtime. Every code block is the live demo — the shown source is the executed source, and each card carries a device toolbar (Phone, Tablet, Desktop, Full) that really resizes the sandbox.
 </PageHeader>
 
 <h2 id="small-surface" class="h2-display">A small surface over native layout</h2>
@@ -61,22 +61,20 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </table>
 </div>
 
-<Demo viewport>
-  <div class="demo-viewport">
-    <div class="stack gap-6" data-demo="layout-composition">
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <h3 style="margin:0;font-size:1.125rem;font-weight:500;">Projects</h3>
-        <button class="btn" type="button">New project</button>
-      </div>
-      <div class="grid grid-cols-auto gap-4" style="--layout-min:12rem;">
-        <div class="demo-box">Research</div>
-        <div class="demo-box">Design</div>
-        <div class="demo-box">Engineering</div>
-      </div>
-    </div>
+```html example hint="A stack of a flex row and an intrinsic grid — switch the card to Phone or Tablet to watch both halves re-flow." schema="none"
+<div class="stack gap-6" data-demo="layout-composition">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <h3>Projects</h3>
+    <button class="btn" type="button">New project</button>
   </div>
-  <DemoCode>{"<div class=\"stack gap-6\">\n  <div class=\"flex flex-wrap items-center justify-between gap-3\">\n    <h3>Projects</h3>\n    <button class=\"btn\" type=\"button\">New project</button>\n  </div>\n  <div class=\"grid grid-cols-auto gap-4\" style=\"--layout-min:12rem;\">\n    <div class=\"demo-box\">Research</div>\n    <div class=\"demo-box\">Design</div>\n    <div class=\"demo-box\">Engineering</div>\n  </div>\n</div>"}</DemoCode>
-</Demo>
+  <div class="grid grid-cols-auto gap-4" style="--layout-min:12rem;">
+    <div class="demo-box">Research</div>
+    <div class="demo-box">Design</div>
+    <div class="demo-box">Engineering</div>
+  </div>
+</div>
+```
+
 
 <div class="sep" />
 
@@ -84,9 +82,14 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <DocText>Use wrapping Flexbox for one-dimensional content and an intrinsic Grid for equal-width cards — the two halves of the composition demo above, which reacts when you resize it with the width toolbar. A grid can adapt inside a sidebar, dialog or full page without viewport breakpoints. Use container queries only when the structure must change.</DocText>
 
-<Demo>
-  <DemoCode>{"<!-- One-dimensional content: wrap with the available width. -->\n<div class=\"flex flex-wrap items-center justify-between gap-3\">…</div>\n\n<!-- Equal-width cards: intrinsic auto-fit grid, no breakpoints. -->\n<div class=\"grid grid-cols-auto gap-4\" style=\"--layout-min:12rem;\">…</div>"}</DemoCode>
-</Demo>
+```html
+<!-- One-dimensional content: wrap with the available width. -->
+<div class="flex flex-wrap items-center justify-between gap-3">…</div>
+
+<!-- Equal-width cards: intrinsic auto-fit grid, no breakpoints. -->
+<div class="grid grid-cols-auto gap-4" style="--layout-min:12rem;">…</div>
+```
+
 
 <div class="sep" />
 
@@ -135,18 +138,14 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </table>
 </div>
 
-<Demo viewport>
-  <div class="demo-viewport">
-    <div class="stack gap-4" data-demo="layout-overflow">
-      <div class="overflow-x-auto h-8 demo-tile" data-variant="muted" style="justify-content:flex-start;">
-        <span class="w-64 shrink-0" style="padding-inline:0.5rem;">overflow-x-auto — the tile scrolls instead of widening the page when the stage gets narrower →</span>
-      </div>
-      <div class="truncate h-8 demo-tile" data-variant="outline" style="display:block;line-height:2rem;padding-inline:0.5rem;">truncate — a single line that must not widen its container collapses to an ellipsis exactly like a UI list row</div>
-      <div class="h-auto p-2 demo-tile wrap-anywhere" data-variant="secondary" style="justify-content:flex-start;">wrap-anywhere — PneumonoultramicroscopicsilicovolcanoconiosisLongIdentifiers break here instead of pushing the track open</div>
-    </div>
-  </div>
-  <DemoCode>{"<!-- scroll the box -->\n<div class=\"overflow-x-auto h-8\">…wide content…</div>\n\n<!-- single-line ellipsis recipe -->\n<div class=\"truncate h-8\">…text that must not widen its row…</div>\n\n<!-- long identifiers break inside a shrinkable track -->\n<div class=\"wrap-anywhere\">…Pneumonoultramicroscopicsilicovolcanoconiosis…</div>"}</DemoCode>
-</Demo>
+```html example hint="Three overflow policies at work — shrink the canvas (Phone) and watch each box react on its own axis." schema="none"
+<div class="stack gap-4" data-demo="layout-overflow">
+  <div class="overflow-x-auto h-8 demo-tile" data-variant="muted" style="justify-content:flex-start;"><span class="w-64 shrink-0" style="padding-inline:0.5rem;">overflow-x-auto — the tile scrolls instead of widening the page when the stage gets narrower →</span></div>
+  <div class="truncate h-8 demo-tile" data-variant="outline" style="display:block;line-height:2rem;padding-inline:0.5rem;">truncate — a single line that must not widen its container collapses to an ellipsis exactly like a UI list row</div>
+  <div class="h-auto p-2 demo-tile wrap-anywhere" data-variant="secondary" style="justify-content:flex-start;">wrap-anywhere — PneumonoultramicroscopicsilicovolcanoconiosisLongIdentifiers break here instead of pushing the track open</div>
+</div>
+```
+
 
 <div class="sep" />
 
@@ -228,9 +227,11 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <DocText>An outer grid’s track minimum must not accidentally configure an inner grid. Defaults are declared on each owning root; override that root with inline properties or unlayered application CSS. An explicit helper such as <code>gap-2</code> takes precedence over a primitive’s default gap.</DocText>
 
-<Demo>
-  <DemoCode header="CSS" lang="css">{".project-grid { --layout-min: 18rem; --layout-gap: 1.25rem; }\n.reading-area { --layout-max: 70ch; --layout-gutter: clamp(1rem, 3vw, 2rem); }"}</DemoCode>
-</Demo>
+```css
+.project-grid { --layout-min: 18rem; --layout-gap: 1.25rem; }
+.reading-area { --layout-max: 70ch; --layout-gutter: clamp(1rem, 3vw, 2rem); }
+```
+
 
 <div class="sep" />
 
@@ -250,9 +251,15 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <h2 id="install" class="h2-display">Load the optional modules</h2>
 
-<Demo>
-  <DemoCode>{"<link rel=\"stylesheet\" href=\"../theme/utils/default-semantic-tokens.css\">\n<link rel=\"stylesheet\" href=\"../theme/utils/sizing.css\">\n<link rel=\"stylesheet\" href=\"../theme/utils/layout.css\">\n<link rel=\"stylesheet\" href=\"../theme/utils/accessibility.css\">\n<!-- Load the component stylesheets you actually use next. -->\n<link rel=\"stylesheet\" href=\"../components/button/button.css\">"}</DemoCode>
-</Demo>
+```html
+<link rel="stylesheet" href="../theme/utils/default-semantic-tokens.css">
+<link rel="stylesheet" href="../theme/utils/sizing.css">
+<link rel="stylesheet" href="../theme/utils/layout.css">
+<link rel="stylesheet" href="../theme/utils/accessibility.css">
+<!-- Load the component stylesheets you actually use next. -->
+<link rel="stylesheet" href="../components/button/button.css">
+```
+
 
 <div class="sep" />
 

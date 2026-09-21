@@ -96,7 +96,12 @@
      bezel + island + home indicator scale with it — a dark fixed-color shell
      reads as hardware in both themes (like real device frames) */
   .ce-screen {
+    /* the .preview stage is a flex row — the screen must GROW into it
+       (flex:1), otherwise shrink-to-fit collapses the iframe to min-content
+       and Full mode renders a narrow sliver instead of the card width */
     display: block;
+    flex: 1;
+    min-width: 0;
   }
   /* measured modes (full/desktop): the canvas gets a light dashed outline in
      the separator color, so the preview box stays visible at every width */
@@ -379,6 +384,21 @@
     font-size: 0.75rem;
     padding: 0.75rem;
     margin: 0;
+  }
+
+  /* Phones: the labeled toolbar can't fit ~320px (five quick buttons plus
+     the size fields exceed the card's min-content) — buttons go icon-only
+     (aria-label/title carry the name) and the fields shrink. Same fix every
+     CodeExample page needs at phone width, guide or component page alike. */
+  @media (max-width: 30rem) {
+    .code-example-vp span,
+    .code-example-copy span,
+    .code-example-reset span {
+      display: none;
+    }
+    .code-example-size input[type='number'] {
+      width: 3.25rem;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

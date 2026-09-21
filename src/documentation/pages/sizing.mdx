@@ -9,7 +9,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <DocPage meta={meta}>
 
 <PageHeader slug="sizing" title="Sizing" introStyle="max-width:38rem;">
-  A single geometric scale, explicit density, and independent interaction targets. Familiar classes, native CSS, no Tailwind dependency. Every code block shows exactly the classes that render the demo above it — only the demo's decorative colors are omitted.
+  A single geometric scale, explicit density, and independent interaction targets. Familiar classes, native CSS, no Tailwind dependency. Every code block is the live demo — the shown source is the executed source.
 </PageHeader>
 
 <h2 id="one-scale" class="h2-display">One scale, two vocabularies</h2>
@@ -72,31 +72,31 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </table>
 </div>
 
-<Demo>
-  <div class="flex items-end gap-8" data-demo="sizing-scale">
-    <div class="flex flex-col items-center gap-2">
-      <div class="demo-tile" style="inline-size:var(--size-xs);block-size:var(--size-xs);" />
-      <span class="demo-label demo-label-inline">xs</span>
-    </div>
-    <div class="flex flex-col items-center gap-2">
-      <div class="demo-tile" style="inline-size:var(--size-sm);block-size:var(--size-sm);" />
-      <span class="demo-label demo-label-inline">sm</span>
-    </div>
-    <div class="flex flex-col items-center gap-2">
-      <div class="demo-tile" style="inline-size:var(--size-md);block-size:var(--size-md);" />
-      <span class="demo-label demo-label-inline">md</span>
-    </div>
-    <div class="flex flex-col items-center gap-2">
-      <div class="demo-tile" style="inline-size:var(--size-lg);block-size:var(--size-lg);" />
-      <span class="demo-label demo-label-inline">lg</span>
-    </div>
-    <div class="flex flex-col items-center gap-2">
-      <div class="demo-tile" style="inline-size:var(--size-xl);block-size:var(--size-xl);" />
-      <span class="demo-label demo-label-inline">xl</span>
-    </div>
+```html example schema="none"
+<div class="flex items-end gap-8" data-demo="sizing-scale">
+  <div class="flex flex-col items-center gap-2">
+    <div class="demo-tile" style="inline-size:var(--size-xs);block-size:var(--size-xs);"></div>
+    <span class="demo-label demo-label-inline">xs</span>
   </div>
-  <DemoCode>{"<div class=\"flex items-end gap-8\">\n  <div class=\"flex flex-col items-center gap-2\">\n    <div style=\"inline-size:var(--size-xs);block-size:var(--size-xs);\"></div>\n    <span>xs</span>\n  </div>\n  <!-- sm · md · lg: same pattern with var(--size-sm/md/lg) -->\n  <div class=\"flex flex-col items-center gap-2\">\n    <div style=\"inline-size:var(--size-xl);block-size:var(--size-xl);\"></div>\n    <span>xl</span>\n  </div>\n</div>"}</DemoCode>
-</Demo>
+  <div class="flex flex-col items-center gap-2">
+    <div class="demo-tile" style="inline-size:var(--size-sm);block-size:var(--size-sm);"></div>
+    <span class="demo-label demo-label-inline">sm</span>
+  </div>
+  <div class="flex flex-col items-center gap-2">
+    <div class="demo-tile" style="inline-size:var(--size-md);block-size:var(--size-md);"></div>
+    <span class="demo-label demo-label-inline">md</span>
+  </div>
+  <div class="flex flex-col items-center gap-2">
+    <div class="demo-tile" style="inline-size:var(--size-lg);block-size:var(--size-lg);"></div>
+    <span class="demo-label demo-label-inline">lg</span>
+  </div>
+  <div class="flex flex-col items-center gap-2">
+    <div class="demo-tile" style="inline-size:var(--size-xl);block-size:var(--size-xl);"></div>
+    <span class="demo-label demo-label-inline">xl</span>
+  </div>
+</div>
+```
+
 
 <div class="sep" />
 
@@ -110,23 +110,23 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <DocText>Real UI mixes fixed and flexible sizes on one row: a <code>size-10 shrink-0</code> avatar square, a <code>flex-1 min-w-0</code> text column that absorbs the remaining width without widening the page, and a <code>shrink-0</code> action that keeps its own size. The same scale sizes icon boxes inside buttons — a <code>size-4</code> SVG lines up with the label's line height.</DocText>
 
-<Demo>
-  <div class="stack gap-6" data-demo="sizing-toolbox">
-    <div class="flex items-center gap-3">
-      <div class="size-10 shrink-0" style="border-radius:9999px;background:var(--primary);color:var(--primary-foreground);display:flex;align-items:center;justify-content:center;font-size:0.8125rem;">AL</div>
-      <div class="flex-1 min-w-0" style="overflow-wrap:anywhere;">
-        <p class="row-title">Ada Lovelace</p>
-        <p class="text-sm text-muted-foreground m-0">ada.lovelace@analytical-engines.example</p>
-      </div>
-      <button class="btn shrink-0" type="button" data-variant="outline" data-size="sm">Follow</button>
+```html example schema="none"
+<div class="stack gap-6" data-demo="sizing-toolbox">
+  <div class="flex items-center gap-3">
+    <div class="size-10 shrink-0" style="border-radius:9999px;background:var(--primary);color:var(--primary-foreground);display:flex;align-items:center;justify-content:center;font-size:0.8125rem;">AL</div>
+    <div class="flex-1 min-w-0" style="overflow-wrap:anywhere;">
+      <p style="margin:0;font-size:0.875rem;font-weight:500;">Ada Lovelace</p>
+      <p style="margin:0;font-size:0.8125rem;color:var(--muted-foreground);">ada.lovelace@analytical-engines.example</p>
     </div>
-    <div class="flex flex-wrap gap-2">
-      <button class="btn" type="button"><svg class="size-4" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M8 2v12M2 8h12" /></svg> New project </button>
-      <button class="btn" type="button" data-variant="outline"><svg class="size-4" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="4.5" /><path d="m10.5 10.5 3.5 3.5" /></svg> Search </button>
-    </div>
+    <button class="btn shrink-0" type="button" data-variant="outline" data-size="sm">Follow</button>
   </div>
-  <DemoCode>{"<div class=\"flex items-center gap-3\">\n  <div class=\"size-10 shrink-0\">AL</div>\n  <div class=\"flex-1 min-w-0\" style=\"overflow-wrap:anywhere;\">\n    <p>Ada Lovelace</p>\n    <p>ada.lovelace@analytical-engines.example</p>\n  </div>\n  <button class=\"btn shrink-0\" type=\"button\" data-variant=\"outline\" data-size=\"sm\">Follow</button>\n</div>\n\n<div class=\"flex flex-wrap gap-2\">\n  <button class=\"btn\" type=\"button\">\n    <svg class=\"size-4\" viewBox=\"0 0 16 16\" aria-hidden=\"true\">…</svg>\n    New project\n  </button>\n  <button class=\"btn\" type=\"button\" data-variant=\"outline\">\n    <svg class=\"size-4\" viewBox=\"0 0 16 16\" aria-hidden=\"true\">…</svg>\n    Search\n  </button>\n</div>"}</DemoCode>
-</Demo>
+  <div class="flex flex-wrap gap-2">
+    <button class="btn" type="button"><svg class="size-4" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M8 2v12M2 8h12" /></svg> New project </button>
+    <button class="btn" type="button" data-variant="outline"><svg class="size-4" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="4.5" /><path d="m10.5 10.5 3.5 3.5" /></svg> Search </button>
+  </div>
+</div>
+```
+
 
 <div class="sep" />
 
@@ -166,17 +166,29 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <DocText>Use 44px minimum dimensions as a starting point for touch-oriented controls; assess the actual clickable shape and surrounding targets. A minimum-size declaration alone does not certify WCAG conformance. Existing buttons are not silently resized by this module.</DocText>
 
-<Demo>
-  <DemoCode>{"<button class=\"btn\" type=\"button\" aria-label=\"Add project\"\n  style=\"min-inline-size:44px;min-block-size:44px;\">\n  <svg class=\"size-4\" viewBox=\"0 0 16 16\" aria-hidden=\"true\">\n    <path d=\"M8 2v12M2 8h12\" fill=\"none\" stroke=\"currentColor\"/>\n  </svg>\n</button>"}</DemoCode>
-</Demo>
+```html
+<button class="btn" type="button" aria-label="Add project"
+  style="min-inline-size:44px;min-block-size:44px;">
+  <svg class="size-4" viewBox="0 0 16 16" aria-hidden="true">
+    <path d="M8 2v12M2 8h12" fill="none" stroke="currentColor"/>
+  </svg>
+</button>
+```
+
 
 <div class="sep" />
 
 <h2 id="install" class="h2-display">Install only what you use</h2>
 
-<Demo>
-  <DemoCode>{"<link rel=\"stylesheet\" href=\"../theme/utils/default-semantic-tokens.css\">\n<link rel=\"stylesheet\" href=\"../theme/utils/sizing.css\">\n<link rel=\"stylesheet\" href=\"../theme/utils/layout.css\">\n<link rel=\"stylesheet\" href=\"../theme/utils/accessibility.css\">\n<!-- Load the component stylesheets you actually use next. -->\n<link rel=\"stylesheet\" href=\"../components/button/button.css\">"}</DemoCode>
-</Demo>
+```html
+<link rel="stylesheet" href="../theme/utils/default-semantic-tokens.css">
+<link rel="stylesheet" href="../theme/utils/sizing.css">
+<link rel="stylesheet" href="../theme/utils/layout.css">
+<link rel="stylesheet" href="../theme/utils/accessibility.css">
+<!-- Load the component stylesheets you actually use next. -->
+<link rel="stylesheet" href="../components/button/button.css">
+```
+
 
 <DocText>The optional modules live beside the theme assets so the existing copy build and CDN mirror work unchanged. They are not part of the replaceable semantic-token export. Both files declare <code>@layer components, utilities</code>; load them before component CSS so that order is established first. A later layer declaration cannot reorder layers that already exist. Normal unlayered application CSS overrides both.</DocText>
 
@@ -184,13 +196,27 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <h2 id="customize" class="h2-display">Override properties, not generated classes</h2>
 
-<Demo>
-  <DemoCode header="CSS" lang="css">{"/* Global application CSS; do not edit a tweakcn export. */\n:root {\n  --size-base: 0.3rem;\n  --layout-density: 1;\n}\n\n/* Local scale: redeclare aliases at this explicit boundary. */\n.compact-panel {\n  --size-base: 0.2rem;\n}"}</DemoCode>
-</Demo>
+```css
+/* Global application CSS; do not edit a tweakcn export. */
+:root {
+  --size-base: 0.3rem;
+  --layout-density: 1;
+}
 
-<Demo>
-  <DemoCode>{"<section class=\"compact-panel\" data-size-scope>\n  <div class=\"w-16 h-8\">Local scale</div>\n  <div style=\"padding:var(--size-sm);\">Named local size</div>\n</section>"}</DemoCode>
-</Demo>
+/* Local scale: redeclare aliases at this explicit boundary. */
+.compact-panel {
+  --size-base: 0.2rem;
+}
+```
+
+
+```html
+<section class="compact-panel" data-size-scope>
+  <div class="w-16 h-8">Local scale</div>
+  <div style="padding:var(--size-sm);">Named local size</div>
+</section>
+```
+
 
 <DocText>Custom-property formulas resolve before inheritance. When a local <code>--size-base</code> changes, add <code>data-size-scope</code> on that element to recompute its named aliases. Numeric utilities use the base directly. Prefer custom properties or a small semantic rule to inventing unsupported class names.</DocText>
 

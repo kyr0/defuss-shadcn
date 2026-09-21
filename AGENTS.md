@@ -1183,7 +1183,11 @@ tabulated. When you change a demo, change its code block in the same commit.
 ### The demo design system (guide pages)
 
 Guide-page demos are authored as `<Demo>` / `<DemoCode>` components (see
-`pages/container.mdx`); component-page demos as `<Example>` / `<ExampleLabel>` /
+`pages/container.mdx`) — except `layout.mdx` and `sizing.mdx`, which migrated to
+the ` ```… example ` fences (CodeExample: one source + device toolbar; utility
+demos bind no contract via `schema="none"`, code-only snippets are plain fences
+rendered as static code cards, media-query demos boot via `mode="…"`);
+component-page demos as `<Example>` / `<ExampleLabel>` /
 `<ExampleHint>` / `<ExampleCode>`. Without an `<ExampleCode>`/`<DemoCode>` child
 the code sample is **auto-serialized from the demo children** — demo ↔ code
 parity by construction. The rendered markup uses the shared `.demo-*` / `.preview`

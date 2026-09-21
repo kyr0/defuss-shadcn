@@ -1580,9 +1580,12 @@ check(
       const page = file.replace(/\.mdx$/, '');
       for (const ex of exampleFences(mdx)) {
         if (ex.body.trim() === '') problems.push(`pages/${file}:${ex.line} empty example fence (plan §21)`);
+        // schema="none": guide-page utility demos (layout/sizing/sizing-scale…)
+        // demonstrate the optional modules, not a component — no contract to bind
+        if (ex.schema === 'none') continue;
         const comp = ex.component ?? page;
         if (!existsSync(join(COMPS, comp)))
-          problems.push(`pages/${file}:${ex.line} example schema component "${comp}" is not a shipped component (pages/${page}.mdx → add component="…" or ship the component)`);
+          problems.push(`pages/${file}:${ex.line} example schema component "${comp}" is not a shipped component (pages/${page}.mdx → add component="…"/schema="none" or ship the component)`);
       }
       for (const m of mdx.matchAll(/<CodeExample[^>]*?\s(code|preview|previewSource)=/g))
         problems.push(`pages/${file}: CodeExample received \`${m[1]}\` — dual-source prop, source={fence} only (plan §5)`);

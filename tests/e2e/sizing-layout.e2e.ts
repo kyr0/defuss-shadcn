@@ -27,6 +27,39 @@ const DEMOS: Record<string, string[]> = {
 /** Third-party CDNs (shiki/icons/fonts) may be unreachable in sandboxed CI. */
 const VENDOR = /esm\.sh|unpkg\.com|cdnjs|api\.github\.com|fonts\.googleapis/;
 
+/** Why: layout/sizing demos migrated into CodeExample sandboxes — their
+ * data-demo anchors live INSIDE a srcdoc iframe now. Find the anchor in the
+ * main document or (after the card's lazy boot) in any child frame. */
+async function demoBox(pg: import('playwright').Page, name: string, timeoutMs = 12000) {
+  const deadline = Date.now() + timeoutMs;
+  for (;;) {
+    const local = pg.locator(`[data-demo="${name}"]`);
+    if (await local.count()) {
+      const b = await local.first().boundingBox();
+      if (b) return b;
+    }
+    for (const f of pg.frames().filter((x) => x !== pg.mainFrame())) {
+      const el = await f.$(`[data-demo="${name}"]`);
+      if (el) {
+        const b = await el.boundingBox();
+        if (b) return b;
+      }
+    }
+    if (Date.now() > deadline) throw new Error(`demo "${name}" never rendered`);
+    await pg.waitForTimeout(250);
+  }
+}
+/** run fn inside the frame holding the anchor (main doc or sandbox) */
+async function inDemo<T>(pg: import('playwright').Page, name: string, fn: (el: Element) => T): Promise<T> {
+  const local = pg.locator(`[data-demo="${name}"]`);
+  if (await local.count()) return (await local.first().evaluate(fn)) as T;
+  for (const f of pg.frames().filter((x) => x !== pg.mainFrame())) {
+    const el = await f.$(`[data-demo="${name}"]`);
+    if (el) return (await el.evaluate(fn)) as T;
+  }
+  throw new Error(`demo "${name}" frame not found`);
+}
+
 const server = startServer();
 const browser = await chromium.launch();
 
@@ -61,8 +94,9 @@ try {
       }
       assert.equal(await page.locator('iframe[src^="examples/"]').count(), 0, 'dead example iframes must be gone');
       // the demo tiles read their size from the --size-* aliases: xs=8px … xl=32px
-      const tiles = page.locator('[data-demo="sizing-scale"] > div > div:first-child');
-      const widths = await tiles.evaluateAll((els) => els.map((el) => el.getBoundingClientRect().width));
+      // (the demo renders inside the CodeExample sandbox since the migration)
+      const widths = await inDemo(page, 'sizing-scale', (el) =>
+        [...el.querySelectorAll(':scope > div > div:first-child')].map((d) => d.getBoundingClientRect().width));
       assert.deepEqual(widths, [8, 12, 16, 24, 32], `scale tiles rendered ${JSON.stringify(widths)}`);
       assert.deepEqual(responseErrors, [], 'broken first-party assets');
     } finally {
@@ -80,8 +114,8 @@ try {
         `${slug}: sidebar route`,
       );
       for (const demo of DEMOS[slug]) {
-        const box = await page.locator(`[data-demo="${demo}"]`).boundingBox();
-        assert.ok(box && box.width > 100 && box.height > 24, `${slug}: ${demo} demo did not render`);
+        const box = await demoBox(page, demo);
+        assert.ok(box.width > 100 && box.height > 24, `${slug}: ${demo} demo did not render`);
       }
     }
   });

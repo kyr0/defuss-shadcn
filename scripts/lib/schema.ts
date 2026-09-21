@@ -440,6 +440,9 @@ export interface ExampleFence {
   component: string | null;
   label: string | null;
   hint: string | null;
+  /** "none" = guide-page utility demo without a component contract (skip the
+   * component-schema gate — the card ships no State tab) */
+  schema: string | null;
 }
 
 const FENCE = /(^|\n)(`{3,}|~{3,})([^\n]*)\n([\s\S]*?)\n\2(?=\n|$)/g;
@@ -461,6 +464,7 @@ export function exampleFences(mdx: string): ExampleFence[] {
       component: attr('component'),
       label: attr('label'),
       hint: attr('hint'),
+      schema: attr('schema'),
     });
   }
   return out;

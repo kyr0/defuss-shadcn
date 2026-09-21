@@ -81,12 +81,15 @@ function codeExampleNode(node: CodeNode, pageComponent: string): unknown {
   const attrs = fenceAttrs(node.meta ?? '');
   const attributes = [jsxAttr('source', node.value + '\n')];
   // plan §23: the page's component is the default schema — an explicit
-  // component="…" only overrides it when a page demonstrates another component
-  const component = attrs.component ?? pageComponent;
+  // component="…" only overrides it when a page demonstrates another component.
+  // schema="none" opts the card out entirely (guide-page utility demos have no
+  // contract: no State tab, no schema binding) — verify honors the same attr.
+  const component = attrs.schema === 'none' ? '' : (attrs.component ?? pageComponent);
   if (component) attributes.push(jsxAttr('component', component));
   if (attrs.label) attributes.push(jsxAttr('label', attrs.label));
   if (attrs.hint) attributes.push(jsxAttr('hint', attrs.hint));
   if (attrs.height) attributes.push(jsxAttr('height', attrs.height));
+  if (attrs.mode) attributes.push(jsxAttr('mode', attrs.mode));
   if (attrs.previewStyle) attributes.push(jsxAttr('previewStyle', attrs.previewStyle));
   return { type: 'mdxJsxFlowElement', name: 'CodeExample', attributes, children: [] };
 }

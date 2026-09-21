@@ -669,7 +669,10 @@
             var vpRotate = root.querySelector('.code-example-vp[data-vp="rotate"]');
             var grip = null; // SE resize handle (created below; vpApply syncs its aria-valuenow)
             var clamp = function (v, lo, hi) { return Math.min(hi, Math.max(lo, v)); };
-            var vpMode = 'full';
+            // a fence may boot the toolbar in a specific mode (mode="desktop" on
+            // media-query components: the sandbox viewport must be ≥ their thresholds)
+            var bootMode = ['phone', 'tablet', 'desktop', 'full'].indexOf(root.dataset.vpMode) >= 0 ? root.dataset.vpMode : 'full';
+            var vpMode = bootMode;
             function vpApply() {
                 var dev = vpMode === 'phone' || vpMode === 'tablet';
                 // empty field = unset (full mode stays fluid); clamp only real values
@@ -680,11 +683,6 @@
                 var h = rawH > 0 ? clamp(rawH, 240, 1400) : 0;
                 vpDevice.style.cssText = '';
                 frame.style.width = '100%';
-                // the device box (844px + bezel) exceeds the closed stage — let the
-                // .preview grow around it instead of clipping (its SSR style is inline)
-                var stage = root.querySelector('.preview');
-                if (stage)
-                    stage.style.overflow = dev ? 'visible' : 'hidden';
                 if (dev) {
                     if (w)
                         vpDevice.style.width = w + 'px';
@@ -697,6 +695,17 @@
                         vpDevice.style.width = w + 'px';
                     frame.style.height = ''; // back to measured (the height message lands via measure)
                     api.send('measure', {});
+                }
+                // device box exceeds the stage vertically → overflow visible (before:
+                // the phone frame grew past the closed stage); measured canvas wider
+                // than the stage → scroll it (desktop/tablet boxes), and stop centering
+                // then — a centered wider-than-box flex child has its start cut off by
+                // the scroll origin and can never be scrolled into view.
+                var stage = root.querySelector('.preview');
+                if (stage) {
+                    stage.style.overflow = dev ? 'visible' : 'auto';
+                    stage.style.justifyContent =
+                        !dev && vpDevice.getBoundingClientRect().width > stage.clientWidth - 24 ? 'flex-start' : '';
                 }
                 root.dataset.vpMode = vpMode;
                 vpScreen.dataset.mode = vpMode;
@@ -726,6 +735,9 @@
             vpBtns.forEach(function (b) {
                 b.addEventListener('click', function () { vpSetMode(b.dataset.vp); });
             });
+            // boot in the fence's declared mode (fills fields, aria-pressed, chrome)
+            if (bootMode !== 'full')
+                vpSetMode(bootMode);
             vpRotate.addEventListener('click', function () {
                 if (vpRotate.disabled)
                     return;
