@@ -3905,7 +3905,10 @@
       outline: none;
       background: transparent;
       height: 100%;
-      width: 4rem;
+      /* 4rem basis, but GROWS when the container is widened (w-full demos,
+         grid cells): a fixed width left dead space after the + button */
+      flex: 1 1 4rem;
+      min-width: 0;
       text-align: center;
       font-size: 0.875rem;
       font-family: var(--font-sans);

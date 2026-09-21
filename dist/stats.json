@@ -9,17 +9,17 @@
   },
   "withJs": 30,
   "withoutJs": 42,
-  "totalSize": 464849,
-  "totalSizeMinified": 220307,
-  "totalSizeGz": 152043,
-  "totalSizeGzMinified": 81496,
+  "totalSize": 465022,
+  "totalSizeMinified": 220318,
+  "totalSizeGz": 152134,
+  "totalSizeGzMinified": 81507,
   "bundle": {
     "jsSize": 184297,
     "jsSizeMinified": 98259,
-    "cssSize": 251523,
-    "cssSizeMinified": 140734,
-    "totalSizeGz": 81218,
-    "totalSizeGzMinified": 48511
+    "cssSize": 251696,
+    "cssSizeMinified": 140745,
+    "totalSizeGz": 81301,
+    "totalSizeGzMinified": 48519
   },
   "core": {
     "jsSize": 63491,
@@ -491,12 +491,12 @@
       "withJs": true,
       "jsSize": 4178,
       "jsSizeMinified": 1510,
-      "cssSize": 4165,
-      "cssSizeMinified": 1968,
-      "totalSizeGz": 3002,
-      "totalSizeGzMinified": 1423,
-      "totalSize": 8343,
-      "totalSizeMinified": 3478
+      "cssSize": 4338,
+      "cssSizeMinified": 1979,
+      "totalSizeGz": 3093,
+      "totalSizeGzMinified": 1434,
+      "totalSize": 8516,
+      "totalSizeMinified": 3489
     },
     "pagination": {
       "name": "pagination",

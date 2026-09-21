@@ -113,8 +113,14 @@ export function CodeExample({ source, component, label, hint, height, previewSty
             empty contract (or stateTab:false) means no tab: editor stands alone. */}
         {stateTab ? <button class="code-example-tab" data-tab="state" aria-pressed="false">State</button> : null}
         <span class="code-example-spacer"></span>
-        <button class="code-example-copy">Copy</button>
-        <button class="code-example-reset" title="Restore the original source and rerun">Reset</button>
+        <button class="code-example-copy" title="Copy the example source">
+          <i data-lucide="copy"></i>
+          <span>Copy</span>
+        </button>
+        <button class="code-example-reset" title="Restore the original source and rerun">
+          <i data-lucide="rotate-ccw"></i>
+          <span>Reset</span>
+        </button>
       </div>
       <div class="code-example-panel" data-panel="code">
         <textarea

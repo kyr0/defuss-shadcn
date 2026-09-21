@@ -256,6 +256,11 @@
     if (d.kind === 'set-dark') {
       document.documentElement.classList.toggle('dark', !!d.value);
       document.documentElement.style.colorScheme = d.value ? 'dark' : 'light';
+    } else if (d.kind === 'set-theme') {
+      // tweakcn theme switched on the host: swap the tail token sheet's text —
+      // the whole example keeps running (a rebuild would lose its state)
+      var tag = document.getElementById('ce-theme');
+      if (tag) tag.textContent = d.css || '';
     }
   });
 

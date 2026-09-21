@@ -50,6 +50,14 @@
     font: inherit;
     font-size: 0.75rem;
     padding: 0.25rem 0.625rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  /* lucide glyph on Copy/Reset — sized to sit beside the 0.75rem label */
+  .code-example-toolbar button svg.lucide {
+    width: 0.875rem;
+    height: 0.875rem;
   }
   .code-example-toolbar button:hover {
     color: var(--foreground);

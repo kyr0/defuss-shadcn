@@ -28,6 +28,10 @@
     var RERUN_DEBOUNCE_MS = 400;
     var MIN_FRAME_HEIGHT = 64;
     var MAX_FRAME_HEIGHT = 900;
+    // boot cards lazily (viewport + margin) so a page full of sandboxes never
+    // blocks first paint; everything else boots once the page has been idle
+    var IO_ROOT_MARGIN = '600px 0px';
+    var IDLE_BOOT_MS = 1500;
     /** shipped docs stylesheets mirrored into the sandbox (path fragments) */
     var STYLE_FRAGMENTS = [
         'default-semantic-tokens.css',
@@ -40,6 +44,12 @@
         'docs-utilities.css',
         'components/all.css',
     ];
+    /** @font-face rules are stripped from every inlined sheet: an opaque-origin
+     * (about:srcdoc) sandbox fetches fonts in CORS mode and static hosts send no
+     * ACAO header — each blocked font is a console error storm (and stalls the
+     * first paint of every iframe). font-display: swap already means the demo
+     * text renders with the fallback stack; only the glyphs change. */
+    var FONT_FACE = /@font-face\s*\{[^}]*\}\s*/g;
     // ?raw: under the Vite dev/preview server (bun run dev, Vitest) a plain .js
     // fetch gets Vite's module transform (HMR boilerplate breaks the bridge);
     // ?raw returns the bytes verbatim. Static hosts (build, Pages, jsDelivr)
@@ -115,42 +125,92 @@
     })();
     var bridgeSource = cachedFetch(BRIDGE_URL);
     /** absolute URLs of the docs stylesheets the preview renders against —
-     * taken from the live <link> tags, so the jsDelivr CDN mirror just works. */
+     * taken from the live <link> tags, so the jsDelivr CDN mirror just works.
+     * all.css swaps to its .min twin when the host page ships it (the twin is
+     * gate-verified); the docs sheets have no twins and stay verbatim. */
     function styleUrls() {
         var out = [];
         document.querySelectorAll('link[rel="stylesheet"]').forEach(function (l) {
             var href = l.getAttribute('href') || '';
             for (var i = 0; i < STYLE_FRAGMENTS.length; i++)
                 if (href.indexOf(STYLE_FRAGMENTS[i]) >= 0) {
-                    out.push(l.href);
+                    var url = l.href;
+                    if (STYLE_FRAGMENTS[i] === 'components/all.css' && /all\.css/.test(href))
+                        url = url.replace(/all\.css(\?.*)?$/, 'all.min.css');
+                    out.push(url);
                     break;
                 }
         });
-        // active tweakcn theme sheet (theme-switcher.js), when one is applied
-        var theme = document.getElementById('theme-css');
-        if (theme && theme.getAttribute('href'))
-            out.push(theme.href);
         return out;
+    }
+    // one fetch per stylesheet, cached, @font-face stripped (see FONT_FACE):
+    // the sandbox is a srcdoc — every mirror as <link> meant N render-blocking
+    // requests per iframe; inlined once per page they are free after first read.
+    var cssCache = {};
+    function fetchStripped(url) {
+        if (!cssCache[url]) {
+            // ?raw + unwrapRaw: Vite dev/preview answers plain .css fetches with its
+            // module wrapper; static hosts ignore the query (see unwrapRaw above)
+            var raw = url + (url.includes('?') ? '&' : '?') + 'raw';
+            cssCache[url] = fetch(raw)
+                .then(function (r) {
+                if (!r.ok)
+                    throw new Error(url + ' → HTTP ' + r.status);
+                return r.text();
+            })
+                .then(unwrapRaw)
+                .then(function (t) {
+                return t.replace(FONT_FACE, '');
+            })
+                .catch(function (e) {
+                cssCache[url] = null;
+                throw e;
+            });
+        }
+        return cssCache[url];
+    }
+    // all mirrored sheets concatenated in host order (tokens first — cascade
+    // order must match the host page) — resolved once, reused by every sandbox
+    var stylesPromise = null;
+    function inlinedStyles() {
+        if (!stylesPromise) {
+            var urls = styleUrls();
+            if (!urls.length)
+                return Promise.resolve('');
+            stylesPromise = Promise.all(urls.map(fetchStripped)).then(function (texts) {
+                return '<style>' + texts.join('\n') + '</style>';
+            });
+            stylesPromise.catch(function () {
+                stylesPromise = null;
+            });
+        }
+        return stylesPromise;
+    }
+    // current tweakcn theme sheet text (theme-switcher applies it as #theme-css)
+    function themeText() {
+        var theme = document.getElementById('theme-css');
+        if (!theme || !theme.getAttribute('href'))
+            return Promise.resolve('');
+        return fetchStripped(theme.href).catch(function () {
+            return '';
+        });
     }
     /** the shipped runtime bundle (df$) as TEXT, inlined into each srcdoc: a
      * module <script src> from the sandbox's opaque origin would need CORS that
      * static hosts (Bun.serve screenshot server!) don't send; inlining removes
-     * the dependency. URL derived like the mirror rewrites it (local + CDN). */
+     * the dependency. URL derived like the mirror rewrites it (local + CDN);
+     * the .min twin is preferred (half the bytes — it is embedded in EVERY
+     * sandbox), falling back to the readable bundle if a deploy lacks it. */
     var runtimeTextPromise = null;
     function runtimeText() {
         if (!runtimeTextPromise) {
             var link = Array.prototype.find.call(document.querySelectorAll('link[rel="stylesheet"]'), function (l) {
                 return (l.href || '').indexOf('components/all') >= 0;
             });
-            var url = link ? link.getAttribute('href').replace(/\.css(\?.*)?$/, '.js') : '../components/all.js';
-            runtimeTextPromise = fetch(url + (url.includes('?') ? '&' : '?') + 'raw')
-                .then(function (r) {
-                if (!r.ok)
-                    throw new Error('components bundle → HTTP ' + r.status);
-                return r.text();
-            })
-                .then(function (t) {
-                return unwrapRaw(t).replace(/<\/script/gi, '<\\/script'); // srcdoc-safe (all.js is import-free, plan §2.3)
+            var base = link ? link.getAttribute('href').replace(/\.css(\?.*)?$/, '') : '../components/all';
+            runtimeTextPromise = fetchRuntime(base + '.min.js')
+                .catch(function () {
+                return fetchRuntime(base + '.js'); // readable fallback (dev trees without min pass)
             })
                 .catch(function (e) {
                 runtimeTextPromise = null;
@@ -158,6 +218,16 @@
             });
         }
         return runtimeTextPromise;
+    }
+    function fetchRuntime(url) {
+        return fetch(url + (url.includes('?') ? '&' : '?') + 'raw').then(function (r) {
+            if (!r.ok)
+                throw new Error('components bundle → HTTP ' + r.status);
+            return r.text();
+        })
+            .then(function (t) {
+            return unwrapRaw(t).replace(/<\/script/gi, '<\\/script'); // srcdoc-safe (all.js is import-free, plan §2.3)
+        });
     }
     // -- editor mapping: mirrors editorFor() in the shared contract (plan §3:
     // schema hint when recognized, generic fallback by type — no branching) ----
@@ -187,16 +257,54 @@
         for (var ch in registry)
             registry[ch].send('set-dark', { value: dark });
     }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    // tweakcn theme switch → every booted sandbox re-fetches the token sheet and
+    // swaps its tail <style> (theme-switcher dispatches this on every applyTheme;
+    // no iframe rebuild, so running examples keep their state)
+    document.addEventListener('defuss-theme-change', function () {
+        themeText().then(function (css) {
+            for (var ch in registry)
+                registry[ch].send('set-theme', { css: css });
+        });
+    });
     function init() {
         // NOTE: registry is intentionally NEVER cleared — init() re-runs after
         // every SPA navigation (onPageReady), and wiping it would orphan the
         // sandboxes of cards already booted on this page (their bridge messages
         // would silently drop). Stale channels of detached iframes are inert:
         // their documents are gone and send() no-ops once contentWindow is dead.
-        document.querySelectorAll('.code-example:not([data-init])').forEach(function (el) {
+        // Lazy boot: a page of a dozen sandboxes must not block first paint —
+        // cards near the viewport boot via IntersectionObserver, the rest once
+        // the page goes idle (IDLE_BOOT_MS), so every sandbox is eventually live
+        // (screenshots/tests driving below-fold cards just wait on .api as before).
+        document.querySelectorAll('.code-example:not([data-io])').forEach(function (el) {
+            el.dataset.io = '';
+            if (io)
+                io.observe(el);
+            else
+                initExample(el); // no IO support: boot eagerly
+        });
+        if (idleTimer)
+            clearTimeout(idleTimer);
+        idleTimer = setTimeout(bootRemaining, IDLE_BOOT_MS);
+    }
+    function bootRemaining() {
+        document.querySelectorAll('.code-example[data-io]:not([data-init])').forEach(function (el) {
+            if (io)
+                io.unobserve(el);
             initExample(el);
         });
     }
+    var io = 'IntersectionObserver' in window
+        ? new IntersectionObserver(function (entries) {
+            entries.forEach(function (en) {
+                if (!en.isIntersecting)
+                    return;
+                io.unobserve(en.target);
+                initExample(en.target);
+            });
+        }, { rootMargin: IO_ROOT_MARGIN })
+        : null;
+    var idleTimer = null;
     function initExample(root) {
         root.dataset.init = '';
         var frame = root.querySelector('.code-example-frame');
@@ -230,13 +338,11 @@
         var CE_SCRIPT_OPEN = '<scr' + 'ipt data-ce-chrome>';
         var CE_SCRIPT_CLOSE = '</scr' + 'ipt>';
         function buildSrcdoc(source) {
-            return Promise.all([sandboxTemplate(), bridgeSource(), runtimeText()]).then(function (parts) {
+            return Promise.all([sandboxTemplate(), bridgeSource(), runtimeText(), inlinedStyles(), themeText()]).then(function (parts) {
                 var dark = document.documentElement.classList.contains('dark');
-                var styles = styleUrls()
-                    .map(function (u) {
-                    return '<link rel="stylesheet" href="' + u + '" />';
-                })
-                    .join('\n');
+                // theme gets its OWN tail <style id="ce-theme">: a theme switch swaps
+                // just that block via postMessage (no iframe rebuild, examples survive)
+                var styles = parts[3] + '<style id="ce-theme">' + (parts[4] || '') + '</style>';
                 // previewStyle (the old <Example previewStyle>) rides INSIDE the chrome
                 // body rule (marker below) — same rule, later declarations win, so
                 // display:flex overrides the chrome's flow-root. The old .preview div
@@ -543,15 +649,22 @@
             navigator.clipboard
                 .writeText(src.value)
                 .then(function () {
-                btn.textContent = 'Copied';
+                setToolBtn(btn, 'check', 'Copied');
                 setTimeout(function () {
-                    btn.textContent = 'Copy';
+                    setToolBtn(btn, 'copy', 'Copy');
                 }, 1200);
             })
                 .catch(function () {
-                btn.textContent = 'Copy failed';
+                setToolBtn(btn, 'copy', 'Copy failed');
             });
         });
+        // toolbar label + icon swap: the <i> placeholder becomes an <svg> in place
+        // when lucide re-runs, so the button keeps its icon after a text change
+        function setToolBtn(btn, icon, label) {
+            btn.innerHTML = '<i data-lucide="' + icon + '"></i><span>' + label + '</span>';
+            if (globalThis.lucide)
+                globalThis.lucide.createIcons();
+        }
         buildControls();
         run(src.value);
     }

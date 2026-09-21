@@ -50,10 +50,11 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </SkillPanel>
 
 ```html example label="Default" hint="Basic checkbox with label."
-<input class="checkbox" type="checkbox" id="terms">
-<label for="terms">Accept terms and conditions</label>
+<div class="checkbox-item">
+  <input class="checkbox" type="checkbox" id="terms">
+  <label for="terms">Accept terms and conditions</label>
+</div>
 ```
-
 ```html example label="With description" hint="Checkbox with helper text."
 <div class="checkbox-item-block">
   <input class="checkbox" type="checkbox" id="d-notify" style="margin-top:0.125rem;" aria-describedby="d-notify-desc">
@@ -77,19 +78,21 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="Checked by default"
-<input class="checkbox" type="checkbox" id="option" checked>
-<label for="option">Pre-checked option</label>
+<div class="checkbox-item">
+  <input class="checkbox" type="checkbox" id="option" checked>
+  <label for="option">Pre-checked option</label>
+</div>
 ```
-
 ```html example label="Indeterminate" hint="Set via JavaScript: checkbox.indeterminate = true."
-<input class="checkbox" type="checkbox" id="select-all">
-<label for="select-all">Select all</label>
-
-<script>
-  document.getElementById('select-all').indeterminate = true;
-</script>
+<div class="checkbox-item">
+  <input class="checkbox" type="checkbox" id="select-all">
+  <label for="select-all">Select all</label>
+  
+  <script>
+    document.getElementById('select-all').indeterminate = true;
+  </script>
+</div>
 ```
-
 ```html example label="Invalid" hint="Shows destructive border via aria-invalid='true'."
 <div class="checkbox-item">
   <input class="checkbox" type="checkbox" id="d-invalid" aria-invalid="true">
