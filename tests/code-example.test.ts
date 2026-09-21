@@ -131,8 +131,10 @@ describe('CodeExample (input page)', () => {
 
   it('schema states generate typed editors (§10: exclusively from schema)', async () => {
     const { doc } = await openDocPage('input.html');
-    await clickSelector(doc, '.code-example .code-example-tab[data-tab="state"]');
     const card = firstCard(doc);
+    // lazy boot (IO/idle): wait for the card to build its controls before clicking
+    await waitFor(() => card.querySelectorAll('.code-example-row').length > 0, 'state rows built');
+    await clickSelector(doc, '.code-example .code-example-tab[data-tab="state"]');
     const rows = card.querySelectorAll('.code-example-row');
     expect(rows.length).toBe(7); // value, disabled, readonly, required, invalid, type, size
     const control = (state: string) =>

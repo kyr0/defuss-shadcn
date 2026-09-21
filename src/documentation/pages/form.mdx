@@ -98,7 +98,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     </div>
     <div class="form-field">
       <label class="label" for="fh-1c">Number</label>
-      <div class="number-input w-full"><button type="button" aria-label="Decrease">−</button><input type="text" id="fh-1c" value="1" ></input><button type="button" aria-label="Increase">+</button></div>
+      <div class="number-input w-full"><button type="button" data-action="decrement" aria-label="Decrease">−</button><input type="number" id="fh-1c" value="1" min="0" max="99" step="1"></input><button type="button" data-action="increment" aria-label="Increase">+</button></div>
     </div>
     <div class="form-field">
       <label class="label" id="fh-1d-label">Combobox</label>
@@ -145,7 +145,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     </div>
     <div class="form-field">
       <label class="label" for="fh-3c">Number <code>xs</code></label>
-      <div class="number-input w-full" data-size="xs"><button type="button" aria-label="Decrease">−</button><input type="text" id="fh-3c" value="1" ></input><button type="button" aria-label="Increase">+</button></div>
+      <div class="number-input w-full" data-size="xs"><button type="button" data-action="decrement" aria-label="Decrease">−</button><input type="number" id="fh-3c" value="1" min="0" max="99" step="1"></input><button type="button" data-action="increment" aria-label="Increase">+</button></div>
     </div>
     <div class="form-field">
       <label class="label" for="fh-3d">Date <code>xs</code></label>
@@ -163,7 +163,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     </div>
     <div class="form-field">
       <label class="label" for="fh-4c">Number <code>lg</code></label>
-      <div class="number-input w-full" data-size="lg"><button type="button" aria-label="Decrease">−</button><input type="text" id="fh-4c" value="1" ></input><button type="button" aria-label="Increase">+</button></div>
+      <div class="number-input w-full" data-size="lg"><button type="button" data-action="decrement" aria-label="Decrease">−</button><input type="number" id="fh-4c" value="1" min="0" max="99" step="1"></input><button type="button" data-action="increment" aria-label="Increase">+</button></div>
     </div>
     <div class="form-field">
       <label class="label" for="fh-4d">Date <code>lg</code></label>
@@ -173,7 +173,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </form>
 ```
 
-```html example label="Inline fields" hint="Checkbox and switch aligned with labels." previewStyle="justify-content:start;padding:2rem;"
+```html example label="Inline fields" hint="Checkbox and switch aligned with labels." previewStyle="display:flex;flex-direction:column;align-items:flex-start;gap:1.25rem;padding:2rem;"
 <div class="form-field-inline">
   <input class="checkbox" type="checkbox" id="terms">
   <label for="terms">Accept terms and conditions</label>

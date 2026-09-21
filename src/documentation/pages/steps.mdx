@@ -107,18 +107,40 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="With checkmarks" hint="Complete steps show a checkmark SVG instead of the step number."
-<li class="step" data-status="complete">
-  <div class="step-indicator">
-    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24"
-         fill="none" stroke="currentColor" stroke-width="3">
-      <path d="M20 6 9 17l-5-5"></path>
-    </svg>
-  </div>
-  <div class="step-content">
-    <p class="step-title">Account</p>
-    <p class="step-description">Create credentials</p>
-  </div>
-</li>
+<ol class="steps" style="max-width:32rem;width:100%;">
+  <li class="step" data-status="complete">
+    <div class="step-indicator">
+      <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+    </div>
+    <div class="step-content">
+      <p class="step-title">Account</p>
+      <p class="step-description">Create credentials</p>
+    </div>
+  </li>
+  <li class="step" data-status="complete">
+    <div class="step-indicator">
+      <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+    </div>
+    <div class="step-content">
+      <p class="step-title">Profile</p>
+      <p class="step-description">Add your details</p>
+    </div>
+  </li>
+  <li class="step" data-status="current">
+    <div class="step-indicator">3</div>
+    <div class="step-content">
+      <p class="step-title">Preferences</p>
+      <p class="step-description">Choose defaults</p>
+    </div>
+  </li>
+  <li class="step" data-status="upcoming">
+    <div class="step-indicator">4</div>
+    <div class="step-content">
+      <p class="step-title">Review</p>
+      <p class="step-description">Confirm and finish</p>
+    </div>
+  </li>
+</ol>
 ```
 
 ```html example label="Vertical" hint="Add data-orientation='vertical' for a stacked layout with a vertical connector line." previewStyle="justify-content:flex-start;padding:2rem 2.5rem;"

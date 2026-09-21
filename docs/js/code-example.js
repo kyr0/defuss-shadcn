@@ -28,6 +28,10 @@
     var RERUN_DEBOUNCE_MS = 400;
     var MIN_FRAME_HEIGHT = 64;
     var MAX_FRAME_HEIGHT = 900;
+    var REM_PX = 16; // data-height is authored in rem (fence height="N")
+    // placeholder the theme-switcher fence uses; swapped for the ABSOLUTE theme
+    // folder in the sandbox (about:srcdoc can't resolve relative URLs)
+    var THEME_BASE_PLACEHOLDER = '../theme';
     // boot cards lazily (viewport + margin) so a page full of sandboxes never
     // blocks first paint; everything else boots once the page has been idle
     var IO_ROOT_MARGIN = '600px 0px';
@@ -240,6 +244,26 @@
         var known = ['text', 'number', 'checkbox', 'radio', 'select'];
         return { kind: known.indexOf(hint) >= 0 ? hint : byType, props: (spec.editor && spec.editor.props) || {} };
     }
+    /** absolute URL of the theme folder, derived from the token stylesheet the
+     * host page loaded (works on local + jsDelivr mirrors alike) */
+    function themeBaseUrl() {
+        var tokens = (document.getElementById('tokens-css') ||
+            document.querySelector('link[href*="default-semantic-tokens.css"]'));
+        if (!tokens)
+            return '';
+        try {
+            return new URL('..', tokens.href).href.replace(/\/$/, '');
+        }
+        catch {
+            return '';
+        }
+    }
+    /** chrome script: rewrites the fence placeholder ../theme to the absolute URL */
+    function themeInitScript() {
+        return ("(function(){var b=" + JSON.stringify(themeBaseUrl()) + ";if(!b)return;" +
+            "document.querySelectorAll('.theme-switcher[data-theme-base]').forEach(function(el){" +
+            "if(el.dataset.themeBase==='" + THEME_BASE_PLACEHOLDER + "')el.dataset.themeBase=b});})();");
+    }
     /** ch → controller; the single global listener + dark observer route here. */
     var registry = {};
     addEventListener('message', function (e) {
@@ -312,7 +336,11 @@
         var src = root.querySelector('.code-example-src');
         var statePanel = root.querySelector('[data-panel="state"]');
         var codePanel = root.querySelector('[data-panel="code"]');
-        var minHeight = Math.max(MIN_FRAME_HEIGHT, Number(root.dataset.height) || 0);
+        // fence height="N" is rem — a px floor would be inert; overlay demos
+        // (dialog/sheet/combobox/command…) need the floor to hold their open
+        // panel: fixed-position overlays don't grow the body flow, so the
+        // bridge's content height stays at the closed-state size
+        var minHeight = Math.max(MIN_FRAME_HEIGHT, (Number(root.dataset.height) || 0) * REM_PX);
         // stage chrome from the fence (previewStyle="…"): body-level layout for the
         // demo area (flex centering, padding…) — chrome, never part of the source
         var previewStyle = root.dataset.previewStyle || '';
@@ -357,7 +385,11 @@
                 // lucide mirrors the host page so icon examples render.
                 var scripts = CE_SCRIPT_OPEN + '(function(){\n' + parts[2] + '\n})();' + CE_SCRIPT_CLOSE +
                     '\n<scr' + 'ipt src="https://unpkg.com/lucide@1.8.0" data-ce-chrome></scr' + 'ipt>' +
-                    '\n' + CE_SCRIPT_OPEN + 'globalThis.lucide && lucide.createIcons();' + CE_SCRIPT_CLOSE + '\n';
+                    '\n' + CE_SCRIPT_OPEN + 'globalThis.lucide && lucide.createIcons();' + CE_SCRIPT_CLOSE +
+                    // the theme-switcher demo: swap the ../theme placeholder for the
+                    // absolute folder (from the token sheet the host fetched), so the
+                    // sandbox can load theme files despite its opaque base URL
+                    '\n' + CE_SCRIPT_OPEN + themeInitScript() + CE_SCRIPT_CLOSE + '\n';
                 // function replacements: injected bytes contain `$` sequences (df$ in
                 // all.js, `$&` in sources) that String.replace would expand as patterns
                 return parts[0]

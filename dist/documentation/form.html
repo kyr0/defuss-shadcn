@@ -32,7 +32,7 @@
     &lt;/div&gt;
     &lt;div class="form-field"&gt;
       &lt;label class="label" for="fh-1c"&gt;Number&lt;/label&gt;
-      &lt;div class="number-input w-full"&gt;&lt;button type="button" aria-label="Decrease"&gt;−&lt;/button&gt;&lt;input type="text" id="fh-1c" value="1" &gt;&lt;/input&gt;&lt;button type="button" aria-label="Increase"&gt;+&lt;/button&gt;&lt;/div&gt;
+      &lt;div class="number-input w-full"&gt;&lt;button type="button" data-action="decrement" aria-label="Decrease"&gt;−&lt;/button&gt;&lt;input type="number" id="fh-1c" value="1" min="0" max="99" step="1"&gt;&lt;/input&gt;&lt;button type="button" data-action="increment" aria-label="Increase"&gt;+&lt;/button&gt;&lt;/div&gt;
     &lt;/div&gt;
     &lt;div class="form-field"&gt;
       &lt;label class="label" id="fh-1d-label"&gt;Combobox&lt;/label&gt;
@@ -79,7 +79,7 @@
     &lt;/div&gt;
     &lt;div class="form-field"&gt;
       &lt;label class="label" for="fh-3c"&gt;Number &lt;code&gt;xs&lt;/code&gt;&lt;/label&gt;
-      &lt;div class="number-input w-full" data-size="xs"&gt;&lt;button type="button" aria-label="Decrease"&gt;−&lt;/button&gt;&lt;input type="text" id="fh-3c" value="1" &gt;&lt;/input&gt;&lt;button type="button" aria-label="Increase"&gt;+&lt;/button&gt;&lt;/div&gt;
+      &lt;div class="number-input w-full" data-size="xs"&gt;&lt;button type="button" data-action="decrement" aria-label="Decrease"&gt;−&lt;/button&gt;&lt;input type="number" id="fh-3c" value="1" min="0" max="99" step="1"&gt;&lt;/input&gt;&lt;button type="button" data-action="increment" aria-label="Increase"&gt;+&lt;/button&gt;&lt;/div&gt;
     &lt;/div&gt;
     &lt;div class="form-field"&gt;
       &lt;label class="label" for="fh-3d"&gt;Date &lt;code&gt;xs&lt;/code&gt;&lt;/label&gt;
@@ -97,7 +97,7 @@
     &lt;/div&gt;
     &lt;div class="form-field"&gt;
       &lt;label class="label" for="fh-4c"&gt;Number &lt;code&gt;lg&lt;/code&gt;&lt;/label&gt;
-      &lt;div class="number-input w-full" data-size="lg"&gt;&lt;button type="button" aria-label="Decrease"&gt;−&lt;/button&gt;&lt;input type="text" id="fh-4c" value="1" &gt;&lt;/input&gt;&lt;button type="button" aria-label="Increase"&gt;+&lt;/button&gt;&lt;/div&gt;
+      &lt;div class="number-input w-full" data-size="lg"&gt;&lt;button type="button" data-action="decrement" aria-label="Decrease"&gt;−&lt;/button&gt;&lt;input type="number" id="fh-4c" value="1" min="0" max="99" step="1"&gt;&lt;/input&gt;&lt;button type="button" data-action="increment" aria-label="Increase"&gt;+&lt;/button&gt;&lt;/div&gt;
     &lt;/div&gt;
     &lt;div class="form-field"&gt;
       &lt;label class="label" for="fh-4d"&gt;Date &lt;code&gt;lg&lt;/code&gt;&lt;/label&gt;
@@ -105,7 +105,7 @@
     &lt;/div&gt;
   &lt;/div&gt;
 &lt;/form&gt;
-</textarea></div></div><div class="code-example" data-component="form" data-preview-style="justify-content:start;padding:2rem;"><p class="text-sm font-medium mb-2" id="toc-inline-fields"><a class="heading-anchor" href="#toc-inline-fields" aria-label="Link to section: Inline fields">§</a>Inline fields</p><p class="text-xs text-muted-foreground mb-3">Checkbox and switch aligned with labels.</p><div class="preview" style="padding:0;overflow:hidden;"><iframe class="code-example-frame" sandbox="allow-scripts" title="Inline fields" style="width:100%;min-height:8rem;border:0;display:block;"></iframe><output class="code-example-error" role="alert" hidden=""></output></div><div class="code-example-toolbar"><button class="code-example-tab" data-tab="code" aria-pressed="true">Code</button><span class="code-example-spacer"></span><button class="code-example-copy" title="Copy the example source"><i data-lucide="copy"></i><span>Copy</span></button><button class="code-example-reset" title="Restore the original source and rerun"><i data-lucide="rotate-ccw"></i><span>Reset</span></button></div><div class="code-example-panel" data-panel="code"><textarea class="code-example-src" spellcheck="false" aria-label="Editable source for: Inline fields" rows="10">&lt;div class="form-field-inline"&gt;
+</textarea></div></div><div class="code-example" data-component="form" data-preview-style="display:flex;flex-direction:column;align-items:flex-start;gap:1.25rem;padding:2rem;"><p class="text-sm font-medium mb-2" id="toc-inline-fields"><a class="heading-anchor" href="#toc-inline-fields" aria-label="Link to section: Inline fields">§</a>Inline fields</p><p class="text-xs text-muted-foreground mb-3">Checkbox and switch aligned with labels.</p><div class="preview" style="padding:0;overflow:hidden;"><iframe class="code-example-frame" sandbox="allow-scripts" title="Inline fields" style="width:100%;min-height:8rem;border:0;display:block;"></iframe><output class="code-example-error" role="alert" hidden=""></output></div><div class="code-example-toolbar"><button class="code-example-tab" data-tab="code" aria-pressed="true">Code</button><span class="code-example-spacer"></span><button class="code-example-copy" title="Copy the example source"><i data-lucide="copy"></i><span>Copy</span></button><button class="code-example-reset" title="Restore the original source and rerun"><i data-lucide="rotate-ccw"></i><span>Reset</span></button></div><div class="code-example-panel" data-panel="code"><textarea class="code-example-src" spellcheck="false" aria-label="Editable source for: Inline fields" rows="10">&lt;div class="form-field-inline"&gt;
   &lt;input class="checkbox" type="checkbox" id="terms"&gt;
   &lt;label for="terms"&gt;Accept terms and conditions&lt;/label&gt;
 &lt;/div&gt;

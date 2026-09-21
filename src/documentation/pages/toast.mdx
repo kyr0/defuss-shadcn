@@ -69,26 +69,26 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
-```html example label="Default" hint="Basic toast with title and description via df$.shadcn.toast.show()." height="14"
+```html example label="Default" hint="Basic toast with title and description via df$.shadcn.toast.show()." height="20"
 <button class="btn" data-variant="default" onclick="df$.shadcn.toast.show({ title: 'Event created', description: 'Monday, January 3rd at 6:00pm' })"> Show Toast </button>
 ```
 
-```html example label="Variants" hint="Semantic variants add a colored border and icon. Use df$.shadcn.toast.success(), df$.shadcn.toast.warning(), df$.shadcn.toast.info(), or df$.shadcn.toast.error()." height="14"
+```html example label="Variants" hint="Semantic variants add a colored border and icon. Use df$.shadcn.toast.success(), df$.shadcn.toast.warning(), df$.shadcn.toast.info(), or df$.shadcn.toast.error()." height="20"
 <button class="btn" data-variant="outline" onclick="df$.shadcn.toast.success({ title: 'Success', description: 'Your changes have been saved.' })"> Success </button>
 <button class="btn" data-variant="outline" onclick="df$.shadcn.toast.warning({ title: 'Warning', description: 'Your session will expire in 5 minutes.' })"> Warning </button>
 <button class="btn" data-variant="outline" onclick="df$.shadcn.toast.info({ title: 'Info', description: 'A new version is available for download.' })"> Info </button>
 <button class="btn" data-variant="destructive" onclick="df$.shadcn.toast.error({ title: 'Error', description: 'Something went wrong. Please try again.' })"> Error </button>
 ```
 
-```html example label="With Description" hint="Pass a description for a secondary line of detail below the title." height="14"
+```html example label="With Description" hint="Pass a description for a secondary line of detail below the title." height="20"
 <button class="btn" data-variant="outline" onclick="df$.shadcn.toast.show({ title: 'Scheduled', description: 'Your report will be generated at 9:00 AM tomorrow.' })"> Show Toast </button>
 ```
 
-```html example label="With Action" hint="Add an action object with label and onClick to render an action button inside the toast." height="14"
+```html example label="With Action" hint="Add an action object with label and onClick to render an action button inside the toast." height="20"
 <button class="btn" data-variant="outline" onclick="df$.shadcn.toast.show({ title: 'Changes saved', description: 'Your profile has been updated.', action: { label: 'Undo', onClick: () => df$.shadcn.toast.show('Undone!') } })"> Show Toast </button>
 ```
 
-```html example label="Size & Density" hint="size scales the width envelope (sm / md / lg, md matches the unsized default), density the padding and content gap (compact / comfortable / spacious) — pass either option to show() and it lands as the matching data-* attribute on the toast." height="14"
+```html example label="Size & Density" hint="size scales the width envelope (sm / md / lg, md matches the unsized default), density the padding and content gap (compact / comfortable / spacious) — pass either option to show() and it lands as the matching data-* attribute on the toast." height="20"
 <div class="flex flex-wrap gap-2">
   <button class="btn" data-variant="outline" onclick="df$.shadcn.toast.show({ title: 'Narrow toast', description: 'Width envelope sm.', size: 'sm' })">Size sm</button>
   <button class="btn" data-variant="outline" onclick="df$.shadcn.toast.show({ title: 'Wide toast', description: 'Width envelope lg.', size: 'lg' })">Size lg</button>

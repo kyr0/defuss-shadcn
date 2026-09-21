@@ -56,8 +56,41 @@ import { themeFiles } from "../lib/repo";
   </SkillField>
 </SkillPanel>
 
-```html example label="Live" hint="Pick any of the {themeFiles().length} tweakcn presets — the whole page re-themes by loading {'../theme/.css'}. Watch the page's stylesheets in DevTools: exactly one {''} appears and disappears." height="16"
-<ThemeSwitcherDemo id="ts-page"></ThemeSwitcherDemo>
+```html example label="Live" hint="Pick any of the {themeFiles().length} tweakcn presets — the whole page re-themes by loading {'../theme/.css'}. Watch the page's stylesheets in DevTools: exactly one {''} appears and disappears." height="22"
+<div class="theme-switcher" data-theme-base="../theme">
+  <button class="btn theme-switcher-trigger" id="ts-trigger" popovertarget="ts-menu" aria-expanded="false" aria-haspopup="menu">
+    <span class="theme-switcher-dot" aria-hidden="true"></span>
+    <span class="theme-switcher-label">Default</span>
+    <svg class="theme-switcher-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+  </button>
+  <div id="ts-menu" class="theme-switcher-menu" popover="auto" role="menu" aria-labelledby="ts-trigger">
+    <button class="theme-switcher-item" role="menuitemradio" aria-checked="true" data-theme-id="default" data-theme-label="Default">
+      <span class="theme-switcher-dots" aria-hidden="true"></span>
+      <span class="theme-switcher-name">Default</span>
+      <svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+    </button>
+    <button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="claude" data-theme-label="Claude" data-theme-colors="#c96442,#e9e6dc,#e9e6dc,#141413,#ede9de">
+      <span class="theme-switcher-dots" aria-hidden="true"></span>
+      <span class="theme-switcher-name">Claude</span>
+      <svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+    </button>
+    <button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="catppuccin" data-theme-label="Catppuccin" data-theme-colors="#f5c2e7,#cba6f7,#1e1e2e,#cdd6f4,#313244">
+      <span class="theme-switcher-dots" aria-hidden="true"></span>
+      <span class="theme-switcher-name">Catppuccin</span>
+      <svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+    </button>
+    <button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="cyberpunk" data-theme-label="Cyberpunk" data-theme-colors="#fcee0a,#ff006e,#0a0a12,#e0e0e0,#16161f">
+      <span class="theme-switcher-dots" aria-hidden="true"></span>
+      <span class="theme-switcher-name">Cyberpunk</span>
+      <svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+    </button>
+    <button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="supabase" data-theme-label="Supabase" data-theme-colors="#3ecf8e,#00c573,#0b0f14,#edeede,#1c1c1c">
+      <span class="theme-switcher-dots" aria-hidden="true"></span>
+      <span class="theme-switcher-name">Supabase</span>
+      <svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+    </button>
+  </div>
+</div>
 ```
 
 <H2>How the mechanism works</H2>
