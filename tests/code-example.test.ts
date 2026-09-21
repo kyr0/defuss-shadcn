@@ -355,5 +355,12 @@ describe('CodeExample viewport toolbar (device emulation)', () => {
     expect(h.disabled).toBe(true);
     expect(h.placeholder).toBe('Full');
     expect((btn('rotate') as HTMLButtonElement).disabled).toBe(true);
+
+    // SE resize handle: present, keyboard-operable, ArrowRight grows W by 10
+    const grip = vp('.ce-resize');
+    expect(grip.getAttribute('role')).toBe('spinbutton');
+    expect(grip.getAttribute('aria-valuenow')).toBe('1024');
+    grip.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true }));
+    expect(w.value).toBe('1034');
   });
 });

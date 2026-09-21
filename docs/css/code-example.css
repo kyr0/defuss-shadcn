@@ -98,6 +98,12 @@
   .ce-screen {
     display: block;
   }
+  /* measured modes (full/desktop): the canvas gets a light dashed outline in
+     the separator color, so the preview box stays visible at every width */
+  .ce-screen[data-mode='full'] .ce-device,
+  .ce-screen[data-mode='desktop'] .ce-device {
+    border: 1px dashed var(--border);
+  }
   /* block + width:100% default (iframe keeps its fluid 100%); device modes
      set an inline width and margin-inline:auto centers the hardware */
   .ce-device {
@@ -115,13 +121,63 @@
     border-color: #18181b;
     box-shadow: var(--shadow-lg);
   }
+  /* --ce-bezel: the runtime resize grip sits on the OUTER corner, offset by
+     the bezel thickness (0 outside device modes) */
   .ce-screen[data-mode='phone'] .ce-device {
-    border-width: 0.6875rem;
+    --ce-bezel: 0.6875rem;
+    border-width: var(--ce-bezel);
     border-radius: 2.5rem;
   }
   .ce-screen[data-mode='tablet'] .ce-device {
-    border-width: 0.5rem;
+    --ce-bezel: 0.5rem;
+    border-width: var(--ce-bezel);
     border-radius: 1.5rem;
+  }
+  /* SE resize grip (runtime-created): drags update the W/H fields — both axes
+     for devices, width only in measured modes (cursor signals it). Device
+     frames clip (overflow:hidden) → the tab sits on the bezel's corner;
+     measured canvases are unclipped → it straddles the outer corner. */
+  .ce-resize {
+    position: absolute;
+    /* inside the corner in every mode: device frames clip (overflow:hidden)
+       and measured canvases can be wider than the card — a grip straddling
+       the edge would be half-clipped either way */
+    right: 2px;
+    bottom: 2px;
+    width: 0.875rem;
+    height: 0.875rem;
+    border: 1px solid var(--border);
+    background: var(--background);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-2xs);
+    cursor: ew-resize; /* measured modes resize width only */
+    touch-action: none;
+    z-index: 2;
+  }
+  .ce-screen[data-mode='phone'] .ce-resize,
+  .ce-screen[data-mode='tablet'] .ce-resize {
+    cursor: nwse-resize;
+  }
+  .ce-resize:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  .ce-resize::after {
+    /* two grip ticks echoing the dashed canvas */
+    content: '';
+    position: absolute;
+    right: 2px;
+    bottom: 2px;
+    width: 6px;
+    height: 6px;
+    background: linear-gradient(
+      135deg,
+      transparent 40%,
+      var(--muted-foreground) 40%,
+      var(--muted-foreground) 55%,
+      transparent 55%
+    );
+    border-radius: 1px;
   }
   /* notch pill (phone only, like the iPhone 15 vector reference) */
   .ce-device-island {

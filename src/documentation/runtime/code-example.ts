@@ -656,11 +656,17 @@
       var vpH = root.querySelector('.code-example-vp-h');
       var vpBtns = root.querySelectorAll('.code-example-vp[data-vp]:not([data-vp="rotate"])');
       var vpRotate = root.querySelector('.code-example-vp[data-vp="rotate"]');
+      var grip = null; // SE resize handle (created below; vpApply syncs its aria-valuenow)
       var clamp = function (v, lo, hi) { return Math.min(hi, Math.max(lo, v)); };
       var vpMode = 'full';
       function vpApply() {
         var dev = vpMode === 'phone' || vpMode === 'tablet';
-        var w = clamp(Number(vpW.value) || 0, 240, 1600);
+        // empty field = unset (full mode stays fluid); clamp only real values
+        // (0 would otherwise land on the 240 floor and shrink the canvas)
+        var rawW = Number(vpW.value);
+        var w = rawW > 0 ? clamp(rawW, 240, 1600) : 0;
+        var rawH = Number(vpH.value);
+        var h = rawH > 0 ? clamp(rawH, 240, 1400) : 0;
         vpDevice.style.cssText = '';
         frame.style.width = '100%';
         // the device box (844px + bezel) exceeds the closed stage — let the
@@ -668,8 +674,8 @@
         var stage = root.querySelector('.preview');
         if (stage) stage.style.overflow = dev ? 'visible' : 'hidden';
         if (dev) {
-          vpDevice.style.width = w + 'px';
-          vpDevice.style.height = clamp(Number(vpH.value) || 0, 240, 1400) + 'px';
+          if (w) vpDevice.style.width = w + 'px';
+          if (h) vpDevice.style.height = h + 'px';
           frame.style.height = '100%'; // fills the bezel's content box
         } else {
           if (w) vpDevice.style.width = w + 'px';
@@ -678,6 +684,7 @@
         }
         root.dataset.vpMode = vpMode;
         vpScreen.dataset.mode = vpMode;
+        if (grip) grip.setAttribute('aria-valuenow', String(w));
       }
       function vpSetMode(mode) {
         vpMode = mode;
@@ -718,6 +725,48 @@
           if (inp === vpH && vpH.disabled) return;
           vpApply();
         });
+      });
+
+      // SE resize handle: pointer drag resizes the canvas and writes the W/H
+      // fields (both axes on devices, width-only when measured — matching the
+      // cursor). Arrow keys resize by 10px (keyboard parity, role=spinbutton).
+      grip = document.createElement('div');
+      grip.className = 'ce-resize';
+      grip.setAttribute('role', 'spinbutton');
+      grip.setAttribute('aria-label', 'Resize preview');
+      grip.setAttribute('aria-valuemin', '240');
+      grip.setAttribute('aria-valuemax', '1600');
+      grip.tabIndex = 0;
+      vpDevice.appendChild(grip);
+      grip.addEventListener('pointerdown', function (ev) {
+        ev.preventDefault();
+        grip.setPointerCapture(ev.pointerId);
+        var dev = vpMode === 'phone' || vpMode === 'tablet';
+        var startW = clamp(Number(vpW.value) || vpDevice.getBoundingClientRect().width, 240, 1600);
+        var startH = clamp(Number(vpH.value) || 0, 240, 1400);
+        var x0 = ev.clientX;
+        var y0 = ev.clientY;
+        function move(e) {
+          vpW.value = String(Math.round(clamp(startW + (e.clientX - x0), 240, 1600)));
+          if (dev && vpH) vpH.value = String(Math.round(clamp(startH + (e.clientY - y0), 240, 1400)));
+          vpApply();
+        }
+        function up() {
+          grip.removeEventListener('pointermove', move);
+          grip.removeEventListener('pointerup', up);
+        }
+        grip.addEventListener('pointermove', move);
+        grip.addEventListener('pointerup', up);
+      });
+      grip.addEventListener('keydown', function (ev) {
+        var step = ev.key === 'ArrowRight' || ev.key === 'ArrowUp' ? 10 : ev.key === 'ArrowLeft' || ev.key === 'ArrowDown' ? -10 : 0;
+        if (!step) return;
+        ev.preventDefault();
+        var dev = vpMode === 'phone' || vpMode === 'tablet';
+        if (ev.key === 'ArrowRight' || ev.key === 'ArrowLeft')
+          vpW.value = String(clamp((Number(vpW.value) || vpDevice.getBoundingClientRect().width) + step, 240, 1600));
+        else if (dev && vpH) vpH.value = String(clamp((Number(vpH.value) || 0) + step, 240, 1400));
+        vpApply();
       });
     }
 
