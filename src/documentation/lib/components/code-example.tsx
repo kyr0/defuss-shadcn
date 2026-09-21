@@ -112,7 +112,10 @@ export function CodeExample({ source, component, label, hint, height, previewSty
           the iframe is inside it, so the captured default-state PNG shows the live sandbox.
           .ce-screen/.ce-device: the device emulation wrapper — phone/tablet modes put a
           scaling bezel (border + island + home indicator, pure CSS) around the iframe. */}
-      <div class="preview" style="padding:0;overflow:hidden;">
+      // padding gives the canvas breathing room inside the card (medium
+      // 0.75rem); overflow hidden keeps wide content clipped until the
+      // viewport toolbar's device modes flip it (code-example.js)
+      <div class="preview" style="padding:0.75rem;overflow:hidden;">
         <div class="ce-screen" data-mode="full">
           <div class="ce-device">
             <iframe class="code-example-frame" sandbox="allow-scripts" title={name} style="width:100%;min-height:8rem;border:0;display:block;"></iframe>
