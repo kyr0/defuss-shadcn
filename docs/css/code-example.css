@@ -32,12 +32,148 @@
   .code-example-toolbar {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 0.25rem;
     border: 1px solid var(--border);
     border-top: 0;
     border-radius: 0 0 var(--radius-md) var(--radius-md);
     background: var(--muted);
     padding: 0.25rem 0.375rem;
+  }
+
+  /* -- viewport toolbar (device emulation) -------------------- */
+  /* quick group: rotate + phone/tablet/desktop/full */
+  .code-example-viewport {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  /* vertical separator between the quick buttons and the size fields */
+  .code-example-sep {
+    width: 1px;
+    align-self: stretch;
+    min-height: 1.25rem;
+    margin: 0 0.375rem;
+    background: var(--border);
+  }
+  .code-example-size {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .code-example-vp-x {
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+  }
+  .code-example-size input[type='number'] {
+    width: 4.25rem;
+    height: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--background);
+    color: var(--foreground);
+    font: inherit;
+    font-size: 0.75rem;
+    padding: 0 0.375rem;
+  }
+  .code-example-size input[type='number']:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  /* orientation only exists for devices → the rotate button greys out */
+  .code-example-vp:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .code-example-vp:disabled:hover {
+    background: transparent;
+    color: var(--muted-foreground);
+  }
+
+  /* -- device frame (phone/tablet modes) ---------------------- */
+  /* the sandbox iframe is wrapped in .ce-screen > .ce-device; device modes
+     pin the device box (runtime sets inline W/H from the fields) and the CSS
+     bezel + island + home indicator scale with it — a dark fixed-color shell
+     reads as hardware in both themes (like real device frames) */
+  .ce-screen {
+    display: block;
+  }
+  /* block + width:100% default (iframe keeps its fluid 100%); device modes
+     set an inline width and margin-inline:auto centers the hardware */
+  .ce-device {
+    display: block;
+    position: relative;
+    width: 100%;
+    margin-inline: auto;
+    box-sizing: border-box;
+    min-width: 0;
+  }
+  .ce-screen[data-mode='phone'] .ce-device,
+  .ce-screen[data-mode='tablet'] .ce-device {
+    overflow: hidden;
+    border-style: solid;
+    border-color: #18181b;
+    box-shadow: var(--shadow-lg);
+  }
+  .ce-screen[data-mode='phone'] .ce-device {
+    border-width: 0.6875rem;
+    border-radius: 2.5rem;
+  }
+  .ce-screen[data-mode='tablet'] .ce-device {
+    border-width: 0.5rem;
+    border-radius: 1.5rem;
+  }
+  /* notch pill (phone only, like the iPhone 15 vector reference) */
+  .ce-device-island {
+    display: none;
+    position: absolute;
+    z-index: 1;
+    pointer-events: none;
+    background: #18181b;
+    border-radius: 999px;
+  }
+  .ce-screen[data-mode='phone'] .ce-device-island {
+    display: block;
+    top: 0.375rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6rem;
+    height: 1.375rem;
+  }
+  /* home indicator */
+  .ce-device-home {
+    display: none;
+    position: absolute;
+    z-index: 1;
+    pointer-events: none;
+    background: #18181b;
+    border-radius: 999px;
+  }
+  .ce-screen[data-mode='phone'] .ce-device-home {
+    display: block;
+    bottom: 0.375rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 7.5rem;
+    height: 0.4375rem;
+  }
+  /* landscape "holding": the runtime swaps W/H AND flags the screen — the
+     island slides to the left edge (vertical), the home bar to the right */
+  .ce-screen[data-mode='phone'][data-landscape] .ce-device-island {
+    top: 50%;
+    left: 0.375rem;
+    transform: translateY(-50%);
+    width: 1.375rem;
+    height: 6rem;
+  }
+  .ce-screen[data-mode='phone'][data-landscape] .ce-device-home {
+    top: 50%;
+    bottom: auto;
+    left: auto;
+    right: 0.375rem;
+    transform: translateY(-50%);
+    width: 0.4375rem;
+    height: 7.5rem;
   }
 
   .code-example-toolbar button {

@@ -261,6 +261,11 @@
       // the whole example keeps running (a rebuild would lose its state)
       var tag = document.getElementById('ce-theme');
       if (tag) tag.textContent = d.css || '';
+    } else if (d.kind === 'measure') {
+      // host resized the frame (viewport toolbar): the reflowed content needs
+      // a fresh height round (sync posts state + height; source stays unposted
+      // unless dirty)
+      sync();
     }
   });
 

@@ -15,9 +15,16 @@ import { repoFile } from '../repo';
  * controls from it exclusively (§10), and pages stay self-contained on any host
  * (no runtime fetch that a mirror/CDN layout could break).
  *
- * All interactivity (srcdoc assembly, sandbox bridge, controls, rerun/reset)
- * lives in runtime/code-example.ts; SSR emits the static shell so the layout,
- * source and toolbar exist pre-JS.
+ * All interactivity (srcdoc assembly, sandbox bridge, controls, rerun/reset,
+ * viewport/device emulation) lives in runtime/code-example.ts; SSR emits the
+ * static shell so the layout, source and toolbars exist pre-JS.
+ *
+ * Viewport toolbar (every card, not just the layout demos): Rotate / Phone /
+ * Tablet / Desktop / Full + custom W×H fields. Phone (390×844) and tablet
+ * (834×1112) pin the frame to a device box and draw a scaling CSS bezel + island
+ * + home indicator around the sandbox (the .ce-device shell) so it reads as a
+ * handheld; Rotate flips the box for landscape. Desktop / Full measure the
+ * content instead and reset the height field (placeholder "Full").
  */
 export interface CodeExampleProps {
   /** the exact example fence body — displayed AND executed (§4 one source) */
@@ -102,17 +109,56 @@ export function CodeExample({ source, component, label, hint, height, previewSty
       {label ? <p class={H2_LABEL}>{label}</p> : null}
       {hint ? <p class={H2_HINT}>{hint}</p> : null}
       {/* class="preview" exactly (verify's `preview blocks` gate + screenshot anchor);
-          the iframe is inside it, so the captured default-state PNG shows the live sandbox */}
+          the iframe is inside it, so the captured default-state PNG shows the live sandbox.
+          .ce-screen/.ce-device: the device emulation wrapper — phone/tablet modes put a
+          scaling bezel (border + island + home indicator, pure CSS) around the iframe. */}
       <div class="preview" style="padding:0;overflow:hidden;">
-        <iframe class="code-example-frame" sandbox="allow-scripts" title={name} style="width:100%;min-height:8rem;border:0;display:block;"></iframe>
+        <div class="ce-screen" data-mode="full">
+          <div class="ce-device">
+            <iframe class="code-example-frame" sandbox="allow-scripts" title={name} style="width:100%;min-height:8rem;border:0;display:block;"></iframe>
+            <span class="ce-device-island" aria-hidden="true"></span>
+            <span class="ce-device-home" aria-hidden="true"></span>
+          </div>
+        </div>
         <output class="code-example-error" role="alert" hidden></output>
       </div>
       <div class="code-example-toolbar">
+        {/* device toolbar (every CodeExample, not only the layout demos):
+            orientation rotate + quick sizes + custom W×H — runtime
+            (code-example.js) owns the mode state and the device chrome */}
+        <span class="code-example-viewport" role="group" aria-label="Preview device">
+          <button class="code-example-vp" data-vp="rotate" title="Swap orientation (phone/tablet)" aria-disabled="true">
+            <i data-lucide="rotate-cw"></i>
+            <span>Rotate</span>
+          </button>
+          <button class="code-example-vp" data-vp="phone" aria-pressed="false" title="Phone 390×844">
+            <i data-lucide="smartphone"></i>
+            <span>Phone</span>
+          </button>
+          <button class="code-example-vp" data-vp="tablet" aria-pressed="false" title="Tablet 834×1112">
+            <i data-lucide="tablet"></i>
+            <span>Tablet</span>
+          </button>
+          <button class="code-example-vp" data-vp="desktop" aria-pressed="false" title="Desktop 1024">
+            <i data-lucide="monitor"></i>
+            <span>Desktop</span>
+          </button>
+          <button class="code-example-vp" data-vp="full" aria-pressed="true" title="Full width (source default)">
+            <i data-lucide="app-window"></i>
+            <span>Full</span>
+          </button>
+        </span>
+        <span class="code-example-sep" aria-hidden="true"></span>
+        <span class="code-example-size">
+          <input class="code-example-vp-w" type="number" min="240" step="10" inputmode="numeric" placeholder="Width" aria-label="Custom preview width (px)" />
+          <span class="code-example-vp-x" aria-hidden="true">×</span>
+          <input class="code-example-vp-h" type="number" min="240" step="10" inputmode="numeric" placeholder="Full" aria-label="Custom preview height (px)" disabled />
+        </span>
+        <span class="code-example-spacer"></span>
         <button class="code-example-tab" data-tab="code" aria-pressed="true">Code</button>
         {/* State tab renders ONLY when the schema offers editable states — an
             empty contract (or stateTab:false) means no tab: editor stands alone. */}
         {stateTab ? <button class="code-example-tab" data-tab="state" aria-pressed="false">State</button> : null}
-        <span class="code-example-spacer"></span>
         <button class="code-example-copy" title="Copy the example source">
           <i data-lucide="copy"></i>
           <span>Copy</span>

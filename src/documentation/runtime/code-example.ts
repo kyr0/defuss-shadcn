@@ -630,13 +630,96 @@
         } else if (d.kind === 'error') {
           showError(d.message || 'Sandbox error', d.stack);
         } else if (d.kind === 'height') {
-          frame.style.height = Math.min(MAX_FRAME_HEIGHT, Math.max(minHeight, (d.height || 0) + 2)) + 'px';
+          // device modes (phone/tablet) PIN the frame to the device box — the
+          // measured flow height doesn't apply (content scrolls inside);
+          // measured modes (full/desktop/custom) size from the sandbox
+          if (root.dataset.vpMode !== 'phone' && root.dataset.vpMode !== 'tablet')
+            frame.style.height = Math.min(MAX_FRAME_HEIGHT, Math.max(minHeight, (d.height || 0) + 2)) + 'px';
         }
       },
     };
     registry[ch] = api;
 
     // (root.api is installed inside onMessage on the bridge's 'ready' — see above)
+
+    // -- viewport toolbar ----------------------------------------------------
+    // Device emulation for every example: full (source default, measured
+    // height) · desktop (width-constrained, measured height) · phone 390×844
+    // · tablet 834×1112 (device presets; the CSS bezel marks them as devices).
+    // Rotate swaps W/H (landscape "holding"). The number fields edit the size
+    // directly; the height field only exists for device modes.
+    var vpScreen = root.querySelector('.ce-screen');
+    var vpDevice = root.querySelector('.ce-device');
+    if (vpScreen && vpDevice) {
+      var VP_DEVICE_DEFAULTS = { phone: [390, 844], tablet: [834, 1112] };
+      var vpW = root.querySelector('.code-example-vp-w');
+      var vpH = root.querySelector('.code-example-vp-h');
+      var vpBtns = root.querySelectorAll('.code-example-vp[data-vp]:not([data-vp="rotate"])');
+      var vpRotate = root.querySelector('.code-example-vp[data-vp="rotate"]');
+      var clamp = function (v, lo, hi) { return Math.min(hi, Math.max(lo, v)); };
+      var vpMode = 'full';
+      function vpApply() {
+        var dev = vpMode === 'phone' || vpMode === 'tablet';
+        var w = clamp(Number(vpW.value) || 0, 240, 1600);
+        vpDevice.style.cssText = '';
+        frame.style.width = '100%';
+        // the device box (844px + bezel) exceeds the closed stage — let the
+        // .preview grow around it instead of clipping (its SSR style is inline)
+        var stage = root.querySelector('.preview');
+        if (stage) stage.style.overflow = dev ? 'visible' : 'hidden';
+        if (dev) {
+          vpDevice.style.width = w + 'px';
+          vpDevice.style.height = clamp(Number(vpH.value) || 0, 240, 1400) + 'px';
+          frame.style.height = '100%'; // fills the bezel's content box
+        } else {
+          if (w) vpDevice.style.width = w + 'px';
+          frame.style.height = ''; // back to measured (the height message lands via measure)
+          api.send('measure', {});
+        }
+        root.dataset.vpMode = vpMode;
+        vpScreen.dataset.mode = vpMode;
+      }
+      function vpSetMode(mode) {
+        vpMode = mode;
+        var dev = !!VP_DEVICE_DEFAULTS[mode];
+        vpRotate.disabled = !dev; // orientation only meaningful for devices
+        vpRotate.setAttribute('aria-disabled', String(!dev));
+        delete vpScreen.dataset.landscape;
+        vpH.disabled = !dev;
+        if (dev) {
+          vpW.value = String(VP_DEVICE_DEFAULTS[mode][0]);
+          vpH.placeholder = 'Height';
+          vpH.value = String(VP_DEVICE_DEFAULTS[mode][1]);
+        } else {
+          vpW.value = mode === 'desktop' ? '1024' : '';
+          vpH.value = '';
+          vpH.placeholder = 'Full'; // height follows the content again
+        }
+        vpBtns.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.vp === mode)); });
+        vpApply();
+      }
+      vpBtns.forEach(function (b) {
+        b.addEventListener('click', function () { vpSetMode(b.dataset.vp); });
+      });
+      vpRotate.addEventListener('click', function () {
+        if (vpRotate.disabled) return;
+        var w = vpW.value;
+        vpW.value = vpH.value;
+        vpH.value = w; // landscape holding: the fields carry the swapped box
+        // toggle: a second rotate returns to portrait (chrome follows the flag)
+        if (vpScreen.dataset.landscape) delete vpScreen.dataset.landscape;
+        else vpScreen.dataset.landscape = '1';
+        vpApply();
+      });
+      [vpW, vpH].forEach(function (inp) {
+        inp.addEventListener('change', function () {
+          // a custom size is still phone/tablet chrome if a device mode is on;
+          // in measured modes only the width matters (height field is disabled)
+          if (inp === vpH && vpH.disabled) return;
+          vpApply();
+        });
+      });
+    }
 
     // -- toolbar -------------------------------------------------------------
     root.querySelectorAll('.code-example-tab').forEach(function (tab) {

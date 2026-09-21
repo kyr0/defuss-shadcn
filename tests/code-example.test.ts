@@ -309,3 +309,51 @@ describe('CodeExample (dialog page)', () => {
     expect(stateTable!.textContent).toContain('open');
   });
 });
+
+describe('CodeExample viewport toolbar (device emulation)', () => {
+  it('phone mode pins the device box, fills the fields, enables rotate + swaps on rotate', async () => {
+    const { doc } = await openDocPage('input.html');
+    const card = firstCard(doc);
+    await waitFor(() => card.dataset.init === '', 'card booted (lazy boot)');
+    const vp = (css: string) => card.querySelector(css) as HTMLElement;
+    const w = vp('.code-example-vp-w') as HTMLInputElement;
+    const h = vp('.code-example-vp-h') as HTMLInputElement;
+    const btn = (mode: string) => card.querySelector(`.code-example-vp[data-vp="${mode}"]`) as HTMLButtonElement;
+    const device = vp('.ce-device');
+
+    // default: Full — height field inert, placeholder "Full"
+    expect(h.disabled).toBe(true);
+    expect(h.placeholder).toBe('Full');
+    expect(btn('phone').getAttribute('aria-pressed')).toBe('false');
+
+    // phone: standard preset lands in the fields, chrome flags the device
+    btn('phone').click();
+    expect(card.dataset.vpMode).toBe('phone');
+    expect(w.value).toBe('390');
+    expect(h.value).toBe('844');
+    expect(h.disabled).toBe(false);
+    expect((btn('rotate') as HTMLButtonElement).disabled).toBe(false);
+    expect(device.style.width).toBe('390px');
+    expect(device.style.height).toBe('844px');
+    expect(vp('.ce-screen').dataset.mode).toBe('phone');
+
+    // rotate swaps the box (landscape holding) and flags the screen
+    btn('rotate').click();
+    expect(w.value).toBe('844');
+    expect(h.value).toBe('390');
+    expect(device.style.width).toBe('844px');
+    expect(vp('.ce-screen').dataset.landscape).toBe('1');
+    btn('rotate').click(); // back to portrait
+    expect(device.style.width).toBe('390px');
+    expect(vp('.ce-screen').dataset.landscape).toBeUndefined();
+
+    // desktop: width preset, height field inert again with the Full placeholder
+    btn('desktop').click();
+    expect(card.dataset.vpMode).toBe('desktop');
+    expect(w.value).toBe('1024');
+    expect(h.value).toBe('');
+    expect(h.disabled).toBe(true);
+    expect(h.placeholder).toBe('Full');
+    expect((btn('rotate') as HTMLButtonElement).disabled).toBe(true);
+  });
+});
