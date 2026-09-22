@@ -9,17 +9,17 @@
   },
   "withJs": 31,
   "withoutJs": 42,
-  "totalSize": 488960,
-  "totalSizeMinified": 228316,
-  "totalSizeGz": 160411,
-  "totalSizeGzMinified": 84571,
+  "totalSize": 489389,
+  "totalSizeMinified": 228365,
+  "totalSizeGz": 160594,
+  "totalSizeGzMinified": 84586,
   "bundle": {
     "jsSize": 195313,
     "jsSizeMinified": 104366,
-    "cssSize": 256222,
-    "cssSizeMinified": 142663,
-    "totalSizeGz": 85312,
-    "totalSizeGzMinified": 50818
+    "cssSize": 256651,
+    "cssSizeMinified": 142712,
+    "totalSizeGz": 85476,
+    "totalSizeGzMinified": 50830
   },
   "core": {
     "jsSize": 64162,
@@ -582,12 +582,12 @@
       "withJs": true,
       "jsSize": 19464,
       "jsSizeMinified": 6061,
-      "cssSize": 3917,
-      "cssSizeMinified": 1928,
-      "totalSizeGz": 8005,
-      "totalSizeGzMinified": 3063,
-      "totalSize": 23381,
-      "totalSizeMinified": 7989
+      "cssSize": 4346,
+      "cssSizeMinified": 1977,
+      "totalSizeGz": 8188,
+      "totalSizeGzMinified": 3078,
+      "totalSize": 23810,
+      "totalSizeMinified": 8038
     },
     "scroll-area": {
       "name": "scroll-area",

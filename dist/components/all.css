@@ -4835,6 +4835,14 @@
     outline: 1px dashed var(--ring);
     outline-offset: 2px;
   }
+  /* the box must track the pointer 1:1 — a size TRANSITION on the wrapped
+     element (e.g. the sidebar's `transition: width 200ms`) would ease toward
+     the drag instead of following it, which reads as the handle lagging
+     behind the mouse. Only during the drag; authored transitions resume after
+     (trigger-toggle collapse animation stays intact) */
+  .resizer[data-resizing] > * {
+    transition-duration: 0s;
+  }
 
   /* -- side geometry: edge centers + corners, with the right cursor -------- */
   .resizer-handle[data-handle='n'] {

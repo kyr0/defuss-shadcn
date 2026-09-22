@@ -149,6 +149,33 @@ try {
     await page.mouse.up();
   });
 
+  await check('drag suspends size transitions on the box (the box tracks the pointer)', async () => {
+    // the sidebar rail's `transition: width 200ms` is exactly the "handle
+    // lags behind the mouse" complaint: the box EASES toward the pointer.
+    // [data-resizing] zeroes child transition-duration for the gesture only.
+    // The test transition is a layered component rule (same layer, lower
+    // specificity than the guard) — inline style would beat any CSS rule.
+    await page.addStyleTag({ content: '@layer components { .rz-trans-test { transition: width 200ms ease; } }' });
+    const box = page.locator('#rz-px-box');
+    await box.evaluate((el) => el.classList.add('rz-trans-test'));
+    const h = page.locator('#rz-px .resizer-handle[data-handle="e"]');
+    const r = (await h.boundingBox())!;
+    try {
+      await page.mouse.move(r.x + r.width / 2, r.y + r.height / 2);
+      await page.mouse.down();
+      await page.mouse.move(r.x + r.width / 2 + 40, r.y + r.height / 2, { steps: 3 });
+      assert.equal(await box.evaluate((el) => getComputedStyle(el).transitionDuration), '0s', 'duration zeroed mid-drag');
+      await page.mouse.up(); // release EARLY — the guard lifts with data-resizing
+      assert.equal(await box.evaluate((el) => getComputedStyle(el).transitionDuration), '0.2s', 'authored transition restored after release');
+    } finally {
+      // cleanup: a leftover 200ms transition would make every LATER width
+      // read race the ease-out (the 225 !== 320 cascade of failures)
+      await page.mouse.up(); // idempotent; guards against a mid-check throw
+      await box.evaluate((el) => el.classList.remove('rz-trans-test'));
+      await page.waitForTimeout(260); // let the ease-out land
+    }
+  });
+
   await check('classes mode: drag swaps the w-* token (no inline styles)', async () => {
     const cls0 = await page.getAttribute('#rz-cl-box', 'class');
     assert.match(cls0!, /w-64/);

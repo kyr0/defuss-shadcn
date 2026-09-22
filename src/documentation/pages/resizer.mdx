@@ -114,9 +114,9 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 The same component on a real <DocLink href="sidebar.html">Sidebar</DocLink> — first with pixel sizes (inline styles the runtime writes), then class-based, where the size lives in <code>w-\*</code>/<code>h-\*</code> utility classes only:
 
-```html example component="resizer" label="Sidebar — pixels" hint="Every side + corner drags the panel; the size lands as inline px on the aside. The rail's own width/height rules lose to the inline style, as intended. Drag below 24rem and the component's own auto-collapse docks it to the icon rail." height="24" mode="desktop" previewStyle="margin:1rem;"
+```html example component="resizer" label="Sidebar — pixels" hint="Every side + corner drags the panel; the size lands as inline px on the aside. data-state-name='default' declares the expanded state deliberately — that is the component's own opt-out from auto-collapse, so the rail shrinks continuously (labels clip first) instead of snapping to the icon dock. The width transition is suspended while dragging, so the box tracks the pointer exactly." height="24" mode="desktop" previewStyle="margin:1rem;"
 <div class="resizer" data-handles="all" data-min="220" data-max="560" data-min-h="160" data-max-h="480">
-  <aside class="app-sidebar" style="width:24rem;height:18rem;border-radius:var(--radius-lg);">
+  <aside class="app-sidebar" data-state-name="default" style="width:24rem;height:18rem;border-radius:var(--radius-lg);">
     <div class="sidebar-header">
       <a class="sidebar-logo" href="#">
         <i data-lucide="command" style="width:1rem;height:1rem;"></i>
@@ -134,9 +134,9 @@ The same component on a real <DocLink href="sidebar.html">Sidebar</DocLink> — 
 </div>
 ```
 
-```html example component="resizer" label="Sidebar — classes" hint="data-resize-mode='classes': dragging swaps w-N/h-N utilities on the aside — inspect the Code tab while you drag and the class attribute is the only thing that changes. Authored w-96 (= the rail's 24rem auto-collapse threshold): narrower snaps dock it to the icon rail." height="24" mode="desktop" previewStyle="margin:1rem;"
+```html example component="resizer" label="Sidebar — classes" hint="data-resize-mode='classes': dragging swaps w-N/h-N utilities on the aside — inspect the Code tab while you drag and the class attribute is the only thing that changes. data-state-name keeps the rail expanded at every ladder step (no icon-dock snap) — down to w-16 it just clips." height="24" mode="desktop" previewStyle="margin:1rem;"
 <div class="resizer" data-handles="all" data-resize-mode="classes" data-min="220" data-max="560" data-min-h="160" data-max-h="480">
-  <aside class="app-sidebar w-96 h-72" style="border-radius:var(--radius-lg);">
+  <aside class="app-sidebar w-96 h-72" data-state-name="default" style="border-radius:var(--radius-lg);">
     <div class="sidebar-header">
       <a class="sidebar-logo" href="#">
         <i data-lucide="command" style="width:1rem;height:1rem;"></i>

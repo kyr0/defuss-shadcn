@@ -715,6 +715,13 @@
       // media-query components: the sandbox viewport must be ≥ their thresholds)
       var bootMode = ['phone', 'tablet', 'desktop', 'full'].indexOf(root.dataset.vpMode) >= 0 ? root.dataset.vpMode : 'full';
       var vpMode = bootMode;
+      // Auto-fit (shrink-to-stage zoom) is a convenience for untouched cards.
+      // Once the USER sized the canvas — drag or W/H field — its width is
+      // deliberate: refitting it smaller under the user is exactly what reads
+      // as "the handle lags / the box shrinks back on its own" (measured: a
+      // +100 px drag rubber-banded to a smaller box on the 120 ms settle).
+      // Auto-fit resumes on the next mode switch.
+      var vpFitFrozen = false;
       function vpApply() {
         var dev = vpMode === 'phone' || vpMode === 'tablet';
         // empty field = unset (full mode stays fluid); clamp only real values
@@ -769,6 +776,7 @@
       }
       function vpSetMode(mode) {
         vpMode = mode;
+        vpFitFrozen = false; // a mode switch is a fresh start for auto-fit
         var dev = !!VP_DEVICE_DEFAULTS[mode];
         vpRotate.disabled = !dev; // orientation only meaningful for devices
         vpRotate.setAttribute('aria-disabled', String(!dev));
@@ -803,6 +811,8 @@
         var z;
         if (manual >= 25) {
           z = Math.min(manual, 100);
+        } else if (vpFitFrozen) {
+          return; // user-sized canvas: track 1:1, let the stage scroll instead
         } else {
           // natural width = unzoomed box (CSS zoom feeds back into layout, so
           // measure with it cleared, then restore)
@@ -840,6 +850,7 @@
           // a custom size is still phone/tablet chrome if a device mode is on;
           // in measured modes only the width matters (height field is disabled)
           if (inp === vpH && vpH.disabled) return;
+          vpFitFrozen = true; // a typed size is deliberate, same as a drag
           vpApply();
         });
       });
@@ -865,6 +876,7 @@
           // vpApply would clear the measured frame height and wait a
           // postMessage round-trip to restore it — per pointermove that is one
           // collapse flash per event (the visible flicker). It runs on quiet.
+          vpFitFrozen = true; // a drag IS a deliberate size — stop auto-fitting
           var w = Math.round(clamp(d.width, 240, 1600));
           vpW.value = String(w);
           vpResize.style.width = w + 'px';

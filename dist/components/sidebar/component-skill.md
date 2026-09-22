@@ -206,3 +206,10 @@ The registry global is `df$.shadcn.sidebarApi` / `df$.shadcn.sidebarStates`.
 - The nav area has `overflow-y: auto` and `overscroll-behavior: contain` for scroll containment.
 - Width transition is suppressed for users who prefer reduced motion.
 - Pure CSS — no JavaScript required for rendering. Collapse toggle would need JS to toggle `data-state`.
+- **Auto-collapse opt-out:** a row narrower than 24rem docks the rail to the
+  icon rail automatically (448px restores it — hysteresis). Any deliberate
+  state wins over that: once `data-state-name` is set — by a trigger click,
+  `api.setState()`, or authored directly — auto-collapse stays out and the
+  rail keeps its inline/width-class size at any width (labels clip via
+  `overflow: hidden` instead of snapping to the dock). Useful for resizable
+  panels: pair with the `resizer` component + `data-state-name="default"`.
