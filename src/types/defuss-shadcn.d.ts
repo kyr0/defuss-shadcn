@@ -66,6 +66,11 @@ interface DefussShadcnShared {
   safeShowPopover(el: HTMLElement): void;
   /** the installed callable query factory (typed via defuss-query/core) */
   defussQuery(): import('defuss-query/core').DfDollar;
+  /** trailing-edge debounce with flush()/cancel() (src/shared/debounce.ts) */
+  debounce<A extends unknown[]>(
+    fn: (...args: A) => void,
+    wait: number,
+  ): ((...args: A) => void) & { flush(): void; cancel(): void };
 }
 
 /**

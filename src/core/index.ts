@@ -14,7 +14,7 @@
  */
 import * as morph from 'defuss-morph';
 import { createDf$ } from 'defuss-query/core';
-import { defussGlobals, safeShowPopover, defussQuery, SHARED_ABI } from '../shared/index.js';
+import { debounce, defussGlobals, safeShowPopover, defussQuery, SHARED_ABI } from '../shared/index.js';
 
 /** The df$.shadcn namespace core prepares (§2.1): shared layer + registries. */
 type ShadcnNamespace = {
@@ -23,6 +23,7 @@ type ShadcnNamespace = {
     defussGlobals: () => unknown;
     safeShowPopover: (el: HTMLElement) => void;
     defussQuery: () => unknown;
+    debounce: (fn: (...args: unknown[]) => void, wait: number) => unknown;
   };
   docs?: Record<string, unknown>;
   [key: string]: unknown;
@@ -54,4 +55,4 @@ Reflect.set(globalThis, 'df$', df);
 // (df$.shadcn.docs) join the same namespace as their owners load — core never
 // prepopulates component-specific or docs state.
 const shadcn = ((df as { shadcn?: ShadcnNamespace }).shadcn ??= {});
-shadcn.shared = { abi: SHARED_ABI, defussGlobals, safeShowPopover, defussQuery };
+shadcn.shared = { abi: SHARED_ABI, defussGlobals, safeShowPopover, defussQuery, debounce };

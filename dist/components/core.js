@@ -1734,6 +1734,38 @@ function createDf$(morphApi) {
   return dollar;
 }
 
+// src/shared/debounce.ts
+function debounce(fn, wait2) {
+  let timer;
+  let lastArgs;
+  const invoke = () => {
+    timer = undefined;
+    const args = lastArgs;
+    lastArgs = undefined;
+    if (args)
+      fn(...args);
+  };
+  const wrapped = (...args) => {
+    lastArgs = args;
+    if (timer !== undefined)
+      clearTimeout(timer);
+    timer = setTimeout(invoke, wait2);
+  };
+  wrapped.flush = () => {
+    if (timer === undefined)
+      return;
+    clearTimeout(timer);
+    invoke();
+  };
+  wrapped.cancel = () => {
+    if (timer === undefined)
+      return;
+    clearTimeout(timer);
+    timer = undefined;
+    lastArgs = undefined;
+  };
+  return wrapped;
+}
 // src/shared/query.ts
 var MORPH_METHODS = [
   "morph",
@@ -1798,8 +1830,8 @@ if (existing !== undefined) {
 var df = createDf$(exports_dist);
 Reflect.set(globalThis, "df$", df);
 var shadcn = df.shadcn ??= {};
-shadcn.shared = { abi: SHARED_ABI, defussGlobals, safeShowPopover, defussQuery };
+shadcn.shared = { abi: SHARED_ABI, defussGlobals, safeShowPopover, defussQuery, debounce };
 
-//# debugId=E357BE4CC63EF23C64756E2164756E21
+//# debugId=0FD6712EE038191864756E2164756E21
 /* defuss-shadcn v0.9.0 runtime provenance: bundles defuss-morph@0.1.1 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.1.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=core.js.map

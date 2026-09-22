@@ -7308,6 +7308,10 @@
     border-radius: var(--radius-md);
     background: var(--muted);
     padding: 0.75rem;
+    /* the element is a <figure> — without an explicit reset its UA margins
+       (1em 40px) stack onto the grid gap (measured: 92px between cards); the
+       gap comes from `gap` alone */
+    margin: 0;
 
     & > img {
       position: absolute;

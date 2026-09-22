@@ -9,25 +9,25 @@
   },
   "withJs": 31,
   "withoutJs": 42,
-  "totalSize": 487553,
-  "totalSizeMinified": 228092,
-  "totalSizeGz": 159906,
-  "totalSizeGzMinified": 84531,
+  "totalSize": 487761,
+  "totalSizeMinified": 228101,
+  "totalSizeGz": 160010,
+  "totalSizeGzMinified": 84532,
   "bundle": {
-    "jsSize": 194357,
-    "jsSizeMinified": 103887,
-    "cssSize": 256014,
-    "cssSizeMinified": 142654,
-    "totalSizeGz": 84988,
-    "totalSizeGzMinified": 50673
+    "jsSize": 195028,
+    "jsSizeMinified": 104151,
+    "cssSize": 256222,
+    "cssSizeMinified": 142663,
+    "totalSizeGz": 85267,
+    "totalSizeGzMinified": 50773
   },
   "core": {
-    "jsSize": 63491,
-    "jsSizeMinified": 30837,
+    "jsSize": 64162,
+    "jsSizeMinified": 31101,
     "cssSize": 127923,
     "cssSizeMinified": 109216,
-    "totalSizeGz": 27027,
-    "totalSizeGzMinified": 20277
+    "totalSizeGz": 27185,
+    "totalSizeGzMinified": 20372
   },
   "components": {
     "accordion": {
@@ -816,12 +816,12 @@
       "withJs": false,
       "jsSize": 0,
       "jsSizeMinified": 0,
-      "cssSize": 3921,
-      "cssSizeMinified": 2684,
-      "totalSizeGz": 1292,
-      "totalSizeGzMinified": 924,
-      "totalSize": 3921,
-      "totalSizeMinified": 2684
+      "cssSize": 4129,
+      "cssSizeMinified": 2693,
+      "totalSizeGz": 1396,
+      "totalSizeGzMinified": 925,
+      "totalSize": 4129,
+      "totalSizeMinified": 2693
     },
     "textarea": {
       "name": "textarea",

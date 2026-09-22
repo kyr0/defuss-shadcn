@@ -670,6 +670,37 @@
             var vpRotate = root.querySelector('.code-example-vp[data-vp="rotate"]');
             var vpResize = null; // resizer wrapper (handles on every side; bound below)
             var clamp = function (v, lo, hi) { return Math.min(hi, Math.max(lo, v)); };
+            // trailing debounce: the SHARED implementation (src/shared/debounce.ts,
+            // installed at df$.shadcn.shared by core/all — doc pages always ship it;
+            // the local fallback keeps the toolbar working without the runtime).
+            // Bursty events (drag pointermove, window resize) settle before work runs.
+            var sharedNs = (globalThis.df$ && globalThis.df$.shadcn && globalThis.df$.shadcn.shared) || null;
+            var debounce = sharedNs && typeof sharedNs.debounce === 'function'
+                ? sharedNs.debounce
+                : function (fn, wait) {
+                    // fallback keeps the SAME shape (call / flush / cancel) so call
+                    // sites never branch on which implementation answered
+                    var t = 0;
+                    return Object.assign(function () {
+                        clearTimeout(t);
+                        t = setTimeout(function () {
+                            t = 0;
+                            fn();
+                        }, wait);
+                    }, {
+                        flush: function () {
+                            if (!t)
+                                return;
+                            clearTimeout(t);
+                            t = 0;
+                            fn();
+                        },
+                        cancel: function () {
+                            clearTimeout(t);
+                            t = 0;
+                        },
+                    });
+                };
             // a fence may boot the toolbar in a specific mode (mode="desktop" on
             // media-query components: the sandbox viewport must be ≥ their thresholds)
             var bootMode = ['phone', 'tablet', 'desktop', 'full'].indexOf(root.dataset.vpMode) >= 0 ? root.dataset.vpMode : 'full';
@@ -699,7 +730,12 @@
                 else {
                     if (vpResize && w)
                         vpResize.style.width = w + 'px';
-                    frame.style.height = ''; // back to measured (the height message lands via measure)
+                    // device→measured: release the pinned 100% height. An already
+                    // measured inline height STAYS while the re-measure lands — clearing
+                    // it would flash the frame to its CSS min-height for one postMessage
+                    // round-trip (the drag flicker; the height message replaces it anyway)
+                    if (frame.style.height === '100%')
+                        frame.style.height = '';
                     api.send('measure', {});
                 }
                 vpZoomApply(); // may shrink the canvas → the stage checks below read the fresh zoom
@@ -782,13 +818,11 @@
                 canvas.style.zoom = z < 100 ? String(z / 100) : '';
                 root.dataset.vpZoom = String(z);
             }
-            var vpResizeT;
-            addEventListener('resize', function () {
+            addEventListener('resize', debounce(function () {
                 if (!vpZ || vpZ.value)
                     return; // manual zoom is a deliberate choice
-                clearTimeout(vpResizeT);
-                vpResizeT = setTimeout(vpZoomApply, 120);
-            });
+                vpZoomApply();
+            }, 120));
             if (vpZ)
                 vpZ.addEventListener('input', vpZoomApply);
             vpRotate.addEventListener('click', function () {
@@ -823,6 +857,7 @@
             if (vpResize) {
                 // sync the wrapper once now (full mode = width axis, no n/s handles)
                 vpApply();
+                var vpApplySoon = debounce(vpApply, 120);
                 vpResize.addEventListener('resizer-resize', function (ev) {
                     var d = ev.detail;
                     if (!d)
@@ -830,10 +865,20 @@
                     var dev = vpMode === 'phone' || vpMode === 'tablet';
                     if (d.axis === 'h' && !dev)
                         return;
-                    vpW.value = String(Math.round(clamp(d.width, 240, 1600)));
-                    if (dev && vpH)
-                        vpH.value = String(Math.round(clamp(d.height, 240, 1400)));
-                    vpApply();
+                    // Live path is ONLY the cheap synchronous writes: the field readout
+                    // and the wrapper width (the wrapper IS the canvas box). The full
+                    // vpApply would clear the measured frame height and wait a
+                    // postMessage round-trip to restore it — per pointermove that is one
+                    // collapse flash per event (the visible flicker). It runs on quiet.
+                    var w = Math.round(clamp(d.width, 240, 1600));
+                    vpW.value = String(w);
+                    vpResize.style.width = w + 'px';
+                    if (dev && vpH) {
+                        var h = Math.round(clamp(d.height, 240, 1400));
+                        vpH.value = String(h);
+                        vpResize.style.height = h + 'px';
+                    }
+                    vpApplySoon(); // height re-measure + auto-zoom settle once per burst
                 });
             }
         }

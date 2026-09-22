@@ -56,10 +56,32 @@ try {
         abi: globalThis.df$?.shadcn?.shared?.abi,
         helpers:
           typeof globalThis.df$?.shadcn?.shared?.defussGlobals === 'function' &&
-          typeof globalThis.df$?.shadcn?.shared?.safeShowPopover === 'function',
+          typeof globalThis.df$?.shadcn?.shared?.safeShowPopover === 'function' &&
+          typeof globalThis.df$?.shadcn?.shared?.debounce === 'function',
       }));
       assert.equal(out.abi, ABI, 'shared.abi mismatch');
       assert.ok(out.helpers, 'shared helpers missing');
+    });
+    await check('modular: shared debounce is the real utility (trailing + flush)', async () => {
+      const out = await page.evaluate(
+        () =>
+          new Promise<Record<string, unknown>>((resolve) => {
+            const calls: number[] = [];
+            const d = globalThis.df$!.shadcn!.shared!.debounce((n: number) => calls.push(n), 20);
+            d(1);
+            d(2); // same burst → only the freshest args survive
+            setTimeout(() => {
+              const trailing = calls.join(',') === '2';
+              d(3);
+              d.flush(); // pending call lands NOW
+              d(4);
+              d.cancel(); // and is dropped
+              setTimeout(() => resolve({ trailing, calls: calls.join(',') }), 40);
+            }, 40);
+          }),
+      );
+      assert.equal(out.trailing, true, 'trailing-edge semantics: one call with the last args');
+      assert.equal(out.calls, '2,3', 'flush() applies, cancel() drops');
     });
     await check('modular: selected component registers + initializes', async () => {
       const out = await page.evaluate(() => ({
