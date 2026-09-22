@@ -3736,10 +3736,282 @@ function init17() {
 init17();
 new MutationObserver(init17).observe(document, { childList: true, subtree: true });
 
-// src/components/sheet/sheet.ts
+// src/components/resizer/resizer.ts
 var df$18 = defussGlobals();
+var resizerStates = ["default"];
+var HANDLES = ["n", "e", "s", "w", "ne", "nw", "se", "sw"];
+var CLASS_NUMBERS = Array.from({ length: 81 }, (_, i) => i + 16);
+var clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+var numAttr2 = (el, key, fallback) => {
+  const v = parseFloat(el.dataset[key] ?? "");
+  return Number.isFinite(v) ? v : fallback;
+};
+function targetOf(wrapper) {
+  for (const el of Array.from(wrapper.children)) {
+    if (!el.hasAttribute("data-handle"))
+      return el;
+  }
+  return null;
+}
+function handleSet(wrapper) {
+  const spec = (wrapper.dataset.handles || "se").trim();
+  const requested = spec === "all" ? [...HANDLES] : spec.split(/[\s,]+/).filter((h) => HANDLES.includes(h));
+  const axis = wrapper.dataset.axis || "both";
+  if (axis === "both")
+    return requested;
+  const moves = (h) => axis === "w" ? /e|w/.test(h) : /n|s/.test(h);
+  return requested.filter(moves);
+}
+function ladderTokens(wrapper, axis) {
+  const custom = axis === "w" ? wrapper.dataset.wClasses : wrapper.dataset.hClasses;
+  if (custom)
+    return custom.trim().split(/\s+/);
+  return CLASS_NUMBERS.map((n) => `${axis}-${n}`);
+}
+var LADDER_PX = new Map;
+function tokenPx(wrapper, token, axis) {
+  const key = axis + token;
+  let px = LADDER_PX.get(key);
+  if (px !== undefined)
+    return px;
+  const target = targetOf(wrapper);
+  const had = Array.from(target.classList).filter((c) => /^[wh]-[\d.]+$/.test(c));
+  had.forEach((c) => target.classList.remove(c));
+  target.classList.add(token);
+  const box = target.getBoundingClientRect();
+  px = (axis === "w" ? box.width : box.height) / zoomOf(wrapper);
+  target.classList.remove(token);
+  had.forEach((c) => target.classList.add(c));
+  LADDER_PX.set(key, px);
+  return px;
+}
+function nearestToken(wrapper, ladder, wantedPx, axis) {
+  let best = ladder[0];
+  let bestD = Infinity;
+  for (const token of ladder) {
+    const d = Math.abs(tokenPx(wrapper, token, axis) - wantedPx);
+    if (d < bestD) {
+      bestD = d;
+      best = token;
+    }
+  }
+  return best;
+}
+function setClassSize(el, token, ladder) {
+  const owned = new Set(ladder);
+  for (const cls of Array.from(el.classList))
+    if (owned.has(cls) && cls !== token)
+      el.classList.remove(cls);
+  if (!el.classList.contains(token))
+    el.classList.add(token);
+}
+function setPxSize(el, axis, px) {
+  const prop = axis === "w" ? "width" : "height";
+  const value = `${Math.round(px)}px`;
+  if (el.style.getPropertyValue(prop) !== value)
+    el.style.setProperty(prop, value);
+}
+function bounds(wrapper, axis) {
+  const min = numAttr2(wrapper, axis === "w" ? "minW" : "minH", numAttr2(wrapper, "min", 80));
+  const max = numAttr2(wrapper, axis === "w" ? "maxW" : "maxH", numAttr2(wrapper, "max", 2000));
+  return [min, max];
+}
+function zoomOf(el) {
+  const zs = getComputedStyle(el).zoom || "1";
+  const z = zs.includes("%") ? parseFloat(zs) / 100 : parseFloat(zs);
+  return Number.isFinite(z) && z > 0 ? z : 1;
+}
+function currentPx(wrapper, axis) {
+  const target = targetOf(wrapper);
+  if (!target)
+    return 0;
+  const box = target.getBoundingClientRect();
+  const raw = axis === "w" ? box.width : box.height;
+  return Math.round(raw / zoomOf(wrapper));
+}
+function applySize(wrapper, axis, px) {
+  const target = targetOf(wrapper);
+  if (!target)
+    return;
+  const mode = wrapper.dataset.resizeMode || "px";
+  const [min, max] = bounds(wrapper, axis);
+  const wanted = clamp(px, min, max);
+  let resolved = wanted;
+  if (mode === "classes") {
+    const ladder = ladderTokens(wrapper, axis);
+    setClassSize(target, nearestToken(wrapper, ladder, wanted, axis), ladder);
+    resolved = currentPx(wrapper, axis);
+  } else if (mode !== "controlled") {
+    const step = Math.max(1, numAttr2(wrapper, "step", 1));
+    resolved = Math.round(wanted / step) * step;
+    setPxSize(target, axis, resolved);
+  }
+  if (mode !== "controlled") {
+    const key = axis === "w" ? "width" : "height";
+    const value = String(Math.round(resolved));
+    if (wrapper.dataset[key] !== value)
+      wrapper.dataset[key] = value;
+  }
+  wrapper.dispatchEvent(new CustomEvent("resizer-resize", {
+    bubbles: true,
+    detail: {
+      axis,
+      width: axis === "w" ? mode === "controlled" ? Math.round(wanted) : currentPx(wrapper, "w") : currentPx(wrapper, "w"),
+      height: axis === "h" ? mode === "controlled" ? Math.round(wanted) : currentPx(wrapper, "h") : currentPx(wrapper, "h")
+    }
+  }));
+}
+function triggerStateChange18(wrapper, stateName, config = {}) {
+  if (stateName !== "default")
+    return;
+  if (config.width !== undefined || wrapper._defaultSize)
+    applySize(wrapper, "w", Number(config.width ?? wrapper._defaultSize?.[0]));
+  if (config.height !== undefined || wrapper._defaultSize)
+    applySize(wrapper, "h", Number(config.height ?? wrapper._defaultSize?.[1]));
+}
+var resizerApi = {
+  setState(wrapper, stateName, config = {}) {
+    if (!resizerStates.includes(stateName)) {
+      throw new Error(`resizer: unknown state "${stateName}" (supported: ${resizerStates.join(", ")})`);
+    }
+    triggerStateChange18(wrapper, stateName, config);
+    wrapper.dataset.stateName = stateName;
+    wrapper._stateConfig = config;
+  },
+  getState(wrapper) {
+    return {
+      name: wrapper.dataset.stateName || "default",
+      config: {
+        ...wrapper._stateConfig,
+        width: currentPx(wrapper, "w"),
+        height: currentPx(wrapper, "h"),
+        mode: wrapper.dataset.resizeMode || "px"
+      }
+    };
+  }
+};
+df$18.resizerApi = resizerApi;
+df$18.resizerStates = resizerStates;
+var HANDLE_LABEL = {
+  n: "top edge",
+  s: "bottom edge",
+  e: "right edge",
+  w: "left edge",
+  ne: "top-right corner",
+  nw: "top-left corner",
+  se: "bottom-right corner",
+  sw: "bottom-left corner"
+};
+function makeHandle(wrapper, h) {
+  const el = document.createElement("span");
+  el.className = "resizer-handle";
+  el.dataset.handle = h;
+  el.setAttribute("role", "separator");
+  el.setAttribute("tabindex", "0");
+  if (h.length === 1)
+    el.setAttribute("aria-orientation", h === "n" || h === "s" ? "horizontal" : "vertical");
+  el.setAttribute("aria-label", `Resize ${HANDLE_LABEL[h]}`);
+  el.setAttribute("data-ce-chrome", "");
+  el.addEventListener("pointerdown", (ev) => startDrag(wrapper, el, ev));
+  el.addEventListener("keydown", (ev) => handleKeys(wrapper, el, ev));
+  return el;
+}
+function syncHandles(wrapper) {
+  const want = handleSet(wrapper);
+  for (const el of Array.from(wrapper.querySelectorAll(":scope > .resizer-handle"))) {
+    if (!want.includes(el.dataset.handle))
+      el.remove();
+  }
+  for (const h of want) {
+    if (!wrapper.querySelector(`:scope > .resizer-handle[data-handle="${h}"]`))
+      wrapper.appendChild(makeHandle(wrapper, h));
+  }
+}
+function handleKeys(wrapper, handle, ev) {
+  const sides = handle.dataset.handle;
+  if (!sides)
+    return;
+  const dir = ev.key === "ArrowRight" || ev.key === "ArrowUp" ? 1 : ev.key === "ArrowLeft" || ev.key === "ArrowDown" ? -1 : 0;
+  if (dir === 0 && ev.key !== "Home" && ev.key !== "End")
+    return;
+  ev.preventDefault();
+  const step = (numAttr2(wrapper, "stepKey", 10) || 10) * (ev.shiftKey ? 10 : 1);
+  const apply = (axis) => {
+    const [min, max] = bounds(wrapper, axis);
+    const cur = currentPx(wrapper, axis);
+    applySize(wrapper, axis, ev.key === "Home" ? min : ev.key === "End" ? max : cur + dir * step);
+  };
+  if (sides.includes("e") || sides.includes("w"))
+    apply("w");
+  if (sides.includes("n") || sides.includes("s"))
+    apply("h");
+}
+function startDrag(wrapper, handle, ev) {
+  if (ev.button !== 0)
+    return;
+  ev.preventDefault();
+  handle.setPointerCapture(ev.pointerId);
+  const side = handle.dataset.handle || "se";
+  const axis = wrapper.dataset.axis || "both";
+  const startX = ev.clientX;
+  const startY = ev.clientY;
+  const startW = currentPx(wrapper, "w");
+  const startH = currentPx(wrapper, "h");
+  const z = zoomOf(wrapper);
+  const dx = side.includes("w") ? -1 : side.includes("e") ? 1 : 0;
+  const dy = side.includes("n") ? -1 : side.includes("s") ? 1 : 0;
+  wrapper.dataset.resizing = side;
+  const onMove = (e) => {
+    if (dx !== 0 && axis !== "h")
+      applySize(wrapper, "w", startW + dx * (e.clientX - startX) / z);
+    if (dy !== 0 && axis !== "w")
+      applySize(wrapper, "h", startH + dy * (e.clientY - startY) / z);
+  };
+  const onUp = () => {
+    delete wrapper.dataset.resizing;
+    handle.removeEventListener("pointermove", onMove);
+    handle.removeEventListener("pointerup", onUp);
+    handle.removeEventListener("pointercancel", onUp);
+  };
+  handle.addEventListener("pointermove", onMove);
+  handle.addEventListener("pointerup", onUp);
+  handle.addEventListener("pointercancel", onUp);
+}
+function init18() {
+  document.querySelectorAll(".resizer:not([data-init])").forEach((wrapper) => {
+    wrapper.dataset.init = "";
+    if (!targetOf(wrapper))
+      return;
+    wrapper._defaultSize = [currentPx(wrapper, "w"), currentPx(wrapper, "h")];
+    wrapper.api = {
+      setState: (stateName, config) => resizerApi.setState(wrapper, stateName, config),
+      getState: () => resizerApi.getState(wrapper)
+    };
+    syncHandles(wrapper);
+    const target = targetOf(wrapper);
+    target?.style.setProperty("resize", "none");
+    new MutationObserver((records) => {
+      for (const r of records) {
+        if (r.attributeName === "data-handles" || r.attributeName === "data-axis") {
+          syncHandles(wrapper);
+          continue;
+        }
+        const axis = r.attributeName === "data-width" ? "w" : "h";
+        const v = parseFloat(wrapper.dataset[axis === "w" ? "width" : "height"] ?? "");
+        if (Number.isFinite(v) && Math.abs(currentPx(wrapper, axis) - v) > 0.5)
+          applySize(wrapper, axis, v);
+      }
+    }).observe(wrapper, { attributes: true, attributeFilter: ["data-width", "data-height", "data-handles", "data-axis"] });
+    wrapper.addEventListener("resizer-reset", () => resizerApi.setState(wrapper, "default"));
+  });
+}
+init18();
+new MutationObserver(init18).observe(document, { childList: true, subtree: true });
+
+// src/components/sheet/sheet.ts
+var df$19 = defussGlobals();
 var sheetStates = ["default", "open"];
-function triggerStateChange18(sheet, stateName, _config) {
+function triggerStateChange19(sheet, stateName, _config) {
   switch (stateName) {
     case "default":
       if (sheet.open)
@@ -3756,7 +4028,7 @@ var sheetApi = {
     if (!sheetStates.includes(stateName)) {
       throw new Error(`sheet: unknown state "${stateName}" (supported: ${sheetStates.join(", ")})`);
     }
-    triggerStateChange18(sheet, stateName, config);
+    triggerStateChange19(sheet, stateName, config);
     sheet.dataset.stateName = stateName;
     sheet._stateConfig = config;
   },
@@ -3764,9 +4036,9 @@ var sheetApi = {
     return { name: sheet.dataset.stateName || "default", config: sheet._stateConfig ?? {} };
   }
 };
-df$18.sheetApi = sheetApi;
-df$18.sheetStates = sheetStates;
-function init18() {
+df$19.sheetApi = sheetApi;
+df$19.sheetStates = sheetStates;
+function init19() {
   document.querySelectorAll("[data-sheet-trigger]:not([data-init])").forEach((trigger) => {
     trigger.dataset.init = "";
     const sheet = document.getElementById(trigger.dataset.sheetTrigger);
@@ -3801,13 +4073,13 @@ function init18() {
     });
   });
 }
-init18();
-new MutationObserver(init18).observe(document, { childList: true, subtree: true });
+init19();
+new MutationObserver(init19).observe(document, { childList: true, subtree: true });
 
 // src/components/sidebar/sidebar.ts
-var df$19 = defussGlobals();
+var df$20 = defussGlobals();
 var sidebarStates = ["default", "collapsed"];
-function triggerStateChange19(sidebar, stateName, _config) {
+function triggerStateChange20(sidebar, stateName, _config) {
   switch (stateName) {
     case "default":
       sidebar.dataset.state = sidebar._defaultState ?? "expanded";
@@ -3822,7 +4094,7 @@ var sidebarApi = {
     if (!sidebarStates.includes(stateName)) {
       throw new Error(`sidebar: unknown state "${stateName}" (supported: ${sidebarStates.join(", ")})`);
     }
-    triggerStateChange19(sidebar, stateName, config);
+    triggerStateChange20(sidebar, stateName, config);
     sidebar.dataset.stateName = stateName;
     sidebar._stateConfig = config;
   },
@@ -3833,9 +4105,9 @@ var sidebarApi = {
     };
   }
 };
-df$19.sidebarApi = sidebarApi;
-df$19.sidebarStates = sidebarStates;
-function init19() {
+df$20.sidebarApi = sidebarApi;
+df$20.sidebarStates = sidebarStates;
+function init20() {
   document.querySelectorAll(".app-sidebar:not([data-init])").forEach((sidebar) => {
     sidebar.dataset.init = "";
     sidebar._defaultState = sidebar.dataset.state || "expanded";
@@ -3891,8 +4163,8 @@ if (typeof ResizeObserver !== "undefined" && !document.__sidebarAutoRo) {
     }
   });
 }
-init19();
-new MutationObserver(init19).observe(document, { childList: true, subtree: true });
+init20();
+new MutationObserver(init20).observe(document, { childList: true, subtree: true });
 if (!document.__sidebarKbInit) {
   document.__sidebarKbInit = true;
   document.addEventListener("keydown", (e) => {
@@ -3908,7 +4180,7 @@ if (!document.__sidebarKbInit) {
 }
 
 // src/components/slider/slider.ts
-var df$20 = defussGlobals();
+var df$21 = defussGlobals();
 var sliderStates = ["default", "disabled"];
 function updateSliderValue(el) {
   const min = parseFloat(el.min || 0);
@@ -3917,7 +4189,7 @@ function updateSliderValue(el) {
   const percent = max === min ? 0 : (value - min) / (max - min) * 100;
   el.style.setProperty("--slider-value", `${percent}%`);
 }
-function triggerStateChange20(el, stateName, config) {
+function triggerStateChange21(el, stateName, config) {
   switch (stateName) {
     case "default":
       el.disabled = el._defaultDisabled ?? false;
@@ -3935,7 +4207,7 @@ var sliderApi = {
     if (!sliderStates.includes(stateName)) {
       throw new Error(`slider: unknown state "${stateName}" (supported: ${sliderStates.join(", ")})`);
     }
-    triggerStateChange20(el, stateName, config);
+    triggerStateChange21(el, stateName, config);
     el.dataset.stateName = stateName;
     el._stateConfig = config;
   },
@@ -3946,9 +4218,9 @@ var sliderApi = {
     };
   }
 };
-df$20.sliderApi = sliderApi;
-df$20.sliderStates = sliderStates;
-function init20() {
+df$21.sliderApi = sliderApi;
+df$21.sliderStates = sliderStates;
+function init21() {
   document.querySelectorAll(".slider:not([data-init])").forEach((el) => {
     el.dataset.init = "";
     el._defaultDisabled = el.disabled;
@@ -3960,15 +4232,15 @@ function init20() {
     el.addEventListener("input", () => updateSliderValue(el));
   });
 }
-init20();
-new MutationObserver(init20).observe(document, { childList: true, subtree: true });
+init21();
+new MutationObserver(init21).observe(document, { childList: true, subtree: true });
 
 // src/components/sortable/sortable.ts
-var df$21 = defussGlobals();
+var df$22 = defussGlobals();
 var dfDollar7 = defussQuery();
 var sortableStates = ["default"];
 var sortableLabels = (list) => dfDollar7(list).find(".sortable-item").map((item) => dfDollar7(item).find("span:not(.sortable-handle)").text().trim());
-function triggerStateChange21(list, stateName, config) {
+function triggerStateChange22(list, stateName, config) {
   if (stateName !== "default")
     return;
   dfDollar7(list).append(list._defaultOrder ?? []);
@@ -3982,7 +4254,7 @@ var sortableApi = {
     if (!sortableStates.includes(stateName)) {
       throw new Error(`sortable: unknown state "${stateName}" (supported: ${sortableStates.join(", ")})`);
     }
-    triggerStateChange21(list, stateName, config);
+    triggerStateChange22(list, stateName, config);
     list.dataset.stateName = stateName;
     list._stateConfig = config;
   },
@@ -3999,9 +4271,9 @@ var sortableApi = {
     };
   }
 };
-df$21.sortableApi = sortableApi;
-df$21.sortableStates = sortableStates;
-function init21() {
+df$22.sortableApi = sortableApi;
+df$22.sortableStates = sortableStates;
+function init22() {
   document.querySelectorAll(".sortable:not([data-init])").forEach((list) => {
     list.dataset.init = "";
     list.api = {
@@ -4177,13 +4449,13 @@ function init21() {
     });
   });
 }
-init21();
-new MutationObserver(init21).observe(document, { childList: true, subtree: true });
+init22();
+new MutationObserver(init22).observe(document, { childList: true, subtree: true });
 
 // src/components/steps/steps.ts
-var df$22 = defussGlobals();
+var df$23 = defussGlobals();
 var stepsStates = ["default"];
-var numAttr2 = (el, key, fallback) => {
+var numAttr3 = (el, key, fallback) => {
   const v = parseInt(el.dataset[key] ?? "", 10);
   return Number.isFinite(v) ? v : fallback;
 };
@@ -4192,7 +4464,7 @@ function renderSteps(ol) {
   if (items.length === 0)
     return;
   const total = items.length;
-  const active = Math.min(total, Math.max(1, numAttr2(ol, "activeStep", 1)));
+  const active = Math.min(total, Math.max(1, numAttr3(ol, "activeStep", 1)));
   const raw = ol.dataset.errorStep ?? "";
   const error = raw === "true" ? active : parseInt(raw, 10) || 0;
   if (ol.dataset.activeStep !== String(active))
@@ -4210,7 +4482,7 @@ function renderSteps(ol) {
       item.removeAttribute("aria-current");
   });
 }
-function triggerStateChange22(ol, stateName, config = {}) {
+function triggerStateChange23(ol, stateName, config = {}) {
   if (stateName !== "default")
     return;
   const a = config.activeStep ?? config.step ?? config.page;
@@ -4231,7 +4503,7 @@ var stepsApi = {
     if (!stepsStates.includes(stateName)) {
       throw new Error(`steps: unknown state "${stateName}" (supported: ${stepsStates.join(", ")})`);
     }
-    triggerStateChange22(ol, stateName, config);
+    triggerStateChange23(ol, stateName, config);
     ol.dataset.stateName = stateName;
     ol._stateConfig = config;
   },
@@ -4240,17 +4512,17 @@ var stepsApi = {
       name: ol.dataset.stateName || "default",
       config: {
         ...ol._stateConfig,
-        activeStep: numAttr2(ol, "activeStep", 1),
-        activeStepError: numAttr2(ol, "errorStep", 0) === numAttr2(ol, "activeStep", 1) && numAttr2(ol, "errorStep", 0) !== 0,
-        errorStep: numAttr2(ol, "errorStep", 0),
+        activeStep: numAttr3(ol, "activeStep", 1),
+        activeStepError: numAttr3(ol, "errorStep", 0) === numAttr3(ol, "activeStep", 1) && numAttr3(ol, "errorStep", 0) !== 0,
+        errorStep: numAttr3(ol, "errorStep", 0),
         size: ol.dataset.size ?? "md"
       }
     };
   }
 };
-df$22.stepsApi = stepsApi;
-df$22.stepsStates = stepsStates;
-function init22() {
+df$23.stepsApi = stepsApi;
+df$23.stepsStates = stepsStates;
+function init23() {
   document.querySelectorAll(".steps:not([data-init])").forEach((ol) => {
     ol.dataset.init = "";
     ol.api = {
@@ -4285,11 +4557,11 @@ function init22() {
     });
   });
 }
-init22();
-new MutationObserver(init22).observe(document, { childList: true, subtree: true });
+init23();
+new MutationObserver(init23).observe(document, { childList: true, subtree: true });
 
 // src/components/tabs/tabs.ts
-var df$23 = defussGlobals();
+var df$24 = defussGlobals();
 var tabsStates = ["default", "active"];
 var activateTab = (tab, triggers) => {
   triggers.forEach((t) => {
@@ -4307,7 +4579,7 @@ var activateTab = (tab, triggers) => {
   if (panel)
     panel.hidden = false;
 };
-function triggerStateChange23(tab, triggers, stateName, _config) {
+function triggerStateChange24(tab, triggers, stateName, _config) {
   switch (stateName) {
     case "default":
       if (tab._defaultSelected)
@@ -4327,7 +4599,7 @@ var tabsApi = {
       throw new Error(`tabs: unknown state "${stateName}" (supported: ${tabsStates.join(", ")})`);
     }
     const triggers = Array.from(tab.closest('[role="tablist"]').querySelectorAll('[role="tab"]'));
-    triggerStateChange23(tab, triggers, stateName, config);
+    triggerStateChange24(tab, triggers, stateName, config);
     tab._stateConfig = config;
   },
   getState(tab) {
@@ -4337,9 +4609,9 @@ var tabsApi = {
     };
   }
 };
-df$23.tabsApi = tabsApi;
-df$23.tabsStates = tabsStates;
-function init23() {
+df$24.tabsApi = tabsApi;
+df$24.tabsStates = tabsStates;
+function init24() {
   document.querySelectorAll('[role="tablist"]:not([data-init])').forEach((tablist) => {
     tablist.dataset.init = "";
     if (!tablist.querySelector(".tab-trigger"))
@@ -4400,11 +4672,11 @@ function init23() {
     });
   });
 }
-init23();
-new MutationObserver(init23).observe(document, { childList: true, subtree: true });
+init24();
+new MutationObserver(init24).observe(document, { childList: true, subtree: true });
 
 // src/components/theme-switcher/theme-switcher.ts
-var df$24 = defussGlobals();
+var df$25 = defussGlobals();
 var dfDollar8 = defussQuery();
 var themeSwitcherStates = ["default", "open"];
 var STORAGE_KEY = "defuss-shadcn-color-theme";
@@ -4473,7 +4745,7 @@ function syncTrigger(root, id) {
     dfDollar8(label).text(active?.dataset.themeLabel || "Default");
   root.dataset.themeId = id;
 }
-function triggerStateChange24(menu, stateName, _config) {
+function triggerStateChange25(menu, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -4490,7 +4762,7 @@ var themeSwitcherApi = {
     if (!themeSwitcherStates.includes(stateName)) {
       throw new Error(`theme-switcher: unknown state "${stateName}" (supported: ${themeSwitcherStates.join(", ")})`);
     }
-    triggerStateChange24(menu, stateName, config);
+    triggerStateChange25(menu, stateName, config);
     menu.dataset.stateName = stateName;
     menu._stateConfig = config;
   },
@@ -4504,9 +4776,9 @@ var themeSwitcherApi = {
     applyThemeId(root, id);
   }
 };
-df$24.themeSwitcherApi = themeSwitcherApi;
-df$24.themeSwitcherStates = themeSwitcherStates;
-function init24() {
+df$25.themeSwitcherApi = themeSwitcherApi;
+df$25.themeSwitcherStates = themeSwitcherStates;
+function init25() {
   document.querySelectorAll(".theme-switcher-menu:not([data-init])").forEach((menu) => {
     menu.dataset.init = "";
     const root = menu.closest(".theme-switcher");
@@ -4577,14 +4849,14 @@ document.addEventListener(THEME_EVENT, (e) => {
   const id = e.detail?.id || "default";
   document.querySelectorAll(".theme-switcher").forEach((root) => syncTrigger(root, id));
 });
-init24();
-new MutationObserver(init24).observe(document, { childList: true, subtree: true });
+init25();
+new MutationObserver(init25).observe(document, { childList: true, subtree: true });
 
 // src/components/toast/toast.ts
-var df$25 = defussGlobals();
+var df$26 = defussGlobals();
 var dfDollar9 = defussQuery();
 var toastStates = ["default"];
-function triggerStateChange25(container, stateName, _config) {
+function triggerStateChange26(container, stateName, _config) {
   if (stateName !== "default")
     return;
   container.querySelectorAll(".toast").forEach((el) => toastDismiss(el));
@@ -4594,7 +4866,7 @@ var toastApi = {
     if (!toastStates.includes(stateName)) {
       throw new Error(`toast: unknown state "${stateName}" (supported: ${toastStates.join(", ")})`);
     }
-    triggerStateChange25(container, stateName, config);
+    triggerStateChange26(container, stateName, config);
     container.dataset.stateName = stateName;
     container._stateConfig = config;
   },
@@ -4605,8 +4877,8 @@ var toastApi = {
     };
   }
 };
-df$25.toastApi = toastApi;
-df$25.toastStates = toastStates;
+df$26.toastApi = toastApi;
+df$26.toastStates = toastStates;
 var DURATION = 4000;
 var MAX_VISIBLE = 3;
 var toastCallbacks = new WeakMap;
@@ -4714,7 +4986,7 @@ var toastCreate = (options) => {
     toastDismiss(toasts[0]);
   return el;
 };
-function init25() {
+function init26() {
   document.querySelectorAll("#toast-container:not([data-init])").forEach((container) => {
     container.dataset.init = "";
     container.api = {
@@ -4738,9 +5010,9 @@ function init25() {
     });
   });
 }
-init25();
-new MutationObserver(init25).observe(document.body, { childList: true, subtree: true });
-df$25.toast = {
+init26();
+new MutationObserver(init26).observe(document.body, { childList: true, subtree: true });
+df$26.toast = {
   show: toastCreate,
   success: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "success" })),
   warning: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "warning" })),
@@ -4754,9 +5026,9 @@ df$25.toast = {
 };
 
 // src/components/toggle/toggle.ts
-var df$26 = defussGlobals();
+var df$27 = defussGlobals();
 var toggleStates = ["default", "pressed"];
-function triggerStateChange26(toggle, stateName, _config) {
+function triggerStateChange27(toggle, stateName, _config) {
   switch (stateName) {
     case "default":
       toggle.setAttribute("aria-pressed", toggle._defaultPressed ?? "false");
@@ -4771,7 +5043,7 @@ var toggleApi = {
     if (!toggleStates.includes(stateName)) {
       throw new Error(`toggle: unknown state "${stateName}" (supported: ${toggleStates.join(", ")})`);
     }
-    triggerStateChange26(toggle, stateName, config);
+    triggerStateChange27(toggle, stateName, config);
     toggle.dataset.stateName = stateName;
     toggle._stateConfig = config;
   },
@@ -4783,9 +5055,9 @@ var toggleApi = {
     };
   }
 };
-df$26.toggleApi = toggleApi;
-df$26.toggleStates = toggleStates;
-function init26() {
+df$27.toggleApi = toggleApi;
+df$27.toggleStates = toggleStates;
+function init27() {
   document.querySelectorAll(".toggle:not([data-init]):not(.toggle-group .toggle)").forEach((toggle) => {
     toggle.dataset.init = "";
     toggle._defaultPressed = toggle.getAttribute("aria-pressed") || "false";
@@ -4800,13 +5072,13 @@ function init26() {
     });
   });
 }
-init26();
-new MutationObserver(init26).observe(document, { childList: true, subtree: true });
+init27();
+new MutationObserver(init27).observe(document, { childList: true, subtree: true });
 
 // src/components/toggle-group/toggle-group.ts
-var df$27 = defussGlobals();
+var df$28 = defussGlobals();
 var toggleGroupStates = ["default", "disabled"];
-function triggerStateChange27(group, stateName, _config) {
+function triggerStateChange28(group, stateName, _config) {
   switch (stateName) {
     case "default":
       group.removeAttribute("data-disabled");
@@ -4821,7 +5093,7 @@ var toggleGroupApi = {
     if (!toggleGroupStates.includes(stateName)) {
       throw new Error(`toggle-group: unknown state "${stateName}" (supported: ${toggleGroupStates.join(", ")})`);
     }
-    triggerStateChange27(group, stateName, config);
+    triggerStateChange28(group, stateName, config);
     group.dataset.stateName = stateName;
     group._stateConfig = config;
   },
@@ -4832,9 +5104,9 @@ var toggleGroupApi = {
     };
   }
 };
-df$27.toggleGroupApi = toggleGroupApi;
-df$27.toggleGroupStates = toggleGroupStates;
-function init27() {
+df$28.toggleGroupApi = toggleGroupApi;
+df$28.toggleGroupStates = toggleGroupStates;
+function init28() {
   document.querySelectorAll(".toggle-group:not([data-init])").forEach((group) => {
     group.dataset.init = "";
     group.api = {
@@ -4902,13 +5174,13 @@ function init27() {
     });
   });
 }
-init27();
-new MutationObserver(init27).observe(document, { childList: true, subtree: true });
+init28();
+new MutationObserver(init28).observe(document, { childList: true, subtree: true });
 
 // src/components/toolbar/toolbar.ts
-var df$28 = defussGlobals();
+var df$29 = defussGlobals();
 var toolbarStates = ["default"];
-function triggerStateChange28(toolbar, items, stateName, config) {
+function triggerStateChange29(toolbar, items, stateName, config) {
   if (stateName !== "default" || items.length === 0)
     return;
   const target = items[Math.min(Number(config?.focus ?? 0), items.length - 1)] || items[0];
@@ -4922,7 +5194,7 @@ var toolbarApi = {
       throw new Error(`toolbar: unknown state "${stateName}" (supported: ${toolbarStates.join(", ")})`);
     }
     const items = toolbarItems(toolbar);
-    triggerStateChange28(toolbar, items, stateName, config);
+    triggerStateChange29(toolbar, items, stateName, config);
     toolbar.dataset.stateName = stateName;
     toolbar._stateConfig = config;
   },
@@ -4935,10 +5207,10 @@ var toolbarApi = {
     };
   }
 };
-df$28.toolbarApi = toolbarApi;
-df$28.toolbarStates = toolbarStates;
+df$29.toolbarApi = toolbarApi;
+df$29.toolbarStates = toolbarStates;
 var toolbarItems = (toolbar) => Array.from(toolbar.querySelectorAll('button:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])'));
-function init28() {
+function init29() {
   document.querySelectorAll('.toolbar[role="toolbar"]:not([data-init])').forEach((toolbar) => {
     toolbar.dataset.init = "";
     toolbar.api = {
@@ -4980,13 +5252,13 @@ function init28() {
     });
   });
 }
-init28();
-new MutationObserver(init28).observe(document, { childList: true, subtree: true });
+init29();
+new MutationObserver(init29).observe(document, { childList: true, subtree: true });
 
 // src/components/tooltip/tooltip.ts
-var df$29 = defussGlobals();
+var df$30 = defussGlobals();
 var tooltipStates = ["default", "visible"];
-function triggerStateChange29(tip, stateName, _config) {
+function triggerStateChange30(tip, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -5004,7 +5276,7 @@ var tooltipApi = {
     if (!tooltipStates.includes(stateName)) {
       throw new Error(`tooltip: unknown state "${stateName}" (supported: ${tooltipStates.join(", ")})`);
     }
-    triggerStateChange29(tip, stateName, config);
+    triggerStateChange30(tip, stateName, config);
     tip.dataset.stateName = stateName;
     tip._stateConfig = config;
   },
@@ -5012,8 +5284,8 @@ var tooltipApi = {
     return { name: tip.dataset.stateName || "default", config: tip._stateConfig ?? {} };
   }
 };
-df$29.tooltipApi = tooltipApi;
-df$29.tooltipStates = tooltipStates;
+df$30.tooltipApi = tooltipApi;
+df$30.tooltipStates = tooltipStates;
 var DELAY_DEFAULT = 700;
 var CLOSE_DELAY_DEFAULT = 0;
 var GROUP_TIMEOUT = 400;
@@ -5029,7 +5301,7 @@ function scheduleGroupReset() {
     groupOpen = false;
   }, GROUP_TIMEOUT);
 }
-function init29() {
+function init30() {
   document.querySelectorAll("[data-tooltip-trigger]:not([data-init])").forEach((trigger) => {
     trigger.dataset.init = "";
     const tip = document.getElementById(trigger.dataset.tooltipTrigger);
@@ -5077,8 +5349,8 @@ function init29() {
     };
   });
 }
-init29();
-new MutationObserver(init29).observe(document, { childList: true, subtree: true });
+init30();
+new MutationObserver(init30).observe(document, { childList: true, subtree: true });
 if (!document.__tooltipScrollInit) {
   document.__tooltipScrollInit = true;
   document.addEventListener("scroll", () => {
@@ -5091,9 +5363,9 @@ if (!document.__tooltipScrollInit) {
 }
 
 // src/components/tree-view/tree-view.ts
-var df$30 = defussGlobals();
+var df$31 = defussGlobals();
 var treeViewStates = ["default", "expanded"];
-function triggerStateChange30(details, stateName, _config) {
+function triggerStateChange31(details, stateName, _config) {
   switch (stateName) {
     case "default":
       details.open = details._defaultOpen ?? false;
@@ -5108,7 +5380,7 @@ var treeViewApi = {
     if (!treeViewStates.includes(stateName)) {
       throw new Error(`tree-view: unknown state "${stateName}" (supported: ${treeViewStates.join(", ")})`);
     }
-    triggerStateChange30(details, stateName, config);
+    triggerStateChange31(details, stateName, config);
     details.dataset.stateName = stateName;
     details._stateConfig = config;
   },
@@ -5119,9 +5391,9 @@ var treeViewApi = {
     };
   }
 };
-df$30.treeViewApi = treeViewApi;
-df$30.treeViewStates = treeViewStates;
-function init30() {
+df$31.treeViewApi = treeViewApi;
+df$31.treeViewStates = treeViewStates;
+function init31() {
   document.querySelectorAll('.tree[role="tree"]:not([data-init])').forEach((tree) => {
     tree.dataset.init = "";
     tree.querySelectorAll(".tree-branch").forEach((details) => {
@@ -5186,9 +5458,9 @@ function init30() {
     });
   });
 }
-init30();
-new MutationObserver(init30).observe(document, { childList: true, subtree: true });
+init31();
+new MutationObserver(init31).observe(document, { childList: true, subtree: true });
 
-//# debugId=B45BA020C221DA8164756E2164756E21
+//# debugId=A14EE0D03B71940D64756E2164756E21
 /* defuss-shadcn v0.9.0 runtime provenance: bundles defuss-morph@0.1.1 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.1.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=all.js.map

@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "name": "resizer",
+  "states": {
+    "width": {
+      "type": "number",
+      "default": 320,
+      "target": {
+        "kind": "selector",
+        "selector": ".resizer"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "data-width"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-width"
+      },
+      "editor": {
+        "component": "number"
+      }
+    },
+    "height": {
+      "type": "number",
+      "default": 160,
+      "target": {
+        "kind": "selector",
+        "selector": ".resizer"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "data-height"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-height"
+      },
+      "editor": {
+        "component": "number"
+      }
+    }
+  },
+  "actions": {
+    "reset": {
+      "target": {
+        "kind": "selector",
+        "selector": ".resizer"
+      },
+      "operation": {
+        "kind": "event",
+        "name": "resizer-reset"
+      }
+    }
+  }
+}

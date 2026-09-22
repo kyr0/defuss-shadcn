@@ -343,25 +343,29 @@ describe('CodeExample viewport toolbar (device emulation)', () => {
     expect(h.placeholder).toBe('Full');
     expect(btn('phone').getAttribute('aria-pressed')).toBe('false');
 
-    // phone: standard preset lands in the fields, chrome flags the device
+    // phone: standard preset lands in the fields, chrome flags the device;
+    // the SIZE lives on the resizer wrapper now (the toolbar writes it, the
+    // .ce-resizer around .ce-device carries the handles and the inline box)
+    const rz = () => vp('.ce-resizer');
     btn('phone').click();
     expect(card.dataset.vpMode).toBe('phone');
     expect(w.value).toBe('390');
     expect(h.value).toBe('844');
     expect(h.disabled).toBe(false);
     expect((btn('rotate') as HTMLButtonElement).disabled).toBe(false);
-    expect(device.style.width).toBe('390px');
-    expect(device.style.height).toBe('844px');
+    expect(rz().style.width).toBe('390px');
+    expect(rz().style.height).toBe('844px');
+    expect(device.style.width).toBe(''); // fills the wrapper (CSS), not inline
     expect(vp('.ce-screen').dataset.mode).toBe('phone');
 
     // rotate swaps the box (landscape holding) and flags the screen
     btn('rotate').click();
     expect(w.value).toBe('844');
     expect(h.value).toBe('390');
-    expect(device.style.width).toBe('844px');
+    expect(rz().style.width).toBe('844px');
     expect(vp('.ce-screen').dataset.landscape).toBe('1');
     btn('rotate').click(); // back to portrait
-    expect(device.style.width).toBe('390px');
+    expect(rz().style.width).toBe('390px');
     expect(vp('.ce-screen').dataset.landscape).toBeUndefined();
 
     // desktop: width preset, height field inert again with the Full placeholder
@@ -373,12 +377,26 @@ describe('CodeExample viewport toolbar (device emulation)', () => {
     expect(h.placeholder).toBe('Full');
     expect((btn('rotate') as HTMLButtonElement).disabled).toBe(true);
 
-    // SE resize handle: present, keyboard-operable, ArrowRight grows W by 10
-    const grip = vp('.ce-resize');
-    expect(grip.getAttribute('role')).toBe('spinbutton');
-    expect(grip.getAttribute('aria-valuenow')).toBe('1024');
-    grip.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true }));
+    // resizer (dogfooded): controlled wrapper — axis drops to w in measured
+    // modes (n/s handles removed, corners kept), keyboard grows W by 10
+    expect(rz().getAttribute('data-resize-mode')).toBe('controlled');
+    expect(rz().dataset.axis).toBe('w');
+    expect(rz().querySelectorAll('.resizer-handle[data-handle="n"], .resizer-handle[data-handle="s"]').length).toBe(0);
+    const handle = rz().querySelector('.resizer-handle[data-handle="e"]') as HTMLElement;
+    expect(handle.getAttribute('role')).toBe('separator');
+    handle.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true }));
     expect(w.value).toBe('1034');
+  });
+
+  it('resizer handles appear on every side of the preview (dogfooded resizer)', async () => {
+    const { doc } = await openDocPage('badge.html');
+    const card = firstCard(doc);
+    await waitFor(() => card.querySelector('.ce-resizer .resizer-handle'), 'handles placed');
+    const sides = [...card.querySelectorAll('.resizer-handle')].map((h) => h.getAttribute('data-handle'));
+    // device modes carry the full 8; full mode drops n/s (width axis only)
+    for (const want of ['e', 'se', 'sw', 'ne', 'nw', 'w']) expect(sides).toContain(want);
+    // runtime chrome never leaks into the example source (serializer drops it)
+    expect(sides.length).toBeGreaterThanOrEqual(6);
   });
 });
 

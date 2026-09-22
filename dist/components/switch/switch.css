@@ -129,10 +129,14 @@
     }
   }
 
-  /* With-description layout */
+  /* With-description layout: label + description stack beside the switch.
+     The switch spans both rows, so grid auto-placement (definite-row items
+     first) pins it to column 1 — the track template must therefore lead with
+     the auto (switch) track. `1fr auto` here once placed the text in the far
+     right track (reported: "description renders on the far right"). */
   .switch-item-block {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: auto 1fr;
     gap: 0 0.75rem;
     align-items: center;
 

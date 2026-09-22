@@ -37,16 +37,22 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 </SkillPanel>
 
-```html example label="Default" hint="Single file selection."
+```html example label="Default" hint="Single file selection." previewStyle="margin:1.25rem;"
+<div class="max-w-80">
 <input class="file-input" type="file" id="avatar">
+</div>
 ```
 
-```html example label="Multiple files"
+```html example label="Multiple files" previewStyle="margin:1.25rem;"
+<div class="max-w-80">
 <input class="file-input" type="file" multiple>
+</div>
 ```
 
-```html example label="Accept filter"
+```html example label="Accept filter" previewStyle="margin:1.25rem;"
+<div class="max-w-80">
 <input class="file-input" type="file" accept="image/*">
+</div>
 ```
 
 ```html example label="Sizes" hint="The control follows the shared input ladder via data-size — md is 2.25rem, matching .input."

@@ -490,6 +490,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/radio.png
 **Skill:** [components/radio/component-skill.md](components/radio/component-skill.md)
 
+## Resizer
+
+**Type:** ATM
+**Why:** Pointer capture + box geometry give edge/corner drag handles for any single container — with a classes mode that keeps sizing declarative (the sizing.css ladder stays the source of truth).
+**When:** When a demo surface, canvas, or panel must be user-resizable on more than the native CSS `resize` corner — or when the size should stay expressed as w-/h- classes instead of inline px.
+**Files:** dist/components/resizer/resizer.css + dist/components/resizer/resizer.js
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/resizer.png
+**Skill:** [components/resizer/component-skill.md](components/resizer/component-skill.md)
+
 ## Scroll Area
 
 **Type:** ATM

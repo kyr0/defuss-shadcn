@@ -25,6 +25,7 @@
     "product-showcase": "./product-showcase.schema.json",
     "progress": "./progress.schema.json",
     "radio": "./radio.schema.json",
+    "resizer": "./resizer.schema.json",
     "scroll-area": "./scroll-area.schema.json",
     "select": "./select.schema.json",
     "sheet": "./sheet.schema.json",

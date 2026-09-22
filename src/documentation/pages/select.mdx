@@ -54,28 +54,35 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 </SkillPanel>
 
-```html example label="Default" hint="Native select with a clearable placeholder — re-choose 'Select a fruit' to empty it again."
+```html example label="Default" hint="Native select with a clearable placeholder — re-choose 'Select a fruit' to empty it again." previewStyle="margin:1.25rem;"
+<div class="max-w-80">
 <select class="select">
   <option value="" selected>Select a fruit</option>
   <option value="apple">Apple</option>
   ...
 </select>
+</div>
 ```
 
-```html example label="With groups"
+```html example label="With groups" previewStyle="margin:1.25rem;"
+<div class="max-w-80">
 <select class="select">
   <optgroup label="Americas">
     <option>New York</option>
     ...
   </optgroup>
 </select>
+</div>
 ```
 
-```html example label="Disabled"
+```html example label="Disabled" previewStyle="margin:1.25rem;"
+<div class="max-w-80">
 <select class="select" disabled>...</select>
+</div>
 ```
 
-```html example label="Sizes" hint="The full five-step scale via data-size — the unlabeled default IS md (2.25rem)."
+```html example label="Sizes" hint="The full five-step scale via data-size — the unlabeled default IS md (2.25rem)." previewStyle="margin:1.25rem;"
+<div class="stack gap-3 max-w-80">
 <select class="select" data-size="xs">
   <option>Extra small</option>
 </select>
@@ -95,6 +102,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <select class="select" data-size="xl">
   <option>Extra large</option>
 </select>
+</div>
 ```
 
 <StatesSection>

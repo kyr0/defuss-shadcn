@@ -1,25 +1,25 @@
 {
-  "total": 72,
+  "total": 73,
   "byType": {
-    "ATM": 44,
+    "ATM": 45,
     "MOL": 13,
     "ORG": 1,
     "BLK": 14,
     "TPL": 0
   },
-  "withJs": 30,
+  "withJs": 31,
   "withoutJs": 42,
-  "totalSize": 465022,
-  "totalSizeMinified": 220318,
-  "totalSizeGz": 152134,
-  "totalSizeGzMinified": 81507,
+  "totalSize": 487553,
+  "totalSizeMinified": 228092,
+  "totalSizeGz": 159906,
+  "totalSizeGzMinified": 84531,
   "bundle": {
-    "jsSize": 184297,
-    "jsSizeMinified": 98259,
-    "cssSize": 251696,
-    "cssSizeMinified": 140745,
-    "totalSizeGz": 81301,
-    "totalSizeGzMinified": 48519
+    "jsSize": 194357,
+    "jsSizeMinified": 103887,
+    "cssSize": 256014,
+    "cssSizeMinified": 142654,
+    "totalSizeGz": 84988,
+    "totalSizeGzMinified": 50673
   },
   "core": {
     "jsSize": 63491,
@@ -576,6 +576,19 @@
       "totalSize": 5055,
       "totalSizeMinified": 2755
     },
+    "resizer": {
+      "name": "resizer",
+      "type": "ATM",
+      "withJs": true,
+      "jsSize": 18265,
+      "jsSizeMinified": 5846,
+      "cssSize": 3917,
+      "cssSizeMinified": 1928,
+      "totalSizeGz": 7604,
+      "totalSizeGzMinified": 3024,
+      "totalSize": 22182,
+      "totalSizeMinified": 7774
+    },
     "scroll-area": {
       "name": "scroll-area",
       "type": "ATM",
@@ -764,11 +777,11 @@
       "withJs": false,
       "jsSize": 0,
       "jsSizeMinified": 0,
-      "cssSize": 3856,
+      "cssSize": 4205,
       "cssSizeMinified": 2143,
-      "totalSizeGz": 1113,
+      "totalSizeGz": 1281,
       "totalSizeGzMinified": 780,
-      "totalSize": 3856,
+      "totalSize": 4205,
       "totalSizeMinified": 2143
     },
     "table": {

@@ -657,7 +657,7 @@
       var vpZ = root.querySelector('.code-example-vp-z');
       var vpBtns = root.querySelectorAll('.code-example-vp[data-vp]:not([data-vp="rotate"])');
       var vpRotate = root.querySelector('.code-example-vp[data-vp="rotate"]');
-      var grip = null; // SE resize handle (created below; vpApply syncs its aria-valuenow)
+      var vpResize = null; // resizer wrapper (handles on every side; bound below)
       var clamp = function (v, lo, hi) { return Math.min(hi, Math.max(lo, v)); };
       // a fence may boot the toolbar in a specific mode (mode="desktop" on
       // media-query components: the sandbox viewport must be ≥ their thresholds)
@@ -671,14 +671,18 @@
         var w = rawW > 0 ? clamp(rawW, 240, 1600) : 0;
         var rawH = Number(vpH.value);
         var h = rawH > 0 ? clamp(rawH, 240, 1400) : 0;
+        // the resizer wrapper is the canvas box (the toolbar writes its size;
+        // .ce-device fills it) — clear first, device modes pin, measured pin
+        // width only (the height message lands via measure)
+        if (vpResize) vpResize.style.cssText = '';
         vpDevice.style.cssText = '';
         frame.style.width = '100%';
         if (dev) {
-          if (w) vpDevice.style.width = w + 'px';
-          if (h) vpDevice.style.height = h + 'px';
+          if (vpResize && w) vpResize.style.width = w + 'px';
+          if (vpResize && h) vpResize.style.height = h + 'px';
           frame.style.height = '100%'; // fills the bezel's content box
         } else {
-          if (w) vpDevice.style.width = w + 'px';
+          if (vpResize && w) vpResize.style.width = w + 'px';
           frame.style.height = ''; // back to measured (the height message lands via measure)
           api.send('measure', {});
         }
@@ -690,16 +694,22 @@
         // the scroll origin and can never be scrolled into view.
         var stage = root.querySelector('.preview');
         if (stage) {
+          var canvas = vpResize || vpDevice;
           stage.style.overflow = dev ? 'visible' : 'auto';
           stage.style.justifyContent =
-            !dev && vpDevice.getBoundingClientRect().width * ((Number(root.dataset.vpZoom) || 100) / 100) >
+            !dev && canvas.getBoundingClientRect().width * ((Number(root.dataset.vpZoom) || 100) / 100) >
             stage.clientWidth - 24
               ? 'flex-start'
               : '';
         }
         root.dataset.vpMode = vpMode;
         vpScreen.dataset.mode = vpMode;
-        if (grip) grip.setAttribute('aria-valuenow', String(w));
+        // measured modes resize width only → tell the resizer so the
+        // height-only handles are dropped (corner handles keep the width drag)
+        if (vpResize) {
+          var rzAxis = dev ? 'both' : 'w';
+          if (vpResize.dataset.axis !== rzAxis) vpResize.dataset.axis = rzAxis;
+        }
       }
       function vpSetMode(mode) {
         vpMode = mode;
@@ -732,6 +742,7 @@
       // above 100, floored at 25); a manual value (25–100) is honored as-is.
       function vpZoomApply() {
         if (!vpZ) return; // card rendered without the field (stale HTML)
+        var canvas = vpResize || vpDevice; // zoom rides the box that owns the size
         var manual = clamp(Math.round(Number(vpZ.value) || 0), 0, 100);
         var z;
         if (manual >= 25) {
@@ -739,15 +750,15 @@
         } else {
           // natural width = unzoomed box (CSS zoom feeds back into layout, so
           // measure with it cleared, then restore)
-          var prev = vpDevice.style.zoom;
-          vpDevice.style.zoom = '';
+          var prev = canvas.style.zoom;
+          canvas.style.zoom = '';
           var stage = root.querySelector('.preview');
-          var natural = vpDevice.getBoundingClientRect().width || 1;
+          var natural = canvas.getBoundingClientRect().width || 1;
           var avail = Math.max(stage.clientWidth - 24, 120); // inline padding
-          vpDevice.style.zoom = prev;
+          canvas.style.zoom = prev;
           z = clamp(Math.floor(Math.min(avail / natural, 1) * 20) * 5, 25, 100);
         }
-        vpDevice.style.zoom = z < 100 ? String(z / 100) : '';
+        canvas.style.zoom = z < 100 ? String(z / 100) : '';
         root.dataset.vpZoom = String(z);
       }
       var vpResizeT;
@@ -776,47 +787,26 @@
         });
       });
 
-      // SE resize handle: pointer drag resizes the canvas and writes the W/H
-      // fields (both axes on devices, width-only when measured — matching the
-      // cursor). Arrow keys resize by 10px (keyboard parity, role=spinbutton).
-      grip = document.createElement('div');
-      grip.className = 'ce-resize';
-      grip.setAttribute('role', 'spinbutton');
-      grip.setAttribute('aria-label', 'Resize preview');
-      grip.setAttribute('aria-valuemin', '240');
-      grip.setAttribute('aria-valuemax', '1600');
-      grip.tabIndex = 0;
-      vpDevice.appendChild(grip);
-      grip.addEventListener('pointerdown', function (ev) {
-        ev.preventDefault();
-        grip.setPointerCapture(ev.pointerId);
-        var dev = vpMode === 'phone' || vpMode === 'tablet';
-        var startW = clamp(Number(vpW.value) || vpDevice.getBoundingClientRect().width, 240, 1600);
-        var startH = clamp(Number(vpH.value) || 0, 240, 1400);
-        var x0 = ev.clientX;
-        var y0 = ev.clientY;
-        function move(e) {
-          vpW.value = String(Math.round(clamp(startW + (e.clientX - x0), 240, 1600)));
-          if (dev && vpH) vpH.value = String(Math.round(clamp(startH + (e.clientY - y0), 240, 1400)));
-          vpApply();
-        }
-        function up() {
-          grip.removeEventListener('pointermove', move);
-          grip.removeEventListener('pointerup', up);
-        }
-        grip.addEventListener('pointermove', move);
-        grip.addEventListener('pointerup', up);
-      });
-      grip.addEventListener('keydown', function (ev) {
-        var step = ev.key === 'ArrowRight' || ev.key === 'ArrowUp' ? 10 : ev.key === 'ArrowLeft' || ev.key === 'ArrowDown' ? -10 : 0;
-        if (!step) return;
-        ev.preventDefault();
-        var dev = vpMode === 'phone' || vpMode === 'tablet';
-        if (ev.key === 'ArrowRight' || ev.key === 'ArrowLeft')
-          vpW.value = String(clamp((Number(vpW.value) || vpDevice.getBoundingClientRect().width) + step, 240, 1600));
-        else if (dev && vpH) vpH.value = String(clamp((Number(vpH.value) || 0) + step, 240, 1400));
+      // resize handles (dogfooded `resizer` component, controlled mode): the
+      // wrapper around .ce-screen carries handles on EVERY side and corner —
+      // the old SE-only grip is retired. The component owns the gesture,
+      // clamping and keyboard parity; this toolbar stays the size OWNER (the
+      // W/H fields drive vpApply). Measured modes are width-only (height
+      // follows the content), so 'h' events only land in device modes.
+      vpResize = root.querySelector('.ce-resizer');
+      if (vpResize) {
+        // sync the wrapper once now (full mode = width axis, no n/s handles)
         vpApply();
-      });
+        vpResize.addEventListener('resizer-resize', function (ev) {
+          var d = ev.detail;
+          if (!d) return;
+          var dev = vpMode === 'phone' || vpMode === 'tablet';
+          if (d.axis === 'h' && !dev) return;
+          vpW.value = String(Math.round(clamp(d.width, 240, 1600)));
+          if (dev && vpH) vpH.value = String(Math.round(clamp(d.height, 240, 1400)));
+          vpApply();
+        });
+      }
     }
 
     // -- toolbar -------------------------------------------------------------

@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="color-scheme" content="light dark" /><link rel="icon" href="images/favicon.webp" type="image/webp" /><meta name="description" content="Resizer component — wrap any single container and drag handles on its sides and corners, in pixels or w-/h- classes." /><meta property="og:title" content="Resizer — defuss-shadcn" /><meta property="og:description" content="Resizer component — wrap any single container and drag handles on its sides and corners, in pixels or w-/h- classes." /><meta property="og:type" content="website" /><meta property="og:url" content="https://kyr0.github.io/defuss-shadcn/resizer.html" /><meta property="og:site_name" content="defuss-shadcn" /><meta name="twitter:card" content="summary" /><meta name="twitter:title" content="Resizer — defuss-shadcn" /><meta name="twitter:description" content="Resizer component — wrap any single container and drag handles on its sides and corners, in pixels or w-/h- classes." /><title>Resizer — defuss-shadcn</title><link id="tokens-css" rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/utils/default-semantic-tokens.css" /><script src="js/themes.js"></script><script src="js/theme-switcher.js"></script><script src="js/layout.js"></script><script src="js/search-index.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/utils/sizing.css" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/utils/layout.css" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/utils/accessibility.css" /><link rel="stylesheet" href="css/docs-theme.css" /><link rel="stylesheet" href="css/docs-utilities.css" /><link rel="stylesheet" href="css/layout.css" /><link rel="stylesheet" href="css/code-example.css" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.css" /></head><body><header class="site-header"><a href="index.html" class="header-brand"><img src="images/favicon.webp" alt="defuss-shadcn logo" class="header-brand-logo" /><span class="header-brand-name">defuss<em>-shadcn</em></span></a><button class="sidebar-toggle" id="sidebar-toggle" type="button" aria-label="Collapse sidebar" title="Collapse sidebar (⌘B)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg></button><div class="header-search" role="search"><input type="text" class="header-search-input" placeholder="Search docs… (⌘K)" aria-label="Search documentation" autocomplete="off" readonly="" /></div><div style="flex:1;"></div><nav style="display:flex;align-items:center;gap:0.5rem;"><span class="badge header-version" data-variant="outline" style="font-family:var(--font-mono);">v0.9.0</span><span class="separator" data-orientation="vertical" role="none" aria-hidden="true"></span><a href="https://github.com/kyr0/defuss-shadcn" target="_blank" rel="noopener" class="header-action"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg><span class="github-label">GitHub</span><span class="github-stars"></span></a><span class="separator" data-orientation="vertical" role="none" aria-hidden="true"></span><button id="wide-toggle" class="header-action theme-toggle-btn" aria-label="Toggle wide layout" aria-pressed="false"><svg id="icon-wide-expand" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg><svg id="icon-wide-collapse" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/><path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/></svg></button><button id="theme-toggle" class="header-action theme-toggle-btn" aria-label="Toggle dark mode"><svg id="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg><svg id="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button><button id="theme-selector-btn" class="header-action theme-toggle-btn" aria-label="Change color theme" popovertarget="theme-popover"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="0.5" fill="currentColor"/><circle cx="17.5" cy="10.5" r="0.5" fill="currentColor"/><circle cx="8.5" cy="7.5" r="0.5" fill="currentColor"/><circle cx="6.5" cy="12" r="0.5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></button></nav></header><div id="theme-popover" popover="" class="theme-popover"><div class="theme-popover-header"><span class="theme-popover-title">Theme</span><button class="theme-reset-btn" id="theme-reset-btn">Reset</button></div><div class="theme-grid" id="theme-grid"></div></div><dialog id="docs-palette" class="command" aria-label="Search documentation"><div class="command-content"><div class="command-input-wrapper"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input class="command-input" type="text" placeholder="Search documentation…" autocomplete="off" autocorrect="off" spellcheck="false" /></div><div class="command-list" id="docs-palette-list"></div><div class="command-empty" hidden="">No results found.</div></div></dialog><div class="flex" style="margin-top: 3.5rem; min-height: calc(100vh - 3.5rem);"><aside class="app-sidebar site-sidebar" id="docs-sidebar" data-state="expanded"><div class="sidebar-content"><details class="sidebar-group nav-section" open="" data-nav-section="Introduction"><summary><span>Introduction</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="index.html"><span>Getting Started</span></a><a class="nav-link sidebar-link" href="installation.html"><span>Installation</span></a><a class="nav-link sidebar-link" href="how-to-use.html"><span>How to Use</span></a><a class="nav-link sidebar-link" href="component-skills.html"><span>Component Skills</span></a><a class="nav-link sidebar-link" href="changelog.html"><span>Changelog</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Guides"><summary><span>Guides</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="theming.html"><span>Theming</span></a><a class="nav-link sidebar-link" href="dark-mode.html"><span>Dark Mode</span></a><a class="nav-link sidebar-link" href="data-attribute-api.html"><span>Data Attribute API</span></a><a class="nav-link sidebar-link" href="state-api.html"><span>State API</span></a><a class="nav-link sidebar-link" href="dom-querying.html"><span>DOM Querying &amp; Morphing</span></a><a class="nav-link sidebar-link" href="architecture.html"><span>Verified Agentic Engineering (VAE)</span></a><a class="nav-link sidebar-link" href="cascade-layers.html"><span>Cascade Layers</span></a><a class="nav-link sidebar-link" href="es-modules.html"><span>JavaScript Modules</span></a><a class="nav-link sidebar-link" href="native-web-apis.html"><span>Native Web APIs</span></a><a class="nav-link sidebar-link" href="animations.html"><span>Animations</span></a><details class="sidebar-submenu"><summary><a class="nav-link sidebar-link" href="sizing.html"><span>Sizing</span></a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="width-height.html"><span>Width &amp; Height</span></a><a class="nav-link sidebar-link" href="spacing.html"><span>Spacing</span></a><a class="nav-link sidebar-link" href="density.html"><span>Density</span></a></nav></details><details class="sidebar-submenu"><summary><a class="nav-link sidebar-link" href="layout.html"><span>Layout</span></a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="container.html"><span>Container</span></a><a class="nav-link sidebar-link" href="flex.html"><span>Flex</span></a><a class="nav-link sidebar-link" href="grid.html"><span>Grid</span></a></nav></details><a class="nav-link sidebar-link" href="accessibility.html"><span>Accessibility</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Primitives"><summary><span>Primitives</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="typography.html"><span>Typography</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="separator.html"><span>Separator</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="icon.html"><span>Icon</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="heading-anchor.html"><span>Heading Anchor</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Actions"><summary><span>Actions</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="button.html"><span>Button</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="toggle.html"><span>Toggle</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="toggle-group.html"><span>Toggle Group</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="button-group.html"><span>Button Group</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="toolbar.html"><span>Toolbar</span><span class="type-badge" data-type="ORG" title="ORG">ORG</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Forms &amp; Inputs"><summary><span>Forms &amp; Inputs</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="label.html"><span>Label</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="input.html"><span>Input</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="textarea.html"><span>Textarea</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="checkbox.html"><span>Checkbox</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="radio.html"><span>Radio Group</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="switch.html"><span>Switch</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="slider.html"><span>Slider</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="select.html"><span>Select</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="number-input.html"><span>Number Input</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="file-input.html"><span>File Input</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="color-picker.html"><span>Color Picker</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="date-picker.html"><span>Date Picker</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="combobox.html"><span>Combobox</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="form.html"><span>Form</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Data Display"><summary><span>Data Display</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="badge.html"><span>Badge</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="type-badge.html"><span>Type Badge</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="avatar.html"><span>Avatar</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="card.html"><span>Card</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="image.html"><span>Image</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="statistic.html"><span>Statistic</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="table.html"><span>Table</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="collapsible.html"><span>Collapsible</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="timeline.html"><span>Timeline</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="tree-view.html"><span>Tree View</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="calendar.html"><span>Calendar</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="carousel.html"><span>Carousel</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="scroll-area.html"><span>Scroll Area</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="sortable.html"><span>Sortable</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Feedback &amp; Status"><summary><span>Feedback &amp; Status</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="spinner.html"><span>Spinner</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="skeleton.html"><span>Skeleton</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="progress.html"><span>Progress</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="alert.html"><span>Alert</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="alert-dialog.html"><span>Alert Dialog</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="toast.html"><span>Toast</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Overlays"><summary><span>Overlays</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="popover.html"><span>Popover</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="tooltip.html"><span>Tooltip</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="context-menu.html"><span>Context Menu</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="dialog.html"><span>Dialog</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="sheet.html"><span>Sheet</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="accordion.html"><span>Accordion</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="command.html"><span>Command</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Navigation"><summary><span>Navigation</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="breadcrumb.html"><span>Breadcrumb</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="toc.html"><span>Table of Contents</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="pagination.html"><span>Pagination</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="steps.html"><span>Steps</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="tabs.html"><span>Tabs</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="dropdown.html"><span>Dropdown Menu</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="navigation-menu.html"><span>Navigation Menu</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="theme-switcher.html"><span>Theme Switcher</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="sidebar-group nav-section" open="" data-nav-section="Application"><summary><span>Application</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="sidebar.html"><span>Sidebar</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link active" href="resizer.html" aria-current="page"><span>Resizer</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Marketing"><summary><span>Marketing</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="site-header.html"><span>Site Header</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="hero.html"><span>Hero</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="product-showcase.html"><span>Product Showcase</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="brand-logos.html"><span>Brand Logos</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="feature-details.html"><span>Feature Details</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="testimonials.html"><span>Testimonials</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="stats.html"><span>Stats</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="pricing.html"><span>Pricing</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="blog.html"><span>Blog</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="faq.html"><span>FAQ</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="get-in-touch.html"><span>Get In Touch</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="newsletter.html"><span>Newsletter</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="site-footer.html"><span>Site Footer</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a></nav></details></div></aside><main style="flex: 1; min-width: 0; max-width: 44rem; padding: 2rem 3.5rem 8rem;"><div class="page-header"><div class="flex items-baseline justify-between mb-1"><p class="text-sm text-muted-foreground" style="font-family:var(--font-mono);">defuss-shadcn / resizer</p><div style="display:flex;align-items:baseline;gap:0.375rem;"><span class="text-xs text-muted-foreground" style="font-family:var(--font-mono);white-space:nowrap;">Built with:</span> <a href="#source-css" class="badge built-with-pill" data-variant="outline">CSS</a> <a href="#source-js" class="badge built-with-pill" data-variant="outline">JS</a></div></div><h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">Resizer<span class="type-badge" data-type="ATM" title="Atom">ATM</span></h1><p class="text-muted-foreground leading-relaxed mb-6">Wraps <strong>one</strong> container element and makes it resizable via draggable handles on
+any subset of its sides and corners — either pixel-perfect (inline styles) or class-based
+(the <code>w-*</code>/<code>h-*</code> utilities stay the source of truth). This documentation
+site dogfoods it: the preview box of every <a href="how-to-use.html" style="color:var(--primary);text-decoration:underline;text-underline-offset:4px;">CodeExample</a>
+carries resizer handles on all 8 positions.</p></div><details style="margin-bottom:2rem;border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;"><summary style="padding:0.875rem 1.25rem;background:var(--muted);cursor:pointer;font-size:0.8125rem;font-weight:600;font-family:var(--font-mono);color:var(--muted-foreground);list-style:none;display:flex;align-items:center;gap:0.5rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 200ms;"><path d="m9 18 6-6-6-6"/></svg>Component Skill — <span data-spec-href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/resizer/component-skill.md" style="text-decoration:underline;text-underline-offset:3px;">components/resizer/component-skill.md</span></summary><div style="padding:1.5rem;font-size:0.875rem;line-height:1.85;"><p class="skill-field-label">Native basis</p><p class="text-muted-foreground" style="margin:0 0 1.25rem;">Pointer Events with <code>setPointerCapture</code> drive the drag; <code>getBoundingClientRect()</code> reads the box. In classes mode the runtime only swaps <code>w-*</code>/<code>h-*</code> classes, so the sizing utilities remain the single source of size truth.</p><p class="skill-field-label">Web Platform APIs</p><div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture" target="_blank" rel="noopener" title="drag continues outside the handle without document listeners" class="api-pill"><code>setPointerCapture()</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/touch-action" target="_blank" rel="noopener" title="the browser yields the gesture to the drag" class="api-pill"><code>touch-action</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/separator_role" target="_blank" rel="noopener" title="a draggable divider — exactly what the role describes" class="api-pill"><code>role="separator"</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent" target="_blank" rel="noopener" title="resizer-resize lets consumers mirror the live size" class="api-pill"><code>CustomEvent</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver" target="_blank" rel="noopener" title="data-width/data-height writes (State tab) apply back into the box" class="api-pill"><code>MutationObserver</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a></div><p class="skill-field-label">Classes</p><div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;"><code>.resizer</code><code>.resizer-handle</code></div><p class="skill-field-label">Variants (data attributes)</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>data-handles</code> — space list of <code>n e s w ne nw se sw</code>, or <code>all</code> (default <code>se</code>)</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>data-resize-mode</code> — <code>px</code> (default) | <code>classes</code> | <code>controlled</code></p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>data-axis</code> — <code>both</code> (default) | <code>w</code> | <code>h</code>; handles the axis forbids are never placed</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• <code>data-min</code>/<code>data-max</code> — clamp in px (80 / 2000; per-axis <code>data-min-w</code> … override), <code>data-step</code> quantizes drags</p><p class="text-muted-foreground m-0">• <code>data-w-classes</code>/<code>data-h-classes</code> replace the classes ladder with your own token list</p><p class="skill-field-label">Accessibility</p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Handles are focusable <code>role="separator"</code> controls with a position-naming <code>aria-label</code>; edge handles carry <code>aria-orientation</code></p><p class="text-muted-foreground" style="margin:0 0 0.25rem;">• Keyboard parity: Arrow keys resize (Right/Up grow, Left/Down shrink, Shift ×10), Home/End jump to the clamp bounds</p><p class="text-muted-foreground m-0">• While dragging, the wrapper carries <code>data-resizing</code> — a dashed outline plus a filled handle</p></div></details><div class="code-example" data-component="resizer" data-schema="{&#xA;  &quot;schemaVersion&quot;: 1,&#xA;  &quot;name&quot;: &quot;resizer&quot;,&#xA;  &quot;states&quot;: {&#xA;    &quot;width&quot;: {&#xA;      &quot;type&quot;: &quot;number&quot;,&#xA;      &quot;default&quot;: 320,&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.resizer&quot;&#xA;      },&#xA;      &quot;mutation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-width&quot;&#xA;      },&#xA;      &quot;observation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-width&quot;&#xA;      },&#xA;      &quot;editor&quot;: {&#xA;        &quot;component&quot;: &quot;number&quot;&#xA;      }&#xA;    },&#xA;    &quot;height&quot;: {&#xA;      &quot;type&quot;: &quot;number&quot;,&#xA;      &quot;default&quot;: 160,&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.resizer&quot;&#xA;      },&#xA;      &quot;mutation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-height&quot;&#xA;      },&#xA;      &quot;observation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-height&quot;&#xA;      },&#xA;      &quot;editor&quot;: {&#xA;        &quot;component&quot;: &quot;number&quot;&#xA;      }&#xA;    }&#xA;  },&#xA;  &quot;actions&quot;: {&#xA;    &quot;reset&quot;: {&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.resizer&quot;&#xA;      },&#xA;      &quot;operation&quot;: {&#xA;        &quot;kind&quot;: &quot;event&quot;,&#xA;        &quot;name&quot;: &quot;resizer-reset&quot;&#xA;      }&#xA;    }&#xA;  }&#xA;}&#xA;" data-state-demo="" data-height="14"><p class="text-sm font-medium mb-2" id="toc-pixel-perfect"><a class="heading-anchor" href="#toc-pixel-perfect" aria-label="Link to section: Pixel-perfect">§</a>Pixel-perfect</p><p class="text-xs text-muted-foreground mb-3">The default: one SE handle, sizes land as inline px on the wrapped element. Drag any handle, then open State to see data-width/data-height follow.</p><div class="preview" style="padding:0.75rem;overflow:hidden;"><div class="ce-screen" data-mode="full"><div class="resizer ce-resizer" data-handles="all" data-resize-mode="controlled" data-axis="both" data-min="240" data-max="1600" data-min-h="240" data-max-h="1400"><div class="ce-device"><iframe class="code-example-frame" sandbox="allow-scripts" title="Pixel-perfect" style="width:100%;min-height:8rem;border:0;display:block;"></iframe><span class="ce-device-island" aria-hidden="true"></span><span class="ce-device-home" aria-hidden="true"></span></div></div></div><output class="code-example-error" role="alert" hidden=""></output></div><div class="code-example-toolbar"><span class="code-example-viewport" role="group" aria-label="Preview device"><button class="code-example-vp" data-vp="rotate" title="Swap orientation (phone/tablet)" aria-disabled="true"><i data-lucide="rotate-cw"></i><span>Rotate</span></button><button class="code-example-vp" data-vp="phone" aria-pressed="false" title="Phone 390×844"><i data-lucide="smartphone"></i><span>Phone</span></button><button class="code-example-vp" data-vp="tablet" aria-pressed="false" title="Tablet 834×1112"><i data-lucide="tablet"></i><span>Tablet</span></button><button class="code-example-vp" data-vp="desktop" aria-pressed="false" title="Desktop 1024"><i data-lucide="monitor"></i><span>Desktop</span></button><button class="code-example-vp" data-vp="full" aria-pressed="true" title="Full width (source default)"><i data-lucide="app-window"></i><span>Full</span></button></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-w" type="number" min="240" step="10" inputmode="numeric" placeholder="Width" aria-label="Custom preview width (px)" /><span class="code-example-vp-x" aria-hidden="true">×</span><input class="code-example-vp-h" type="number" min="240" step="10" inputmode="numeric" placeholder="Full" aria-label="Custom preview height (px)" disabled="" /></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-z" type="number" min="25" max="100" step="5" inputmode="numeric" placeholder="Auto" aria-label="Preview zoom (%)" /><span class="code-example-vp-x" aria-hidden="true">%</span></span><span class="code-example-spacer"></span><button class="code-example-tab" data-tab="code" aria-pressed="false" title="Show or hide the example source"><i data-lucide="code-xml"></i><span>Code</span></button><button class="code-example-tab" data-tab="state" aria-pressed="false" title="Show or hide the state contract"><i data-lucide="sliders-horizontal"></i><span>State</span></button><button class="code-example-copy" title="Copy the example source"><i data-lucide="copy"></i><span>Copy</span></button><button class="code-example-reset" title="Restore the original source and rerun"><i data-lucide="rotate-ccw"></i><span>Reset</span></button></div><div class="code-example-panel" data-panel="code" hidden=""><textarea class="code-example-src" spellcheck="false" aria-label="Editable source for: Pixel-perfect" rows="10">&lt;div class="resizer" data-handles="se" data-min="120"&gt;
+  &lt;div class="card" style="width:20rem;height:10rem;padding:1rem;"&gt;
+    &lt;h3 class="card-title"&gt;Panel&lt;/h3&gt;
+    &lt;p class="card-description" style="margin-top:0.5rem;"&gt;Drag the corner. The runtime writes style.width / style.height — pixel-perfect, no quantization.&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</textarea></div><div class="code-example-panel" data-panel="state" hidden=""></div></div><div class="code-example" data-component="resizer" data-schema="{&#xA;  &quot;schemaVersion&quot;: 1,&#xA;  &quot;name&quot;: &quot;resizer&quot;,&#xA;  &quot;states&quot;: {&#xA;    &quot;width&quot;: {&#xA;      &quot;type&quot;: &quot;number&quot;,&#xA;      &quot;default&quot;: 320,&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.resizer&quot;&#xA;      },&#xA;      &quot;mutation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-width&quot;&#xA;      },&#xA;      &quot;observation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-width&quot;&#xA;      },&#xA;      &quot;editor&quot;: {&#xA;        &quot;component&quot;: &quot;number&quot;&#xA;      }&#xA;    },&#xA;    &quot;height&quot;: {&#xA;      &quot;type&quot;: &quot;number&quot;,&#xA;      &quot;default&quot;: 160,&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.resizer&quot;&#xA;      },&#xA;      &quot;mutation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-height&quot;&#xA;      },&#xA;      &quot;observation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-height&quot;&#xA;      },&#xA;      &quot;editor&quot;: {&#xA;        &quot;component&quot;: &quot;number&quot;&#xA;      }&#xA;    }&#xA;  },&#xA;  &quot;actions&quot;: {&#xA;    &quot;reset&quot;: {&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.resizer&quot;&#xA;      },&#xA;      &quot;operation&quot;: {&#xA;        &quot;kind&quot;: &quot;event&quot;,&#xA;        &quot;name&quot;: &quot;resizer-reset&quot;&#xA;      }&#xA;    }&#xA;  }&#xA;}&#xA;" data-state-demo="" data-height="16"><p class="text-sm font-medium mb-2" id="toc-all-sides-corners"><a class="heading-anchor" href="#toc-all-sides-corners" aria-label="Link to section: All sides + corners">§</a>All sides + corners</p><p class="text-xs text-muted-foreground mb-3">data-handles='all' places all 8 handles — every side AND every corner drags independently.</p><div class="preview" style="padding:0.75rem;overflow:hidden;"><div class="ce-screen" data-mode="full"><div class="resizer ce-resizer" data-handles="all" data-resize-mode="controlled" data-axis="both" data-min="240" data-max="1600" data-min-h="240" data-max-h="1400"><div class="ce-device"><iframe class="code-example-frame" sandbox="allow-scripts" title="All sides + corners" style="width:100%;min-height:8rem;border:0;display:block;"></iframe><span class="ce-device-island" aria-hidden="true"></span><span class="ce-device-home" aria-hidden="true"></span></div></div></div><output class="code-example-error" role="alert" hidden=""></output></div><div class="code-example-toolbar"><span class="code-example-viewport" role="group" aria-label="Preview device"><button class="code-example-vp" data-vp="rotate" title="Swap orientation (phone/tablet)" aria-disabled="true"><i data-lucide="rotate-cw"></i><span>Rotate</span></button><button class="code-example-vp" data-vp="phone" aria-pressed="false" title="Phone 390×844"><i data-lucide="smartphone"></i><span>Phone</span></button><button class="code-example-vp" data-vp="tablet" aria-pressed="false" title="Tablet 834×1112"><i data-lucide="tablet"></i><span>Tablet</span></button><button class="code-example-vp" data-vp="desktop" aria-pressed="false" title="Desktop 1024"><i data-lucide="monitor"></i><span>Desktop</span></button><button class="code-example-vp" data-vp="full" aria-pressed="true" title="Full width (source default)"><i data-lucide="app-window"></i><span>Full</span></button></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-w" type="number" min="240" step="10" inputmode="numeric" placeholder="Width" aria-label="Custom preview width (px)" /><span class="code-example-vp-x" aria-hidden="true">×</span><input class="code-example-vp-h" type="number" min="240" step="10" inputmode="numeric" placeholder="Full" aria-label="Custom preview height (px)" disabled="" /></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-z" type="number" min="25" max="100" step="5" inputmode="numeric" placeholder="Auto" aria-label="Preview zoom (%)" /><span class="code-example-vp-x" aria-hidden="true">%</span></span><span class="code-example-spacer"></span><button class="code-example-tab" data-tab="code" aria-pressed="false" title="Show or hide the example source"><i data-lucide="code-xml"></i><span>Code</span></button><button class="code-example-tab" data-tab="state" aria-pressed="false" title="Show or hide the state contract"><i data-lucide="sliders-horizontal"></i><span>State</span></button><button class="code-example-copy" title="Copy the example source"><i data-lucide="copy"></i><span>Copy</span></button><button class="code-example-reset" title="Restore the original source and rerun"><i data-lucide="rotate-ccw"></i><span>Reset</span></button></div><div class="code-example-panel" data-panel="code" hidden=""><textarea class="code-example-src" spellcheck="false" aria-label="Editable source for: All sides + corners" rows="10">&lt;div class="resizer" data-handles="all" data-min="120"&gt;
+  &lt;div class="card" style="width:18rem;height:12rem;padding:1rem;"&gt;
+    &lt;h3 class="card-title"&gt;Canvas&lt;/h3&gt;
+    &lt;p class="card-description" style="margin-top:0.5rem;"&gt;Edges resize one axis, corners both. Grab any of the 8 chips.&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</textarea></div><div class="code-example-panel" data-panel="state" hidden=""></div></div><div class="code-example" data-component="resizer" data-schema="{&#xA;  &quot;schemaVersion&quot;: 1,&#xA;  &quot;name&quot;: &quot;resizer&quot;,&#xA;  &quot;states&quot;: {&#xA;    &quot;width&quot;: {&#xA;      &quot;type&quot;: &quot;number&quot;,&#xA;      &quot;default&quot;: 320,&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.resizer&quot;&#xA;      },&#xA;      &quot;mutation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-width&quot;&#xA;      },&#xA;      &quot;observation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-width&quot;&#xA;      },&#xA;      &quot;editor&quot;: {&#xA;        &quot;component&quot;: &quot;number&quot;&#xA;      }&#xA;    },&#xA;    &quot;height&quot;: {&#xA;      &quot;type&quot;: &quot;number&quot;,&#xA;      &quot;default&quot;: 160,&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.resizer&quot;&#xA;      },&#xA;      &quot;mutation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-height&quot;&#xA;      },&#xA;      &quot;observation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-height&quot;&#xA;      },&#xA;      &quot;editor&quot;: {&#xA;        &quot;component&quot;: &quot;number&quot;&#xA;      }&#xA;    }&#xA;  },&#xA;  &quot;actions&quot;: {&#xA;    &quot;reset&quot;: {&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.resizer&quot;&#xA;      },&#xA;      &quot;operation&quot;: {&#xA;        &quot;kind&quot;: &quot;event&quot;,&#xA;        &quot;name&quot;: &quot;resizer-reset&quot;&#xA;      }&#xA;    }&#xA;  }&#xA;}&#xA;" data-state-demo="" data-height="14"><p class="text-sm font-medium mb-2" id="toc-width-only"><a class="heading-anchor" href="#toc-width-only" aria-label="Link to section: Width only">§</a>Width only</p><p class="text-xs text-muted-foreground mb-3">data-axis='w' keeps the height owned by the content — the n/s handles are never placed, and corners drag width only.</p><div class="preview" style="padding:0.75rem;overflow:hidden;"><div class="ce-screen" data-mode="full"><div class="resizer ce-resizer" data-handles="all" data-resize-mode="controlled" data-axis="both" data-min="240" data-max="1600" data-min-h="240" data-max-h="1400"><div class="ce-device"><iframe class="code-example-frame" sandbox="allow-scripts" title="Width only" style="width:100%;min-height:8rem;border:0;display:block;"></iframe><span class="ce-device-island" aria-hidden="true"></span><span class="ce-device-home" aria-hidden="true"></span></div></div></div><output class="code-example-error" role="alert" hidden=""></output></div><div class="code-example-toolbar"><span class="code-example-viewport" role="group" aria-label="Preview device"><button class="code-example-vp" data-vp="rotate" title="Swap orientation (phone/tablet)" aria-disabled="true"><i data-lucide="rotate-cw"></i><span>Rotate</span></button><button class="code-example-vp" data-vp="phone" aria-pressed="false" title="Phone 390×844"><i data-lucide="smartphone"></i><span>Phone</span></button><button class="code-example-vp" data-vp="tablet" aria-pressed="false" title="Tablet 834×1112"><i data-lucide="tablet"></i><span>Tablet</span></button><button class="code-example-vp" data-vp="desktop" aria-pressed="false" title="Desktop 1024"><i data-lucide="monitor"></i><span>Desktop</span></button><button class="code-example-vp" data-vp="full" aria-pressed="true" title="Full width (source default)"><i data-lucide="app-window"></i><span>Full</span></button></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-w" type="number" min="240" step="10" inputmode="numeric" placeholder="Width" aria-label="Custom preview width (px)" /><span class="code-example-vp-x" aria-hidden="true">×</span><input class="code-example-vp-h" type="number" min="240" step="10" inputmode="numeric" placeholder="Full" aria-label="Custom preview height (px)" disabled="" /></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-z" type="number" min="25" max="100" step="5" inputmode="numeric" placeholder="Auto" aria-label="Preview zoom (%)" /><span class="code-example-vp-x" aria-hidden="true">%</span></span><span class="code-example-spacer"></span><button class="code-example-tab" data-tab="code" aria-pressed="false" title="Show or hide the example source"><i data-lucide="code-xml"></i><span>Code</span></button><button class="code-example-tab" data-tab="state" aria-pressed="false" title="Show or hide the state contract"><i data-lucide="sliders-horizontal"></i><span>State</span></button><button class="code-example-copy" title="Copy the example source"><i data-lucide="copy"></i><span>Copy</span></button><button class="code-example-reset" title="Restore the original source and rerun"><i data-lucide="rotate-ccw"></i><span>Reset</span></button></div><div class="code-example-panel" data-panel="code" hidden=""><textarea class="code-example-src" spellcheck="false" aria-label="Editable source for: Width only" rows="10">&lt;div class="resizer" data-handles="w e" data-axis="w" data-min="140" data-max="520"&gt;
+  &lt;div class="card" style="width:16rem;padding:1rem;"&gt;
+    &lt;h3 class="card-title"&gt;Report&lt;/h3&gt;
+    &lt;p class="card-description" style="margin-top:0.5rem;"&gt;Height follows the text; only the horizontal edges respond.&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</textarea></div><div class="code-example-panel" data-panel="state" hidden=""></div></div><div class="code-example" data-component="resizer" data-schema="{&#xA;  &quot;schemaVersion&quot;: 1,&#xA;  &quot;name&quot;: &quot;resizer&quot;,&#xA;  &quot;states&quot;: {&#xA;    &quot;width&quot;: {&#xA;      &quot;type&quot;: &quot;number&quot;,&#xA;      &quot;default&quot;: 320,&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.resizer&quot;&#xA;      },&#xA;      &quot;mutation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-width&quot;&#xA;      },&#xA;      &quot;observation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-width&quot;&#xA;      },&#xA;      &quot;editor&quot;: {&#xA;        &quot;component&quot;: &quot;number&quot;&#xA;      }&#xA;    },&#xA;    &quot;height&quot;: {&#xA;      &quot;type&quot;: &quot;number&quot;,&#xA;      &quot;default&quot;: 160,&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.resizer&quot;&#xA;      },&#xA;      &quot;mutation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-height&quot;&#xA;      },&#xA;      &quot;observation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-height&quot;&#xA;      },&#xA;      &quot;editor&quot;: {&#xA;        &quot;component&quot;: &quot;number&quot;&#xA;      }&#xA;    }&#xA;  },&#xA;  &quot;actions&quot;: {&#xA;    &quot;reset&quot;: {&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.resizer&quot;&#xA;      },&#xA;      &quot;operation&quot;: {&#xA;        &quot;kind&quot;: &quot;event&quot;,&#xA;        &quot;name&quot;: &quot;resizer-reset&quot;&#xA;      }&#xA;    }&#xA;  }&#xA;}&#xA;" data-state-demo="" data-height="16"><p class="text-sm font-medium mb-2" id="toc-class-based-sizing"><a class="heading-anchor" href="#toc-class-based-sizing" aria-label="Link to section: Class-based sizing">§</a>Class-based sizing</p><p class="text-xs text-muted-foreground mb-3">data-resize-mode='classes' snaps to the sizing.css ladder: the element's class attribute IS the size (open State/Code while dragging to watch w-*/h-* swap).</p><div class="preview" style="padding:0.75rem;overflow:hidden;"><div class="ce-screen" data-mode="full"><div class="resizer ce-resizer" data-handles="all" data-resize-mode="controlled" data-axis="both" data-min="240" data-max="1600" data-min-h="240" data-max-h="1400"><div class="ce-device"><iframe class="code-example-frame" sandbox="allow-scripts" title="Class-based sizing" style="width:100%;min-height:8rem;border:0;display:block;"></iframe><span class="ce-device-island" aria-hidden="true"></span><span class="ce-device-home" aria-hidden="true"></span></div></div></div><output class="code-example-error" role="alert" hidden=""></output></div><div class="code-example-toolbar"><span class="code-example-viewport" role="group" aria-label="Preview device"><button class="code-example-vp" data-vp="rotate" title="Swap orientation (phone/tablet)" aria-disabled="true"><i data-lucide="rotate-cw"></i><span>Rotate</span></button><button class="code-example-vp" data-vp="phone" aria-pressed="false" title="Phone 390×844"><i data-lucide="smartphone"></i><span>Phone</span></button><button class="code-example-vp" data-vp="tablet" aria-pressed="false" title="Tablet 834×1112"><i data-lucide="tablet"></i><span>Tablet</span></button><button class="code-example-vp" data-vp="desktop" aria-pressed="false" title="Desktop 1024"><i data-lucide="monitor"></i><span>Desktop</span></button><button class="code-example-vp" data-vp="full" aria-pressed="true" title="Full width (source default)"><i data-lucide="app-window"></i><span>Full</span></button></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-w" type="number" min="240" step="10" inputmode="numeric" placeholder="Width" aria-label="Custom preview width (px)" /><span class="code-example-vp-x" aria-hidden="true">×</span><input class="code-example-vp-h" type="number" min="240" step="10" inputmode="numeric" placeholder="Full" aria-label="Custom preview height (px)" disabled="" /></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-z" type="number" min="25" max="100" step="5" inputmode="numeric" placeholder="Auto" aria-label="Preview zoom (%)" /><span class="code-example-vp-x" aria-hidden="true">%</span></span><span class="code-example-spacer"></span><button class="code-example-tab" data-tab="code" aria-pressed="false" title="Show or hide the example source"><i data-lucide="code-xml"></i><span>Code</span></button><button class="code-example-tab" data-tab="state" aria-pressed="false" title="Show or hide the state contract"><i data-lucide="sliders-horizontal"></i><span>State</span></button><button class="code-example-copy" title="Copy the example source"><i data-lucide="copy"></i><span>Copy</span></button><button class="code-example-reset" title="Restore the original source and rerun"><i data-lucide="rotate-ccw"></i><span>Reset</span></button></div><div class="code-example-panel" data-panel="code" hidden=""><textarea class="code-example-src" spellcheck="false" aria-label="Editable source for: Class-based sizing" rows="10">&lt;div class="resizer" data-handles="all" data-resize-mode="classes"&gt;
+  &lt;div class="card w-64 h-40" style="padding:1rem;"&gt;
+    &lt;h3 class="card-title"&gt;Card&lt;/h3&gt;
+    &lt;p class="card-description" style="margin-top:0.5rem;"&gt;Authored w-64 h-40. Drags snap to the nearest w-N / h-N token (4 px steps) — no inline styles.&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</textarea></div><div class="code-example-panel" data-panel="state" hidden=""></div></div><div class="code-example" data-component="resizer" data-schema="{&#xA;  &quot;schemaVersion&quot;: 1,&#xA;  &quot;name&quot;: &quot;resizer&quot;,&#xA;  &quot;states&quot;: {&#xA;    &quot;width&quot;: {&#xA;      &quot;type&quot;: &quot;number&quot;,&#xA;      &quot;default&quot;: 320,&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.resizer&quot;&#xA;      },&#xA;      &quot;mutation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-width&quot;&#xA;      },&#xA;      &quot;observation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-width&quot;&#xA;      },&#xA;      &quot;editor&quot;: {&#xA;        &quot;component&quot;: &quot;number&quot;&#xA;      }&#xA;    },&#xA;    &quot;height&quot;: {&#xA;      &quot;type&quot;: &quot;number&quot;,&#xA;      &quot;default&quot;: 160,&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.resizer&quot;&#xA;      },&#xA;      &quot;mutation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-height&quot;&#xA;      },&#xA;      &quot;observation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-height&quot;&#xA;      },&#xA;      &quot;editor&quot;: {&#xA;        &quot;component&quot;: &quot;number&quot;&#xA;      }&#xA;    }&#xA;  },&#xA;  &quot;actions&quot;: {&#xA;    &quot;reset&quot;: {&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.resizer&quot;&#xA;      },&#xA;      &quot;operation&quot;: {&#xA;        &quot;kind&quot;: &quot;event&quot;,&#xA;        &quot;name&quot;: &quot;resizer-reset&quot;&#xA;      }&#xA;    }&#xA;  }&#xA;}&#xA;" data-state-demo="" data-height="16"><p class="text-sm font-medium mb-2" id="toc-controlled"><a class="heading-anchor" href="#toc-controlled" aria-label="Link to section: Controlled">§</a>Controlled</p><p class="text-xs text-muted-foreground mb-3">data-resize-mode='controlled' writes NOTHING — the component only measures and fires resizer-resize, so the consumer owns the size (this is how the CodeExample preview toolbar uses it).</p><div class="preview" style="padding:0.75rem;overflow:hidden;"><div class="ce-screen" data-mode="full"><div class="resizer ce-resizer" data-handles="all" data-resize-mode="controlled" data-axis="both" data-min="240" data-max="1600" data-min-h="240" data-max-h="1400"><div class="ce-device"><iframe class="code-example-frame" sandbox="allow-scripts" title="Controlled" style="width:100%;min-height:8rem;border:0;display:block;"></iframe><span class="ce-device-island" aria-hidden="true"></span><span class="ce-device-home" aria-hidden="true"></span></div></div></div><output class="code-example-error" role="alert" hidden=""></output></div><div class="code-example-toolbar"><span class="code-example-viewport" role="group" aria-label="Preview device"><button class="code-example-vp" data-vp="rotate" title="Swap orientation (phone/tablet)" aria-disabled="true"><i data-lucide="rotate-cw"></i><span>Rotate</span></button><button class="code-example-vp" data-vp="phone" aria-pressed="false" title="Phone 390×844"><i data-lucide="smartphone"></i><span>Phone</span></button><button class="code-example-vp" data-vp="tablet" aria-pressed="false" title="Tablet 834×1112"><i data-lucide="tablet"></i><span>Tablet</span></button><button class="code-example-vp" data-vp="desktop" aria-pressed="false" title="Desktop 1024"><i data-lucide="monitor"></i><span>Desktop</span></button><button class="code-example-vp" data-vp="full" aria-pressed="true" title="Full width (source default)"><i data-lucide="app-window"></i><span>Full</span></button></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-w" type="number" min="240" step="10" inputmode="numeric" placeholder="Width" aria-label="Custom preview width (px)" /><span class="code-example-vp-x" aria-hidden="true">×</span><input class="code-example-vp-h" type="number" min="240" step="10" inputmode="numeric" placeholder="Full" aria-label="Custom preview height (px)" disabled="" /></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-z" type="number" min="25" max="100" step="5" inputmode="numeric" placeholder="Auto" aria-label="Preview zoom (%)" /><span class="code-example-vp-x" aria-hidden="true">%</span></span><span class="code-example-spacer"></span><button class="code-example-tab" data-tab="code" aria-pressed="false" title="Show or hide the example source"><i data-lucide="code-xml"></i><span>Code</span></button><button class="code-example-tab" data-tab="state" aria-pressed="false" title="Show or hide the state contract"><i data-lucide="sliders-horizontal"></i><span>State</span></button><button class="code-example-copy" title="Copy the example source"><i data-lucide="copy"></i><span>Copy</span></button><button class="code-example-reset" title="Restore the original source and rerun"><i data-lucide="rotate-ccw"></i><span>Reset</span></button></div><div class="code-example-panel" data-panel="code" hidden=""><textarea class="code-example-src" spellcheck="false" aria-label="Editable source for: Controlled" rows="10">&lt;div class="resizer" data-handles="all" data-resize-mode="controlled" data-min="120"&gt;
+  &lt;div class="card" style="width:18rem;height:11rem;padding:1rem;"&gt;
+    &lt;h3 class="card-title"&gt;Consumer owns the box&lt;/h3&gt;
+    &lt;p class="card-description" style="margin-top:0.5rem;"&gt;Live size below — updated from the &lt;code&gt;resizer-resize&lt;/code&gt; event, not from any style the component writes.&lt;/p&gt;
+    &lt;output class="mono-meta" id="rs-controlled" style="display:block;margin-top:0.5rem;"&gt;288 × 176&lt;/output&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script type="module"&gt;
+  const wrap = document.querySelector(".resizer");
+  const out = document.getElementById("rs-controlled");
+  const box = wrap.firstElementChild;
+  wrap.addEventListener("resizer-resize", (e) =&gt; {
+    box.style.width = e.detail.width + "px";
+    box.style.height = e.detail.height + "px";
+    out.textContent = e.detail.width + " × " + e.detail.height;
+  });
+&lt;/script&gt;
+</textarea></div><div class="code-example-panel" data-panel="state" hidden=""></div></div><h2 id="toc-resizing-a-sidebar"><a class="heading-anchor" href="#toc-resizing-a-sidebar" aria-label="Link to section: Resizing a Sidebar">§</a>Resizing a Sidebar</h2><p>The same component on a real <a href="sidebar.html" style="color:var(--primary);text-decoration:underline;text-underline-offset:4px;">Sidebar</a> — first with pixel sizes (inline styles the runtime writes), then class-based, where the size lives in <code>w-*</code>/<code>h-*</code> utility classes only:</p><div class="code-example" data-component="resizer" data-schema="{&#xA;  &quot;schemaVersion&quot;: 1,&#xA;  &quot;name&quot;: &quot;resizer&quot;,&#xA;  &quot;states&quot;: {&#xA;    &quot;width&quot;: {&#xA;      &quot;type&quot;: &quot;number&quot;,&#xA;      &quot;default&quot;: 320,&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.resizer&quot;&#xA;      },&#xA;      &quot;mutation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-width&quot;&#xA;      },&#xA;      &quot;observation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-width&quot;&#xA;      },&#xA;      &quot;editor&quot;: {&#xA;        &quot;component&quot;: &quot;number&quot;&#xA;      }&#xA;    },&#xA;    &quot;height&quot;: {&#xA;      &quot;type&quot;: &quot;number&quot;,&#xA;      &quot;default&quot;: 160,&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.resizer&quot;&#xA;      },&#xA;      &quot;mutation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-height&quot;&#xA;      },&#xA;      &quot;observation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-height&quot;&#xA;      },&#xA;      &quot;editor&quot;: {&#xA;        &quot;component&quot;: &quot;number&quot;&#xA;      }&#xA;    }&#xA;  },&#xA;  &quot;actions&quot;: {&#xA;    &quot;reset&quot;: {&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.resizer&quot;&#xA;      },&#xA;      &quot;operation&quot;: {&#xA;        &quot;kind&quot;: &quot;event&quot;,&#xA;        &quot;name&quot;: &quot;resizer-reset&quot;&#xA;      }&#xA;    }&#xA;  }&#xA;}&#xA;" data-state-demo="" data-height="24" data-vp-mode="desktop" data-preview-style="margin:1rem;"><p class="text-sm font-medium mb-2" id="toc-sidebar-pixels"><a class="heading-anchor" href="#toc-sidebar-pixels" aria-label="Link to section: Sidebar — pixels">§</a>Sidebar — pixels</p><p class="text-xs text-muted-foreground mb-3">Every side + corner drags the panel; the size lands as inline px on the aside. The rail's own width/height rules lose to the inline style, as intended. Drag below 24rem and the component's own auto-collapse docks it to the icon rail.</p><div class="preview" style="padding:0.75rem;overflow:hidden;"><div class="ce-screen" data-mode="full"><div class="resizer ce-resizer" data-handles="all" data-resize-mode="controlled" data-axis="both" data-min="240" data-max="1600" data-min-h="240" data-max-h="1400"><div class="ce-device"><iframe class="code-example-frame" sandbox="allow-scripts" title="Sidebar — pixels" style="width:100%;min-height:8rem;border:0;display:block;"></iframe><span class="ce-device-island" aria-hidden="true"></span><span class="ce-device-home" aria-hidden="true"></span></div></div></div><output class="code-example-error" role="alert" hidden=""></output></div><div class="code-example-toolbar"><span class="code-example-viewport" role="group" aria-label="Preview device"><button class="code-example-vp" data-vp="rotate" title="Swap orientation (phone/tablet)" aria-disabled="true"><i data-lucide="rotate-cw"></i><span>Rotate</span></button><button class="code-example-vp" data-vp="phone" aria-pressed="false" title="Phone 390×844"><i data-lucide="smartphone"></i><span>Phone</span></button><button class="code-example-vp" data-vp="tablet" aria-pressed="false" title="Tablet 834×1112"><i data-lucide="tablet"></i><span>Tablet</span></button><button class="code-example-vp" data-vp="desktop" aria-pressed="false" title="Desktop 1024"><i data-lucide="monitor"></i><span>Desktop</span></button><button class="code-example-vp" data-vp="full" aria-pressed="true" title="Full width (source default)"><i data-lucide="app-window"></i><span>Full</span></button></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-w" type="number" min="240" step="10" inputmode="numeric" placeholder="Width" aria-label="Custom preview width (px)" /><span class="code-example-vp-x" aria-hidden="true">×</span><input class="code-example-vp-h" type="number" min="240" step="10" inputmode="numeric" placeholder="Full" aria-label="Custom preview height (px)" disabled="" /></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-z" type="number" min="25" max="100" step="5" inputmode="numeric" placeholder="Auto" aria-label="Preview zoom (%)" /><span class="code-example-vp-x" aria-hidden="true">%</span></span><span class="code-example-spacer"></span><button class="code-example-tab" data-tab="code" aria-pressed="false" title="Show or hide the example source"><i data-lucide="code-xml"></i><span>Code</span></button><button class="code-example-tab" data-tab="state" aria-pressed="false" title="Show or hide the state contract"><i data-lucide="sliders-horizontal"></i><span>State</span></button><button class="code-example-copy" title="Copy the example source"><i data-lucide="copy"></i><span>Copy</span></button><button class="code-example-reset" title="Restore the original source and rerun"><i data-lucide="rotate-ccw"></i><span>Reset</span></button></div><div class="code-example-panel" data-panel="code" hidden=""><textarea class="code-example-src" spellcheck="false" aria-label="Editable source for: Sidebar — pixels" rows="10">&lt;div class="resizer" data-handles="all" data-min="220" data-max="560" data-min-h="160" data-max-h="480"&gt;
+  &lt;aside class="app-sidebar" style="width:24rem;height:18rem;border-radius:var(--radius-lg);"&gt;
+    &lt;div class="sidebar-header"&gt;
+      &lt;a class="sidebar-logo" href="#"&gt;
+        &lt;i data-lucide="command" style="width:1rem;height:1rem;"&gt;&lt;/i&gt;
+        &lt;span class="sidebar-logo-text"&gt;MyApp&lt;/span&gt;
+      &lt;/a&gt;
+    &lt;/div&gt;
+    &lt;div class="sidebar-content"&gt;
+      &lt;nav class="sidebar-nav"&gt;
+        &lt;a class="sidebar-link" href="#" aria-current="page"&gt;&lt;i data-lucide="home"&gt;&lt;/i&gt;&lt;span&gt;Dashboard&lt;/span&gt;&lt;/a&gt;
+        &lt;a class="sidebar-link" href="#"&gt;&lt;i data-lucide="inbox"&gt;&lt;/i&gt;&lt;span&gt;Inbox&lt;/span&gt;&lt;/a&gt;
+        &lt;a class="sidebar-link" href="#"&gt;&lt;i data-lucide="folder"&gt;&lt;/i&gt;&lt;span&gt;Projects&lt;/span&gt;&lt;/a&gt;
+      &lt;/nav&gt;
+    &lt;/div&gt;
+  &lt;/aside&gt;
+&lt;/div&gt;
+</textarea></div><div class="code-example-panel" data-panel="state" hidden=""></div></div><div class="code-example" data-component="resizer" data-schema="{&#xA;  &quot;schemaVersion&quot;: 1,&#xA;  &quot;name&quot;: &quot;resizer&quot;,&#xA;  &quot;states&quot;: {&#xA;    &quot;width&quot;: {&#xA;      &quot;type&quot;: &quot;number&quot;,&#xA;      &quot;default&quot;: 320,&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.resizer&quot;&#xA;      },&#xA;      &quot;mutation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-width&quot;&#xA;      },&#xA;      &quot;observation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-width&quot;&#xA;      },&#xA;      &quot;editor&quot;: {&#xA;        &quot;component&quot;: &quot;number&quot;&#xA;      }&#xA;    },&#xA;    &quot;height&quot;: {&#xA;      &quot;type&quot;: &quot;number&quot;,&#xA;      &quot;default&quot;: 160,&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.resizer&quot;&#xA;      },&#xA;      &quot;mutation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-height&quot;&#xA;      },&#xA;      &quot;observation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-height&quot;&#xA;      },&#xA;      &quot;editor&quot;: {&#xA;        &quot;component&quot;: &quot;number&quot;&#xA;      }&#xA;    }&#xA;  },&#xA;  &quot;actions&quot;: {&#xA;    &quot;reset&quot;: {&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.resizer&quot;&#xA;      },&#xA;      &quot;operation&quot;: {&#xA;        &quot;kind&quot;: &quot;event&quot;,&#xA;        &quot;name&quot;: &quot;resizer-reset&quot;&#xA;      }&#xA;    }&#xA;  }&#xA;}&#xA;" data-state-demo="" data-height="24" data-vp-mode="desktop" data-preview-style="margin:1rem;"><p class="text-sm font-medium mb-2" id="toc-sidebar-classes"><a class="heading-anchor" href="#toc-sidebar-classes" aria-label="Link to section: Sidebar — classes">§</a>Sidebar — classes</p><p class="text-xs text-muted-foreground mb-3">data-resize-mode='classes': dragging swaps w-N/h-N utilities on the aside — inspect the Code tab while you drag and the class attribute is the only thing that changes. Authored w-96 (= the rail's 24rem auto-collapse threshold): narrower snaps dock it to the icon rail.</p><div class="preview" style="padding:0.75rem;overflow:hidden;"><div class="ce-screen" data-mode="full"><div class="resizer ce-resizer" data-handles="all" data-resize-mode="controlled" data-axis="both" data-min="240" data-max="1600" data-min-h="240" data-max-h="1400"><div class="ce-device"><iframe class="code-example-frame" sandbox="allow-scripts" title="Sidebar — classes" style="width:100%;min-height:8rem;border:0;display:block;"></iframe><span class="ce-device-island" aria-hidden="true"></span><span class="ce-device-home" aria-hidden="true"></span></div></div></div><output class="code-example-error" role="alert" hidden=""></output></div><div class="code-example-toolbar"><span class="code-example-viewport" role="group" aria-label="Preview device"><button class="code-example-vp" data-vp="rotate" title="Swap orientation (phone/tablet)" aria-disabled="true"><i data-lucide="rotate-cw"></i><span>Rotate</span></button><button class="code-example-vp" data-vp="phone" aria-pressed="false" title="Phone 390×844"><i data-lucide="smartphone"></i><span>Phone</span></button><button class="code-example-vp" data-vp="tablet" aria-pressed="false" title="Tablet 834×1112"><i data-lucide="tablet"></i><span>Tablet</span></button><button class="code-example-vp" data-vp="desktop" aria-pressed="false" title="Desktop 1024"><i data-lucide="monitor"></i><span>Desktop</span></button><button class="code-example-vp" data-vp="full" aria-pressed="true" title="Full width (source default)"><i data-lucide="app-window"></i><span>Full</span></button></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-w" type="number" min="240" step="10" inputmode="numeric" placeholder="Width" aria-label="Custom preview width (px)" /><span class="code-example-vp-x" aria-hidden="true">×</span><input class="code-example-vp-h" type="number" min="240" step="10" inputmode="numeric" placeholder="Full" aria-label="Custom preview height (px)" disabled="" /></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-z" type="number" min="25" max="100" step="5" inputmode="numeric" placeholder="Auto" aria-label="Preview zoom (%)" /><span class="code-example-vp-x" aria-hidden="true">%</span></span><span class="code-example-spacer"></span><button class="code-example-tab" data-tab="code" aria-pressed="false" title="Show or hide the example source"><i data-lucide="code-xml"></i><span>Code</span></button><button class="code-example-tab" data-tab="state" aria-pressed="false" title="Show or hide the state contract"><i data-lucide="sliders-horizontal"></i><span>State</span></button><button class="code-example-copy" title="Copy the example source"><i data-lucide="copy"></i><span>Copy</span></button><button class="code-example-reset" title="Restore the original source and rerun"><i data-lucide="rotate-ccw"></i><span>Reset</span></button></div><div class="code-example-panel" data-panel="code" hidden=""><textarea class="code-example-src" spellcheck="false" aria-label="Editable source for: Sidebar — classes" rows="10">&lt;div class="resizer" data-handles="all" data-resize-mode="classes" data-min="220" data-max="560" data-min-h="160" data-max-h="480"&gt;
+  &lt;aside class="app-sidebar w-96 h-72" style="border-radius:var(--radius-lg);"&gt;
+    &lt;div class="sidebar-header"&gt;
+      &lt;a class="sidebar-logo" href="#"&gt;
+        &lt;i data-lucide="command" style="width:1rem;height:1rem;"&gt;&lt;/i&gt;
+        &lt;span class="sidebar-logo-text"&gt;MyApp&lt;/span&gt;
+      &lt;/a&gt;
+    &lt;/div&gt;
+    &lt;div class="sidebar-content"&gt;
+      &lt;nav class="sidebar-nav"&gt;
+        &lt;a class="sidebar-link" href="#" aria-current="page"&gt;&lt;i data-lucide="home"&gt;&lt;/i&gt;&lt;span&gt;Dashboard&lt;/span&gt;&lt;/a&gt;
+        &lt;a class="sidebar-link" href="#"&gt;&lt;i data-lucide="inbox"&gt;&lt;/i&gt;&lt;span&gt;Inbox&lt;/span&gt;&lt;/a&gt;
+        &lt;a class="sidebar-link" href="#"&gt;&lt;i data-lucide="folder"&gt;&lt;/i&gt;&lt;span&gt;Projects&lt;/span&gt;&lt;/a&gt;
+      &lt;/nav&gt;
+    &lt;/div&gt;
+  &lt;/aside&gt;
+&lt;/div&gt;
+</textarea></div><div class="code-example-panel" data-panel="state" hidden=""></div></div><section style="margin-top:3rem;" id="states"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-states"><a class="heading-anchor" href="#toc-states" aria-label="Link to section: States">§</a>States</h2><p class="text-sm text-muted-foreground m-0 mb-3">The <code>default</code> state restores the size the markup was authored with (snapshotted at init); <code>setState('default', { width, height })</code> applies an explicit px size instead, and <code>getState().config</code> always reports the live box plus the active mode. The wrapper mirrors the live size onto <code>data-width</code>/<code>data-height</code>, and external writes to those attributes are applied back — that is the loop the State tab uses.</p><p>Machine contract — verified against <a href="../schemas/resizer.schema.json"><code>resizer.schema.json</code></a> by <code>bun run verify</code>:</p><div class="states-table-wrap"><table class="table states-table" data-variant="simple"><thead><tr><th scope="col" class="st-state">State</th><th scope="col" class="st-type">Type</th><th scope="col" class="st-values">Values</th><th scope="col" class="st-default">Default</th><th scope="col" class="st-desc">Description</th></tr></thead><tbody><tr><td class="st-state"><code>width</code></td><td class="st-type"><code>number</code></td><td class="st-values"><code>—</code></td><td class="st-default"><code>320</code></td><td class="st-desc">Live width in px, mirrored on <code>data-width</code> (drags and keyboard write it; panel edits apply back).</td></tr><tr><td class="st-state"><code>height</code></td><td class="st-type"><code>number</code></td><td class="st-values"><code>—</code></td><td class="st-default"><code>160</code></td><td class="st-desc">Live height in px, mirrored on <code>data-height</code> (dropped while <code>data-axis="w"</code>).</td></tr></tbody></table></div><p>The action <code>reset</code> dispatches <code>resizer-reset</code> on the wrapper — equivalent to <code>setState('default')</code>.</p></section><section style="margin-top:3rem;" id="source-css"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-css"><a class="heading-anchor" href="#toc-css" aria-label="Link to section: CSS">§</a>CSS <a href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/resizer/resizer.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2><p class="text-muted-foreground text-sm mb-4">Handle geometry, cursors and the drag feedback state live here; the sizing behavior is runtime-driven.</p><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-scss">@layer components {
+  /* -- Resizer --------------------------------------------------
+     Wraps ONE container element and adds draggable handles on any subset of
+     its 8 positions (sides + corners). The wrapper is the positioning context;
+     handles overhang the border box by design, so keep overflow visible.
+     Sizing behavior (px vs w-/h- classes) is driven by the runtime — this
+     sheet owns only the handle geometry, cursors and feedback states. */
+  .resizer {
+    position: relative;
+    /* block box hugging the wrapped element (its intrinsic width) so handles
+       sit on the BOX's edges, not the container's; an explicit authored/
+       runtime width overrides this (e.g. the CodeExample toolbar writes px) */
+    width: fit-content;
+  }
+
+  /* The resizer owns resizing: a native CSS `resize` on the wrapped element
+     (e.g. a resizable canvas) would double the affordances — the runtime
+     neutralizes it inline; this is the authored-CSS fallback. */
+  .resizer[data-resize-mode] {
+    resize: none;
+  }
+
+  .resizer-handle {
+    position: absolute;
+    z-index: 5;
+    display: block;
+    box-sizing: border-box;
+    width: 0.375rem;
+    height: 0.375rem;
+    background: var(--background);
+    border: 1px solid var(--primary);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-2xs);
+    touch-action: none; /* the pointer-drag is ours — no scroll/pinch steal */
+    opacity: 0.85;
+    transition: opacity 120ms ease, background-color 120ms ease, transform 120ms ease;
+
+    /* generous hit area around the small visible chip */
+    &amp;::after {
+      content: '';
+      position: absolute;
+      inset: -0.5rem;
+    }
+
+    &amp;:hover {
+      opacity: 1;
+      background: var(--primary);
+    }
+
+    &amp;:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+      opacity: 1;
+    }
+  }
+
+  /* drag in progress — the active handle (and the box) read as engaged */
+  .resizer[data-resizing] &gt; .resizer-handle {
+    opacity: 1;
+    background: var(--primary);
+  }
+  .resizer[data-resizing] {
+    outline: 1px dashed var(--ring);
+    outline-offset: 2px;
+  }
+
+  /* -- side geometry: edge centers + corners, with the right cursor -------- */
+  .resizer-handle[data-handle='n'] {
+    top: -0.1875rem;
+    left: 50%;
+    translate: -50% -50%;
+    cursor: ns-resize;
+  }
+  .resizer-handle[data-handle='s'] {
+    bottom: -0.1875rem;
+    left: 50%;
+    translate: -50% 50%;
+    cursor: ns-resize;
+  }
+  .resizer-handle[data-handle='e'] {
+    right: -0.1875rem;
+    top: 50%;
+    translate: 50% -50%;
+    cursor: ew-resize;
+  }
+  .resizer-handle[data-handle='w'] {
+    left: -0.1875rem;
+    top: 50%;
+    translate: -50% -50%;
+    cursor: ew-resize;
+  }
+  .resizer-handle[data-handle='ne'] {
+    top: -0.1875rem;
+    right: -0.1875rem;
+    translate: 50% -50%;
+    cursor: nesw-resize;
+  }
+  .resizer-handle[data-handle='nw'] {
+    top: -0.1875rem;
+    left: -0.1875rem;
+    translate: -50% -50%;
+    cursor: nwse-resize;
+  }
+  .resizer-handle[data-handle='se'] {
+    bottom: -0.1875rem;
+    right: -0.1875rem;
+    translate: 50% 50%;
+    cursor: nwse-resize;
+  }
+  .resizer-handle[data-handle='sw'] {
+    bottom: -0.1875rem;
+    left: -0.1875rem;
+    translate: -50% 50%;
+    cursor: nesw-resize;
+  }
+
+  /* -- Accessibility media features (REQUIRED) ------------------ */
+  @media (prefers-reduced-motion: reduce) {
+    .resizer-handle,
+    .resizer[data-resizing] &gt; .resizer-handle {
+      transition: none;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .resizer-handle {
+      width: 0.625rem;
+      height: 0.625rem;
+      opacity: 1;
+      border-width: 2px;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .resizer-handle {
+      background: Canvas;
+      border-color: CanvasText;
+      forced-color-adjust: none;
+    }
+    .resizer[data-resizing] &gt; .resizer-handle {
+      background: Highlight;
+      border-color: Highlight;
+    }
+  }
+}
+</code></pre></div></section><section style="margin-top:3rem;" id="source-js"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-javascript"><a class="heading-anchor" href="#toc-javascript" aria-label="Link to section: JavaScript">§</a>JavaScript <a href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/resizer/resizer.js" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2><p class="text-muted-foreground text-sm mb-4">One <code>applySize()</code> funnels drag, keyboard, panel-edit and <code>setState</code> traffic through the same mode switch, so px / classes / controlled differ in exactly one place.</p><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-javascript">// -- Resizer ----------------------------------------------------
+// Wraps ONE container element and makes it resizable via draggable handles
+// on any subset of the 8 positions (n/e/s/w + ne/se/sw/nw), configured by
+// data attributes (AGENTS.md "State API").
+//
+// Contract (all attributes on the .resizer wrapper; the resized box is the
+// wrapper's first element child — the wrapper tracks the child's box):
+//   data-handles      which handles to place: space list (e.g. "e s se"),
+//                     or "all"; default "se". Handles the axis restricts
+//                     (e.g. n/s under data-axis="w") are never placed —
+//                     changing either attribute re-syncs them live.
+//   data-resize-mode  "px" (pixel-perfect, default) | "classes" (snap to the
+//                     sizing.css w-N / h-N ladder — the class attribute IS
+//                     the size state) | "controlled" (the runtime writes
+//                     NOTHING and only fires `resizer-resize` events —
+//                     consumers own the size, e.g. the CodeExample toolbar)
+//   data-axis         "both" (default) | "w" | "h"
+//   data-min / data-max        shared clamp px (defaults 80 / 2000); per-axis
+//                     overrides data-min-w/-max-w/-min-h/-max-h
+//   data-step         px quantization for drag (default 1)
+//   data-step-key     keyboard arrow step (default 10; Shift multiplies ×10)
+//   data-w-classes / data-h-classes  classes-mode ladder override: space-list
+//                     of exact tokens (e.g. "w-40 w-48 w-56"); the default
+//                     ladder is the integer w-N/h-N scale 16..96 (4–24 rem)
+//   data-width / data-height     px mirror of the live size — the observation
+//                     surface for the machine contract (the CodeExample State
+//                     tab edits these attributes; a MutationObserver applies
+//                     them back, so panel edits and drags stay in sync)
+//
+// Handles are runtime-made chrome: marked `data-ce-chrome` so the CodeExample
+// sandbox serializer never leaks them into example source. Without JS the
+// markup renders untouched — resizing is intrinsically interactive behavior.
+
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
+import { defussGlobals } from '../../shared/state-api.js';
+
+const df$ = defussGlobals();
+
+const resizerStates = ['default'];
+
+/** The 8 handle positions; corners resize both axes unless data-axis limits it. */
+const HANDLES = ['n', 'e', 's', 'w', 'ne', 'nw', 'se', 'sw'] as const;
+type Handle = (typeof HANDLES)[number];
+
+/** Default classes-mode ladder numbers: w-N/h-N from 16 (4rem) to 96 (24rem),
+ *  the integer scale sizing.css ships (the demo-friendly band). */
+const CLASS_NUMBERS = Array.from({ length: 81 }, (_, i) =&gt; i + 16);
+
+const clamp = (v: number, lo: number, hi: number): number =&gt; Math.min(hi, Math.max(lo, v));
+
+/** Read one numeric data attribute (camelCase key) with a fallback. */
+const numAttr = (el: HTMLElement, key: string, fallback: number): number =&gt; {
+  const v = parseFloat(el.dataset[key] ?? '');
+  return Number.isFinite(v) ? v : fallback;
+};
+
+/** The box being resized: the wrapper's first element child (never a handle). */
+function targetOf(wrapper: HTMLElement): HTMLElement | null {
+  for (const el of Array.from(wrapper.children)) {
+    if (!(el as HTMLElement).hasAttribute('data-handle')) return el as HTMLElement;
+  }
+  return null;
+}
+
+/** Handles this wrapper asks for ("all" or a space list), restricted to the
+ *  axes the box can actually take (an axis-restricted handle would drag
+ *  against a cursor that promises nothing). */
+function handleSet(wrapper: HTMLElement): Handle[] {
+  const spec = (wrapper.dataset.handles || 'se').trim();
+  const requested = spec === 'all' ? [...HANDLES] : spec.split(/[\s,]+/).filter((h): h is Handle =&gt; (HANDLES as readonly string[]).includes(h));
+  const axis = wrapper.dataset.axis || 'both';
+  if (axis === 'both') return requested;
+  const moves = (h: string): boolean =&gt; (axis === 'w' ? /e|w/.test(h) : /n|s/.test(h));
+  return requested.filter(moves);
+}
+
+/** The classes-mode token list for one axis (default integer ladder 16..96). */
+function ladderTokens(wrapper: HTMLElement, axis: 'w' | 'h'): string[] {
+  const custom = axis === 'w' ? wrapper.dataset.wClasses : wrapper.dataset.hClasses;
+  if (custom) return custom.trim().split(/\s+/);
+  return CLASS_NUMBERS.map((n) =&gt; `${axis}-${n}`);
+}
+
+// Token → px cache (classes mode). The ladder is static CSS, so one token
+// resolves to one px value per document (--size-base changes would need a
+// reload — no shipped surface does that mid-session). Measured on the resized
+// element itself with ONLY the probed token applied (real styles). Keyed per
+// axis because a token like `w-40` measures differently from `h-40`.
+const LADDER_PX = new Map&lt;string, number&gt;();
+function tokenPx(wrapper: HTMLElement, token: string, axis: 'w' | 'h'): number {
+  const key = axis + token;
+  let px = LADDER_PX.get(key);
+  if (px !== undefined) return px;
+  const target = targetOf(wrapper)!;
+  const had = Array.from(target.classList).filter((c) =&gt; /^[wh]-[\d.]+$/.test(c));
+  had.forEach((c) =&gt; target.classList.remove(c));
+  target.classList.add(token);
+  const box = target.getBoundingClientRect();
+  px = (axis === 'w' ? box.width : box.height) / zoomOf(wrapper);
+  target.classList.remove(token);
+  had.forEach((c) =&gt; target.classList.add(c));
+  LADDER_PX.set(key, px);
+  return px;
+}
+
+/** Nearest ladder token to a px request. */
+function nearestToken(wrapper: HTMLElement, ladder: string[], wantedPx: number, axis: 'w' | 'h'): string {
+  let best = ladder[0];
+  let bestD = Infinity;
+  for (const token of ladder) {
+    const d = Math.abs(tokenPx(wrapper, token, axis) - wantedPx);
+    if (d &lt; bestD) { bestD = d; best = token; }
+  }
+  return best;
+}
+
+/** Replace the axis's sizing-ladder token on the target (classes mode). */
+function setClassSize(el: HTMLElement, token: string, ladder: string[]): void {
+  const owned = new Set(ladder);
+  for (const cls of Array.from(el.classList)) if (owned.has(cls) &amp;&amp; cls !== token) el.classList.remove(cls);
+  if (!el.classList.contains(token)) el.classList.add(token);
+}
+
+/** Apply a px size to the target (px mode). Guarded write — same bytes must
+ *  not fire the sandbox serializer nor a redundant style mutation. */
+function setPxSize(el: HTMLElement, axis: 'w' | 'h', px: number): void {
+  const prop = axis === 'w' ? 'width' : 'height';
+  const value = `${Math.round(px)}px`;
+  if (el.style.getPropertyValue(prop) !== value) el.style.setProperty(prop, value);
+}
+
+/** The wrapper's clamp bounds for an axis. */
+function bounds(wrapper: HTMLElement, axis: 'w' | 'h'): [number, number] {
+  const min = numAttr(wrapper, axis === 'w' ? 'minW' : 'minH', numAttr(wrapper, 'min', 80));
+  const max = numAttr(wrapper, axis === 'w' ? 'maxW' : 'maxH', numAttr(wrapper, 'max', 2000));
+  return [min, max];
+}
+
+/** CSS `zoom` on the WRAPPER (Chromium serializes it as a number, other
+ *  engines may use a percentage — normalize both). The toolbar of the
+ *  CodeExample zooms the wrapper; `zoom` is not inherited, so it must be read
+ *  where it is applied (getBoundingClientRect already includes it). */
+function zoomOf(el: HTMLElement): number {
+  const zs = getComputedStyle(el).zoom || '1';
+  const z = zs.includes('%') ? parseFloat(zs) / 100 : parseFloat(zs);
+  return Number.isFinite(z) &amp;&amp; z &gt; 0 ? z : 1;
+}
+
+/** Live px size of one axis (the target owns the box). getBoundingClientRect()
+ *  already includes any CSS `zoom` on the wrapper, so divide it out — the drag
+ *  math works in true layout px (a drag started from a zoomed measure jumps). */
+function currentPx(wrapper: HTMLElement, axis: 'w' | 'h'): number {
+  const target = targetOf(wrapper);
+  if (!target) return 0;
+  const box = target.getBoundingClientRect();
+  const raw = axis === 'w' ? box.width : box.height;
+  return Math.round(raw / zoomOf(wrapper));
+}
+
+/**
+ * Apply one size change through the configured mode. Everything — drag,
+ * keyboard, panel edits, setState — funnels through here, so px/classes/
+ * controlled differ in exactly this one place. Fires `resizer-resize` with
+ * the resulting box (controlled mode reports the requested px — nothing was
+ * applied yet; consumers own the size).
+ */
+function applySize(wrapper: HTMLElement, axis: 'w' | 'h', px: number): void {
+  const target = targetOf(wrapper);
+  if (!target) return;
+  const mode = wrapper.dataset.resizeMode || 'px';
+  const [min, max] = bounds(wrapper, axis);
+  const wanted = clamp(px, min, max);
+  let resolved = wanted;
+
+  if (mode === 'classes') {
+    const ladder = ladderTokens(wrapper, axis);
+    setClassSize(target, nearestToken(wrapper, ladder, wanted, axis), ladder);
+    resolved = currentPx(wrapper, axis); // CSS owns the size — read it back
+  } else if (mode !== 'controlled') {
+    const step = Math.max(1, numAttr(wrapper, 'step', 1));
+    resolved = Math.round(wanted / step) * step;
+    setPxSize(target, axis, resolved);
+  }
+
+  if (mode !== 'controlled') {
+    // px mirror (the observation surface) — guarded so our own write leaves
+    // the MutationObserver idle when nothing changed
+    const key = axis === 'w' ? 'width' : 'height';
+    const value = String(Math.round(resolved));
+    if (wrapper.dataset[key] !== value) wrapper.dataset[key] = value;
+  }
+  wrapper.dispatchEvent(
+    new CustomEvent('resizer-resize', {
+      bubbles: true,
+      detail: {
+        axis,
+        width: axis === 'w' ? (mode === 'controlled' ? Math.round(wanted) : currentPx(wrapper, 'w')) : currentPx(wrapper, 'w'),
+        height: axis === 'h' ? (mode === 'controlled' ? Math.round(wanted) : currentPx(wrapper, 'h')) : currentPx(wrapper, 'h'),
+      },
+    }),
+  );
+}
+
+/**
+ * UI side of setState. 'default' restores the authored snapshot taken at init
+ * (or an explicit { width, height } px config). Unknown names are rejected
+ * upstream by the api.
+ */
+function triggerStateChange(wrapper: HTMLElement, stateName: string, config: Record&lt;string, unknown&gt; = {}): void {
+  if (stateName !== 'default') return;
+  if (config.width !== undefined || wrapper._defaultSize) applySize(wrapper, 'w', Number(config.width ?? wrapper._defaultSize?.[0]));
+  if (config.height !== undefined || wrapper._defaultSize) applySize(wrapper, 'h', Number(config.height ?? wrapper._defaultSize?.[1]));
+}
+
+/** Registry-level API; pass the .resizer wrapper explicitly. Unknown names throw. */
+export const resizerApi = {
+  setState(wrapper: HTMLElement, stateName: string, config: Record&lt;string, unknown&gt; = {}) {
+    if (!resizerStates.includes(stateName)) {
+      throw new Error(`resizer: unknown state "${stateName}" (supported: ${resizerStates.join(', ')})`);
+    }
+    triggerStateChange(wrapper, stateName, config);
+    // state lives on the ELEMENT, not module scope (AGENTS.md "State API")
+    wrapper.dataset.stateName = stateName;
+    wrapper._stateConfig = config;
+  },
+  getState(wrapper: HTMLElement) {
+    // reflect reality: drags move the size without setState()
+    return {
+      name: wrapper.dataset.stateName || 'default',
+      config: {
+        ...wrapper._stateConfig,
+        width: currentPx(wrapper, 'w'),
+        height: currentPx(wrapper, 'h'),
+        mode: wrapper.dataset.resizeMode || 'px',
+      },
+    };
+  },
+};
+
+df$.resizerApi = resizerApi;
+df$.resizerStates = resizerStates;
+
+const HANDLE_LABEL: Record&lt;string, string&gt; = {
+  n: 'top edge', s: 'bottom edge', e: 'right edge', w: 'left edge',
+  ne: 'top-right corner', nw: 'top-left corner', se: 'bottom-right corner', sw: 'bottom-left corner',
+};
+
+function makeHandle(wrapper: HTMLElement, h: Handle): HTMLElement {
+  const el = document.createElement('span');
+  el.className = 'resizer-handle';
+  el.dataset.handle = h;
+  el.setAttribute('role', 'separator');
+  el.setAttribute('tabindex', '0');
+  // edge handles announce their orientation; corners own both axes
+  if (h.length === 1) el.setAttribute('aria-orientation', h === 'n' || h === 's' ? 'horizontal' : 'vertical');
+  el.setAttribute('aria-label', `Resize ${HANDLE_LABEL[h]}`);
+  // sandbox chrome marker: the bridge serializer must never leak runtime
+  // handles into a CodeExample's editable source
+  el.setAttribute('data-ce-chrome', '');
+  el.addEventListener('pointerdown', (ev) =&gt; startDrag(wrapper, el, ev as PointerEvent));
+  el.addEventListener('keydown', (ev) =&gt; handleKeys(wrapper, el, ev));
+  return el;
+}
+
+/** Place/repair the handle set for the current config (also re-run on live
+ *  data-handles / data-axis changes — the CodeExample toolbar flips modes). */
+function syncHandles(wrapper: HTMLElement): void {
+  const want = handleSet(wrapper);
+  for (const el of Array.from(wrapper.querySelectorAll(':scope &gt; .resizer-handle'))) {
+    if (!want.includes((el as HTMLElement).dataset.handle as Handle)) el.remove();
+  }
+  for (const h of want) {
+    if (!wrapper.querySelector(`:scope &gt; .resizer-handle[data-handle="${h}"]`)) wrapper.appendChild(makeHandle(wrapper, h));
+  }
+}
+
+/** Keyboard parity (same convention as the CodeExample preview grip):
+ *  ArrowRight / ArrowUp grow, ArrowLeft / ArrowDown shrink — Shift ×10,
+ *  Home/End jump to the clamp bounds. Corners drive both axes at once. */
+function handleKeys(wrapper: HTMLElement, handle: HTMLElement, ev: KeyboardEvent): void {
+  const sides = handle.dataset.handle;
+  if (!sides) return;
+  const dir = ev.key === 'ArrowRight' || ev.key === 'ArrowUp' ? 1 : ev.key === 'ArrowLeft' || ev.key === 'ArrowDown' ? -1 : 0;
+  if (dir === 0 &amp;&amp; ev.key !== 'Home' &amp;&amp; ev.key !== 'End') return;
+  ev.preventDefault();
+  const step = (numAttr(wrapper, 'stepKey', 10) || 10) * (ev.shiftKey ? 10 : 1);
+  const apply = (axis: 'w' | 'h'): void =&gt; {
+    const [min, max] = bounds(wrapper, axis);
+    const cur = currentPx(wrapper, axis);
+    applySize(wrapper, axis, ev.key === 'Home' ? min : ev.key === 'End' ? max : cur + dir * step);
+  };
+  if (sides.includes('e') || sides.includes('w')) apply('w');
+  if (sides.includes('n') || sides.includes('s')) apply('h');
+}
+
+/** One handle's drag: capture the pointer, translate movement into the axis
+ *  deltas the position implies, feed applySize (mode-agnostic). */
+function startDrag(wrapper: HTMLElement, handle: HTMLElement, ev: PointerEvent): void {
+  if (ev.button !== 0) return;
+  ev.preventDefault();
+  handle.setPointerCapture(ev.pointerId);
+  const side = handle.dataset.handle || 'se';
+  const axis = wrapper.dataset.axis || 'both';
+  const startX = ev.clientX;
+  const startY = ev.clientY;
+  const startW = currentPx(wrapper, 'w');
+  const startH = currentPx(wrapper, 'h');
+  // pointer deltas are SCREEN px; the box works in layout px — undo the zoom
+  const z = zoomOf(wrapper);
+  // sign per edge: handles on the left/top grow the box by NEGATIVE movement
+  const dx = side.includes('w') ? -1 : side.includes('e') ? 1 : 0;
+  const dy = side.includes('n') ? -1 : side.includes('s') ? 1 : 0;
+  wrapper.dataset.resizing = side;
+  const onMove = (e: PointerEvent): void =&gt; {
+    if (dx !== 0 &amp;&amp; axis !== 'h') applySize(wrapper, 'w', startW + (dx * (e.clientX - startX)) / z);
+    if (dy !== 0 &amp;&amp; axis !== 'w') applySize(wrapper, 'h', startH + (dy * (e.clientY - startY)) / z);
+  };
+  const onUp = (): void =&gt; {
+    delete wrapper.dataset.resizing;
+    handle.removeEventListener('pointermove', onMove);
+    handle.removeEventListener('pointerup', onUp);
+    handle.removeEventListener('pointercancel', onUp);
+  };
+  handle.addEventListener('pointermove', onMove);
+  handle.addEventListener('pointerup', onUp);
+  handle.addEventListener('pointercancel', onUp);
+}
+
+function init(): void {
+  document.querySelectorAll&lt;HTMLElement&gt;('.resizer:not([data-init])').forEach((wrapper) =&gt; {
+    wrapper.dataset.init = '';
+    if (!targetOf(wrapper)) return; // a resizer wraps exactly ONE element
+    // authored snapshot for the 'default' state (computed — works for px and
+    // classes authored alike)
+    wrapper._defaultSize = [currentPx(wrapper, 'w'), currentPx(wrapper, 'h')];
+    wrapper.api = {
+      setState: (stateName: string, config?: Record&lt;string, unknown&gt;) =&gt; resizerApi.setState(wrapper, stateName, config),
+      getState: () =&gt; resizerApi.getState(wrapper),
+    };
+    syncHandles(wrapper);
+    // native CSS `resize` (e.g. a resizable textarea) would double the
+    // affordances — this component owns the interaction
+    const target = targetOf(wrapper);
+    target?.style.setProperty('resize', 'none');
+
+    // data-width/data-height are the machine-contract surface: bridge panel
+    // edits apply back through here. data-handles/data-axis re-sync handles.
+    new MutationObserver((records) =&gt; {
+      for (const r of records) {
+        if (r.attributeName === 'data-handles' || r.attributeName === 'data-axis') {
+          syncHandles(wrapper);
+          continue;
+        }
+        const axis: 'w' | 'h' = r.attributeName === 'data-width' ? 'w' : 'h';
+        const v = parseFloat(wrapper.dataset[axis === 'w' ? 'width' : 'height'] ?? '');
+        // act only on EXTERNAL writes that differ from the live box (our own
+        // mirror write lands here too — same value, so it no-ops)
+        if (Number.isFinite(v) &amp;&amp; Math.abs(currentPx(wrapper, axis) - v) &gt; 0.5) applySize(wrapper, axis, v);
+      }
+    }).observe(wrapper, { attributes: true, attributeFilter: ['data-width', 'data-height', 'data-handles', 'data-axis'] });
+
+    // schema action surface: `resizer-reset` → authored size
+    wrapper.addEventListener('resizer-reset', () =&gt; resizerApi.setState(wrapper, 'default'));
+  });
+}
+
+init();
+new MutationObserver(init).observe(document, { childList: true, subtree: true });
+</code></pre></div></section><nav class="page-nav"><a class="page-nav-link page-nav-prev" href="sidebar.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><div><span class="page-nav-label">Previous</span><span class="page-nav-title">Sidebar</span></div></a><a class="page-nav-link page-nav-next" href="site-header.html"><div><span class="page-nav-label">Next</span><span class="page-nav-title">Site Header</span></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></nav></main><aside class="site-toc"><div class="site-toc-content"><p class="toc-title">On This Page</p><a class="toc-link" href="#toc-pixel-perfect">Pixel-perfect</a><a class="toc-link" href="#toc-all-sides-corners">All sides + corners</a><a class="toc-link" href="#toc-width-only">Width only</a><a class="toc-link" href="#toc-class-based-sizing">Class-based sizing</a><a class="toc-link" href="#toc-controlled">Controlled</a><a class="toc-link" href="#toc-resizing-a-sidebar">Resizing a Sidebar</a><a class="toc-link" href="#toc-sidebar-pixels">Sidebar — pixels</a><a class="toc-link" href="#toc-sidebar-classes">Sidebar — classes</a><a class="toc-link" href="#toc-states">States</a><a class="toc-link" href="#toc-css">CSS</a><a class="toc-link" href="#toc-javascript">JavaScript</a></div></aside></div><script>try {
+  var c = JSON.parse(localStorage.getItem('defuss-shadcn-nav-collapsed') || '{}');
+  if (c && typeof c === 'object' && !Array.isArray(c)) {
+    for (var h in c) {
+      var d = document.querySelector('details[data-nav-section="' + h + '"]');
+      if (!d) continue;
+      if (c[h] === '1') d.open = true;
+      else if (!d.querySelector('a.nav-link.active')) d.open = false;
+    }
+  }
+  if (localStorage.getItem('defuss-shadcn-nav-docked') === '1') {
+    var sb = document.querySelector('.site-sidebar');
+    /* stateName pins it: the sidebar component's auto-collapse treats a
+       set stateName as a deliberate user choice and leaves it alone */
+    if (sb) { sb.dataset.state = 'collapsed'; sb.dataset.stateName = 'collapsed'; }
+  }
+} catch (e) {}</script><footer class="site-footer"><p class="site-footer-tagline">Agentically engineered with local Qwen3.8-Flash-Next/vLLM, quality-gated automatically, and human-reviewed before release.</p><p class="site-footer-tagline" style="margin-top:0;">Reworked, enhanced and maintained by <a href="https://aron-homberg.de" target="_blank" rel="noopener">Aron Homberg</a></p><span class="site-footer-dot"> · </span>MIT Licensed<span class="site-footer-dot"> · </span><a href="https://github.com/kyr0/defuss-shadcn" target="_blank" rel="noopener">Source on GitHub</a></footer><script src="js/site.js" defer=""></script><script src="js/code-example.js" defer=""></script><script type="module" src="js/shiki-highlight.js"></script><script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.js"></script><script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script><script>globalThis.lucide?.createIcons();</script></body></html>

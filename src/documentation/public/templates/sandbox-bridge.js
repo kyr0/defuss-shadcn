@@ -103,6 +103,9 @@
       // runtime infrastructure, not example source; never serialize it
       if (el.id === 'toast-container') continue;
       var clone = el.cloneNode(true);
+      // runtime chrome INSIDE an example (e.g. the resizer's handles) is the
+      // same environment noise as top-level chrome — never part of the source
+      clone.querySelectorAll('[data-ce-chrome]').forEach(function (n) { n.remove(); });
       // querySelectorAll never matches SELF — a root-level <input> (the common
       // example shape) would lose its runtime value without the matches() leg
       var live = el.matches('input, textarea') ? [el] : Array.prototype.slice.call(el.querySelectorAll('input, textarea'));

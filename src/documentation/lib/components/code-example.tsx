@@ -120,12 +120,25 @@ export function CodeExample({ source, component, label, hint, height, mode, prev
           padding gives the canvas breathing room inside the card (medium 0.75rem);
           overflow hidden keeps wide content clipped until the viewport toolbar's
           device modes flip it (code-example.js). */}
+      {/* the resizer component (dogfooded): 8 handles around the preview box —
+          any side or corner drags, replacing the old SE-only grip. Controlled
+          mode: the toolbar runtime owns the size (drives the W/H fields), the
+          resizer only measures + dispatches. clamps mirror the old grip
+          (240..1600 w, 240..1400 h). */}
       <div class="preview" style="padding:0.75rem;overflow:hidden;">
         <div class="ce-screen" data-mode="full">
-          <div class="ce-device">
-            <iframe class="code-example-frame" sandbox="allow-scripts" title={name} style="width:100%;min-height:8rem;border:0;display:block;"></iframe>
-            <span class="ce-device-island" aria-hidden="true"></span>
-            <span class="ce-device-home" aria-hidden="true"></span>
+          {/* the resizer component (dogfooded): handles on EVERY side and
+              corner of the canvas box (the old SE-only grip is retired).
+              Controlled mode: the toolbar runtime owns the size (drives the
+              W/H fields) — the component only measures, clamps, keyboard-
+              drives and dispatches resizer-resize. Clamps mirror the old
+              grip (240..1600 w, 240..1400 h). */}
+          <div class="resizer ce-resizer" data-handles="all" data-resize-mode="controlled" data-axis="both" data-min="240" data-max="1600" data-min-h="240" data-max-h="1400">
+            <div class="ce-device">
+              <iframe class="code-example-frame" sandbox="allow-scripts" title={name} style="width:100%;min-height:8rem;border:0;display:block;"></iframe>
+              <span class="ce-device-island" aria-hidden="true"></span>
+              <span class="ce-device-home" aria-hidden="true"></span>
+            </div>
           </div>
         </div>
         <output class="code-example-error" role="alert" hidden></output>

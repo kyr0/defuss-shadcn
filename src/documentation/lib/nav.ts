@@ -140,6 +140,7 @@ export const NAV: NavSection[] = [
   ]},
   { heading: 'Application', items: [
     { label: 'Sidebar', href: 'sidebar.html' },
+    { label: 'Resizer', href: 'resizer.html' },
   ]},
   { heading: 'Marketing', items: [
     { label: 'Site Header', href: 'site-header.html' },

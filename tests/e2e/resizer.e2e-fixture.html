@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>resizer e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/sizing.css" />
+    <link rel="stylesheet" href="/dist/components/resizer/resizer.css" />
+  </head>
+  <body style="padding:3rem;display:flex;flex-direction:column;gap:3rem;">
+    <!-- px mode: authored px size, all 8 handles, clamps 120..600 -->
+    <section aria-labelledby="rz-px-h">
+      <h2 id="rz-px-h">px</h2>
+      <div class="resizer" id="rz-px" data-handles="all" data-min="120" data-max="600">
+        <div id="rz-px-box" style="width:240px;height:120px;background:var(--muted);border-radius:var(--radius-md);"></div>
+      </div>
+    </section>
+
+    <!-- classes mode: authored ladder tokens, e handle only -->
+    <section aria-labelledby="rz-cl-h">
+      <h2 id="rz-cl-h">classes</h2>
+      <div class="resizer" id="rz-cl" data-handles="e" data-resize-mode="classes" data-min="120">
+        <div id="rz-cl-box" class="w-64 h-40" style="background:var(--muted);border-radius:var(--radius-md);"></div>
+      </div>
+    </section>
+
+    <!-- controlled mode: the runtime must write NOTHING, only dispatch -->
+    <section aria-labelledby="rz-ct-h">
+      <h2 id="rz-ct-h">controlled</h2>
+      <div class="resizer" id="rz-ct" data-handles="all" data-resize-mode="controlled" data-min="100" data-max="800">
+        <div id="rz-ct-box" style="width:200px;height:100px;background:var(--muted);border-radius:var(--radius-md);"></div>
+      </div>
+    </section>
+
+    <!-- axis=w: n/s handles must never be placed; e handles still resize -->
+    <section aria-labelledby="rz-ax-h">
+      <h2 id="rz-ax-h">axis w</h2>
+      <div class="resizer" id="rz-ax" data-handles="all" data-axis="w" data-min="100">
+        <div id="rz-ax-box" style="width:180px;height:90px;background:var(--muted);border-radius:var(--radius-md);"></div>
+      </div>
+    </section>
+
+    <!-- default single-SE (the contract default), for the ARIA + init checks -->
+    <section aria-labelledby="rz-se-h">
+      <h2 id="rz-se-h">default se</h2>
+      <div class="resizer" id="rz-se">
+        <div id="rz-se-box" style="width:160px;height:80px;background:var(--muted);border-radius:var(--radius-md);"></div>
+      </div>
+    </section>
+
+    <script type="module" src="/dist/components/core.js"></script>
+    <script type="module" src="/dist/components/resizer/resizer.js"></script>
+  </body>
+</html>

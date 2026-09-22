@@ -4769,6 +4769,153 @@
   }
 }
 
+/* ── components/resizer/resizer.css ── */
+@layer components {
+  /* -- Resizer --------------------------------------------------
+     Wraps ONE container element and adds draggable handles on any subset of
+     its 8 positions (sides + corners). The wrapper is the positioning context;
+     handles overhang the border box by design, so keep overflow visible.
+     Sizing behavior (px vs w-/h- classes) is driven by the runtime — this
+     sheet owns only the handle geometry, cursors and feedback states. */
+  .resizer {
+    position: relative;
+    /* block box hugging the wrapped element (its intrinsic width) so handles
+       sit on the BOX's edges, not the container's; an explicit authored/
+       runtime width overrides this (e.g. the CodeExample toolbar writes px) */
+    width: fit-content;
+  }
+
+  /* The resizer owns resizing: a native CSS `resize` on the wrapped element
+     (e.g. a resizable canvas) would double the affordances — the runtime
+     neutralizes it inline; this is the authored-CSS fallback. */
+  .resizer[data-resize-mode] {
+    resize: none;
+  }
+
+  .resizer-handle {
+    position: absolute;
+    z-index: 5;
+    display: block;
+    box-sizing: border-box;
+    width: 0.375rem;
+    height: 0.375rem;
+    background: var(--background);
+    border: 1px solid var(--primary);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-2xs);
+    touch-action: none; /* the pointer-drag is ours — no scroll/pinch steal */
+    opacity: 0.85;
+    transition: opacity 120ms ease, background-color 120ms ease, transform 120ms ease;
+
+    /* generous hit area around the small visible chip */
+    &::after {
+      content: '';
+      position: absolute;
+      inset: -0.5rem;
+    }
+
+    &:hover {
+      opacity: 1;
+      background: var(--primary);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+      opacity: 1;
+    }
+  }
+
+  /* drag in progress — the active handle (and the box) read as engaged */
+  .resizer[data-resizing] > .resizer-handle {
+    opacity: 1;
+    background: var(--primary);
+  }
+  .resizer[data-resizing] {
+    outline: 1px dashed var(--ring);
+    outline-offset: 2px;
+  }
+
+  /* -- side geometry: edge centers + corners, with the right cursor -------- */
+  .resizer-handle[data-handle='n'] {
+    top: -0.1875rem;
+    left: 50%;
+    translate: -50% -50%;
+    cursor: ns-resize;
+  }
+  .resizer-handle[data-handle='s'] {
+    bottom: -0.1875rem;
+    left: 50%;
+    translate: -50% 50%;
+    cursor: ns-resize;
+  }
+  .resizer-handle[data-handle='e'] {
+    right: -0.1875rem;
+    top: 50%;
+    translate: 50% -50%;
+    cursor: ew-resize;
+  }
+  .resizer-handle[data-handle='w'] {
+    left: -0.1875rem;
+    top: 50%;
+    translate: -50% -50%;
+    cursor: ew-resize;
+  }
+  .resizer-handle[data-handle='ne'] {
+    top: -0.1875rem;
+    right: -0.1875rem;
+    translate: 50% -50%;
+    cursor: nesw-resize;
+  }
+  .resizer-handle[data-handle='nw'] {
+    top: -0.1875rem;
+    left: -0.1875rem;
+    translate: -50% -50%;
+    cursor: nwse-resize;
+  }
+  .resizer-handle[data-handle='se'] {
+    bottom: -0.1875rem;
+    right: -0.1875rem;
+    translate: 50% 50%;
+    cursor: nwse-resize;
+  }
+  .resizer-handle[data-handle='sw'] {
+    bottom: -0.1875rem;
+    left: -0.1875rem;
+    translate: -50% 50%;
+    cursor: nesw-resize;
+  }
+
+  /* -- Accessibility media features (REQUIRED) ------------------ */
+  @media (prefers-reduced-motion: reduce) {
+    .resizer-handle,
+    .resizer[data-resizing] > .resizer-handle {
+      transition: none;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .resizer-handle {
+      width: 0.625rem;
+      height: 0.625rem;
+      opacity: 1;
+      border-width: 2px;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .resizer-handle {
+      background: Canvas;
+      border-color: CanvasText;
+      forced-color-adjust: none;
+    }
+    .resizer[data-resizing] > .resizer-handle {
+      background: Highlight;
+      border-color: Highlight;
+    }
+  }
+}
+
 /* ── components/scroll-area/scroll-area.css ── */
 @layer components {
   .scroll-area {
@@ -6719,10 +6866,14 @@
     }
   }
 
-  /* With-description layout */
+  /* With-description layout: label + description stack beside the switch.
+     The switch spans both rows, so grid auto-placement (definite-row items
+     first) pins it to column 1 — the track template must therefore lead with
+     the auto (switch) track. `1fr auto` here once placed the text in the far
+     right track (reported: "description renders on the far right"). */
   .switch-item-block {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: auto 1fr;
     gap: 0 0.75rem;
     align-items: center;
 

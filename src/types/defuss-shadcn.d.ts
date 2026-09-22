@@ -95,6 +95,8 @@ interface HTMLElement {
   api?: DefussShadcnComponentApi;
   /** Config from the last setState() call (state name lives in dataset.stateName). */
   _stateConfig?: Record<string, unknown>;
+  /** Resizer-only: authored [width, height] px snapshot at init, for 'default'. */
+  _defaultSize?: [number, number];
   /** Accordion-only: authored open flags snapshotted at init, for the 'default' state. */
   _defaultOpen?: boolean[];
   /** Accordion-only: set while triggerStateChange() is applying (suspends enforcement). */
