@@ -269,6 +269,20 @@
       // a fresh height round (sync posts state + height; source stays unposted
       // unless dirty)
       sync();
+    } else if (d.kind === 'pointer-release') {
+      // The host saw the pointer come up (or the window blur) while a drag in
+      // THIS document may still hold pointer capture — capture is document-
+      // scoped, so a release over the parent page is invisible here and the
+      // drag would stay live (resizing on every later re-entry move). A
+      // synthetic bubbling pointercancel ends any live drag; components not
+      // dragging simply never listen for it.
+      var pr;
+      try {
+        pr = new PointerEvent('pointercancel', { bubbles: true, cancelable: true });
+      } catch {
+        pr = new Event('pointercancel', { bubbles: true });
+      }
+      document.dispatchEvent(pr);
     }
   });
 

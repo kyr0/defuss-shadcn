@@ -3993,21 +3993,29 @@ function startDrag(wrapper, handle, ev) {
   const dx = side.includes("w") ? -1 : side.includes("e") ? 1 : 0;
   const dy = side.includes("n") ? -1 : side.includes("s") ? 1 : 0;
   wrapper.dataset.resizing = side;
-  const onMove = (e) => {
-    if (dx !== 0 && axis !== "h")
-      applySize(wrapper, "w", startW + dx * (e.clientX - startX) / z);
-    if (dy !== 0 && axis !== "w")
-      applySize(wrapper, "h", startH + dy * (e.clientY - startY) / z);
-  };
   const onUp = () => {
     delete wrapper.dataset.resizing;
     handle.removeEventListener("pointermove", onMove);
     handle.removeEventListener("pointerup", onUp);
     handle.removeEventListener("pointercancel", onUp);
+    handle.removeEventListener("lostpointercapture", onUp);
+    document.removeEventListener("pointercancel", onUp);
+  };
+  document.addEventListener("pointercancel", onUp);
+  const onMove = (e) => {
+    if (e.buttons === 0) {
+      onUp();
+      return;
+    }
+    if (dx !== 0 && axis !== "h")
+      applySize(wrapper, "w", startW + dx * (e.clientX - startX) / z);
+    if (dy !== 0 && axis !== "w")
+      applySize(wrapper, "h", startH + dy * (e.clientY - startY) / z);
   };
   handle.addEventListener("pointermove", onMove);
   handle.addEventListener("pointerup", onUp);
   handle.addEventListener("pointercancel", onUp);
+  handle.addEventListener("lostpointercapture", onUp);
 }
 function init18() {
   document.querySelectorAll(".resizer:not([data-init])").forEach((wrapper) => {
@@ -5493,6 +5501,6 @@ function init31() {
 init31();
 new MutationObserver(init31).observe(document, { childList: true, subtree: true });
 
-//# debugId=3FF9C3B84BF0822D64756E2164756E21
+//# debugId=D4D663EF3B1758DE64756E2164756E21
 /* defuss-shadcn v0.9.0 runtime provenance: bundles defuss-morph@0.1.1 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.1.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=all.js.map

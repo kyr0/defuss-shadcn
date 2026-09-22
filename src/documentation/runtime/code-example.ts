@@ -270,6 +270,24 @@
   /** ch → controller; the single global listener + dark observer route here. */
   var registry = {};
 
+  // -- cross-document drag safety (the sandbox cannot see host releases) --
+  // Pointer capture is DOCUMENT-scoped: a drag started inside a sandbox
+  // (e.g. a resizer example) that is released over the host page produces
+  // no pointerup inside the iframe — the drag stays live and resizes on
+  // every re-entry until another click. The host DOES see those releases,
+  // so it forwards them on every channel (kind `pointer-release`); the
+  // bridge answers with a document-level synthetic pointercancel, which
+  // every drag owner (resizer) ends on. No-op when nothing is dragging.
+  if (!document.__cePointerRelay) {
+    document.__cePointerRelay = true;
+    var relayRelease = function () {
+      for (var rc in registry) registry[rc].send('pointer-release', {});
+    };
+    addEventListener('pointerup', relayRelease);
+    addEventListener('pointercancel', relayRelease);
+    addEventListener('blur', relayRelease); // released while the window was unfocused
+  }
+
   addEventListener('message', function (e) {
     var d = e.data;
     if (!d || d.type !== 'ce' || !d.ch) return; // per-example channel (§9): foreign postMessages ignored

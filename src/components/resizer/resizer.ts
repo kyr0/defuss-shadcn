@@ -295,7 +295,14 @@ function handleKeys(wrapper: HTMLElement, handle: HTMLElement, ev: KeyboardEvent
 }
 
 /** One handle's drag: capture the pointer, translate movement into the axis
- *  deltas the position implies, feed applySize (mode-agnostic). */
+ *  deltas the position implies, feed applySize (mode-agnostic). The release
+ *  may never arrive: pointer capture is document-scoped, so a drag started
+ *  inside an iframe and released over the parent page produces no pointerup
+ *  here — the drag would stay live and resize on every later move. Three
+ *  guards end it: lostpointercapture (capture revoked), pointercancel (the
+ *  sandbox bridge re-dispatches it when the HOST reports the release) and a
+ *  captured pointermove with buttons === 0 (the button is up; the up event
+ *  was swallowed by another document). */
 function startDrag(wrapper: HTMLElement, handle: HTMLElement, ev: PointerEvent): void {
   if (ev.button !== 0) return;
   ev.preventDefault();
@@ -312,19 +319,32 @@ function startDrag(wrapper: HTMLElement, handle: HTMLElement, ev: PointerEvent):
   const dx = side.includes('w') ? -1 : side.includes('e') ? 1 : 0;
   const dy = side.includes('n') ? -1 : side.includes('s') ? 1 : 0;
   wrapper.dataset.resizing = side;
-  const onMove = (e: PointerEvent): void => {
-    if (dx !== 0 && axis !== 'h') applySize(wrapper, 'w', startW + (dx * (e.clientX - startX)) / z);
-    if (dy !== 0 && axis !== 'w') applySize(wrapper, 'h', startH + (dy * (e.clientY - startY)) / z);
-  };
   const onUp = (): void => {
     delete wrapper.dataset.resizing;
     handle.removeEventListener('pointermove', onMove);
     handle.removeEventListener('pointerup', onUp);
     handle.removeEventListener('pointercancel', onUp);
+    handle.removeEventListener('lostpointercapture', onUp);
+    // the sandbox bridge dispatches the host-relayed cancel ON document (a
+    // document-dispatched event never bubbles down to the handle) — watch it
+    // there for exactly the drag's lifetime
+    document.removeEventListener('pointercancel', onUp);
+  };
+  document.addEventListener('pointercancel', onUp);
+  const onMove = (e: PointerEvent): void => {
+    // captured moves carry the pressed button — buttons === 0 means the
+    // release happened where we cannot see it (outside this document): end
+    if (e.buttons === 0) {
+      onUp();
+      return;
+    }
+    if (dx !== 0 && axis !== 'h') applySize(wrapper, 'w', startW + (dx * (e.clientX - startX)) / z);
+    if (dy !== 0 && axis !== 'w') applySize(wrapper, 'h', startH + (dy * (e.clientY - startY)) / z);
   };
   handle.addEventListener('pointermove', onMove);
   handle.addEventListener('pointerup', onUp);
   handle.addEventListener('pointercancel', onUp);
+  handle.addEventListener('lostpointercapture', onUp);
 }
 
 function init(): void {

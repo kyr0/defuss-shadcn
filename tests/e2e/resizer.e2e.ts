@@ -111,6 +111,44 @@ try {
     assert.deepEqual(await sizeOf(boxOf(page, 'rz-px-box')), [120, 120], 'Home jumps to data-min');
   });
 
+  await check("a document 'pointercancel' (sandbox bridge relay) ends a live drag", async () => {
+    const h = page.locator('#rz-px .resizer-handle[data-handle="e"]');
+    const r = (await h.boundingBox())!;
+    await page.mouse.move(r.x + r.width / 2, r.y + r.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(r.x + 30, r.y + r.height / 2, { steps: 3 });
+    assert.equal(await page.getAttribute('#rz-px', 'data-resizing'), 'e', 'drag live');
+    // EXACTLY what the sandbox bridge dispatches when the host reports the
+    // release (a drag the document itself never saw end):
+    await page.evaluate(() =>
+      document.dispatchEvent(new PointerEvent('pointercancel', { bubbles: true, cancelable: true })),
+    );
+    assert.equal(await page.getAttribute('#rz-px', 'data-resizing'), null, 'drag ended via relayed cancel');
+    const w0 = (await sizeOf(boxOf(page, 'rz-px-box')))[0];
+    await page.mouse.move(r.x + 90, r.y + r.height / 2, { steps: 3 }); // re-entry move must NOT resize
+    assert.equal((await sizeOf(boxOf(page, 'rz-px-box')))[0], w0, 'no stuck resize on re-entry');
+    await page.mouse.up();
+  });
+
+  await check('a captured move with buttons === 0 ends the drag (lost release)', async () => {
+    const h = page.locator('#rz-cl .resizer-handle[data-handle="e"]');
+    const r = (await h.boundingBox())!;
+    await page.mouse.move(r.x + r.width / 2, r.y + r.height / 2);
+    await page.mouse.down();
+    await page.waitForTimeout(40);
+    // a move whose button is already up (release happened in another document
+    // — trusted input can't fake buttons:0, so the guard is dispatched here)
+    await page.evaluate(
+      ([x, y]: number[]) => {
+        const el = document.querySelector('#rz-cl .resizer-handle[data-handle="e"]') as HTMLElement;
+        el.dispatchEvent(new PointerEvent('pointermove', { clientX: x, clientY: y, buttons: 0, bubbles: true, cancelable: true, pointerId: 1 }));
+      },
+      [r.x + 80, r.y + r.height / 2],
+    );
+    assert.equal(await page.getAttribute('#rz-cl', 'data-resizing'), null, 'buttons-0 move ended the drag');
+    await page.mouse.up();
+  });
+
   await check('classes mode: drag swaps the w-* token (no inline styles)', async () => {
     const cls0 = await page.getAttribute('#rz-cl-box', 'class');
     assert.match(cls0!, /w-64/);

@@ -20,6 +20,7 @@ uses plain keydown handling on `role="separator"` handles.
 ## Native Web APIs
 
 - [Pointer Events (`setPointerCapture`)](https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture) — drag continues outside the handle, no document-level listeners
+- [`lostpointercapture`](https://developer.mozilla.org/en-US/docs/Web/API/Element/lostpointercapture_event) + `buttons === 0` move guard — a release the document cannot see (outside an iframe) still ends the drag
 - [`touch-action: none`](https://developer.mozilla.org/en-US/docs/Web/CSS/touch-action) — the browser yields the gesture to the drag
 - [`role="separator"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/separator_role) — a resizable divider is exactly what the ARIA role describes
 - [KeyboardEvents](https://developer.mozilla.org/en-US/docs/Web/API/Element/keydown_event) — arrow-key resize parity for every handle
@@ -89,3 +90,9 @@ equivalent to `setState('default')`.
 - The `data-width`/`data-height` mirror updates on every applied change
   (drag, keyboard, panel edit, setState) — that is what the machine contract
   (`resizer.schema.json`) observes.
+- Pointer capture is **document-scoped**: a drag started inside an iframe and
+  released over the parent page produces no `pointerup` here. The drag ends
+  anyway via three guards — `lostpointercapture`, a captured `pointermove`
+  with `buttons === 0`, and a document-level `pointercancel` (which the
+  CodeExample sandbox bridge dispatches when the HOST reports the release).
+  Without them the example would stay "stuck resizing" until the next click.

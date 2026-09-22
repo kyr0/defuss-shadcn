@@ -87,6 +87,53 @@ try {
     await page.waitForTimeout(150); // mid-debounce: a source post must NOT overwrite
     assert.equal(await editorVal(card), held, 'editor keeps the un-run bytes');
   });
+
+  // Cross-document drag safety: a resizer drag started INSIDE the sandbox and
+  // released over the host page produces no pointerup in the sandbox document
+  // (capture is document-scoped). The host relays the release; the bridge
+  // dispatches a synthetic pointercancel; the drag must end and must NOT
+  // resume on re-entry (the "stuck resizing until a click" bug).
+  {
+    const rpage = await browser.newPage();
+    await rpage.goto(`${url}/dist/documentation/resizer.html`, { waitUntil: 'load', timeout: 30000 });
+    await rpage.waitForTimeout(2500);
+    const rcard = rpage.locator('.code-example').first(); // "Pixel-perfect"
+    const sb = rcard.locator('iframe').contentFrame();
+    await waitFor(async () => (await sb.locator('.resizer[data-init]').count()) === 1, 'sandbox resizer booted');
+    await rcard.scrollIntoViewIfNeeded();
+    await rpage.waitForTimeout(400);
+
+    await check('E: release over the HOST ends the sandbox drag (host→bridge relay)', async () => {
+      const handle = sb.locator('.resizer-handle[data-handle="se"]');
+      const hb = (await handle.boundingBox())!;
+      const sizeOf = () =>
+        sb.locator('.resizer > .card').evaluate((el) => Math.round(el.getBoundingClientRect().width));
+      const w0 = await sizeOf();
+      await rpage.mouse.move(hb.x + hb.width / 2, hb.y + hb.height / 2);
+      await rpage.mouse.down();
+      await rpage.mouse.move(hb.x + hb.width / 2 + 40, hb.y + hb.height / 2 + 40, { steps: 4 });
+      assert.ok((await sizeOf()) > w0, 'drag grew the sandbox card');
+      assert.ok(
+        await sb.locator('.resizer[data-resizing]').count(),
+        'drag live while held',
+      );
+      // release OVER THE HOST (outside the iframe) — the sandbox sees no up:
+      const ofr = (await rcard.locator('iframe').boundingBox())!;
+      await rpage.mouse.move(ofr.x + ofr.width - 8, ofr.y - 40, { steps: 4 }); // over host chrome
+      await rpage.mouse.up();
+      await waitFor(
+        async () => (await sb.locator('.resizer[data-resizing]').count()) === 0,
+        'host-relayed release ended the drag',
+        3000,
+      );
+      // re-enter and move: a STUCK drag would resize here — the box must hold
+      const w1 = await sizeOf();
+      await rpage.mouse.move(hb.x + hb.width / 2 + 120, hb.y + hb.height / 2 + 120, { steps: 6 });
+      await rpage.waitForTimeout(120);
+      assert.equal(await sizeOf(), w1, 'no stuck resize after re-entry');
+    });
+    await rpage.close();
+  }
 } finally {
   await browser.close();
   stop();

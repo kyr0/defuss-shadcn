@@ -9,17 +9,17 @@
   },
   "withJs": 31,
   "withoutJs": 42,
-  "totalSize": 487761,
-  "totalSizeMinified": 228101,
-  "totalSizeGz": 160010,
-  "totalSizeGzMinified": 84532,
+  "totalSize": 488960,
+  "totalSizeMinified": 228316,
+  "totalSizeGz": 160411,
+  "totalSizeGzMinified": 84571,
   "bundle": {
-    "jsSize": 195028,
-    "jsSizeMinified": 104151,
+    "jsSize": 195313,
+    "jsSizeMinified": 104366,
     "cssSize": 256222,
     "cssSizeMinified": 142663,
-    "totalSizeGz": 85267,
-    "totalSizeGzMinified": 50773
+    "totalSizeGz": 85312,
+    "totalSizeGzMinified": 50818
   },
   "core": {
     "jsSize": 64162,
@@ -580,14 +580,14 @@
       "name": "resizer",
       "type": "ATM",
       "withJs": true,
-      "jsSize": 18265,
-      "jsSizeMinified": 5846,
+      "jsSize": 19464,
+      "jsSizeMinified": 6061,
       "cssSize": 3917,
       "cssSizeMinified": 1928,
-      "totalSizeGz": 7604,
-      "totalSizeGzMinified": 3024,
-      "totalSize": 22182,
-      "totalSizeMinified": 7774
+      "totalSizeGz": 8005,
+      "totalSizeGzMinified": 3063,
+      "totalSize": 23381,
+      "totalSizeMinified": 7989
     },
     "scroll-area": {
       "name": "scroll-area",
