@@ -50,6 +50,22 @@ async function editSource(doc: Document, card: HTMLElement, value: string): Prom
 }
 
 describe('CodeExample (input page)', () => {
+  it('boots collapsed: both panels hidden; Code toggles open and closed again', async () => {
+    const { doc } = await openDocPage('input');
+    await waitFor(() => doc.querySelector('.code-example[data-init]'), 'example init', 5000);
+    const card = doc.querySelector('.code-example') as HTMLElement;
+    const codePanel = card.querySelector('[data-panel="code"]') as HTMLElement;
+    const codeTab = card.querySelector('.code-example-tab[data-tab="code"]') as HTMLButtonElement;
+    // default: rendered demo is the hero — the lower area is not shown
+    expect(codePanel.hidden).toBe(true);
+    expect(codeTab.getAttribute('aria-pressed')).toBe('false');
+    // tabs carry icons (lucide placeholders swapped by createIcons)
+    expect(codeTab.querySelector('svg, i[data-lucide]')).toBeTruthy();
+    await clickSelector(doc, '.code-example-tab[data-tab="code"]');
+    await waitFor(() => !codePanel.hidden, 'code panel open');
+    await clickSelector(doc, '.code-example-tab[data-tab="code"]');
+    await waitFor(() => codePanel.hidden, 'code panel collapsed again');
+  });
   it('renders cards from the example fences with the schema embedded', async () => {
     const { doc } = await openDocPage('input.html');
     const cards = doc.querySelectorAll('.code-example');

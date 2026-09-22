@@ -195,16 +195,20 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 ```
 
 ```html example label="Density" hint="Set data-density on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25), typography and fixed dimensions stay identical. comfortable matches the unsized default." height="24" mode="desktop"
-<div class="flex flex-wrap gap-4">
-  <div class="flex-1 min-w-48">
+<!-- columns are STACKED (full-width rows): the component auto-collapses a rail
+     whose row drops below 384px — three side-by-side flex-1 columns inside a
+     592px card would each sit under that threshold and dock to the icon rail,
+     hiding the entry text (the "text not visible" regression). -->
+<div class="stack gap-4">
+  <div>
     <p class="demo-label">Compact</p>
     <aside class="app-sidebar" data-density="compact" style="position:relative;width:auto;height:11rem;border:1px solid var(--border);border-radius:var(--radius-lg);"><div class="sidebar-header"><span class="sidebar-logo-text">App</span></div><div class="sidebar-content"><nav class="sidebar-nav"><a class="sidebar-link" href="#"><span>Dashboard</span></a><a class="sidebar-link" href="#"><span>Inbox</span></a><a class="sidebar-link" href="#"><span>Settings</span></a></nav></div></aside>
   </div>
-  <div class="flex-1 min-w-48">
+  <div>
     <p class="demo-label">Comfortable</p>
     <aside class="app-sidebar" data-density="comfortable" style="position:relative;width:auto;height:11rem;border:1px solid var(--border);border-radius:var(--radius-lg);"><div class="sidebar-header"><span class="sidebar-logo-text">App</span></div><div class="sidebar-content"><nav class="sidebar-nav"><a class="sidebar-link" href="#"><span>Dashboard</span></a><a class="sidebar-link" href="#"><span>Inbox</span></a><a class="sidebar-link" href="#"><span>Settings</span></a></nav></div></aside>
   </div>
-  <div class="flex-1 min-w-48">
+  <div>
     <p class="demo-label">Spacious</p>
     <aside class="app-sidebar" data-density="spacious" style="position:relative;width:auto;height:11rem;border:1px solid var(--border);border-radius:var(--radius-lg);"><div class="sidebar-header"><span class="sidebar-logo-text">App</span></div><div class="sidebar-content"><nav class="sidebar-nav"><a class="sidebar-link" href="#"><span>Dashboard</span></a><a class="sidebar-link" href="#"><span>Inbox</span></a><a class="sidebar-link" href="#"><span>Settings</span></a></nav></div></aside>
   </div>

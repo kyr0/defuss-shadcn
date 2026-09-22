@@ -398,6 +398,7 @@
      CodeExample page needs at phone width, guide or component page alike. */
   @media (max-width: 30rem) {
     .code-example-vp span,
+    .code-example-tab span,
     .code-example-copy span,
     .code-example-reset span {
       display: none;

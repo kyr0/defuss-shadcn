@@ -820,15 +820,23 @@
     }
 
     // -- toolbar -------------------------------------------------------------
+    // tabs are TOGGLES (both start off — SSR ships both panels hidden): clicking
+    // a tab shows its panel and hides the other; clicking the ACTIVE tab
+    // collapses everything — the rendered demo is the hero, the lower area is
+    // opt-in. read-state is requested whenever the state panel opens.
+    function setTab(which) {
+      root.querySelectorAll('.code-example-tab').forEach(function (t) {
+        t.setAttribute('aria-pressed', String(t.dataset.tab === which));
+      });
+      codePanel.hidden = which !== 'code';
+      if (statePanel) statePanel.hidden = which !== 'state';
+      if (which === 'state') api.send('read-state', {});
+    }
     root.querySelectorAll('.code-example-tab').forEach(function (tab) {
       tab.addEventListener('click', function () {
-        var which = tab.dataset.tab;
-        root.querySelectorAll('.code-example-tab').forEach(function (t) {
-          t.setAttribute('aria-pressed', String(t === tab));
-        });
-        codePanel.hidden = which !== 'code';
-        if (statePanel) statePanel.hidden = which !== 'state';
-        if (which === 'state') api.send('read-state', {});
+        var active = tab.getAttribute('aria-pressed') === 'true';
+        if (active) setTab(null); // second click on the same tab → collapse
+        else setTab(tab.dataset.tab);
       });
     });
     var rerunTimer = null;

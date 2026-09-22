@@ -172,10 +172,21 @@ export function CodeExample({ source, component, label, hint, height, mode, prev
           <span class="code-example-vp-x" aria-hidden="true">%</span>
         </span>
         <span class="code-example-spacer"></span>
-        <button class="code-example-tab" data-tab="code" aria-pressed="true">Code</button>
+        {/* Both tabs start OFF: the rendered demo is the hero, the lower area
+            (source editor / state contract) is opt-in — the runtime makes the
+            buttons toggles (radio + click-again collapses everything). */}
+        <button class="code-example-tab" data-tab="code" aria-pressed="false" title="Show or hide the example source">
+          <i data-lucide="code-xml"></i>
+          <span>Code</span>
+        </button>
         {/* State tab renders ONLY when the schema offers editable states — an
             empty contract (or stateTab:false) means no tab: editor stands alone. */}
-        {stateTab ? <button class="code-example-tab" data-tab="state" aria-pressed="false">State</button> : null}
+        {stateTab ? (
+          <button class="code-example-tab" data-tab="state" aria-pressed="false" title="Show or hide the state contract">
+            <i data-lucide="sliders-horizontal"></i>
+            <span>State</span>
+          </button>
+        ) : null}
         <button class="code-example-copy" title="Copy the example source">
           <i data-lucide="copy"></i>
           <span>Copy</span>
@@ -185,7 +196,7 @@ export function CodeExample({ source, component, label, hint, height, mode, prev
           <span>Reset</span>
         </button>
       </div>
-      <div class="code-example-panel" data-panel="code">
+      <div class="code-example-panel" data-panel="code" hidden>
         <textarea
           class="code-example-src"
           spellcheck="false"

@@ -58,18 +58,18 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, CodeBlock, De
 
 Every example on this page is one executable source: the editor bytes and the sandboxed preview are the same string — editing the code changes the preview (no second render tree can drift from the sample).
 
-```html example label="Default" hint="Standard text input with label." height="150"
+```html example label="Default" hint="Standard text input with label." height="9.5"
 <label class="label" for="email">Email</label>
 <input data-example-root class="input" type="email" id="email" placeholder="you@example.com" />
 ```
 
-```html example label="With description" hint="Use .field-description below the input for help text (wired with aria-describedby)." height="170"
+```html example label="With description" hint="Use .field-description below the input for help text (wired with aria-describedby)." height="11"
 <label class="label" for="username">Username</label>
 <input data-example-root class="input" type="text" id="username" placeholder="kyr0" aria-describedby="username-desc" />
 <p class="field-description" id="username-desc">Choose a unique username for your account.</p>
 ```
 
-```html example label="Sizes" hint="The five-step data-size ladder. The State tab's size select mutates the marked root input." height="260"
+```html example label="Sizes" hint="The five-step data-size ladder. The State tab's size select mutates the marked root input." height="16"
 <div style="display:flex;flex-direction:column;gap:0.75rem;max-width:24rem;">
   <input class="input" data-size="xs" type="text" placeholder="Extra small" />
   <input class="input" data-size="sm" type="text" placeholder="Small" />
@@ -79,22 +79,22 @@ Every example on this page is one executable source: the editor bytes and the sa
 </div>
 ```
 
-```html example label="Disabled" hint="Non-interactive at 50% opacity — flip the disabled row in the State tab." height="150"
+```html example label="Disabled" hint="Non-interactive at 50% opacity — flip the disabled row in the State tab." height="9.5"
 <input data-example-root class="input" type="text" disabled placeholder="Disabled" />
 ```
 
-```html example label="Invalid" hint="aria-invalid with a .field-error message — native validation styling." height="170"
+```html example label="Invalid" hint="aria-invalid with a .field-error message — native validation styling." height="11"
 <label class="label" for="invalid-email">Email</label>
 <input data-example-root class="input" type="email" id="invalid-email" aria-invalid="true" value="not-an-email" aria-describedby="invalid-email-err" />
 <p class="field-error" id="invalid-email-err">Please enter a valid email address.</p>
 ```
 
-```html example label="Required" hint="Just the required attribute — the label's red star renders automatically, and the State tab toggles it live." height="170"
+```html example label="Required" hint="Just the required attribute — the label's red star renders automatically, and the State tab toggles it live." height="11"
 <label class="label" for="name">Name</label>
 <input data-example-root class="input" type="text" id="name" required placeholder="Jane Doe" />
 ```
 
-```html example label="With icon" hint="Wrap in a relative container and position the icon absolutely." height="130"
+```html example label="With icon" hint="Wrap in a relative container and position the icon absolutely." height="8"
 <div style="position:relative;max-width:24rem;">
   <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);color:var(--muted-foreground);">
     <circle cx="11" cy="11" r="8" />
@@ -104,24 +104,24 @@ Every example on this page is one executable source: the editor bytes and the sa
 </div>
 ```
 
-```html example label="File" hint="Native file picker — the selector button is styled automatically." height="170"
+```html example label="File" hint="Native file picker — the selector button is styled automatically." height="11"
 <label class="label" for="picture">Picture</label>
 <input data-example-root class="input" type="file" id="picture" aria-describedby="picture-desc" />
 <p class="field-description" id="picture-desc">Select a picture to upload.</p>
 ```
 
-```html example label="Textarea" hint="<textarea> with the .input class. Auto-grows with content via field-sizing: content — zero JS." height="170"
+```html example label="Textarea" hint="<textarea> with the .input class. Auto-grows with content via field-sizing: content — zero JS." height="11"
 <label class="label" for="message">Message</label>
 <textarea data-example-root class="input" id="message" placeholder="Your message..."></textarea>
 ```
 
-```html example label="Readonly" hint="Non-editable value the user can still select and copy." height="170"
+```html example label="Readonly" hint="Non-editable value the user can still select and copy." height="11"
 <label class="label" for="api-key">API Key</label>
 <input data-example-root class="input" type="text" id="api-key" readonly value="sk-1234567890abcdef" aria-describedby="api-key-desc" />
 <p class="field-description" id="api-key-desc">Your API key is read-only.</p>
 ```
 
-```html example label="With button" hint="Pair an input with a button for inline actions (the df$ handler below logs input events into the sandbox console)." height="130"
+```html example label="With button" hint="Pair an input with a button for inline actions (the df$ handler below logs input events into the sandbox console)." height="8"
 <div style="display:flex;gap:0.5rem;max-width:24rem;">
   <input data-example-root class="input" type="search" placeholder="Search..." />
   <button class="btn" data-variant="default">Search</button>
@@ -134,7 +134,7 @@ Every example on this page is one executable source: the editor bytes and the sa
 </script>
 ```
 
-```html example label="Form composition" hint="Multiple inputs with labels, descriptions, and a submit button." height="360"
+```html example label="Form composition" hint="Multiple inputs with labels, descriptions, and a submit button." height="23"
 <form style="max-width:24rem;display:flex;flex-direction:column;gap:1.25rem;" onsubmit="return false;">
   <div>
     <label class="label" for="f-name">Name</label>
