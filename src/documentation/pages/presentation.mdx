@@ -1,0 +1,464 @@
+---
+title: "Presentation"
+description: "Presentation component - a fixed-artboard slide deck: responsive viewer, fixed-coordinate slides, entrance animations shared with the Motion component, native <progress> advance, presenter notes."
+slug: "presentation"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, StatsClaim, DocText, DocLink, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="presentation" title="Presentation" component="presentation">
+  The HTML presentation primitive: a <strong>fixed 1600×900 design surface</strong> scaled uniformly to the mount (responsive <em>viewer</em>, fixed-coordinate <em>slide</em> - no fluid layout inside slides), keyboard/touch/fullscreen navigation, presenter notes, and the <DocLink href="motion.html">Motion</DocLink> entrance vocabulary replayed per slide. Zero dependencies beyond Defuss.
+</PageHeader>
+
+<SkillPanel component="presentation">
+  <SkillField label="Native basis">
+<SkillText>Slides are <code>&lt;section&gt;</code> panels activated by attribute; inactive ones become <code>inert</code> + <code>aria-hidden</code>. Advance is a native <code>&lt;progress&gt;</code>; fullscreen is <code>requestFullscreen()</code>; artboard scaling is one custom property maintained by a ResizeObserver.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/inert" title="hidden slides leave tab order entirely"><code>inert</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress" title="the advance indicator, themed via accent-color"><code>&lt;progress&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver" title="re-scales the artboard; no window.resize math"><code>ResizeObserver</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Element/requestFullscreen" title="native fullscreen, honest fixed-overlay fallback"><code>requestFullscreen()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Window/hashchange_event" title="#slide-id deep links"><code>hashchange</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/transform" title="the uniform scale + transform-origin"><code>transform: scale()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="entrances settle instantly (built in, required)"><code>prefers-reduced-motion</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Attributes">
+<SkillRow>
+    <code>data-slide</code>
+    <code>data-active</code>
+    <code>data-notes</code>
+    <code>data-fullscreen</code>
+    <code>data-current-slide</code>
+    <code>data-loop</code>
+    <code>data-theme</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Variants (data-theme)">
+<SkillGrid>
+    <Variant name="ink" description="dark artboard" />
+    <Variant name="paper" description="light artboard" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Slide chrome">
+<SkillGrid>
+    <Variant name=".presentation-header" description="top line: section label + hairline + accent tick" />
+    <Variant name=".presentation-slide-number" description="NN⁄NN counter (fraction slash), filled by the runtime" />
+  </SkillGrid>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" component="presentation" height="22" hint="A ten-slide QBR on the fixed 1600×900 artboard - click the deck and use ← / → (or the controls). Shipped components compose INSIDE slides: an ECharts revenue chart (df$.shadcn.chart.mount, text sized for the artboard), a .table of the quarterly numbers, a .mk-showcase product video that plays only while its slide is on stage, and an .avatar on the quote. Every slide slides in and out through the df$.anim engine (data-anim-in / data-anim-out on the deck, 1.5 s by default), the in-slide chart replays its entrance whenever its slide comes on stage, and entrances are the shared Motion vocabulary, replayed on activation: staggered agenda, animated counters, an SVG draw-in trend, an iris quote, a spring pop on the close. Slides carry header lines and presenter notes. Try N for notes, F for fullscreen." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="qbr-deck" data-anim-in="slideIn" data-anim-out="slideOut" tabindex="-1" aria-label="Quarterly business review">
+  <!-- the cover stays static: it is the deck's resting face (and the docs
+       screenshot) - entrances belong to the slides that follow -->
+  <section class="slide" data-slide id="cover" data-theme="ink" aria-label="Cover">
+    <p class="presentation-eyebrow">Q3 · Quarterly Business Review</p>
+    <h1 class="presentation-title">Momentum, measured</h1>
+    <p class="presentation-lede">Results, adoption and the road to 2027</p>
+    <p class="presentation-note">One number to remember: 77. Everything else supports it.</p>
+  </section>
+  <section class="slide" data-slide id="agenda" data-theme="paper" aria-label="Agenda">
+    <header class="presentation-header"><span>Agenda</span><span>4 topics</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:170ms; margin:0; padding:0; list-style:none; font-size:2.1rem; line-height:1.7;">
+      <li data-df-entrance="up">Where we landed - the quarter in numbers</li>
+      <li data-df-entrance="up">Adoption - the product-market signal</li>
+      <li data-df-entrance="up">Efficiency - what the platform saved</li>
+      <li data-df-entrance="up">The road to 2027 - three bets</li>
+    </ul>
+    <p class="presentation-note">Thirty seconds - do not walk the list.</p>
+  </section>
+  <section class="slide" data-slide id="metrics" data-theme="ink" aria-label="Key metrics">
+    <p class="presentation-eyebrow" data-df-entrance="fade">Where we landed</p>
+    <div data-df-stagger style="--df-motion-stagger-step:240ms; display:flex; gap:5rem;">
+      <div data-df-entrance="up">
+        <h2 class="presentation-title" style="font-size:4.5rem; margin-block-end:0.5rem;"><span data-count="77">77</span>%</h2>
+        <p class="presentation-lede" style="font-size:1.6rem;">customer optimism</p>
+      </div>
+      <div data-df-entrance="up">
+        <h2 class="presentation-title" style="font-size:4.5rem; margin-block-end:0.5rem;"><span data-count="124" data-count-duration="1100">124</span>k</h2>
+        <p class="presentation-lede" style="font-size:1.6rem;">weekly activations</p>
+      </div>
+      <div data-df-entrance="up">
+        <h2 class="presentation-title" style="font-size:4.5rem; margin-block-end:0.5rem;"><span data-count="2.4" data-count-decimals="1">2.4</span>×</h2>
+        <p class="presentation-lede" style="font-size:1.6rem;">throughput per pod</p>
+      </div>
+    </div>
+    <p class="presentation-note">Let the counters run - narrate the 2.4×.</p>
+  </section>
+  <section class="slide" data-slide id="trend" data-theme="paper" aria-label="Adoption trend">
+    <header class="presentation-header"><span>Adoption</span><span>6 quarters</span></header>
+    <h2 class="presentation-title" data-df-entrance="left" style="font-size:3.5rem;">Adoption is compounding</h2>
+    <svg width="1100" height="300" viewBox="0 0 1100 300" fill="none" aria-hidden="true" data-df-entrance="up" style="--df-motion-delay:200ms;">
+      <g stroke="color-mix(in oklch, currentColor 20%, transparent)" stroke-width="2">
+        <line x1="20" y1="75" x2="1080" y2="75" />
+        <line x1="20" y1="150" x2="1080" y2="150" />
+        <line x1="20" y1="225" x2="1080" y2="225" />
+      </g>
+      <path data-df-draw pathLength="1" stroke="var(--presentation-accent)" stroke-width="7" stroke-linecap="round" d="M20 260 C 260 250, 480 190, 640 120 S 950 30, 1080 18" />
+    </svg>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:900ms; font-size:1.6rem;">Weekly active teams - no plateau in sight.</p>
+    <p class="presentation-note">Point at the inflection, not the axis.</p>
+  </section>
+  <section class="slide" data-slide id="revenue" data-theme="ink" aria-label="Revenue chart">
+    <header class="presentation-header"><span>Where we landed</span><span>Revenue · FY 2026</span></header>
+    <h2 class="presentation-title" data-df-entrance="left" style="font-size:3.5rem;">Revenue follows adoption</h2>
+    <div class="chart" id="qbr-revenue-chart" role="img" aria-label="Bar chart of quarterly revenue: 4.2, 5.1, 6.3 and a forecast 7.4 million dollars" data-df-entrance="up" style="--df-motion-delay:250ms; width:100%; height:520px;"></div>
+    <p class="presentation-note">Q4 is the forecast - say it out loud.</p>
+  </section>
+  <section class="slide" data-slide id="numbers" data-theme="paper" aria-label="Quarterly numbers">
+    <header class="presentation-header"><span>Where we landed</span><span>The numbers</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.5rem;">The quarter, in rows</h2>
+    <div class="table-container" data-df-entrance="up" style="--df-motion-delay:250ms;">
+      <table class="table" data-density="spacious" style="font-size:1.9rem;">
+        <caption class="table-caption" style="font-size:1.4rem;">FY 2026 quarterly results - synthetic data.</caption>
+        <thead>
+          <tr class="table-row">
+            <th class="table-head" scope="col">Quarter</th>
+            <th class="table-head" scope="col" style="text-align:right">Revenue</th>
+            <th class="table-head" scope="col" style="text-align:right">Weekly activations</th>
+            <th class="table-head" scope="col" style="text-align:right">Customer optimism</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="table-row">
+            <td class="table-cell">Q1</td>
+            <td class="table-cell" style="text-align:right">$4.2M</td>
+            <td class="table-cell" style="text-align:right">96k</td>
+            <td class="table-cell" style="text-align:right">71%</td>
+          </tr>
+          <tr class="table-row">
+            <td class="table-cell">Q2</td>
+            <td class="table-cell" style="text-align:right">$5.1M</td>
+            <td class="table-cell" style="text-align:right">104k</td>
+            <td class="table-cell" style="text-align:right">73%</td>
+          </tr>
+          <tr class="table-row">
+            <td class="table-cell">Q3</td>
+            <td class="table-cell" style="text-align:right">$6.3M</td>
+            <td class="table-cell" style="text-align:right">124k</td>
+            <td class="table-cell" style="text-align:right">77%</td>
+          </tr>
+          <tr class="table-row">
+            <td class="table-cell">Q4 · forecast</td>
+            <td class="table-cell" style="text-align:right">$7.4M</td>
+            <td class="table-cell" style="text-align:right">139k</td>
+            <td class="table-cell" style="text-align:right">79%</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr class="table-row">
+            <td class="table-cell">FY total</td>
+            <td class="table-cell" style="text-align:right; font-weight:600">$23.0M</td>
+            <td class="table-cell" style="text-align:right">—</td>
+            <td class="table-cell" style="text-align:right">—</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <p class="presentation-note">Q3 is the quarter under review - the rest is trajectory.</p>
+  </section>
+  <section class="slide" data-slide id="demo" data-theme="ink" aria-label="Product demo">
+    <header class="presentation-header"><span>Adoption</span><span>Product demo</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.5rem;">See the platform move</h2>
+    <figure class="mk-showcase" data-df-entrance="up" style="--df-motion-delay:250ms; max-width:1040px; aspect-ratio:16/9;">
+      <img class="mk-showcase-poster" alt="Product showcase" src="images/mk-wide2.png"></img>
+      <video src="videos/demo.webm" muted loop playsinline>Your browser does not support embedded video.</video>
+      <button type="button" class="mk-showcase-play" aria-label="Play video">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polygon points="6 3 20 12 6 21 6 3"></polygon>
+        </svg>
+      </button>
+    </figure>
+    <p class="presentation-note">The loop starts on activation and stops when you move on - watch the poster return.</p>
+  </section>
+  <section class="slide" data-slide id="quote" data-theme="ink" aria-label="Customer quote">
+    <blockquote data-df-entrance="iris" style="margin:0;">
+      <p class="presentation-title" style="font-size:3.2rem; line-height:1.25;">"We stopped debating the roadmap - the platform just tells us."</p>
+    </blockquote>
+    <footer data-df-entrance="fade" style="--df-motion-delay:700ms; display:flex; align-items:center; gap:1.5rem;">
+      <span class="avatar" data-size="xl" style="width:6rem; height:6rem;">
+        <span class="avatar-fallback" style="font-size:2.2rem;">MK</span>
+      </span>
+      <p class="presentation-lede" style="font-family:var(--font-mono); font-size:1.4rem;">Mara Kessler - VP Platform (n = <span data-count="118">118</span> interviews)</p>
+    </footer>
+    <p class="presentation-note">Pause two beats after the quote.</p>
+  </section>
+  <section class="slide" data-slide id="takeaways" data-theme="paper" aria-label="Takeaways">
+    <header class="presentation-header"><span>The road to 2027</span><span>Takeaways</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.5rem;">What we do with this</h2>
+    <ul data-df-stagger style="--df-motion-stagger-step:200ms; margin:2rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.7;">
+      <li data-df-entrance="up">Double the pods behind the 2.4× throughput play</li>
+      <li data-df-entrance="up">Fund the adoption loop - it compounds</li>
+      <li data-df-entrance="up">Hold the Q4 forecast to the 7.4 it just promised</li>
+    </ul>
+    <p class="presentation-note">Three commitments, one slide - land each with a name.</p>
+  </section>
+  <section class="slide" data-slide id="close" data-theme="ink" aria-label="Closing">
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring);">Three bets, one number</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms;">Questions - <span data-count="4.5" data-count-decimals="1">4.5</span> minutes on the clock.</p>
+    <p class="presentation-note">Keep close under two minutes.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 10</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="10" value="1"></progress>
+</section>
+<script>
+  // all.js (df$) boots after example scripts in the sandbox - the chart mount
+  // and the showcase drive happen in the load handler, never at parse time.
+  // Chart colors come off the deck's own --presentation-* surface (a slide's
+  // art direction is fixed by design); the artboard is 1600×900, so chart
+  // text runs at 26–28px - ECharts' 12px default is illegible at this scale.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('qbr-deck');
+    const cs = getComputedStyle(deck);
+    const ink = cs.getPropertyValue('--presentation-ink-foreground').trim() || '#e9eef8';
+    const accent = cs.getPropertyValue('--presentation-accent').trim() || '#38bdf8';
+
+    // slides stay full-size while hidden, so the chart mounts fine on load
+    df$.shadcn.chart.mount(document.getElementById('qbr-revenue-chart'), {
+      aria: { enabled: true },
+      grid: { left: 110, right: 60, top: 60, bottom: 70 },
+      xAxis: {
+        type: 'category', data: ['Q1', 'Q2', 'Q3', 'Q4'],
+        axisLine: { show: false }, axisTick: { show: false },
+        axisLabel: { color: ink, fontSize: 28, fontWeight: 700 },
+      },
+      yAxis: {
+        type: 'value', max: 8,
+        axisLabel: { color: ink, fontSize: 26, formatter: '${value}M' },
+        splitLine: { lineStyle: { color: 'rgba(233,238,248,.14)' } },
+      },
+      series: [{
+        type: 'bar',
+        data: [4.2, 5.1, 6.3, { value: 7.4, itemStyle: { opacity: 0.55 } }],
+        itemStyle: { color: accent, borderRadius: [12, 12, 0, 0] },
+        label: { show: true, position: 'top', color: ink, fontSize: 28, fontWeight: 700, formatter: '${c}M' },
+      }],
+    });
+
+    // the product demo plays only while its slide is on stage: the shared
+    // data-active MutationObserver drives the shipped .mk-showcase State API
+    const demoSlide = document.getElementById('demo');
+    const showcase = demoSlide.querySelector('.mk-showcase');
+    const syncDemo = () => showcase.api.setState(demoSlide.hasAttribute('data-active') ? 'playing' : 'default');
+    new MutationObserver(syncDemo).observe(demoSlide, { attributes: true, attributeFilter: ['data-active'] });
+    syncDemo(); // the observer only fires on CHANGE - cover a deep-linked #demo
+  });
+</script>
+```
+
+```html example label="Slide chrome + Art direction" component="presentation" height="16" hint="Slide chrome composes inside the artboard coordinates: .presentation-header (section label + hairline + accent tick), .presentation-slide-number (the runtime fills NN⁄NN - the fraction slash ⁄ slants by itself). The deck overrides its local --presentation-* surface and the shared --df-motion-* defaults for full art direction - here a 4:3 amber identity. Theme tokens stay untouched." previewStyle="align-items:flex-start;"
+<section class="presentation" tabindex="-1" aria-label="Custom-branded deck" style="--presentation-width:1024;--presentation-height:768;--presentation-ink:#0A1E4A;--presentation-ink-foreground:#F5F7FF;--presentation-paper:#FFF7ED;--presentation-paper-foreground:#1C1917;--presentation-accent:#F472B6;--df-motion-duration:900ms;--df-motion-distance:3rem;">
+  <section class="slide" data-slide data-theme="ink" aria-label="Cover">
+    <header class="presentation-header"><span>Design</span><span>Kickoff</span></header>
+    <h1 class="presentation-title" data-df-entrance="wipe">A new identity</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:250ms;">One artboard, two palettes, ownable everywhere</p>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Lead with the palette story.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Closing">
+    <header class="presentation-header"><span>Design</span><span>Next</span></header>
+    <h2 class="presentation-title" data-df-entrance="flip">Ship it</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Same slide, second chapter.</p>
+  </section>
+</section>
+```
+
+```html example label="Chart story deck" schema="none" height="22" hint="One chart for the whole deck: a .chart.presentation-stage child of the mount, laid out in artboard coordinates by presentation.css. Slides name the state they show with data-chart-state; df$.shadcn.chart.deck(deck, { base, states }) applies each state to the SAME instance, so bars → grouped bars → donut morph (universalTransition is on by default; keep series ids and item names stable). Slides without a state fade the stage out; the next chart slide morphs on from there. The deck declares its slide transition: data-anim-in=&quot;slideIn&quot; / data-anim-out=&quot;fadeOut&quot;, and the closing slide a blocksIn curtain." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="story-deck" data-anim-in="slideIn" data-anim-in-distance="120px" data-anim-out="fadeOut" tabindex="-1" aria-label="Chart story">
+  <!-- ONE chart for the whole deck: every data-chart-state below is a state
+       of this instance, so moving between chart slides MORPHS the chart -->
+  <div class="chart presentation-stage" role="img" aria-label="Adoption by product line, morphing from baseline bars to a comparison with last year and to a composition donut"></div>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="baseline" style="justify-content:flex-start;" aria-label="Baseline">
+    <header class="presentation-header"><span>Chart story</span><span>1 · Baseline</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block-start:5.25rem;">Alpha leads adoption</h2>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="compare" style="justify-content:flex-start;" aria-label="Comparison">
+    <header class="presentation-header"><span>Chart story</span><span>2 · Comparison</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block-start:5.25rem;">Every line grew on last year</h2>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="share" style="justify-content:flex-start;" aria-label="Composition">
+    <header class="presentation-header"><span>Chart story</span><span>3 · Composition</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block-start:5.25rem;">Alpha is a third of the total</h2>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-blocks="6" aria-label="Closing">
+    <h2 class="presentation-title" data-df-entrance="pop">Three claims, one chart</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms;">The curtain colour is picked to contrast with both slides.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 4</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="4" value="1"></progress>
+</section>
+<script>
+  // all.js (df$) boots after example scripts in the sandbox - build the
+  // stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('story-deck');
+    // [product line, this year, last year]
+    const rows = [['Alpha', 54, 34], ['Beta', 42, 29], ['Gamma', 31, 23], ['Delta', 24, 14]];
+    const ink = '#e9eef8', accent = '#38bdf8';
+    const G = { left: 190, right: 170, top: 320, bottom: 140 };
+    const yCats = { type: 'category', inverse: true, data: rows.map((r) => r[0]), axisLine: { show: false }, axisLabel: { color: ink, fontWeight: 700 } };
+    const xVal = { type: 'value', max: 60 };
+    df$.shadcn.chart.deck(deck, {
+      // shared by every state (the token theme supplies type scale + chrome)
+      base: { tooltip: { trigger: 'item' } },
+      states: {
+        baseline: { grid: G, xAxis: xVal, yAxis: yCats,
+          series: [{ id: 'main', type: 'bar', data: rows.map((r) => ({ name: r[0], value: r[1] })),
+                     itemStyle: { color: accent }, label: { show: true, position: 'right', color: ink, fontWeight: 700 } }] },
+        compare: { grid: G, xAxis: xVal, yAxis: yCats, legend: { top: 280, right: 170 },
+          series: [
+            { id: 'main', name: 'This year', type: 'bar', data: rows.map((r) => ({ name: r[0], value: r[1] })), itemStyle: { color: accent } },
+            { id: 'then', name: 'Last year', type: 'bar', data: rows.map((r) => ({ name: r[0], value: r[2] })), itemStyle: { color: 'rgba(233,238,248,.3)' } },
+          ] },
+        share: {
+          series: [{ id: 'main', type: 'pie', radius: ['30%', '52%'], center: ['50%', '64%'],
+                     data: rows.map((r) => ({ name: r[0], value: r[1] })),
+                     color: [accent, ink, 'rgba(233,238,248,.55)', 'rgba(56,189,248,.5)'],
+                     itemStyle: { borderColor: '#0d1424', borderWidth: 4 },
+                     label: { formatter: (p) => p.name + '  ' + Math.round(p.percent) + '%', color: ink, fontWeight: 700 } }] },
+      },
+    });
+  });
+</script>
+```
+
+```html example label="Live data slide" schema="none" height="22" hint="The bar race (adapted from echarts-feat 09-bar-race) runs only while its slide is on stage: the same data-active MutationObserver starts the setInterval-driven setOption race when slide two activates and stops it when the deck moves on - realtimeSort + valueAnimation do the ranking morph." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="live-deck" tabindex="-1" aria-label="Live data deck">
+  <section class="slide" data-slide data-theme="ink" aria-label="Intro">
+    <header class="presentation-header"><span>Regionals</span><span>Live data</span></header>
+    <h1 class="presentation-title" data-df-entrance="up">Rankings, live</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:250ms;">Next slide starts the race - leaving the slide stops it.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Bar race" id="race-slide">
+    <header class="presentation-header"><span>Regionals</span><span>Animated ranking</span></header>
+    <div class="chart" id="race-chart" role="img" aria-label="Animated bar race of six regions over six time steps" style="height:30rem;"></div>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Closing">
+    <h2 class="presentation-title" data-df-entrance="pop">North keeps the lead</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms;">Six steps, one overtaking - the rank change is the story.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 3</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="3" value="1"></progress>
+</section>
+<script>
+  // The race STARTS when its slide activates and STOPS when it deactivates —
+  // no timers burning on hidden slides. df$.shadcn.chart.mount owns init/resize/theme.
+  window.addEventListener('load', () => {
+    const raceSlide = document.getElementById('race-slide');
+    const names = ['North', 'West', 'Central', 'Coast', 'Metro', 'Rural'];
+    const frames = [
+      [32, 27, 25, 21, 18, 14],
+      [35, 31, 28, 23, 22, 17],
+      [38, 33, 29, 28, 24, 20],
+      [41, 36, 35, 30, 27, 22],
+      [45, 42, 38, 31, 30, 25],
+      [48, 46, 41, 34, 33, 28],
+    ];
+    const option = (i) => ({
+      grid: { left: 110, right: 80, top: 40, bottom: 40 },
+      xAxis: { type: 'value', max: 'dataMax' },
+      yAxis: { type: 'category', inverse: true, data: names,
+               axisLine: { show: false }, axisTick: { show: false } },
+      series: [{ type: 'bar', realtimeSort: true, data: frames[i],
+                 label: { show: true, position: 'right', valueAnimation: true } }],
+    });
+
+    let idx = 0;
+    let timer = null;
+    const race = df$.shadcn.chart.mount(document.getElementById('race-chart'), option(0));
+    const stop = () => { clearInterval(timer); timer = null; };
+    const start = () => {
+      stop();
+      idx = 0;
+      race.setOption(option(0), true);
+      timer = setInterval(() => {
+        idx = (idx + 1) % frames.length;
+        race.setOption(option(idx));
+      }, 1300);
+    };
+    const sync = () => (raceSlide.hasAttribute('data-active') ? start() : stop());
+    new MutationObserver(sync).observe(raceSlide, { attributes: true, attributeFilter: ['data-active'] });
+    sync();
+  });
+</script>
+```
+
+<StatsClaim />
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - the authored surface; <code>setState('default', \{ index \})</code> activates slide N and <code>getState().config.slide</code> reports the live index</li>
+    <li><code>notes</code> - presenter notes of the active slide visible (<code>data-notes</code>)</li>
+    <li><code>fullscreen</code> - mount pinned to the viewport (<code>data-fullscreen</code>): native fullscreen or the fixed-overlay fallback</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code>.</p>
+
+Machine contract - verified against <a href="../schemas/presentation.schema.json"><code>presentation.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `slide` | `number` | `—` | `0` | Active slide index - `setState('default', { index })`; mirrored as `data-current-slide` and updated by keyboard/click/hash. |
+| `notes` | `boolean` | `true`, `false` | `false` | Presenter notes of the active slide visible (`data-notes` on the mount). |
+| `fullscreen` | `boolean` | `true`, `false` | `false` | Mount pinned to the viewport (`data-fullscreen`): native fullscreen or the honest fixed-overlay fallback. |
+```
+
+</StatesSection>
+
+## API
+
+```html example label="Imperative control" schema="none" hint="The same deck driven from JS: the State API on the element (open the State tab to drive it), plus the shared-library scope for clamped navigation. Motion replays come free with activation."
+<div id="deck-host"></div>
+<section class="presentation" id="api-deck" aria-label="API deck" style="--df-motion-duration:500ms;">
+  <section class="slide" data-slide data-theme="ink" aria-label="One">
+    <h2 class="presentation-title" data-df-entrance="up">Slide one</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms;">api.setState('default', { index: 1 })</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Two">
+    <h2 class="presentation-title" data-df-entrance="iris">Slide two</h2>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Three">
+    <h2 class="presentation-title" data-df-entrance="wipe">Slide three</h2>
+  </section>
+</section>
+<div style="display:flex; gap:0.5rem;">
+  <button class="btn" data-size="sm" onclick="ddf$.presentation(document.getElementById('api-deck')).next()">ddf$.presentation(deck).next()</button>
+  <button class="btn" data-size="sm" data-variant="outline" onclick="document.getElementById('api-deck').api.setState('default', { index: 0 })">back to start</button>
+</div>
+```
+
+<SourceFiles component="presentation" section="css">
+  <SourceNote for="css">The deck surface: artboard scaling, ink/paper themes, slide chrome (header line, slash counter), presenter notes and the shared <code>--df-motion-\*</code> defaults. The entrance keyframes themselves ship in <DocLink href="motion.html">motion.css</DocLink>.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="presentation" section="js">
+  <SourceNote for="js">The smallest presentation engine that works: slide lifecycle, ResizeObserver scaling, keyboard/click/touch/hash navigation, counters, notes, fullscreen - and the per-activation replay of the shared Motion entrances via ddf$.entrance / ddf$.draw.</SourceNote>
+</SourceFiles>
+
+</DocPage>

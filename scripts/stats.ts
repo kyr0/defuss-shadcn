@@ -5,7 +5,7 @@ import { writeStatsFile } from './lib/stats-files.ts';
 
 /**
  * Why: publish the size/surface summary of the shipped system as
- * dist/stats.json — per-type counts, the JS/CSS-only split, and per-
+ * dist/stats.json - per-type counts, the JS/CSS-only split, and per-
  * component + total byte sizes (readable, minified, gzipped). It runs right
  * after minify (the min twins are what get measured), standalone via
  * `bun run stats` / `make stats`, and is part of `bun run build`. verify's
@@ -16,7 +16,7 @@ const ROOT = join(import.meta.dirname, '..');
 const DIST = join(ROOT, 'dist');
 
 if (!existsSync(join(DIST, 'components'))) {
-  console.error('stats: dist/components/ missing — run `bun run build` first');
+  console.error('stats: dist/components/ missing - run `bun run build` first');
   process.exit(1);
 }
 

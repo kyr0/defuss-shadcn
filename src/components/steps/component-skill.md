@@ -15,11 +15,11 @@ supportedStates: default
 
 ## Native Web APIs
 
-- [`<ol>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol) — ordered list providing sequential numbering semantics
-- [`aria-current="step"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current) — identifies the current step for screen readers
-- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) — suppresses transitions for users who prefer reduced motion
-- [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) — thickens indicator borders and connector lines
-- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) — maps indicator and connector to system colors
+- [`<ol>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol) - ordered list providing sequential numbering semantics
+- [`aria-current="step"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current) - identifies the current step for screen readers
+- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) - suppresses transitions for users who prefer reduced motion
+- [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) - thickens indicator borders and connector lines
+- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) - maps indicator and connector to system colors
 
 ---
 
@@ -134,8 +134,8 @@ supportedStates: default
 
 | `data-orientation` | Layout |
 |--------------------|--------|
-| *(none)* | Horizontal — steps arranged in a row |
-| `vertical` | Vertical — steps stacked in a column with vertical connector |
+| *(none)* | Horizontal - steps arranged in a row |
+| `vertical` | Vertical - steps stacked in a column with vertical connector |
 
 ---
 
@@ -156,12 +156,12 @@ Connector offsets follow the indicator size in both orientations; `md` equals th
 
 ## Density
 
-Set `data-density` on the `.steps` root; the flex gaps scale — the size ladder keeps owning indicator size and typography, so size and density combine freely.
+Set `data-density` on the `.steps` root; the flex gaps scale - the size ladder keeps owning indicator size and typography, so size and density combine freely.
 
 | Value | Effect |
 | --- | --- |
 | `compact` | Step gap 0.375rem, content gap 0.0625rem |
-| `comfortable` | Gaps 0.5rem / 0.125rem — identical to the unsized default |
+| `comfortable` | Gaps 0.5rem / 0.125rem - identical to the unsized default |
 | `spacious` | Gaps 0.75rem / 0.25rem |
 
 ## States
@@ -197,11 +197,11 @@ This component is CSS-only and does not manage keyboard interaction by default. 
 
 ## Notes
 
-- Use `<ol>` for semantic ordering — screen readers announce "item 1 of 3", etc.
+- Use `<ol>` for semantic ordering - screen readers announce "item 1 of 3", etc.
 - Complete steps can show a checkmark SVG or the step number.
 - Add `aria-current="step"` to the `data-status="current"` step for accessibility.
 - The connector line between steps uses `::after` pseudo-element positioned absolutely.
 - For vertical orientation, add `data-orientation="vertical"` to the `.steps` container.
 - For error steps, add `aria-invalid="true"` to the `<li>` alongside `data-status="error"`.
-- No JavaScript required — this is a CSS-only component. Step state is set via `data-status` attributes.
+- No JavaScript required - this is a CSS-only component. Step state is set via `data-status` attributes.
 

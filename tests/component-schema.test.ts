@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-// ?raw imports (browser-mode tests have no fs) — the REAL shipped contracts, so
+// ?raw imports (browser-mode tests have no fs) - the REAL shipped contracts, so
 // these tests pin the actual files, not fixtures (plans/cmp-schemas-and-codeexample.md §27).
 import inputSchemaJson from '../src/components/input/input.schema.json?raw';
 import dialogSchemaJson from '../src/components/dialog/dialog.schema.json?raw';
@@ -146,16 +146,16 @@ describe('States table (§13–§18): real docs match the real schemas', () => {
       const t = findStatesTable(good + rows + '```\n');
       return schemaStatesProblems('x.mdx', schema, t.rows, t.problems);
     };
-    expect(problems('| `a` | `string` | — | `"A"` | d |\n').join()).toContain('MISSING STATE `b`');
+    expect(problems('| `a` | `string` | - | `"A"` | d |\n').join()).toContain('MISSING STATE `b`');
     expect(
       problems(
-        '| `a` | `string` | — | `"A"` | d |\n| `b` | `boolean` | `true`, `false` | `false` | d |\n' +
-          '| `c` | `enum` | `one`, `two` | `one` | d |\n| `ghost` | `string` | — | — | d |\n',
+        '| `a` | `string` | - | `"A"` | d |\n| `b` | `boolean` | `true`, `false` | `false` | d |\n' +
+          '| `c` | `enum` | `one`, `two` | `one` | d |\n| `ghost` | `string` | - | - | d |\n',
       ).join(),
     ).toContain('PHANTOM STATE `ghost`');
     expect(
       problems(
-        '| `a` | `number` | — | `"A"` | d |\n| `b` | `boolean` | `true`, `false` | `false` | d |\n' +
+        '| `a` | `number` | - | `"A"` | d |\n| `b` | `boolean` | `true`, `false` | `false` | d |\n' +
           '| `c` | `enum` | `one`, `two` | `one` | d |\n',
       ).join(),
     ).toContain('type mismatch');
@@ -167,13 +167,13 @@ describe('States table (§13–§18): real docs match the real schemas', () => {
     ).toMatch(/missing values|unexpected values/);
     expect(
       problems(
-        '| `a` | `string` | — | `"B"` | d |\n| `b` | `boolean` | `true`, `false` | `false` | d |\n' +
+        '| `a` | `string` | - | `"B"` | d |\n| `b` | `boolean` | `true`, `false` | `false` | d |\n' +
           '| `c` | `enum` | `one`, `two` | `one` | d |\n',
       ).join(),
     ).toContain('default mismatch');
     expect(
       problems(
-        '| `a` | `string` | — | `"A"` | d |\n| `a` | `string` | — | `"A"` | d |\n' +
+        '| `a` | `string` | - | `"A"` | d |\n| `a` | `string` | - | `"A"` | d |\n' +
           '| `b` | `boolean` | `true`, `false` | `false` | d |\n| `c` | `enum` | `one`, `two` | `one` | d |\n',
       ).join(),
     ).toContain('duplicate state row');

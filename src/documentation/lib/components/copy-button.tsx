@@ -23,7 +23,7 @@ export function CopyButton(_props: Props) {
   );
 }
 
-/** Wraps a <pre><code> block in the relative container + copy button — the
+/** Wraps a <pre><code> block in the relative container + copy button - the
  * pairing site.js's code-collapse keys on. */
 export function CodeBlock({
   lang,

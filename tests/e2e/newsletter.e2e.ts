@@ -1,7 +1,7 @@
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: newsletter is CSS-only around a real form — inline row at wide
+ * Why: newsletter is CSS-only around a real form - inline row at wide
  * width, the browser-native email input semantics (type/required/label),
  * and the privacy note styling.
  */

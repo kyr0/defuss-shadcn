@@ -1,0 +1,223 @@
+---
+title: "Waffle Dot Matrix - Presentation"
+description: "Pixel Arcade design language presenting how players split across gaming platforms as a 12-slide deck - a 10 × 10 pixel waffle that re-colours from 2020 to 2025, merges into bars and re-sorts by play time, one morphing chart."
+slug: "waffle-dot-matrix"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="waffle-dot-matrix" title="Waffle Dot Matrix" component="presentation">
+  Pixel Arcade: midnight purple, cream pixels and one insert-coin pink - where 100 players play, one pixel each, and how that grid shifted in five years.
+</PageHeader>
+
+```html example label="Pixel Arcade" schema="none" height="26" hint="Slides pop in and zoom out (df$.anim, declared on the deck); pink pixel curtains (many blocks, short stagger) mark the breaks. One deck-level chart (df$.shadcn.chart.deck): the 10 × 10 waffle re-colours from 2020 to 2025, the pixels merge into one bar per platform (universalTransition by group), then re-sort by weekly play time. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-waffle" data-anim-in="popIn" data-anim-out="zoomOut" style="--presentation-ink:#17142F;--presentation-ink-foreground:#FFF9D8;--presentation-paper:#FFF9D8;--presentation-paper-foreground:#17142F;--presentation-accent:#FF5C8A;font-family:ui-monospace, SFMono-Regular, Menlo, monospace;" tabindex="-1" aria-label="Player one: where 100 players play">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="Main gaming platform of 100 players as a 10 by 10 waffle: mobile 47, console 26, PC 21, handheld 6 in 2025, versus mobile 38, console 31, PC 25, handheld 6 in 2020; then weekly play hours by platform"></div>
+  <section class="slide" data-slide data-theme="ink" aria-label="Cover">
+    <svg aria-hidden="true" width="520" height="400" viewBox="0 0 13 10" style="position:absolute; right:150px; top:220px; image-rendering:pixelated;" shape-rendering="crispEdges">
+      <g fill="#FF5C8A"><rect x="2" y="0" width="1" height="1" /><rect x="8" y="0" width="1" height="1" /><rect x="3" y="1" width="1" height="1" /><rect x="7" y="1" width="1" height="1" /><rect x="2" y="2" width="1" height="1" /><rect x="3" y="2" width="1" height="1" /><rect x="4" y="2" width="1" height="1" /><rect x="5" y="2" width="1" height="1" /><rect x="6" y="2" width="1" height="1" /><rect x="7" y="2" width="1" height="1" /><rect x="8" y="2" width="1" height="1" /><rect x="1" y="3" width="1" height="1" /><rect x="2" y="3" width="1" height="1" /><rect x="4" y="3" width="1" height="1" /><rect x="5" y="3" width="1" height="1" /><rect x="6" y="3" width="1" height="1" /><rect x="8" y="3" width="1" height="1" /><rect x="9" y="3" width="1" height="1" /><rect x="0" y="4" width="1" height="1" /><rect x="1" y="4" width="1" height="1" /><rect x="2" y="4" width="1" height="1" /><rect x="3" y="4" width="1" height="1" /><rect x="4" y="4" width="1" height="1" /><rect x="5" y="4" width="1" height="1" /><rect x="6" y="4" width="1" height="1" /><rect x="7" y="4" width="1" height="1" /><rect x="8" y="4" width="1" height="1" /><rect x="9" y="4" width="1" height="1" /><rect x="10" y="4" width="1" height="1" /><rect x="0" y="5" width="1" height="1" /><rect x="2" y="5" width="1" height="1" /><rect x="3" y="5" width="1" height="1" /><rect x="4" y="5" width="1" height="1" /><rect x="5" y="5" width="1" height="1" /><rect x="6" y="5" width="1" height="1" /><rect x="7" y="5" width="1" height="1" /><rect x="8" y="5" width="1" height="1" /><rect x="10" y="5" width="1" height="1" /><rect x="0" y="6" width="1" height="1" /><rect x="2" y="6" width="1" height="1" /><rect x="8" y="6" width="1" height="1" /><rect x="10" y="6" width="1" height="1" /><rect x="3" y="7" width="1" height="1" /><rect x="4" y="7" width="1" height="1" /><rect x="6" y="7" width="1" height="1" /><rect x="7" y="7" width="1" height="1" /></g>
+      <rect x="0" y="9" width="13" height="1" fill="#FFF9D8" opacity="0.5" />
+    </svg>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Waffle dot matrix · Pixel Arcade</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-weight:800; letter-spacing:-0.02em; text-transform:uppercase; font-size:4.75rem; max-width:900px;">Player one: where 100 players play</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">One pixel per player, one grid of 100 - and five years of platform shifts.</p>
+    <p class="presentation-note">Insert coin.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="y2025" style="justify-content:flex-start;" aria-label="Players 2025">
+    <header class="presentation-header"><span>Level 1</span><span>Main platform · 2025</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-weight:800; letter-spacing:-0.02em; text-transform:uppercase; font-size:3rem;">47 of 100 play mostly on mobile</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Count the pixels - percentages become countable.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="y2020" style="justify-content:flex-start;" aria-label="Players 2020">
+    <header class="presentation-header"><span>Level 2</span><span>Main platform · 2020</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-weight:800; letter-spacing:-0.02em; text-transform:uppercase; font-size:3rem;">Rewind to 2020: mobile had 38</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Nine pixels change colour - from console and PC to mobile.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="bars" style="justify-content:flex-start;" aria-label="Bars">
+    <header class="presentation-header"><span>Level 3</span><span>Share of players · 2025</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-weight:800; letter-spacing:-0.02em; text-transform:uppercase; font-size:3rem;">Stack the pixels: mobile is almost half</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Each platform’s pixels merge into its bar.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Key figures">
+    <p class="presentation-eyebrow" data-df-entrance="fade">High score</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#FF5C8A; font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-weight:800; letter-spacing:-0.02em; text-transform:uppercase;"><span data-count="47">47</span>/100</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">play mainly on mobile</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-weight:800; letter-spacing:-0.02em; text-transform:uppercase;">+<span data-count="9">9</span></p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">mobile pixels since 2020</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-weight:800; letter-spacing:-0.02em; text-transform:uppercase;"><span data-count="11.2">11.2</span> h</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">weekly play time on PC - the longest sessions</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">Mobile wins the headcount. PC wins the hours.</p>
+    <p class="presentation-note">Headcount versus time - the twist.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="The controller">
+    <header class="presentation-header"><span>Bonus level</span><span>Console</span></header>
+    <div style="display:flex; gap:4.5rem; align-items:center; margin-top:3.5rem;">
+      <figure class="image" data-ratio="4/3" data-df-entrance="pop" style="--df-motion-delay:150ms; flex:0 0 700px; margin:0;">
+        <img src="https://picsum.photos/id/96/960/720" alt="A game controller lying on a dark surface, lit from behind" loading="lazy" width="960" height="720" style="width:100%; height:100%; object-fit:cover;" />
+        <figcaption class="image-caption" style="font-size:1.25rem;">Player two, ready (stock photo).</figcaption>
+      </figure>
+      <div style="flex:1 1 0; min-width:0;">
+        <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-weight:800; letter-spacing:-0.02em; text-transform:uppercase; font-size:3rem;">Console players are fewer - but loyal</h2>
+        <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:300ms; font-size:1.7rem;">81% of console players still play on the same console family they owned in 2020.</p>
+      </div>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The loyal minority.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="north" data-anim-in-blocks="12" data-anim-in-stagger="25" data-anim-in-color="#FF5C8A" aria-label="Platform table">
+    <header class="presentation-header"><span>Scoreboard</span><span>Of 100 players</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" data-density="spacious" style="font-size:1.7rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">Main gaming platform per 100 players, and weekly play time (synthetic survey).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">Platform</th><th class="table-head" style="text-align:right">2020</th><th class="table-head" style="text-align:right">2025</th><th class="table-head" style="text-align:right">Hours / week</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row"><td class="table-cell">Mobile</td><td class="table-cell" style="text-align:right">38</td><td class="table-cell" style="text-align:right">47</td><td class="table-cell" style="text-align:right">5.3</td></tr>
+          <tr class="table-row"><td class="table-cell">Console</td><td class="table-cell" style="text-align:right">31</td><td class="table-cell" style="text-align:right">26</td><td class="table-cell" style="text-align:right">9.4</td></tr>
+          <tr class="table-row"><td class="table-cell">PC</td><td class="table-cell" style="text-align:right">25</td><td class="table-cell" style="text-align:right">21</td><td class="table-cell" style="text-align:right">11.2</td></tr>
+          <tr class="table-row"><td class="table-cell">Handheld</td><td class="table-cell" style="text-align:right">6</td><td class="table-cell" style="text-align:right">6</td><td class="table-cell" style="text-align:right">6.1</td></tr>
+        </tbody>
+        <tfoot>
+          <tr class="table-row"><td class="table-cell">All</td><td class="table-cell" style="text-align:right;font-weight:700">100</td><td class="table-cell" style="text-align:right;font-weight:700">100</td><td class="table-cell" style="text-align:right;font-weight:700">7.7</td></tr>
+        </tfoot>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Hours are per player of that platform.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-weight:800; letter-spacing:-0.02em; text-transform:uppercase; font-size:2.8rem;">“Mobile is where people start playing. PC is where they stay up until two.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#FF5C8A; color:#17142F;"><span class="avatar-fallback">KD</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Kai Dorsey<br /><span style="opacity:0.7; font-size:1.4rem;">Games researcher - 6,000 players surveyed</span></p>
+    </div>
+    <p class="presentation-note">The two-in-the-morning line always gets a laugh.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="hours" style="justify-content:flex-start;" aria-label="Hours">
+    <header class="presentation-header"><span>Final level</span><span>Weekly play time per player</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-weight:800; letter-spacing:-0.02em; text-transform:uppercase; font-size:3rem;">By time played, the order flips</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The same bars re-sort by hours - PC first, mobile last.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Questions from the studio">
+    <header class="presentation-header"><span>Q & A</span><span>Game studio</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-weight:800; letter-spacing:-0.02em; text-transform:uppercase; font-size:2.8rem;">Questions from the studio</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="wf-qa2" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Should we build mobile first?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">For reach, yes - for revenue per player, PC and console still lead.</p></div>
+      </details>
+      <details class="accordion-item" name="wf-qa2" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Why is handheld flat?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Six players in 100 in both years: a stable niche, strongly tied to one hardware generation.</p></div>
+      </details>
+      <details class="accordion-item" name="wf-qa2" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>What does “main platform” mean?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">The platform with the most hours in the survey week; many players use two.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Definitions matter - answer the third one carefully.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Takeaways">
+    <header class="presentation-header"><span>Game over</span><span>Continue?</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">▶</span><span>Waffles make shares countable - 47 pixels, not “47%”.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">▶</span><span>Mobile gained nine players in five years.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">▶</span><span>Headcount and hours rank platforms in opposite order.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">▶</span><span>Design for the platform where your players stay.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Four lines, arcade speed.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-anim-in="blocksIn" data-anim-in-direction="south" data-anim-in-blocks="12" data-anim-in-stagger="25" data-anim-in-color="#FF5C8A" aria-label="Closing">
+    <svg aria-hidden="true" width="520" height="400" viewBox="0 0 13 10" style="position:absolute; right:150px; top:220px; image-rendering:pixelated;" shape-rendering="crispEdges">
+      <g fill="#FF5C8A"><rect x="2" y="0" width="1" height="1" /><rect x="8" y="0" width="1" height="1" /><rect x="3" y="1" width="1" height="1" /><rect x="7" y="1" width="1" height="1" /><rect x="2" y="2" width="1" height="1" /><rect x="3" y="2" width="1" height="1" /><rect x="4" y="2" width="1" height="1" /><rect x="5" y="2" width="1" height="1" /><rect x="6" y="2" width="1" height="1" /><rect x="7" y="2" width="1" height="1" /><rect x="8" y="2" width="1" height="1" /><rect x="1" y="3" width="1" height="1" /><rect x="2" y="3" width="1" height="1" /><rect x="4" y="3" width="1" height="1" /><rect x="5" y="3" width="1" height="1" /><rect x="6" y="3" width="1" height="1" /><rect x="8" y="3" width="1" height="1" /><rect x="9" y="3" width="1" height="1" /><rect x="0" y="4" width="1" height="1" /><rect x="1" y="4" width="1" height="1" /><rect x="2" y="4" width="1" height="1" /><rect x="3" y="4" width="1" height="1" /><rect x="4" y="4" width="1" height="1" /><rect x="5" y="4" width="1" height="1" /><rect x="6" y="4" width="1" height="1" /><rect x="7" y="4" width="1" height="1" /><rect x="8" y="4" width="1" height="1" /><rect x="9" y="4" width="1" height="1" /><rect x="10" y="4" width="1" height="1" /><rect x="0" y="5" width="1" height="1" /><rect x="2" y="5" width="1" height="1" /><rect x="3" y="5" width="1" height="1" /><rect x="4" y="5" width="1" height="1" /><rect x="5" y="5" width="1" height="1" /><rect x="6" y="5" width="1" height="1" /><rect x="7" y="5" width="1" height="1" /><rect x="8" y="5" width="1" height="1" /><rect x="10" y="5" width="1" height="1" /><rect x="0" y="6" width="1" height="1" /><rect x="2" y="6" width="1" height="1" /><rect x="8" y="6" width="1" height="1" /><rect x="10" y="6" width="1" height="1" /><rect x="3" y="7" width="1" height="1" /><rect x="4" y="7" width="1" height="1" /><rect x="6" y="7" width="1" height="1" /><rect x="7" y="7" width="1" height="1" /></g>
+      <rect x="0" y="9" width="13" height="1" fill="#FFF9D8" opacity="0.5" />
+    </svg>
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-weight:800; letter-spacing:-0.02em; text-transform:uppercase; font-size:4.5rem;">Percentages become countable</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">A synthetic survey of 100 players - the waffle is the real pattern.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">Game over screen.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) - build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-waffle');
+    const TEXT = '#FFF9D8', MUTED = '#8C86B5';
+    const platforms = [['Mobile', '#FF5C8A', 47, 38, 5.3], ['Console', '#5CE1E6', 26, 31, 9.4], ['PC', '#FFD84D', 21, 25, 11.2], ['Handheld', '#9B8CFF', 6, 6, 6.1]];
+    // a square 10 × 10 board on the artboard (equal x/y scale), pixels fill row by row
+    const board = {
+      grid: { left: 470, top: 300, width: 460, height: 460 },
+      xAxis: { type: 'value', min: -0.5, max: 9.5, show: false },
+      yAxis: { type: 'value', min: -0.5, max: 9.5, inverse: true, show: false },
+    };
+    const waffle = (col) => {
+      let at = 0;
+      return {
+        ...board,
+        legend: { orient: 'vertical', left: 1010, top: 'middle', icon: 'rect', itemWidth: 26, itemHeight: 26, itemGap: 26, textStyle: { color: TEXT, fontWeight: 700 },
+          formatter: (n) => n + '  ' + platforms.find((p) => p[0] === n)[col] },
+        series: platforms.map(([name, color, ...counts]) => {
+          const n = counts[col - 2];
+          const data = Array.from({ length: n }, (_, i) => [(at + i) % 10, Math.floor((at + i) / 10)]);
+          at += n;
+          return { id: name, name, type: 'scatter', dataGroupId: name, symbol: 'rect', symbolSize: 38, data, itemStyle: { color },
+            universalTransition: { enabled: true, divideShape: 'split' } };
+        }),
+      };
+    };
+    const bars = (list, value, fmt, max) => ({
+      grid: { left: 260, right: 190, top: 330, bottom: 150 },
+      xAxis: { type: 'value', max, axisLabel: { color: MUTED }, splitLine: { lineStyle: { color: 'rgba(255,249,216,.08)' } } },
+      yAxis: { type: 'category', inverse: true, data: list.map((p) => p[0]), axisLine: { show: false }, axisLabel: { color: TEXT, fontWeight: 700 } },
+      series: [{ id: 'platforms', type: 'bar', barWidth: '56%', universalTransition: { enabled: true, divideShape: 'split' },
+        data: list.map((p) => ({ name: p[0], value: p[value], groupId: p[0], itemStyle: { color: p[1], borderRadius: 0 } })),
+        label: { show: true, position: 'right', formatter: fmt, color: TEXT, fontWeight: 700 } }],
+    });
+
+    df$.shadcn.chart.deck(deck, {
+      base: { tooltip: { trigger: 'item' } },
+      states: {
+        y2025: waffle(2),
+        y2020: waffle(3),
+        bars: bars(platforms, 2, '{c} / 100', 50),
+        hours: bars(platforms.slice().sort((a, b) => b[4] - a[4]), 4, '{c} h', 12),
+      },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 28-waffle-dot-matrix (Pixel Arcade) - a synthetic player survey.</p>
+<SourceFiles component="presentation" />
+</DocPage>

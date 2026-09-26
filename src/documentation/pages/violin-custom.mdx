@@ -1,0 +1,232 @@
+---
+title: "Violin - Custom Series - Presentation"
+description: "Fashion Editorial design language presenting resale price premiums for sneakers as a 12-slide deck - custom-series violins that isolate the collaborations, then give way to medians and market share, one continuous stage."
+slug: "violin-custom"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="violin-custom" title="Violin - Custom Series" component="presentation">
+  Fashion Editorial: ivory, black and one lacquer red - what sneakers resell for above retail, drawn as violins so the shape of the market shows before any median does.
+</PageHeader>
+
+```html example label="Fashion Editorial" schema="none" height="26" hint="Slides iris open and fade (df$.anim irisIn/fadeOut, declared on the deck); lacquer-red curtains open the data and the ending. One deck-level chart (df$.shadcn.chart.deck): custom renderItem violins grow in (enterFrom) and re-light to isolate the collaborations, then give way to median bars and the resale-volume donut. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-violin" data-anim-in="irisIn" data-anim-out="fadeOut" style="--presentation-ink:#171312;--presentation-ink-foreground:#F8F4F0;--presentation-paper:#F8F4F0;--presentation-paper-foreground:#171312;--presentation-accent:#B92A4A;font-family:Didot, 'Bodoni MT', Georgia, serif;" tabindex="-1" aria-label="The resale premium - sneakers above retail">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="Distribution of resale premiums over retail price for 2,500 sneaker sales in five categories drawn as violins: collaborations have a median premium of 96 percent with a long upper tail; then medians and resale volume"></div>
+  <section class="slide" data-slide data-theme="paper" aria-label="Cover">
+    <svg aria-hidden="true" width="420" height="760" viewBox="0 0 420 760" style="position:absolute; right:170px; top:70px;">
+      <path d="M210 20 C 150 140 120 220 170 300 C 230 390 60 470 90 560 C 120 650 190 700 210 740 C 230 700 300 650 330 560 C 360 470 190 390 250 300 C 300 220 270 140 210 20 Z" fill="#B92A4A" />
+      <line x1="210" y1="0" x2="210" y2="760" stroke="currentColor" stroke-width="2" opacity="0.4" />
+    </svg>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Violin · Fashion Editorial</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-family:Didot, 'Bodoni MT', Georgia, serif; font-weight:400; letter-spacing:-0.02em; font-size:7rem; max-width:900px;">The resale premium</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">2,500 sneaker resales, five categories - and the shape of what people pay above retail.</p>
+    <p class="presentation-note">The red silhouette is the first violin.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="violins" style="justify-content:flex-start;" aria-label="Distributions">
+    <header class="presentation-header"><span>The market</span><span>Premium over retail, % · 500 sales each</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Didot, 'Bodoni MT', Georgia, serif; font-weight:400; letter-spacing:-0.02em;">Five categories, five silhouettes</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Width = how many sales sit at that premium. Shape before summary.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="collabs" style="justify-content:flex-start;" aria-label="Collaborations">
+    <header class="presentation-header"><span>The market</span><span>Collaborations highlighted</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Didot, 'Bodoni MT', Georgia, serif; font-weight:400; letter-spacing:-0.02em;">Collaborations: a long neck of +200% resales</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">One silhouette in red - the others step back.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="medians" style="justify-content:flex-start;" aria-label="Medians">
+    <header class="presentation-header"><span>The summary</span><span>Median premium</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Didot, 'Bodoni MT', Georgia, serif; font-weight:400; letter-spacing:-0.02em;">The median says +96% - the violin says “it depends”</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Each shape shrinks to one number.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Key figures">
+    <p class="presentation-eyebrow" data-df-entrance="fade">In numbers</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#B92A4A; font-family:Didot, 'Bodoni MT', Georgia, serif; font-weight:400; letter-spacing:-0.02em;">+<span data-count="96">96</span>%</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">median premium for collaborations</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:Didot, 'Bodoni MT', Georgia, serif; font-weight:400; letter-spacing:-0.02em;">+<span data-count="8">8</span>%</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">median premium for runners</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:Didot, 'Bodoni MT', Georgia, serif; font-weight:400; letter-spacing:-0.02em;"><span data-count="18">18</span>%</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">of collaboration resales above +200%</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">Most pairs resell near retail. A few resell like art.</p>
+    <p class="presentation-note">The art line is the quote-able one.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Worn">
+    <header class="presentation-header"><span>Worn, not kept</span><span>Runners</span></header>
+    <div style="display:flex; gap:4.5rem; align-items:center; margin-top:3.5rem;">
+      <figure class="image" data-ratio="4/3" data-df-entrance="iris" style="--df-motion-delay:150ms; flex:0 0 700px; margin:0;">
+        <img src="https://picsum.photos/id/103/960/720" alt="A person’s legs in sneakers stretched out on a sunlit field" loading="lazy" width="960" height="720" style="width:100%; height:100%; object-fit:cover;" />
+        <figcaption class="image-caption" style="font-size:1.25rem;">Worn on a Sunday (stock photo).</figcaption>
+      </figure>
+      <div style="flex:1 1 0; min-width:0;">
+        <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; font-family:Didot, 'Bodoni MT', Georgia, serif; font-weight:400; letter-spacing:-0.02em;">Runners are bought to run</h2>
+        <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:300ms; font-size:1.7rem;">71% of runner resales are worn pairs - the premium is thin because the shoes are used.</p>
+      </div>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The other end of the market.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="east" data-anim-in-blocks="5" data-anim-in-color="#B92A4A" aria-label="Premium table">
+    <header class="presentation-header"><span>The ledger</span><span>Premium over retail</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" data-density="spacious" style="font-size:1.7rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">Resale premium by category, 500 sales each (synthetic).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">Category</th><th class="table-head" style="text-align:right">Median</th><th class="table-head" style="text-align:right">Middle half</th><th class="table-head" style="text-align:right">Share of resales</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row" style="font-weight:700"><td class="table-cell">Collaborations</td><td class="table-cell" style="text-align:right">+96%</td><td class="table-cell" style="text-align:right">+48% – +168%</td><td class="table-cell" style="text-align:right">22%</td></tr>
+          <tr class="table-row"><td class="table-cell">Retro</td><td class="table-cell" style="text-align:right">+31%</td><td class="table-cell" style="text-align:right">+12% – +55%</td><td class="table-cell" style="text-align:right">26%</td></tr>
+          <tr class="table-row"><td class="table-cell">Basketball</td><td class="table-cell" style="text-align:right">+22%</td><td class="table-cell" style="text-align:right">+6% – +41%</td><td class="table-cell" style="text-align:right">24%</td></tr>
+          <tr class="table-row"><td class="table-cell">Skate</td><td class="table-cell" style="text-align:right">+14%</td><td class="table-cell" style="text-align:right">+2% – +29%</td><td class="table-cell" style="text-align:right">11%</td></tr>
+          <tr class="table-row"><td class="table-cell">Runners</td><td class="table-cell" style="text-align:right">+8%</td><td class="table-cell" style="text-align:right">−6% – +21%</td><td class="table-cell" style="text-align:right">17%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Runners sometimes resell below retail - the only category that does.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-family:Didot, 'Bodoni MT', Georgia, serif; font-weight:400; letter-spacing:-0.02em; font-size:3rem;">“A collaboration is not a shoe. It is a ticket to a moment - and the price follows the moment, not the leather.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#B92A4A; color:#F8F4F0;"><span class="avatar-fallback">CV</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Camille Vautrin<br /><span style="opacity:0.7; font-size:1.4rem;">Resale market editor - fictional</span></p>
+    </div>
+    <p class="presentation-note">Editorial voice.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="volume" style="justify-content:flex-start;" aria-label="Resale volume">
+    <header class="presentation-header"><span>The volume</span><span>Share of all resales</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Didot, 'Bodoni MT', Georgia, serif; font-weight:400; letter-spacing:-0.02em;">Retro and basketball move the most pairs</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The premium story is the collaborations; the volume story is not.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Reader questions">
+    <header class="presentation-header"><span>Letters</span><span>Readers ask</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; font-family:Didot, 'Bodoni MT', Georgia, serif; font-weight:400; letter-spacing:-0.02em;">Letters to the editor</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="vi-qa" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Why violins instead of boxplots?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Collaborations have two peaks - early drops and later hype - a box would hide both.</p></div>
+      </details>
+      <details class="accordion-item" name="vi-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Are fees included?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">No: premiums compare the sale price with retail, before platform fees of 8–12%.</p></div>
+      </details>
+      <details class="accordion-item" name="vi-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Is the premium falling?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">For retro, yes - down 9 points on last year as re-releases increased supply.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The two-peaks answer justifies the chart.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Takeaways">
+    <header class="presentation-header"><span>The edit</span><span>Four notes</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">—</span><span>Draw the distribution when the shape is the story.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">—</span><span>Collaborations are a separate market, not a bigger version of the same one.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">—</span><span>Runners resell near - sometimes below - retail.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">—</span><span>Supply, not taste, is cooling the retro premium.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The edit, four lines.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-anim-in="blocksIn" data-anim-in-direction="west" data-anim-in-blocks="5" data-anim-in-color="#B92A4A" aria-label="Closing">
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-family:Didot, 'Bodoni MT', Georgia, serif; font-weight:400; letter-spacing:-0.02em; font-size:6rem;">Shape before summary</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">Synthetic resales - the custom-series violin is the real technique.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">Fade to ivory.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) - build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-violin');
+    const TEXT = '#171312', MUTED = '#8C8580', RED = '#B92A4A', GREY = '#CFC7C0';
+    // [category, median, resale share %, density modes as [centre, spread, weight]]
+    const cats = [
+      ['Runners', 8, 17, [[6, 14, 1]]],
+      ['Skate', 14, 11, [[14, 15, 1]]],
+      ['Basketball', 22, 24, [[18, 16, 0.8], [45, 14, 0.3]]],
+      ['Retro', 31, 26, [[28, 18, 1], [70, 16, 0.2]]],
+      ['Collaborations', 96, 22, [[60, 30, 0.8], [190, 45, 0.45]]],
+    ];
+    const ys = Array.from({ length: 67 }, (_, i) => -30 + i * 5); // premium grid −30 … +300
+    const density = (modes) => {
+      const raw = ys.map((y) => modes.reduce((s, [c, sd, w]) => s + w * Math.exp(-((y - c) ** 2) / (2 * sd * sd)), 0));
+      const max = Math.max(...raw);
+      return raw.map((v) => v / max);
+    };
+    const shapes = cats.map((c) => density(c[3]));
+    const G = { left: 150, right: 150, top: 330, bottom: 150 };
+    const violins = (hot) => ({
+      grid: G,
+      xAxis: { type: 'category', data: cats.map((c) => c[0]), axisLabel: { color: TEXT, fontSize: 26 } },
+      yAxis: { type: 'value', min: -50, max: 300, interval: 50, axisLabel: { color: MUTED, formatter: (v) => (v > 0 ? '+' : '') + v + '%' } },
+      series: [{ id: 'violins', type: 'custom', data: cats.map((_, i) => [i]),
+        renderItem: (p, api) => {
+          const i = p.dataIndex, cx = api.coord([i, 0])[0], half = api.size([1, 0])[0] * 0.4;
+          const pts = ys.map((y, k) => [cx - shapes[i][k] * half, api.coord([i, y])[1]])
+            .concat(ys.slice().reverse().map((y, k) => [cx + shapes[i][ys.length - 1 - k] * half, api.coord([i, y])[1]]));
+          const lit = !hot || cats[i][0] === hot;
+          const my = api.coord([i, cats[i][1]])[1];
+          return { type: 'group', children: [
+            { type: 'polygon', shape: { points: pts, smooth: 0.2 }, style: { fill: lit ? (hot ? RED : TEXT) : GREY, opacity: lit ? 0.9 : 0.35 },
+              enterFrom: { scaleY: 0, originY: api.coord([i, 0])[1], style: { opacity: 0 } }, transition: ['shape', 'style'] },
+            { type: 'line', shape: { x1: cx - half * 0.45, y1: my, x2: cx + half * 0.45, y2: my }, style: { stroke: '#F8F4F0', lineWidth: 4 } },
+          ] };
+        } }],
+    });
+
+    df$.shadcn.chart.deck(deck, {
+      base: { tooltip: { show: false } },
+      states: {
+        violins: violins(null),
+        collabs: violins('Collaborations'),
+        medians: {
+          grid: G,
+          xAxis: { type: 'category', data: cats.map((c) => c[0]), axisLabel: { color: TEXT, fontSize: 26 } },
+          yAxis: { type: 'value', min: 0, max: 120, interval: 20, axisLabel: { color: MUTED, formatter: '+{value}%' } },
+          series: [{ id: 'medians', type: 'bar', barWidth: '32%', data: cats.map((c) => ({ name: c[0], value: c[1], itemStyle: { color: c[0] === 'Collaborations' ? RED : TEXT, borderRadius: 0 } })),
+            label: { show: true, position: 'top', formatter: '+{c}%', color: TEXT, fontSize: 28 } }],
+        },
+        volume: {
+          series: [{ id: 'medians', type: 'pie', radius: ['30%', '50%'], center: ['50%', '64%'],
+            data: cats.map((c) => ({ name: c[0], value: c[2], itemStyle: { color: c[0] === 'Collaborations' ? RED : c[0] === 'Retro' ? TEXT : c[0] === 'Basketball' ? '#5A4E49' : GREY } })),
+            itemStyle: { borderColor: '#F8F4F0', borderWidth: 6 },
+            label: { formatter: '{b}  {c}%', color: TEXT, fontSize: 26 }, labelLine: { lineStyle: { color: MUTED }, length: 20, length2: 30 } }],
+        },
+      },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 30-violin-custom (Fashion Editorial) - synthetic resale data.</p>
+<SourceFiles component="presentation" />
+</DocPage>

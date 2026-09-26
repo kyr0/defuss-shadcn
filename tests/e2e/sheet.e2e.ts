@@ -7,7 +7,7 @@ import { icbRect } from './lib/viewport.ts';
  * Why: E2E smoke test for the shipped sheet component. Loads the fixture
  * (one sheet per documented side, mirroring the doc page) over HTTP in a real
  * browser, then verifies the slide-out geometry per side, trigger/close
- * wiring, Escape-to-close, and the named State API — the same files consumers
+ * wiring, Escape-to-close, and the named State API - the same files consumers
  * copy from dist/, unmodified.
  */
 
@@ -26,7 +26,7 @@ async function open(page: Page, id: string): Promise<void> {
     `#${id}`,
     (el) =>
       new Promise<void>((resolve) => {
-        // transitionend fires per property (opacity + transform) — wait for transform
+        // transitionend fires per property (opacity + transform) - wait for transform
         if (!el.classList.contains('sheet')) return resolve();
         const done = (ev: Event) => {
           if (!(ev instanceof TransitionEvent)) return;
@@ -66,7 +66,7 @@ try {
 
   // The modal scroll lock (scrollbar-gutter:stable) shrinks the fixed-element
   // containing block by the classic scrollbar while clientWidth keeps
-  // reporting the full viewport — dock against the ICB sentinel
+  // reporting the full viewport - dock against the ICB sentinel
   // (tests/e2e/lib/viewport.ts), the block fixed elements actually get.
   await check('right sheet: docked right, 24rem wide, full height', async () => {
     await open(page, 'sheet-right');
@@ -239,7 +239,7 @@ try {
   // -- Scroll lock (documented in skill Notes: page behind stays put) --------
   await check('page behind the modal sheet stays put; position restored on close', async () => {
     await page.evaluate(() => {
-      // blur the trigger still focused from the previous check — its
+      // blur the trigger still focused from the previous check - its
       // async focus-restore scroll-into-view would race our measurement
       (document.activeElement as HTMLElement | null)?.blur();
       window.scrollTo(0, 400);

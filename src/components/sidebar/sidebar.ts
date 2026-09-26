@@ -109,7 +109,7 @@ const AUTO_COLLAPSE_BELOW = 24 * 16; // 384px
 const AUTO_COLLAPSE_ABOVE = 28 * 16; // 448px
 
 function autoCollapseSidebar(sidebar) {
-  if (sidebar.dataset.stateName) return; // deliberate state — never fight it
+  if (sidebar.dataset.stateName) return; // deliberate state - never fight it
   // available space = the sidebar's row (a .sidebar-layout or any container);
   // clientWidth of the parent, not the sidebar's own width (flex-shrink: 0
   // keeps the authored width and overflows instead of shrinking).
@@ -145,7 +145,7 @@ if (!document.__sidebarKbInit) {
       const sidebar = document.querySelector('.app-sidebar');
       if (sidebar) {
         sidebar.dataset.state = sidebar.dataset.state === 'collapsed' ? 'expanded' : 'collapsed';
-        // user decision — pins against the auto-collapse heuristic
+        // user decision - pins against the auto-collapse heuristic
         sidebar.dataset.stateName = sidebar.dataset.state === 'collapsed' ? 'collapsed' : 'default';
       }
     }

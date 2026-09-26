@@ -7,7 +7,7 @@ import { startServer } from './server.ts';
  * (default + custom-range + authored-disabled sliders, mirroring the doc
  * page) over HTTP in a real browser, then verifies the fill-track custom
  * property, keyboard stepping, native disabled behavior, and the named State
- * API ({ value } preset) — the same files consumers copy from dist/,
+ * API ({ value } preset) - the same files consumers copy from dist/,
  * unmodified.
  */
 
@@ -45,7 +45,7 @@ try {
   });
 
   await check('slider.css paints a two-stop gradient driven by --slider-value', async () => {
-    // Chromium can't compute styles for -webkit- pseudo-elements — read the
+    // Chromium can't compute styles for -webkit- pseudo-elements - read the
     // shipped rule straight from the CSSOM instead (exact string match).
     const rule = await page.evaluate(
       () =>

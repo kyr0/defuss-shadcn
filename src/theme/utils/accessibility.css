@@ -1,7 +1,7 @@
-/* defuss-shadcn — optional accessibility utilities.
+/* defuss-shadcn - optional accessibility utilities.
  * Text meant for assistive technology only (.sr-only) and its inverse
  * (.not-sr-only). The clip pattern keeps content in the AT tree while
- * removing it visually — display:none would hide it from screen readers too.
+ * removing it visually - display:none would hide it from screen readers too.
  * Focusable elements re-reveal via :focus / :focus-within so keyboard users
  * never lose the control entirely (the Tailwind idiom, kept intact).
  */

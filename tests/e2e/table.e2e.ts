@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: table is CSS-only — the container (overflow + inline-size container
+ * Why: table is CSS-only - the container (overflow + inline-size container
  * for the @container query), collapsed borders, head/cell geometry, and the
  * documented <480px compact query.
  */

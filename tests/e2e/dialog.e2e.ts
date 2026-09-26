@@ -6,7 +6,7 @@ import { startServer } from './server.ts';
  * Why: E2E smoke test for the shipped dialog component. Loads the fixture
  * (trigger + modal dialog, mirroring the doc page) over HTTP in a real
  * browser, then verifies component CSS was applied, the trigger/close wiring
- * works, and the named State API drives the dialog — the same files consumers
+ * works, and the named State API drives the dialog - the same files consumers
  * copy from dist/, unmodified.
  */
 
@@ -121,7 +121,7 @@ try {
     const before = await page.evaluate(() => document.scrollingElement!.scrollTop);
     assert.ok(before > 0, 'fixture page is scrollable');
     await setState(page, 'open');
-    // wheel over the backdrop corner and over the dialog box — neither may
+    // wheel over the backdrop corner and over the dialog box - neither may
     // move the page behind (the bug this guards: page scrolled ~600px here)
     await page.mouse.move(2, 2);
     await page.mouse.wheel(0, 500);

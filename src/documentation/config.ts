@@ -9,7 +9,7 @@ export default {
   // DOCS_OUTPUT lets scripts/build-docs.ts redirect the build (pilot/diff runs)
   output: process.env.DOCS_OUTPUT ?? '../../dist/documentation',
   // hydration is opt-in per directory; all docs components live in lib/ (static).
-  // The dir is never populated — lib/plugins.ts removes the runtime stub.
+  // The dir is never populated - lib/plugins.ts removes the runtime stub.
   components: 'components',
   rpc: false,
   plugins: docsPlugins,
@@ -22,7 +22,7 @@ export default {
     [remarkFrontmatter, ['yaml', 'toml']],
     [remarkMdxFrontmatter, { name: 'meta' }],
     // canonical executable-example fences (```… example → CodeExample;
-    // ```states → StatesTable) — the ONE example rendering mechanism
+    // ```states → StatesTable) - the ONE example rendering mechanism
     remarkDocExamples,
   ],
   rehypePlugins: [],

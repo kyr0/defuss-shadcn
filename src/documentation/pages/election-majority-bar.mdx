@@ -1,0 +1,229 @@
+---
+title: "Election Majority Bar - Presentation"
+description: "Live News Election Desk design language presenting a fictional city-council election as a 12-slide deck - one stacked seat bar that moves from the early projection to the result, splits into coalition options and ends on votes versus seats."
+slug: "election-majority-bar"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="election-majority-bar" title="Election Majority Bar" component="presentation">
+  Live News Election Desk: studio black, clean white and breaking-news red - election night in the fictional city of Port Aldwin, told with one stacked bar and one line that matters: 36 seats.
+</PageHeader>
+
+```html example label="Live News Election Desk" schema="none" height="26" hint="Slides wipe in and out like a news graphic (df$.anim wipeIn/wipeOut, declared on the deck); red curtains mark the breaks. One deck-level chart (df$.shadcn.chart.deck): the stacked seat bar moves from the 20% projection to the final result, splits into three coalition options against the majority line, then regroups as votes versus seats. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-majority" data-anim-in="wipeIn" data-anim-in-direction="west" data-anim-out="wipeOut" style="--presentation-ink:#101319;--presentation-ink-foreground:#F5F6F8;--presentation-paper:#F5F6F8;--presentation-paper-foreground:#101319;--presentation-accent:#D71920;font-family:Arial, Helvetica, sans-serif;" tabindex="-1" aria-label="Election night in Port Aldwin - 71 seats, 36 to govern">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="Seats in the fictional Port Aldwin council, 71 seats with 36 for a majority: City First 24, Harbour Greens 17, Social City 14, Liberal Voice 8, neighbourhood lists 5, others 3; three coalition options and votes versus seats"></div>
+  <section class="slide" data-slide data-theme="ink" aria-label="Cover">
+    <div aria-hidden="true" style="position:absolute; left:0; right:0; bottom:0; height:70px; display:flex; align-items:center; gap:3rem; padding-inline:112px; background:#D71920; color:#FFFFFF; font:800 1.5rem/1 Arial, sans-serif; text-transform:uppercase; letter-spacing:0.04em;">
+      <span>● Live</span><span>Port Aldwin council · 71 seats</span><span>36 for a majority</span><span>100% counted</span>
+    </div>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Majority bar · Live News Election Desk</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-weight:800; letter-spacing:-0.02em; font-size:6rem;">Election night: who gets to 36?</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">Port Aldwin elects its 71-seat council. The only number that matters is the majority line.</p>
+    <p class="presentation-note">Studio tone: short sentences, one number.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="early" style="justify-content:flex-start;" aria-label="Projection">
+    <header class="presentation-header"><span>20:15 · 20% counted</span><span>Projected seats</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:800; letter-spacing:-0.02em;">Early projection: City First at 27</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">One bar, every seat - the red line is the majority.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="final" style="justify-content:flex-start;" aria-label="Result">
+    <header class="presentation-header"><span>23:40 · 100% counted</span><span>Final seats</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:800; letter-spacing:-0.02em;">Final result: City First 24 - twelve short</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Watch three seats move from City First to the Greens.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="coalitions" style="justify-content:flex-start;" aria-label="Coalitions">
+    <header class="presentation-header"><span>The arithmetic</span><span>Options past 36</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:800; letter-spacing:-0.02em;">Three ways past the line</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The single bar splits into the three coalitions that reach 36.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Key figures">
+    <p class="presentation-eyebrow" data-df-entrance="fade">Three numbers from the night</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-weight:800; letter-spacing:-0.02em;"><span data-count="36">36</span></p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">seats needed for a majority</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#D71920; font-weight:800; letter-spacing:-0.02em;"><span data-count="24">24</span></p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">seats for City First - largest, not governing</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-weight:800; letter-spacing:-0.02em;">+<span data-count="7">7</span></p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">seats for the Harbour Greens vs last election</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">Turnout 58.4% - up six points on the last council vote.</p>
+    <p class="presentation-note">Read them like a presenter.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="The city">
+    <header class="presentation-header"><span>Port Aldwin</span><span>On the ground</span></header>
+    <div style="display:flex; gap:4.5rem; align-items:center; margin-top:3.5rem;">
+      <figure class="image" data-ratio="4/3" data-df-entrance="right" style="--df-motion-delay:150ms; flex:0 0 700px; margin:0;">
+        <img src="https://picsum.photos/id/49/960/720" alt="White houses with blue accents on a hillside above the sea" loading="lazy" width="960" height="720" style="width:100%; height:100%; object-fit:cover;" />
+        <figcaption class="image-caption" style="font-size:1.25rem;">The waterfront wards (stock photo).</figcaption>
+      </figure>
+      <div style="flex:1 1 0; min-width:0;">
+        <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; font-weight:800; letter-spacing:-0.02em;">A harbour town decided on its waterfront</h2>
+        <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:300ms; font-size:1.7rem;">The Greens won 7 of the 9 waterfront wards - on one issue: the new ferry terminal.</p>
+      </div>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Local issue, local map.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="west" data-anim-in-blocks="6" data-anim-in-color="#D71920" aria-label="Result table">
+    <header class="presentation-header"><span>Official result</span><span>71 seats</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" style="font-size:1.7rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">Port Aldwin council election, final result (fictional).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">Party</th><th class="table-head" style="text-align:right">Votes</th><th class="table-head" style="text-align:right">Seats</th><th class="table-head" style="text-align:right">Change</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row"><td class="table-cell">City First</td><td class="table-cell" style="text-align:right">32.1%</td><td class="table-cell" style="text-align:right">24</td><td class="table-cell" style="text-align:right">−4</td></tr>
+          <tr class="table-row"><td class="table-cell">Harbour Greens</td><td class="table-cell" style="text-align:right">23.4%</td><td class="table-cell" style="text-align:right">17</td><td class="table-cell" style="text-align:right">+7</td></tr>
+          <tr class="table-row"><td class="table-cell">Social City</td><td class="table-cell" style="text-align:right">19.8%</td><td class="table-cell" style="text-align:right">14</td><td class="table-cell" style="text-align:right">−2</td></tr>
+          <tr class="table-row"><td class="table-cell">Liberal Voice</td><td class="table-cell" style="text-align:right">11.2%</td><td class="table-cell" style="text-align:right">8</td><td class="table-cell" style="text-align:right">+1</td></tr>
+          <tr class="table-row"><td class="table-cell">Neighbourhood lists</td><td class="table-cell" style="text-align:right">7.4%</td><td class="table-cell" style="text-align:right">5</td><td class="table-cell" style="text-align:right">0</td></tr>
+          <tr class="table-row"><td class="table-cell">Others</td><td class="table-cell" style="text-align:right">6.1%</td><td class="table-cell" style="text-align:right">3</td><td class="table-cell" style="text-align:right">−2</td></tr>
+        </tbody>
+        <tfoot>
+          <tr class="table-row"><td class="table-cell">Total</td><td class="table-cell" style="text-align:right;font-weight:700">100%</td><td class="table-cell" style="text-align:right;font-weight:700">71</td><td class="table-cell" style="text-align:right;font-weight:700"></td></tr>
+        </tfoot>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Seat changes sum to zero.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-weight:800; letter-spacing:-0.02em; font-size:3rem;">“We won the most votes and lost the evening. In a council, you count to 36, not to first place.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#D71920; color:#F5F6F8;"><span class="avatar-fallback">OB</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Owen Brandt<br /><span style="opacity:0.7; font-size:1.4rem;">City First lead candidate - fictional</span></p>
+    </div>
+    <p class="presentation-note">The loser’s honesty is the best quote of the night.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="votes" style="justify-content:flex-start;" aria-label="Votes vs seats">
+    <header class="presentation-header"><span>Fairness check</span><span>% of votes vs % of seats</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:800; letter-spacing:-0.02em;">Seats follow votes closely - small lists lose most</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Vote share and seat share side by side per party.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Viewer questions">
+    <header class="presentation-header"><span>Your questions</span><span>From the live chat</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; font-weight:800; letter-spacing:-0.02em;">Viewer questions</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="em-qa" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Which coalition will form?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Greens + Social City + Liberal Voice (39) is the only option all three have not ruled out.</p></div>
+      </details>
+      <details class="accordion-item" name="em-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Why do “Others” lose seats with 6% of votes?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Their votes are spread over four lists; each falls short of the seat threshold.</p></div>
+      </details>
+      <details class="accordion-item" name="em-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>When is the council sworn in?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">In three weeks - coalition talks start on Monday.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Studio Q&A, one answer at a time.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Takeaways">
+    <header class="presentation-header"><span>Analysis</span><span>The night in four lines</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">■</span><span>One stacked bar and one line show the whole result.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">■</span><span>Largest party ≠ governing party.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">■</span><span>The Greens’ waterfront gains decided the night.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">■</span><span>Show votes next to seats to explain the maths.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Wrap-up, studio style.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-anim-in="blocksIn" data-anim-in-direction="east" data-anim-in-blocks="6" data-anim-in-color="#D71920" aria-label="Closing">
+    <div aria-hidden="true" style="position:absolute; left:0; right:0; bottom:0; height:70px; display:flex; align-items:center; gap:3rem; padding-inline:112px; background:#D71920; color:#FFFFFF; font:800 1.5rem/1 Arial, sans-serif; text-transform:uppercase; letter-spacing:0.04em;">
+      <span>● Live</span><span>Port Aldwin council · 71 seats</span><span>36 for a majority</span><span>100% counted</span>
+    </div>
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-weight:800; letter-spacing:-0.02em; font-size:7rem;">Count to 36</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">A fictional city, synthetic votes - the majority bar is the real format.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">Sign off.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) - build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-majority');
+    const TEXT = '#101319', MUTED = '#6B7280', RED = '#D71920';
+    const parties = [['City First', '#1D4ED8'], ['Harbour Greens', '#15803D'], ['Social City', '#DC2626'], ['Liberal Voice', '#EAB308'], ['Neighbourhood lists', '#7C3AED'], ['Others', '#9CA3AF']];
+    const early = [27, 14, 15, 8, 4, 3], final = [24, 17, 14, 8, 5, 3];
+    const votes = [32.1, 23.4, 19.8, 11.2, 7.4, 6.1];
+    const majority = (position) => ({ symbol: 'none', silent: true, lineStyle: { color: RED, width: 5, type: 'solid' },
+      label: { formatter: 'MAJORITY 36', position, color: RED, fontWeight: 800 }, data: [{ xAxis: 36 }] });
+    const seatBar = (seats) => ({
+      legend: { top: 300, left: 112, textStyle: { color: TEXT } },
+      grid: { left: 112, right: 112, top: 450, bottom: 300 },
+      xAxis: { type: 'value', min: 0, max: 71, show: false },
+      yAxis: { type: 'category', data: ['Seats'], show: false },
+      series: parties.map(([n, c], i) => ({ id: n, name: n, type: 'bar', stack: 'seats', barWidth: 120,
+        data: [seats[i]], itemStyle: { color: c, borderColor: '#F5F6F8', borderWidth: 3, borderRadius: 0 },
+        label: { show: seats[i] >= 4, position: 'inside', color: '#FFFFFF', fontWeight: 800, fontSize: 30 },
+        markLine: i === 0 ? majority('end') : undefined })),
+    });
+    const options = [['Greens + Social + Liberal', [0, 17, 14, 8, 0, 0]], ['City First + Social City', [24, 0, 14, 0, 0, 0]], ['City First + Greens', [24, 17, 0, 0, 0, 0]]];
+
+    df$.shadcn.chart.deck(deck, {
+      base: { tooltip: { trigger: 'item' } },
+      states: {
+        early: seatBar(early),
+        final: seatBar(final),
+        coalitions: {
+          legend: { top: 300, left: 112, textStyle: { color: TEXT } },
+          grid: { left: 400, right: 190, top: 380, bottom: 170 },
+          xAxis: { type: 'value', min: 0, max: 50, axisLabel: { color: MUTED } },
+          yAxis: { type: 'category', inverse: true, data: options.map((o) => o[0]), axisLine: { show: false }, axisLabel: { color: TEXT, fontWeight: 800 } },
+          series: parties.map(([n, c], i) => ({ id: n, name: n, type: 'bar', stack: 'seats', barWidth: '58%',
+            data: options.map((o) => o[1][i] || '-'), itemStyle: { color: c, borderColor: '#F5F6F8', borderWidth: 3, borderRadius: 0 },
+            label: { show: true, position: 'inside', color: '#FFFFFF', fontWeight: 800 },
+            markLine: i === 0 ? majority('start') : undefined })),
+        },
+        votes: {
+          legend: { top: 300, right: 112, textStyle: { color: TEXT } },
+          grid: { left: 150, right: 112, top: 370, bottom: 150 },
+          xAxis: { type: 'category', data: parties.map((p) => p[0]), axisLabel: { color: TEXT, fontWeight: 800, interval: 0, width: 180, overflow: 'break' } },
+          yAxis: { type: 'value', max: 40, axisLabel: { color: MUTED, formatter: '{value}%' } },
+          series: [
+            { id: 'City First', name: '% of votes', type: 'bar', barGap: '10%', data: votes, itemStyle: { color: '#9CA3AF', borderRadius: 0 },
+              label: { show: true, position: 'top', formatter: '{c}%', color: MUTED } },
+            { id: 'Harbour Greens', name: '% of seats', type: 'bar', data: final.map((s, i) => ({ value: Math.round((s / 71) * 1000) / 10, itemStyle: { color: parties[i][1], borderRadius: 0 } })),
+              label: { show: true, position: 'top', formatter: '{c}%', color: TEXT, fontWeight: 800 } },
+          ],
+        },
+      },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 24-election-majority-bar (Live News Election Desk) - a fictional city and synthetic votes.</p>
+<SourceFiles component="presentation" />
+</DocPage>

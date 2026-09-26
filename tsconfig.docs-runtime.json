@@ -1,6 +1,6 @@
 {
   // Compiles the docs client runtime (src/documentation/runtime/*.ts) to
-  // plain JS in src/documentation/public/js/ — the SSG build copies public/
+  // plain JS in src/documentation/public/js/ - the SSG build copies public/
   // verbatim into dist/documentation/. Same strip-types pipeline as the root
   // tsconfig, separate rootDir/outDir so paths stay flat.
   "compilerOptions": {

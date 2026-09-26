@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-// Vite ?raw imports instead of node:fs — Vitest runs in browser mode where the
+// Vite ?raw imports instead of node:fs - Vitest runs in browser mode where the
 // filesystem isn't available (same pattern as contrast.test.ts).
 import formCss from '../src/components/form/form.css?raw';
 import inputCss from '../src/components/input/input.css?raw';
@@ -89,13 +89,13 @@ describe('ariaDescribedByProblems', () => {
   });
   it('names a dangling reference', () => {
     expect(ariaDescribedByProblems('label.html', [ref('input#username', ['username-desc'])], ['username'])).toEqual([
-      'label.html: input#username references #username-desc — no element has that id',
+      'label.html: input#username references #username-desc - no element has that id',
     ]);
   });
   it('names a duplicated id and counts the duplicates', () => {
     const problems = ariaDescribedByProblems('form.html', [ref('input#f-name', ['f-name-desc'])], ['f-name-desc', 'f-name-desc']);
     expect(problems).toEqual([
-      'form.html: input#f-name references #f-name-desc — 2 elements share the id (must be exactly one)',
+      'form.html: input#f-name references #f-name-desc - 2 elements share the id (must be exactly one)',
     ]);
   });
   it('passes pages without any references', () => {
@@ -112,7 +112,7 @@ describe('fieldDescriptionOwnerProblems', () => {
   });
   it('flags a wrapper-only reference (the div names nothing for the control)', () => {
     expect(fieldDescriptionOwnerProblems('p', [{ owner: 'div.wrap', tag: 'div', tokens: ['hint'] }], target)).toEqual([
-      'p: #hint (.field-description) is only referenced by <div> — aria-describedby must sit on the input/select/textarea/fieldset itself',
+      'p: #hint (.field-description) is only referenced by <div> - aria-describedby must sit on the input/select/textarea/fieldset itself',
     ]);
   });
   it('skips targets nobody references (wiring gate owns that finding)', () => {
@@ -122,7 +122,7 @@ describe('fieldDescriptionOwnerProblems', () => {
 
 describe('real repo components', () => {
   // The gate's current keepers: form.css re-styles .field-description while
-  // input.css defines .field-description and .field-error — both must stay
+  // input.css defines .field-description and .field-error - both must stay
   // documented in their skill and doc page or `bun run verify` fails.
   it('form + input ship field features that are documented everywhere', () => {
     expect(fieldFeatureProblems([

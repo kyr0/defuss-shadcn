@@ -3,7 +3,7 @@
 @layer components {
   .checkbox {
     appearance: none;
-    margin: 0; /* kill the UA's ~4px input margin — breaks flex/grid rhythm */
+    margin: 0; /* kill the UA's ~4px input margin - breaks flex/grid rhythm */
     width: 1.125rem;
     height: 1.125rem;
     border: 1px solid var(--border);
@@ -31,7 +31,7 @@
       }
     }
 
-    /* Per spec, an indeterminate checkbox ALSO matches :checked — both
+    /* Per spec, an indeterminate checkbox ALSO matches :checked - both
        ::after rules land on the element, so the dash must explicitly cancel
        the checkmark's border (else the rotated border renders on top of it). */
     &:indeterminate {
@@ -76,7 +76,7 @@
       font-size: 0.875rem;
       cursor: pointer;
       /* leading-none (shadcn parity): a 1.6 line-box centers the LINE, not
-         the glyphs — baseline then floats with the font's ascent, so text
+         the glyphs - baseline then floats with the font's ascent, so text
          rides visibly off the box midline (worst with metric-heavy
          fallbacks). line-height:1 shrinks the box to the glyphs themselves. */
       line-height: 1;

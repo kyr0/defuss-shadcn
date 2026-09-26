@@ -2,7 +2,7 @@
 name: Sortable
 type: ATM
 why: Native HTML drag-and-drop reordering with a handle and a drop indicator.
-when: Lists whose order the user controls — todo lists, table row ordering.
+when: Lists whose order the user controls - todo lists, table row ordering.
 where: dist/components/sortable/sortable.css + dist/components/sortable/sortable.js
 supportedStates: default
 ---
@@ -11,19 +11,19 @@ supportedStates: default
 
 ## Native basis
 
-HTML Drag and Drop API + keyboard reordering for accessible drag-and-drop lists. Uses native `draggable`, `DataTransfer`, and DOM manipulation — no SortableJS or drag libraries.
+HTML Drag and Drop API + keyboard reordering for accessible drag-and-drop lists. Uses native `draggable`, `DataTransfer`, and DOM manipulation - no SortableJS or drag libraries.
 
 ## Native Web APIs
 
-- [Drag and Drop API](https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API) — native drag/drop with `dragstart`, `dragover`, `drop`, `dragend` events
-- [`draggable`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/draggable) — makes elements natively draggable
-- [`DataTransfer`](https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer) — drag operation data and `effectAllowed`/`dropEffect`
-- [`CustomEvent`](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent) — `sortable-change` event dispatched on reorder
-- [`aria-live`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-live) — live region announces position changes to screen readers
-- [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) — keyboard-only focus ring on items
-- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) — suppresses transitions
-- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) — Windows High Contrast Mode support
-- [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) — enhanced contrast support
+- [Drag and Drop API](https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API) - native drag/drop with `dragstart`, `dragover`, `drop`, `dragend` events
+- [`draggable`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/draggable) - makes elements natively draggable
+- [`DataTransfer`](https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer) - drag operation data and `effectAllowed`/`dropEffect`
+- [`CustomEvent`](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent) - `sortable-change` event dispatched on reorder
+- [`aria-live`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-live) - live region announces position changes to screen readers
+- [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) - keyboard-only focus ring on items
+- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) - suppresses transitions
+- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) - Windows High Contrast Mode support
+- [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) - enhanced contrast support
 
 ## Structure
 
@@ -82,7 +82,7 @@ Set `data-density` on the `.sortable` root; list gap and item padding scale.
 | Value | Effect |
 | --- | --- |
 | `compact` | Gap 0.125rem, item padding 0.375rem 0.5rem |
-| `comfortable` | 0.25rem / 0.5rem 0.75rem — identical to the unsized default |
+| `comfortable` | 0.25rem / 0.5rem 0.75rem - identical to the unsized default |
 | `spacious` | 0.375rem / 0.625rem 1rem |
 
 ## States
@@ -121,7 +121,7 @@ The api is bound per list; the registry global is
 | `Alt + ↓` / `Alt + →` | Move focused item down / right |
 | `Alt + ↑` / `Alt + ←` | Move focused item up / left |
 
-Arrow direction depends on orientation — vertical uses `↑`/`↓`, horizontal uses `←`/`→`.
+Arrow direction depends on orientation - vertical uses `↑`/`↓`, horizontal uses `←`/`→`.
 
 ## ARIA
 
@@ -150,7 +150,7 @@ Dispatched via `CustomEvent` after every reorder (drag-drop or keyboard).
 - A `.sortable-live` region is auto-created by JS if not present in the markup.
 - `user-select: none` prevents text selection during drag.
 - `cursor: grab` / `cursor: grabbing` provides visual feedback.
-- Drop position is calculated from pointer midpoint — items drop before or after the target.
+- Drop position is calculated from pointer midpoint - items drop before or after the target.
 - `prefers-reduced-motion: reduce` suppresses transitions.
 - `forced-colors: active` maps to system colors for High Contrast Mode.
 - Disabled items (`aria-disabled="true"`) are skipped by keyboard navigation and cannot be dragged.

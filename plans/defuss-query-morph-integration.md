@@ -8,17 +8,17 @@
 > (tests/e2e/core.e2e.ts), stats core measurement, §5 docs parity (guide page "DOM
 > Querying & Morphing", README/index/installation/es-modules updates), **all four §3 Tier-1
 > migrations** (toast: query `.append()`/`.remove()` lifecycle; calendar: `df$(grid).morph()`
-> keyed by stable ISO-date cell ids — identity + focus survive re-renders, identity-tested;
-> combobox: query scalar writes over flag-based filtering — node/caret identity preserved;
+> keyed by stable ISO-date cell ids - identity + focus survive re-renders, identity-tested;
+> combobox: query scalar writes over flag-based filtering - node/caret identity preserved;
 > carousel: keyed dot morph + `.attr()`/`.prop()` flags), and the **§3 Tier-2 query baseline**
 > (command, sortable, theme-switcher, image: scoped `.find()` lookup + `.attr()/.prop()/.data()/
 > .text()/.val()/.css()` scalar writes, `.append()/.before()/.after()` exact moves, `.html()`
-> single-pass swatch render; native protocols — showModal/showPopover/focus/DnD — stay native
+> single-pass swatch render; native protocols - showModal/showPopover/focus/DnD - stay native
 > as named exceptions).
 > **§5.1 DOM boundary** (verify gate `DOM boundary (migrated components)`): component sources
 > that adopted the runtime (import `defussQuery`) may not use native structural sinks
 > (innerHTML/outerHTML assignment, insertAdjacentHTML/Element, replaceChildren, insertBefore,
-> appendChild) nor the §5.2 `.prop(innerHTML|outerHTML|textContent)` escape — the allow-list
+> appendChild) nor the §5.2 `.prop(innerHTML|outerHTML|textContent)` escape - the allow-list
 > ships empty (every migrated file uses query ops). **Per-release provenance** (§6): the
 > deterministic stamp (defuss-shadcn version + pinned upstream versions + SHA-256 of each
 > LICENSE) rides inside core.js/core.min.js/all.js/all.min.js as a pointer comment and ships
@@ -89,7 +89,7 @@ Keep `src/shared/query.ts` as the typed doorway to the actual query factory. **I
 The full accessor validates runtime capabilities; it does not install, repair, or load anything:
 
 ```ts
-// src/shared/query.ts — included once in core, never inlined into each component.
+// src/shared/query.ts - included once in core, never inlined into each component.
 import type { MorphApi } from "defuss-query";
 
 type HostQuery = typeof import("defuss-query").df$;
@@ -229,7 +229,7 @@ Preserve side-effect metadata for the browser entries so downstream tooling does
 
 All audited components adopt query for ordinary selection/traversal and suitable scalar writes. Event migration is semantic, not a search-and-replace. **Being a non-candidate for morph no longer means being a non-candidate for query.**
 
-### Tier 1 — this milestone
+### Tier 1 - this milestone
 
 | Component | Direct query integration | Structural path and acceptance criteria |
 | --- | --- | --- |
@@ -240,7 +240,7 @@ All audited components adopt query for ordinary selection/traversal and suitable
 
 Keys must be unique within the relevant reconciliation scope and represent identity, not the current filtered position. Preserve unmanaged/slotted content by keeping it outside owned render boundaries. The same collection must not acquire competing incremental and full-state owners.
 
-### Tier 2 — lands with the feature that needs it
+### Tier 2 - lands with the feature that needs it
 
 - [command](../src/components/command/command.ts): query for selection, flags, and interactions; full keyed `.morph()` when a filtered result set changes membership/order. Use `{ diff: true }` only for addressed streaming patches/upserts where retaining other results is intended.
 - [sortable](../src/components/sortable/sortable.ts): restore an existing-node order through query `.append(orderedNodes)` on one parent; use full keyed morph only when an authoritative data render already exists. Native `appendChild` moves already preserve node identity; the benefit here is a shared adapter, not repairing a supposed replacement operation. Do not `.remove()` before moving: that clears delegated handlers. [Q-IMPL] [Q-ARCH]
@@ -320,7 +320,7 @@ Run the behavioral suite through both **core + selected components** and **all a
 
 Use the existing component `bun run e2e` workflow for application tests. Keep upstream package qualification separate: query exposes `bun run check`; morph's manifest lists its lint/typecheck/test/build/bundle/minify/stats/verify release sequence. Neither upstream coverage claims nor source review replace application integration and distribution tests. [Q-PKG] [M-PKG]
 
-## 6. Costs — bundled once, measured honestly
+## 6. Costs - bundled once, measured honestly
 
 - **Core payload:** measure the actual artifact containing morph + query + component-shared code, including bootstrap/linkage. Query's prior README reports **4.2 kB gzip** for its standalone browser bundle, excluding morph; neither that value nor the original morph-only 6.8 KiB figure is a combined-core measurement. Report raw/gzip/Brotli for each emitted core/all/individual artifact. [Q-README]
 - **Modular versus all:** publish the transfer total for core + selected components and the size of all. Sum independently compressed files for the modular path; measure all as one compressed artifact. Do not infer all's compressed size by adding separate bundle sizes. Shared infrastructure is paid once per supported page configuration, not once per selected component. Byte savings and runtime improvements are measured outcomes, not promises.

@@ -1,0 +1,122 @@
+---
+title: "Image Gallery - Image"
+description: "Auto-advancing image gallery composed from figure.image slides - per-slide data-duration dwell times, an abortable setTimeout chain, and every DOM touch routed through defuss-query (df$)."
+slug: "image-gallery"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="image-gallery" title="Image Gallery" component="image">
+  A composition pattern on top of the Image component: a crossfading, auto-advancing gallery where each slide declares its own dwell time in markup (<code>data-duration</code>) and a small defuss-query controller owns selection, state attributes, and the timer - no raw <code>querySelector</code>/<code>classList</code> anywhere.
+</PageHeader>
+
+```html example label="Auto-advancing gallery" schema="none" height="26" hint="Five figure.image slides crossfade on a re-armed setTimeout chain: each slide's data-duration is its dwell (the last slide has none and falls back to the Default dwell field). Prev/next reschedule the timer, the toggle pauses it - and every DOM read/write in the controller goes through df$ (defuss-query)."
+<section class="image-gallery" id="igal" aria-label="Auto-advancing image gallery" style="max-width:44rem;margin-inline:auto;">
+  <div class="igal-viewport">
+    <div class="image-gallery-track">
+      <figure class="image igal-slide" data-duration="3000" data-active>
+        <img src="https://picsum.photos/id/1015/960/540" alt="River winding through a mountain valley"></img>
+        <figcaption class="image-caption igal-caption">River valley - dwell 3000ms (data-duration)</figcaption>
+      </figure>
+      <figure class="image igal-slide" data-duration="6000">
+        <img src="https://picsum.photos/id/1016/960/540" alt="Sunlit canyon walls"></img>
+        <figcaption class="image-caption igal-caption">Canyon - dwell 6000ms (data-duration)</figcaption>
+      </figure>
+      <figure class="image igal-slide" data-duration="4000">
+        <img src="https://picsum.photos/id/1018/960/540" alt="Mountain lake under a clear sky"></img>
+        <figcaption class="image-caption igal-caption">Mountain lake - dwell 4000ms (data-duration)</figcaption>
+      </figure>
+      <figure class="image igal-slide" data-duration="5000">
+        <img src="https://picsum.photos/id/1025/960/540" alt="Pug wrapped in a knitted blanket"></img>
+        <figcaption class="image-caption igal-caption">Studio pug - dwell 5000ms (data-duration)</figcaption>
+      </figure>
+      <figure class="image igal-slide">
+        <img src="https://picsum.photos/id/1035/960/540" alt="Dark mountain ridge in fog"></img>
+        <figcaption class="image-caption igal-caption">Foggy ridge - no data-duration, uses the default dwell below</figcaption>
+      </figure>
+    </div>
+  </div>
+  <div class="igal-controls">
+    <button type="button" class="btn" data-variant="outline" id="igal-prev">← Prev</button>
+    <button type="button" class="btn" data-variant="outline" id="igal-play" aria-pressed="true">Pause</button>
+    <button type="button" class="btn" data-variant="outline" id="igal-next">Next →</button>
+    <output class="igal-counter" id="igal-counter" for="igal-prev igal-next igal-play" aria-live="polite">1 / 5</output>
+  </div>
+  <div class="igal-config">
+    <label class="label" for="igal-dwell">Default dwell (ms)</label>
+    <input class="input" type="number" id="igal-dwell" value="4000" min="500" max="20000" step="500" aria-describedby="igal-dwell-hint" />
+    <p class="field-description" id="igal-dwell-hint">Fallback for slides without their own data-duration - here: the foggy ridge.</p>
+  </div>
+</section>
+<style>
+  /* demo-scoped styles - the gallery is a docs pattern, not a shipped component;
+     .image already supplies position/overflow/radius/object-fit, the data-active
+     crossfade and the demo chrome are all that is left */
+  .igal-viewport { position: relative; aspect-ratio: 16 / 9; border-radius: var(--radius-lg); background: var(--muted); }
+  .igal-slide { position: absolute; inset: 0; opacity: 0; transform: scale(1.03); transition: opacity 480ms ease, transform 480ms ease; pointer-events: none; }
+  .igal-slide[data-active] { opacity: 1; transform: none; pointer-events: auto; }
+  .igal-caption { position: absolute; inset-inline: 0; bottom: 0; padding: 0.6rem 0.9rem; background: color-mix(in oklch, #000 55%, transparent); color: #fff; }
+  .igal-controls { display: flex; align-items: center; gap: 0.5rem; margin-block-start: 0.75rem; }
+  .igal-counter { margin-inline-start: auto; font-variant-numeric: tabular-nums; font-size: 0.875rem; color: var(--muted-foreground); }
+  .igal-config { display: grid; gap: 0.375rem; margin-block-start: 1rem; max-width: 16rem; }
+  @media (prefers-reduced-motion: reduce) { .igal-slide { transition: none; } }
+</style>
+<script type="module">
+  // all.js (df$) is injected into the sandbox as a classic script at end of
+  // body; module scripts run after parsing, so df$ is already live here at
+  // the top level. EVERY DOM touch goes through defuss-query - the point of
+  // the demo: no querySelector, no classList, no setAttribute.
+  const track = df$('#igal').find('.image-gallery-track');
+  const slides = track.children('.igal-slide'); // snapshot selection; .length is fine to read
+  const counter = df$('#igal-counter');
+  const playBtn = df$('#igal-play');
+  const dwellInput = df$('#igal-dwell');
+
+  let index = 0;
+  let playing = true;
+  let timer = 0; // stored timeout id - cleared and re-armed on every nav, pause, or config change
+
+  // dwell of slide i: its own data-duration, else the configured default
+  const dwellFor = (i) => {
+    const own = Number(slides.eq(i).data('duration'));
+    const fallback = Number(dwellInput.val());
+    return own > 0 ? own : fallback > 0 ? fallback : 4000;
+  };
+
+  function render(next) {
+    index = ((next % slides.length) + slides.length) % slides.length; // wrap around both ways
+    slides.attr('data-active', null); // null REMOVES the attribute…
+    slides.eq(index).attr('data-active', ''); // …and the CSS crossfade keys on it
+    counter.text(index + 1 + ' / ' + slides.length);
+  }
+
+  function schedule() {
+    clearTimeout(timer);
+    if (!playing) return; // pausing is just clearing the pending advance
+    timer = setTimeout(() => {
+      render(index + 1);
+      schedule(); // the next slide waits its own dwell - no fixed interval
+    }, dwellFor(index));
+  }
+
+  df$('#igal-prev').on('click', () => { render(index - 1); schedule(); });
+  df$('#igal-next').on('click', () => { render(index + 1); schedule(); });
+  playBtn.on('click', () => {
+    playing = !playing;
+    playBtn.text(playing ? 'Pause' : 'Play').attr('aria-pressed', String(playing));
+    schedule();
+  });
+  // editing the fallback re-arms the CURRENT slide when it has no own dwell
+  dwellInput.on('input', () => schedule());
+
+  schedule(); // start auto-sliding
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">The pattern: <code>df$</code> (defuss-query) drives every DOM touch - selection (<code>find</code> / <code>children</code> / <code>eq</code>), attribute reads and writes (<code>data</code> / <code>attr</code>), label text (<code>text</code>), control values (<code>val</code>) and events (<code>on</code>) - while the crossfade itself is pure CSS keyed on the <code>data-active</code> attribute. Auto-advance is one re-armed <code>setTimeout</code> instead of a fixed interval: each slide's dwell is its own <code>data-duration</code>, falling back to the "Default dwell" field, and every manual navigation, pause, or config edit clears and re-arms the timer - user control always wins over the schedule.</p>
+
+<SourceFiles component="image" />
+
+</DocPage>

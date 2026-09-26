@@ -1,0 +1,145 @@
+---
+title: "Slide Left - Animations"
+description: "The imperative slide-left entrance/exit pair - df$.anim.slideIn / df$.anim.slideOut - with direction, distance, duration and easing as runtime config, plus scroll-bound progress."
+slug: "anim-left"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="anim-left" title="Slide Left" component="motion">
+  The imperative twin of the <code>left</code> entrance: the element starts at its right edge and travels left into place. Everything is driven by <code>df$.anim.slideIn</code> / <code>df$.anim.slideOut</code> - the two channels ship as an in/out pair, each directional with the four orientation variants (<code>north</code>, <code>south</code>, <code>east</code>, <code>west</code>; default <code>east</code>, matching motion.css <code>left</code>). In-variants start at the named edge, out-variants exit toward it.
+</PageHeader>
+
+```html example label="In / out, directions and lifecycle" schema="none" hint="slideIn starts the box at the right edge (direction 'east') and slides it left into place; slideOut exits toward the same edge. Pick a direction, tune duration + easing, then drive the full lifecycle - Pause / Resume / Finish / Reset act on the last-played channel."
+<style>
+  #anim-left-target {
+    width: 160px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+    font-weight: 600;
+  }
+</style>
+<div style="display:flex; flex-direction:column; gap:1rem;">
+  <div style="min-height:200px; display:flex; align-items:center; justify-content:center; border:1px dashed var(--border); border-radius:var(--radius-lg); overflow:hidden;">
+    <div id="anim-left-target">Slide Left</div>
+  </div>
+  <div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.5rem;">
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-left-in">In</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-left-out">Out</button>
+    <span aria-hidden="true" style="color:var(--border);">|</span>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-left-dir-n" aria-pressed="false">N</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-left-dir-s" aria-pressed="false">S</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-left-dir-w" aria-pressed="false">W</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-left-dir-e" aria-pressed="true">E</button>
+    <span aria-hidden="true" style="color:var(--border);">|</span>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-left-pause">Pause</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-left-resume">Resume</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-left-finish">Finish</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-left-reset">Reset</button>
+    <label for="anim-left-duration" class="text-sm">Duration</label>
+    <input class="input" id="anim-left-duration" type="number" value="1500" min="50" step="50" style="width:6rem;" />
+    <label for="anim-left-easing" class="text-sm">Easing</label>
+    <select class="select" id="anim-left-easing">
+      <option value="cubic-bezier(0.16, 1, 0.3, 1)" selected>ease-out (default)</option>
+      <option value="ease">ease</option>
+      <option value="ease-in-out">ease-in-out</option>
+      <option value="linear">linear</option>
+      <option value="cubic-bezier(0.34, 1.56, 0.64, 1)">springy</option>
+    </select>
+  </div>
+</div>
+<script type="module">
+  // all.js (df$) boots after example scripts in the sandbox - reference df$
+  // only at event time, never at parse time.
+  const target = document.getElementById('anim-left-target');
+  const durationInput = document.getElementById('anim-left-duration');
+  const easingSelect = document.getElementById('anim-left-easing');
+  const dirButtons = {
+    north: document.getElementById('anim-left-dir-n'),
+    south: document.getElementById('anim-left-dir-s'),
+    west: document.getElementById('anim-left-dir-w'),
+    east: document.getElementById('anim-left-dir-e'),
+  };
+  let direction = 'east';    // default: starts right, travels left
+  let lastChannel = 'slideIn';
+
+  const config = () => ({
+    direction,
+    duration: Number(durationInput.value) || 1500,
+    easing: easingSelect.value,
+  });
+
+  document.getElementById('anim-left-in').addEventListener('click', () => {
+    lastChannel = 'slideIn';
+    df$.anim.slideIn.play(target, config());
+  });
+  document.getElementById('anim-left-out').addEventListener('click', () => {
+    lastChannel = 'slideOut';
+    df$.anim.slideOut.play(target, config());
+  });
+  for (const [name, btn] of Object.entries(dirButtons)) {
+    btn.addEventListener('click', () => {
+      direction = name;
+      for (const other of Object.values(dirButtons)) other.setAttribute('aria-pressed', String(other === btn));
+    });
+  }
+  for (const method of ['pause', 'resume', 'finish', 'reset']) {
+    document.getElementById(`anim-left-${method}`).addEventListener('click', () => {
+      df$.anim[lastChannel][method](target);
+    });
+  }
+</script>
+```
+
+```html example label="Scroll-bound slide left" schema="none" hint="The same slideIn, but progress comes from the stage's scroll position instead of the clock - opts.scroll binds the animation to a scroller (ScrollTimeline where available, a scrubbed fallback elsewhere). Scroll the stage."
+<style>
+  #anim-left-scroll-target {
+    width: 160px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+    font-weight: 600;
+  }
+</style>
+<div id="anim-left-scroller" style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg);">
+  <div style="height: 600px; display:flex; align-items:flex-end; justify-content:center; padding-bottom:2rem;">
+    <div id="anim-left-scroll-target">Scroll drives me</div>
+  </div>
+</div>
+<script type="module">
+  // bind on load: all.js installs df$ after example scripts are parsed
+  window.addEventListener('load', () => {
+    df$.anim.slideIn.play(document.getElementById('anim-left-scroll-target'), {
+      scroll: { target: document.getElementById('anim-left-scroller'), axis: 'y' },
+    });
+  });
+</script>
+```
+
+Pass `{ target: 'viewport' }` (or omit `target`) instead of an element to bind progress to the page's own scroll position - the parallax use for presentations, where sections slide left as the reader scrolls.
+
+## Config axes
+
+- **direction** - `north` | `south` | `east` | `west`; the edge the in-variant starts at and the out-variant exits toward (default `east` for the slide-left pairing).
+- **distance** - travel length, any CSS length (default `24px`), e.g. `distance: '64px'` for a longer drift.
+- **duration** - total runtime in ms (default `1500`; collapses to ~1ms under `prefers-reduced-motion`).
+- **easing** - any CSS easing (default `cubic-bezier(0.16, 1, 0.3, 1)`).
+
+<SourceFiles component="motion" section="css">
+  <SourceNote for="css">The shared motion stylesheet - the declarative <code>data-df-entrance</code> twin of this page's <code>df$.anim</code> channels: the <code>--df-motion-…</code> tunables, the fifteen <code>df-enter-…</code> keyframes and the reduced-motion flattening.</SourceNote>
+</SourceFiles>
+
+</DocPage>

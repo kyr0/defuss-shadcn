@@ -6,8 +6,8 @@ import { statsClaimText, type StatsDoc } from '../scripts/lib/stats.ts';
 type DocsGlobal = Window & { df$: { shadcn: { docs: { realignWhenSettled?: (id: string) => void } } } };
 
 /**
- * Why: end-to-end checks that the real doc-site UI — web components, SPA
- * router, and component interaction JS — actually work in a real browser
+ * Why: end-to-end checks that the real doc-site UI - web components, SPA
+ * router, and component interaction JS - actually work in a real browser
  * (Chromium via Playwright), loading the genuine pages from dist/.
  */
 
@@ -15,7 +15,7 @@ type DocsGlobal = Window & { df$: { shadcn: { docs: { realignWhenSettled?: (id: 
 type HTMLElementOrNull = HTMLElement | null;
 
 /** Why: sections render collapsed by default (only Introduction and the
- * active page's section are open) — tests that click a link expand its
+ * active page's section are open) - tests that click a link expand its
  * section first, exactly like a visitor would. */
 async function expandSection(doc: Document, heading: string): Promise<void> {
   const group = doc.querySelector(`details[data-nav-section="${heading}"]`) as HTMLDetailsElement | null;
@@ -36,7 +36,7 @@ test('site shell renders header and sidebar from layout.js web components', asyn
   expect(navLink, 'sidebar link to Installation').toBeTruthy();
   expect(navLink!.checkVisibility({ opacityProperty: true, visibilityProperty: true })).toBe(true);
   // collapsed-by-default sections keep their links in the DOM (the group
-  // holds them closed — checkVisibility() can't see the closed state, since
+  // holds them closed - checkVisibility() can't see the closed state, since
   // Blink hides <details> content via content-visibility, which that API
   // ignores without checkVisibilityCSS)
   const accordion: HTMLElementOrNull = doc.querySelector('.site-sidebar a[href="accordion.html"]');
@@ -82,7 +82,7 @@ test('sidebar shows component type badges (taxonomy), never the generic PREVIEW 
   const { doc } = await openDocPage('index.html');
   await waitFor(() => doc.querySelector('.site-sidebar a[href="accordion.html"]'), 'sidebar links');
 
-  // badge type must match the skill frontmatter (accordion is an ATM — verified
+  // badge type must match the skill frontmatter (accordion is an ATM - verified
   // against src/ by `bun run verify`'s `component type badges` gate)
   const atm: HTMLElementOrNull = doc.querySelector('.site-sidebar a[href="accordion.html"] .type-badge');
   expect(atm, 'Accordion type badge').toBeTruthy();
@@ -119,7 +119,7 @@ test('SPA router swaps <main> content on nav click without reloading', async () 
   await expandSection(doc, 'Navigation');
   await clickSelector(doc, '.site-sidebar a[href="tabs.html"]');
 
-  // the router replaces <main> innerHTML — new page shows its own <h1>
+  // the router replaces <main> innerHTML - new page shows its own <h1>
   await waitFor(() => doc.querySelector('main h1')?.textContent?.includes('Tabs'), 'tabs page content');
   // no full reload: the header web component instance is still the same node
   expect(doc.querySelector('.site-header button#theme-toggle')).toBeTruthy();
@@ -137,7 +137,7 @@ test('dark-mode toggle flips the .dark class on <html>', async () => {
 });
 
 test('dialog component: the CodeExample card drives showModal/close end to end', async () => {
-  // the dialog demos are executable fences — the <dialog> lives inside the
+  // the dialog demos are executable fences - the <dialog> lives inside the
   // opaque sandbox iframe, so the assertable contract is the card's mirrored
   // data-state-values (the sandbox observed the real `open` property).
   const { doc } = await openDocPage('dialog.html');
@@ -215,7 +215,7 @@ test('SPA router migrates body-level dialogs so triggers work after nav', async 
 test('sidebar sections are collapsible (dogfood of the sidebar-group pattern)', async () => {
   const { doc } = await openDocPage('index.html');
   await waitFor(() => doc.querySelector('.site-header button#theme-toggle'), 'shell to render');
-  // same-origin localStorage survives iframes — start from a clean slate
+  // same-origin localStorage survives iframes - start from a clean slate
   doc.defaultView!.localStorage.removeItem('defuss-shadcn-nav-collapsed');
 
   // every nav section is a <details class="nav-section sidebar-group">
@@ -233,13 +233,13 @@ test('sidebar sections are collapsible (dogfood of the sidebar-group pattern)', 
   await clickSelector(doc, 'details[data-nav-section="Forms & Inputs"] > summary');
   await waitFor(() => forms.open, 'Forms & Inputs to expand');
   // `open` flips synchronously on click but the toggle event (which persists
-  // to localStorage) is a queued task — wait on the stored value itself
+  // to localStorage) is a queued task - wait on the stored value itself
   await waitFor(
     () => (doc.defaultView!.localStorage.getItem('defuss-shadcn-nav-collapsed') ?? '').includes('"Forms & Inputs":"1"'),
     'expand to persist to localStorage',
   );
 
-  // collapsing again persists '0' — an explicit choice either way
+  // collapsing again persists '0' - an explicit choice either way
   await clickSelector(doc, 'details[data-nav-section="Forms & Inputs"] > summary');
   await waitFor(() => !forms.open, 'Forms & Inputs to collapse');
   await waitFor(
@@ -272,13 +272,13 @@ test('TOC links land their heading below the fixed AND sticky headers (issue #2)
   // regression: the pad must match the SETTLED header stack. The Fraunces
   // web-font swap reflows .page-header taller (~50px) AFTER init; with the
   // old one-shot measurement the pad stayed stale and every anchor overscrolled
-  // the delta — landing the heading UNDER the sticky bar. The click assertion
+  // the delta - landing the heading UNDER the sticky bar. The click assertion
   // below can't catch that (scrollIntoView honors the same stale pad), so pin
   // the invariant directly: ResizeObserver keeps scroll-padding-top >= stack.
   const stackPx = () =>
     (doc.querySelector('.site-header')?.getBoundingClientRect().height ?? 0) +
     (doc.querySelector('.page-header')?.getBoundingClientRect().height ?? 0);
-  // determinism: the swap is what grows the stack — assert only after it, or
+  // determinism: the swap is what grows the stack - assert only after it, or
   // the stale pre-swap pad would satisfy the check with the stale pre-swap stack
   await doc.fonts.ready;
   await waitFor(() => padPx(win) >= stackPx(), '--anchor-pad to track the settled header stack');
@@ -309,7 +309,7 @@ test('every TOC heading carries a § permalink that deep-links (issue #2)', asyn
 
 test('no § permalink is injected inside .preview demo markup', async () => {
   // preview subtrees hold component demo markup (alert-dialog titles,
-  // typography samples) — the § must never be stamped there
+  // typography samples) - the § must never be stamped there
   for (const page of ['alert-dialog.html', 'typography.html']) {
     const { doc } = await openDocPage(page);
     await waitFor(() => doc.querySelector('.toc-link'), 'TOC to build');
@@ -367,9 +367,9 @@ test('component skill link toggles its <details> natively (no modal intercept)',
 
 test('field description example wires aria-describedby to its input', async () => {
   // regression: doc examples showed a .field-description under the field with
-  // no aria-describedby — sighted users see the hint, screen-runner users
+  // no aria-describedby - sighted users see the hint, screen-runner users
   // heard nothing. The pattern is gated by verify's `field description wiring`;
-  // the demo now runs inside the CodeExample sandbox (opaque origin — the
+  // the demo now runs inside the CodeExample sandbox (opaque origin - the
   // parent cannot read into it), so this proves the wiring on the fence source
   // the sandbox renders verbatim: the editable <textarea> IS the executed DOM's
   // single source (plan §5).
@@ -388,7 +388,7 @@ test('field description example wires aria-describedby to its input', async () =
   expect(src!, 'description carries the help text').toContain('public display name');
 });
 
-test('code collapse-all toggles every snippet block — including the standalone CSS/JS source sections', async () => {
+test('code collapse-all toggles every snippet block - including the standalone CSS/JS source sections', async () => {
   // regression: initCodeCollapse paired toggles with ".preview's next sibling"
   // only, so the CSS/JS source sections at the bottom of each page had no
   // toggle and "Collapse all code" visibly did nothing for them.
@@ -400,8 +400,8 @@ test('code collapse-all toggles every snippet block — including the standalone
   const wrappers = [...main.querySelectorAll('.code-block-wrapper')];
   const toggles = [...main.querySelectorAll('.code-toggle-btn')];
   // every snippet wrapper (copy-btn + <pre> div) on the page got a toggle...
-  // (examples are CodeExample fences now — their source lives in the card's
-  // textarea, not a .code-block-wrapper — so this page's wrappers are the
+  // (examples are CodeExample fences now - their source lives in the card's
+  // textarea, not a .code-block-wrapper - so this page's wrappers are the
   // two standalone source sections)
   expect(wrappers.length).toBeGreaterThanOrEqual(2); // CSS + JS
   expect(toggles.length).toBe(wrappers.length);
@@ -430,6 +430,13 @@ test('code collapse-all toggles every snippet block — including the standalone
   wrappers.forEach((w) => expect(win.getComputedStyle(w).display).not.toBe('none'));
   expect(toggles.every((t) => t.getAttribute('aria-expanded') === 'true'), 'per-block toggles in sync').toBe(true);
   expect(allBtn.textContent, 'button offers collapse-all afterwards').toContain('Collapse all code');
+  // …and every CodeExample card opened its Code panel too (tab pressed)
+  const cards = [...main.querySelectorAll('.code-example')];
+  expect(cards.length).toBeGreaterThan(0);
+  cards.forEach((c) => {
+    expect(c.querySelector('.code-example-tab[data-tab="code"]')!.getAttribute('aria-pressed')).toBe('true');
+    expect((c.querySelector('.code-example-panel[data-panel="code"]') as HTMLElement).hidden).toBe(false);
+  });
 
   // collapse all → every wrapper hidden again (display:none via .code-collapsed)
   await clickSelector(doc, '.code-collapse-all-btn');
@@ -438,10 +445,64 @@ test('code collapse-all toggles every snippet block — including the standalone
     'all code blocks to collapse',
   );
   wrappers.forEach((w) => expect(win.getComputedStyle(w).display).toBe('none'));
+  cards.forEach((c) => expect((c.querySelector('.code-example-panel[data-panel="code"]') as HTMLElement).hidden).toBe(true));
+
+  // a single card's Code tab keeps the page-wide button honest. Collapsing
+  // re-sizes every preview frame (height bridge, setTimeout), so the tab moves
+  // for a moment - wait until it holds still, or the trusted click lands where
+  // the tab used to be
+  const singleTab = doc.querySelector('.code-example .code-example-tab[data-tab="code"]') as HTMLElement;
+  let lastPos = '';
+  let steady = 0;
+  await waitFor(() => {
+    const r = singleTab.getBoundingClientRect();
+    const pos = `${r.top}|${r.left}`;
+    steady = pos === lastPos ? steady + 1 : 0;
+    lastPos = pos;
+    return steady >= 3;
+  }, 'code tab to stop moving');
+  await clickSelector(doc, '.code-example .code-example-tab[data-tab="code"]');
+  await waitFor(() => allBtn.textContent!.includes('Collapse all code'), 'toolbar follows a single card');
+  await clickSelector(doc, '.code-example .code-example-tab[data-tab="code"]');
+  await waitFor(() => allBtn.textContent!.includes('Expand all code'), 'toolbar follows the card back');
+});
+
+test('CodeExample fullscreen: the whole card fills the screen with the toolbar docked at the bottom', async () => {
+  // the test page sits in an iframe without allow="fullscreen", so the request
+  // is rejected and the card takes the .ce-fs fixed-overlay fallback - the
+  // same layout the native :fullscreen rules produce
+  const { doc } = await openDocPage('sheet.html');
+  await waitFor(() => doc.querySelector('.code-example[data-init]'), 'booted card');
+  const card = doc.querySelector('.code-example[data-init]') as HTMLElement;
+  const win = doc.defaultView!;
+  card.scrollIntoView();
+  (card.querySelector('.code-example-full') as HTMLElement).click();
+  await waitFor(() => card.classList.contains('ce-fs'), 'fullscreen fallback overlay');
+
+  const tb = card.querySelector('.code-example-toolbar')!.getBoundingClientRect();
+  const stage = card.querySelector('.preview')!.getBoundingClientRect();
+  expect(win.getComputedStyle(card).position).toBe('fixed');
+  expect(Math.round(tb.bottom), 'toolbar docks at the bottom edge').toBe(win.innerHeight);
+  expect(stage.top, 'the stage sits above the toolbar').toBeLessThan(tb.top);
+  expect(stage.height, 'the stage takes the remaining height').toBeGreaterThan(win.innerHeight * 0.5);
+  expect(card.querySelector('.code-example-full')!.textContent).toContain('Exit fullscreen');
+
+  // device modes keep working in fullscreen - and the canvas is no longer
+  // pinned to 100%: the phone box is its own size with resize handles
+  (card.querySelector('.code-example-vp[data-vp="phone"]') as HTMLElement).click();
+  await waitFor(() => (card.querySelector('.ce-screen') as HTMLElement).dataset.mode === 'phone', 'phone mode');
+  const rz = card.querySelector('.ce-resizer') as HTMLElement;
+  expect(Math.round(rz.getBoundingClientRect().width), 'phone canvas keeps its own width').toBeLessThan(win.innerWidth);
+  expect(rz.querySelectorAll('.resizer-handle').length, 'resize handles present').toBeGreaterThan(0);
+
+  (card.querySelector('.code-example-full-exit') as HTMLElement).click();
+  await waitFor(() => !card.classList.contains('ce-fs'), 'exit fullscreen');
+  expect(card.querySelector('.code-example-full')!.textContent).toContain('Fullscreen');
+  (card.querySelector('.code-example-vp[data-vp="full"]') as HTMLElement).click();
 });
 
 test('accordion state contract: the CodeExample card exposes the schema State API end to end', async () => {
-  // the doc demos are executable CodeExample fences now — the sandbox is an
+  // the doc demos are executable CodeExample fences now - the sandbox is an
   // opaque-origin iframe (sandbox="allow-scripts"), so the host-side contract
   // is the card's bound api + its mirrored data-state-values (§11). The
   // single-open click behavior itself is pinned in tests/e2e/accordion.e2e.ts.
@@ -459,4 +520,91 @@ test('accordion state contract: the CodeExample card exposes the schema State AP
 
   card.api!.setState('default');
   await waitFor(() => mirrored()['all-open'] === false, 'default clears all-open');
+});
+
+test('presentation state contract: the CodeExample card drives the sandbox deck end to end', async () => {
+  // same contract shape as the accordion test: the opaque sandbox is driven
+  // through the host card's api; the mirrored data-state-values is assertable.
+  const { doc } = await openDocPage('presentation.html');
+
+  const card = doc.querySelector('.code-example[data-component="presentation"]') as HTMLElement & {
+    // host card api: name is a SCHEMA state (slide/notes/fullscreen), config the
+    // scalar editor value - the bridge maps it onto the runtime's own contract
+    api?: { setState(name: string, config?: unknown): void; getState(): { name: Record<string, unknown> } };
+  };
+  await waitFor(() => card?.api, 'presentation example card to boot its sandbox');
+
+  const mirrored = (): Record<string, unknown> => JSON.parse(card.dataset.stateValues || '{}') as Record<string, unknown>;
+  card.api!.setState('slide', 1);
+  await waitFor(() => mirrored()['slide'] === '1' || mirrored()['slide'] === 1, 'slide 1 to mirror onto the card');
+
+  card.api!.setState('notes');
+  await waitFor(() => mirrored()['notes'] === true, 'notes to mirror onto the card');
+
+  card.api!.setState('slide', 0);
+  await waitFor(() => mirrored()['slide'] === '0' || mirrored()['slide'] === 0, 'back to slide 0');
+  expect(mirrored()['notes'], 'notes survive a slide move').toBe(true);
+
+  card.api!.setState('notes', false);
+  await waitFor(() => mirrored()['notes'] === false, 'notes cleared');
+});
+
+test('anim-canvas state contract: the CodeExample card drives the sandbox canvas end to end', async () => {
+  // same contract shape as the presentation test: the canvas lives in the
+  // opaque sandbox iframe, so arrow-key behavior itself is pinned in
+  // tests/e2e/anim-canvas.e2e.ts; here the host card api + the mirrored
+  // data-state-values prove the schema State API round-trip (§11).
+  const { doc } = await openDocPage('anim-canvas.html');
+
+  const card = doc.querySelector('.code-example[data-component="anim-canvas"]') as HTMLElement & {
+    api?: { setState(name: string, config?: unknown): void; getState(): { name: Record<string, unknown> } };
+  };
+  await waitFor(() => card?.api, 'anim-canvas example card to boot its sandbox');
+
+  const mirrored = (): Record<string, unknown> => JSON.parse(card.dataset.stateValues || '{}') as Record<string, unknown>;
+  // initial observation: the authored data-active slide, no overview
+  await waitFor(() => mirrored()['slide'] === 'ac-1', 'initial slide to mirror onto the card');
+  expect(mirrored()['overview'], 'overview starts off').toBe(false);
+
+  card.api!.setState('slide', 'ac-2');
+  await waitFor(() => mirrored()['slide'] === 'ac-2', 'slide ac-2 to mirror onto the card');
+
+  card.api!.setState('overview');
+  await waitFor(() => mirrored()['overview'] === true, 'overview to mirror onto the card');
+
+  card.api!.setState('overview', false);
+  await waitFor(() => mirrored()['overview'] === false, 'overview cleared');
+  expect(mirrored()['slide'], 'slide survives the overview round-trip').toBe('ac-2');
+});
+
+test('switching to a font-bearing theme retypes the site (kodama-grove fonts)', async () => {
+  const { doc } = await openDocPage('theming.html');
+  const win = doc.defaultView as Window & {
+    df$: { shadcn: { docs: { applyTheme?: (id: string) => void } } };
+  };
+  await waitFor(() => typeof win.df$.shadcn.docs.applyTheme === 'function', 'docs theme switcher to boot');
+  const { body } = doc;
+  const fontSans = () => getComputedStyle(doc.documentElement).getPropertyValue('--font-sans');
+
+  // default rides the docs sheet (Geist) - not Merriweather
+  expect(fontSans()).not.toContain('Merriweather');
+
+  win.df$.shadcn.docs.applyTheme!('kodama-grove');
+  // token mirror: inline overrides beat docs-theme.css's :root Geist block
+  await waitFor(() => fontSans().includes('Merriweather'), 'theme font token to win the cascade');
+  // the sidecar's font <link>s mount into the page <head>
+  await waitFor(
+    () => doc.querySelectorAll('link[data-df-theme-link="kodama-grove"]').length >= 3,
+    'font links to mount',
+  );
+  // and the theme-sheet cascade really retypes the body
+  await waitFor(
+    () => getComputedStyle(body).fontFamily.includes('Merriweather'),
+    'body to render in the theme font',
+  );
+
+  // back to default: inline overrides + links are gone (no font bleed)
+  win.df$.shadcn.docs.applyTheme!('default');
+  await waitFor(() => !fontSans().includes('Merriweather'), 'default restores Geist');
+  await waitFor(() => doc.querySelectorAll('link[data-df-theme-link]').length === 0, 'links unmount');
 });

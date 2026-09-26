@@ -1,0 +1,113 @@
+---
+title: "Spin - Animations"
+description: "The spin channel of the df$.anim engine - a rotational entrance and exit driven imperatively via df$.anim.spinIn / spinOut."
+slug: "anim-spin"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="anim-spin" title="Spin" component="motion">
+  The rotational pair of the imperative animation engine: <code>spinIn</code> turns the element in from −0.5 turn while fading on, <code>spinOut</code> unwinds it to +0.5 turn while fading off. Spin is not directional - rotation has no edge - so its configuration surface is just <code>duration</code> and <code>easing</code>. Everything below is driven by <code>df$.anim.spinIn</code> and <code>df$.anim.spinOut</code> - the shared lifecycle (<code>play</code> / <code>pause</code> / <code>resume</code> / <code>finish</code> / <code>reset</code> / <code>state</code>) every channel exposes.
+</PageHeader>
+
+```html example label="In / out and lifecycle" schema="none" hint="One target, two channels: In plays spinIn, Out plays spinOut, and Pause / Resume / Finish / Reset act on whichever channel ran last. Duration and easing feed every play() call."
+<style>
+  #anim-spin-target {
+    width: 160px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+  }
+</style>
+<div style="display:flex; flex-direction:column; align-items:flex-start; gap:0.75rem;">
+  <div id="anim-spin-target">Spin me</div>
+  <div id="anim-spin-controls" style="display:flex; flex-wrap:wrap; gap:0.4rem;">
+    <button class="btn" data-variant="outline" data-size="sm" data-anim="in">In</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-anim="out">Out</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-anim="pause">Pause</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-anim="resume">Resume</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-anim="finish">Finish</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-anim="reset">Reset</button>
+  </div>
+  <div style="display:flex; align-items:center; gap:0.5rem;">
+    <label class="label" for="anim-spin-duration">Duration</label>
+    <input class="input" id="anim-spin-duration" type="number" min="50" step="50" value="1500" style="width:6rem;" />
+    <label class="label" for="anim-spin-easing">Easing</label>
+    <select class="select" id="anim-spin-easing">
+      <option value="cubic-bezier(0.16, 1, 0.3, 1)" selected>default (out-expo)</option>
+      <option value="linear">linear</option>
+      <option value="ease-in-out">ease-in-out</option>
+      <option value="cubic-bezier(.34, 1.56, .64, 1)">spring (overshoot)</option>
+    </select>
+    <span class="badge" data-variant="secondary" id="anim-spin-status">idle</span>
+  </div>
+</div>
+<script type="module">
+  // df$ boots after example scripts in the sandbox - reference it only at event time
+  const target = document.getElementById('anim-spin-target');
+  const status = document.getElementById('anim-spin-status');
+  const config = () => ({
+    duration: Number(document.getElementById('anim-spin-duration').value) || 1500,
+    easing: document.getElementById('anim-spin-easing').value,
+  });
+  let last = 'spinIn'; // lifecycle controls act on the channel that played last
+  document.getElementById('anim-spin-controls').addEventListener('click', async (e) => {
+    const btn = e.target.closest('button[data-anim]');
+    if (!btn) return;
+    const action = btn.dataset.anim;
+    if (action === 'in' || action === 'out') {
+      last = action === 'in' ? 'spinIn' : 'spinOut';
+      const handle = df$.anim[last].play(target, config());
+      status.textContent = 'running';
+      await handle.finished;
+      status.textContent = df$.anim[last].state(target);
+      return;
+    }
+    if (action === 'reset') df$.anim[last].reset(target);
+    else df$.anim[last][action](target); // pause | resume | finish
+    status.textContent = df$.anim[last].state(target);
+  });
+</script>
+```
+
+```html example label="Scroll-bound spin" schema="none" hint="opts.scroll ties the animation's progress to a scroll position instead of time - here the spinIn of the box is scrubbed by the stage's own scroll offset. Scroll the stage."
+<div id="anim-spin-scroller" style="height:220px; overflow-y:auto; border:1px solid var(--border); border-radius:var(--radius-lg);">
+  <div style="height:600px; display:flex; align-items:center; justify-content:center;">
+    <div id="anim-spin-scroll-target" style="width:160px; height:100px; display:flex; align-items:center; justify-content:center; font-weight:600; border:1px solid var(--border); border-radius:var(--radius-lg); background:var(--card); color:var(--card-foreground);">
+      Scroll to spin
+    </div>
+  </div>
+</div>
+<script type="module">
+  window.addEventListener('load', () => {
+    df$.anim.spinIn.play(document.getElementById('anim-spin-scroll-target'), {
+      scroll: { target: document.getElementById('anim-spin-scroller'), axis: 'y' },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Passing <code>{`{ target: 'viewport' }`}</code> (the default when <code>target</code> is omitted) binds progress to the page's own scroll position instead of an element - the parallax use for presentations.</p>
+
+## Config
+
+Spin is not directional, so its play-time surface is small:
+
+<ul>
+  <li><code>duration</code> - total time in ms (default <code>1500</code>; flattens to 1ms under <code>prefers-reduced-motion</code>)</li>
+  <li><code>easing</code> - any CSS easing (default <code>cubic-bezier(0.16, 1, 0.3, 1)</code>)</li>
+</ul>
+
+<SourceFiles component="motion" section="css">
+  <SourceNote for="css">The shared motion stylesheet - the declarative <code>data-df-entrance</code> twin of this page's <code>df$.anim</code> channels: the <code>--df-motion-…</code> tunables, the fifteen <code>df-enter-…</code> keyframes and the reduced-motion flattening.</SourceNote>
+</SourceFiles>
+
+</DocPage>

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: checkbox is CSS-only — appearance:none + the ::after check/dash are
+ * Why: checkbox is CSS-only - appearance:none + the ::after check/dash are
  * the whole visual contract. Verify geometry, the checked/indeterminate
  * fills (distinct from the empty box), the ::after marks, disabled dimming,
  * and the aria-invalid border recolor.

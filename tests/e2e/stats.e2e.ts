@@ -1,7 +1,7 @@
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: stats is CSS-only — the metric rule (border-left + padding), 30px
+ * Why: stats is CSS-only - the metric rule (border-left + padding), 30px
  * values, the 2-column media split at wide width, and the flush-left link
  * CTA override (.mk-stat-link { padding-inline: 0 }) are the whole contract.
  */

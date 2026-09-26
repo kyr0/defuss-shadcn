@@ -1,7 +1,7 @@
 import type { Props } from 'defuss';
 
 /**
- * Docs content blocks — the prose/skill-panel/code-card patterns the doc
+ * Docs content blocks - the prose/skill-panel/code-card patterns the doc
  * pages repeat. They render byte-identical markup to the hand-written forms
  * they replace (DOM-diff verified), so a page authored with them cannot drift
  * on spacing, classes or inline styles.

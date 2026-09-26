@@ -1,4 +1,4 @@
-/* defuss-shadcn — optional native layout utilities.
+/* defuss-shadcn - optional native layout utilities.
  * .flex / .grid only select a formatting context: no default gap or tracks.
  * .stack / .center / .container / .query and .grid-cols-auto are extensions.
  * Params are instance-owned: nested primitives do not inherit outer configs.
@@ -149,7 +149,7 @@
   :where(.auto-rows-auto) { grid-auto-rows: auto; }
   :where(.auto-cols-auto) { grid-auto-columns: auto; }
 
-  /* Box clipping/scrolling and text-flow control — orthogonal to gap/track
+  /* Box clipping/scrolling and text-flow control - orthogonal to gap/track
      selection; the generic pairing for constrained containers (a scrollable
      table on a capped width needs both overflow-x-auto and nowrap cells). */
   :where(.overflow-x-auto) { overflow-x: auto; }
@@ -167,7 +167,7 @@
   :where(.truncate) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   /* Overflowing WORDS: break-word/anywhere split on demand, break-all splits
      per character, break-normal restores. `wrap-anywhere` also shrinks
-     min-content — the flex min-w-0 companion that lets a long identifier wrap
+     min-content - the flex min-w-0 companion that lets a long identifier wrap
      inside a shrinkable track. */
   :where(.break-normal) { overflow-wrap: normal; word-break: normal; }
   :where(.break-words) { overflow-wrap: break-word; }

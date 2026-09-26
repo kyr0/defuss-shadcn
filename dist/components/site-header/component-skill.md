@@ -1,8 +1,8 @@
 ---
 name: Site Header
 type: BLK
-why: A marketing page header is pure layout — flexbox + a container query replace any JS show/hide of the nav.
-when: Top of a marketing/landing page — for the doc site's own chrome use <site-header> instead.
+why: A marketing page header is pure layout - flexbox + a container query replace any JS show/hide of the nav.
+when: Top of a marketing/landing page - for the doc site's own chrome use <site-header> instead.
 where: dist/components/site-header/site-header.css
 supportedStates: default
 ---
@@ -14,19 +14,19 @@ supportedStates: default
 container query (`@container`), so the block adapts to the width it is
 placed in, not the viewport. Dropdowns compose the
 [navigation-menu](../navigation-menu/component-skill.md) component: trigger
-buttons wired with `popovertarget` and `popover` panels — the Popover API
+buttons wired with `popovertarget` and `popover` panels - the Popover API
 handles open/close, Escape, and light dismiss natively.
 
 ---
 
 ## Native Web APIs
-- [`<header>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/header) — banner landmark
-- [`<nav>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav) — navigation landmark with `aria-label`
-- [`position: sticky`](https://developer.mozilla.org/en-US/docs/Web/CSS/position#sticky_positioning) — opt-in sticky header, no scroll JS
-- [Container queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries) — width-aware nav collapse
-- [`popovertarget` / `popover`](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API) — declarative dropdown triggers, zero JS
-- [CSS anchor positioning](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning) — panels place below their trigger (from navigation-menu)
-- [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) — keyboard-only focus rings
+- [`<header>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/header) - banner landmark
+- [`<nav>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav) - navigation landmark with `aria-label`
+- [`position: sticky`](https://developer.mozilla.org/en-US/docs/Web/CSS/position#sticky_positioning) - opt-in sticky header, no scroll JS
+- [Container queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries) - width-aware nav collapse
+- [`popovertarget` / `popover`](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API) - declarative dropdown triggers, zero JS
+- [CSS anchor positioning](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning) - panels place below their trigger (from navigation-menu)
+- [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) - keyboard-only focus rings
 
 ---
 
@@ -65,7 +65,7 @@ handles open/close, Escape, and light dismiss natively.
 ```
 
 Actions compose the [Button](../button/component-skill.md) component; the nav
-composes [Navigation Menu](../navigation-menu/component-skill.md) — its JS
+composes [Navigation Menu](../navigation-menu/component-skill.md) - its JS
 wires the CSS anchor names per trigger→panel pair (no `.nav-menu` wrapper
 needed, only `.nav-menu-trigger[popovertarget]` + `.nav-menu-content[popover]`),
 so each panel positions under its trigger; unwired panels open at the viewport
@@ -92,6 +92,6 @@ origin instead.
 
 ## Notes
 - Icons render via lucide (`<i data-lucide="…">` + `lucide.createIcons()`); an inline `<svg>` works identically with zero dependencies.
-- `.mk-header-nav` is hidden below a 30rem **container** width — put the header in a wide container to see the links.
+- `.mk-header-nav` is hidden below a 30rem **container** width - put the header in a wide container to see the links.
 - Plain destinations are `.nav-menu-link` anchors; only sections that open a dropdown get a trigger `<button>`.
 - Give each `nav-menu-content` id a page-unique prefix (ids are document-global; two headers on one page collide otherwise).

@@ -11,7 +11,7 @@
     margin-bottom: 0.375rem;
     cursor: default;
 
-    /* Required — the adjacent control carries `required`: render the star.
+    /* Required - the adjacent control carries `required`: render the star.
        Pure CSS (no span to remember, nothing to desync); decorative only —
        the native attribute already conveys the requirement to AT. */
     &:has(+ input[required])::after,
@@ -21,13 +21,13 @@
       font-weight: 600;
     }
 
-    /* Disabled — explicit attribute */
+    /* Disabled - explicit attribute */
     &[data-disabled] {
       opacity: 0.7;
       cursor: not-allowed;
     }
 
-    /* Disabled — auto-detect via adjacent disabled control */
+    /* Disabled - auto-detect via adjacent disabled control */
     &:has(+ :disabled),
     &:has(+ [data-disabled]) {
       opacity: 0.7;

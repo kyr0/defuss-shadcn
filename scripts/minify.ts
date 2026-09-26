@@ -11,7 +11,7 @@ import { isDerivedArtifact } from './lib/minify.ts';
 /**
  * Why: consumers ship readable files for debugging and request no bundle step,
  * but production pages want tiny payloads. Post-pass over the freshly built
- * dist/ writes per-component minified twins — `*.min.js` + `*.min.js.map`
+ * dist/ writes per-component minified twins - `*.min.js` + `*.min.js.map`
  * (oxc-minify, on top of the tsc-emitted `*.js.map`) and `*.min.css`
  * (lightningcss). Runs after build.ts, never touches src/; verify's
  * `minified artifacts` gate makes shipping without them a build failure.
@@ -24,23 +24,23 @@ import { isDerivedArtifact } from './lib/minify.ts';
 const ROOT = join(import.meta.dirname, '..');
 const COMPONENTS = join(ROOT, 'dist', 'components');
 
-// 1. JS: oxc minifySync — sourcemap maps min → the shipped readable .js
+// 1. JS: oxc minifySync - sourcemap maps min → the shipped readable .js
 //    (which its own tsc map then maps back to the .ts source).
 // mangle without `toplevel`: inner names get minified, but module top-level
-// names stay (the exports are the public State API contract — AGENTS.md).
+// names stay (the exports are the public State API contract - AGENTS.md).
 // Derived twins are skipped so re-running `make minify` stays idempotent
 // (never re-minifies a .min.js into a .min.min.js).
 const jsFiles = walk(COMPONENTS, ['.js']).filter((f) => !isDerivedArtifact(f));
 // §6 provenance: oxc drops comments, so the min twins of the two RUNTIME
 // bundles (they embed defuss-morph + defuss-query) get the pointer re-stamped
-// after minification — every shipped copy of the runtime carries its notice.
+// after minification - every shipped copy of the runtime carries its notice.
 const RUNTIME_MIN = new Set([join(COMPONENTS, 'core.min.js'), join(COMPONENTS, 'all.min.js')]);
 const PROVENANCE_POINTER = provenancePointer(collectProvenance(ROOT));
 for (const file of jsFiles) {
   const source = readFileSync(file, 'utf8');
   const minName = file.slice(file.lastIndexOf('/') + 1, -3);
   const result = minifySync(relative(ROOT, file), source, {
-    module: true, // shipped as <script type="module"> — keep import/export semantics
+    module: true, // shipped as <script type="module"> - keep import/export semantics
     compress: true,
     mangle: true,
     sourcemap: true,
@@ -50,17 +50,17 @@ for (const file of jsFiles) {
     process.exit(1);
   }
   const minPath = file.replace(/\.js$/, '.min.js');
-  // devtools resolve map.sources relative to the .map's URL — point at the
+  // devtools resolve map.sources relative to the .map's URL - point at the
   // sibling readable .js by basename (oxc emits the ROOT-relative input path)
   const map = { ...result.map, file: `${minName}.min.js`, sources: [`${minName}.js`] };
-  // the comment must START a line — oxc's codegen may omit the trailing newline
+  // the comment must START a line - oxc's codegen may omit the trailing newline
   const code = result.code.endsWith('\n') ? result.code : `${result.code}\n`;
   const provenance = RUNTIME_MIN.has(minPath) ? `${PROVENANCE_POINTER}\n` : '';
   writeFileSync(minPath, `${code}${provenance}//# sourceMappingURL=${minName}.min.js.map\n`);
   writeFileSync(`${minPath}.map`, JSON.stringify(map));
 }
 
-// 2. CSS: lightningcss minify — no lowering targets given, so modern author
+// 2. CSS: lightningcss minify - no lowering targets given, so modern author
 //    features (@layer, nesting, anchor positioning) pass through untouched.
 const cssFiles = walk(COMPONENTS, ['.css']).filter((f) => !isDerivedArtifact(f));
 // the generated bundles (all.css, core.css) also ship a CSS source map —

@@ -2,7 +2,7 @@
 name: Dialog
 type: MOL
 why: Native <dialog> + showModal(): focus trap, Escape-to-close, ::backdrop, and inert background all come from the browser.
-when: Modals for forms, detail views, or previews — unless the answer is mandatory (then alert-dialog).
+when: Modals for forms, detail views, or previews - unless the answer is mandatory (then alert-dialog).
 where: dist/components/dialog/dialog.css + dist/components/dialog/dialog.js
 supportedStates: default, open
 ---
@@ -27,15 +27,15 @@ Unknown state names throw. `globalThis.df$.shadcn.dialogStates` lists them.
 - `::backdrop` for overlay
 - `aria-modal` behavior when opened with `showModal()`
 
-Requires minimal JavaScript — only for trigger wiring and backdrop-click-to-close.
+Requires minimal JavaScript - only for trigger wiring and backdrop-click-to-close.
 
 ---
 
 ## Native Web APIs
-- [`<dialog>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog) — native modal element with built-in focus trap and Escape-to-close
-- [`HTMLDialogElement.showModal()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal) — opens dialog as modal in the top layer with backdrop
-- [`::backdrop`](https://developer.mozilla.org/en-US/docs/Web/CSS/::backdrop) — pseudo-element for the overlay behind the modal
-- [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) — defines entry animation starting values
+- [`<dialog>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog) - native modal element with built-in focus trap and Escape-to-close
+- [`HTMLDialogElement.showModal()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal) - opens dialog as modal in the top layer with backdrop
+- [`::backdrop`](https://developer.mozilla.org/en-US/docs/Web/CSS/::backdrop) - pseudo-element for the overlay behind the modal
+- [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) - defines entry animation starting values
 
 ---
 
@@ -88,7 +88,7 @@ Set `data-density` on the `.dialog` root. A whitespace policy, not a zoom: only 
 | Value | Effect |
 | --- | --- |
 | `compact` | content padding 1rem |
-| `comfortable` | content padding 1.5rem — identical to the unsized default |
+| `comfortable` | content padding 1.5rem - identical to the unsized default |
 | `spacious` | content padding 2rem |
 
 ## Sizes
@@ -127,6 +127,6 @@ Set `data-density` on the `.dialog` root. A whitespace policy, not a zoom: only 
 ## Notes
 
 - Animation uses CSS-only enter via `@starting-style` and exit via `transition` + `allow-discrete`.
-- While the dialog is modal, `html:has(dialog.dialog:modal)` sets `overflow: hidden` + `scrollbar-gutter: stable` — the page behind cannot scroll and its position is preserved for when the dialog closes (no JS scroll-lock).
+- While the dialog is modal, `html:has(dialog.dialog:modal)` sets `overflow: hidden` + `scrollbar-gutter: stable` - the page behind cannot scroll and its position is preserved for when the dialog closes (no JS scroll-lock).
 - The selector is `dialog.dialog` (element + class) to avoid styling native `<dialog>` elements used elsewhere.
 - For forms inside dialogs, use the `dialog-body` wrapper for the form content.

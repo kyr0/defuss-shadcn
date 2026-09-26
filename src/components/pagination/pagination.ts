@@ -6,7 +6,7 @@
 // next()/back() action events into page changes (AGENTS.md "State API").
 //
 // Attribute-driven on purpose: the sandbox bridge mutates DOM natively, so
-// writing data-active-page (panel editor) must visibly re-render — the
+// writing data-active-page (panel editor) must visibly re-render - the
 // MutationObserver below is that bridge between "attribute changed" and
 // "window recomputed". The authored markup stays fully functional without
 // this file (progressive enhancement); the script only adds the window
@@ -16,7 +16,7 @@
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 // defussQuery: the window is (re)rendered through keyed morph (plans/
 // defuss-query-morph-integration.md §3: link nodes keep identity across a
-// page change — focus survives).
+// page change - focus survives).
 import { defussGlobals, defussQuery } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
@@ -53,7 +53,7 @@ function renderWindow(nav: HTMLElement): void {
 
   const count = Math.max(1, numAttr(nav, 'pageDisplayCount', 5));
   // guard the write: a same-value setAttribute STILL fires a MutationObserver
-  // record — unguarded, the attribute MO below would re-render forever
+  // record - unguarded, the attribute MO below would re-render forever
   if (nav.dataset.activePage !== String(active)) nav.dataset.activePage = String(active);
   // window start: center `active` in `count` slots, slide to stay in range
   const start = Math.max(min, Math.min(active - Math.floor((count - 1) / 2), max - count + 1));
@@ -76,7 +76,7 @@ function renderWindow(nav: HTMLElement): void {
   }
 
   // 2. build the ordered window (fresh nodes for pages that appear) and insert
-  //    everything before the authored next item — .before() is the sanctioned
+  //    everything before the authored next item - .before() is the sanctioned
   //    move op (AGENTS.md DOM boundary), inserted in order so it lands sorted
   for (const node of windowNodes(start, end, min, max, active, survivors)) dfDollar(nextLi).before(node);
 }
@@ -85,7 +85,7 @@ function renderWindow(nav: HTMLElement): void {
  * Ordered <li> nodes for the window [start, end]: leading/trailing ellipsis
  * when pages are skipped, reused nodes from `survivors` where a page stays
  * visible, fresh (data-page-keyed) nodes otherwise. Active page is rebuilt
- * every time (its class/aria are the state — a reused node could be stale).
+ * every time (its class/aria are the state - a reused node could be stale).
  */
 function windowNodes(
   start: number,
@@ -121,7 +121,7 @@ function windowNodes(
     if (p === active || !survivors.has(p)) out.push(pageLink(p));
     else {
       // reused link: drop stale active markers (it WAS the active page before
-      // this render — its class/aria are now wrong)
+      // this render - its class/aria are now wrong)
       const node = survivors.get(p)!;
       const a = node.querySelector('a');
       a?.classList.remove('pagination-active');
@@ -134,7 +134,7 @@ function windowNodes(
 }
 
 /**
- * Move the active page by a delta (clamped) and re-render — the single path
+ * Move the active page by a delta (clamped) and re-render - the single path
  * for link clicks, prev/next clicks and the next()/back() action events.
  */
 function setPage(nav: HTMLElement, page: number): void {
@@ -200,11 +200,11 @@ function init(): void {
     };
 
     // opt-in: only a data-driven nav (one that declares its contract with
-    // data-active-page) gets its window rendered — plain authored markup is
+    // data-active-page) gets its window rendered - plain authored markup is
     // left exactly as written (progressive enhancement)
     if (nav.hasAttribute('data-active-page')) renderWindow(nav);
     // attribute-driven re-render: panel edits (bridge writes the data attrs)
-    // and setState both land here — the attributes ARE the state
+    // and setState both land here - the attributes ARE the state
     new MutationObserver(() => {
       if (nav.hasAttribute('data-active-page')) renderWindow(nav);
     }).observe(nav, {
@@ -213,7 +213,7 @@ function init(): void {
     });
 
     // one delegated click path: page links jump, prev/next step (href="#"
-    // would jump to the top — the component owns the interaction)
+    // would jump to the top - the component owns the interaction)
     nav.addEventListener('click', (e) => {
       const link = (e.target as HTMLElement).closest<HTMLElement>('.pagination-link[data-page], .pagination-prev, .pagination-next');
       if (!link) return;

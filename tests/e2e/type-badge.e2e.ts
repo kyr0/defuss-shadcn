@@ -2,7 +2,7 @@ import { cssSmoke, type Check } from './lib/css-smoke.ts';
 
 const checks: Check[] = [
   {
-    label: 'base: mono chip — xs font size, 600 weight, border, sm radius',
+    label: 'base: mono chip - xs font size, 600 weight, border, sm radius',
     selector: '.type-badge[data-type="ATM"]',
     css: {
       fontWeight: '600',
@@ -14,7 +14,7 @@ const checks: Check[] = [
     },
   },
   {
-    label: 'all five type colors are pairwise distinct',
+    label: 'all six type colors are pairwise distinct',
     distinct: ['ATM', 'MOL', 'ORG', 'BLK', 'TPL'].map((t) => ({
       selector: `.type-badge[data-type="${t}"]`,
       prop: 'color',

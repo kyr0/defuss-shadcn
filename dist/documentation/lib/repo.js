@@ -2,7 +2,7 @@
  * Why: docs-build-time access to repo data (component sources, skill
  * frontmatter, stats, changelog). defuss-ssg copies the project into
  * `.ssg-temp/` before rendering, so relative paths from this file do NOT
- * reach the repo — the build runner (scripts/build-docs.ts) pins the real
+ * reach the repo - the build runner (scripts/build-docs.ts) pins the real
  * root in DEFUSS_SHADCN_ROOT.
  */
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
@@ -12,7 +12,7 @@ export function repoFile(...parts) {
     return join(REPO_ROOT, ...parts);
 }
 /** Minimal YAML-frontmatter reader for component-skill.md files (flat
- * `key: value` pairs only — the skill contract bans anything fancier). */
+ * `key: value` pairs only - the skill contract bans anything fancier). */
 export function readSkillMeta(component) {
     const file = repoFile('src', 'components', component, 'component-skill.md');
     if (!existsSync(file))
@@ -40,7 +40,7 @@ export function readSkillMeta(component) {
     };
 }
 /**
- * Why: the generated theme files ARE the manifest — the Theme Switcher demo
+ * Why: the generated theme files ARE the manifest - the Theme Switcher demo
  * enumerates them (build.ts must run before build:docs; dist/ is fresh in
  * CI/make). Label comes from each file's header comment, dots from the
  * `:root` block, so the demo can never advertise a theme that doesn't ship.

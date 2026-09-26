@@ -7,7 +7,7 @@ import { startServer } from './server.ts';
  * (options menu + checkbox/radio menu, mirroring both doc demos) over HTTP in
  * a real browser, then verifies trigger toggle, aria-expanded sync, keyboard
  * navigation with roving highlight, checkbox/radio activation, disabled-item
- * skipping, the destructive variant, and the named State API — the same files
+ * skipping, the destructive variant, and the named State API - the same files
  * consumers copy from dist/, unmodified.
  */
 
@@ -47,7 +47,7 @@ try {
 
   await check('check/radio indicators use a mask (visible in dark mode)', async () => {
     // regression: data: URI SVGs resolve currentColor to BLACK when used as
-    // background-image — the checks vanished on dark surfaces. A mask paints
+    // background-image - the checks vanished on dark surfaces. A mask paints
     // them with background-color: currentColor instead.
     const geom = await page.evaluate(() => {
       const chk = document.querySelector('.dropdown-check[aria-checked="true"]')!;
@@ -77,7 +77,7 @@ try {
 
   await check('trigger click toggles the menu + aria-expanded', async () => {
     await page.click('[data-dropdown-trigger="demo-dropdown"]');
-    // aria-expanded is set by the async `toggle` event — poll it, don't race it
+    // aria-expanded is set by the async `toggle` event - poll it, don't race it
     await page.waitForFunction(
       () =>
         document.querySelector('#demo-dropdown')!.matches(':popover-open') &&
@@ -179,7 +179,7 @@ try {
 
   await check("state API: setState('open') opens menu and highlights first item", async () => {
     await setState(page, 'demo-dropdown', 'open');
-    // the toggle handler is async (toggle event) — poll for its highlight
+    // the toggle handler is async (toggle event) - poll for its highlight
     await page.waitForFunction(
       () => document.querySelectorAll('#demo-dropdown [data-highlighted]').length > 0,
     );

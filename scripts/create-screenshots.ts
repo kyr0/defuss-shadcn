@@ -8,9 +8,9 @@ import { componentFingerprints, declaredStates } from './lib/inputs.ts';
 /**
  * Why: per-component default-state screenshots the AI agent can inspect
  * directly (light/ + dark/ PNGs under screenshots/). Only the initial render
- * is captured — zero interaction — so a screenshot is the component's resting
+ * is captured - zero interaction - so a screenshot is the component's resting
  * look. Pages are served over HTTP. CDNs are still reachable (lucide icons
- * and demo images are part of the default state) — only esm.sh is blocked,
+ * and demo images are part of the default state) - only esm.sh is blocked,
  * which serves the 2 MB shiki bundle the source-viewer needs but previews
  * never do. All waits are bounded so nothing can hang the run.
  *
@@ -32,7 +32,7 @@ const SETTLE_MS = 250; // settle time for CSS enter animations
 /** Both color schemes the system supports; each gets its own subfolder. */
 const MODES = ['light', 'dark'] as const;
 
-/** Pages rendered concurrently — Chromium handles ~8 easily; more just queues. */
+/** Pages rendered concurrently - Chromium handles ~8 easily; more just queues. */
 const CONCURRENCY = 8;
 /** Hard ceiling per page so a slow network/CDN can never hang the run. */
 const PAGE_TIMEOUT_MS = 20_000;
@@ -76,7 +76,7 @@ function shotKeys(name: string): string[] {
   );
 }
 
-/** Content hash of a captured PNG — detects renders changing without inputs. */
+/** Content hash of a captured PNG - detects renders changing without inputs. */
 function hashFile(path: string): string {
   return createHash('sha256').update(readFileSync(path)).digest('hex').slice(0, 16);
 }
@@ -102,8 +102,8 @@ async function shoot(
     // the first .preview block is the component's default demo
     const preview = page.locator('main .preview').first();
     await preview.waitFor({ state: 'visible', timeout: PAGE_TIMEOUT_MS });
-    // images/icons inside the preview are network loads — wait for them to
-    // settle (or fail — broken-image demos stay honest) with a 4s hard cap
+    // images/icons inside the preview are network loads - wait for them to
+    // settle (or fail - broken-image demos stay honest) with a 4s hard cap
     await preview
       .locator('img')
       .evaluateAll((imgs) =>
@@ -118,6 +118,21 @@ async function shoot(
         ]),
       )
       .catch(() => undefined);
+    // CodeExample sandboxes boot asynchronously (srcdoc assembly + module
+    // fetches) - SETTLE_MS alone can catch the pre-boot placeholder frame
+    // (seen on the presentation page: 4 decks racing for all.min.js). The
+    // bridge's first height post IS the ready signal; pages without
+    // executable examples pass immediately, broken ones time out softly.
+    await page
+      .waitForFunction(
+        () => {
+          const first = document.querySelector('.code-example-frame') as HTMLIFrameElement | null;
+          return !first || parseFloat(first.style.height || '0') > 50;
+        },
+        undefined,
+        { timeout: PAGE_TIMEOUT_MS },
+      )
+      .catch(() => undefined);
     await page.waitForTimeout(SETTLE_MS);
     await preview.screenshot({ path: join(OUT, mode, `${name}.png`), timeout: PAGE_TIMEOUT_MS });
     console.log(`  ✓ ${mode}/${name}.png`);
@@ -129,7 +144,7 @@ async function shoot(
       const anchor = page.locator('[data-state-demo]').first();
       if ((await anchor.count()) === 0) continue; // verify.ts reports the missing anchor
       // the anchor is typically a CodeExample card now: its host .api appears
-      // only after the sandbox bridge reports ready — wait for it before driving
+      // only after the sandbox bridge reports ready - wait for it before driving
       await page.waitForFunction(
         () => {
           const el = document.querySelector('[data-state-demo]') as (HTMLElement & { api?: unknown }) | null;
@@ -141,11 +156,11 @@ async function shoot(
       await anchor.evaluate((el, s) => {
         // structural type (page context can't import the repo's .d.ts)
         const target = el as HTMLElement & { api?: { setState(name: string, config?: Record<string, unknown>): void } };
-        if (!target.api) throw new Error('[data-state-demo] element has no .api — component failed to init?');
+        if (!target.api) throw new Error('[data-state-demo] element has no .api - component failed to init?');
         target.api.setState(s);
       }, state);
       await page.waitForTimeout(SETTLE_MS);
-      // fixed/anchored popovers render in the viewport's top layer — a demo
+      // fixed/anchored popovers render in the viewport's top layer - a demo
       // below the fold would capture as blank. Scrolling the document moves
       // the static trigger (and the CSS anchor + popover with it) into view.
       await anchor.evaluate((el) => {
@@ -164,7 +179,7 @@ async function shoot(
 type Manifest = {
   /** input fingerprint per component (what the screenshots were shot against) */
   fingerprints: Record<string, string>;
-  /** content hash per PNG ("mode/file.png") — detects renders edited/corrupted outside the pipeline */
+  /** content hash per PNG ("mode/file.png") - detects renders edited/corrupted outside the pipeline */
   renders: Record<string, string>;
 };
 
@@ -172,7 +187,7 @@ const components = readdirSync(COMPS).filter((d) => statSync(join(COMPS, d)).isD
 if (FORCE) rmSync(OUT, { recursive: true, force: true }); // --force: full recapture
 for (const mode of MODES) mkdirSync(join(OUT, mode), { recursive: true });
 
-// decide what actually changed — content hashes, not mtimes
+// decide what actually changed - content hashes, not mtimes
 const current = componentFingerprints(DIST);
 const previous: Manifest = existsSync(MANIFEST)
   ? (JSON.parse(readFileSync(MANIFEST, 'utf8')) as Manifest)
@@ -199,7 +214,7 @@ const browser = await chromium.launch();
 const failures: string[] = [];
 let cursor = 0;
 
-// simple worker pool — each worker pulls the next (component × mode) job until exhausted
+// simple worker pool - each worker pulls the next (component × mode) job until exhausted
 const jobs = stale.flatMap((name) => MODES.map((mode) => ({ name, mode })));
 async function worker(): Promise<void> {
   while (cursor < jobs.length) {
@@ -217,7 +232,7 @@ await browser.close();
 server.stop();
 
 // record fingerprints + render hashes only for components whose modes ALL
-// succeeded — a partially failed component stays stale and is retried
+// succeeded - a partially failed component stays stale and is retried
 const failedComponents = new Set(failures.map((f) => f.split(':')[0].split('/')[1]));
 for (const name of stale) {
   if (failedComponents.has(name)) continue;

@@ -1,7 +1,7 @@
 ---
 name: Alert
 type: MOL
-why: Styled container using role=status/aria-live so the message is announced inline — no modal logic involved.
+why: Styled container using role=status/aria-live so the message is announced inline - no modal logic involved.
 when: Inline, non-blocking notices (error, warning, info) tied to surrounding content.
 where: dist/components/alert/alert.css
 supportedStates: default
@@ -15,7 +15,7 @@ supportedStates: default
 
 ## Native Web APIs
 
-- [`role="alert"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/alert_role) — ARIA alert role for assertive announcements
+- [`role="alert"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/alert_role) - ARIA alert role for assertive announcements
 
 ## Structure
 
@@ -66,7 +66,7 @@ Set `data-density` on the `.alert` root. A whitespace policy, not a zoom: only g
 | Value | Effect |
 | --- | --- |
 | `compact` | padding 0.75rem 1rem, icon gap 0.5rem |
-| `comfortable` | padding 1rem 1.25rem, gap 0.75rem — identical to the unsized default |
+| `comfortable` | padding 1rem 1.25rem, gap 0.75rem - identical to the unsized default |
 | `spacious` | padding 1.25rem 1.5rem, gap 1rem |
 
 ## Accessibility

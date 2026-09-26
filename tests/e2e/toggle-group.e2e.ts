@@ -7,7 +7,7 @@ import { startServer } from './server.ts';
  * fixture (single/multiple types, outline + sizes + vertical, disabled group,
  * mirroring the doc page) over HTTP in a real browser, then verifies selection
  * semantics per type, roving tabindex + arrow keys, the documented
- * data-disabled behavior, and the named State API — the same files consumers
+ * data-disabled behavior, and the named State API - the same files consumers
  * copy from dist/, unmodified.
  */
 
@@ -95,17 +95,17 @@ try {
         const s = getComputedStyle(el);
         return [s.borderTopLeftRadius, s.borderTopRightRadius, s.borderBottomRightRadius, s.borderBottomLeftRadius];
       });
-    // actual rounded radius (--radius-md as computed on this page) — no hardcoded px
+    // actual rounded radius (--radius-md as computed on this page) - no hardcoded px
     const R = (await radii('#group-vertical .toggle:first-child'))[0];
     assert.notEqual(R, '0px', 'first item keeps its outer radius');
     // horizontal middle: no rounded corners at all
     assert.deepEqual(await radii('#group-single .toggle:nth-child(2)'), ['0px', '0px', '0px', '0px']);
-    // vertical middle: same — the old rules re-rounded its top-right corner (the notch)
+    // vertical middle: same - the old rules re-rounded its top-right corner (the notch)
     assert.deepEqual(await radii('#group-vertical .toggle:nth-child(2)'), ['0px', '0px', '0px', '0px']);
     // vertical ends: rounded on the outward side, square toward the neighbour
     assert.deepEqual(await radii('#group-vertical .toggle:first-child'), [R, R, '0px', '0px']);
     assert.deepEqual(await radii('#group-vertical .toggle:last-child'), ['0px', '0px', R, R]);
-    // data-spacing keeps individual full radii — its later rule must still beat
+    // data-spacing keeps individual full radii - its later rule must still beat
     // the :where()-wrapped corner rules regardless of orientation
     assert.deepEqual(await radii('#group-spaced .toggle:nth-child(2)'), [R, R, R, R]);
   });

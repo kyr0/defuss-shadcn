@@ -1,0 +1,123 @@
+---
+title: "Zoom - Animations"
+description: "The zoom channel of the df$.anim engine - scale-and-fade entrances and exits with a configurable transform origin, driven imperatively or bound to scroll."
+slug: "anim-zoom"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="anim-zoom" title="Zoom" component="motion">
+  The scale entrance/exit pair of the imperative animation engine: <code>zoomIn</code> grows the element from <code>scale(0.8)</code> (configurable) and transparent to full size, <code>zoomOut</code> shrinks it away again - both around a configurable <code>transform-origin</code>. Zoom is not directional; its geometry axis is the origin point. Everything below is driven by <code>df$.anim.zoomIn</code> and <code>df$.anim.zoomOut</code> - Web Animations API under the hood, no CSS class toggling.
+</PageHeader>
+
+```html example label="In / out, origin and lifecycle" schema="none" hint="In plays zoomIn, Out plays zoomOut - Pause/Resume/Finish/Reset act on whichever channel ran last. Origin moves the transform-origin the scale grows from; duration and easing are per-play options."
+<style>
+  .anim-zoom-box {
+    width: 160px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+    font-weight: 600;
+  }
+</style>
+<div style="display:flex; flex-direction:column; gap:0.85rem; align-items:flex-start;">
+  <div id="anim-zoom-target" class="anim-zoom-box">zoom me</div>
+  <div style="display:flex; flex-wrap:wrap; gap:0.4rem; align-items:center;">
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-zoom-in">In</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-zoom-out">Out</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-zoom-pause">Pause</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-zoom-resume">Resume</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-zoom-finish">Finish</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-zoom-reset">Reset</button>
+  </div>
+  <div style="display:flex; flex-wrap:wrap; gap:0.6rem; align-items:center;">
+    <label class="text-sm" for="anim-zoom-duration">Duration</label>
+    <input class="input" id="anim-zoom-duration" type="number" min="0" step="50" value="1500" style="width:6rem;" />
+    <label class="text-sm" for="anim-zoom-origin">Origin</label>
+    <select class="select" id="anim-zoom-origin">
+      <option value="50% 50%" selected>center</option>
+      <option value="0% 0%">top-left</option>
+      <option value="100% 100%">bottom-right</option>
+    </select>
+    <label class="text-sm" for="anim-zoom-easing">Easing</label>
+    <select class="select" id="anim-zoom-easing">
+      <option value="cubic-bezier(0.16, 1, 0.3, 1)" selected>ease-out (default)</option>
+      <option value="linear">linear</option>
+      <option value="ease-in-out">ease-in-out</option>
+      <option value="cubic-bezier(0.34, 1.56, 0.64, 1)">springy</option>
+    </select>
+  </div>
+</div>
+<script type="module">
+  const target = document.getElementById('anim-zoom-target');
+  const opts = () => ({
+    duration: Number(document.getElementById('anim-zoom-duration').value) || undefined,
+    origin: document.getElementById('anim-zoom-origin').value,
+    easing: document.getElementById('anim-zoom-easing').value,
+  });
+  // the lifecycle buttons act on whichever channel played last
+  let last = 'zoomIn';
+  const on = (id, fn) => document.getElementById(id).addEventListener('click', fn);
+  on('anim-zoom-in', () => { last = 'zoomIn'; df$.anim.zoomIn.play(target, opts()); });
+  on('anim-zoom-out', () => { last = 'zoomOut'; df$.anim.zoomOut.play(target, opts()); });
+  on('anim-zoom-pause', () => df$.anim[last].pause(target));
+  on('anim-zoom-resume', () => df$.anim[last].resume(target));
+  on('anim-zoom-finish', () => df$.anim[last].finish(target));
+  on('anim-zoom-reset', () => df$.anim[last].reset(target));
+</script>
+```
+
+```html example label="Scroll binding" schema="none" hint="opts.scroll ties the animation's progress to a scroll position instead of time - here the box zooms in as you scroll the stage. reset() unwinds the binding."
+<style>
+  .anim-zoom-box {
+    width: 160px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+    font-weight: 600;
+  }
+</style>
+<div id="anim-zoom-scroller" style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg);">
+  <div style="height: 600px; display: flex; align-items: center; justify-content: center;">
+    <div id="anim-zoom-scroll-target" class="anim-zoom-box">scroll to grow</div>
+  </div>
+</div>
+<script type="module">
+  // all.js (df$) boots after example scripts in the sandbox - bind on load,
+  // never at parse time
+  window.addEventListener('load', () => {
+    df$.anim.zoomIn.play(document.getElementById('anim-zoom-scroll-target'), {
+      scroll: { target: document.getElementById('anim-zoom-scroller'), axis: 'y' },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Passing <code>{`scroll: { target: 'viewport' }`}</code> instead of an element binds progress to the page's own scroll - the parallax use for presentations and long-form pages.</p>
+
+## Config axes
+
+<ul>
+  <li><code>origin</code> - the <code>transform-origin</code> the scale grows from / shrinks toward, e.g. <code>'50% 50%'</code> (default) or <code>'0% 0%'</code>.</li>
+  <li><code>scale</code> - the scale factor at the hidden end (default <code>0.8</code>; a value above 1, e.g. <code>1.1</code>, turns the pair into a shrink-in / grow-out effect).</li>
+  <li><code>duration</code> - total duration in ms (default 1500; 1ms under <code>prefers-reduced-motion</code>).</li>
+  <li><code>easing</code> - any CSS easing (default <code>cubic-bezier(0.16, 1, 0.3, 1)</code>).</li>
+</ul>
+
+<SourceFiles component="motion" section="css">
+  <SourceNote for="css">The shared motion stylesheet - the declarative <code>data-df-entrance</code> twin of this page's <code>df$.anim</code> channels: the <code>--df-motion-…</code> tunables, the fifteen <code>df-enter-…</code> keyframes and the reduced-motion flattening.</SourceNote>
+</SourceFiles>
+
+</DocPage>

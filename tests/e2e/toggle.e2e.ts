@@ -6,7 +6,7 @@ import { startServer } from './server.ts';
  * Why: E2E smoke test for the shipped toggle component. Loads the fixture
  * (all documented variants/sizes, mirroring the doc page) over HTTP in a real
  * browser, then verifies click toggling, pressed styling, disabled behavior,
- * and the named State API — the same files consumers copy from dist/,
+ * and the named State API - the same files consumers copy from dist/,
  * unmodified.
  */
 

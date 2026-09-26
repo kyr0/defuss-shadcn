@@ -9,14 +9,14 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <DocPage meta={meta}>
 
 <PageHeader slug="component-skills" title="Component Skills" introStyle="max-width:38rem;">
-  Every component includes a <code>component-skill.md</code> file — a structured reference that teaches both AI assistants and humans how to build that component's HTML correctly. And every skill is indexed in <code>dist/SKILL.md</code> — the single entry point an agent should read first.
+  Every component includes a <code>component-skill.md</code> file - a structured reference that teaches both AI assistants and humans how to build that component's HTML correctly. And every skill is indexed in <code>dist/SKILL.md</code> - the single entry point an agent should read first.
 </PageHeader>
 
 <H2>What is a component skill?</H2>
 
-<p class="text-sm text-muted-foreground mb-5">A component skill is a Markdown file that documents the <strong>HTML pattern</strong> for a component — what elements to use, which attributes to set, what variants and sizes are available, and the ARIA requirements. It's the single source of truth for how to write the markup.</p>
+<p class="text-sm text-muted-foreground mb-5">A component skill is a Markdown file that documents the <strong>HTML pattern</strong> for a component - what elements to use, which attributes to set, what variants and sizes are available, and the ARIA requirements. It's the single source of truth for how to write the markup.</p>
 
-<p class="text-sm text-muted-foreground mb-5">Component skills don't contain CSS or JavaScript code — those live in their own files alongside the skill. The skill focuses purely on the HTML structure and its configuration options.</p>
+<p class="text-sm text-muted-foreground mb-5">Component skills don't contain CSS or JavaScript code - those live in their own files alongside the skill. The skill focuses purely on the HTML structure and its configuration options.</p>
 
 <CodeCard title="file location" lang="bash" mb="2.5rem">{"dist/components/{name}/\n├── component-skill.md   "}<Dim>{"← the skill file (HTML reference)"}</Dim>{"\n├── {name}.css            "}<Dim>{"← component stylesheet"}</Dim>{"\n└── {name}.js             "}<Dim>{"← interaction JS (if needed)"}</Dim></CodeCard>
 
@@ -24,9 +24,9 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <H2>The SKILL.md index</H2>
 
-<p class="text-sm text-muted-foreground mb-5"><code>dist/SKILL.md</code> is the generated entry point of the whole system — integration instructions, the library's philosophy, a map of the <code>dist/</code> layout, and one index entry per component (its taxonomy type, why to use it, when to reach for it, which files ship it, and which states it supports). It is built on every build from <code>SKILL\_tpl.md</code> plus each skill's frontmatter, so it can never drift from the skills it indexes.</p>
+<p class="text-sm text-muted-foreground mb-5"><code>dist/SKILL.md</code> is the generated entry point of the whole system - integration instructions, the library's philosophy, a map of the <code>dist/</code> layout, and one index entry per component (its taxonomy type, why to use it, when to reach for it, which files ship it, and which states it supports). It is built on every build from <code>SKILL\_tpl.md</code> plus each skill's frontmatter, so it can never drift from the skills it indexes.</p>
 
-<p class="text-sm text-muted-foreground mb-5"><strong>If you are an agent wiring this library into a project, point yourself at <a href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/SKILL.md"><code>dist/SKILL.md</code></a> first</strong> — it tells you what to include, which skill to read next, and where the state screenshots live (<code>screenshots/\{light,dark\}/\{name\}-\{state\}.png</code> in the source repo), so you can look up exactly what an "open modal" or "collapsed sidebar" should look like before you build it.</p>
+<p class="text-sm text-muted-foreground mb-5"><strong>If you are an agent wiring this library into a project, point yourself at <a href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/SKILL.md"><code>dist/SKILL.md</code></a> first</strong> - it tells you what to include, which skill to read next, and where the state screenshots live (<code>screenshots/\{light,dark\}/\{name\}-\{state\}.png</code> in the source repo), so you can look up exactly what an "open modal" or "collapsed sidebar" should look like before you build it.</p>
 
 <div class="sep" />
 
@@ -36,7 +36,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div style="display:grid;grid-template-columns:auto 1fr;gap:0.5rem 1rem;margin-bottom:2.5rem;align-items:baseline;">
   <span class="def-term">0. Frontmatter</span>
-  <span class="text-sm text-muted-foreground">Machine-readable header (<code>name</code>, <code>type</code>, <code>why</code>, <code>when</code>, <code>where</code>, <code>supportedStates</code>) that <code>SKILL.md</code> is generated from — required on every skill and enforced by <code>verify</code>.</span>
+  <span class="text-sm text-muted-foreground">Machine-readable header (<code>name</code>, <code>type</code>, <code>why</code>, <code>when</code>, <code>where</code>, <code>supportedStates</code>) that <code>SKILL.md</code> is generated from - required on every skill and enforced by <code>verify</code>.</span>
   <span class="def-term">1. Native basis</span>
   <span class="text-sm text-muted-foreground">Which HTML element or browser API the component builds on. Every component starts from native semantics.</span>
   <span class="def-term">2. Native Web APIs</span>
@@ -57,28 +57,28 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <h2 id="component-taxonomy" class="h2-display">Component taxonomy</h2>
 
-<p class="text-sm text-muted-foreground mb-5">Every component is classified with exactly one type, expressed in three places that <code>verify</code> keeps in sync: the skill's <code>type:</code> frontmatter (source of truth), the sidebar badge, and the badge on the component's doc page. Classification never leaks into component names — <code>Button</code>, never <code>ButtonAtom</code>.</p>
+<p class="text-sm text-muted-foreground mb-5">Every component is classified with exactly one type, expressed in three places that <code>verify</code> keeps in sync: the skill's <code>type:</code> frontmatter (source of truth), the sidebar badge, and the badge on the component's doc page. Classification never leaks into component names - <code>Button</code>, never <code>ButtonAtom</code>.</p>
 
 <div style="display:grid;gap:0.5rem;margin-bottom:2.5rem;">
   <div class="flex items-center gap-2">
     <span class="type-badge" data-type="ATM" title="Atom">ATM</span>
-    <span class="text-sm text-muted-foreground"><strong>Atom</strong> — contains no descendant components (any DOM inside, but no other component).</span>
+    <span class="text-sm text-muted-foreground"><strong>Atom</strong> - contains no descendant components (any DOM inside, but no other component).</span>
   </div>
   <div class="flex items-center gap-2">
     <span class="type-badge" data-type="MOL" title="Molecule">MOL</span>
-    <span class="text-sm text-muted-foreground"><strong>Molecule</strong> — ≥1 direct child component, all atoms.</span>
+    <span class="text-sm text-muted-foreground"><strong>Molecule</strong> - ≥1 direct child component, all atoms.</span>
   </div>
   <div class="flex items-center gap-2">
     <span class="type-badge" data-type="ORG" title="Organism">ORG</span>
-    <span class="text-sm text-muted-foreground"><strong>Organism</strong> — direct children are atoms and/or molecules, with ≥1 molecule.</span>
+    <span class="text-sm text-muted-foreground"><strong>Organism</strong> - direct children are atoms and/or molecules, with ≥1 molecule.</span>
   </div>
   <div class="flex items-center gap-2">
     <span class="type-badge" data-type="BLK" title="Block">BLK</span>
-    <span class="text-sm text-muted-foreground"><strong>Block</strong> — a self-contained sectional slice of a template (header, hero, pricing, footer…); arbitrary nesting inside.</span>
+    <span class="text-sm text-muted-foreground"><strong>Block</strong> - a self-contained sectional slice of a template (header, hero, pricing, footer…); arbitrary nesting inside.</span>
   </div>
   <div class="flex items-center gap-2">
     <span class="type-badge" data-type="TPL" title="Template">TPL</span>
-    <span class="text-sm text-muted-foreground"><strong>Template</strong> — the whole page/UI composition of blocks and anything else.</span>
+    <span class="text-sm text-muted-foreground"><strong>Template</strong> - the whole page/UI composition of blocks and anything else.</span>
   </div>
 </div>
 
@@ -86,9 +86,9 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <H2>Example: Badge skill file</H2>
 
-<p class="text-sm text-muted-foreground mb-5">Here's the complete skill file for the Badge component — one of the simplest components in the system.</p>
+<p class="text-sm text-muted-foreground mb-5">Here's the complete skill file for the Badge component - one of the simplest components in the system.</p>
 
-<CodeCard title="dist/components/badge/component-skill.md" lang="markdown" mb="2.5rem">{"---\nname: Badge\ntype: ATM\nwhy: Pure-CSS "}<span>{" chip with emphasis variants —\n     nothing to wire up.\nwhen: Short status, version, or count labels next to\n      content — not for actions.\nwhere: dist/components/badge/badge.css\nsupportedStates: default\n---\n\n# Pattern: Badge\n\n## Native basis\n`<span>` element. No interactivity required —\npure visual indicator.\n\n---\n\n## Native Web APIs\n- [`<span>`](https://developer.mozilla.org/...)\n  — inline container for phrasing content\n\n---\n\n## Structure\n\n```html\n<span class=\"badge\" data-variant=\"default\">\n  Badge\n</span>\n```\n\n---\n\n## Variants\n\n| `data-variant` | Purpose                    |\n|----------------|----------------------------|\n| `default`      | Primary bg, high emphasis  |\n| `secondary`    | Secondary bg, medium       |\n| `outline`      | Border only, low emphasis  |\n\n```html\n<span class=\"badge\" data-variant=\"default\">\n  New\n</span>\n<span class=\"badge\" data-variant=\"secondary\">\n  Draft\n</span>\n<span class=\"badge\" data-variant=\"outline\">\n  v0.1.0\n</span>\n```\n\n---\n\n## Accessibility\n\n- Use descriptive text content — badges are\n  read inline by screen readers.\n- If the badge is purely decorative, add\n  `aria-hidden=\"true\"`."}</span></CodeCard>
+<CodeCard title="dist/components/badge/component-skill.md" lang="markdown" mb="2.5rem">{"---\nname: Badge\ntype: ATM\nwhy: Pure-CSS "}<span>{" chip with emphasis variants —\n     nothing to wire up.\nwhen: Short status, version, or count labels next to\n      content - not for actions.\nwhere: dist/components/badge/badge.css\nsupportedStates: default\n---\n\n# Pattern: Badge\n\n## Native basis\n`<span>` element. No interactivity required —\npure visual indicator.\n\n---\n\n## Native Web APIs\n- [`<span>`](https://developer.mozilla.org/...)\n  - inline container for phrasing content\n\n---\n\n## Structure\n\n```html\n<span class=\"badge\" data-variant=\"default\">\n  Badge\n</span>\n```\n\n---\n\n## Variants\n\n| `data-variant` | Purpose                    |\n|----------------|----------------------------|\n| `default`      | Primary bg, high emphasis  |\n| `secondary`    | Secondary bg, medium       |\n| `outline`      | Border only, low emphasis  |\n\n```html\n<span class=\"badge\" data-variant=\"default\">\n  New\n</span>\n<span class=\"badge\" data-variant=\"secondary\">\n  Draft\n</span>\n<span class=\"badge\" data-variant=\"outline\">\n  v0.1.0\n</span>\n```\n\n---\n\n## Accessibility\n\n- Use descriptive text content - badges are\n  read inline by screen readers.\n- If the badge is purely decorative, add\n  `aria-hidden=\"true\"`."}</span></CodeCard>
 
 <div class="sep" />
 
@@ -98,7 +98,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div style="display:grid;grid-template-columns:auto 1fr;gap:0.75rem 1.5rem;margin-bottom:1.5rem;align-items:baseline;">
   <span class="def-term">Start at SKILL.md</span>
-  <span class="text-sm text-muted-foreground">Give the agent <code>dist/SKILL.md</code> as its entry point: it explains integration and philosophy once, then points at the right component skill — the agent only reads the skills it actually needs.</span>
+  <span class="text-sm text-muted-foreground">Give the agent <code>dist/SKILL.md</code> as its entry point: it explains integration and philosophy once, then points at the right component skill - the agent only reads the skills it actually needs.</span>
   <span class="def-term">Copy &amp; paste</span>
   <span class="text-sm text-muted-foreground">Copy the skill file content into your AI chat alongside your request. The AI will use it as context to generate correct markup.</span>
   <span class="def-term">File reference</span>

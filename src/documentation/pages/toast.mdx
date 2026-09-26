@@ -1,6 +1,6 @@
 ---
 title: "Toast"
-description: "Toast component — ephemeral notifications using popover API."
+description: "Toast component - ephemeral notifications using popover API."
 slug: "toast"
 ---
 
@@ -48,13 +48,13 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 
   <SkillField label="Data attributes">
-<SkillText dense>• <code>data-position</code> — values: <code>bottom-right</code>, <code>bottom-left</code>, <code>top-right</code>, <code>top-left</code>, <code>top-center</code>, <code>bottom-center</code></SkillText>
+<SkillText dense>• <code>data-position</code> - values: <code>bottom-right</code>, <code>bottom-left</code>, <code>top-right</code>, <code>top-left</code>, <code>top-center</code>, <code>bottom-center</code></SkillText>
   <SkillText dense>• <code>data-toast-close</code></SkillText>
   <SkillText>• <code>data-toast-action</code></SkillText>
   </SkillField>
 
   <SkillField label="Wiring conventions">
-<SkillText dense>• <code>data-toast-close</code> on any element inside — closes the component</SkillText>
+<SkillText dense>• <code>data-toast-close</code> on any element inside - closes the component</SkillText>
   <SkillText>• <code>data-toast-action</code> identifies an interactive action element</SkillText>
   </SkillField>
 
@@ -62,10 +62,10 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <SkillText dense>• The toast container should be a direct child of <code>&lt;body&gt;</code></SkillText>
   <SkillText dense>• Toasts use <code>popover="manual"</code> so they don't auto-dismiss on outside click</SkillText>
   <SkillText dense>• The stacking order is newest on top (CSS <code>flex-direction: column-reverse</code> for bottom positions)</SkillText>
-  <SkillText dense>• Maximum visible toasts defaults to 3 — older toasts are dismissed</SkillText>
+  <SkillText dense>• Maximum visible toasts defaults to 3 - older toasts are dismissed</SkillText>
   <SkillText dense>• Swipe-to-dismiss can be added with touch event handling but is not required for MVP</SkillText>
   <SkillText dense>• For forms, show success/error toasts after submission rather than inline messages</SkillText>
-  <p class="text-muted-foreground m-0">• The <code>toast()</code> API is imperative — call it from any event handler</p>
+  <p class="text-muted-foreground m-0">• The <code>toast()</code> API is imperative - call it from any event handler</p>
   </SkillField>
 </SkillPanel>
 
@@ -88,7 +88,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <button class="btn" data-variant="outline" onclick="df$.shadcn.toast.show({ title: 'Changes saved', description: 'Your profile has been updated.', action: { label: 'Undo', onClick: () => df$.shadcn.toast.show('Undone!') } })"> Show Toast </button>
 ```
 
-```html example label="Size & Density" hint="size scales the width envelope (sm / md / lg, md matches the unsized default), density the padding and content gap (compact / comfortable / spacious) — pass either option to show() and it lands as the matching data-* attribute on the toast." height="20"
+```html example label="Size & Density" hint="size scales the width envelope (sm / md / lg, md matches the unsized default), density the padding and content gap (compact / comfortable / spacious) - pass either option to show() and it lands as the matching data-* attribute on the toast." height="20"
 <div class="flex flex-wrap gap-2">
   <button class="btn" data-variant="outline" onclick="df$.shadcn.toast.show({ title: 'Narrow toast', description: 'Width envelope sm.', size: 'sm' })">Size sm</button>
   <button class="btn" data-variant="outline" onclick="df$.shadcn.toast.show({ title: 'Wide toast', description: 'Width envelope lg.', size: 'lg' })">Size lg</button>
@@ -100,11 +100,11 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">The named-state API is bound to the region container (<code>#toast-container</code>):</p>
   <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
-    <li><code>default</code> — no visible toasts: <code>setState('default')</code> dismisses everything (the same path as <code>window.\df$.shadcn.toast.dismiss()</code>); <code>getState().config.count</code> reports the live number of visible toasts</li>
+    <li><code>default</code> - no visible toasts: <code>setState('default')</code> dismisses everything (the same path as <code>window.\df$.shadcn.toast.dismiss()</code>); <code>getState().config.count</code> reports the live number of visible toasts</li>
   </ul>
   <p class="text-sm text-muted-foreground">The region element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code>.</p>
 
-Machine contract — verified against <a href="../schemas/toast.schema.json"><code>toast.schema.json</code></a> by <code>bun run verify</code>:
+Machine contract - verified against <a href="../schemas/toast.schema.json"><code>toast.schema.json</code></a> by <code>bun run verify</code>:
 
 
 ```states

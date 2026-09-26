@@ -7,7 +7,7 @@ import { startServer } from './server.ts';
  * (flat list + grouped list with a disabled option and separator, mirroring
  * the doc page) over HTTP in a real browser, then verifies trigger toggling,
  * search filtering with empty state, keyboard navigation and selection,
- * group/separator/option hiding, and the per-popover named State API — the
+ * group/separator/option hiding, and the per-popover named State API - the
  * same files consumers copy from dist/, unmodified.
  */
 
@@ -90,7 +90,7 @@ try {
       input.setSelectionRange(2, 2);
       input.dispatchEvent(new Event('input', { bubbles: true })); // hides non-matches
       const hiddenKept = (opt as any).__cbSentinel === 1; // staying hidden kept the node
-      // caret must be exactly where we put it — flag writes never touch the input
+      // caret must be exactly where we put it - flag writes never touch the input
       const caret = [input.selectionStart, input.selectionEnd].join(',');
       input.value = '';
       input.dispatchEvent(new Event('input', { bubbles: true })); // re-shows everything
@@ -179,7 +179,7 @@ try {
   });
 
   await check('clear button: injected, visible with a selection, restores placeholder', async () => {
-    // the ✕ is NOT in consumer markup — combobox.js injects exactly one per wrapper
+    // the ✕ is NOT in consumer markup - combobox.js injects exactly one per wrapper
     const count = await page.$$eval('#cb-demo .combobox-clear', (els) => els.length);
     assert.equal(count, 1, 'exactly one injected clear button');
     // Astro is selected from the previous check → clear shows, chevron yields
@@ -201,7 +201,7 @@ try {
     assert.equal(cleared.selected, 0, 'no option remains selected');
     assert.equal(cleared.clear, 'none', 'clear hides again without a selection');
     assert.notEqual(cleared.chevron, 'none', 'chevron returns');
-    // reselect Astro — later state-API checks assert getState().config.value === 'Astro'
+    // reselect Astro - later state-API checks assert getState().config.value === 'Astro'
     await page.click('#cb-demo .combobox-trigger');
     await page.waitForFunction(() => document.querySelector('#cb-framework-popover')!.matches(':popover-open'));
     await page.click('#cb-opt-astro');
@@ -216,7 +216,7 @@ try {
       'EET (Bucharest)',
     ]);
     // clicking the disabled option must not select or close (pointer-events:
-    // none in CSS + JS aria-disabled guard — force to bypass actionability)
+    // none in CSS + JS aria-disabled guard - force to bypass actionability)
     await page.click('#cb-tz-eet', { force: true });
     assert.equal(await isOpen(page, 'cb-tz-popover'), true, 'disabled click keeps it open');
     assert.equal(await triggerText(page, 'cb-grouped'), 'Select timezone...', 'disabled option not selected');
@@ -270,8 +270,8 @@ try {
   await check('regression: filtered-out options are display:none and non-clickable', async () => {
     // bug: `.combobox-item { display: flex }` (author origin) beat the UA's
     // [hidden] { display: none }, so all options stayed rendered while JS
-    // treated them as hidden — clicking a still-visible non-match was dropped.
-    // (previous check leaves the popover open — close deterministically first)
+    // treated them as hidden - clicking a still-visible non-match was dropped.
+    // (previous check leaves the popover open - close deterministically first)
     await setState(page, 'cb-framework-popover', 'default');
     await page.click('#cb-demo .combobox-trigger');
     await page.waitForFunction(() => document.querySelector('#cb-framework-popover')!.matches(':popover-open'));

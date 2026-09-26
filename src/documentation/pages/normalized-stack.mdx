@@ -1,0 +1,221 @@
+---
+title: "Normalized Stack - Presentation"
+description: "Engineering Blueprint design language presenting a decade of electricity generation mix as a 12-slide deck - 100% columns that flow into areas, collapse into fossil vs low-carbon and close as a 2025 donut, one morphing chart."
+slug: "normalized-stack"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="normalized-stack" title="Normalized Stack" component="presentation">
+  Engineering Blueprint: drafting blue, white linework and one teal for wind - how a grid’s generation mix changed from 2015 to 2025, told with a normalized stack that flows, merges and folds on one chart.
+</PageHeader>
+
+```html example label="Engineering Blueprint" schema="none" height="26" hint="Slides shrink in and fade out (df$.anim zoomIn with scale 1.08, declared on the deck); teal curtains mark the data section. One deck-level chart (df$.shadcn.chart.deck): the 100% columns flow into stacked areas, merge into fossil vs low-carbon, then fold into the 2025 donut. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-stack" data-anim-in="zoomIn" data-anim-in-scale="1.08" data-anim-out="fadeOut" style="--presentation-ink:#073553;--presentation-ink-foreground:#E9F7FF;--presentation-paper:#E9F7FF;--presentation-paper-foreground:#0A4A78;--presentation-accent:#7BE0D3;font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;" tabindex="-1" aria-label="A decade of the grid - electricity mix 2015 to 2025">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="Electricity generation mix from 2015 to 2025 as 100 percent columns, stacked areas, fossil versus low-carbon, and a 2025 donut: wind grew from 13 to 33 percent, coal fell from 42 to 16"></div>
+  <section class="slide" data-slide data-theme="ink" aria-label="Cover">
+    <svg aria-hidden="true" width="1600" height="900" viewBox="0 0 1600 900" style="position:absolute; inset:0; opacity:0.18;">
+      <defs><pattern id="ns-grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#E9F7FF" stroke-width="1" /></pattern></defs>
+      <rect width="1600" height="900" fill="url(#ns-grid)" />
+      <circle cx="1270" cy="330" r="190" fill="none" stroke="#7BE0D3" stroke-width="3" stroke-dasharray="14 10" />
+      <path d="M1270 100V560M1040 330H1500" stroke="#7BE0D3" stroke-width="2" />
+    </svg>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Normalized stack · Engineering Blueprint</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-weight:600; letter-spacing:-0.01em; font-size:6.25rem; max-width:1000px;">A decade of the grid</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">Same demand, different machines: how every 100 kWh was made, 2015 to 2025.</p>
+    <p class="presentation-note">The drafting grid sets the tone - this is an engineering review.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="mix" style="justify-content:flex-start;" aria-label="Mix by year">
+    <header class="presentation-header"><span>GEN-MIX-01</span><span>% of generation</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:600; letter-spacing:-0.01em;">Wind overtook coal in 2023</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Each column is 100%: composition, not totals.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="flow" style="justify-content:flex-start;" aria-label="Mix as flow">
+    <header class="presentation-header"><span>GEN-MIX-02</span><span>stacked area</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:600; letter-spacing:-0.01em;">The same decade as a flow</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Columns melt into areas - the trend reads as a current.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="split" style="justify-content:flex-start;" aria-label="Fossil vs low-carbon">
+    <header class="presentation-header"><span>GEN-MIX-03</span><span>two groups</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:600; letter-spacing:-0.01em;">Low-carbon went from 48% to 70%</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Six sources merge into two groups.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Key figures">
+    <p class="presentation-eyebrow" data-df-entrance="fade">Three numbers for the review board</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#7BE0D3; font-weight:600; letter-spacing:-0.01em;"><span data-count="70">70</span>%</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">low-carbon generation in 2025</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-weight:600; letter-spacing:-0.01em;"><span data-count="33">33</span>%</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">from wind - now the largest source</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-weight:600; letter-spacing:-0.01em;"><span data-count="42">42</span>→16%</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">coal’s share, 2015 to 2025</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">Nuclear left the mix in 2024; wind, solar and hydro more than covered the gap.</p>
+    <p class="presentation-note">Say the nuclear line out loud - someone will ask.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="The wires">
+    <header class="presentation-header"><span>GRID</span><span>transmission</span></header>
+    <div style="display:flex; gap:4.5rem; align-items:center; margin-top:3.5rem;">
+      <div style="flex:1 1 0; min-width:0;">
+        <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; font-weight:600; letter-spacing:-0.01em;">The bottleneck moved from plants to wires</h2>
+        <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:300ms; font-size:1.7rem;">Wind is built where it blows, not where people live. 1,900 km of new lines carried the shift.</p>
+      </div>
+      <figure class="image" data-ratio="4/3" data-df-entrance="zoom" style="--df-motion-delay:150ms; flex:0 0 700px; margin:0;">
+        <img src="https://picsum.photos/id/69/960/720" alt="Railway tracks running through a forest under overhead power lines" loading="lazy" width="960" height="720" style="width:100%; height:100%; object-fit:cover;" />
+        <figcaption class="image-caption" style="font-size:1.25rem;">Lines through the forest (stock photo).</figcaption>
+      </figure>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Transmission is the unsung half of the chart.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="south" data-anim-in-blocks="6" data-anim-in-color="#7BE0D3" aria-label="Mix table">
+    <header class="presentation-header"><span>GEN-MIX-TABLE</span><span>% of generation</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" style="font-size:1.7rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">Generation mix of a fictional grid, % of annual generation (synthetic).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">Source</th><th class="table-head" style="text-align:right">2015</th><th class="table-head" style="text-align:right">2019</th><th class="table-head" style="text-align:right">2023</th><th class="table-head" style="text-align:right">2025</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row"><td class="table-cell">Coal</td><td class="table-cell" style="text-align:right">42</td><td class="table-cell" style="text-align:right">30</td><td class="table-cell" style="text-align:right">21</td><td class="table-cell" style="text-align:right">16</td></tr>
+          <tr class="table-row"><td class="table-cell">Gas</td><td class="table-cell" style="text-align:right">10</td><td class="table-cell" style="text-align:right">15</td><td class="table-cell" style="text-align:right">15</td><td class="table-cell" style="text-align:right">14</td></tr>
+          <tr class="table-row"><td class="table-cell">Nuclear</td><td class="table-cell" style="text-align:right">14</td><td class="table-cell" style="text-align:right">12</td><td class="table-cell" style="text-align:right">2</td><td class="table-cell" style="text-align:right">0</td></tr>
+          <tr class="table-row" style="font-weight:700"><td class="table-cell">Wind</td><td class="table-cell" style="text-align:right">13</td><td class="table-cell" style="text-align:right">21</td><td class="table-cell" style="text-align:right">30</td><td class="table-cell" style="text-align:right">33</td></tr>
+          <tr class="table-row"><td class="table-cell">Solar</td><td class="table-cell" style="text-align:right">6</td><td class="table-cell" style="text-align:right">8</td><td class="table-cell" style="text-align:right">13</td><td class="table-cell" style="text-align:right">17</td></tr>
+          <tr class="table-row"><td class="table-cell">Hydro & bio</td><td class="table-cell" style="text-align:right">15</td><td class="table-cell" style="text-align:right">14</td><td class="table-cell" style="text-align:right">19</td><td class="table-cell" style="text-align:right">20</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Every column sums to 100.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-weight:600; letter-spacing:-0.01em;">“Balancing used to mean ramping coal. Today it means forecasting weather - and trading with our neighbours.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#073553; color:#7BE0D3;"><span class="avatar-fallback">IS</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Ines Sørensen<br /><span style="opacity:0.7; font-size:1.4rem;">Grid control room lead - 17 winters on shift</span></p>
+    </div>
+    <p class="presentation-note">The operator’s view makes the chart physical.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="y2025" style="justify-content:flex-start;" aria-label="2025 mix">
+    <header class="presentation-header"><span>GEN-MIX-2025</span><span>2025 · 100%</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:600; letter-spacing:-0.01em;">2025: a third wind, a sixth coal</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The last column folds into a donut.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Review questions">
+    <header class="presentation-header"><span>REVIEW</span><span>Open items</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; font-weight:600; letter-spacing:-0.01em;">Questions from the review board</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="ns-qa" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>What happens on windless weeks?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Gas and imports cover it: gas share stayed near 14% as the backup, not the baseload.</p></div>
+      </details>
+      <details class="accordion-item" name="ns-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Did total demand change?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Barely - 1.2% higher in 2025 than 2015; the stack is about composition.</p></div>
+      </details>
+      <details class="accordion-item" name="ns-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Where does storage show up?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">It does not generate - it shifts. 2.1 GW of batteries move solar into the evening peak.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Storage is the question to prepare for.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Takeaways">
+    <header class="presentation-header"><span>Takeaways</span><span>Actions</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">→</span><span>Keep building wind - it is now the backbone.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">→</span><span>Gas is the balancer; plan its hours, not its share.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">→</span><span>Transmission and storage decide the next 10 points.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">→</span><span>Coal at 16% is the next exit to schedule.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Four actions, one slide.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-anim-in="blocksIn" data-anim-in-direction="north" data-anim-in-blocks="6" data-anim-in-color="#7BE0D3" aria-label="Closing">
+    <svg aria-hidden="true" width="1600" height="900" viewBox="0 0 1600 900" style="position:absolute; inset:0; opacity:0.18;">
+      <defs><pattern id="ns-grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#E9F7FF" stroke-width="1" /></pattern></defs>
+      <rect width="1600" height="900" fill="url(#ns-grid)" />
+      <circle cx="1270" cy="330" r="190" fill="none" stroke="#7BE0D3" stroke-width="3" stroke-dasharray="14 10" />
+      <path d="M1270 100V560M1040 330H1500" stroke="#7BE0D3" stroke-width="2" />
+    </svg>
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-weight:600; letter-spacing:-0.01em;">Same 100%, new machines</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">A fictional grid, synthetic shares - the normalized stack shows the shift without the noise of totals.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">Close on the chart idea.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) - build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-stack');
+    const TEXT = '#E9F7FF', MUTED = '#8FB6D0', LINE = 'rgba(233,247,255,.14)';
+    const years = ['2015', '2017', '2019', '2021', '2023', '2025'];
+    const sources = [
+      ['Coal', '#6F8393', [42, 37, 30, 28, 21, 16]],
+      ['Gas', '#A9C1D3', [10, 13, 15, 14, 15, 14]],
+      ['Nuclear', '#E9F7FF', [14, 12, 12, 11, 2, 0]],
+      ['Wind', '#7BE0D3', [13, 17, 21, 22, 30, 33]],
+      ['Solar', '#FFD166', [6, 7, 8, 10, 13, 17]],
+      ['Hydro & bio', '#4FA3E0', [15, 14, 14, 15, 19, 20]],
+    ];
+    const G = { left: 150, right: 170, top: 370, bottom: 150 };
+    const legend = { top: 300, left: 150, textStyle: { color: TEXT }, itemGap: 28 };
+    const xCat = { type: 'category', data: years, axisLabel: { color: TEXT, fontWeight: 700 }, axisLine: { lineStyle: { color: MUTED } } };
+    const yPct = { type: 'value', max: 100, interval: 25, axisLabel: { color: MUTED, formatter: '{value}%' }, splitLine: { lineStyle: { color: LINE } } };
+    const fossil = years.map((_, i) => sources[0][2][i] + sources[1][2][i]);
+
+    df$.shadcn.chart.deck(deck, {
+      base: { tooltip: { trigger: 'axis' } },
+      states: {
+        mix: { legend, grid: G, xAxis: xCat, yAxis: yPct,
+          series: sources.map(([n, c, v], i) => ({ id: n, name: n, type: 'bar', stack: 'mix', barWidth: '54%', data: v, itemStyle: { color: c, borderRadius: i === sources.length - 1 ? [6, 6, 0, 0] : 0 } })) },
+        flow: { legend, grid: G, xAxis: { ...xCat, boundaryGap: false }, yAxis: yPct,
+          series: sources.map(([n, c, v]) => ({ id: n, name: n, type: 'line', stack: 'mix', smooth: 0.3, showSymbol: false, data: v, lineStyle: { width: 0 }, areaStyle: { color: c, opacity: 0.95 }, itemStyle: { color: c } })) },
+        split: { legend, grid: G, xAxis: xCat, yAxis: yPct,
+          series: [
+            { id: 'Coal', name: 'Fossil', type: 'bar', stack: 'g', barWidth: '54%', data: fossil, itemStyle: { color: '#6F8393', borderRadius: 0 }, label: { show: true, position: 'inside', formatter: '{c}%', color: TEXT, fontWeight: 700 } },
+            { id: 'Wind', name: 'Low-carbon', type: 'bar', stack: 'g', data: fossil.map((f) => 100 - f), itemStyle: { color: '#7BE0D3', borderRadius: [6, 6, 0, 0] }, label: { show: true, position: 'inside', formatter: '{c}%', color: '#073553', fontWeight: 700 } },
+          ] },
+        y2025: {
+          series: [{ id: 'Wind', type: 'pie', radius: ['30%', '52%'], center: ['50%', '64%'],
+            data: sources.filter((s) => s[2][5] > 0).map(([n, c, v]) => ({ name: n, value: v[5], itemStyle: { color: c } })),
+            itemStyle: { borderColor: '#073553', borderWidth: 4 },
+            label: { formatter: '{b}  {c}%', color: TEXT, fontWeight: 700 }, labelLine: { lineStyle: { color: MUTED }, length: 22, length2: 30 } }],
+        },
+      },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 07-normalized-stack (Engineering Blueprint) - a fictional grid, synthetic shares.</p>
+<SourceFiles component="presentation" />
+</DocPage>

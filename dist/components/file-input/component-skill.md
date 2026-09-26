@@ -15,8 +15,8 @@ supportedStates: default
 ---
 
 ## Native Web APIs
-- [`<input type="file">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file) — native file picker with drag-and-drop support
-- [`::file-selector-button`](https://developer.mozilla.org/en-US/docs/Web/CSS/::file-selector-button) — styles the native Choose File button
+- [`<input type="file">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file) - native file picker with drag-and-drop support
+- [`::file-selector-button`](https://developer.mozilla.org/en-US/docs/Web/CSS/::file-selector-button) - styles the native Choose File button
 
 ---
 
@@ -56,4 +56,4 @@ Same ladder as `.input` (md = 2.25rem); the file-selector button fills the box.
 
 - Reuses the `.input` styling pattern for consistency.
 - The `::file-selector-button` is styled as a muted button with hover effect.
-- The existing `.input[type="file"]` already covers this — the file-input component provides a standalone class.
+- The existing `.input[type="file"]` already covers this - the file-input component provides a standalone class.

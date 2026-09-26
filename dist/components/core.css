@@ -1,6 +1,6 @@
 /* ── theme/utils/default-semantic-tokens.css ── */
 /**
- * defuss-shadcn — Token Layer
+ * defuss-shadcn - Token Layer
  * Semantic CSS custom properties matching the tweakcn.com export format.
  * OKLCH color space. Full surface/foreground pair model.
  *
@@ -46,7 +46,7 @@
   --sidebar-foreground:      oklch(0.1450 0 0);
   --sidebar-primary:         oklch(0.2050 0 0);
   --sidebar-primary-foreground: oklch(0.9850 0 0);
-  /* 0.97 was within 1.1 contrast of --sidebar — the active nav pill read as
+  /* 0.97 was within 1.1 contrast of --sidebar - the active nav pill read as
      "no background at all"; 0.94 keeps 12+ text contrast and separates */
   --sidebar-accent:          oklch(0.9400 0 0);
   --sidebar-accent-foreground: oklch(0.2050 0 0);
@@ -68,7 +68,7 @@
 
   /* -- Radius --------------------------------------------------- */
   --radius:                  0.625rem;
-  /* Derived — matches tweakcn/shadcn scale */
+  /* Derived - matches tweakcn/shadcn scale */
   --radius-sm:               calc(var(--radius) - 4px);
   --radius-md:               calc(var(--radius) - 2px);
   --radius-lg:               var(--radius);
@@ -140,7 +140,7 @@
 }
 
 /* ── theme/utils/sizing.css ── */
-/* defuss-shadcn — optional sizing utilities.
+/* defuss-shadcn - optional sizing utilities.
  * Standalone native CSS. No Tailwind, scan, runtime or consumer build.
  * Numeric dimensions = n × --size-base. Spacing additionally uses density.
  * Theme export remains untouched. Place this sheet before component CSS.
@@ -1220,7 +1220,7 @@
 }
 
 /* ── theme/utils/layout.css ── */
-/* defuss-shadcn — optional native layout utilities.
+/* defuss-shadcn - optional native layout utilities.
  * .flex / .grid only select a formatting context: no default gap or tracks.
  * .stack / .center / .container / .query and .grid-cols-auto are extensions.
  * Params are instance-owned: nested primitives do not inherit outer configs.
@@ -1371,7 +1371,7 @@
   :where(.auto-rows-auto) { grid-auto-rows: auto; }
   :where(.auto-cols-auto) { grid-auto-columns: auto; }
 
-  /* Box clipping/scrolling and text-flow control — orthogonal to gap/track
+  /* Box clipping/scrolling and text-flow control - orthogonal to gap/track
      selection; the generic pairing for constrained containers (a scrollable
      table on a capped width needs both overflow-x-auto and nowrap cells). */
   :where(.overflow-x-auto) { overflow-x: auto; }
@@ -1389,7 +1389,7 @@
   :where(.truncate) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   /* Overflowing WORDS: break-word/anywhere split on demand, break-all splits
      per character, break-normal restores. `wrap-anywhere` also shrinks
-     min-content — the flex min-w-0 companion that lets a long identifier wrap
+     min-content - the flex min-w-0 companion that lets a long identifier wrap
      inside a shrinkable track. */
   :where(.break-normal) { overflow-wrap: normal; word-break: normal; }
   :where(.break-words) { overflow-wrap: break-word; }
@@ -1401,10 +1401,10 @@
 }
 
 /* ── theme/utils/accessibility.css ── */
-/* defuss-shadcn — optional accessibility utilities.
+/* defuss-shadcn - optional accessibility utilities.
  * Text meant for assistive technology only (.sr-only) and its inverse
  * (.not-sr-only). The clip pattern keeps content in the AT tree while
- * removing it visually — display:none would hide it from screen readers too.
+ * removing it visually - display:none would hide it from screen readers too.
  * Focusable elements re-reveal via :focus / :focus-within so keyboard users
  * never lose the control entirely (the Tailwind idiom, kept intact).
  */

@@ -1,6 +1,6 @@
 ---
 title: "Sidebar"
-description: "Sidebar component — collapsible side navigation panel."
+description: "Sidebar component - collapsible side navigation panel."
 slug: "sidebar"
 ---
 
@@ -49,7 +49,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 
   <SkillField label="Notes">
-<p class="text-muted-foreground m-0">• While the mobile sheet is modal, <code>html:has(.sidebar-mobile:modal)</code> sets <code>overflow: hidden</code> + <code>scrollbar-gutter: stable</code> — the page behind cannot scroll and its position is preserved for when the sheet closes (no JS scroll-lock).<br/>• <strong>Auto-collapse</strong>: when the sidebar's row (its container) drops below 24rem the component docks itself to the icon rail and restores above 28rem (hysteresis — no flicker). Trigger clicks, <code>Cmd/Ctrl+B</code> and <code>api.setState()</code> count as deliberate choices and pin the sidebar against the heuristic.</p>
+<p class="text-muted-foreground m-0">• While the mobile sheet is modal, <code>html:has(.sidebar-mobile:modal)</code> sets <code>overflow: hidden</code> + <code>scrollbar-gutter: stable</code> - the page behind cannot scroll and its position is preserved for when the sheet closes (no JS scroll-lock).<br/>• <strong>Auto-collapse</strong>: when the sidebar's row (its container) drops below 24rem the component docks itself to the icon rail and restores above 28rem (hysteresis - no flicker). Trigger clicks, <code>Cmd/Ctrl+B</code> and <code>api.setState()</code> count as deliberate choices and pin the sidebar against the heuristic.</p>
   </SkillField>
 </SkillPanel>
 
@@ -132,15 +132,15 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </div>
 ```
 
-```html example label="Right Side" hint="Add data-side='right' to dock the sidebar to the right edge — the border flips to its left side automatically." height="24" mode="desktop"
-<div style="display:flex;width:100%;height:100%;border-radius:var(--radius-lg);overflow:hidden;">
-  <div style="flex:1;padding:1rem;display:flex;align-items:flex-start;gap:0.5rem;background:var(--background);">
+```html example label="Right Side" hint="Add data-side='right' to dock the sidebar to the right edge - the border flips to its left side automatically. The panel rounds only its exposed left corners and stays square (docked) on the right; the trigger sits on the right, next to the panel." height="24" mode="desktop"
+<div style="display:flex;width:100%;height:100%;border-radius:var(--radius-lg) 0 0 var(--radius-lg);overflow:hidden;">
+  <div style="flex:1;padding:1rem;display:flex;align-items:flex-start;justify-content:space-between;gap:0.5rem;background:var(--background);">
+    <span class="text-muted-foreground" style="font-size:0.875rem;padding-top:0.375rem;">Main content area</span>
     <button class="sidebar-trigger" data-sidebar-trigger="demo-sidebar-right" aria-label="Toggle sidebar">
       <i data-lucide="panel-right"></i>
     </button>
-    <span class="text-muted-foreground" style="font-size:0.875rem;padding-top:0.375rem;">Main content area</span>
   </div>
-  <aside class="app-sidebar" id="demo-sidebar-right" data-side="right" data-state="expanded" style="position:relative;height:100%;">
+  <aside class="app-sidebar" id="demo-sidebar-right" data-side="right" data-state="expanded" style="position:relative;height:100%;border-radius:var(--radius-lg) 0 0 var(--radius-lg);">
     <div class="sidebar-header">
       <a class="sidebar-logo" href="#">
         <i data-lucide="command" style="width:1rem;height:1rem;"></i>
@@ -170,7 +170,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </div>
 ```
 
-```html example label="Mobile sheet" hint="Below 768px the rail hides; the documented data-sidebar-mobile button opens the <dialog class='sidebar-mobile'> sheet. Booted in Phone mode — click Menu, close with the X or Escape." mode="phone" height="54"
+```html example label="Mobile sheet" hint="Below 768px the rail hides; the documented data-sidebar-mobile button opens the <dialog class='sidebar-mobile'> sheet. Booted in Phone mode - click Menu, close with the X or Escape." mode="phone" height="54"
 <div style="min-height:100%;">
   <button class="btn" type="button" data-sidebar-mobile="demo-mobile-sheet" style="margin:1rem;">
     <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
@@ -196,7 +196,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 ```html example label="Density" hint="Set data-density on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25), typography and fixed dimensions stay identical. comfortable matches the unsized default." height="24" mode="desktop"
 <!-- columns are STACKED (full-width rows): the component auto-collapses a rail
-     whose row drops below 384px — three side-by-side flex-1 columns inside a
+     whose row drops below 384px - three side-by-side flex-1 columns inside a
      592px card would each sit under that threshold and dock to the icon rail,
      hiding the entry text (the "text not visible" regression). -->
 <div class="stack gap-4">
@@ -218,17 +218,17 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
   <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
-    <li><code>default</code> — expanded (the authored width; <code>setState('default')</code> restores it)</li>
-    <li><code>collapsed</code> — icon-rail width via the documented <code>data-state="collapsed"</code> attribute</li>
+    <li><code>default</code> - expanded (the authored width; <code>setState('default')</code> restores it)</li>
+    <li><code>collapsed</code> - icon-rail width via the documented <code>data-state="collapsed"</code> attribute</li>
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/sidebar-\{state\}.png</code>.</p>
 
-Machine contract — verified against <a href="../schemas/sidebar.schema.json"><code>sidebar.schema.json</code></a> by <code>bun run verify</code>:
+Machine contract - verified against <a href="../schemas/sidebar.schema.json"><code>sidebar.schema.json</code></a> by <code>bun run verify</code>:
 
 ```states
 | State | Type | Values | Default | Description |
 | --- | --- | --- | --- | --- |
-| `collapsed` | `boolean` | `true`, `false` | `false` | Rail mode — icon-only width carried by `data-state="collapsed"`. |
+| `collapsed` | `boolean` | `true`, `false` | `false` | Rail mode - icon-only width carried by `data-state="collapsed"`. |
 ```
 
 </StatesSection>

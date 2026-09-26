@@ -15,12 +15,12 @@ supportedStates: default
 ---
 
 ## Native Web APIs
-- [`role="group"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/group_role) — groups related buttons
-- [`aria-label`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-label) — accessible name for the group
-- [`role="separator"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/separator_role) — visually divides buttons within a group
-- [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has) — restores border-radius on buttons adjacent to separators
-- [Logical properties](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_logical_properties_and_values) — `margin-inline-start`, `border-start-start-radius` for RTL support
-- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) — maps separator to system `ButtonText` color
+- [`role="group"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/group_role) - groups related buttons
+- [`aria-label`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-label) - accessible name for the group
+- [`role="separator"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/separator_role) - visually divides buttons within a group
+- [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has) - restores border-radius on buttons adjacent to separators
+- [Logical properties](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_logical_properties_and_values) - `margin-inline-start`, `border-start-start-radius` for RTL support
+- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) - maps separator to system `ButtonText` color
 
 ---
 
@@ -58,9 +58,9 @@ supportedStates: default
 
 ## Notes
 
-- Button groups work best with the `outline` variant — the connected borders create a cohesive unit.
+- Button groups work best with the `outline` variant - the connected borders create a cohesive unit.
 - Adjacent button borders collapse so only one border renders between buttons.
 - The group removes internal border-radii to create seamless joins.
 - Use `<hr role="separator">` in Split buttons to divide the primary action from its dropdown trigger.
 - Uses CSS logical properties (`margin-inline-start`, `border-start-*-radius`) for automatic RTL support.
-- No JavaScript required — this is purely a CSS layout component.
+- No JavaScript required - this is purely a CSS layout component.

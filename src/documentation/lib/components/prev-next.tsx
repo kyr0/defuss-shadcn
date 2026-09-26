@@ -2,7 +2,7 @@ import type { Props } from 'defuss';
 import { ALL_PAGES } from '../nav';
 
 /** Prev/next pager, statically rendered at the end of <main> (replaces the
- * old runtime buildPrevNext injection — same markup, same order). */
+ * old runtime buildPrevNext injection - same markup, same order). */
 export function PrevNext({ active }: Props & { active: string }) {
   const idx = ALL_PAGES.findIndex((p) => p.href === active);
   if (idx === -1) return null;

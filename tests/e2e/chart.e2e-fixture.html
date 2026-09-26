@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>Chart E2E Fixture - defuss-shadcn</title>
+  <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css">
+  <link rel="stylesheet" href="/dist/components/chart/chart.css">
+</head>
+<body>
+  <main style="max-width:48rem;margin-inline:auto;padding:2rem;display:flex;flex-direction:column;gap:3rem;">
+
+    <!-- Declarative mount, default size -->
+    <section aria-labelledby="declarative-h">
+      <h2 id="declarative-h">Declarative</h2>
+      <div class="chart" id="declarative" role="img" aria-label="Bar chart of quarterly revenue"
+           data-chart='{"xAxis":{"type":"category","data":["Q1","Q2","Q3","Q4"]},"yAxis":{"type":"value"},"series":[{"id":"rev","type":"bar","universalTransition":true,"data":[12,19,15,24]}]}'></div>
+    </section>
+
+    <!-- Axis-less chart: the theme adapter must not grow phantom cartesian
+         axes on hierarchy/flow charts (treemap/sankey/chord/pie… lesson:
+         xAxis/yAxis defaults belong only on options that declare them) -->
+    <section aria-labelledby="axisless-h">
+      <h2 id="axisless-h">Axis-less</h2>
+      <div class="chart" id="axisless" role="img" aria-label="Pie chart of market share"
+           data-chart='{"series":[{"id":"share","type":"pie","radius":["30%","60%"],"data":[{"name":"A","value":40},{"name":"B","value":32},{"name":"C","value":28}]}]}'></div>
+    </section>
+
+    <!-- Every data-size (fixture ↔ CSS parity) -->
+    <section aria-labelledby="sizes-h">
+      <h2 id="sizes-h">Sizes</h2>
+      <div class="chart" data-size="sm" id="size-sm" role="img" aria-label="Small line chart"
+           data-chart='{"xAxis":{"type":"category","data":["A","B","C"]},"yAxis":{"type":"value"},"series":[{"id":"s","type":"line","data":[3,7,5]}]}'></div>
+      <div class="chart" id="size-default" role="img" aria-label="Default line chart"
+           data-chart='{"xAxis":{"type":"category","data":["A","B","C"]},"yAxis":{"type":"value"},"series":[{"id":"s","type":"line","data":[3,7,5]}]}'></div>
+      <div class="chart" data-size="lg" id="size-lg" role="img" aria-label="Large line chart"
+           data-chart='{"xAxis":{"type":"category","data":["A","B","C"]},"yAxis":{"type":"value"},"series":[{"id":"s","type":"line","data":[3,7,5]}]}'></div>
+    </section>
+
+    <!-- Editorial frame -->
+    <section aria-labelledby="frame-h">
+      <h2 id="frame-h">Frame</h2>
+      <figure class="chart-frame">
+        <h3 class="chart-title">Revenue by quarter</h3>
+        <p class="chart-dek">Quarterly revenue, bar chart.</p>
+        <div class="chart" id="framed" role="img" aria-label="Framed bar chart"
+             data-chart='{"xAxis":{"type":"category","data":["Q1","Q2"]},"yAxis":{"type":"value"},"series":[{"id":"rev","type":"bar","data":[12,19]}]}'></div>
+        <figcaption class="chart-source">Source: annual report 2026</figcaption>
+      </figure>
+    </section>
+
+    <!-- Bare mounts: imperative API + story drive these -->
+    <section aria-labelledby="imperative-h">
+      <h2 id="imperative-h">Imperative</h2>
+      <div class="chart" id="imperative" role="img" aria-label="Imperatively mounted chart"></div>
+      <div class="chart" id="story" role="img" aria-label="Story-driven chart"></div>
+      <!-- token references in options: var(--x) resolves (and re-resolves on theme change) -->
+      <div class="chart" id="tokens" role="img" aria-label="Chart with token colours" style="width:400px; height:240px;"></div>
+    </section>
+
+    <!-- Deck stage: one chart for a whole presentation (chart.deck). Slides
+         are toggled by the test directly - the stage only reads data-active. -->
+    <section aria-labelledby="stage-h">
+      <h2 id="stage-h">Stage</h2>
+      <section id="stage-deck" style="position:relative; width:800px; height:450px;">
+        <div class="chart presentation-stage" role="img" aria-label="Deck stage" style="width:800px; height:450px;"></div>
+        <section data-slide data-chart-state="bars" data-active></section>
+        <section data-slide data-chart-state="pie"></section>
+        <section data-slide></section>
+      </section>
+    </section>
+
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+  <script type="module" src="/dist/components/core.js"></script>
+  <script type="module" src="/dist/components/chart/chart.js"></script>
+</body>
+</html>

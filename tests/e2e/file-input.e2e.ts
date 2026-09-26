@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: file-input is CSS-only — verify the 36px (md-step) control frame and that the
+ * Why: file-input is CSS-only - verify the 36px (md-step) control frame and that the
  * ::file-selector-button pseudo-element gets the muted fill + divider the
  * sheet defines, plus disabled dimming.
  */

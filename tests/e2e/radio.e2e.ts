@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: radio is CSS-only — appearance:none circle + a centered ::after dot.
+ * Why: radio is CSS-only - appearance:none circle + a centered ::after dot.
  * Verify the 16px round control, the checked dot + border recolor, group
  * orientation, the disabled dimming that also reaches the sibling label, and
  * the two-column block layout.

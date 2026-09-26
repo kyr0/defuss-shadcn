@@ -1,7 +1,7 @@
 ---
 name: Toast
 type: MOL
-why: Transient notification via the Popover API plus the df$.shadcn.toast factory — auto-dismisses.
+why: Transient notification via the Popover API plus the df$.shadcn.toast factory - auto-dismisses.
 when: Post-action feedback that must not interrupt the user.
 where: dist/components/toast/toast.css + dist/components/toast/toast.js
 supportedStates: default
@@ -17,15 +17,15 @@ region announcements. Follows `role="status"` with `aria-live="polite"`.
 ---
 
 ## Native Web APIs
-- [Popover API (`popover="manual"`)](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API) — top-layer rendering without light-dismiss for persistent notifications
-- [`aria-live` regions](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-live) — announces toast content changes to screen readers
+- [Popover API (`popover="manual"`)](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API) - top-layer rendering without light-dismiss for persistent notifications
+- [`aria-live` regions](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-live) - announces toast content changes to screen readers
 
 ---
 
 ## Structure
 
 ```html
-<!-- Toast container — place once in the page -->
+<!-- Toast container - place once in the page -->
 <div id="toast-container"
      class="toast-container"
      aria-label="Notifications"
@@ -78,12 +78,12 @@ region announcements. Follows `role="status"` with `aria-live="polite"`.
 
 ## Sizes
 
-Set `data-size` on the .toast element. Width envelope only — typography and padding are density’s job.
+Set `data-size` on the .toast element. Width envelope only - typography and padding are density’s job.
 
 | `data-size` | Effect |
 |-------------|--------|
 | `sm` | min-width 16rem, max-width 20rem |
-| `md` | min-width 20rem, max-width 26rem — identical to the unsized default |
+| `md` | min-width 20rem, max-width 26rem - identical to the unsized default |
 | `lg` | min-width 24rem, max-width 32rem |
 
 ## Density
@@ -93,7 +93,7 @@ Set `data-density` on the `.toast` element. A whitespace policy, not a zoom: onl
 | Value | Effect |
 | --- | --- |
 | `compact` | padding 0.75rem, content gap 0.5rem |
-| `comfortable` | padding 1rem, gap 0.75rem — identical to the unsized default |
+| `comfortable` | padding 1rem, gap 0.75rem - identical to the unsized default |
 | `spacious` | padding 1.25rem, gap 1rem |
 
 ## ARIA
@@ -149,7 +149,7 @@ Set `data-variant` on the `.toast` element.
 
 The api is bound to the **region container** (`#toast-container`). Its
 observable state is which toasts are visible. Declared states: `default`
-(dismisses every visible toast — the same path as `df$.shadcn.toast.dismiss()`).
+(dismisses every visible toast - the same path as `df$.shadcn.toast.dismiss()`).
 `getState().config.count` reports the live number of visible toasts.
 
 ```js
@@ -165,13 +165,13 @@ The registry global is `df$.shadcn.toastApi` / `df$.shadcn.toastStates`.
 - Toasts use `popover="manual"` so they don't auto-dismiss on outside click
 - Lifecycle runs through the core `df$` runtime (see the "DOM Querying &
   Morphing" guide): toasts mount via `df$(container).append(el)` and dismiss
-  via `df$(el).remove()` after the exit animation — exact operations that
+  via `df$(el).remove()` after the exit animation - exact operations that
   keep node identity and the container's delegated listeners intact
 - Because `popover="manual"` renders each toast in the top layer (outside the
   container's flex flow), CSS pins each toast to its container's corner and the
-  component JS sets a `--toast-stack` offset per toast — order stays newest-on-top
+  component JS sets a `--toast-stack` offset per toast - order stays newest-on-top
 - The stacking order is newest on top (CSS `flex-direction: column-reverse` for bottom positions)
-- Maximum visible toasts defaults to 3 — older toasts are dismissed
+- Maximum visible toasts defaults to 3 - older toasts are dismissed
 - Swipe-to-dismiss can be added with touch event handling but is not required for MVP
 - For forms, show success/error toasts after submission rather than inline messages
-- The `toast()` API is imperative — call it from any event handler
+- The `toast()` API is imperative - call it from any event handler

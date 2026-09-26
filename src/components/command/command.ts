@@ -5,9 +5,9 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-// defussQuery: the callable runtime — filtering flags + the move-highlight
+// defussQuery: the callable runtime - filtering flags + the move-highlight
 // marker ride query scalar writes; membership stays authored (flag-based
-// filtering, no renderer — §3 command row: keyed morph only once a data
+// filtering, no renderer - §3 command row: keyed morph only once a data
 // source drives the result set, which the docs palette may adopt later).
 import { defussGlobals, defussQuery } from '../../shared/state-api.js';
 
@@ -54,7 +54,7 @@ export const commandApi = {
 df$.commandApi = commandApi;
 df$.commandStates = commandStates;
 
-/* Cmd/Ctrl+K handler — added once at module level */
+/* Cmd/Ctrl+K handler - added once at module level */
 let commandKeydownAdded = false;
 if (!commandKeydownAdded) {
   commandKeydownAdded = true;
@@ -144,7 +144,7 @@ document.querySelectorAll('dialog.command:not([data-init])').forEach((dialog) =>
     });
     dialog.addEventListener('close', () => {
       // `close` fires AFTER the exit transition (display allow-discrete), so a
-      // fast re-open (setState/⌘K within 150ms) can beat the queued event — a
+      // fast re-open (setState/⌘K within 150ms) can beat the queued event - a
       // stale one must not downgrade an open palette to 'default'. (Skipping
       // the reset on re-open keeps the last query, like macOS Spotlight.)
       if (dialog.open) return;

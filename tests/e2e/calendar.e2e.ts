@@ -7,7 +7,7 @@ import { startServer } from './server.ts';
  * (month navigation + generated grid, mirroring the doc page) over HTTP in a
  * real browser, then verifies the rendered grid, month navigation, day
  * selection with its custom event, today/outside markers, keyboard cell
- * movement, and the named State API (view reset/preset) — the same files
+ * movement, and the named State API (view reset/preset) - the same files
  * consumers copy from dist/, unmodified.
  */
 

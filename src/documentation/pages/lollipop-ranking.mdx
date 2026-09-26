@@ -1,0 +1,222 @@
+---
+title: "Lollipop Ranking - Presentation"
+description: "Bauhaus Primary Poster design language presenting caffeine by brew method as a 10-slide deck - lollipops that re-rank per 100 ml, burst into a bubble scatter and settle into columns on one morphing chart."
+slug: "lollipop-ranking"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="lollipop-ranking" title="Lollipop Ranking" component="presentation">
+  Bauhaus Primary Poster: cream paper, black type and three primary shapes - how much caffeine is really in your cup, told with lollipops that re-rank, scatter and regroup on one continuous chart.
+</PageHeader>
+
+```html example label="Bauhaus Primary Poster" schema="none" height="26" hint="Slides travel in and out sideways through the df$.anim engine; primary-colored curtains mark the section breaks. One deck-level chart (df$.shadcn.chart.deck): the lollipop heads re-sort when the measure changes from per-serving to per-100-ml, fly into a serving-size scatter, then land as columns - the stems fade out and in around them. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-lollipop" data-anim-in="slideIn" data-anim-in-distance="220px" data-anim-out="slideOut" data-anim-out-distance="220px" style="--presentation-ink:#151515;--presentation-ink-foreground:#F3EADB;--presentation-paper:#F3EADB;--presentation-paper-foreground:#151515;--presentation-accent:#E33124;font-family:Arial, Helvetica, sans-serif;" tabindex="-1" aria-label="Caffeine by brew method - a Bauhaus deck">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="Caffeine by coffee brew method: per serving cold brew leads with 205 milligrams, per 100 milliliters espresso leads with 210, shown as lollipops, a scatter and office cup counts"></div>
+  <section class="slide" data-slide data-theme="paper" aria-label="Cover">
+    <svg aria-hidden="true" width="900" height="900" viewBox="0 0 900 900" style="position:absolute; right:-220px; top:-250px;"><circle cx="450" cy="450" r="330" fill="#E33124" /></svg>
+    <svg aria-hidden="true" width="520" height="520" viewBox="0 0 520 520" style="position:absolute; left:-150px; bottom:-180px; rotate:18deg;"><rect x="70" y="70" width="380" height="380" fill="#1B4CA1" /></svg>
+    <svg aria-hidden="true" width="260" height="230" viewBox="0 0 260 230" style="position:absolute; right:180px; bottom:90px;"><polygon points="130,0 260,230 0,230" fill="#F2B705" /></svg>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Lollipop ranking · Bauhaus Primary Poster</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-family:'Arial Black', Arial, sans-serif; text-transform:uppercase; letter-spacing:-0.03em; font-size:6.5rem; max-width:1000px;">Which cup hits hardest?</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">Seven brew methods, one question - and two honest answers, depending on how you measure.</p>
+    <p class="presentation-note">The shapes are the grammar: circle, square, triangle, one red decision.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="serving" style="justify-content:flex-start;" aria-label="Per serving">
+    <header class="presentation-header"><span>Per serving</span><span>mg caffeine per typical cup</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Arial Black', Arial, sans-serif; text-transform:uppercase; letter-spacing:-0.03em;">Per cup, cold brew wins: 205 mg</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Dots instead of bars: the baseline is not the point, the endpoints are.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="density" style="justify-content:flex-start;" aria-label="Per 100 ml">
+    <header class="presentation-header"><span>Per 100 ml</span><span>mg caffeine per 100 ml</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Arial Black', Arial, sans-serif; text-transform:uppercase; letter-spacing:-0.03em;">Per sip, espresso is 3.5× stronger</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Same seven dots - watch them re-rank when the measure changes.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="scatter" style="justify-content:flex-start;" aria-label="Size vs strength">
+    <header class="presentation-header"><span>Why they disagree</span><span>serving size × caffeine</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Arial Black', Arial, sans-serif; text-transform:uppercase; letter-spacing:-0.03em;">Big cups hide weak coffee</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The heads leave their stems: x is the cup size, y the caffeine per cup.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Key figures">
+    <p class="presentation-eyebrow" data-df-entrance="fade">Three numbers to remember</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#E33124; font-family:'Arial Black', Arial, sans-serif; text-transform:uppercase; letter-spacing:-0.03em;"><span data-count="210">210</span> mg</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">per 100 ml in an espresso</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#1B4CA1; font-family:'Arial Black', Arial, sans-serif; text-transform:uppercase; letter-spacing:-0.03em;"><span data-count="205">205</span> mg</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">in one large cold brew</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:'Arial Black', Arial, sans-serif; text-transform:uppercase; letter-spacing:-0.03em;"><span data-count="400">400</span> mg</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">a common daily guideline for adults</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">Two cold brews and you are at the line - two espressos and you are barely a third of the way.</p>
+    <p class="presentation-note">Guideline figure is the commonly cited adult reference; the cups are synthetic.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="The small cup">
+    <header class="presentation-header"><span>The small cup</span><span>30 ml · 63 mg</span></header>
+    <div style="display:flex; gap:4.5rem; align-items:center; margin-top:3.5rem;">
+      <div style="flex:1 1 0; min-width:0;">
+        <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; font-family:'Arial Black', Arial, sans-serif; text-transform:uppercase; letter-spacing:-0.03em;">Small cup, dense dose</h2>
+        <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:300ms; font-size:1.7rem;">A single espresso holds less caffeine than a mug of drip - but every millilitre of it is three and a half times stronger.</p>
+      </div>
+      <figure class="image" data-ratio="4/3" data-df-entrance="pop" style="--df-motion-delay:150ms; flex:0 0 700px; margin:0;">
+        <img src="https://picsum.photos/id/63/960/720" alt="A cup of coffee with milk on a bright red surface, seen from above" loading="lazy" width="960" height="720" style="width:100%; height:100%; object-fit:cover;" />
+        <figcaption class="image-caption" style="font-size:1.25rem;">One cup, red ground (stock photo).</figcaption>
+      </figure>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Red again - the photo is the poster.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="north" data-anim-in-blocks="3" data-anim-in-color="#1B4CA1" aria-label="The numbers">
+    <header class="presentation-header"><span>The data</span><span>Typical values</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" style="font-size:1.45rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">Caffeine by brew method - illustrative typical values (synthetic).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">Method</th><th class="table-head" style="text-align:right">Serving</th><th class="table-head" style="text-align:right">Caffeine</th><th class="table-head" style="text-align:right">Per 100 ml</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row"><td class="table-cell">Cold brew</td><td class="table-cell" style="text-align:right">350 ml</td><td class="table-cell" style="text-align:right">205 mg</td><td class="table-cell" style="text-align:right">59 mg</td></tr>
+          <tr class="table-row"><td class="table-cell">Drip</td><td class="table-cell" style="text-align:right">240 ml</td><td class="table-cell" style="text-align:right">145 mg</td><td class="table-cell" style="text-align:right">60 mg</td></tr>
+          <tr class="table-row"><td class="table-cell">Pour-over</td><td class="table-cell" style="text-align:right">240 ml</td><td class="table-cell" style="text-align:right">120 mg</td><td class="table-cell" style="text-align:right">50 mg</td></tr>
+          <tr class="table-row"><td class="table-cell">French press</td><td class="table-cell" style="text-align:right">240 ml</td><td class="table-cell" style="text-align:right">107 mg</td><td class="table-cell" style="text-align:right">45 mg</td></tr>
+          <tr class="table-row"><td class="table-cell">Moka pot</td><td class="table-cell" style="text-align:right">60 ml</td><td class="table-cell" style="text-align:right">105 mg</td><td class="table-cell" style="text-align:right">175 mg</td></tr>
+          <tr class="table-row"><td class="table-cell">Espresso</td><td class="table-cell" style="text-align:right">30 ml</td><td class="table-cell" style="text-align:right">63 mg</td><td class="table-cell" style="text-align:right">210 mg</td></tr>
+          <tr class="table-row"><td class="table-cell">Instant</td><td class="table-cell" style="text-align:right">240 ml</td><td class="table-cell" style="text-align:right">62 mg</td><td class="table-cell" style="text-align:right">26 mg</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Brew time, grind and bean change these a lot - the ranking is robust, the digits are not.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-family:'Arial Black', Arial, sans-serif; text-transform:uppercase; letter-spacing:-0.03em; font-size:2.9rem;">“Customers ask for a double espresso to wake up, then order a cold brew to relax. It is exactly backwards.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#F2B705; color:#151515;"><span class="avatar-fallback">JK</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Jonas Keller<br /><span style="opacity:0.7; font-size:1.4rem;">Head barista - 60,000 shots pulled</span></p>
+    </div>
+    <p class="presentation-note">A laugh here is fine; it makes the next chart land.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="cups" style="justify-content:flex-start;" aria-label="Office cups">
+    <header class="presentation-header"><span>In practice</span><span>Cups per day · 120-person office</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Arial Black', Arial, sans-serif; text-transform:uppercase; letter-spacing:-0.03em;">What the office actually drinks</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The dots regroup as columns: drip is the workhorse, espresso the ritual.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Questions at the counter">
+    <header class="presentation-header"><span>Q & A</span><span>Asked at the counter</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; font-family:'Arial Black', Arial, sans-serif; text-transform:uppercase; letter-spacing:-0.03em;">Questions at the counter</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="lp-qa" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Does a darker roast mean more caffeine?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">No - by weight, light roasts carry slightly more; dark roasts only taste stronger.</p></div>
+      </details>
+      <details class="accordion-item" name="lp-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Why is cold brew so strong per cup?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">A long steep at a high coffee-to-water ratio, then served in a big glass: the dose is the size.</p></div>
+      </details>
+      <details class="accordion-item" name="lp-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Is decaf caffeine-free?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Not quite - around 2–5 mg per cup, which is why it is not on the chart.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The roast question always comes - have the answer ready.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Takeaways">
+    <header class="presentation-header"><span>Takeaways</span><span>Before your next cup</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">●</span><span>Ask “per what?” before you trust a caffeine ranking.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">●</span><span>Cup size beats brew method: a large cold brew outdoses three espressos.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">●</span><span>Moka pots are the quiet heavyweight - espresso strength in double size.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">●</span><span>Instant is the gentlest cup on the list.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Four rules - the room will remember the cold brew one.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="east" data-anim-in-blocks="3" data-anim-in-color="#E33124" aria-label="Closing">
+    <svg aria-hidden="true" width="420" height="420" viewBox="0 0 420 420" style="position:absolute; right:120px; top:120px;"><circle cx="210" cy="210" r="200" fill="#E33124" /></svg>
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-family:'Arial Black', Arial, sans-serif; text-transform:uppercase; letter-spacing:-0.03em;">Measure the dose, not the drama</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">Seven cups, two rankings, one lollipop chart - synthetic data, real pattern.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">Close on the method question.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) - build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-lollipop');
+    const INK = '#151515', MUTED = '#8C8474', RED = '#E33124', BLUE = '#1B4CA1', YELLOW = '#F2B705';
+    const G = { left: 260, right: 160, top: 320, bottom: 140 };
+    // [method, serving ml, mg per serving, office cups per day]
+    const cups = [['Cold brew', 350, 205, 14], ['Drip', 240, 145, 48], ['Pour-over', 240, 120, 9], ['French press', 240, 107, 5], ['Moka pot', 60, 105, 6], ['Espresso', 30, 63, 36], ['Instant', 240, 62, 4]];
+    const per100 = (c) => Math.round((c[2] / c[1]) * 100);
+
+    // a lollipop = hairline stem (bar) + head (scatter); ids 'stem' + 'head' carry the morph
+    const lollipop = (rows, value, hot, color, suffix, max) => ({
+      grid: G,
+      xAxis: { type: 'value', max, axisLabel: { color: MUTED, formatter: '{value}' } },
+      yAxis: { type: 'category', inverse: true, data: rows.map((c) => c[0]), axisLine: { show: false }, axisLabel: { color: INK, fontWeight: 700 } },
+      series: [
+        { id: 'stem', type: 'bar', barWidth: 4, silent: true, data: rows.map((c) => ({ name: c[0], value: value(c) })), itemStyle: { color: INK, borderRadius: 0 } },
+        { id: 'head', type: 'scatter', symbolSize: 34, data: rows.map((c) => ({ name: c[0], value: value(c), itemStyle: { color: c[0] === hot ? color : INK } })),
+          label: { show: true, position: 'right', distance: 18, formatter: (p) => p.value + suffix, color: INK, fontWeight: 700 } },
+      ],
+    });
+    const bySize = cups.slice().sort((a, b) => b[2] - a[2]);
+    const byDensity = cups.slice().sort((a, b) => per100(b) - per100(a));
+
+    df$.shadcn.chart.deck(deck, {
+      base: { tooltip: { trigger: 'item' } },
+      states: {
+        serving: lollipop(bySize, (c) => c[2], 'Cold brew', RED, ' mg', 240),
+        density: lollipop(byDensity, per100, 'Espresso', BLUE, ' mg', 240),
+        scatter: {
+          grid: { left: 190, right: 160, top: 330, bottom: 150 },
+          xAxis: { type: 'value', min: 0, max: 400, name: 'serving size (ml)', nameLocation: 'middle', nameGap: 52, axisLabel: { color: MUTED } },
+          yAxis: { type: 'value', min: 0, max: 240, name: 'mg per serving', nameLocation: 'middle', nameGap: 84, axisLabel: { color: MUTED } },
+          series: [{ id: 'head', type: 'scatter',
+            data: cups.map((c) => ({ name: c[0], value: [c[1], c[2]], symbolSize: 18 + per100(c) * 0.16,
+              itemStyle: { color: c[0] === 'Espresso' ? BLUE : c[0] === 'Cold brew' ? RED : INK } })),
+            label: { show: true, formatter: '{b}', position: 'right', distance: 14, color: INK, fontWeight: 700 } }],
+        },
+        cups: {
+          grid: { left: 150, right: 120, top: 330, bottom: 150 },
+          xAxis: { type: 'category', data: cups.map((c) => c[0]), axisLabel: { interval: 0, color: INK, fontWeight: 700 } },
+          yAxis: { type: 'value', max: 60, interval: 20, axisLabel: { color: MUTED } },
+          series: [{ id: 'head', type: 'bar', barWidth: '46%',
+            data: cups.map((c) => ({ name: c[0], value: c[3], itemStyle: { color: c[0] === 'Drip' ? RED : c[0] === 'Espresso' ? BLUE : c[0] === 'Cold brew' ? YELLOW : INK, borderRadius: 0 } })),
+            label: { show: true, position: 'top', color: INK, fontWeight: 700 } }],
+        },
+      },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 02-lollipop-ranking (Bauhaus Primary Poster) - illustrative caffeine values, synthetic office data.</p>
+<SourceFiles component="presentation" />
+</DocPage>

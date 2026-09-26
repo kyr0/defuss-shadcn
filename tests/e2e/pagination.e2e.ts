@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: pagination is CSS-only — verify the centered flex bar, the 36px
+ * Why: pagination is CSS-only - verify the centered flex bar, the 36px
  * square controls, prev/next's wider padding, the active border + weight,
  * and aria-disabled inertness.
  */

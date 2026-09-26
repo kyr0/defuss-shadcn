@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: switch is CSS-only — appearance:none track + a translated ::after
+ * Why: switch is CSS-only - appearance:none track + a translated ::after
  * thumb is the entire control. Verify the 36x20 pill, the thumb geometry,
  * the checked fill/translate, sm sizing, disabled, and invalid colors.
  */
@@ -68,7 +68,7 @@ await cssSmoke('switch', [
       const xlThumb = await page.$eval('#sw-xl-on', (el) =>
         getComputedStyle(el, '::after').transform,
       );
-      // translateX(1.5rem) computes to matrix(1, 0, 0, 1, 24, 0) — e is the 5th value
+      // translateX(1.5rem) computes to matrix(1, 0, 0, 1, 24, 0) - e is the 5th value
       assert.equal(xlThumb, 'matrix(1, 0, 0, 1, 24, 0)', 'checked xl thumb offset = width − height');
     },
   },

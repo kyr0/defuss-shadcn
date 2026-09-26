@@ -5,7 +5,7 @@ import { startServer } from './server.ts';
 /**
  * Why: E2E smoke test for the shipped accordion component. Loads the fixture
  * (every accordion configuration at once) over HTTP in a real browser, then
- * verifies component CSS was applied and accordion.js wiring works — the same
+ * verifies component CSS was applied and accordion.js wiring works - the same
  * files consumers copy from dist/, unmodified.
  */
 
@@ -17,7 +17,7 @@ const browser = await chromium.launch();
 async function expectOpen(page: Page, id: string, expected: boolean[], label: string): Promise<void> {
   let actual: boolean[] = [];
   for (let i = 0; i < 100; i++) {
-    // selector targets <details class="accordion-item"> — Playwright can't infer
+    // selector targets <details class="accordion-item"> - Playwright can't infer
     // that from the string, so annotate for `.open`
     actual = await page.$$eval(`#${id} .accordion-item`, (els: HTMLDetailsElement[]) => els.map((el) => el.open));
     if (actual.join(',') === expected.join(',')) return;
@@ -102,7 +102,7 @@ try {
     await clickItem(page, 'single', 3);
     await page.waitForTimeout(250);
     const sawClose = await page.$eval('#single .accordion-item[data-item="3"]', (el) => el.dataset.sawClose);
-    assert.equal(sawClose, 'false', 'open item fired a closing toggle — the beforetoggle deny did not take effect');
+    assert.equal(sawClose, 'false', 'open item fired a closing toggle - the beforetoggle deny did not take effect');
     await expectOpen(page, 'single', [false, false, true], 'still open after click');
   });
 
@@ -200,7 +200,7 @@ try {
   });
 
   await check('state API: per-instance isolation (sibling unaffected)', async () => {
-    // read the sibling first — earlier tests clicked it, its pattern is whatever it is
+    // read the sibling first - earlier tests clicked it, its pattern is whatever it is
     const before = await page.$$eval('#collapsible .accordion-item', (els: HTMLDetailsElement[]) => els.map((el) => el.open));
     await setState('single', 'all-open');
     await expectOpen(page, 'single', [true, true, true], 'single all-open');

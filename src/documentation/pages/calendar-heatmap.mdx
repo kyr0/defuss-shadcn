@@ -1,0 +1,236 @@
+---
+title: "Calendar Heatmap - Presentation"
+description: "Pastel Stationery design language presenting a runner’s training year as a 12-slide deck - a calendar heatmap of 365 days that folds into months, weekdays and the 16-week marathon build, one morphing chart."
+slug: "calendar-heatmap"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="calendar-heatmap" title="Calendar Heatmap" component="presentation">
+  Pastel Stationery: blush paper, rounded tiles and sticker colours - a year of running in one glance, 2,104 km across 365 small squares, and the marathon they built toward.
+</PageHeader>
+
+```html example label="Pastel Stationery" schema="none" height="26" hint="Slides wipe up and fade out (df$.anim, declared on the deck); pink curtains mark the breaks. One deck-level chart (df$.shadcn.chart.deck): the 365-day calendar heatmap folds into monthly totals, the weekday rhythm and the 16-week marathon build. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-calendar" data-anim-in="wipeIn" data-anim-in-direction="south" data-anim-out="fadeOut" style="--presentation-ink:#43333B;--presentation-ink-foreground:#FFF9FA;--presentation-paper:#FFF9FA;--presentation-paper-foreground:#43333B;--presentation-accent:#E26C8D;font-family:Verdana, Arial, sans-serif;" tabindex="-1" aria-label="A year of running - 2,104 km in 365 squares">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="Daily running distance for 2025 as a calendar heatmap: 2,104 km over 201 running days, a two-week break in August and a marathon on 12 October; then monthly totals, weekday totals and the marathon build"></div>
+  <section class="slide" data-slide data-theme="paper" aria-label="Cover">
+    <svg aria-hidden="true" width="600" height="700" viewBox="0 0 600 700" style="position:absolute; right:90px; top:120px;">
+      <rect x="60" y="40" width="440" height="520" rx="28" fill="#FFFFFF" stroke="#F3C6D3" stroke-width="6" />
+      <g transform="translate(110 110)">
+        <rect x="0" y="0" width="40" height="40" rx="8" fill="#FCE4EC" /><rect x="50" y="0" width="40" height="40" rx="8" fill="#E26C8D" /><rect x="100" y="0" width="40" height="40" rx="8" fill="#F48FB1" /><rect x="150" y="0" width="40" height="40" rx="8" fill="#F8BBD0" /><rect x="200" y="0" width="40" height="40" rx="8" fill="#FCE4EC" /><rect x="250" y="0" width="40" height="40" rx="8" fill="#FCE4EC" /><rect x="300" y="0" width="40" height="40" rx="8" fill="#E26C8D" /><rect x="0" y="50" width="40" height="40" rx="8" fill="#F48FB1" /><rect x="50" y="50" width="40" height="40" rx="8" fill="#F8BBD0" /><rect x="100" y="50" width="40" height="40" rx="8" fill="#FCE4EC" /><rect x="150" y="50" width="40" height="40" rx="8" fill="#FCE4EC" /><rect x="200" y="50" width="40" height="40" rx="8" fill="#E26C8D" /><rect x="250" y="50" width="40" height="40" rx="8" fill="#F48FB1" /><rect x="300" y="50" width="40" height="40" rx="8" fill="#F8BBD0" /><rect x="0" y="100" width="40" height="40" rx="8" fill="#FCE4EC" /><rect x="50" y="100" width="40" height="40" rx="8" fill="#FCE4EC" /><rect x="100" y="100" width="40" height="40" rx="8" fill="#E26C8D" /><rect x="150" y="100" width="40" height="40" rx="8" fill="#F48FB1" /><rect x="200" y="100" width="40" height="40" rx="8" fill="#F8BBD0" /><rect x="250" y="100" width="40" height="40" rx="8" fill="#FCE4EC" /><rect x="300" y="100" width="40" height="40" rx="8" fill="#FCE4EC" /><rect x="0" y="150" width="40" height="40" rx="8" fill="#E26C8D" /><rect x="50" y="150" width="40" height="40" rx="8" fill="#F48FB1" /><rect x="100" y="150" width="40" height="40" rx="8" fill="#F8BBD0" /><rect x="150" y="150" width="40" height="40" rx="8" fill="#FCE4EC" /><rect x="200" y="150" width="40" height="40" rx="8" fill="#FCE4EC" /><rect x="250" y="150" width="40" height="40" rx="8" fill="#E26C8D" /><rect x="300" y="150" width="40" height="40" rx="8" fill="#F48FB1" /><rect x="0" y="200" width="40" height="40" rx="8" fill="#F8BBD0" /><rect x="50" y="200" width="40" height="40" rx="8" fill="#FCE4EC" /><rect x="100" y="200" width="40" height="40" rx="8" fill="#FCE4EC" /><rect x="150" y="200" width="40" height="40" rx="8" fill="#E26C8D" /><rect x="200" y="200" width="40" height="40" rx="8" fill="#F48FB1" /><rect x="250" y="200" width="40" height="40" rx="8" fill="#F8BBD0" /><rect x="300" y="200" width="40" height="40" rx="8" fill="#FCE4EC" />
+      </g>
+      <circle cx="470" cy="600" r="70" fill="#C9E4DE" /><circle cx="120" cy="620" r="44" fill="#F6E7A9" />
+    </svg>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Calendar heatmap · Pastel Stationery</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-family:Verdana, Arial, sans-serif; font-weight:700; letter-spacing:-0.02em; font-size:6rem; max-width:800px;">A year of running</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">365 squares, 201 runs, one marathon - a training diary in a single glance.</p>
+    <p class="presentation-note">Stationery warmth - this is a personal story.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="year" style="justify-content:flex-start;" aria-label="The year">
+    <header class="presentation-header"><span>The diary</span><span>km per day · 2025</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Verdana, Arial, sans-serif; font-weight:700; letter-spacing:-0.02em;">Every square is a day</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Darker = further. Find the Sundays, the August gap and the marathon.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="months" style="justify-content:flex-start;" aria-label="Months">
+    <header class="presentation-header"><span>By month</span><span>km per month</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Verdana, Arial, sans-serif; font-weight:700; letter-spacing:-0.02em;">Steady all year - except August</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The calendar folds into twelve bars.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="weekday" style="justify-content:flex-start;" aria-label="Weekdays">
+    <header class="presentation-header"><span>By weekday</span><span>km per weekday, whole year</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Verdana, Arial, sans-serif; font-weight:700; letter-spacing:-0.02em;">Sunday carries 44% of the year</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The long run is the backbone.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Key figures">
+    <p class="presentation-eyebrow" data-df-entrance="fade">Three numbers from the diary</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:Verdana, Arial, sans-serif; font-weight:700; letter-spacing:-0.02em;"><span data-count="2104">2104</span> km</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">run in 2025</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:Verdana, Arial, sans-serif; font-weight:700; letter-spacing:-0.02em;"><span data-count="201">201</span></p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">running days out of 365</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#E26C8D; font-family:Verdana, Arial, sans-serif; font-weight:700; letter-spacing:-0.02em;"><span data-count="42.2">42.2</span> km</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">the marathon, 12 October</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">The longest training run was 22.1 km. The race asked for almost twice that - and got it.</p>
+    <p class="presentation-note">The race-day gap is the emotional beat.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="The route">
+    <header class="presentation-header"><span>The route</span><span>Sunday long run</span></header>
+    <div style="display:flex; gap:4.5rem; align-items:center; margin-top:3.5rem;">
+      <figure class="image" data-ratio="4/3" data-df-entrance="zoom" style="--df-motion-delay:150ms; flex:0 0 700px; margin:0;">
+        <img src="https://picsum.photos/id/17/960/720" alt="A gravel path winding through a green meadow toward a line of trees" loading="lazy" width="960" height="720" style="width:100%; height:100%; object-fit:cover;" />
+        <figcaption class="image-caption" style="font-size:1.25rem;">The Sunday loop (stock photo).</figcaption>
+      </figure>
+      <div style="flex:1 1 0; min-width:0;">
+        <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; font-family:Verdana, Arial, sans-serif; font-weight:700; letter-spacing:-0.02em;">Same path, every Sunday</h2>
+        <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:300ms; font-size:1.7rem;">Forty-eight Sunday long runs on one loop through the meadows - the darkest column of the calendar.</p>
+      </div>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The photo is the Sunday column.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="west" data-anim-in-blocks="6" data-anim-in-color="#E26C8D" aria-label="Month table">
+    <header class="presentation-header"><span>The log</span><span>km per month</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" style="font-size:1.7rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">Monthly running distance, 2025 (synthetic diary).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">Month</th><th class="table-head" style="text-align:right">km</th><th class="table-head">Month</th><th class="table-head" style="text-align:right">km</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row"><td class="table-cell">January</td><td class="table-cell" style="text-align:right">190</td><td class="table-cell">July</td><td class="table-cell" style="text-align:right">175</td></tr>
+          <tr class="table-row"><td class="table-cell">February</td><td class="table-cell" style="text-align:right">184</td><td class="table-cell">August</td><td class="table-cell" style="text-align:right">96</td></tr>
+          <tr class="table-row"><td class="table-cell">March</td><td class="table-cell" style="text-align:right">216</td><td class="table-cell">September</td><td class="table-cell" style="text-align:right">152</td></tr>
+          <tr class="table-row"><td class="table-cell">April</td><td class="table-cell" style="text-align:right">194</td><td class="table-cell">October</td><td class="table-cell" style="text-align:right">158</td></tr>
+          <tr class="table-row"><td class="table-cell">May</td><td class="table-cell" style="text-align:right">186</td><td class="table-cell">November</td><td class="table-cell" style="text-align:right">182</td></tr>
+          <tr class="table-row"><td class="table-cell">June</td><td class="table-cell" style="text-align:right">181</td><td class="table-cell">December</td><td class="table-cell" style="text-align:right">191</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">March was the biggest month; August the smallest.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-family:Verdana, Arial, sans-serif; font-weight:700; letter-spacing:-0.02em; font-size:3rem;">“I never looked at a single run. I looked at the squares - and did not want a white week.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#E26C8D; color:#FFF9FA;"><span class="avatar-fallback">LW</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Lotte Weber<br /><span style="opacity:0.7; font-size:1.4rem;">Hobby runner - first marathon, 3:52</span></p>
+    </div>
+    <p class="presentation-note">The heatmap as motivation - a lovely closing thought for the data part.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="build" style="justify-content:flex-start;" aria-label="Marathon build">
+    <header class="presentation-header"><span>The build</span><span>km per week · 16 weeks to race day</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Verdana, Arial, sans-serif; font-weight:700; letter-spacing:-0.02em;">Sixteen weeks: steady volume, a summer gap, then race week</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The weeks before 12 October, as a line.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Questions from the running club">
+    <header class="presentation-header"><span>Q & A</span><span>Running club</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; font-family:Verdana, Arial, sans-serif; font-weight:700; letter-spacing:-0.02em;">Questions from the running club</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="ch-qa" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Why no Monday or Friday runs?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Rest days by design: two fixed rest days kept 201 runs injury-free.</p></div>
+      </details>
+      <details class="accordion-item" name="ch-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>What happened in August?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Two weeks of holiday, zero runs - the white strip in the calendar.</p></div>
+      </details>
+      <details class="accordion-item" name="ch-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Was 22 km enough for a marathon?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">For a first finish, yes: the plan built weekly volume, not single long runs.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The rest-day question is the useful one.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Takeaways">
+    <header class="presentation-header"><span>Takeaways</span><span>From the diary</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">♥</span><span>A calendar heatmap shows habits that averages hide.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">♥</span><span>Rest days are visible structure, not missing data.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">♥</span><span>One long run a week did almost half of the work.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">♥</span><span>Streaks motivate - design for the white squares too.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Soft, friendly, done.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-anim-in="blocksIn" data-anim-in-direction="east" data-anim-in-blocks="6" data-anim-in-color="#F8BBD0" aria-label="Closing">
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-family:Verdana, Arial, sans-serif; font-weight:700; letter-spacing:-0.02em;">A year fits into one glance</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">A synthetic diary of 365 days - the calendar is the real pattern.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">End on the glance.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) - build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-calendar');
+    const TEXT = '#43333B', MUTED = '#A08F97', PINK = '#E26C8D';
+    // the diary (deterministic): runs on Tue/Thu/Sun, some Wed/Sat, an August
+    // break, the marathon on 12 October and a recovery week after it
+    const start = Date.UTC(2025, 0, 1);
+    const diary = [];
+    for (let i = 0; i < 365; i++) {
+      const d = new Date(start + i * 864e5), wd = d.getUTCDay(), iso = d.toISOString().slice(0, 10);
+      const r = (Math.sin(i * 9.17) + 1) / 2;
+      const season = 0.75 + 0.35 * Math.sin(((i - 60) / 365) * Math.PI * 2 + Math.PI / 2);
+      let km = wd === 0 ? 16 + 10 * season + r * 4 : wd === 2 || wd === 4 ? 8 + 4 * season + r * 2 : wd === 6 ? (r > 0.35 ? 6 + r * 4 : 0) : wd === 3 ? (r > 0.55 ? 5 + r * 3 : 0) : 0;
+      if (d.getUTCMonth() === 7 && d.getUTCDate() >= 4 && d.getUTCDate() <= 17) km = 0;
+      if (iso > '2025-10-12' && iso <= '2025-10-19') km = 0;
+      km = iso === '2025-10-12' ? 42.2 : km * 0.72;
+      diary.push([iso, Math.round(km * 10) / 10]);
+    }
+    const months = [190, 184, 216, 194, 186, 181, 175, 96, 152, 158, 182, 191];
+    // 16 weeks to race day: weekly sums of the diary, Monday-based
+    const race = diary.findIndex((d) => d[0] === '2025-10-12');
+    const build = Array.from({ length: 16 }, (_, w) => {
+      const end = race - (15 - w) * 7;
+      return Math.round(diary.slice(Math.max(0, end - 6), end + 1).reduce((s, d) => s + d[1], 0));
+    });
+    const G = { left: 150, right: 150, top: 330, bottom: 150 };
+    const cols = (labels, values, hot) => ({
+      grid: G,
+      xAxis: { type: 'category', data: labels, axisLabel: { color: TEXT, fontWeight: 700 } },
+      yAxis: { type: 'value', axisLabel: { color: MUTED } },
+      series: [{ id: 'km', type: 'bar', barWidth: '56%',
+        data: values.map((v, i) => ({ value: v, itemStyle: { color: hot(i) ? PINK : '#F8BBD0', borderRadius: [10, 10, 0, 0] } })),
+        label: { show: true, position: 'top', color: TEXT, fontWeight: 700 } }],
+    });
+
+    df$.shadcn.chart.deck(deck, {
+      base: { tooltip: { trigger: 'item' } },
+      states: {
+        year: {
+          tooltip: { formatter: (p) => p.value[0] + ' · ' + p.value[1] + ' km' },
+          visualMap: { show: false, min: 0, max: 24, inRange: { color: ['#FCE4EC', '#F48FB1', PINK, '#8E2C4F'] } },
+          calendar: { top: 360, left: 150, right: 110, bottom: 190, range: '2025', cellSize: ['auto', 'auto'],
+            splitLine: { show: false }, itemStyle: { color: '#FFFFFF', borderColor: '#FFF9FA', borderWidth: 5 },
+            yearLabel: { show: false }, monthLabel: { color: TEXT, fontWeight: 700 }, dayLabel: { firstDay: 1, color: MUTED, nameMap: ['S', 'M', 'T', 'W', 'T', 'F', 'S'] } },
+          series: [{ id: 'km', type: 'heatmap', coordinateSystem: 'calendar', data: diary.map(([d, v]) => [d, v || '-']), itemStyle: { borderRadius: 6 },
+            markPoint: undefined }],
+        },
+        months: cols(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], months, (i) => i === 7),
+        weekday: cols(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], [0, 424, 136, 425, 0, 187, 934], (i) => i === 6),
+        build: {
+          grid: G,
+          xAxis: { type: 'category', data: build.map((_, w) => 'W-' + (15 - w)), boundaryGap: false, axisLabel: { color: MUTED } },
+          yAxis: { type: 'value', axisLabel: { color: MUTED, formatter: '{value} km' } },
+          series: [{ id: 'km', type: 'line', data: build, smooth: 0.3, symbolSize: 14, lineStyle: { color: PINK, width: 5 }, itemStyle: { color: PINK },
+            areaStyle: { color: 'rgba(226,108,141,.18)' },
+            markPoint: { symbol: 'pin', symbolSize: 96, itemStyle: { color: TEXT }, label: { color: '#FFF9FA', fontWeight: 700, fontSize: 18, formatter: 'Race' }, data: [{ coord: ['W-0', build[15]] }] } }],
+        },
+      },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 16-calendar-heatmap (Pastel Stationery) - a synthetic training diary.</p>
+<SourceFiles component="presentation" />
+</DocPage>

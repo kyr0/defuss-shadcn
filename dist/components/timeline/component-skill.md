@@ -1,7 +1,7 @@
 ---
 name: Timeline
 type: ATM
-why: Ordered list laid out on a vertical rail — the <ol> keeps the chronological semantics.
+why: Ordered list laid out on a vertical rail - the <ol> keeps the chronological semantics.
 when: Event history: activity logs, order tracking, changelog-style lists.
 where: dist/components/timeline/timeline.css
 supportedStates: default
@@ -15,8 +15,8 @@ supportedStates: default
 
 ## Native Web APIs
 
-- [`<ol>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol) — ordered list conveying sequence
-- [`::before`](https://developer.mozilla.org/en-US/docs/Web/CSS/::before) — pseudo-element for connector line and dot
+- [`<ol>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol) - ordered list conveying sequence
+- [`::before`](https://developer.mozilla.org/en-US/docs/Web/CSS/::before) - pseudo-element for connector line and dot
 
 ## Structure
 
@@ -55,7 +55,7 @@ Set `data-density` on the `.timeline` root; the per-item rhythm (connector gap +
 | Value | Effect |
 | --- | --- |
 | `compact` | Item gap 0.75rem, spacing 1.125rem |
-| `comfortable` | Gap 1rem, spacing 1.5rem — identical to the unsized default |
+| `comfortable` | Gap 1rem, spacing 1.5rem - identical to the unsized default |
 | `spacious` | Gap 1.25rem, spacing 1.875rem |
 
 ## Accessibility

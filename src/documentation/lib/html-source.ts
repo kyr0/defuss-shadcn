@@ -1,6 +1,6 @@
 /**
  * Why: <Example>/<Demo> render the live demo AND the code sample below it from
- * the same children — demo ↔ code parity by construction (AGENTS.md). defuss
+ * the same children - demo ↔ code parity by construction (AGENTS.md). defuss
  * component functions receive children as expanded VNodes, so this serializer
  * turns that tree back into the hand-formatted HTML style the docs show
  * (2-space indent, short single-text elements inlined).

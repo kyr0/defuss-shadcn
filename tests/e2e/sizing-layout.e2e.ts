@@ -4,7 +4,7 @@ import { startServer } from './server.ts';
 
 /**
  * Why: the sizing/layout modules shipped with an iframe `examples/` tree that
- * was never committed — every doc demo 404'd silently. This smoke test serves
+ * was never committed - every doc demo 404'd silently. This smoke test serves
  * the real dist/documentation pages and pins what a user (and the
  * docs↔e2e-parity rule) requires: the pages load the two optional modules,
  * their live demos actually render (non-zero geometry from the real CSS),
@@ -13,7 +13,7 @@ import { startServer } from './server.ts';
  */
 
 const PAGES = ['sizing', 'layout', 'width-height', 'spacing', 'density', 'container', 'flex', 'grid'];
-/** One live demo per page (grid has two — both checked). */
+/** One live demo per page (grid has two - both checked). */
 const DEMOS: Record<string, string[]> = {
   sizing: ['sizing-scale'],
   layout: ['layout-composition'],
@@ -27,7 +27,7 @@ const DEMOS: Record<string, string[]> = {
 /** Third-party CDNs (shiki/icons/fonts) may be unreachable in sandboxed CI. */
 const VENDOR = /esm\.sh|unpkg\.com|cdnjs|api\.github\.com|fonts\.googleapis/;
 
-/** Why: layout/sizing demos migrated into CodeExample sandboxes — their
+/** Why: layout/sizing demos migrated into CodeExample sandboxes - their
  * data-demo anchors live INSIDE a srcdoc iframe now. Find the anchor in the
  * main document or (after the card's lazy boot) in any child frame. */
 async function demoBox(pg: import('playwright').Page, name: string, timeoutMs = 12000) {

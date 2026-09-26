@@ -3,7 +3,7 @@
  * Why: dist/documentation/ is produced ONLY by defuss-ssg from the MDX pages
  * and TSX components in src/documentation/. defuss-ssg pulls in uWebSockets.js
  * through its serve machinery, which ships Node-only native binaries
- * (engines ^20.19 || >=22.12) — so this script runs under `node`, not bun
+ * (engines ^20.19 || >=22.12) - so this script runs under `node`, not bun
  * (Node ≥23 strips the TypeScript types natively; keep the syntax erasable).
  *
  * Steps: compile the client runtime (runtime/*.ts → public/js/, tsc strips
@@ -24,7 +24,7 @@ const tsc = spawnSync('bunx', ['tsc', '-p', join(ROOT, 'tsconfig.docs-runtime.js
 if (tsc.status !== 0) process.exit(tsc.status ?? 1);
 
 // 2. components read repo files (component sources, skills, stats.json) at
-//    build time — the SSG copies the project into .ssg-temp, so pin the root
+//    build time - the SSG copies the project into .ssg-temp, so pin the root
 process.env.DEFUSS_SHADCN_ROOT = ROOT;
 
 const status = await build({

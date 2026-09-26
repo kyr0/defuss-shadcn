@@ -10,7 +10,10 @@
        (page behind a modal lightbox must stay put) is observable. -->
   <body style="padding:2rem;min-height:250vh;display:flex;flex-direction:column;gap:1.5rem;align-items:flex-start;">
     <!-- mirrors the doc page: plain figure, caption, ratio, fallback, preview.
-         Images use data: URIs so loads are deterministic and offline. -->
+         Images use data: URIs so loads are deterministic and offline - except
+         the progressive figure below, whose /img/*.png URLs do not exist on
+         disk: the test intercepts them via page.route() and fulfills a
+         synthetic PNG (server.ts only exposes /dist and /tests/e2e). -->
     <figure class="image" id="im-loaded" style="max-width:320px;">
       <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='160'%3E%3Crect width='320' height='160' fill='%230ea5e9'/%3E%3C/svg%3E" alt="Solid blue" />
     </figure>
@@ -31,6 +34,20 @@
     <!-- documented data-preview axis (lightbox) -->
     <figure class="image" id="im-preview" style="max-width:320px;" data-preview>
       <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='160'%3E%3Crect width='320' height='160' fill='%23a855f7'/%3E%3C/svg%3E" alt="Previewable" />
+    </figure>
+
+    <!-- documented progressive-sources axis (data-src-low + src +
+         data-src-high); data-preview also exercises the zoom-in high-res
+         upgrade. /img/*.png is intercepted by the test - never touches disk. -->
+    <figure class="image" id="im-progressive" style="max-width:320px;" data-preview>
+      <img src="/img/standard.png" data-src-low="/img/low.png" data-src-high="/img/high.png" alt="Progressive" />
+    </figure>
+
+    <!-- documented data-src-full axis: a lightbox-only original (never fetched
+         by the page); data-src-high rides along to prove the zoom-in upgrade
+         is skipped when an original exists -->
+    <figure class="image" id="im-full" style="max-width:320px;" data-preview>
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='160'%3E%3Crect width='320' height='160' fill='%23f97316'/%3E%3C/svg%3E" data-src-full="/img/full.png" data-src-high="/img/full-high.png" alt="Lightbox original" />
     </figure>
 
     <script type="module" src="/dist/components/core.js"></script>

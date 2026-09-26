@@ -27,7 +27,7 @@ import {
 import { readmeCssOnlyProblems } from './lib/readme.ts';
 import { ariaDescribedByProblems, fieldDescriptionOwnerProblems, fieldFeatureProblems } from './lib/fields.ts';
 import { parseThemes, defaultTokenModes, sidebarContrastProblems, radiusConsistencyProblems } from './lib/contrast.ts';
-import { themeCssText, themeFileName } from './lib/theme-css.ts';
+import { themeCssText, themeFileName, themeJsonText, themeJsonFileName } from './lib/theme-css.ts';
 import { buildSkillText } from './lib/skill-files.ts';
 import { archBodyHtml } from '../src/documentation/lib/arch-md.ts';
 import { typeBadgeHtml, type ComponentType } from './lib/taxonomy.ts';
@@ -45,7 +45,7 @@ import {
 
 /**
  * Why: one static, fast gate that proves the repo is self-consistent after any
- * change — run automatically at the end of `bun run build`. Every check names
+ * change - run automatically at the end of `bun run build`. Every check names
  * the offending file and the fix. Failures exit 1; ⚠ warnings (known gaps,
  * e.g. not every component has an e2e test yet) report but don't fail.
  */
@@ -83,7 +83,7 @@ const componentDirs = readdirSync(COMPS).filter((d) => statSync(join(COMPS, d)).
 /** Both color schemes create-screenshots.ts captures; state PNGs need both. */
 const MODES = ['light', 'dark'];
 /** Doc pages are defuss-ssg output: dist/documentation/*.html, rendered from
- * src/documentation/pages/*.mdx (build:docs must run before verify — it does,
+ * src/documentation/pages/*.mdx (build:docs must run before verify - it does,
  * in every package.json chain). Gates that check the SHIPPED surface read the
  * rendered pages; gates about authoring read the .mdx sources. */
 const docPages = existsSync(DOCS_DIST)
@@ -104,7 +104,7 @@ check(
   `copy src/documentation/pages/badge.mdx as template`,
 );
 
-// 3. every component has an e2e smoke test — rollout complete, hard gate.
+// 3. every component has an e2e smoke test - rollout complete, hard gate.
 // The fixture/assertions encode the component's documented surface (incl.
 // State API states), so new components land with source + fixture + test
 // together (AGENTS.md "Docs ↔ E2E parity").
@@ -152,7 +152,7 @@ check(
 
 // 6. the source listings on the rendered doc pages must equal the component
 // sources they claim to show. <SourceFiles> embeds the file at SSG build
-// time, so drift is impossible by construction — this gate proves it holds:
+// time, so drift is impossible by construction - this gate proves it holds:
 // every #source-css/#source-js section's <code> text must match the file its
 // "view file" anchor points at (entity-decoded textContent vs file bytes).
 const docHtml = docPages.map((p) => [p, readFileSync(join(DOCS_DIST, p), 'utf8')] as const);
@@ -172,7 +172,7 @@ for (const [page, html] of docHtml) {
     if (!expected) continue;
     const shown = section.querySelector('pre > code')?.textContent ?? '';
     if (shown !== expected) {
-      snippetProblems.push(`${page} — #source-${ext} listing differs from src/components/${comp}/${comp}.${ext === 'css' ? 'css' : 'ts'} (rebuild docs)`);
+      snippetProblems.push(`${page} - #source-${ext} listing differs from src/components/${comp}/${comp}.${ext === 'css' ? 'css' : 'ts'} (rebuild docs)`);
     }
   }
 }
@@ -184,7 +184,7 @@ check(
 
 // 6b. doc-page code-block integrity: unbalanced <pre> tags mean a snippet's
 // opening tag was destroyed and raw code leaked into live markup (accordion/
-// dialog shipped exactly that — the parser then swallows real DOM and site.js
+// dialog shipped exactly that - the parser then swallows real DOM and site.js
 // mis-pairs code toggles); duplicate real-DOM ids mean a whole section was
 // duplicated (both pages also shipped that, breaking `built with` anchors and
 // any getElementById consumer). Ids quoted inside <pre>/inline <code>/the
@@ -197,7 +197,7 @@ for (const [page, html] of docHtml) {
   const closes = html.match(/<\/pre>/g)?.length ?? 0;
   if (opens !== closes) {
     codeBlockProblems.push(
-      `${page}: ${opens} <pre> open vs ${closes} </pre> close tags — a code block's opening tag was destroyed, raw code leaked into markup`,
+      `${page}: ${opens} <pre> open vs ${closes} </pre> close tags - a code block's opening tag was destroyed, raw code leaked into markup`,
     );
     continue;
   }
@@ -209,7 +209,7 @@ for (const [page, html] of docHtml) {
   for (const m of realDom.matchAll(/(?<![\w-])id="([^"]+)"/g)) ids.push(m[1]);
   const dupes = [...new Set(ids.filter((id, i) => ids.indexOf(id) !== i))];
   if (dupes.length) {
-    codeBlockProblems.push(`${page}: duplicate element id(s) ${dupes.join(', ')} — a section is duplicated`);
+    codeBlockProblems.push(`${page}: duplicate element id(s) ${dupes.join(', ')} - a section is duplicated`);
   }
 }
 check(
@@ -223,7 +223,7 @@ check(
 // the bundle covers all components). Stray per-component stylesheet/script
 // tags are banned so the lists can't creep back; <a href> "view file"
 // anchors, data-spec-href spans and escaped code samples (&lt;link…) stay
-// legal — only real tags match.
+// legal - only real tags match.
 const importProblems: string[] = [];
 for (const [page, html] of docHtml) {
   if (!html.includes('<link rel="stylesheet" href="../components/all.css"')) {
@@ -233,10 +233,10 @@ for (const [page, html] of docHtml) {
     importProblems.push(`${page} missing the all.js bundle script`);
   }
   for (const m of html.matchAll(/<link\b[^>]*\bhref="\.\.\/components\/[^/"]+\/[^/"]+\.css"/g)) {
-    importProblems.push(`${page} loads a per-component stylesheet (${m[0]}) — the all.css bundle replaced the include lists`);
+    importProblems.push(`${page} loads a per-component stylesheet (${m[0]}) - the all.css bundle replaced the include lists`);
   }
   for (const m of html.matchAll(/<script\b[^>]*\bsrc="\.\.\/components\/[^/"]+\/[^/"]+\.js"/g)) {
-    importProblems.push(`${page} imports a per-component script (${m[0]}) — the all.js bundle replaced the include lists`);
+    importProblems.push(`${page} imports a per-component script (${m[0]}) - the all.js bundle replaced the include lists`);
   }
 }
 check(
@@ -253,7 +253,7 @@ check(
   "add the page to the NAV array in src/documentation/lib/nav.ts",
 );
 
-// 9. oxlint clean (oxlint exits non-zero only on errors — warnings pass by policy)
+// 9. oxlint clean (oxlint exits non-zero only on errors - warnings pass by policy)
 const lint = Bun.spawnSync({ cmd: ['bunx', 'oxlint', 'src', 'tests', 'scripts'], cwd: ROOT, stdout: 'pipe' });
 check(
   'lint',
@@ -266,7 +266,7 @@ check(
 // 10. dist/ is a fresh 1:1 mirror of src/ (types stripped, everything else copied)
 const distProblems: string[] = [];
 if (!existsSync(DIST)) {
-  distProblems.push('dist/ does not exist — run `bun run build`');
+  distProblems.push('dist/ does not exist - run `bun run build`');
 } else {
   for (const f of walk(SRC, [''])) {
     const rel = relative(SRC, f);
@@ -279,12 +279,12 @@ if (!existsSync(DIST)) {
     if (isDocsSsgAuthoringSrc(rel)) continue;
     if (rel.endsWith('.ts')) {
       const js = join(DIST, rel.replace(/\.ts$/, '.js'));
-      if (!existsSync(js)) distProblems.push(`dist/${relative(SRC, f).replace(/\.ts$/, '.js')} missing — rebuild`);
-      else if (readFileSync(js, 'utf8').trim() === '') distProblems.push(`dist/${relative(SRC, rel)} is empty — rebuild`);
+      if (!existsSync(js)) distProblems.push(`dist/${relative(SRC, f).replace(/\.ts$/, '.js')} missing - rebuild`);
+      else if (readFileSync(js, 'utf8').trim() === '') distProblems.push(`dist/${relative(SRC, rel)} is empty - rebuild`);
     } else {
       const mirror = join(DIST, rel);
-      if (!existsSync(mirror)) distProblems.push(`dist/${rel} missing — rebuild`);
-      else if(!readFileSync(mirror).equals(readFileSync(f))) distProblems.push(`dist/${rel} differs from src — rebuild`);
+      if (!existsSync(mirror)) distProblems.push(`dist/${rel} missing - rebuild`);
+      else if(!readFileSync(mirror).equals(readFileSync(f))) distProblems.push(`dist/${rel} differs from src - rebuild`);
     }
   }
   const srcSet = new Set(walk(SRC, ['']).map((f) => relative(SRC, f).replace(/\.ts$/, '.js')));
@@ -292,20 +292,20 @@ if (!existsSync(DIST)) {
     const rel = relative(DIST, f);
     // scripts/minify.ts + tsc sourceMap write derived twins, scripts/stats.ts
     // writes the generated stats document, scripts/bundle.ts writes the
-    // single-file bundle — none of them are orphans
+    // single-file bundle - none of them are orphans
     // scripts/build.ts publishes schema sidecars to dist/schemas/ from a
-    // DIFFERENT src path (components/<n>/<n>.schema.json) — allow-listed, not orphans
+    // DIFFERENT src path (components/<n>/<n>.schema.json) - allow-listed, not orphans
     if (isDerivedArtifact(rel) || BUNDLE_ARTIFACTS.has(rel) || rel === STATS_FILE || isSchemaArtifact(rel)) continue;
     if (!srcSet.has(rel)) {
       // docs pages/assets originate from the SSG authoring tree
-      // (pages/*.mdx, public/*, runtime/*.ts) — resolve before flagging
+      // (pages/*.mdx, public/*, runtime/*.ts) - resolve before flagging
       const docsRel = rel.startsWith(`documentation${sep}`) ? rel.slice(`documentation${sep}`.length) : null;
       if (docsRel) {
         const mapped = docsDistToSrc(docsRel);
         // null = generated output with no src counterpart (js/search-index.js)
         if (mapped === null || existsSync(join(SRC, mapped))) continue;
       }
-      distProblems.push(`dist/${rel} is orphaned (no src/ counterpart) — rebuild`);
+      distProblems.push(`dist/${rel} is orphaned (no src/ counterpart) - rebuild`);
     }
   }
 }
@@ -317,7 +317,7 @@ check(
 
 // 10a. every shipped component file must carry its minified twins (the
 // Installation page advertises *.min.css / *.min.js / *.min.js.map / *.js.map
-// to consumers — a component shipping without them is a broken CDN URL).
+// to consumers - a component shipping without them is a broken CDN URL).
 const artifactProblems = existsSync(DIST)
   ? minifyArtifactProblems(
       new Set(
@@ -333,7 +333,7 @@ check(
   'run `bun run build` (compiles + minifies via scripts/minify.ts; `make minify` for the post-pass alone)',
 );
 
-// 10d. dist/stats.json must match the CURRENT dist/components/ tree — it is
+// 10d. dist/stats.json must match the CURRENT dist/components/ tree - it is
 // generated by scripts/stats.ts (counts per taxonomy type, JS/CSS-only split,
 // byte sizes incl. minified + gzipped). Byte-comparison against exactly what
 // the writer produces (shared lib/stats-files.ts), so a component edit or a
@@ -341,9 +341,9 @@ check(
 const statsProblems: string[] = [];
 if (existsSync(DIST)) {
   const statsPath = join(DIST, STATS_FILE);
-  if (!existsSync(statsPath)) statsProblems.push(`dist/${STATS_FILE} missing — generated by scripts/stats.ts`);
+  if (!existsSync(statsPath)) statsProblems.push(`dist/${STATS_FILE} missing - generated by scripts/stats.ts`);
   else if (!readFileSync(statsPath).equals(Buffer.from(buildStatsFileText(DIST), 'utf8')))
-    statsProblems.push(`dist/${STATS_FILE} is stale vs. dist/components/ — rebuild`);
+    statsProblems.push(`dist/${STATS_FILE} is stale vs. dist/components/ - rebuild`);
 }
 check(
   'stats.json fresh',
@@ -352,7 +352,7 @@ check(
 );
 
 // 10e. README + doc-site index must PROMINENTLY state the current numbers —
-// total, withJs, withoutJs and the KiB-formatted gzip sizes — as the exact
+// total, withJs, withoutJs and the KiB-formatted gzip sizes - as the exact
 // sentence generated from dist/stats.json (shared renderer in lib/stats.ts).
 // A stale or missing claim is misinformation: the docs promise the site's
 // data, so verify compares the rendered sentence, not hand-typed digits.
@@ -362,26 +362,26 @@ if (statsProblems.length === 0) {
   const claim = statsClaimProblems(readFileSync(join(ROOT, 'README.md'), 'utf8'), 'README.md', statsDoc).concat(
     existsSync(join(DOCS_DIST, 'index.html'))
       ? statsClaimProblems(readFileSync(join(DOCS_DIST, 'index.html'), 'utf8'), 'dist/documentation/index.html', statsDoc)
-      : ['dist/documentation/index.html missing — run `bun run build:docs`'],
+      : ['dist/documentation/index.html missing - run `bun run build:docs`'],
   );
   check(
     'stats claim (README + index)',
     claim,
-    'state the current footprint verbatim in both files — update the sentence to match dist/stats.json and run `bun run docs` (README.md and the rendered index page are a parity pair, commit them together)',
+    'state the current footprint verbatim in both files - update the sentence to match dist/stats.json and run `bun run docs` (README.md and the rendered index page are a parity pair, commit them together)',
   );
 }
 
 // 10b. State API contract (AGENTS.md "State API"): every JS component must
 // expose the global preamble + a declared default state + a bound per-element
 // api. Ratchet rollout: components listed in STATE_API_LEGACY predate the
-// contract and only warn — remove a name from the list as it is migrated, and
+// contract and only warn - remove a name from the list as it is migrated, and
 // every NEW JS component must satisfy the contract from day one.
 // Migration complete: every JS component satisfies the State API contract —
 // keep this list empty as the ratchet (new components must comply from day one).
 const STATE_API_LEGACY: string[] = [];
 const STATE_API_PATTERNS: Array<[string, RegExp]> = [
   // preamble comes from the shared layer (emitted once in core.js; the
-  // component build binds dist .js to df$.shadcn.shared — verify 10c)
+  // component build binds dist .js to df$.shadcn.shared - verify 10c)
   ['defussGlobals() preamble', /(defussGlobals\(\)|globalThis\.df\$\s*=)/],
   ['registry api assignment', /(df\$|defussGlobals\(\))\.\w+Api\s*=/],
   ['registry states assignment', /(df\$|defussGlobals\(\))\.\w+States\s*=/],
@@ -402,7 +402,7 @@ for (const name of componentDirs) {
   // an agent reading only this line must know what to do (AGENTS.md "State API")
   const rest = missing.filter((m) => m !== 'states array declares default').join(', ');
   const line = missing.includes('states array declares default')
-    ? `${name}: no ${name}States = ['default', …] declared — refactor this component to support at least the 'default' state following the State API architecture${rest ? ` (also missing: ${rest})` : ''}`
+    ? `${name}: no ${name}States = ['default', …] declared - refactor this component to support at least the 'default' state following the State API architecture${rest ? ` (also missing: ${rest})` : ''}`
     : `${name}: missing ${missing.join(', ')}`;
   if (STATE_API_LEGACY.includes(name)) stateApiWarnings.push(line);
   else stateApiProblems.push(line);
@@ -432,9 +432,9 @@ for (const name of componentDirs) {
   if (!existsSync(distJs)) continue; // already reported by dist 1:1
   const shipped = readFileSync(distJs, 'utf8');
   if (!shipped.includes('__df$shared')) {
-    inlineProblems.push(`${name}.js missing the df$.shadcn.shared binding guard — run \`bun run build\``);
+    inlineProblems.push(`${name}.js missing the df$.shadcn.shared binding guard - run \`bun run build\``);
   } else if (/(^|\n)\s*import[\s({]|import\(/.test(shipped)) {
-    inlineProblems.push(`${name}.js still has a live module import — build post-pass failed to bind`);
+    inlineProblems.push(`${name}.js still has a live module import - build post-pass failed to bind`);
   }
 }
 check(
@@ -446,7 +446,7 @@ check(
 // 10f. artifact contract (plans/defuss-query-morph-integration.md §2.3 + §5.1):
 // core.js carries exactly morph+query+shared (no component code, no docs
 // data, no runtime imports); all.js embeds the same runtime first plus every
-// shipping JS component once. Membership markers, not byte hashes — the
+// shipping JS component once. Membership markers, not byte hashes - the
 // generated-code exemption minification would otherwise hide.
 {
   const artifactProblems: string[] = [];
@@ -457,7 +457,7 @@ check(
   /** component identifiers are camelCased (number-input → numberInputStates) */
   const camel = (c: string): string => c.replace(/-([a-z])/g, (_m, ch: string) => ch.toUpperCase());
 
-  if (!coreJs) artifactProblems.push('dist/components/core.js missing — run `bun run build`');
+  if (!coreJs) artifactProblems.push('dist/components/core.js missing - run `bun run build`');
   else {
     for (const marker of ['queryVersion', 'htmlStringToVNodes', 'defussGlobals'])
       if (!coreJs.includes(marker)) artifactProblems.push(`core.js lacks runtime marker "${marker}"`);
@@ -465,15 +465,15 @@ check(
       if (!existsSync(join(COMPS, c, `${c}.ts`))) continue;
       const id = camel(c);
       if (new RegExp(`\\b${id}States\\s*=`).test(coreJs))
-        artifactProblems.push(`core.js embeds component "${c}" — core must stay component-free`);
+        artifactProblems.push(`core.js embeds component "${c}" - core must stay component-free`);
     }
     for (const marker of ['searchIndex', 'onPageReady', 'realignWhenSettled'])
       if (coreJs.includes(marker)) artifactProblems.push(`core.js contains docs-only marker "${marker}"`);
     if (/(^|\n)\s*import[\s({]|import\(/.test(coreJs))
-      artifactProblems.push('core.js contains a runtime import — the payload must be self-contained');
+      artifactProblems.push('core.js contains a runtime import - the payload must be self-contained');
   }
 
-  if (!allJs) artifactProblems.push('dist/components/all.js missing — run `bun run build`');
+  if (!allJs) artifactProblems.push('dist/components/all.js missing - run `bun run build`');
   else {
     if (!allJs.includes('queryVersion') || !allJs.includes('htmlStringToVNodes'))
       artifactProblems.push('all.js does not embed the core runtime (morph + query)');
@@ -483,17 +483,17 @@ check(
         artifactProblems.push(`all.js is missing component "${c}" (bundle ≠ shipping manifest)`);
     }
     if (/(^|\n)\s*import[\s({]|import\(/.test(allJs))
-      artifactProblems.push('all.js contains a runtime import — the payload must be self-contained');
+      artifactProblems.push('all.js contains a runtime import - the payload must be self-contained');
   }
   check(
     'artifact contract (core/all)',
     artifactProblems,
-    'run `bun run build` — core = morph+query+shared only; all = core first + every shipping component, both import-free (see plans/defuss-query-morph-integration.md §2.3)',
+    'run `bun run build` - core = morph+query+shared only; all = core first + every shipping component, both import-free (see plans/defuss-query-morph-integration.md §2.3)',
   );
 }
 
 // 10g. legacy runtime namespace: the pre-migration registry name must be gone
-// from every authored surface (plans §2.1 — the namespace is df$.shadcn).
+// from every authored surface (plans §2.1 - the namespace is df$.shadcn).
 // Historical prose inside plans/ and compiled public/js output are exempt
 // (the latter is regenerated by build:docs). The marker is assembled at
 // runtime so this gate's own source text never trips it.
@@ -512,7 +512,7 @@ check(
 }
 
 // 10h. shared ABI stamp: core publishes df$.shadcn.shared.abi and every
-// emitted component guards on it — core and components must qualify from the
+// emitted component guards on it - core and components must qualify from the
 // SAME release, so src/shared/version.ts must equal package.json's version.
 {
   const pkgVersion = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8')).version as string;
@@ -524,7 +524,7 @@ check(
   );
 }
 
-// 11. every component doc page exposes a default-state .preview block — the
+// 11. every component doc page exposes a default-state .preview block - the
 //     contract create-screenshots.ts (and the agent's eye) relies on
 const previewProblems: string[] = [];
 for (const c of componentDirs) {
@@ -564,7 +564,7 @@ if (existsSync(DIST)) {
 check(
   'screenshots',
   shotProblems,
-  'run `bun run screenshots` (incremental — re-shoots only components changed since the manifest)',
+  'run `bun run screenshots` (incremental - re-shoots only components changed since the manifest)',
 );
 
 // 12b. every declared state of every JS component must be covered by ALL
@@ -589,7 +589,7 @@ for (const c of componentDirs) {
 
   for (const s of states) {
     if (s !== 'default' && MODES.some((m) => !existsSync(join(ROOT, 'screenshots', m, `${c}-${s}.png`)))) {
-      coverageProblems.push(`${c}: no screenshot for state "${s}" (both modes) — add [data-state-demo] + run \`bun run screenshots\``);
+      coverageProblems.push(`${c}: no screenshot for state "${s}" (both modes) - add [data-state-demo] + run \`bun run screenshots\``);
     }
     if (!doc.includes(`<code>${s}</code>`)) coverageProblems.push(`${c}: state "${s}" not documented in ${c}.html (<code>${s}</code>)`);
     if (!skill.includes(s)) coverageProblems.push(`${c}: state "${s}" not listed in component-skill.md`);
@@ -603,23 +603,23 @@ check(
 );
 
 // 13. version is consistent: package.json ↔ the header badge stamped into
-// every page at SSG build time (SiteHeader reads package.json — no version
+// every page at SSG build time (SiteHeader reads package.json - no version
 // literal anywhere to bump or forget).
 const version = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8')).version as string;
 {
   const versionProblems: string[] = [];
   const indexPage = join(DOCS_DIST, 'index.html');
-  if (!existsSync(indexPage)) versionProblems.push('dist/documentation/index.html missing — run `bun run build:docs`');
+  if (!existsSync(indexPage)) versionProblems.push('dist/documentation/index.html missing - run `bun run build:docs`');
   else {
     const html = readFileSync(indexPage, 'utf8');
     const badge = html.match(/<span class="badge header-version"[^>]*>(v[^<]+)<\/span>/);
     if (!badge) versionProblems.push('index.html lost the header version badge (span.header-version)');
-    else if (badge[1] !== `v${version}`) versionProblems.push(`header badge says ${badge[1]} but package.json says v${version} — run \`bun run build:docs\``);
+    else if (badge[1] !== `v${version}`) versionProblems.push(`header badge says ${badge[1]} but package.json says v${version} - run \`bun run build:docs\``);
   }
   check(
     'version consistency',
     versionProblems,
-    'the badge is stamped from package.json at docs build time — run `bun run build:docs`',
+    'the badge is stamped from package.json at docs build time - run `bun run build:docs`',
   );
 }
 
@@ -638,16 +638,32 @@ const version = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8')).ver
     for (const [where, base] of [['src', SRC], ['dist', DIST]] as const) {
       const file = join(base, rel);
       if (!existsSync(file)) {
-        themeFileProblems.push(`${rel} missing (${where}) — run \`bun run build\``);
+        themeFileProblems.push(`${rel} missing (${where}) - run \`bun run build\``);
       } else if (readFileSync(file, 'utf8') !== expected) {
-        themeFileProblems.push(`${rel} (${where}) is stale vs themes.ts — run \`bun run build\``);
+        themeFileProblems.push(`${rel} (${where}) is stale vs themes.ts - run \`bun run build\``);
+      }
+    }
+    // resource sidecars (df$.shadcn.loadTheme fetches theme/<id>.json for the
+    // theme's font <link>s): must exist for link-bearing themes and NEVER for
+    // themes without links (a stale sidecar would load foreign fonts).
+    const json = themeJsonText(t);
+    const jsonRel = join('theme', themeJsonFileName(t.id));
+    for (const [where, base] of [['src', SRC], ['dist', DIST]] as const) {
+      const file = join(base, jsonRel);
+      if (json === null) {
+        if (existsSync(file))
+          themeFileProblems.push(`${jsonRel} (${where}) exists but ${t.id} declares no links - delete it`);
+      } else if (!existsSync(file)) {
+        themeFileProblems.push(`${jsonRel} missing (${where}) - run \`bun run build\``);
+      } else if (readFileSync(file, 'utf8') !== json) {
+        themeFileProblems.push(`${jsonRel} (${where}) is stale vs themes.ts - run \`bun run build\``);
       }
     }
   }
   check(
     'theme files fresh',
     themeFileProblems,
-    'theme files are generated from themes.ts by build.ts — run `bun run build`',
+    'theme files are generated from themes.ts by build.ts - run `bun run build`',
   );
 }
 
@@ -656,16 +672,16 @@ check(
   'changelog data',
   existsSync(join(DOCS, 'data/changelog.json'))
     ? []
-    : ['src/documentation/data/changelog.json missing — deploy.sh cannot add entries'],
+    : ['src/documentation/data/changelog.json missing - deploy.sh cannot add entries'],
   'restore the changelog data file (entries rendered by lib/components/changelog-entries.tsx)',
 );
 
 // 15. code ↔ skill ↔ docs parity: every variant/size/density IMPLEMENTED in
 // the component CSS (data-variant/data-size/data-density selectors are the
-// source of truth — the CSS ships what works) must be documented in BOTH the
+// source of truth - the CSS ships what works) must be documented in BOTH the
 // component skill and the doc page. Catches the classic drift: CSS gains a
 // variant, docs and skill silently rot. A token counts as documented when it
-// appears quoted ("x"), backticked (`x`), or as a table cell (| x |) — the
+// appears quoted ("x"), backticked (`x`), or as a table cell (| x |) - the
 // forms the skill template and doc markup actually use.
 const skillProblems: string[] = [];
 for (const c of componentDirs) {
@@ -712,8 +728,8 @@ check(
 );
 
 // 15b. strict type-check of the tooling/test trees (bun run typecheck). The
-// e2e rollout is all test code — a type error must not survive to CI. ~0.3 s.
-// NOTE: tsc writes diagnostics to STDOUT — reading only stderr silently passed
+// e2e rollout is all test code - a type error must not survive to CI. ~0.3 s.
+// NOTE: tsc writes diagnostics to STDOUT - reading only stderr silently passed
 // every failure (fixed after 12 real errors slipped past the gate).
 const typecheck = Bun.spawnSync({ cmd: ['bun', 'run', 'typecheck'], cwd: ROOT });
 check(
@@ -727,7 +743,7 @@ check(
   'fix the type errors above (bun run typecheck prints full output)',
 );
 
-// 15c. docs/ mirror freshness: GitHub Pages publishes ./docs — the documen-
+// 15c. docs/ mirror freshness: GitHub Pages publishes ./docs - the documen-
 // tation site (dist/documentation/* + SEO files + the 404.html fallback copy
 // of index.html), with ../component & ../theme refs CDN-rewritten. Compared
 // against exactly what sync-docs.ts writes (shared lib/mirror.ts), so a green
@@ -747,7 +763,7 @@ if (existsSync(DOCS_OUT) && existsSync(DIST)) {
   }
   for (const rel of actual.keys()) if (!expected.has(rel)) docsProblems.push(`docs/${rel} is stale (not in the doc site)`);
 } else if (!existsSync(DOCS_OUT) && existsSync(DIST)) {
-  docsProblems.push('docs/ missing — GitHub Pages would publish nothing');
+  docsProblems.push('docs/ missing - GitHub Pages would publish nothing');
 }
 check(
   'docs mirror fresh',
@@ -756,7 +772,7 @@ check(
 );
 
 // 16. working tree cleanliness (warn): uncommitted changes make "green build"
-// ambiguous — the agent must finish by committing so CI sees what was tested.
+// ambiguous - the agent must finish by committing so CI sees what was tested.
 const gitProblems: string[] = [];
 const gitStatus = Bun.spawnSync({ cmd: ['git', 'status', '--porcelain'], cwd: ROOT });
 if (gitStatus.exitCode === 0) {
@@ -785,12 +801,12 @@ for (const [f, html] of docHtml) {
 check(
   'snippet escaping',
   escapeProblems,
-  'raw < in a code block means a snippet was hand-pasted — the docs build escapes code text on render; check the page source',
+  'raw < in a code block means a snippet was hand-pasted - the docs build escapes code text on render; check the page source',
 );
 
 // 18. accessibility CSS promises (AGENTS.md "Accessibility CSS"): any
 // component that animates must honor prefers-reduced-motion. Migration
-// complete — keep this list empty as the ratchet (new components must comply
+// complete - keep this list empty as the ratchet (new components must comply
 // from day one).
 const REDUCED_MOTION_LEGACY: string[] = [];
 const motionProblems: string[] = [];
@@ -848,7 +864,7 @@ check(
 );
 
 // 20. doc/tooling reference integrity: commands quoted in AGENTS.md and
-// README must exist — renaming a script or make target silently rots the docs
+// README must exist - renaming a script or make target silently rots the docs
 // that agents follow as instructions.
 const pkgScripts = new Set(Object.keys(JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8')).scripts));
 const makeTargets = new Set(
@@ -857,7 +873,7 @@ const makeTargets = new Set(
 const refProblems: string[] = [];
 for (const md of ['AGENTS.md', 'README.md']) {
   const text = readFileSync(join(ROOT, md), 'utf8');
-  // only backtick-quoted commands count — prose like "make sure" must not match
+  // only backtick-quoted commands count - prose like "make sure" must not match
   for (const m of text.matchAll(/`bun run ([a-z][a-z0-9:-]*)`/g)) {
     if (!pkgScripts.has(m[1])) refProblems.push(`${md}: "bun run ${m[1]}" is not a package.json script`);
   }
@@ -868,13 +884,13 @@ for (const md of ['AGENTS.md', 'README.md']) {
 check(
   'doc command refs',
   refProblems,
-  'fix the doc reference or restore the script/target — docs are agent instructions',
+  'fix the doc reference or restore the script/target - docs are agent instructions',
 );
 
 // 20b. field-description wiring: every live .field-description / .field-error
 // paragraph on a doc page must carry an id that at least one aria-describedby
 // in the same page points at. Visual proximity is invisible to screen
-// readers — the Input "With description" example is the site's established
+// readers - the Input "With description" example is the site's established
 // pattern; this gate keeps the other pages from drifting off it. linkedom
 // only sees live elements: escaped snippet markup is text, not DOM.
 const descProblems: string[] = [];
@@ -913,7 +929,7 @@ for (const [page, html] of docHtml) {
   for (const el of document.querySelectorAll('.field-description, .field-error')) {
     const id = el.getAttribute('id');
     if (!id) descProblems.push(`${page}: a .${el.classList[0]} has no id for a control to reference`);
-    else if (!refs.has(id)) descProblems.push(`${page}: #${id} is referenced by no aria-describedby — screen readers never announce it`);
+    else if (!refs.has(id)) descProblems.push(`${page}: #${id} is referenced by no aria-describedby - screen readers never announce it`);
   }
 }
 check(
@@ -932,8 +948,8 @@ check(
 // they contain escaped examples (src="photo.jpg") meant to be illustrative.
 // checked against the SHIPPED tree (pages reference compiled .js). linkedom
 // gives us the same view the browser has: contents of <pre>, <script> and
-// <style> — including the raw skill markdown embedded in
-// <script type="text/plain"> — are text, not elements, so illustrative
+// <style> - including the raw skill markdown embedded in
+// <script type="text/plain"> - are text, not elements, so illustrative
 // markup there (src="photo.jpg") is never mistaken for a live link.
 // Cross-page anchors (page.html#id) resolve against the target page's id set
 // (parsed once up front), so a renamed heading anchor is a build failure too.
@@ -986,7 +1002,7 @@ check(
 
 // 21b. markdown source link integrity: every [text](target) in the prose
 // sources (README/AGENTS/ARCH, src/SKILL.md, component skills, docs pages'
-// MDX) must resolve — to a real file (relative to the source file) or to a
+// MDX) must resolve - to a real file (relative to the source file) or to a
 // heading anchor in the same file. This catches what the rendered-HTML gate
 // above structurally can't: links that never became links (escaped
 // `\[x\](y)` in MDX renders as literal text) and repo-relative links that
@@ -1002,7 +1018,7 @@ check(
     .map(([name, abs]) => ({ name, text: readFileSync(abs, 'utf8') }));
   // existence resolved inside ROOT, relative to the doc's own folder. .mdx
   // pages additionally render one level up (dist/documentation/), so links
-  // there address the SHIPPED surface — mapped back onto the sources:
+  // there address the SHIPPED surface - mapped back onto the sources:
   // `sibling.html` → the page's .mdx, `../x` → src/x (dist/components ← src/components).
   const pagesDir = relative(ROOT, DOCS_PAGES);
   const mdExists = (from: string, relPath: string): boolean => {
@@ -1015,7 +1031,7 @@ check(
   check(
     'markdown link integrity',
     markdownLinkProblems(mdSources, mdExists),
-    'point every markdown link at an existing file (relative to its source) or a real heading; in .mdx use <DocLink href> — escaped \\[x\\](y) renders literally',
+    'point every markdown link at an existing file (relative to its source) or a real heading; in .mdx use <DocLink href> - escaped \\[x\\](y) renders literally',
   );
 }
 
@@ -1040,7 +1056,7 @@ check(
 );
 
 // 23. portability: no machine-specific absolute paths anywhere in the repo
-// sources/scripts/tests (repo rule — these paths break on other systems).
+// sources/scripts/tests (repo rule - these paths break on other systems).
 const pathProblems: string[] = [];
 for (const f of [...walk(SRC, ['']), ...walk(join(ROOT, 'scripts'), ['']), ...walk(join(ROOT, 'tests'), [''])]) {
   if (/\.(woff2?|png|ico|jpg|jpeg|gif|webp)$/.test(f)) continue;
@@ -1055,7 +1071,7 @@ check(
 
 // 24. render drift (warn): a PNG whose bytes changed since capture while its
 // component's inputs did NOT means something outside the repo altered the
-// render (CDN asset, font, browser version) — worth a human/agent look.
+// render (CDN asset, font, browser version) - worth a human/agent look.
 const driftProblems: string[] = [];
 const driftManifestPath = join(ROOT, 'screenshots', 'manifest.json');
 if (existsSync(driftManifestPath) && existsSync(DIST)) {
@@ -1080,12 +1096,12 @@ if (existsSync(driftManifestPath) && existsSync(DIST)) {
 check(
   'render drift',
   driftProblems,
-  'inspect the PNG against the component (external asset/browser change?) — or recapture with `bun run screenshots --force` once intentional',
+  'inspect the PNG against the component (external asset/browser change?) - or recapture with `bun run screenshots --force` once intentional',
   true,
 );
 
 // 25. no window globals (AGENTS.md "No window globals"): application globals
-// live on globalThis under df$ — window is the browser-only alias
+// live on globalThis under df$ - window is the browser-only alias
 // (breaks isomorphic runtimes) and a collision magnet on hosts we don't own.
 // Vendor globals (lucide, marked, …) are owned by their vendors: reads via
 // globalThis.* are fine; assignments to window.* anywhere in src/ are not.
@@ -1111,7 +1127,7 @@ check(
 {
   const readme = readFileSync(join(ROOT, 'README.md'), 'utf8');
   // the pillar bullets live under "## What this is", i.e. between the first
-  // `##` and "## Quick start" — scan exactly that range
+  // `##` and "## Quick start" - scan exactly that range
   const intro = readme.slice(0, readme.search(/^## Quick start$/m));
   const readmePillars = [...intro.matchAll(/^- \*\*(.+?)\*\*/gm)].map((m) => m[1].trim());
   const indexMdx = readFileSync(join(DOCS_PAGES, 'index.mdx'), 'utf8');
@@ -1128,14 +1144,14 @@ check(
       ...missing.map((p) => `index page card missing for README pillar "${p}"`),
       ...extra.map((p) => `README bullet missing for index page card "${p}"`),
     ],
-    'keep README.md intro bullets and documentation/pages/index.mdx pillar cards in sync (AGENTS.md "README ↔ index parity") — change both files together',
+    'keep README.md intro bullets and documentation/pages/index.mdx pillar cards in sync (AGENTS.md "README ↔ index parity") - change both files together',
   );
 }
 
 // 27. README ↔ index.html commit window: the two files state the same
 // promises to humans and browser users, so touching one without the other
 // within 15 minutes of commit time is treated as an un-synced edit (the
-// hero paragraph diverged once: "No build step for consumers — dist/ is
+// hero paragraph diverged once: "No build step for consumers - dist/ is
 // committed…" vs "No build step."). Identity of the touching commit passes;
 // otherwise the two last-touch commits must be ≤ SYNC_WINDOW apart.
 {
@@ -1156,7 +1172,7 @@ check(
     if (gap > SYNC_WINDOW) {
       const older = Number(readmeAt) < Number(indexAt) ? 'README.md' : 'pages/index.mdx';
       problems.push(
-        `${older} was last committed ${Math.round(gap / 60)} min apart from the other (> ${SYNC_WINDOW / 60} min) — its statements may have drifted`,
+        `${older} was last committed ${Math.round(gap / 60)} min apart from the other (> ${SYNC_WINDOW / 60} min) - its statements may have drifted`,
       );
     }
   }
@@ -1168,9 +1184,9 @@ check(
   }
   
   // 28. component boundary: dialog.js init() claims dialogs generically via a
-  // :not(...) selector — every component that owns its own <dialog> (command,
-  // alert-dialog, sheet) must be excluded there, or dialog.js — loaded first on
-  // every page — stamps data-init and the real owner's init() silently skips
+  // :not(...) selector - every component that owns its own <dialog> (command,
+  // alert-dialog, sheet) must be excluded there, or dialog.js - loaded first on
+  // every page - stamps data-init and the real owner's init() silently skips
   // the element (this exact bug disabled the docs search palette once).
   {
     const dialogSrc = readFileSync(join(COMPS, 'dialog', 'dialog.ts'), 'utf8');
@@ -1181,21 +1197,21 @@ check(
     check(
       'dialog ownership boundary',
       claim
-        ? owned.map((c) => `dialog.ts claims dialog.${c} too — add :not(.${c}) to its init() selector`)
-        : ['dialog.ts lost the dialog:not(...) init selector — verify cannot check ownership'],
-      'components own their dialogs (backdrop close, focus, filtering); dialog.js must :not-exclude each one — see AGENTS.md "Each component owns its dialog"',
+        ? owned.map((c) => `dialog.ts claims dialog.${c} too - add :not(.${c}) to its init() selector`)
+        : ['dialog.ts lost the dialog:not(...) init selector - verify cannot check ownership'],
+      'components own their dialogs (backdrop close, focus, filtering); dialog.js must :not-exclude each one - see AGENTS.md "Each component owns its dialog"',
     );
   }
 
   // 28b. DOM boundary (plans/defuss-query-morph-integration.md §5.1): component
   // code that has adopted the core df$ runtime (imports defussQuery) must route
   // structural writes through the sanctioned query ops (.morph()/.html()/
-  // .append()/.before()/.after()/factory) — native sinks (innerHTML/outerHTML
+  // .append()/.before()/.after()/factory) - native sinks (innerHTML/outerHTML
   // writes, insertAdjacentHTML, insertAdjacentElement, replaceChildren,
   // insertBefore, appendChild) and the forbidden .prop() escapes are rejected.
   // The boundary keeps ONE renderer per collection, so morph can own
   // reconciliation. Exceptions are file-scoped, reasoned, and stale entries
-  // fail too — they must never grow into fallback renderers (§5.1).
+  // fail too - they must never grow into fallback renderers (§5.1).
   {
     const MIGRATED_RE = /defussQuery/;
     const BANNED: Array<[RegExp, string]> = [
@@ -1224,11 +1240,11 @@ check(
         .filter(({ line }) => BANNED.some(([re]) => re.test(line)));
       if (DOM_BOUNDARY_ALLOW[c]) {
         if (hitLines.length === 0)
-          problems.push(`${c}: DOM_BOUNDARY_ALLOW entry is stale (no banned writes left) — remove it`);
+          problems.push(`${c}: DOM_BOUNDARY_ALLOW entry is stale (no banned writes left) - remove it`);
         else {
           const allowed = DOM_BOUNDARY_ALLOW[c];
           for (const { n } of hitLines)
-            problems.push(`${c}:${n}: exception ${JSON.stringify(allowed)} — re-check whether a query op covers it now`);
+            problems.push(`${c}:${n}: exception ${JSON.stringify(allowed)} - re-check whether a query op covers it now`);
         }
         continue;
       }
@@ -1240,7 +1256,7 @@ check(
     check(
       'DOM boundary (migrated components)',
       problems,
-      'route the write through the core df$ runtime — .morph()/.html() for content, .append()/.before()/.after() for moves/mounts, factory df$("<markup>") for static markup (plans/defuss-query-morph-integration.md §5.1; guide: DOM Querying & Morphing)',
+      'route the write through the core df$ runtime - .morph()/.html() for content, .append()/.before()/.after() for moves/mounts, factory df$("<markup>") for static markup (plans/defuss-query-morph-integration.md §5.1; guide: DOM Querying & Morphing)',
     );
   }
 
@@ -1258,33 +1274,33 @@ check(
       expectedPointer = provenancePointer(input);
       expectedNotice = provenanceNotice(input);
     } catch (e) {
-      problems.push(`provenance unresolvable: ${(e as Error).message} — run \`bun install\``);
+      problems.push(`provenance unresolvable: ${(e as Error).message} - run \`bun install\``);
     }
     if (expectedPointer) {
       for (const artifact of ['core.js', 'core.min.js', 'all.js', 'all.min.js']) {
         const f = join(DIST, 'components', artifact); // the SHIPPED copies carry the notice
         if (!existsSync(f)) {
-          problems.push(`dist/components/${artifact} missing — rebuild`);
+          problems.push(`dist/components/${artifact} missing - rebuild`);
         } else if (!readFileSync(f, 'utf8').includes(expectedPointer)) {
           problems.push(
-            `dist/components/${artifact} lacks the current provenance pointer (embedded upstreams changed, or the artifact predates the last bundle/minify) — rebuild`,
+            `dist/components/${artifact} lacks the current provenance pointer (embedded upstreams changed, or the artifact predates the last bundle/minify) - rebuild`,
           );
         }
       }
       const notice = join(DIST, 'components/NOTICE.txt');
-      if (!existsSync(notice)) problems.push('dist/components/NOTICE.txt missing — rebuild');
+      if (!existsSync(notice)) problems.push('dist/components/NOTICE.txt missing - rebuild');
       else if (expectedNotice && readFileSync(notice, 'utf8') !== expectedNotice)
-        problems.push('dist/components/NOTICE.txt is stale vs. installed upstreams — rebuild');
+        problems.push('dist/components/NOTICE.txt is stale vs. installed upstreams - rebuild');
     }
     check(
       'runtime provenance',
       problems,
-      'run `bun run build` — bundle.ts stamps the pointer into core/all (+ min twins) and writes NOTICE.txt (plans/defuss-query-morph-integration.md §6)',
+      'run `bun run build` - bundle.ts stamps the pointer into core/all (+ min twins) and writes NOTICE.txt (plans/defuss-query-morph-integration.md §6)',
     );
   }
 
   // 29. changelog ↔ version: the version COMMITTED in package.json must have an
-  // entry in changelog.html — a release cut without a changelog is invisible to
+  // entry in changelog.html - a release cut without a changelog is invisible to
   // readers, which happened to v0.7.14. Each entry carries the commit messages
   // of its release, and once the version is committed the changelog commit's
   // git hash is available too, so the entry must embed it as
@@ -1315,18 +1331,18 @@ check(
       resolveCommit,
     });
     check('changelog ↔ version', problems, FIX_TWO_COMMITS);
-    // entries are commit messages — prose with code spans and links only.
+    // entries are commit messages - prose with code spans and links only.
     // Raw markup in an <li> renders live (a v0.8.0 entry once embedded a
     // working <video> and a raw <hr> in the middle of the changelog).
     check(
       'changelog entries are text',
       changelogDataMarkupProblems(changelogJson),
-      'escape element names in commit messages as <video> — only <code>/<strong>/<a>/<span>/<em>/<b>/<i>/<kbd>/<li> may appear raw',
+      'escape element names in commit messages as <video> - only <code>/<strong>/<a>/<span>/<em>/<b>/<i>/<kbd>/<li> may appear raw',
     );
     check(
       'changelog pending bump',
       warnings,
-      'add the entry for the bumped version NOW — commit it, then commit that commit\'s hash into the entry (AGENTS.md "Changelog") — before the version bump itself is committed',
+      'add the entry for the bumped version NOW - commit it, then commit that commit\'s hash into the entry (AGENTS.md "Changelog") - before the version bump itself is committed',
       true,
     );
   }
@@ -1345,7 +1361,7 @@ check(
     check(
       'skill frontmatter',
       fmProblems,
-      `add a --- frontmatter block (${SKILL_FRONTMATTER_KEYS.join(', ')}) to each listed skill — then \`bun run build\` regenerates SKILL.md`,
+      `add a --- frontmatter block (${SKILL_FRONTMATTER_KEYS.join(', ')}) to each listed skill - then \`bun run build\` regenerates SKILL.md`,
     );
     let skillProblems: string[] = [];
     try {
@@ -1354,7 +1370,7 @@ check(
       else if (readFileSync(join(SRC, SKILL_OUTPUT_FILE), 'utf8') !== fresh)
         skillProblems.push(`src/${SKILL_OUTPUT_FILE} is stale vs ${SKILL_TEMPLATE_FILE} + skill frontmatter`);
     } catch (e) {
-      skillProblems.push(`${(e as Error).message.split(' — ')[0]} — SKILL.md cannot be generated`);
+      skillProblems.push(`${(e as Error).message.split(' - ')[0]} - SKILL.md cannot be generated`);
     }
     check(
       'SKILL.md ↔ skills',
@@ -1366,7 +1382,7 @@ check(
   // 30b. architecture page ↔ ARCH.md: the published Overview page is a
   // generated render of the repo's design manifesto (ArchBody renders
   // ARCH.md via lib/arch-md.ts at SSG build time). Same drift class as
-  // SKILL.md: edit ARCH.md, rebuild — never hand-edit the page (AGENTS.md
+  // SKILL.md: edit ARCH.md, rebuild - never hand-edit the page (AGENTS.md
   // "ARCH.md ↔ architecture page sync").
   {
     const archProblems: string[] = [];
@@ -1374,11 +1390,11 @@ check(
       const md = readFileSync(join(ROOT, 'ARCH.md'), 'utf8');
       const expectedBody = archBodyHtml(md.trim());
       const page = join(DOCS_DIST, 'architecture.html');
-      if (!existsSync(page)) archProblems.push('dist/documentation/architecture.html missing — run `bun run build:docs`');
+      if (!existsSync(page)) archProblems.push('dist/documentation/architecture.html missing - run `bun run build:docs`');
       else {
         const { document } = parseHTML(readFileSync(page, 'utf8'));
         // the § anchors are TOC chrome (the plugin injects them into every
-        // page) — strip before comparing against the ARCH.md render
+        // page) - strip before comparing against the ARCH.md render
         document.querySelectorAll('.arch-prose .heading-anchor').forEach((el) => el.remove());
         const shown = document.querySelector('.arch-prose')?.innerHTML ?? '';
         // canonicalize both sides through the same HTML parse+serialize pass:
@@ -1386,10 +1402,10 @@ check(
         // byte level, the DOM must be equal
         const { document: canon } = parseHTML(`<div class="arch-prose">${expectedBody}</div>`);
         const expected = canon.querySelector('.arch-prose')?.innerHTML ?? '';
-        if (shown !== expected) archProblems.push('architecture page body is stale vs ARCH.md — run `bun run build:docs`');
+        if (shown !== expected) archProblems.push('architecture page body is stale vs ARCH.md - run `bun run build:docs`');
       }
     } catch (e) {
-      archProblems.push(`${(e as Error).message.split(' — ')[0]} — architecture page cannot be checked`);
+      archProblems.push(`${(e as Error).message.split(' - ')[0]} - architecture page cannot be checked`);
     }
     check(
       'architecture ↔ ARCH.md',
@@ -1399,7 +1415,7 @@ check(
   }
 
   // 30c. component taxonomy type: every component declares exactly one type
-  // (ATM | MOL | ORG | BLK | TPL — AGENTS.md "Component taxonomy") in its skill
+  // (ATM | MOL | ORG | BLK | TPL - AGENTS.md "Component taxonomy") in its skill
   // frontmatter, and the other two carriers of that claim must agree with it:
   // the sidebar badge (site-nav reads the skill frontmatter at build time)
   // and the doc page badge (exact markup from scripts/lib/taxonomy.ts).
@@ -1418,15 +1434,17 @@ check(
         typeProblems.push(`${c}: doc page lacks the exact \`${meta.type}\` type badge`);
       }
       // sidebar badge on the same rendered page (site-nav built it from the
-      // same skill frontmatter at SSG build time)
-      const sidebarBadge = html.match(new RegExp(`<a class="nav-link[^"]*" href="${c}\\.html"[^>]*>[\\s\\S]*?data-type="([A-Z]{3})"`));
+      // same skill frontmatter at SSG build time). The badge must sit INSIDE
+      // the component's own link - a lazy match across </a> once passed on the
+      // NEXT item's badge while a submenu parent (Image) rendered none.
+      const sidebarBadge = html.match(new RegExp(`<a class="nav-link[^"]*" href="${c}\\.html"[^>]*>(?:(?!</a>)[\\s\\S])*?data-type="([A-Z]{3})"`));
       if (!sidebarBadge) typeProblems.push(`${c}: sidebar link lacks a type badge`);
       else if (sidebarBadge[1] !== meta.type) typeProblems.push(`${c}: sidebar badge says ${sidebarBadge[1]}, skill frontmatter says ${meta.type}`);
     }
     check(
       'component type badges',
       typeProblems,
-      'one type per component, identical in all three places — skill `type:` frontmatter (source of truth), sidebar badge + doc page badge (both built from that frontmatter by defuss-ssg)',
+      'one type per component, identical in all three places - skill `type:` frontmatter (source of truth), sidebar badge + doc page badge (both built from that frontmatter by defuss-ssg)',
     );
   }
 
@@ -1451,18 +1469,18 @@ check(
             'dist/documentation/index.html',
             actual,
           )
-        : ['dist/documentation/index.html missing — run `bun run build:docs`'],
+        : ['dist/documentation/index.html missing - run `bun run build:docs`'],
       statFix,
     );
   }
 
   // 32. theme contrast: the doc-site sidebar must stay readable under every
   // theme preset. Text tokens must reach WCAG AA against the background
-  // they actually sit on (--sidebar / --sidebar-accent) — themes whose
+  // they actually sit on (--sidebar / --sidebar-accent) - themes whose
   // sidebar-accent pairs failed this shipped invisible active nav links.
   {
     const themes = parseThemes(readFileSync(join(DOCS, 'runtime/themes.ts'), 'utf8'));
-    // the "default" theme isn't in themes.ts — fold the shipped token file in
+    // the "default" theme isn't in themes.ts - fold the shipped token file in
     const defaultModes = defaultTokenModes(readFileSync(join(SRC, 'theme/utils/default-semantic-tokens.css'), 'utf8'));
     const problems = sidebarContrastProblems([
       ...themes,
@@ -1471,7 +1489,7 @@ check(
     check(
       'theme sidebar contrast',
       problems,
-      'raise the flagged theme token(s) in src/documentation/runtime/themes.ts (or src/theme/utils/default-semantic-tokens.css) until the sidebar text pair reaches WCAG AA (>=4.5) — the measured pairs are pinned by tests/contrast.test.ts',
+      'raise the flagged theme token(s) in src/documentation/runtime/themes.ts (or src/theme/utils/default-semantic-tokens.css) until the sidebar text pair reaches WCAG AA (>=4.5) - the measured pairs are pinned by tests/contrast.test.ts',
     );
     check(
       'theme radius consistency',
@@ -1482,9 +1500,9 @@ check(
 
   // 33. component schemas (plans/cmp-schemas-and-codeexample.md §14/§25): every
   // <name>.schema.json beside a component parses under the schema contract
-  // (scripts/lib/schema.ts — the single validator), its `name` matches the
+  // (scripts/lib/schema.ts - the single validator), its `name` matches the
   // component folder, and the runtime code that ships it imports none of them
-  // (§23: schemas are documentation/tooling data — zero bytes in the bundle).
+  // (§23: schemas are documentation/tooling data - zero bytes in the bundle).
   const schemaFiles = componentDirs
     .map((d) => join(COMPS, d, `${d}.schema.json`))
     .filter((f) => existsSync(f));
@@ -1505,7 +1523,7 @@ check(
     for (const f of walk(SRC, ['.ts'])) {
       const rel = relative(SRC, f);
       if (isDocsSsgAuthoringSrc(rel)) continue; // docs tooling MAY read schemas (§23)
-      if (/schema\.json/.test(readFileSync(f, 'utf8'))) problems.push(`${rel} references a *.schema.json — runtime code must be schema-free (plan §23)`);
+      if (/schema\.json/.test(readFileSync(f, 'utf8'))) problems.push(`${rel} references a *.schema.json - runtime code must be schema-free (plan §23)`);
     }
     check(
       'component schemas',
@@ -1520,43 +1538,43 @@ check(
     const pub = join(DIST, 'schemas');
     const problems: string[] = [];
     const manifest = join(pub, 'manifest.json');
-    if (!existsSync(manifest)) problems.push('dist/schemas/manifest.json missing — run `bun run build`');
+    if (!existsSync(manifest)) problems.push('dist/schemas/manifest.json missing - run `bun run build`');
     else if (readFileSync(manifest, 'utf8') !== schemaManifestText([...schemaByName.keys()]))
-      problems.push('dist/schemas/manifest.json is stale — run `bun run build`');
+      problems.push('dist/schemas/manifest.json is stale - run `bun run build`');
     for (const [name] of schemaByName) {
       const published = join(pub, `${name}.schema.json`);
-      if (!existsSync(published)) problems.push(`dist/schemas/${name}.schema.json missing — run \`bun run build\``);
+      if (!existsSync(published)) problems.push(`dist/schemas/${name}.schema.json missing - run \`bun run build\``);
       else if (!readFileSync(published).equals(readFileSync(join(COMPS, name, `${name}.schema.json`))))
-        problems.push(`dist/schemas/${name}.schema.json differs from the src sidecar — run \`bun run build\``);
+        problems.push(`dist/schemas/${name}.schema.json differs from the src sidecar - run \`bun run build\``);
     }
     check('schemas published', problems, 'run `bun run build` (build.ts copies schemas + writes the sorted manifest)');
   }
 
   // 35. schema ↔ docs States-table parity (§13–§18/§25): every schema'd component
   // page carries the canonical contract table and matches the schema in BOTH
-  // directions — every schema state documented, no phantom states, types /
+  // directions - every schema state documented, no phantom states, types /
   // enum values / defaults matching verbatim.
   {
     const problems: string[] = [];
     for (const [name, schema] of schemaByName) {
       const page = join(DOCS_PAGES, `${name}.mdx`);
       if (!existsSync(page)) {
-        problems.push(`component "${name}" has a schema but no pages/${name}.mdx — every schema needs its documentation page (plan §25.4)`);
+        problems.push(`component "${name}" has a schema but no pages/${name}.mdx - every schema needs its documentation page (plan §25.4)`);
         continue;
       }
       const mdx = readFileSync(page, 'utf8');
       const t = findStatesTable(mdx);
       if (!t.found)
-        problems.push(`pages/${name}.mdx: canonical ## States contract table missing (plan §13 — ## States / <StatesSection> + a \`\`\`states fence)`);
+        problems.push(`pages/${name}.mdx: canonical ## States contract table missing (plan §13 - ## States / <StatesSection> + a \`\`\`states fence)`);
       else problems.push(...schemaStatesProblems(`pages/${name}.mdx`, schema, t.rows, t.problems));
     }
     check(
       'schema ↔ States docs',
       problems,
-      "fix the Markdown States table so it matches the schema — do NOT loosen the schema to pass (plan §20); parse/compare lives in scripts/lib/schema.ts, pinned by tests/component-schema.test.ts",
+      "fix the Markdown States table so it matches the schema - do NOT loosen the schema to pass (plan §20); parse/compare lives in scripts/lib/schema.ts, pinned by tests/component-schema.test.ts",
     );
     // migration ratchet (plan §26 phase 4): interactive components without a
-    // schema yet — shrink toward zero, same path STATE_API_LEGACY took
+    // schema yet - shrink toward zero, same path STATE_API_LEGACY took
     const pending = componentDirs.filter((d) => !schemaByName.has(d) && existsSync(join(COMPS, d, `${d}.ts`)));
     check(
       'component schema coverage',
@@ -1574,26 +1592,26 @@ check(
     const problems: string[] = [];
     const docsCfg = readFileSync(join(DOCS, 'config.ts'), 'utf8');
     if (!docsCfg.includes('remarkDocExamples'))
-      problems.push('documentation/config.ts does not wire remarkDocExamples — example fences would render as plain code blocks (§22)');
+      problems.push('documentation/config.ts does not wire remarkDocExamples - example fences would render as plain code blocks (§22)');
     for (const file of readdirSync(DOCS_PAGES).filter((f) => f.endsWith('.mdx'))) {
       const mdx = readFileSync(join(DOCS_PAGES, file), 'utf8');
       const page = file.replace(/\.mdx$/, '');
       for (const ex of exampleFences(mdx)) {
         if (ex.body.trim() === '') problems.push(`pages/${file}:${ex.line} empty example fence (plan §21)`);
         // schema="none": guide-page utility demos (layout/sizing/sizing-scale…)
-        // demonstrate the optional modules, not a component — no contract to bind
+        // demonstrate the optional modules, not a component - no contract to bind
         if (ex.schema === 'none') continue;
         const comp = ex.component ?? page;
         if (!existsSync(join(COMPS, comp)))
           problems.push(`pages/${file}:${ex.line} example schema component "${comp}" is not a shipped component (pages/${page}.mdx → add component="…"/schema="none" or ship the component)`);
       }
       for (const m of mdx.matchAll(/<CodeExample[^>]*?\s(code|preview|previewSource)=/g))
-        problems.push(`pages/${file}: CodeExample received \`${m[1]}\` — dual-source prop, source={fence} only (plan §5)`);
+        problems.push(`pages/${file}: CodeExample received \`${m[1]}\` - dual-source prop, source={fence} only (plan §5)`);
       if (mdx.includes('</CodeExample>'))
-        problems.push(`pages/${file}: CodeExample with children — the fence body is the ONLY source (plan §5)`);
+        problems.push(`pages/${file}: CodeExample with children - the fence body is the ONLY source (plan §5)`);
     }
     const codePreviewHits = walk(SRC, ['.mdx', '.tsx', '.ts']).filter((f) => /CodePreview/.test(readFileSync(f, 'utf8')));
-    for (const f of codePreviewHits) problems.push(`${relative(ROOT, f)} mentions CodePreview — the dual-render mechanism stays removed (plan §21)`);
+    for (const f of codePreviewHits) problems.push(`${relative(ROOT, f)} mentions CodePreview - the dual-render mechanism stays removed (plan §21)`);
     check(
       'example fences',
       problems,

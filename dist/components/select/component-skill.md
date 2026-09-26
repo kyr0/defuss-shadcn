@@ -1,7 +1,7 @@
 ---
 name: Select
 type: ATM
-why: Native <select> — the OS renders the options list, fully accessible on every platform.
+why: Native <select> - the OS renders the options list, fully accessible on every platform.
 when: Pick one value from a list; prefer it over custom listboxes and comboboxes.
 where: dist/components/select/select.css
 supportedStates: default
@@ -15,8 +15,8 @@ supportedStates: default
 ---
 
 ## Native Web APIs
-- [`<select>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select) — native dropdown with keyboard navigation and form integration
-- [`<optgroup>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/optgroup) — groups options with a label
+- [`<select>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select) - native dropdown with keyboard navigation and form integration
+- [`<optgroup>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/optgroup) - groups options with a label
 
 ---
 
@@ -24,7 +24,7 @@ supportedStates: default
 
 ### Basic
 The empty-value placeholder stays selectable (no `disabled`) so it doubles as
-the clear/reset entry — re-choosing it empties the box again.
+the clear/reset entry - re-choosing it empties the box again.
 ```html
 <label class="label" for="fruit">Fruit</label>
 <select class="select" id="fruit">
@@ -58,7 +58,7 @@ the clear/reset entry — re-choosing it empties the box again.
 - The placeholder is `<option value="" selected>` **without** `disabled`: a
   disabled placeholder can't be re-selected, so a made selection could never be
   cleared. Keep it selectable and add `required` to the `<select>` when an empty
-  value must not submit — native validation then blocks submission while the
+  value must not submit - native validation then blocks submission while the
   placeholder is still the selection.
 
 ---
@@ -85,5 +85,5 @@ Set `data-size` on the `.select` trigger button.
 - While the empty option is selected, the closed control renders in
   `--muted-foreground` (`:has(> option[value=""]:checked)`) so it reads as a
   placeholder; a real value restores `--foreground`.
-- The dropdown list is rendered by the browser — it cannot be styled.
+- The dropdown list is rendered by the browser - it cannot be styled.
 - For a fully custom dropdown, use the Combobox component instead.

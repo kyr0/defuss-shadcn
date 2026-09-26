@@ -14,7 +14,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <SkillPanel component="product-showcase">
   <SkillField label="Native basis">
-<SkillText><code>&lt;figure&gt;</code> wrapper with three stacked layers — poster <code>&lt;img&gt;</code>, <code>&lt;video controls&gt;</code>, and a circular play <code>&lt;button&gt;</code>. Clicking the button (or pressing Enter on it — it's a real button) flips <code>data-state</code> to <code>playing</code>: CSS hides the poster and button, reveals the video, and JS starts muted playback. From then on the UA renders play/pause, scrubber, volume, and fullscreen. Native pause flips the state back so the poster returns.</SkillText>
+<SkillText><code>&lt;figure&gt;</code> wrapper with three stacked layers - poster <code>&lt;img&gt;</code>, <code>&lt;video controls&gt;</code>, and a circular play <code>&lt;button&gt;</code>. Clicking the button (or pressing Enter on it - it's a real button) flips <code>data-state</code> to <code>playing</code>: CSS hides the poster and button, reveals the video, and JS starts muted playback. From then on the UA renders play/pause, scrubber, volume, and fullscreen. Native pause flips the state back so the poster returns.</SkillText>
   </SkillField>
 
   <SkillField label="Web Platform APIs">
@@ -54,12 +54,12 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
   <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
-    <li><code>default</code> — poster + play button (the authored state)</li>
-    <li><code>playing</code> — the poster and button hide (CSS via <code>data-state</code>), the video plays muted; pausing returns to the poster</li>
+    <li><code>default</code> - poster + play button (the authored state)</li>
+    <li><code>playing</code> - the poster and button hide (CSS via <code>data-state</code>), the video plays muted; pausing returns to the poster</li>
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/product-showcase-\{state\}.png</code>.</p>
 
-Machine contract — verified against <a href="../schemas/product-showcase.schema.json"><code>product-showcase.schema.json</code></a> by <code>bun run verify</code>:
+Machine contract - verified against <a href="../schemas/product-showcase.schema.json"><code>product-showcase.schema.json</code></a> by <code>bun run verify</code>:
 
 ```states
 | State | Type | Values | Default | Description |

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: button is CSS-only — its shipped contract is every variant/size
+ * Why: button is CSS-only - its shipped contract is every variant/size
  * geometry in button.css. Heights/paddings are hardcoded px in the CSS so
  * they assert literally; variant colors assert as distinct (theme-safe);
  * :focus-visible needs trusted keyboard input (run escape hatch).
@@ -99,7 +99,7 @@ await cssSmoke('button', [
       await page.focus('#bt-default');
       await page.keyboard.press('Tab'); // trusted keyboard focus → :focus-visible
       await page.keyboard.press('Shift+Tab');
-      // .btn transitions `all` (150ms) — let the outline settle before reading
+      // .btn transitions `all` (150ms) - let the outline settle before reading
       await page.waitForTimeout(200);
       const outline = await page.$eval('#bt-default', (el) => {
         const cs = getComputedStyle(el);

@@ -1,0 +1,212 @@
+---
+title: "Chord — Presentation"
+description: "Glass Hologram design language presenting air-passenger flows between six world regions as a 12-slide deck — a chord ring that isolates Europe, then morphs into regional totals and growth bars, one continuous chart."
+slug: "chord"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="chord" title="Chord" component="presentation">
+  Glass Hologram: deep navy glass, cyan and violet light — how many people fly between six world regions each year, drawn as one ring of mutual flows, then re-read as totals and growth.
+</PageHeader>
+
+```html example label="Glass Hologram" schema="none" height="26" hint="Slides zoom out of the glass (df$.anim zoomIn with scale 1.1 / fadeOut, declared on the deck); cyan curtains mark the breaks. One deck-level chart (df$.shadcn.chart.deck): the chord ring isolates Europe’s flows, then morphs into regional totals and growth since 2019. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-chord" data-anim-in="zoomIn" data-anim-in-scale="1.1" data-anim-out="fadeOut" style="--presentation-ink:#0C1024;--presentation-ink-foreground:#F5F7FF;--presentation-paper:#EDF0FF;--presentation-paper-foreground:#12172E;--presentation-accent:#7CFFEE;font-family:Inter, system-ui, sans-serif;" tabindex="-1" aria-label="Who flies where — passenger flows between world regions">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="Annual air passengers between six world regions as a chord diagram, 368 million in total, Europe–North America the largest flow at 62 million; then totals and growth by region"></div>
+  <section class="slide" data-slide data-theme="ink" aria-label="Cover">
+    <div aria-hidden="true" style="position:absolute; right:120px; top:150px; width:560px; height:560px; border-radius:50%; border:2px solid rgba(124,255,238,.5); background:conic-gradient(from 40deg, rgba(124,255,238,.35), rgba(167,139,250,.35), rgba(244,114,182,.3), rgba(124,255,238,.35)); filter:blur(1px); mask:radial-gradient(circle, transparent 58%, #000 60%, #000 72%, transparent 74%);"></div>
+    <div aria-hidden="true" style="position:absolute; right:250px; top:280px; width:300px; height:300px; border-radius:50%; background:radial-gradient(circle, rgba(124,255,238,.25), transparent 70%);"></div>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Chord · Glass Hologram</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-family:Inter, system-ui, sans-serif; font-weight:650; letter-spacing:-0.03em; font-size:6.75rem; max-width:760px;">Who flies where</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">368 million passengers a year between six regions — every flow runs both ways.</p>
+    <p class="presentation-note">The glass ring previews the chord.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="ring" style="justify-content:flex-start;" aria-label="All flows">
+    <header class="presentation-header"><span>Flows</span><span>Passengers per year, millions</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Inter, system-ui, sans-serif; font-weight:650; letter-spacing:-0.03em;">Six regions, thirteen corridors</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Arc length = a region’s traffic; ribbon width = one corridor.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="europe" style="justify-content:flex-start;" aria-label="Europe">
+    <header class="presentation-header"><span>Flows</span><span>Europe highlighted</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Inter, system-ui, sans-serif; font-weight:650; letter-spacing:-0.03em;">Europe touches 54% of all passengers</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The ribbons that do not touch Europe dim.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="totals" style="justify-content:flex-start;" aria-label="Totals">
+    <header class="presentation-header"><span>Volume</span><span>Passengers touching each region, millions</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Inter, system-ui, sans-serif; font-weight:650; letter-spacing:-0.03em;">Europe and North America dominate volume</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The ring unrolls into bars.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Key figures">
+    <p class="presentation-eyebrow" data-df-entrance="fade">Three numbers for the network plan</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:Inter, system-ui, sans-serif; font-weight:650; letter-spacing:-0.03em;"><span data-count="368">368</span> M</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">passengers between regions per year</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#7CFFEE; font-family:Inter, system-ui, sans-serif; font-weight:650; letter-spacing:-0.03em;"><span data-count="62">62</span> M</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">Europe ↔ North America — the busiest corridor</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:Inter, system-ui, sans-serif; font-weight:650; letter-spacing:-0.03em;">+<span data-count="21">21</span>%</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">Africa’s growth since 2019 — the fastest</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">The biggest corridors are mature. The fastest growth is on the thinnest ribbons.</p>
+    <p class="presentation-note">Maturity versus growth — the planning tension.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Sky">
+    <header class="presentation-header"><span>Capacity</span><span>Long-haul</span></header>
+    <div style="display:flex; gap:4.5rem; align-items:center; margin-top:3.5rem;">
+      <div style="flex:1 1 0; min-width:0;">
+        <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; font-family:Inter, system-ui, sans-serif; font-weight:650; letter-spacing:-0.03em;">Every ribbon is a timetable</h2>
+        <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:300ms; font-size:1.7rem;">The Europe–North America ribbon alone is about 480 long-haul departures a week, each way.</p>
+      </div>
+      <figure class="image" data-ratio="4/3" data-df-entrance="blur" style="--df-motion-delay:150ms; flex:0 0 700px; margin:0;">
+        <img src="https://picsum.photos/id/53/960/720" alt="A clear blue sky with a thin white streak of cloud" loading="lazy" width="960" height="720" style="width:100%; height:100%; object-fit:cover;" />
+        <figcaption class="image-caption" style="font-size:1.25rem;">A trail across the sky (stock photo).</figcaption>
+      </figure>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Make the ribbon physical.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="north" data-anim-in-blocks="6" data-anim-in-color="#7CFFEE" aria-label="Corridor table">
+    <header class="presentation-header"><span>Corridors</span><span>Top six, millions per year</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" style="font-size:1.7rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">Largest inter-regional air corridors, both directions (synthetic).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">Corridor</th><th class="table-head" style="text-align:right">Passengers</th><th class="table-head" style="text-align:right">Share</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row" style="font-weight:700"><td class="table-cell">Europe ↔ North America</td><td class="table-cell" style="text-align:right">62 M</td><td class="table-cell" style="text-align:right">17%</td></tr>
+          <tr class="table-row"><td class="table-cell">North America ↔ Latin America</td><td class="table-cell" style="text-align:right">51 M</td><td class="table-cell" style="text-align:right">14%</td></tr>
+          <tr class="table-row"><td class="table-cell">Europe ↔ Asia-Pacific</td><td class="table-cell" style="text-align:right">48 M</td><td class="table-cell" style="text-align:right">13%</td></tr>
+          <tr class="table-row"><td class="table-cell">North America ↔ Asia-Pacific</td><td class="table-cell" style="text-align:right">44 M</td><td class="table-cell" style="text-align:right">12%</td></tr>
+          <tr class="table-row"><td class="table-cell">Europe ↔ Middle East</td><td class="table-cell" style="text-align:right">41 M</td><td class="table-cell" style="text-align:right">11%</td></tr>
+          <tr class="table-row"><td class="table-cell">Asia-Pacific ↔ Middle East</td><td class="table-cell" style="text-align:right">36 M</td><td class="table-cell" style="text-align:right">10%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Six corridors carry 77% of the ring.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-family:Inter, system-ui, sans-serif; font-weight:650; letter-spacing:-0.03em; font-size:2.9rem;">“The ring showed our board in one picture why a hub in the Middle East changes everything between Europe and Asia.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#12172E; color:#7CFFEE;"><span class="avatar-fallback">AR</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Amal Rahimi<br /><span style="opacity:0.7; font-size:1.4rem;">Network planner — 31 routes launched</span></p>
+    </div>
+    <p class="presentation-note">The hub insight is the chord’s strength.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="growth" style="justify-content:flex-start;" aria-label="Growth">
+    <header class="presentation-header"><span>Growth</span><span>Passengers vs 2019</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Inter, system-ui, sans-serif; font-weight:650; letter-spacing:-0.03em;">The thin ribbons grow fastest</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The same regions, re-sorted by growth.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Questions from the network team">
+    <header class="presentation-header"><span>Q & A</span><span>Network planning</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; font-family:Inter, system-ui, sans-serif; font-weight:650; letter-spacing:-0.03em;">Questions from the network team</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="ch-qa2" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Why is traffic inside a region missing?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">The ring shows only flows between regions; domestic and intra-regional travel would dwarf it.</p></div>
+      </details>
+      <details class="accordion-item" name="ch-qa2" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Are connecting passengers double counted?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">No — each passenger is counted once, origin to destination region.</p></div>
+      </details>
+      <details class="accordion-item" name="ch-qa2" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Where would a new route matter most?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Africa ↔ Asia-Pacific: 6 M today, growing twice as fast as the network.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The counting question keeps the chart honest.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Takeaways">
+    <header class="presentation-header"><span>Takeaways</span><span>For the network plan</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">◇</span><span>Chords show mutual flows where a sankey would force a direction.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">◇</span><span>Europe sits on more than half of all inter-regional travel.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">◇</span><span>Hubs in the Middle East thicken Europe–Asia indirectly.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">◇</span><span>Grow the thin ribbons — they carry the growth.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Short and luminous.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-anim-in="blocksIn" data-anim-in-direction="south" data-anim-in-blocks="6" data-anim-in-color="#A78BFA" aria-label="Closing">
+    <div aria-hidden="true" style="position:absolute; right:120px; top:150px; width:560px; height:560px; border-radius:50%; border:2px solid rgba(124,255,238,.5); background:conic-gradient(from 40deg, rgba(124,255,238,.35), rgba(167,139,250,.35), rgba(244,114,182,.3), rgba(124,255,238,.35)); filter:blur(1px); mask:radial-gradient(circle, transparent 58%, #000 60%, #000 72%, transparent 74%);"></div>
+    <div aria-hidden="true" style="position:absolute; right:250px; top:280px; width:300px; height:300px; border-radius:50%; background:radial-gradient(circle, rgba(124,255,238,.25), transparent 70%);"></div>
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-family:Inter, system-ui, sans-serif; font-weight:650; letter-spacing:-0.03em;">Every flow runs both ways</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">Synthetic passenger flows — the chord is the real way to read a network.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">Let the ring close the talk.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) — build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-chord');
+    const TEXT = '#F5F7FF', MUTED = '#8A93C0';
+    const regions = [['Europe', '#7CFFEE'], ['North America', '#A78BFA'], ['Asia-Pacific', '#F472B6'], ['Middle East', '#FBBF24'], ['Latin America', '#60A5FA'], ['Africa', '#34D399']];
+    const color = Object.fromEntries(regions);
+    const links = [['Europe', 'North America', 62], ['Europe', 'Asia-Pacific', 48], ['Europe', 'Middle East', 41], ['Europe', 'Africa', 29], ['Europe', 'Latin America', 18],
+      ['North America', 'Asia-Pacific', 44], ['North America', 'Latin America', 51], ['Asia-Pacific', 'Middle East', 36], ['Middle East', 'Africa', 14],
+      ['Asia-Pacific', 'Africa', 6], ['North America', 'Middle East', 12], ['Latin America', 'Africa', 2], ['Asia-Pacific', 'Latin America', 5]];
+    const total = (r) => links.filter((l) => l[0] === r || l[1] === r).reduce((s, l) => s + l[2], 0);
+    const growth = { Africa: 21, 'Middle East': 18, 'Latin America': 11, 'Asia-Pacific': 9, Europe: 4, 'North America': 2 };
+    const ring = (focus) => ({
+      series: [{ id: 'regions', type: 'chord', center: ['50%', '63%'], radius: ['33%', '38%'], padAngle: 3, clockwise: false,
+        itemStyle: { borderRadius: 4 }, label: { show: true, color: TEXT, fontWeight: 650, distance: 16 },
+        lineStyle: { color: 'source', opacity: 0.4 },
+        data: regions.map(([n, c]) => ({ name: n, itemStyle: { color: c, opacity: !focus || n === focus ? 1 : 0.35 } })),
+        links: links.map(([s, t, v]) => ({ source: s, target: t, value: v, lineStyle: { opacity: !focus || s === focus || t === focus ? 0.55 : 0.05 } })) }],
+    });
+    const bars = (list, value, fmt) => ({
+      grid: { left: 290, right: 190, top: 330, bottom: 150 },
+      xAxis: { type: 'value', axisLabel: { color: MUTED }, splitLine: { lineStyle: { color: 'rgba(245,247,255,.08)' } } },
+      yAxis: { type: 'category', inverse: true, data: list, axisLine: { show: false }, axisLabel: { color: TEXT, fontWeight: 650 } },
+      series: [{ id: 'regions', type: 'bar', barWidth: '58%',
+        data: list.map((r) => ({ name: r, value: value(r), itemStyle: { color: color[r], borderRadius: [0, 8, 8, 0], shadowColor: color[r], shadowBlur: 14 } })),
+        label: { show: true, position: 'right', formatter: fmt, color: TEXT, fontWeight: 650 } }],
+    });
+    const byTotal = regions.map((r) => r[0]).sort((a, b) => total(b) - total(a));
+    const byGrowth = Object.keys(growth);
+
+    df$.shadcn.chart.deck(deck, {
+      base: { tooltip: { trigger: 'item' } },
+      states: {
+        ring: ring(null),
+        europe: ring('Europe'),
+        totals: bars(byTotal, total, '{c} M'),
+        growth: bars(byGrowth, (r) => growth[r], '+{c}%'),
+      },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 21-chord (Glass Hologram) — synthetic passenger flows.</p>
+<SourceFiles component="presentation" />
+</DocPage>

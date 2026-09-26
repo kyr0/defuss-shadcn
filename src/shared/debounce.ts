@@ -2,8 +2,8 @@
  * Why: bursty platform events (pointermove drags, resize, MutationObserver
  * batches, sandbox postMessages) fire faster than the work they trigger can
  * settle; running the work per-event causes visual churn (flicker) and wasted
- * re-layout. The one trailing-edge debounce — later calls within the wait
- * window slide the timer, the work runs once on quiet — is the shared answer,
+ * re-layout. The one trailing-edge debounce - later calls within the wait
+ * window slide the timer, the work runs once on quiet - is the shared answer,
  * emitted ONCE inside core (like every shared fn) and installed at
  * df$.shadcn.shared.debounce so components, the docs runtime and consumers
  * bind to the same implementation instead of hand-rolling their own.
@@ -13,7 +13,7 @@
 export interface Debounced<A extends unknown[]> {
   /** forward the latest args; resets the wait timer (work runs on quiet) */
   (...args: A): void;
-  /** run any pending call NOW (e.g. on drag end — the last state must land) */
+  /** run any pending call NOW (e.g. on drag end - the last state must land) */
   flush(): void;
   /** drop any pending call (e.g. on teardown) */
   cancel(): void;
@@ -35,7 +35,7 @@ export function debounce<A extends unknown[]>(fn: (...args: A) => void, wait: nu
     if (args) fn(...args);
   };
   const wrapped = (...args: A): void => {
-    lastArgs = args; // always keep the freshest args — trailing semantics
+    lastArgs = args; // always keep the freshest args - trailing semantics
     if (timer !== undefined) clearTimeout(timer);
     timer = setTimeout(invoke, wait);
   };

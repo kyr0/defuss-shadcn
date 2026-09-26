@@ -2,7 +2,7 @@
 name: Combobox
 type: MOL
 why: Text input filtering an anchored list with the aria-activedescendant keyboard model.
-when: Choosing from a long list the user narrows by typing — states, tags, users.
+when: Choosing from a long list the user narrows by typing - states, tags, users.
 where: dist/components/combobox/combobox.css + dist/components/combobox/combobox.js
 supportedStates: default, open
 ---
@@ -22,12 +22,12 @@ the search input when the popover opens.
 ---
 
 ## Native Web APIs
-- [Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API) — top-layer rendering and light-dismiss for the dropdown list
-- [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has) — reveals the injected clear button exactly while a selection exists (`data-placeholder` absent)
-- [CSS Anchor Positioning](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning) — positions the popover relative to the trigger without JS
-- [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) — entry animation starting values for popover appearance
-- [`overscroll-behavior`](https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior) — prevents scroll chaining from the listbox to the page
-- [WAI-ARIA Combobox pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/) — keyboard navigation and screen reader contract
+- [Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API) - top-layer rendering and light-dismiss for the dropdown list
+- [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has) - reveals the injected clear button exactly while a selection exists (`data-placeholder` absent)
+- [CSS Anchor Positioning](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning) - positions the popover relative to the trigger without JS
+- [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) - entry animation starting values for popover appearance
+- [`overscroll-behavior`](https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior) - prevents scroll chaining from the listbox to the page
+- [WAI-ARIA Combobox pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/) - keyboard navigation and screen reader contract
 
 ---
 
@@ -178,10 +178,10 @@ The registry global is `df$.shadcn.comboboxApi` / `df$.shadcn.comboboxStates`.
 ## Notes
 
 - Filtering toggles option `hidden` flags **in place** through the core `df$`
-  runtime (see the "DOM Querying & Morphing" guide) — consumer-authored
+  runtime (see the "DOM Querying & Morphing" guide) - consumer-authored
   options keep node identity across filtering (caret/selection survive);
   only membership/order changes would justify a keyed `df$(listbox).morph()`
-- The trigger is a `.btn[data-variant="outline"]` — styled by the button system
+- The trigger is a `.btn[data-variant="outline"]` - styled by the button system
 - When the popover opens, focus moves to the search input inside
 - When the popover closes, focus returns to the trigger button
 - Use `aria-activedescendant` to communicate the highlighted item to screen readers
@@ -190,7 +190,7 @@ The registry global is `df$.shadcn.comboboxApi` / `df$.shadcn.comboboxStates`.
 - The popover animates in via `@starting-style` + `transition-behavior: allow-discrete`
 - The check icon for selected items uses a CSS `::before` pseudo-element
 - Filter matching is case-insensitive and supports substring matching
-- The clear button (`.combobox-clear`, ✕) is **injected by the JS after the trigger** — consumer markup never contains it. It replaces the chevron whenever a value is selected (pure CSS via `:has()`), and clicking it restores the placeholder and deselects every option
+- The clear button (`.combobox-clear`, ✕) is **injected by the JS after the trigger** - consumer markup never contains it. It replaces the chevron whenever a value is selected (pure CSS via `:has()`), and clicking it restores the placeholder and deselects every option
 - The empty state element is shown when no items match the filter query
 - Group labels and separators auto-hide when their group has no visible items
 - `overscroll-behavior: contain` prevents scroll chaining from the listbox

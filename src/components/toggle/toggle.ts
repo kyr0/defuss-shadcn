@@ -1,7 +1,7 @@
 // -- Toggle ---------------------------------------------------
 // Toggles aria-pressed on .toggle buttons, plus the named-state API so
 // agents/tests can drive the pressed state by name (AGENTS.md "State API").
-// Skips toggles inside .toggle-group — those are managed by toggle-group.js.
+// Skips toggles inside .toggle-group - those are managed by toggle-group.js.
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.

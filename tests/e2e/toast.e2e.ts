@@ -8,7 +8,7 @@ import { startServer } from './server.ts';
  * HTTP in a real browser, then verifies the programmatic df$.shadcn.toast API
  * (show/variants/roles), the delegated close button, the MAX_VISIBLE trim,
  * and the region's named State API (setState('default') clears; getState()
- * reports the live count) — the same files consumers copy from dist/,
+ * reports the live count) - the same files consumers copy from dist/,
  * unmodified.
  */
 
@@ -53,7 +53,7 @@ try {
 
   await check('toast pins to its container corner (top layer bypasses the flex region)', async () => {
     // toasts render in the top layer (popover="manual"), so the container's
-    // flex layout can't reach them — without explicit corner pinning the UA
+    // flex layout can't reach them - without explicit corner pinning the UA
     // centers every toast in the viewport
     await page.evaluate(() => globalThis.df$.shadcn.toast!.show({ title: 'corner', duration: Infinity }));
     await page.waitForFunction(() => !!document.querySelector('#toast-container .toast'));
@@ -75,7 +75,7 @@ try {
   });
 
   await check('variant icon renders at 16px (not the SVG intrinsic default)', async () => {
-    // regression: generated icon SVGs have no width/height — without the CSS
+    // regression: generated icon SVGs have no width/height - without the CSS
     // size they render ~300px and blow up the whole toast
     await page.click('#t-success');
     await page.waitForFunction(() => !!document.querySelector('#toast-container .toast .toast-icon'));

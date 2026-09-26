@@ -4,7 +4,7 @@ import type { Props } from 'defuss';
  * Marker children shared by <Example> and <Demo>: label/hint/code are declared
  * as child elements with data-example-* marker attributes; the parent extracts
  * them out of the demo flow and places them in the scaffolding. The markers
- * render plain placeholder elements — parents must never pass them through.
+ * render plain placeholder elements - parents must never pass them through.
  */
 
 export const MARKER_ATTRS: Record<string, 'label' | 'hint' | 'code'> = {
@@ -58,7 +58,7 @@ export function DemoCode({ header, lang, children }: Props & { header?: string; 
 }
 
 /** Marker: page-level overlays (demo dialogs/popovers) that must live as
- * direct <body> children — DocPage extracts these and renders them after the
+ * direct <body> children - DocPage extracts these and renders them after the
  * footer, exactly where the hand-written pages put them. */
 export function PageOverlay({ children }: Props) {
   return <div data-page-overlay="">{children}</div>;

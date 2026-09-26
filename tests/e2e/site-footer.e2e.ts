@@ -1,7 +1,7 @@
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: site-footer is CSS-only — 4-column link grid at wide width, the
+ * Why: site-footer is CSS-only - 4-column link grid at wide width, the
  * semantic <hr class="separator"> rule, bottom row split, and labeled
  * social links (icon-only anchors must carry aria-labels).
  */
@@ -28,7 +28,7 @@ await cssSmoke('site-footer', [
       });
       if (r.h !== '1px' || r.bw !== '0px') throw new Error(`height ${r.h}, border ${r.bw}`);
       // full width = container width minus its 2rem inline padding (~32px)
-      if (r.hrW < r.innerW - 80) throw new Error(`hr ${r.hrW}px vs inner ${r.innerW}px — not full width`);
+      if (r.hrW < r.innerW - 80) throw new Error(`hr ${r.hrW}px vs inner ${r.innerW}px - not full width`);
     },
   },
   {

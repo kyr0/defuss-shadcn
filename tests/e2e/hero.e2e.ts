@@ -1,7 +1,7 @@
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: hero is a copy-only CSS block — verify the badge/title/desc/CTA
+ * Why: hero is a copy-only CSS block - verify the badge/title/desc/CTA
  * column and the wide-container size steps all apply from hero.css
  * (values at the fixture's wide container: 30rem+ steps).
  */

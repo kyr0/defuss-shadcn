@@ -7,7 +7,7 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-// defussQuery: the callable runtime — dots are (re)rendered through keyed
+// defussQuery: the callable runtime - dots are (re)rendered through keyed
 // morph, flags ride .attr()/.prop() (plans/defuss-query-morph-integration.md
 // §3 carousel row).
 import { defussGlobals, defussQuery } from '../../shared/state-api.js';
@@ -42,7 +42,7 @@ export const carouselApi = {
   getState(carousel) {
     return {
       name: carousel.dataset.stateName || 'default',
-      // live slide index — updated by updateState() on scroll, not just setState
+      // live slide index - updated by updateState() on scroll, not just setState
       config: { ...carousel._stateConfig, index: Number(carousel.dataset.currentIndex || 0) },
     };
   },
@@ -119,13 +119,13 @@ document.querySelectorAll('.carousel:not([data-init])').forEach((carousel) => {
     // state must not live in module scope)
     carousel.dataset.currentIndex = String(index);
 
-    // Prev/next disabled states (non-loop) — native IDL flags via .prop()
+    // Prev/next disabled states (non-loop) - native IDL flags via .prop()
     if (!isLoop) {
       if (prevBtn) dfDollar(prevBtn).prop('disabled', currentIndex <= 0);
       if (nextBtn) dfDollar(nextBtn).prop('disabled', currentIndex >= allSlides.length - 1);
     }
 
-    // Dot indicators — scalar ARIA flag per dot through query (§3: attr, no re-render)
+    // Dot indicators - scalar ARIA flag per dot through query (§3: attr, no re-render)
     if (dotsContainer)
       dfDollar(dotsContainer)
         .find('.carousel-dot')

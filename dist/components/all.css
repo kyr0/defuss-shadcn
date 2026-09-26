@@ -15,9 +15,9 @@
     /* -- Content animation (CSS-only) -------------------------
        Two gotchas, both required for the panel to glide:
        1. `::details-content` must attach to the compound (`&::details-content`,
-          NOT `& ::details-content` — the descendant form never matches, the
+          NOT `& ::details-content` - the descendant form never matches, the
           pseudo's originating element is the subject itself).
-       2. `block-size: auto` is a keyword — without interpolate-size the
+       2. `block-size: auto` is a keyword - without interpolate-size the
           0→auto pair is non-interpolable and the transition silently snaps. */
     &::details-content {
       block-size: 0;
@@ -97,7 +97,7 @@
 }
 
 /* Accessibility: reduced motion suppresses the expand/collapse animation
-   (REQUIRED for all components — AGENTS.md "Accessibility CSS"). */
+   (REQUIRED for all components - AGENTS.md "Accessibility CSS"). */
 @media (prefers-reduced-motion: reduce) {
   @layer components {
     .accordion-item::details-content { transition: none; }
@@ -226,7 +226,7 @@
       backdrop-filter: blur(3px);
     }
 
-    /* Block Escape key — user must choose an action */
+    /* Block Escape key - user must choose an action */
     &::backdrop {
       pointer-events: auto;
     }
@@ -290,7 +290,7 @@
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all
-   components — AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
    `none` keeps transitionend/animationend (and discrete display flips)
    firing so JS state machines that await them keep working. */
 @media (prefers-reduced-motion: reduce) {
@@ -340,6 +340,131 @@
       transition-duration: 0.01ms !important;
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
+    }
+  }
+}
+
+/* ── components/anim-canvas/anim-canvas.css ── */
+/* -- Animation Canvas component ----------------------------------
+   Chess-board slide canvas: the root is the viewport (overflow hidden),
+   JS-created .anim-canvas-board carries the pan/zoom transform, slides are
+   absolute cells in board units (--anim-canvas-width/height, literal
+   defaults, token-free artboard like presentation). All motion is the shared
+   df$.anim engine + one WAAPI board pan; this sheet owns only the surface:
+   card-ish slides (allowed tokens), the overview tile affordance, and the
+   optional directional chrome. */
+
+@layer components {
+  .anim-canvas {
+    /* artboard contract - override on the mount for other formats */
+    --anim-canvas-width: 1280;
+    --anim-canvas-height: 720;
+
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: var(--anim-canvas-width) / var(--anim-canvas-height);
+    overflow: hidden;
+    background: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+
+    /* the one pan/zoom layer (JS-created; transform-origin pinned so the
+       runtime's translate+scale math stays in raw board units) */
+    & .anim-canvas-board {
+      position: absolute;
+      inset: 0;
+      transform-origin: 0 0;
+      will-change: transform;
+    }
+
+    /* a board cell: card surface, flush against its neighbors (radius only
+       appears in overview, where the tiles separate) */
+    & .anim-canvas-slide {
+      position: absolute;
+      box-sizing: border-box;
+      overflow: hidden;
+      background: var(--card);
+      color: var(--card-foreground);
+    }
+
+    /* overview: every slide reads as a clickable tile */
+    &[data-overview] .anim-canvas-slide {
+      cursor: pointer;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+
+      &:hover {
+        outline: 2px solid var(--ring);
+        outline-offset: 2px;
+      }
+    }
+
+    /* optional authored chrome: directional + overview buttons
+       ([data-anim-canvas-go="east|west|north|south|overview"]) */
+    & .anim-canvas-controls {
+      position: absolute;
+      inset-block-end: 0.75rem;
+      inset-inline-end: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      z-index: 2;
+    }
+
+    & .anim-canvas-control {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      inline-size: 2rem;
+      block-size: 2rem;
+      padding: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--card);
+      color: var(--card-foreground);
+      cursor: pointer;
+      font: inherit;
+      line-height: 1;
+      transition: background-color 150ms ease;
+
+      &:hover {
+        background: var(--accent);
+        color: var(--accent-foreground);
+      }
+      &:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+    }
+  }
+
+  /* accessibility: honor motion + contrast preferences (REQUIRED). The
+     engine collapses its own durations and the runtime collapses the board
+     pan to 1ms; here the chrome's hover transition flattens. */
+  @media (prefers-reduced-motion: reduce) {
+    .anim-canvas .anim-canvas-control {
+      transition: none;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .anim-canvas .anim-canvas-control {
+      border-width: 2px;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .anim-canvas {
+      border-color: CanvasText;
+    }
+    .anim-canvas[data-overview] .anim-canvas-slide {
+      outline: 1px solid CanvasText;
+    }
+    .anim-canvas .anim-canvas-control {
+      border-color: ButtonBorder;
+      color: ButtonText;
+      background: ButtonFace;
     }
   }
 }
@@ -411,7 +536,7 @@
     background-color: var(--muted);
     position: absolute;
     inset: 0;
-    border-radius: inherit; /* .avatar no longer clips — the fallback must round itself */
+    border-radius: inherit; /* .avatar no longer clips - the fallback must round itself */
   }
 
   /* Hide fallback when image is loaded */
@@ -650,7 +775,7 @@
     row-gap: 1.75rem;
   }
 
-  /* the mark links out to the brand — no underline. Ink color tracks the
+  /* the mark links out to the brand - no underline. Ink color tracks the
      theme (black in light, white in dark) via --foreground; the name text
      stays muted so the marks read first. */
   .mk-logo {
@@ -690,13 +815,84 @@
     .mk-logo-name { font-size: 1.25rem; }
   }
 
+  /* -- Rolling marquee ------------------------------------------
+     Continuous speed-based roll (a slow ticker, not step sliding):
+     the track holds the logo set TWICE - the second copy carries
+     aria-hidden="true" + tabindex="-1" - and translates by exactly
+     -50%, so the loop restarts on identical content (seamless).
+     `gap` between items plus an equal padding at the track's end
+     keeps each copy exactly half the border box wide (transform
+     percentages measure the border box, padding included). */
+  .mk-logos-roll {
+    --mk-logos-roll-duration: 30s;
+    --mk-logos-roll-height: 12rem;
+    overflow: hidden;
+    width: 100%;
+    -webkit-mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+  }
+
+  .mk-logos-roll-track {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem; /* matches .mk-logos-row column-gap */
+    padding-inline-end: 2.5rem;
+    width: max-content;
+    animation: mk-logos-roll var(--mk-logos-roll-duration, 30s) linear infinite;
+  }
+
+  .mk-logos-roll:hover .mk-logos-roll-track,
+  .mk-logos-roll:focus-within .mk-logos-roll-track { animation-play-state: paused; }
+
+  /* vertical roll: column track in a fixed-height viewport, mask on
+     the block edges instead */
+  .mk-logos-roll[data-direction="y"] {
+    height: var(--mk-logos-roll-height, 12rem);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+  }
+
+  .mk-logos-roll[data-direction="y"] .mk-logos-roll-track {
+    flex-direction: column;
+    margin-inline: auto;
+    padding-inline-end: 0;
+    padding-block-end: 2.5rem;
+    animation-name: mk-logos-roll-y;
+  }
+
+  @keyframes mk-logos-roll {
+    to { transform: translateX(-50%); }
+  }
+
+  @keyframes mk-logos-roll-y {
+    to { transform: translateY(-50%); }
+  }
+
   /* -- Accessibility ------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
     .mk-logo { transition: none; }
+
+    /* static fallback: the roll collapses back into the plain wrapped
+       row and the duplicated copy drops out so nothing renders twice */
+    .mk-logos-roll,
+    .mk-logos-roll[data-direction="y"] { height: auto; }
+    .mk-logos-roll-track {
+      animation: none;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: auto;
+      padding-inline-end: 0;
+      padding-block-end: 0;
+    }
+    .mk-logos-roll[data-direction="y"] .mk-logos-roll-track { flex-direction: row; animation: none; }
+    .mk-logos-roll-track > [aria-hidden="true"] { display: none; }
   }
 
   @media (forced-colors: active) {
     .mk-logo { color: CanvasText; }
+    /* masks hide content in forced-colors mode - show the full roll */
+    .mk-logos-roll,
+    .mk-logos-roll[data-direction="y"] { -webkit-mask-image: none; mask-image: none; }
   }
 }
 
@@ -812,7 +1008,7 @@
     }
 
     /* Loading state (aria-busy + a .spinner child): a disabled button must
-       freeze its spinner — "pending" is signaled by the dimming, a frozen
+       freeze its spinner - "pending" is signaled by the dimming, a frozen
        wheel is the accepted pattern; only an ENABLED busy button spins. */
     &:disabled .spinner,
     &[aria-disabled="true"] .spinner {
@@ -834,7 +1030,7 @@
       /* --secondary is near-white in light themes, so an opacity fade would
          wash the button further into the page background (invisible hover).
          Mixing in the foreground color instead darkens light themes and
-         lightens dark ones — always moving away from the page surface. */
+         lightens dark ones - always moving away from the page surface. */
       &:hover {
         background-color: color-mix(in oklch, var(--secondary) 85%, var(--secondary-foreground));
       }
@@ -996,7 +1192,7 @@
         margin-top: -1px;
       }
 
-      /* Square exactly the BLOCK corners that touch a neighbour — a
+      /* Square exactly the BLOCK corners that touch a neighbour - a
          non-first button squares its top edge, a non-last its bottom
          edge; the base .btn radius keeps every outer corner rounded on
          both sides. No per-corner "restore" overrides: the last block's
@@ -1100,7 +1296,7 @@
      data-density on the .calendar root scales the whitespace between the
      frame and the grid plus the day hit-areas (0.75 / 1 / 1.25-ish scale of
      the 2rem/2.25rem cells); comfortable matches the unsized default.
-     Typography stays put — a spacing policy, not a zoom. */
+     Typography stays put - a spacing policy, not a zoom. */
   .calendar:where([data-density="compact"]) {
     padding: 0.5rem;
     & .calendar-day-label,
@@ -1176,7 +1372,7 @@
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all
-   components — AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
    `none` keeps transitionend/animationend (and discrete display flips)
    firing so JS state machines that await them keep working. */
 @media (prefers-reduced-motion: reduce) {
@@ -1286,7 +1482,7 @@
   }
 
   /* Header + footer with no .card-content between: the zeroed paddings would
-     glue them together — restore the gap for that composition only. */
+     glue them together - restore the gap for that composition only. */
   .card-header + .card-footer {
     padding-top: 1rem;
   }
@@ -1479,13 +1675,103 @@
   }
 }
 
+/* ── components/chart/chart.css ── */
+/* -- Chart component -----------------------------------------------------
+   The sizing surface + editorial frame for the ECharts mount (chart.ts owns
+   the runtime: theme adapter, resize, story). The mount itself is a plain
+   block with three height presets via data-size; .chart-frame is the
+   card-like bordered wrapper (title/dek/source chrome) for editorial
+   data-storytelling. Tokens only (AGENTS.md token boundary rule). */
+
+@layer components {
+  .chart {
+    width: 100%;
+    height: 20rem;
+
+    &[data-size='sm'] {
+      height: 14rem;
+    }
+    &[data-size='lg'] {
+      height: 28rem;
+    }
+
+    /* ECharts animates internally (canvas/svg), but the mount itself never
+       transitions - reduced motion is handled in the JS base option */
+    @media (prefers-reduced-motion: reduce) {
+      & * {
+        transition: none !important;
+      }
+    }
+  }
+
+  /* the editorial frame: chart + headline + dek + source line, card-like */
+  .chart-frame {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+  }
+
+  .chart-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: var(--tracking-normal);
+    text-wrap: balance;
+  }
+
+  .chart-dek {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--muted-foreground);
+    text-wrap: pretty;
+  }
+
+  .chart-source {
+    margin: 0;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: var(--muted-foreground);
+  }
+
+  @media (prefers-contrast: more) {
+    .chart-frame {
+      border-width: 2px;
+    }
+    .chart-dek,
+    .chart-source {
+      color: var(--foreground);
+    }
+  }
+
+  /* Windows High Contrast Mode: frame + chrome fall back to system colors */
+  @media (forced-colors: active) {
+    .chart-frame {
+      border-color: CanvasText;
+      background: Canvas;
+      color: CanvasText;
+    }
+    .chart-title,
+    .chart-dek,
+    .chart-source {
+      color: CanvasText;
+    }
+  }
+}
+
 /* ── components/checkbox/checkbox.css ── */
 /* -- Checkbox component ----------------------------------------- */
 
 @layer components {
   .checkbox {
     appearance: none;
-    margin: 0; /* kill the UA's ~4px input margin — breaks flex/grid rhythm */
+    margin: 0; /* kill the UA's ~4px input margin - breaks flex/grid rhythm */
     width: 1.125rem;
     height: 1.125rem;
     border: 1px solid var(--border);
@@ -1513,7 +1799,7 @@
       }
     }
 
-    /* Per spec, an indeterminate checkbox ALSO matches :checked — both
+    /* Per spec, an indeterminate checkbox ALSO matches :checked - both
        ::after rules land on the element, so the dash must explicitly cancel
        the checkmark's border (else the rotated border renders on top of it). */
     &:indeterminate {
@@ -1558,7 +1844,7 @@
       font-size: 0.875rem;
       cursor: pointer;
       /* leading-none (shadcn parity): a 1.6 line-box centers the LINE, not
-         the glyphs — baseline then floats with the font's ascent, so text
+         the glyphs - baseline then floats with the font's ascent, so text
          rides visibly off the box midline (worst with metric-heavy
          fallbacks). line-height:1 shrinks the box to the glyphs themselves. */
       line-height: 1;
@@ -1620,9 +1906,9 @@
 
     /* Two gotchas, both required for the panel to glide:
        1. `::details-content` must attach to the compound (`&::details-content`,
-          NOT `& ::details-content` — the descendant form never matches, the
+          NOT `& ::details-content` - the descendant form never matches, the
           pseudo's originating element is the subject itself).
-       2. `block-size: auto` is a keyword — without interpolate-size the
+       2. `block-size: auto` is a keyword - without interpolate-size the
           0→auto pair is non-interpolable and the transition silently snaps. */
     &::details-content {
       block-size: 0;
@@ -1706,7 +1992,7 @@
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all
-   components — AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
    `none` keeps transitionend/animationend (and discrete display flips)
    firing so JS state machines that await them keep working. */
 @media (prefers-reduced-motion: reduce) {
@@ -1794,12 +2080,12 @@
     /* -- Sizes -------------------------------------------------
        Swatch + padding re-derived per step so the TOTAL box height lands
        on the shared input ladder (xs 28 / sm 32 / md 36 / lg 44 / xl 52
-       px — md is the typical 2.25rem the other inputs use at md). The UA
+       px - md is the typical 2.25rem the other inputs use at md). The UA
        styles form controls border-box, so:
        total = swatch + 2×padding-block + 2px frame:
        xs 20+6+2 · sm 24+6+2 · md 28+6+2 · lg 32+10+2 · xl 40+10+2.
        The unsized default IS md (1.75rem swatch, 0.1875rem block padding = 36px)
-       — exactly like .input defaults to the md step. */
+       - exactly like .input defaults to the md step. */
     &[data-size="xs"] { padding: 0.1875rem 0.5rem; gap: 0.375rem; & input[type="color"] { width: 1.25rem; height: 1.25rem; } & .color-picker-value { font-size: 0.6875rem; } }
     &[data-size="sm"] { padding: 0.1875rem 0.625rem; gap: 0.375rem; & input[type="color"] { width: 1.5rem; height: 1.5rem; } & .color-picker-value { font-size: 0.75rem; } }
     &[data-size="md"] { padding: 0.1875rem 0.75rem; & input[type="color"] { width: 1.75rem; height: 1.75rem; } & .color-picker-value { font-size: 0.8125rem; } }
@@ -1818,7 +2104,7 @@
     /* -- Sizes: set data-size on the .combobox wrapper; the trigger (a
        .btn) and the popover's rows scale together. Heights/fonts mirror the
        field ladder the .input defines: the unsized trigger renders 2.5rem —
-       the .input default — via the .combobox-trigger rule below, md = 2.25rem
+       the .input default - via the .combobox-trigger rule below, md = 2.25rem
        is the ladder's md, exactly like .input goes 2.5rem → 2.25rem at md. */
     &[data-size="xs"] {
       & .combobox-trigger { height: 1.75rem; padding: 0 0.5rem; font-size: 0.75rem; }
@@ -1845,7 +2131,7 @@
     width: 100%;
     justify-content: space-between;
     /* the field standard for the unsized default (see .input): the ladder's
-       md step — identical to what a bare .btn renders, so no override is
+       md step - identical to what a bare .btn renders, so no override is
        needed beyond pinning it explicitly against .btn base drift */
     height: 2.25rem;
   }
@@ -1872,7 +2158,7 @@
   /* Clear button (injected by combobox.js after the trigger). Anchor-positioned
      over the trigger's chevron slot; anchored via the same per-instance anchor
      name the popover uses. `data-placeholder` presence is the single
-     selection marker — the :has() rules below flip chevron and clear in sync,
+     selection marker - the :has() rules below flip chevron and clear in sync,
      so no JS toggles visibility. */
   .combobox-clear {
     position: fixed;
@@ -1994,7 +2280,7 @@
 
     /* Mask (not background-image): a data: URI SVG resolves currentColor to
        BLACK when used as an image, making the check invisible in dark mode.
-       Masking paints it with background-color: currentColor — the real text
+       Masking paints it with background-color: currentColor - the real text
        color, hover/foreground included. */
     &[aria-selected="true"]::before {
       content: '';
@@ -2018,7 +2304,7 @@
 
     /* Author `display: flex` overrides the UA's [hidden] { display: none }
        (author origin always wins), so filter()'s item.hidden = true left
-       non-matching options rendered — and clickable — in the list. */
+       non-matching options rendered - and clickable - in the list. */
     &[hidden] {
       display: none;
     }
@@ -2227,7 +2513,7 @@
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all
-   components — AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
    `none` keeps transitionend/animationend (and discrete display flips)
    firing so JS state machines that await them keep working. */
 @media (prefers-reduced-motion: reduce) {
@@ -2274,7 +2560,7 @@
 
 @layer components {
   .date-input {
-    /* see .input — border-box so the declared ladder height is the real box;
+    /* see .input - border-box so the declared ladder height is the real box;
        unsized default = the ladder's md step (field standard) */
     box-sizing: border-box;
     height: 2.25rem;
@@ -2322,7 +2608,7 @@
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all
-   components — AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
    `none` keeps transitionend/animationend (and discrete display flips)
    firing so JS state machines that await them keep working. */
 @media (prefers-reduced-motion: reduce) {
@@ -2400,7 +2686,7 @@
   }
 
   /* -- Scroll lock ------------------------------------------- */
-  /* While the dialog is modal the page behind must stay put — closing
+  /* While the dialog is modal the page behind must stay put - closing
      returns you to exactly the scroll offset you had. `:modal` matches only
      while opened via showModal(); overflow:hidden freezes the viewport
      without losing the scroll position (no JS position:fixed hack), and
@@ -2414,7 +2700,7 @@
   /* -- Density ------------------------------------------------
      data-density on the .dialog root scales the content padding
      (0.75 / 1 / 1.25 of the 1.5rem default); comfortable matches the
-     unsized default. Width stays governed by data-size — two axes. */
+     unsized default. Width stays governed by data-size - two axes. */
   .dialog:where([data-density="compact"]) .dialog-content      { padding: 1rem; }
   .dialog:where([data-density="comfortable"]) .dialog-content  { padding: 1.5rem; }
   .dialog:where([data-density="spacious"]) .dialog-content     { padding: 2rem; }
@@ -2429,7 +2715,7 @@
 }
 
 /* Accessibility: reduced motion removes open/close transitions (REQUIRED
-   for all components — AGENTS.md "Accessibility CSS"). */
+   for all components - AGENTS.md "Accessibility CSS"). */
 @media (prefers-reduced-motion: reduce) {
   @layer components {
     dialog.dialog,
@@ -2628,7 +2914,7 @@
 /* ── components/faq/faq.css ── */
 /* -- FAQ (marketing) -----------------------------------------------
    "Frequently asked questions" as an icon-card grid (each answer is
-   visible — no disclosure widget). Cards hold a muted icon tile and a
+   visible - no disclosure widget). Cards hold a muted icon tile and a
    question/answer pair. Responsive columns follow container width. */
 
 @layer components {
@@ -2852,7 +3138,7 @@
 
 @layer components {
   .file-input {
-    /* see .input — border-box so the declared ladder height is the real box;
+    /* see .input - border-box so the declared ladder height is the real box;
        unsized default = the ladder's md step (field standard) */
     box-sizing: border-box;
     width: 100%;
@@ -2871,7 +3157,7 @@
 
     &::file-selector-button {
       /* % resolves against the border-box's CONTENT height once the control is
-         border-box — 100% would leave 1px gaps above/below the divider; +2px
+         border-box - 100% would leave 1px gaps above/below the divider; +2px
          makes the button flush with the frame (its original visual) */
       height: calc(100% + 2px);
       border: none;
@@ -2912,7 +3198,7 @@
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all
-   components — AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
    `none` keeps transitionend/animationend (and discrete display flips)
    firing so JS state machines that await them keep working. */
 @media (prefers-reduced-motion: reduce) {
@@ -3184,9 +3470,9 @@
 
 /* ── components/hero/hero.css ── */
 /* -- Hero (marketing) ---------------------------------------------
-   Centered headline + description + CTAs. Copy-only by design — pair it
+   Centered headline + description + CTAs. Copy-only by design - pair it
    with the Product Showcase block for video. Layout switches on container
-   width, not viewport — the block renders correctly inside a preview box. */
+   width, not viewport - the block renders correctly inside a preview box. */
 
 @layer components {
   .mk-hero {
@@ -3239,7 +3525,7 @@
 
   .mk-hero-actions { display: flex; flex-direction: column; gap: 0.5rem; width: 100%; }
 
-  /* the section itself is the query container — a container cannot query
+  /* the section itself is the query container - a container cannot query
      itself, so responsive rules target the copy child (descendant) */
   @container mk-hero (min-width: 30rem) {
     .mk-hero-title { font-size: 3.75rem; }
@@ -3315,6 +3601,15 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      transition: filter 200ms ease;
+    }
+
+    /* -- Progressive placeholder --------------------------------
+       Why: the low-res stand-in (data-src-low) shows blurred until the
+       real source is preloaded and swapped in; 8px is a hardcoded filter
+       value per the token boundary (no --* token for filters). */
+    & > img[data-loading] {
+      filter: blur(8px);
     }
 
     /* -- Fit variants ---------------------------------------- */
@@ -3478,6 +3773,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .image > img,
     dialog.image-lightbox,
     dialog.image-lightbox::backdrop,
     .image-lightbox-content > img {
@@ -3495,7 +3791,7 @@
        <input> content-box, so `height` would otherwise exclude the 2px frame
        and render 2px taller than the border-box fields (select, button-based
        triggers). With it, every declared height IS the rendered box.
-       The unsized default IS the ladder's md step (2.25rem = 36px) — same
+       The unsized default IS the ladder's md step (2.25rem = 36px) - same
        height, padding and font as [data-size="md"] below, so an unlabeled
        field and an explicit md field are the same control. */
     box-sizing: border-box;
@@ -3522,7 +3818,7 @@
     /* -- Readonly state -------------------------------------- */
     /* :not(:disabled) is load-bearing: a disabled input ALSO matches
        :read-only, and this rule's specificity (class + pseudo + :not attr)
-       outranks the plain :disabled below — without the exclusion, disabled
+       outranks the plain :disabled below - without the exclusion, disabled
        controls would render with the readonly look (0.7/default). */
     &:read-only:not([type="file"], :disabled) {
       background: var(--muted);
@@ -3666,7 +3962,7 @@
     margin-bottom: 0.375rem;
     cursor: default;
 
-    /* Required — the adjacent control carries `required`: render the star.
+    /* Required - the adjacent control carries `required`: render the star.
        Pure CSS (no span to remember, nothing to desync); decorative only —
        the native attribute already conveys the requirement to AT. */
     &:has(+ input[required])::after,
@@ -3676,13 +3972,13 @@
       font-weight: 600;
     }
 
-    /* Disabled — explicit attribute */
+    /* Disabled - explicit attribute */
     &[data-disabled] {
       opacity: 0.7;
       cursor: not-allowed;
     }
 
-    /* Disabled — auto-detect via adjacent disabled control */
+    /* Disabled - auto-detect via adjacent disabled control */
     &:has(+ :disabled),
     &:has(+ [data-disabled]) {
       opacity: 0.7;
@@ -3720,6 +4016,192 @@
   }
 }
 
+/* ── components/motion/motion.css ── */
+/* -- Motion component -------------------------------------------------
+   The shared entrance-animation vocabulary: CSS @keyframes are the single
+   source of truth (geometry, easing, defaults, reduced-motion), driven either
+   declaratively via [data-df-entrance] or imperatively through the JS
+   controller `ddf$.entrance(el, effect, opts)` (src/shared/motion.ts - same
+   functions under df$.shadcn.entrance). The JS never defines keyframes; it
+   only triggers/retriggers, overrides timing vars and owns the
+   finished/cancel lifecycle via the platform's CSSAnimation objects.
+
+   Why animations (not transitions): they run deterministically when the
+   attribute first applies - including on freshly inserted DOM - and they
+   replay cleanly (cancel → play). Transitions need a rendered "from" state
+   and never fire on initial application (the reason the first vocabulary
+   demo showed a static grid).
+
+   Why animation-composition: add - transform/filter keyframes COMPOSE with
+   any pre-existing transform/filter on the element instead of replacing it,
+   so entrances are safe on arbitrarily styled DOM (no transform inspection
+   or reconstruction). The paired fade runs with `replace`.
+
+   Limits: non-replaced inline boxes (display:inline spans) are not
+   transformable per CSS - this is deliberate and NOT worked around (silent
+   display changes would alter text wrapping). Wrap inline content or let the
+   caller promote it. */
+
+@layer components {
+  /* timing tunables - :root defaults so ANY ancestor (deck mount, container,
+     inline style) can override by ordinary cascade; inline styles win last */
+  :root {
+    --df-motion-duration: 1500ms;
+    --df-motion-delay: 0ms;
+    --df-motion-ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --df-motion-distance: 24px;
+    --df-motion-scale-in: 0.9;
+    --df-motion-scale-out: 1.1;
+    --df-motion-blur: 12px;
+    --df-motion-angle: 12deg;
+    --df-motion-spin: -0.5turn;
+    /* JS writes the element's CURRENT computed opacity here, so fading an
+       opacity:.6 element ends at .6 - never brightens content it doesn't own */
+    --df-motion-base-opacity: 1;
+  }
+
+  /* one animation declaration, parameterized entirely by the vars above */
+  [data-df-entrance] {
+    animation-duration: var(--df-motion-duration);
+    animation-delay: var(--df-motion-delay);
+    animation-timing-function: var(--df-motion-ease);
+    animation-fill-mode: both;
+
+    /* transform-channel entrances pair with the fade (composition: add keeps
+       the element's own transform underneath); clip-path entrances need no
+       fade - the clip alone reveals the content */
+    &[data-df-entrance="up"] { animation-name: df-enter-up, df-enter-fade; animation-composition: add, replace; }
+    &[data-df-entrance="down"] { animation-name: df-enter-down, df-enter-fade; animation-composition: add, replace; }
+    &[data-df-entrance="left"] { animation-name: df-enter-left, df-enter-fade; animation-composition: add, replace; }
+    &[data-df-entrance="right"] { animation-name: df-enter-right, df-enter-fade; animation-composition: add, replace; }
+    &[data-df-entrance="zoom"] { animation-name: df-enter-zoom, df-enter-fade; animation-composition: add, replace; }
+    &[data-df-entrance="zoom-out"] { animation-name: df-enter-zoom-out, df-enter-fade; animation-composition: add, replace; }
+    &[data-df-entrance="pop"] { animation-name: df-enter-pop, df-enter-fade; animation-composition: add, replace; }
+    &[data-df-entrance="spin"] { animation-name: df-enter-spin, df-enter-fade; animation-composition: add, replace; }
+    &[data-df-entrance="flip"] { animation-name: df-enter-flip, df-enter-fade; animation-composition: add, replace; }
+    &[data-df-entrance="skew"] { animation-name: df-enter-skew, df-enter-fade; animation-composition: add, replace; }
+    &[data-df-entrance="blur"] { animation-name: df-enter-blur, df-enter-fade; animation-composition: add, replace; }
+    &[data-df-entrance="wipe"] { animation-name: df-enter-wipe; }
+    &[data-df-entrance="wipe-up"] { animation-name: df-enter-wipe-up; }
+    &[data-df-entrance="iris"] { animation-name: df-enter-iris; }
+    &[data-df-entrance="fade"] { animation-name: df-enter-fade; }
+  }
+
+  /* stagger: children of a [data-df-stagger] container get graded delays
+     (--df-motion-stagger-step per container) while keeping their own
+     direction. ponytail: beyond the 8th child the delay caps at *7 - long
+     lists should chunk into columns. An inline --df-motion-delay on a child
+     still wins (inline beats any stylesheet rule). */
+  [data-df-stagger] {
+    --df-motion-stagger-step: 120ms;
+    & > :nth-child(1) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 0); }
+    & > :nth-child(2) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 1); }
+    & > :nth-child(3) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 2); }
+    & > :nth-child(4) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 3); }
+    & > :nth-child(5) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 4); }
+    & > :nth-child(6) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 5); }
+    & > :nth-child(7) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 6); }
+    & > :nth-child(n + 8) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 7); }
+  }
+
+  /* SVG draw-in - a distinct primitive, not a DOM entrance: pathLength="1"
+     calibrates distance-along-path so ONE dash rule (1 → 0) fits every
+     geometry regardless of actual path length. (The CSS `path-length`
+     property stays experimental - the SVG attribute is the portable form.) */
+  [data-df-draw][pathLength="1"] {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation:
+      df-draw
+      var(--df-motion-duration)
+      var(--df-motion-ease)
+      var(--df-motion-delay)
+      both;
+  }
+
+  /* vocabulary - every direction is exactly one keyframes rule */
+
+  @keyframes df-enter-fade {
+    from { opacity: 0; }
+    to { opacity: var(--df-motion-base-opacity); }
+  }
+
+  /* "up" travels upward into its final position (from below) */
+  @keyframes df-enter-up {
+    from { transform: translateY(var(--df-motion-distance)); }
+    to { transform: translateY(0); }
+  }
+  @keyframes df-enter-down {
+    from { transform: translateY(calc(-1 * var(--df-motion-distance))); }
+    to { transform: translateY(0); }
+  }
+  @keyframes df-enter-left {
+    from { transform: translateX(var(--df-motion-distance)); }
+    to { transform: translateX(0); }
+  }
+  @keyframes df-enter-right {
+    from { transform: translateX(calc(-1 * var(--df-motion-distance))); }
+    to { transform: translateX(0); }
+  }
+  @keyframes df-enter-zoom {
+    from { transform: scale(var(--df-motion-scale-in)); }
+    to { transform: scale(1); }
+  }
+  @keyframes df-enter-zoom-out {
+    from { transform: scale(var(--df-motion-scale-out)); }
+    to { transform: scale(1); }
+  }
+  @keyframes df-enter-pop {
+    0% { transform: scale(0.65); }
+    65% { transform: scale(1.07); }
+    100% { transform: scale(1); }
+  }
+  @keyframes df-enter-spin {
+    from { transform: rotate(var(--df-motion-spin)); }
+    to { transform: rotate(0deg); }
+  }
+  @keyframes df-enter-flip {
+    from { transform: perspective(900px) rotateY(-70deg); }
+    to { transform: perspective(900px) rotateY(0deg); }
+  }
+  @keyframes df-enter-skew {
+    from { transform: skewX(var(--df-motion-angle)); }
+    to { transform: skewX(0deg); }
+  }
+  @keyframes df-enter-blur {
+    from { filter: blur(var(--df-motion-blur)); }
+    to { filter: blur(0); }
+  }
+  @keyframes df-enter-wipe {
+    from { clip-path: inset(0 100% 0 0); }
+    to { clip-path: inset(0); }
+  }
+  @keyframes df-enter-wipe-up {
+    from { clip-path: inset(100% 0 0 0); }
+    to { clip-path: inset(0); }
+  }
+  @keyframes df-enter-iris {
+    from { clip-path: circle(0% at 50% 50%); }
+    to { clip-path: circle(150% at 50% 50%); }
+  }
+
+  @keyframes df-draw {
+    from { stroke-dashoffset: 1; }
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* accessibility: near-instant instead of none - the JS finished/cancel
+     contract behaves identically (a finished 1ms animation still resolves),
+     while nothing visibly moves. REQUIRED for every animation. */
+  @media (prefers-reduced-motion: reduce) {
+    [data-df-entrance],
+    [data-df-draw] {
+      --df-motion-duration: 1ms !important;
+      --df-motion-delay: 0ms !important;
+    }
+  }
+}
+
 /* ── components/navigation-menu/navigation-menu.css ── */
 @layer components {
   .nav-menu-list { display: flex; align-items: center; gap: 0.25rem; list-style: none; margin: 0; padding: 0; }
@@ -3738,7 +4220,7 @@
   /* -- Density: set data-density on the .nav-menu nav to scale the gap
      between top-level items (0.5× / 1 / 1.5× of the 0.25rem base);
      comfortable matches the unsized default. Link padding belongs to
-     data-size — density is the row rhythm only. */
+     data-size - density is the row rhythm only. */
   .nav-menu:where([data-density="compact"]) .nav-menu-list     { gap: 0.125rem; }
   .nav-menu:where([data-density="comfortable"]) .nav-menu-list { gap: 0.25rem; }
   .nav-menu:where([data-density="spacious"]) .nav-menu-list    { gap: 0.375rem; }
@@ -3814,7 +4296,7 @@
 /* ── components/newsletter/newsletter.css ── */
 /* -- Newsletter (marketing) ----------------------------------------
    Two-column sign-up band: copy left, inline email form right. The
-   form is a real <form> + <input type="email"> — browser validation
+   form is a real <form> + <input type="email"> - browser validation
    and the native keyboard work for free. */
 
 @layer components {
@@ -3897,7 +4379,7 @@
     box-sizing: border-box;
     /* explicit default box height (the size ladder below does the rest): an
        auto-height box let the UA-padding children overshoot to 44px. The
-       unsized default IS the ladder's md step — field standard, see .input */
+       unsized default IS the ladder's md step - field standard, see .input */
     height: 2.25rem;
 
     & input {
@@ -3992,7 +4474,7 @@
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all
-   components — AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
    `none` keeps transitionend/animationend (and discrete display flips)
    firing so JS state machines that await them keep working. */
 @media (prefers-reduced-motion: reduce) {
@@ -4195,10 +4677,367 @@
   }
 }
 
+/* ── components/presentation/presentation.css ── */
+/* -- Presentation component ------------------------------------
+   Fixed-coordinate deck runtime: an artboard (default 1600×900) uniformly
+   scaled to the mount, declarative entrance animations, native <progress>
+   advance, presenter notes. Local --presentation-* custom properties are the
+   deck's art-direction contract (literal defaults, token-free on purpose: a
+   slide surface must stay identical under every theme); consumers override
+   them per deck. */
+
+@layer components {
+  .presentation {
+    /* artboard contract - override on the mount for other formats */
+    --presentation-width: 1600;
+    --presentation-height: 900;
+    /* live uniform scale, owned by presentation.js (ResizeObserver) */
+    --presentation-scale: 1;
+    /* slide surfaces (fixed art direction, like the taxonomy badge colors) */
+    --presentation-ink: #0d1424;
+    --presentation-ink-foreground: #e9eef8;
+    --presentation-paper: #ffffff;
+    --presentation-paper-foreground: #101828;
+    --presentation-accent: #38bdf8;
+    /* motion: entrances come from the SHARED motion component (motion.css
+       keyframes + [data-df-entrance]); a deck only tunes the --df-motion-*
+       defaults for its artboard scale - per-element inline vars still win */
+    --presentation-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --presentation-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    /* slow and deliberate: slide transitions (df$.anim, default 1500ms),
+       entrances and the chart stage share one tempo */
+    --presentation-duration: 1500ms;
+    --df-motion-duration: var(--presentation-duration);
+    --df-motion-ease: var(--presentation-out);
+    --df-motion-distance: 3.5rem; /* artboard units - scales with the deck */
+
+    position: relative;
+    display: grid;
+    width: 100%;
+    aspect-ratio: var(--presentation-width) / var(--presentation-height);
+    overflow: hidden;
+    background: var(--presentation-ink);
+    color: var(--presentation-ink-foreground);
+    font-family: var(--font-sans);
+
+    /* fullscreen MODE: when native fullscreen is active this element already
+       owns the viewport; when the request was DENIED (embeds without
+       allow="fullscreen") the same attribute pins it as a fixed overlay —
+       one honest mode, two carriers. */
+    &[data-fullscreen] {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      width: 100vw;
+      height: 100vh;
+      aspect-ratio: auto;
+    }
+
+    & > [data-slide] {
+      position: absolute;
+      inset-block-start: 0;
+      inset-inline-start: 0;
+      inline-size: calc(var(--presentation-width) * 1px);
+      block-size: calc(var(--presentation-height) * 1px);
+      /* uniform artboard scale via zoom, NOT transform: the slide's
+         transform belongs to the df$.anim transitions (slide/zoom/spin/flip
+         keyframes animate transform - a scale() here would be overwritten
+         mid-transition and the slide would jump to artboard size) */
+      zoom: var(--presentation-scale);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: calc(var(--presentation-height) * 0.08px) calc(var(--presentation-width) * 0.07px);
+      box-sizing: border-box;
+      /* the TRANSITION is the df$.anim engine (presentation.js plays a
+         data-anim-out on the leaving slide and a data-anim-in on the
+         arriving one); CSS only says who is on stage: the active slide on
+         top, the leaving slide beneath it until its out-animation ends */
+      visibility: hidden;
+
+      &[data-active],
+      &[data-leaving] {
+        visibility: visible;
+      }
+      &[data-active] {
+        z-index: 1;
+      }
+      &[data-leaving] {
+        z-index: 0;
+      }
+
+      &[data-theme="ink"] {
+        --presentation-surface: var(--presentation-ink);
+        --presentation-on-surface: var(--presentation-ink-foreground);
+      }
+      &[data-theme="paper"] {
+        --presentation-surface: var(--presentation-paper);
+        --presentation-on-surface: var(--presentation-paper-foreground);
+      }
+      &[data-theme] {
+        background: var(--presentation-surface);
+        color: var(--presentation-on-surface);
+        /* shipped components on a slide (table, badge, avatar, button, card)
+           speak the SLIDE's surface, not the page theme: the existing
+           semantic tokens are re-pointed at the deck's art direction, so a
+           paper slide stays legible in dark mode and vice versa */
+        --background: var(--presentation-surface);
+        --foreground: var(--presentation-on-surface);
+        --card: var(--presentation-surface);
+        --card-foreground: var(--presentation-on-surface);
+        --primary: var(--presentation-on-surface);
+        --primary-foreground: var(--presentation-surface);
+        --secondary: color-mix(in oklch, var(--presentation-on-surface) 10%, var(--presentation-surface));
+        --secondary-foreground: var(--presentation-on-surface);
+        --muted: color-mix(in oklch, var(--presentation-on-surface) 7%, var(--presentation-surface));
+        --muted-foreground: color-mix(in oklch, var(--presentation-on-surface) 64%, var(--presentation-surface));
+        --accent: color-mix(in oklch, var(--presentation-on-surface) 10%, var(--presentation-surface));
+        --accent-foreground: var(--presentation-on-surface);
+        --border: color-mix(in oklch, var(--presentation-on-surface) 18%, var(--presentation-surface));
+        --input: color-mix(in oklch, var(--presentation-on-surface) 24%, var(--presentation-surface));
+        --ring: var(--presentation-accent);
+      }
+    }
+
+    /* charts on the artboard read at slide scale: the chart theme adapter
+       derives every label, gap and stroke from --chart-font-size */
+    & .chart {
+      --chart-font-size: 24px;
+    }
+
+    /* -- the chart stage: ONE chart for the whole deck (chart.deck()) -------
+       A deck-level layer in artboard coordinates (same scale transform as
+       the slides) stacked ABOVE them, so every slide keeps its own surface.
+       Slides that name a data-chart-state show it; the chart morphs from
+       state to state while the slides crossfade underneath. Hidden = faded
+       out in step with the slide fade, never unmounted. */
+    & > .presentation-stage {
+      position: absolute;
+      inset-block-start: 0;
+      inset-inline-start: 0;
+      z-index: 2;
+      inline-size: calc(var(--presentation-width) * 1px);
+      block-size: calc(var(--presentation-height) * 1px);
+      transform: scale(var(--presentation-scale));
+      transform-origin: top left;
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transition:
+        opacity var(--presentation-duration) var(--presentation-out),
+        visibility 0s linear var(--presentation-duration);
+
+      &[data-visible] {
+        visibility: visible;
+        opacity: 1;
+        pointer-events: auto;
+        transition: opacity var(--presentation-duration) var(--presentation-out);
+      }
+    }
+    /* a curtain (blocksIn → blocksOut) passes over the SLIDES; the chart
+       stage steps aside while it runs and returns with the arriving slide */
+    &[data-curtain] > .presentation-stage[data-visible] {
+      opacity: 0;
+      transition-duration: 300ms;
+    }
+
+    /* -- entrances: the SHARED motion component owns the vocabulary --------
+       Slides simply carry [data-df-entrance] / [data-df-draw] / [data-df-
+       stagger] elements; the keyframes + --df-motion-* tunables live in
+       motion.css (shipped in the same all.css bundle). The deck runtime
+       REPLAYS every entrance when its slide activates - revisiting a slide
+       re-runs its entrance, and animations (unlike transitions) fire
+       deterministically on first application, so decks animate correctly on
+       load without a rendered "from" state. */
+
+    /* -- in-slide chrome (artboard coordinates, scales with the deck) ------ */
+
+    /* header line: a mono eyebrow strip with a hairline rule, pinned to the
+       slide's top edge - section label left, optional meta right */
+    & .presentation-header {
+      position: absolute;
+      inset-block-start: 0;
+      inset-inline: 0;
+      display: flex;
+      align-items: baseline;
+      gap: 1.25rem;
+      padding: 3.5rem 4.5rem 1.75rem;
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: color-mix(in oklch, currentColor 65%, transparent);
+      border-block-end: 1px solid color-mix(in oklch, currentColor 16%, transparent);
+
+      /* the accent tick gives the line a deliberate start, not a stray rule */
+      &::before {
+        content: '';
+        inline-size: 2.75rem;
+        block-size: 0.3rem;
+        align-self: center;
+        background: var(--presentation-accent);
+      }
+
+      /* the LAST span (meta) rides to the right edge - label stays with the tick */
+      & > :last-child {
+        margin-inline-start: auto;
+      }
+    }
+
+    /* slide number: NN ⁄ NN in the bottom corner - the fraction slash (U+2044)
+       is inherently slanted, so the motif needs no extra decoration. The
+       runtime fills the text; authors just drop the element into a slide. */
+    & .presentation-slide-number {
+      position: absolute;
+      inset-block-end: 2.75rem;
+      /* bottom-LEFT: the bottom-right corner belongs to the deck controls */
+      inset-inline-start: 4.5rem;
+      font-family: var(--font-mono);
+      font-size: 1.6rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: color-mix(in oklch, currentColor 55%, transparent);
+    }
+
+    /* -- chrome (outside slide coordinates, viewport-fixed) -------------- */
+    & .presentation-controls {
+      position: absolute;
+      inset-block-end: 1rem;
+      inset-inline-end: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      z-index: 3;
+    }
+
+    & .presentation-control {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      inline-size: 2rem;
+      block-size: 2rem;
+      padding: 0;
+      border: 1px solid color-mix(in oklch, var(--presentation-paper-foreground) 18%, transparent);
+      border-radius: var(--radius-md);
+      background: color-mix(in oklch, var(--presentation-paper) 82%, transparent);
+      color: var(--presentation-paper-foreground);
+      cursor: pointer;
+      font: inherit;
+      line-height: 1;
+
+      &:hover {
+        background: color-mix(in oklch, var(--presentation-paper) 95%, transparent);
+      }
+      &:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+    }
+
+    & .presentation-counter {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      padding-inline: 0.5rem;
+      color: var(--presentation-ink-foreground);
+      background: color-mix(in oklch, var(--presentation-ink) 60%, transparent);
+      border-radius: var(--radius-sm);
+    }
+
+    /* native <progress> - the platform's completion indicator */
+    & .presentation-progress {
+      position: absolute;
+      inset-block-end: 0;
+      inset-inline: 0;
+      inline-size: 100%;
+      block-size: 3px;
+      margin: 0;
+      border: none;
+      background: color-mix(in oklch, var(--presentation-ink-foreground) 18%, transparent);
+      accent-color: var(--presentation-accent);
+      z-index: 3;
+
+      &::-webkit-progress-bar { background: color-mix(in oklch, var(--presentation-ink-foreground) 18%, transparent); }
+      &::-webkit-progress-value { background: var(--presentation-accent); }
+      &::-moz-progress-bar { background: var(--presentation-accent); }
+    }
+
+    /* presenter notes - hidden until the deck toggles [data-notes] */
+    & .presentation-note {
+      display: none;
+    }
+    &[data-notes] > [data-slide][data-active] > .presentation-note {
+      display: block;
+      position: absolute;
+      inset-block-end: 0;
+      inset-inline: 0;
+      margin: 0;
+      padding: 1.25rem 4rem;
+      font-size: 1.75rem;
+      line-height: 1.4;
+      background: color-mix(in oklch, #000000 82%, transparent);
+      border-block-start: 1px solid color-mix(in oklch, #ffffff 20%, transparent);
+      color: #ffffff;
+    }
+
+    /* slide typography helpers (fixed artboard sizes, not site type scale) */
+    & .presentation-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.7;
+      margin: 0 0 1rem;
+    }
+    & .presentation-title {
+      font-size: 5.5rem;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      font-weight: 700;
+      margin: 0 0 1.5rem;
+      text-wrap: balance;
+    }
+    & .presentation-lede {
+      font-size: 2rem;
+      line-height: 1.4;
+      opacity: 0.85;
+      margin: 0;
+      text-wrap: pretty;
+    }
+  }
+
+  /* accessibility: honor motion + contrast preferences (REQUIRED). Entrances
+     flatten via motion.css's own 1ms rule (keeps the JS finished contract);
+     here only the deck's own slide-fade transition flattens. */
+  @media (prefers-reduced-motion: reduce) {
+    .presentation > [data-slide],
+    .presentation > .presentation-stage {
+      transition: none;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .presentation .presentation-control {
+      border-width: 2px;
+      border-color: var(--presentation-paper-foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .presentation .presentation-control {
+      border-color: CanvasText;
+      color: CanvasText;
+      background: Canvas;
+    }
+    .presentation .presentation-progress {
+      border-block-start: 1px solid CanvasText;
+    }
+  }
+}
+
 /* ── components/pricing/pricing.css ── */
 /* -- Pricing (marketing) -------------------------------------------
    Section head + billing toggle (composed from the tabs component) +
-   plan cards. The featured plan upgrades its border — no layout shift. */
+   plan cards. The featured plan upgrades its border - no layout shift. */
 
 @layer components {
   .mk-pricing {
@@ -4213,7 +5052,7 @@
   }
 
   /* centered stack: eyebrow/title/desc + toggle all share the section's
-     center line (align-items, not text-align — the toggle is a box) */
+     center line (align-items, not text-align - the toggle is a box) */
   .mk-pricing-head { display: flex; flex-direction: column; align-items: center; gap: 1.25rem; }
 
   .mk-pricing-eyebrow { color: var(--primary); font-size: 1rem; font-weight: 500; }
@@ -4228,7 +5067,7 @@
 
   .mk-pricing-desc { margin: 0; max-width: 42rem; color: var(--muted-foreground); font-size: 1rem; text-wrap: pretty; }
 
-  /* Segmented billing toggle: real radios + :has() — keyboard, screen
+  /* Segmented billing toggle: real radios + :has() - keyboard, screen
      readers, and form semantics work natively; one checked radio flips
      every plan's price pair, which per-tab aria-controls could not. */
   .mk-pricing-billing {
@@ -4257,7 +5096,7 @@
       box-shadow: var(--shadow-2xs);
     }
 
-    /* keyboard focus lands on the radio — show the ring on its label */
+    /* keyboard focus lands on the radio - show the ring on its label */
     & label:has(input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
   }
 
@@ -4413,7 +5252,7 @@
     }
   }
 
-  /* centered circular play button — real <button>, keyboard-focusable;
+  /* centered circular play button - real <button>, keyboard-focusable;
      inset auto + margin auto centers the 64px box in the full-inset cell */
   .mk-showcase-play {
     z-index: 10;
@@ -4515,7 +5354,7 @@
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all
-   components — AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
    `none` keeps transitionend/animationend (and discrete display flips)
    firing so JS state machines that await them keep working. */
 @media (prefers-reduced-motion: reduce) {
@@ -4603,7 +5442,7 @@
      data-density on the .radio-group root is a whitespace policy: the gap
      between options (and card padding) scale at the shared 0.75 / 1 / 1.25
      ratio; comfortable matches the unsized default. Radio size itself stays
-     fixed — this is spacing, not zoom. */
+     fixed - this is spacing, not zoom. */
   .radio-group:where([data-density="compact"]) {
     gap: 0.25rem;
     &[data-orientation="horizontal"] { gap: 0.75rem; }
@@ -4671,7 +5510,7 @@
 
   .radio {
     appearance: none;
-    margin: 0; /* kill the UA's ~4px input margin — breaks flex/grid rhythm */
+    margin: 0; /* kill the UA's ~4px input margin - breaks flex/grid rhythm */
     width: 1rem;
     height: 1rem;
     border: 1px solid var(--border);
@@ -4775,7 +5614,7 @@
      Wraps ONE container element and adds draggable handles on any subset of
      its 8 positions (sides + corners). The wrapper is the positioning context;
      handles overhang the border box by design, so keep overflow visible.
-     Sizing behavior (px vs w-/h- classes) is driven by the runtime — this
+     Sizing behavior (px vs w-/h- classes) is driven by the runtime - this
      sheet owns only the handle geometry, cursors and feedback states. */
   .resizer {
     position: relative;
@@ -4786,7 +5625,7 @@
   }
 
   /* The resizer owns resizing: a native CSS `resize` on the wrapped element
-     (e.g. a resizable canvas) would double the affordances — the runtime
+     (e.g. a resizable canvas) would double the affordances - the runtime
      neutralizes it inline; this is the authored-CSS fallback. */
   .resizer[data-resize-mode] {
     resize: none;
@@ -4803,7 +5642,7 @@
     border: 1px solid var(--primary);
     border-radius: var(--radius-sm);
     box-shadow: var(--shadow-2xs);
-    touch-action: none; /* the pointer-drag is ours — no scroll/pinch steal */
+    touch-action: none; /* the pointer-drag is ours - no scroll/pinch steal */
     opacity: 0.85;
     transition: opacity 120ms ease, background-color 120ms ease, transform 120ms ease;
 
@@ -4826,7 +5665,7 @@
     }
   }
 
-  /* drag in progress — the active handle (and the box) read as engaged */
+  /* drag in progress - the active handle (and the box) read as engaged */
   .resizer[data-resizing] > .resizer-handle {
     opacity: 1;
     background: var(--primary);
@@ -4835,7 +5674,7 @@
     outline: 1px dashed var(--ring);
     outline-offset: 2px;
   }
-  /* the box must track the pointer 1:1 — a size TRANSITION on the wrapped
+  /* the box must track the pointer 1:1 - a size TRANSITION on the wrapped
      element (e.g. the sidebar's `transition: width 200ms`) would ease toward
      the drag instead of following it, which reads as the handle lagging
      behind the mouse. Only during the drag; authored transitions resume after
@@ -4987,7 +5826,7 @@
     background-size: 1rem;
 
     /* Placeholder = the empty-value option. It stays selectable (no
-       `disabled`) so it doubles as the clear/reset entry — choosing it
+       `disabled`) so it doubles as the clear/reset entry - choosing it
        again empties the box (issue #32). While it is the selection the
        closed control reads as a placeholder; a real value restores
        --foreground because the base rule's color wins over this one.
@@ -5025,7 +5864,7 @@
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all
-   components — AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
    `none` keeps transitionend/animationend (and discrete display flips)
    firing so JS state machines that await them keep working. */
 @media (prefers-reduced-motion: reduce) {
@@ -5065,10 +5904,10 @@
       align-self: stretch;
     }
 
-    /* Decorative — hidden from assistive technology */
+    /* Decorative - hidden from assistive technology */
     &[aria-hidden="true"],
     &[role="none"] {
-      /* No visual change — purely semantic */
+      /* No visual change - purely semantic */
     }
   }
 
@@ -5256,7 +6095,7 @@
   .sheet:where([data-density="comfortable"]) .sheet-content { padding: 1.5rem; }
   .sheet:where([data-density="spacious"]) .sheet-content    { padding: 2rem; }
 
-  /* Top/bottom sheets span the full viewport width — on wide screens the
+  /* Top/bottom sheets span the full viewport width - on wide screens the
      content would stretch unaligned, so keep a readable, centered column
      (the side sheets are already width-constrained at 24rem). */
   dialog.sheet[data-side="top"] .sheet-content,
@@ -5295,7 +6134,7 @@
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all
-   components — AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
    `none` keeps transitionend/animationend (and discrete display flips)
    firing so JS state machines that await them keep working. */
 @media (prefers-reduced-motion: reduce) {
@@ -5400,7 +6239,7 @@
       order: 1;
     }
 
-    /* Collapsed — icon-only rail */
+    /* Collapsed - icon-only rail */
     &[data-state="collapsed"] {
       width: var(--sidebar-width-collapsed, 3.5rem);
 
@@ -5418,10 +6257,10 @@
       & .sidebar-group > summary svg:last-child { display: none; }
 
       /* The nested-nav indent (0.75rem) would offset submenu icons from the
-         rail column — drop it while collapsed. */
+         rail column - drop it while collapsed. */
       & .sidebar-group > .sidebar-nav { padding-left: 0; }
 
-      /* Submenu summary (e.g. Settings/cog) is NOT a .sidebar-link — it needs
+      /* Submenu summary (e.g. Settings/cog) is NOT a .sidebar-link - it needs
          the same centering or its icon drifts off the icon column. Expanded
          submenu items have no icons, so the nav stays hidden while collapsed. */
       & .sidebar-submenu > summary { justify-content: center; padding: 0.5rem; gap: 0; }
@@ -5430,7 +6269,7 @@
       & .sidebar-submenu > .sidebar-nav { display: none; }
     }
 
-    /* Hidden on mobile by default — shown via dialog */
+    /* Hidden on mobile by default - shown via dialog */
     @media (max-width: 767px) {
       display: none;
     }
@@ -5581,7 +6420,7 @@
       list-style: none;
       transition: background-color 150ms ease;
 
-      /* leading icon matches .sidebar-link's 1rem — otherwise lucide's
+      /* leading icon matches .sidebar-link's 1rem - otherwise lucide's
          24px default renders the cog larger than the nav icons */
       & svg:first-child { width: 1rem; height: 1rem; flex-shrink: 0; }
 
@@ -5917,7 +6756,7 @@
 
   /* nav collapses below the container breakpoint (source: `hidden md:flex`).
      The nav composes the navigation-menu component (.nav-menu-list /
-     .nav-menu-trigger / .nav-menu-content) — its dropdown popovers are the
+     .nav-menu-trigger / .nav-menu-content) - its dropdown popovers are the
      native Popover API, so the header stays CSS-only. */
   .mk-header-nav { display: none; align-items: center; }
 
@@ -5958,7 +6797,7 @@
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all
-   components — AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
    `none` keeps transitionend/animationend (and discrete display flips)
    firing so JS state machines that await them keep working. */
 @media (prefers-reduced-motion: reduce) {
@@ -6001,7 +6840,7 @@
     border: none;
     accent-color: var(--primary);
 
-    /* Track — WebKit (filled via gradient) */
+    /* Track - WebKit (filled via gradient) */
     &::-webkit-slider-runnable-track {
       height: 0.5rem;
       border-radius: 9999px;
@@ -6014,7 +6853,7 @@
       );
     }
 
-    /* Track — Firefox */
+    /* Track - Firefox */
     &::-moz-range-track {
       height: 0.5rem;
       border-radius: 9999px;
@@ -6022,14 +6861,14 @@
       border: none;
     }
 
-    /* Filled portion — Firefox */
+    /* Filled portion - Firefox */
     &::-moz-range-progress {
       height: 0.5rem;
       border-radius: 9999px;
       background: var(--primary);
     }
 
-    /* Thumb — WebKit */
+    /* Thumb - WebKit */
     &::-webkit-slider-thumb {
       -webkit-appearance: none;
       width: 1.25rem;
@@ -6042,7 +6881,7 @@
       transition: box-shadow 150ms, transform 150ms;
     }
 
-    /* Thumb — Firefox */
+    /* Thumb - Firefox */
     &::-moz-range-thumb {
       width: 1.25rem;
       height: 1.25rem;
@@ -6429,7 +7268,7 @@
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all
-   components — AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
    `none` keeps transitionend/animationend (and discrete display flips)
    firing so JS state machines that await them keep working. */
 @media (prefers-reduced-motion: reduce) {
@@ -6721,7 +7560,7 @@
     .step[data-status='error']:not(:last-child)::after { background: Mark; }
   }
   /* -- Density ----------------------------------------------------
-     data-density on the .steps root scales the flex gaps only — the size
+     data-density on the .steps root scales the flex gaps only - the size
      ladder owns indicator/typography, size and density stay independent.
      comfortable == the unsized default (.5rem / .125rem). */
   .steps:where([data-density="compact"]) {
@@ -6748,7 +7587,7 @@
 @layer components {
   .switch {
     appearance: none;
-    margin: 0; /* kill the UA's ~4px input margin — breaks flex/grid rhythm */
+    margin: 0; /* kill the UA's ~4px input margin - breaks flex/grid rhythm */
     width: 2.25rem;
     height: 1.25rem;
     border-radius: 9999px;
@@ -6830,7 +7669,7 @@
     }
 
     &[data-size="md"] {
-      /* same as the default — explicit member of the scale */
+      /* same as the default - explicit member of the scale */
     }
 
     &[data-size="lg"] {
@@ -6876,7 +7715,7 @@
 
   /* With-description layout: label + description stack beside the switch.
      The switch spans both rows, so grid auto-placement (definite-row items
-     first) pins it to column 1 — the track template must therefore lead with
+     first) pins it to column 1 - the track template must therefore lead with
      the auto (switch) track. `1fr auto` here once placed the text in the far
      right track (reported: "description renders on the far right"). */
   .switch-item-block {
@@ -7026,7 +7865,7 @@
      data-density on the .table root scales cell/head/caption padding.
      Scale matches sizing.css (0.75 / 1 / 1.25): comfortable == the unsized
      default (0.75rem 1rem), compact 0.375rem 0.625rem, spacious 1rem 1.25rem.
-     :where() gives these (0,2,0) — an explicit density always beats the
+     :where() gives these (0,2,0) - an explicit density always beats the
      automatic narrow-container compaction below. */
   .table:where([data-density="compact"]) {
     & .table-head, & .table-cell { padding: 0.375rem 0.625rem; }
@@ -7049,7 +7888,7 @@
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all
-   components — AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
    `none` keeps transitionend/animationend (and discrete display flips)
    firing so JS state machines that await them keep working. */
 @media (prefers-reduced-motion: reduce) {
@@ -7249,7 +8088,7 @@
 /* -- Testimonials (marketing) --------------------------------------
    Big pull-quote with partner logo lockup, plus a grid of media cards
    whose review overlay floats over the photo (backdrop blur, real
-   DOM — no JS). Overlay contrast comes from --background at 80% +
+   DOM - no JS). Overlay contrast comes from --background at 80% +
    blur, readable in both modes. */
 
 @layer components {
@@ -7316,7 +8155,7 @@
     border-radius: var(--radius-md);
     background: var(--muted);
     padding: 0.75rem;
-    /* the element is a <figure> — without an explicit reset its UA margins
+    /* the element is a <figure> - without an explicit reset its UA margins
        (1em 40px) stack onto the grid gap (measured: 92px between cards); the
        gap comes from `gap` alone */
     margin: 0;
@@ -7336,7 +8175,7 @@
     position: relative;
     z-index: 10;
     width: 100%;
-    /* source: bg-background/80 + backdrop-blur — keep the text readable over
+    /* source: bg-background/80 + backdrop-blur - keep the text readable over
        any photo without a hard opaque card */
     margin-block-start: auto;
     border: 1px solid var(--border);
@@ -7522,7 +8361,7 @@
     overscroll-behavior: contain;
     box-shadow: 0 4px 16px oklch(0 0 0 / 0.12), 0 0 0 1px var(--border);
 
-    /* Anchor positioning — the trigger names itself, the menu follows */
+    /* Anchor positioning - the trigger names itself, the menu follows */
     position: fixed;
     inset: auto;
     top: anchor(bottom);
@@ -7745,7 +8584,7 @@
 
   /* -- Toast ---------------------------------------------------- */
   .toast {
-    /* Top layer (popover="manual") bypasses the container's flex layout — the
+    /* Top layer (popover="manual") bypasses the container's flex layout - the
        UA sheet would CENTER every toast (inset:0 + margin:auto). Pin each toast
        to its container's corner instead and stack via --toast-stack, which the
        component JS measures (toast.ts stackToasts) since heights vary. */
@@ -7770,7 +8609,7 @@
       transform: translateY(0);
     }
 
-    /* -- Corner placement (top layer — see note above) ------------
+    /* -- Corner placement (top layer - see note above) ------------
        --toast-stack: measured px offset of the stack below this toast;
        the first toast is 0, so default bottom-right lands at the edge. */
     [data-position="bottom-right"] & { bottom: calc(1rem + var(--toast-stack, 0px)); right: 1rem; }
@@ -7782,7 +8621,7 @@
 
     /* -- Sizes + Density ------------------------------------------
        data-size scales the toast's width envelope (sm/md/lg, md == the
-       unsized default); data-density is the whitespace policy — padding and
+       unsized default); data-density is the whitespace policy - padding and
        the content gap at the shared 0.75 / 1 / 1.25 ratio, comfortable ==
        the unsized default. Both live on the .toast element itself. */
     &[data-size="sm"] { min-width: 16rem; max-width: 20rem; }
@@ -7895,7 +8734,7 @@
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all
-   components — AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
    `none` keeps transitionend/animationend (and discrete display flips)
    firing so JS state machines that await them keep working. */
 @media (prefers-reduced-motion: reduce) {
@@ -7991,7 +8830,7 @@
   /* -- Density ----------------------------------------------------
      data-density on the .toc root scales the vertical rhythm of the links
      (0.75 / 1 / 1.25 of the 3px block padding); comfortable matches the
-     unsized default. Font size stays put — whitespace, not zoom. */
+     unsized default. Font size stays put - whitespace, not zoom. */
   .toc:where([data-density="compact"]) .toc-link    { padding: 0.125rem 0.5rem; }
   .toc:where([data-density="comfortable"]) .toc-link { padding: 0.1875rem 0.5rem; }
   .toc:where([data-density="spacious"]) .toc-link   { padding: 0.25rem 0.5rem; }
@@ -8232,11 +9071,11 @@
        Square only the corners that actually touch a neighbour:
        inline corners horizontally, block corners vertically. The
        orientation attribute is wrapped in :where() so every rule
-       keeps one-class-plus-one-pseudo specificity — the later
+       keeps one-class-plus-one-pseudo specificity - the later
        [data-spacing] radius restore must still win the tie.
        (The previous per-corner "restore" overrides let the
        :not(:last-child) block re-round a middle item's top-right
-       corner — issue #12.) */
+       corner - issue #12.) */
     &:where(:not([data-orientation="vertical"])) > .toggle:not(:first-child) {
       border-start-start-radius: 0;
       border-end-start-radius: 0;
@@ -8379,7 +9218,7 @@
     position: fixed;
     inset: auto;
     margin: 0;
-    /* The UA popover stylesheet sets overflow:auto — the [data-arrow] caret
+    /* The UA popover stylesheet sets overflow:auto - the [data-arrow] caret
        sits OUTSIDE the border box (-4px offsets), so it got clipped to a
        sliver and overflow:auto rendered a scrollbar around the text. */
     overflow: visible;
@@ -8455,7 +9294,7 @@
       border: none;
     }
 
-    /* Arrow placement — default (top side): arrow at bottom center */
+    /* Arrow placement - default (top side): arrow at bottom center */
     &:not([data-side]), &[data-side="top"] {
       & [data-arrow] { bottom: -4px; left: 50%; margin-left: -4px; }
     }
@@ -8479,7 +9318,7 @@
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all
-   components — AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
    `none` keeps transitionend/animationend (and discrete display flips)
    firing so JS state machines that await them keep working. */
 @media (prefers-reduced-motion: reduce) {
@@ -8522,9 +9361,9 @@
 
     /* Two gotchas, both required for the branch to glide:
        1. `::details-content` must attach to the compound (`&::details-content`,
-          NOT `& ::details-content` — the descendant form never matches, the
+          NOT `& ::details-content` - the descendant form never matches, the
           pseudo's originating element is the subject itself).
-       2. `block-size: auto` is a keyword — without interpolate-size the
+       2. `block-size: auto` is a keyword - without interpolate-size the
           0→auto pair is non-interpolable and the transition silently snaps. */
     &::details-content {
       block-size: 0;
@@ -8608,7 +9447,7 @@
   }
   /* -- Density ----------------------------------------------------
      data-density on the .tree root scales the row padding-block. Indent
-     (padding-left) is structural — untouched. comfortable == the default. */
+     (padding-left) is structural - untouched. comfortable == the default. */
   .tree:where([data-density="compact"]) {
     & .tree-branch-trigger, & .tree-leaf { padding-block: 0.125rem; }
   }
@@ -8622,7 +9461,7 @@
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all
-   components — AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
    `none` keeps transitionend/animationend (and discrete display flips)
    firing so JS state machines that await them keep working. */
 @media (prefers-reduced-motion: reduce) {

@@ -15,15 +15,15 @@ supportedStates: default, collapsed
 
 ## Native Web APIs
 
-- [`<aside>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/aside) — complementary content landmark
-- [`<nav>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav) — navigation landmark for assistive technology
-- [`<dialog>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog) — native modal for mobile sidebar overlay
-- [`<details>/<summary>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details) — collapsible groups and submenus without JS toggle logic
-- [`::backdrop`](https://developer.mozilla.org/en-US/docs/Web/CSS/::backdrop) — dialog overlay styling
-- [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) — slide-in animation for mobile dialog
-- [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) — keyboard-only focus ring on nav links
-- [`overscroll-behavior`](https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior) — prevents scroll chaining in nav area
-- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) — suppresses all transitions
+- [`<aside>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/aside) - complementary content landmark
+- [`<nav>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav) - navigation landmark for assistive technology
+- [`<dialog>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog) - native modal for mobile sidebar overlay
+- [`<details>/<summary>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details) - collapsible groups and submenus without JS toggle logic
+- [`::backdrop`](https://developer.mozilla.org/en-US/docs/Web/CSS/::backdrop) - dialog overlay styling
+- [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) - slide-in animation for mobile dialog
+- [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) - keyboard-only focus ring on nav links
+- [`overscroll-behavior`](https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior) - prevents scroll chaining in nav area
+- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) - suppresses all transitions
 
 ## Structure
 
@@ -101,7 +101,7 @@ Set `data-density` on the `.app-sidebar` root; link rows and the content frame s
 | Value | Effect |
 | --- | --- |
 | `compact` | Link padding-block 0.375rem, frame 0.375rem |
-| `comfortable` | 0.5rem — identical to the unsized default |
+| `comfortable` | 0.5rem - identical to the unsized default |
 | `spacious` | 0.625rem |
 
 ## ARIA
@@ -124,7 +124,7 @@ Set `data-density` on the `.app-sidebar` root; link rows and the content frame s
 ## States
 
 The api is bound **per `.app-sidebar`**. Declared states: `default`
-(expanded — the authored width) · `collapsed` (icon rail, via the
+(expanded - the authored width) · `collapsed` (icon rail, via the
 documented `data-state="collapsed"` attribute).
 
 ```js
@@ -137,12 +137,12 @@ The registry global is `df$.shadcn.sidebarApi` / `df$.shadcn.sidebarStates`.
 
 ## Notes
 
-- **Mobile**: Desktop sidebar hidden below 768px. Use `<dialog class="sidebar-mobile">` for slide-in sheet. While it is modal, `html:has(.sidebar-mobile:modal)` sets `overflow: hidden` + `scrollbar-gutter: stable` — the page behind cannot scroll and keeps its position (no JS scroll-lock).
-- **Auto-collapse**: When the sidebar's row (its container) drops below 24rem, the component docks itself to the icon rail; it restores above 28rem (hysteresis — a scrollbar appearing never flickers it). A deliberate choice always wins: trigger clicks, Cmd/Ctrl+B and `api.setState()` set `dataset.stateName`, which pins the sidebar against the heuristic until it is cleared.
-- **Collapsible groups**: `<details class="sidebar-group">` — native toggle, no JS.
+- **Mobile**: Desktop sidebar hidden below 768px. Use `<dialog class="sidebar-mobile">` for slide-in sheet. While it is modal, `html:has(.sidebar-mobile:modal)` sets `overflow: hidden` + `scrollbar-gutter: stable` - the page behind cannot scroll and keeps its position (no JS scroll-lock).
+- **Auto-collapse**: When the sidebar's row (its container) drops below 24rem, the component docks itself to the icon rail; it restores above 28rem (hysteresis - a scrollbar appearing never flickers it). A deliberate choice always wins: trigger clicks, Cmd/Ctrl+B and `api.setState()` set `dataset.stateName`, which pins the sidebar against the heuristic until it is cleared.
+- **Collapsible groups**: `<details class="sidebar-group">` - native toggle, no JS.
 - **Submenus**: `<details class="sidebar-submenu">` for nested nav with left border.
 - **Badges**: `<span class="sidebar-badge">` for notification counts.
-- **Collapsed state**: Labels, titles, badges, footer, logo text hidden — icons remain. Submenu summaries (e.g. a Settings cog) center their icon in the rail too, and the nested nav stays hidden until expanded.
+- **Collapsed state**: Labels, titles, badges, footer, logo text hidden - icons remain. Submenu summaries (e.g. a Settings cog) center their icon in the rail too, and the nested nav stays hidden until expanded.
 - **Sidebar tokens**: Uses `--sidebar-*` token group.
 # Sidebar
 
@@ -152,11 +152,11 @@ The registry global is `df$.shadcn.sidebarApi` / `df$.shadcn.sidebarStates`.
 
 ## Native Web APIs
 
-- [`<aside>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/aside) — complementary content landmark
-- [`<nav>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav) — navigation landmark for assistive technology
-- [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) — keyboard-only focus ring on nav links
-- [`overscroll-behavior`](https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior) — prevents scroll chaining in nav area
-- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) — suppresses width transition
+- [`<aside>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/aside) - complementary content landmark
+- [`<nav>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav) - navigation landmark for assistive technology
+- [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) - keyboard-only focus ring on nav links
+- [`overscroll-behavior`](https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior) - prevents scroll chaining in nav area
+- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) - suppresses width transition
 
 ## Structure
 
@@ -205,11 +205,11 @@ The registry global is `df$.shadcn.sidebarApi` / `df$.shadcn.sidebarStates`.
 - Sidebar uses design tokens from the `--sidebar-*` token group.
 - The nav area has `overflow-y: auto` and `overscroll-behavior: contain` for scroll containment.
 - Width transition is suppressed for users who prefer reduced motion.
-- Pure CSS — no JavaScript required for rendering. Collapse toggle would need JS to toggle `data-state`.
+- Pure CSS - no JavaScript required for rendering. Collapse toggle would need JS to toggle `data-state`.
 - **Auto-collapse opt-out:** a row narrower than 24rem docks the rail to the
-  icon rail automatically (448px restores it — hysteresis). Any deliberate
-  state wins over that: once `data-state-name` is set — by a trigger click,
-  `api.setState()`, or authored directly — auto-collapse stays out and the
+  icon rail automatically (448px restores it - hysteresis). Any deliberate
+  state wins over that: once `data-state-name` is set - by a trigger click,
+  `api.setState()`, or authored directly - auto-collapse stays out and the
   rail keeps its inline/width-class size at any width (labels clip via
   `overflow: hidden` instead of snapping to the dock). Useful for resizable
   panels: pair with the `resizer` component + `data-state-name="default"`.

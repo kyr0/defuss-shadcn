@@ -1,7 +1,7 @@
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: blog is CSS-only — 3-up grid at wide width, 3:2 media, the 3-line
+ * Why: blog is CSS-only - 3-up grid at wide width, 3:2 media, the 3-line
  * excerpt clamp, and the See-all button appearing only at wide width.
  */
 await cssSmoke('blog', [

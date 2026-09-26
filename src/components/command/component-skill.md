@@ -1,7 +1,7 @@
 ---
 name: Command Palette
 type: ATM
-why: A <dialog class="command"> palette — filtering and keyboard navigation are the only JS; the modal is native.
+why: A <dialog class="command"> palette - filtering and keyboard navigation are the only JS; the modal is native.
 when: ⌘K-style search or command surface across app features or documentation pages.
 where: dist/components/command/command.css + dist/components/command/command.js
 supportedStates: default, open
@@ -17,14 +17,14 @@ supportedStates: default, open
 
 ## Native Web APIs
 
-- [`<dialog>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog) — modal with focus trap and Escape-to-close
-- [`showModal()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal) — opens dialog as modal with backdrop
-- [`::backdrop`](https://developer.mozilla.org/en-US/docs/Web/CSS/::backdrop) — scrim overlay behind the dialog
-- [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) — entry animation starting values
-- [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) — keyboard-only focus ring on items
-- [`overscroll-behavior`](https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior) — prevents scroll chaining in command list
-- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) — suppresses open/close animations
-- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) — maps highlights to system colors
+- [`<dialog>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog) - modal with focus trap and Escape-to-close
+- [`showModal()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal) - opens dialog as modal with backdrop
+- [`::backdrop`](https://developer.mozilla.org/en-US/docs/Web/CSS/::backdrop) - scrim overlay behind the dialog
+- [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) - entry animation starting values
+- [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) - keyboard-only focus ring on items
+- [`overscroll-behavior`](https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior) - prevents scroll chaining in command list
+- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) - suppresses open/close animations
+- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) - maps highlights to system colors
 
 ---
 
@@ -67,7 +67,7 @@ Set `data-density` on the `dialog.command` root; the palette rows, search wrappe
 | Value | Effect |
 | --- | --- |
 | `compact` | Item padding 0.375rem |
-| `comfortable` | 0.5rem — identical to the unsized default |
+| `comfortable` | 0.5rem - identical to the unsized default |
 | `spacious` | 0.625rem |
 
 ## ARIA
@@ -111,13 +111,13 @@ The api is bound per palette dialog; the registry global is
 
 ## Notes
 
-- The search input filters items by text content — groups with no matching items are hidden automatically.
+- The search input filters items by text content - groups with no matching items are hidden automatically.
 - When all items are filtered out, the `.command-empty` element is shown.
 - Separators are hidden during filtering to avoid visual orphans.
 - The `data-command-trigger` attribute on any element wires it as a trigger button via JS.
 - `Cmd/Ctrl+K` is registered as a global keyboard shortcut.
 - Items with `aria-disabled="true"` are excluded from keyboard navigation and filtering.
-- The dialog uses `showModal()` — focus is trapped inside and Escape closes it natively.
+- The dialog uses `showModal()` - focus is trapped inside and Escape closes it natively.
 - On close, the search input is cleared and all items are restored.
-- No JavaScript positioning is needed — the dialog uses CSS `position: fixed` with `top: 15%`.
-- While the palette is modal, `html:has(dialog.command:modal)` sets `overflow: hidden` + `scrollbar-gutter: stable` — the page behind cannot scroll and its position is preserved for when the palette closes (no JS scroll-lock).
+- No JavaScript positioning is needed - the dialog uses CSS `position: fixed` with `top: 15%`.
+- While the palette is modal, `html:has(dialog.command:modal)` sets `overflow: hidden` + `scrollbar-gutter: stable` - the page behind cannot scroll and its position is preserved for when the palette closes (no JS scroll-lock).

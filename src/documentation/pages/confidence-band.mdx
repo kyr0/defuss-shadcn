@@ -1,0 +1,208 @@
+---
+title: "Confidence Band - Presentation"
+description: "Scientific Journal design language presenting a flu-season hospital forecast as a 12-slide deck - observed weeks grow a median forecast, nested 50% and 90% bands and finally the realized values, on one morphing chart."
+slug: "confidence-band"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="confidence-band" title="Confidence Band" component="presentation">
+  Scientific Journal: white paper, ink-blue type and one red for the evidence - a flu-season forecast told the honest way, uncertainty drawn in, then checked against what actually happened.
+</PageHeader>
+
+```html example label="Scientific Journal" schema="none" height="26" hint="Slides fade in and out (df$.anim, declared on the deck), a red curtain opens the methods section. One deck-level chart (df$.shadcn.chart.deck): the observed weeks extend into a median forecast, the 90% and 50% bands grow around it, and the realized weeks land as dots inside the bands. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-band" data-anim-in="fadeIn" data-anim-out="fadeOut" style="--presentation-ink:#17212B;--presentation-ink-foreground:#FAFAF8;--presentation-paper:#FAFAF8;--presentation-paper-foreground:#17212B;--presentation-accent:#B42025;font-family:Charter, Georgia, 'Times New Roman', serif;" tabindex="-1" aria-label="Forecasting the flu season - a journal deck">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="Weekly flu hospital admissions per 100,000: nine observed weeks, a median forecast peaking at 13 in week 13 with 50 and 90 percent bands, and realized values peaking at 15.1"></div>
+  <section class="slide" data-slide data-theme="paper" aria-label="Cover">
+    <p aria-hidden="true" style="position:absolute; right:112px; bottom:90px; margin:0; font-size:1.35rem; opacity:0.6; font-style:italic;">Fig. 1 - Weekly admissions per 100,000, season 2025/26</p>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Confidence band · Scientific Journal</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-weight:600; letter-spacing:-0.01em; font-size:5rem; max-width:1250px;">Forecasting the flu season - with the uncertainty drawn in</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">Nine observed weeks, eleven forecast weeks, and an honest check at the end.</p>
+    <p class="presentation-note">Journal register: calm type, one figure, one claim.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="observed" style="justify-content:flex-start;" aria-label="Observed">
+    <header class="presentation-header"><span>Results</span><span>Admissions per 100,000 · weeks 1–9</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:600; letter-spacing:-0.01em;">Admissions doubled every three weeks</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Start with what is known - nine weeks of data.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="forecast" style="justify-content:flex-start;" aria-label="Forecast">
+    <header class="presentation-header"><span>Forecast</span><span>Median + 90% interval</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:600; letter-spacing:-0.01em;">The model expects a peak around week 13</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The line extends; the band says how sure we are - not very, further out.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="bands" style="justify-content:flex-start;" aria-label="Nested bands">
+    <header class="presentation-header"><span>Forecast</span><span>50% and 90% intervals</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:600; letter-spacing:-0.01em;">Half the time, the truth lands in the dark band</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Two bands: the inner one is the coin flip, the outer one the safety margin.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Key figures">
+    <p class="presentation-eyebrow" data-df-entrance="fade">Three numbers from the season</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#B42025; font-weight:600; letter-spacing:-0.01em;"><span data-count="15.1">15.1</span></p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">admissions per 100,000 at the actual peak (week 13)</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-weight:600; letter-spacing:-0.01em;"><span data-count="11">11</span>/11</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">forecast weeks inside the 90% band</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-weight:600; letter-spacing:-0.01em;"><span data-count="6">6</span>/11</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">inside the 50% band - as a 50% band should be</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">A 50% band that catches every week is too wide. Six of eleven is calibration, not luck.</p>
+    <p class="presentation-note">Calibration is the concept to land.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Surveillance" style="overflow:hidden;">
+    <video autoplay muted loop playsinline aria-hidden="true" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.55;">
+      <source src="videos/demo.webm" type="video/webm" />
+      <source src="videos/demo.mp4" type="video/mp4" />
+    </video>
+    <div aria-hidden="true" style="position:absolute; inset:0; background:linear-gradient(90deg, #17212B 40%, rgba(23,33,43,.55));"></div>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Methods</p>
+    <h2 class="presentation-title" data-df-entrance="blur" style="position:relative; font-size:5rem; max-width:1100px; font-weight:600; letter-spacing:-0.01em;">Every Monday, 142 hospitals report</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:400ms; position:relative; max-width:900px;">The forecast is refit weekly on admissions, test positivity and school-holiday calendars.</p>
+    <p class="presentation-note">The loop is ambient - the data pipeline is the point.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="north" data-anim-in-blocks="5" data-anim-in-color="#B42025" aria-label="Forecast table">
+    <header class="presentation-header"><span>Table 1</span><span>Forecast vs realized</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" style="font-size:1.45rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">Weekly admissions per 100,000 - median forecast, 90% interval and realized value (synthetic).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">Week</th><th class="table-head" style="text-align:right">Median</th><th class="table-head" style="text-align:right">90% interval</th><th class="table-head" style="text-align:right">Realized</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row"><td class="table-cell">10</td><td class="table-cell" style="text-align:right">11.0</td><td class="table-cell" style="text-align:right">9.7 – 12.3</td><td class="table-cell" style="text-align:right">10.7</td></tr>
+          <tr class="table-row"><td class="table-cell">11</td><td class="table-cell" style="text-align:right">12.1</td><td class="table-cell" style="text-align:right">9.9 – 14.3</td><td class="table-cell" style="text-align:right">13.4</td></tr>
+          <tr class="table-row"><td class="table-cell">12</td><td class="table-cell" style="text-align:right">12.8</td><td class="table-cell" style="text-align:right">9.7 – 15.9</td><td class="table-cell" style="text-align:right">13.9</td></tr>
+          <tr class="table-row" style="font-weight:700"><td class="table-cell">13</td><td class="table-cell" style="text-align:right">13.0</td><td class="table-cell" style="text-align:right">9.1 – 16.9</td><td class="table-cell" style="text-align:right">15.1</td></tr>
+          <tr class="table-row"><td class="table-cell">14</td><td class="table-cell" style="text-align:right">12.6</td><td class="table-cell" style="text-align:right">8.1 – 17.1</td><td class="table-cell" style="text-align:right">13.1</td></tr>
+          <tr class="table-row"><td class="table-cell">16</td><td class="table-cell" style="text-align:right">10.4</td><td class="table-cell" style="text-align:right">5.3 – 15.5</td><td class="table-cell" style="text-align:right">11.8</td></tr>
+          <tr class="table-row"><td class="table-cell">18</td><td class="table-cell" style="text-align:right">7.4</td><td class="table-cell" style="text-align:right">2.5 – 12.3</td><td class="table-cell" style="text-align:right">8.4</td></tr>
+          <tr class="table-row"><td class="table-cell">20</td><td class="table-cell" style="text-align:right">4.8</td><td class="table-cell" style="text-align:right">0.8 – 8.8</td><td class="table-cell" style="text-align:right">2.6</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Selected weeks; the figure has all of them.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-weight:600; letter-spacing:-0.01em; font-size:2.9rem;">“The band is what let us open the overflow ward in week 11 instead of week 13. The line alone would have said wait.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#B42025; color:#FAFAF8;"><span class="avatar-fallback">HA</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Dr. Hana Aziz<br /><span style="opacity:0.7; font-size:1.4rem;">Hospital capacity planning - 9 seasons forecast</span></p>
+    </div>
+    <p class="presentation-note">Uncertainty as a decision tool - the thesis of the talk.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="check" style="justify-content:flex-start;" aria-label="Realized">
+    <header class="presentation-header"><span>Validation</span><span>Realized weeks over the forecast</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:600; letter-spacing:-0.01em;">What actually happened: a higher peak, inside the band</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The realized weeks drop in as red dots.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Questions from reviewers">
+    <header class="presentation-header"><span>Peer review</span><span>Reviewer comments</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; font-weight:600; letter-spacing:-0.01em;">Questions from the reviewers</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="cb-qa" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Why not a single number?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">A point forecast was off by 2.1 at the peak; planners need the range to size wards.</p></div>
+      </details>
+      <details class="accordion-item" name="cb-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Is the band symmetric?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Nearly - admissions cannot go below zero, so the lower edge compresses late in the season.</p></div>
+      </details>
+      <details class="accordion-item" name="cb-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>What drives the width?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Mostly timing: the model is surer about the height of the peak than about its week.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Reviewers always ask for the point forecast.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Takeaways">
+    <header class="presentation-header"><span>Conclusions</span><span>Four findings</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">¶</span><span>Show uncertainty in the figure, not in a footnote.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">¶</span><span>Nested bands tell planners what is likely and what is possible.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">¶</span><span>Check calibration: about half the weeks belong outside a 50% band.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">¶</span><span>Decide on the band edge when the cost of being late is high.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Conclusions, journal-style.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-anim-in="blocksIn" data-anim-in-direction="south" data-anim-in-blocks="5" data-anim-in-color="#B42025" aria-label="Closing">
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-weight:600; letter-spacing:-0.01em;">Uncertainty belongs in the graphic</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">Synthetic season, real method - draw the band, then check it.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">Close on the method.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) - build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-band');
+    const TEXT = '#17212B', MUTED = '#6B7580', RED = '#B42025', BLUE = '#2B5C8A';
+    const weeks = Array.from({ length: 20 }, (_, i) => 'W' + (i + 1));
+    const observed = [2.1, 2.4, 2.9, 3.6, 4.4, 5.5, 6.8, 8.1, 9.6];
+    const median = [11.0, 12.1, 12.8, 13.0, 12.6, 11.7, 10.4, 8.9, 7.4, 6.0, 4.8];
+    const h50 = [0.6, 1.0, 1.4, 1.8, 2.1, 2.3, 2.4, 2.4, 2.3, 2.1, 1.9];
+    const h90 = [1.3, 2.2, 3.1, 3.9, 4.5, 4.9, 5.1, 5.1, 4.9, 4.5, 4.0];
+    const realized = [10.7, 13.4, 13.9, 15.1, 13.1, 14.3, 11.8, 11.9, 8.4, 5.1, 2.6];
+    const pad = (arr) => [...Array(9).fill('-'), ...arr];
+    const r1 = (v) => Math.round(v * 10) / 10;
+    const G = { left: 150, right: 150, top: 330, bottom: 150 };
+    const axes = {
+      grid: G,
+      xAxis: { type: 'category', data: weeks, boundaryGap: false, axisLabel: { color: MUTED, interval: 1 } },
+      yAxis: { type: 'value', min: 0, max: 20, interval: 5, axisLabel: { color: MUTED } },
+    };
+    const obs = { id: 'observed', name: 'Observed', type: 'line', data: [...observed, ...Array(11).fill('-')], symbolSize: 12, lineStyle: { color: TEXT, width: 4 }, itemStyle: { color: TEXT } };
+    const med = { id: 'median', name: 'Median forecast', type: 'line', data: [...Array(8).fill('-'), 9.6, ...median], showSymbol: false, lineStyle: { color: BLUE, width: 4, type: 'dashed' }, itemStyle: { color: BLUE } };
+    const band = (id, half, color) => [
+      { id: id + '-lo', type: 'line', stack: id, data: pad(median.map((m, i) => r1(m - half[i]))), showSymbol: false, silent: true, lineStyle: { opacity: 0 }, tooltip: { show: false } },
+      { id: id + '-w', type: 'line', stack: id, data: pad(half.map((h) => r1(2 * h))), showSymbol: false, silent: true, lineStyle: { opacity: 0 }, areaStyle: { color }, tooltip: { show: false } },
+    ];
+    const b90 = band('b90', h90, 'rgba(43,92,138,.16)');
+    const b50 = band('b50', h50, 'rgba(43,92,138,.30)');
+    const peak = { symbol: 'none', silent: true, lineStyle: { color: MUTED, type: 'dotted', width: 2 }, label: { formatter: 'forecast peak', color: MUTED, position: 'end' }, data: [{ xAxis: 'W13' }] };
+
+    df$.shadcn.chart.deck(deck, {
+      base: { tooltip: { trigger: 'axis' } },
+      states: {
+        observed: { ...axes, series: [obs] },
+        forecast: { ...axes, series: [...b90, obs, med] },
+        bands: { ...axes, series: [...b90, ...b50, obs, { ...med, markLine: peak }] },
+        check: { ...axes, series: [...b90, ...b50, obs, med,
+          { id: 'realized', name: 'Realized', type: 'scatter', data: pad(realized), symbolSize: 18, itemStyle: { color: RED, borderColor: '#FAFAF8', borderWidth: 3 }, z: 5,
+            markPoint: { symbol: 'circle', symbolSize: 1, label: { show: true, formatter: 'peak 15.1', color: RED, fontWeight: 700, offset: [0, -34] }, data: [{ coord: ['W13', 15.1] }] } }] },
+      },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 10-confidence-band (Scientific Journal) - a synthetic season, not real surveillance data.</p>
+<SourceFiles component="presentation" />
+</DocPage>

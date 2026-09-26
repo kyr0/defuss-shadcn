@@ -1,7 +1,7 @@
 /* -- Testimonials (marketing) --------------------------------------
    Big pull-quote with partner logo lockup, plus a grid of media cards
    whose review overlay floats over the photo (backdrop blur, real
-   DOM — no JS). Overlay contrast comes from --background at 80% +
+   DOM - no JS). Overlay contrast comes from --background at 80% +
    blur, readable in both modes. */
 
 @layer components {
@@ -68,7 +68,7 @@
     border-radius: var(--radius-md);
     background: var(--muted);
     padding: 0.75rem;
-    /* the element is a <figure> — without an explicit reset its UA margins
+    /* the element is a <figure> - without an explicit reset its UA margins
        (1em 40px) stack onto the grid gap (measured: 92px between cards); the
        gap comes from `gap` alone */
     margin: 0;
@@ -88,7 +88,7 @@
     position: relative;
     z-index: 10;
     width: 100%;
-    /* source: bg-background/80 + backdrop-blur — keep the text readable over
+    /* source: bg-background/80 + backdrop-blur - keep the text readable over
        any photo without a hard opaque card */
     margin-block-start: auto;
     border: 1px solid var(--border);

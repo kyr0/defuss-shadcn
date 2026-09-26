@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "name": "presentation",
+  "states": {
+    "slide": {
+      "type": "number",
+      "default": 0,
+      "target": {
+        "kind": "selector",
+        "selector": ".presentation"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "default",
+        "args": {
+          "index": "@value"
+        }
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-current-slide"
+      },
+      "editor": {
+        "component": "number"
+      }
+    },
+    "notes": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".presentation"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "notes",
+        "args": {
+          "value": "@value"
+        }
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-notes"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "fullscreen": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".presentation"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "fullscreen",
+        "args": {
+          "value": "@value"
+        }
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-fullscreen"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {
+    "next": {
+      "target": {
+        "kind": "selector",
+        "selector": ".presentation [data-presentation-action=\"next\"]"
+      },
+      "operation": {
+        "kind": "event",
+        "name": "click"
+      }
+    },
+    "prev": {
+      "target": {
+        "kind": "selector",
+        "selector": ".presentation [data-presentation-action=\"prev\"]"
+      },
+      "operation": {
+        "kind": "event",
+        "name": "click"
+      }
+    }
+  }
+}

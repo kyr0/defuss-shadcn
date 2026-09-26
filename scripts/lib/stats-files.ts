@@ -11,7 +11,7 @@ import type { ComponentType } from './taxonomy.ts';
  * browser mode (no node:fs / node:zlib there). scripts/stats.ts (the writer)
  * and verify.ts (the `stats.json fresh` gate) both call these, so the gate
  * compares against exactly what the writer writes. Gzip uses node:zlib
- * defaults — the same compression CDNs apply per asset on the wire.
+ * defaults - the same compression CDNs apply per asset on the wire.
  */
 
 const bytesOf = (file: string): Buffer | null => (existsSync(file) ? readFileSync(file) : null);
@@ -21,7 +21,7 @@ const gzOf = (b: Buffer | null): number => (b ? gzipSync(b).byteLength : 0);
 /**
  * Why: measure every component folder in stable alphabetical order. The
  * taxonomy type comes from the component-skill.md frontmatter (single source
- * of truth); a component whose skill is missing/unparsable throws — same
+ * of truth); a component whose skill is missing/unparsable throws - same
  * fail-closed contract as skillEntries, because an uncounted component would
  * silently shrink the published totals.
  */
@@ -35,7 +35,7 @@ export function measureComponents(componentsDir: string) {
       const type = types.get(name);
       if (!type)
         throw new Error(
-          `components/${name}/component-skill.md missing valid frontmatter — its taxonomy type is unknown (see AGENTS.md "Component skill template")`,
+          `components/${name}/component-skill.md missing valid frontmatter - its taxonomy type is unknown (see AGENTS.md "Component skill template")`,
         );
       const dir = join(componentsDir, name);
       const js = bytesOf(join(dir, `${name}.js`));
@@ -58,7 +58,7 @@ export function measureComponents(componentsDir: string) {
 
 /**
  * Why: measure the single-file bundle (scripts/bundle.ts → minify.ts twins)
- * like a component. Missing files measure as 0 rather than throwing — stats
+ * like a component. Missing files measure as 0 rather than throwing - stats
  * can run on a dist/ that predates the bundle, and the `stats.json fresh`
  * gate forces a regeneration as soon as it exists.
  */
@@ -79,7 +79,7 @@ export function measureBundle(componentsDir: string): BundleStats {
 
 /**
  * Why: measure the core runtime pair (core.js: morph + query + shared;
- * core.css: the four theme utility sheets — plans/core-bundle.md) — the fixed
+ * core.css: the four theme utility sheets - plans/core-bundle.md) - the fixed
  * cost every modular consumer pays once. all.js/all.css embed/carry the same
  * payload, so the bundle figures already include core.
  */
@@ -98,7 +98,7 @@ export function measureCore(componentsDir: string): BundleStats {
   };
 }
 
-/** The full stats.json text for one dist/ tree — writer and gate share this. */
+/** The full stats.json text for one dist/ tree - writer and gate share this. */
 export function buildStatsFileText(distDir: string): string {
   const componentsDir = join(distDir, 'components');
   return buildStatsText(

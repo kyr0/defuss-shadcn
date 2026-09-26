@@ -22,8 +22,8 @@ function triggerStateChange(content, stateName, _config) {
       break;
     case 'open':
       // deferred show (safeShowPopover): calling showPopover() on an element
-      // mid-its-own exit animation — e.g. just light-dismissed by a sibling
-      // trigger's click — crashed the headless renderer. Sibling exclusion
+      // mid-its-own exit animation - e.g. just light-dismissed by a sibling
+      // trigger's click - crashed the headless renderer. Sibling exclusion
       // stays native via popover="auto".
       safeShowPopover(content);
       break;

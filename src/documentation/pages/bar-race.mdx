@@ -1,0 +1,250 @@
+---
+title: "Bar Race - Presentation"
+description: "Sports Broadcast design language presenting a fictional league’s golden-boot race as a 12-slide deck - a live bar race that runs while its slide is on air, then morphs into the final table, efficiency ranking and season lines."
+slug: "bar-race"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="bar-race" title="Bar Race" component="presentation">
+  Sports Broadcast: scoreboard black, broadcast orange and condensed caps - the race for top scorer in a fictional league, replayed live as a bar race and then re-read three ways on the same chart.
+</PageHeader>
+
+```html example label="Sports Broadcast" schema="none" height="26" hint="Slides swoosh in and out sideways (df$.anim slideIn/slideOut with a 400px travel, declared on the deck); orange curtains mark the breaks. One deck-level chart (df$.shadcn.chart.deck): the bar race ticks through the matchdays only while its slide is active (realtimeSort re-ranks live), then morphs into the final table, goals per 90 and season lines. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-race" data-anim-in="slideIn" data-anim-in-distance="400px" data-anim-out="slideOut" data-anim-out-distance="400px" style="--presentation-ink:#0C0E12;--presentation-ink-foreground:#FFFFFF;--presentation-paper:#181D27;--presentation-paper-foreground:#DDE2EB;--presentation-accent:#FF4D00;font-family:'Arial Narrow', Arial, sans-serif;" tabindex="-1" aria-label="The golden-boot race - a broadcast deck">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="Cumulative goals of six top scorers in a fictional league over 34 matchdays: Okoye overtakes Brandt at matchday 20 and finishes with 28"></div>
+  <section class="slide" data-slide data-theme="ink" aria-label="Cover">
+    <div aria-hidden="true" style="position:absolute; top:70px; right:112px; display:flex; gap:0; font:800 1.6rem/1 'Arial Narrow', Arial, sans-serif; text-transform:uppercase;">
+      <span style="background:#FF4D00; color:#0C0E12; padding:0.7rem 1.2rem;">Live</span>
+      <span style="background:#FFFFFF; color:#0C0E12; padding:0.7rem 1.2rem;">Matchday 34</span>
+    </div>
+    <div aria-hidden="true" style="position:absolute; left:0; bottom:0; width:100%; height:18px; background:repeating-linear-gradient(-45deg, #FF4D00 0 24px, transparent 24px 48px); opacity:0.8;"></div>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Bar race · Sports Broadcast</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-family:'Arial Narrow', Arial, sans-serif; text-transform:uppercase; font-weight:800; letter-spacing:0.01em; font-size:7rem;">The golden-boot race</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">Six strikers, 34 matchdays, one lead change - replayed live.</p>
+    <p class="presentation-note">Broadcast energy: the bug and the stripe say “on air”.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="race" style="justify-content:flex-start;" aria-label="The race">
+    <header class="presentation-header"><span>Replay</span><span>Cumulative goals · live</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Arial Narrow', Arial, sans-serif; text-transform:uppercase; font-weight:800; letter-spacing:0.01em;">Replay: 34 matchdays in 10 seconds</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The race runs only while this slide is on air - leave and it stops.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="final" style="justify-content:flex-start;" aria-label="Final tally">
+    <header class="presentation-header"><span>Full time</span><span>Goals · season total</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Arial Narrow', Arial, sans-serif; text-transform:uppercase; font-weight:800; letter-spacing:0.01em;">Okoye wins it with 28</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The race freezes into the final table.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="per90" style="justify-content:flex-start;" aria-label="Goals per 90">
+    <header class="presentation-header"><span>Efficiency</span><span>Goals per 90 minutes</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Arial Narrow', Arial, sans-serif; text-transform:uppercase; font-weight:800; letter-spacing:0.01em;">Per minute played, Varga was deadlier</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Same bars, new measure - the order shuffles.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Key figures">
+    <p class="presentation-eyebrow" data-df-entrance="fade">Three numbers from the season</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#FF4D00; font-family:'Arial Narrow', Arial, sans-serif; text-transform:uppercase; font-weight:800; letter-spacing:0.01em;"><span data-count="28">28</span></p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">goals for M. Okoye - golden boot</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:'Arial Narrow', Arial, sans-serif; text-transform:uppercase; font-weight:800; letter-spacing:0.01em;"><span data-count="20">20</span></p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">the matchday Okoye took the lead for good</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:'Arial Narrow', Arial, sans-serif; text-transform:uppercase; font-weight:800; letter-spacing:0.01em;"><span data-count="0.84">0.84</span></p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">goals per 90 for T. Varga - the best rate</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">Brandt led for 19 matchdays and still finished second.</p>
+    <p class="presentation-note">Leads do not win races; finishes do.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Atmosphere" style="overflow:hidden;">
+    <video autoplay muted loop playsinline aria-hidden="true" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.55; mix-blend-mode:screen;">
+      <source src="videos/demo.webm" type="video/webm" />
+      <source src="videos/demo.mp4" type="video/mp4" />
+    </video>
+    <div aria-hidden="true" style="position:absolute; inset:0; background:linear-gradient(90deg, #0C0E12 35%, rgba(255,77,0,.25));"></div>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Matchday 34</p>
+    <h2 class="presentation-title" data-df-entrance="blur" style="position:relative; font-size:5rem; max-width:1100px; font-family:'Arial Narrow', Arial, sans-serif; text-transform:uppercase; font-weight:800; letter-spacing:0.01em; font-size:4.25rem;">The last day decided nothing - the second half of the season did</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:400ms; position:relative; max-width:900px;">Okoye scored 13 after the winter break; Brandt scored 12. The gap opened slowly, then stayed.</p>
+    <p class="presentation-note">An ambient loop - let the headline carry it.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="east" data-anim-in-blocks="5" data-anim-in-color="#FF4D00" aria-label="Scorers table">
+    <header class="presentation-header"><span>The table</span><span>Season totals</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" style="font-size:1.7rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">Top scorers of a fictional league season (synthetic).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">Player</th><th class="table-head" style="text-align:right">Club</th><th class="table-head" style="text-align:right">Goals</th><th class="table-head" style="text-align:right">Minutes</th><th class="table-head" style="text-align:right">Per 90</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row" style="font-weight:700"><td class="table-cell">M. Okoye</td><td class="table-cell" style="text-align:right">Harbor City</td><td class="table-cell" style="text-align:right">28</td><td class="table-cell" style="text-align:right">3,073</td><td class="table-cell" style="text-align:right">0.82</td></tr>
+          <tr class="table-row"><td class="table-cell">L. Brandt</td><td class="table-cell" style="text-align:right">FC Nordtal</td><td class="table-cell" style="text-align:right">26</td><td class="table-cell" style="text-align:right">2,962</td><td class="table-cell" style="text-align:right">0.79</td></tr>
+          <tr class="table-row"><td class="table-cell">T. Varga</td><td class="table-cell" style="text-align:right">Rovers</td><td class="table-cell" style="text-align:right">23</td><td class="table-cell" style="text-align:right">2,464</td><td class="table-cell" style="text-align:right">0.84</td></tr>
+          <tr class="table-row"><td class="table-cell">J. Silva</td><td class="table-cell" style="text-align:right">Athletic</td><td class="table-cell" style="text-align:right">22</td><td class="table-cell" style="text-align:right">2,789</td><td class="table-cell" style="text-align:right">0.71</td></tr>
+          <tr class="table-row"><td class="table-cell">K. Mensah</td><td class="table-cell" style="text-align:right">United</td><td class="table-cell" style="text-align:right">21</td><td class="table-cell" style="text-align:right">2,739</td><td class="table-cell" style="text-align:right">0.69</td></tr>
+          <tr class="table-row"><td class="table-cell">R. Ito</td><td class="table-cell" style="text-align:right">Wanderers</td><td class="table-cell" style="text-align:right">17</td><td class="table-cell" style="text-align:right">2,782</td><td class="table-cell" style="text-align:right">0.55</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Minutes explain the per-90 flip.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-family:'Arial Narrow', Arial, sans-serif; text-transform:uppercase; font-weight:800; letter-spacing:0.01em; font-size:3.2rem;">“I stopped looking at the table after matchday twenty. I only looked at the next chance.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#FF4D00; color:#0C0E12;"><span class="avatar-fallback">MO</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Musa Okoye<br /><span style="opacity:0.7; font-size:1.4rem;">Striker, Harbor City - 28 goals in 34 matchdays</span></p>
+    </div>
+    <p class="presentation-note">Fictional player, fictional quote - the pattern is real.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="season" style="justify-content:flex-start;" aria-label="Season lines">
+    <header class="presentation-header"><span>The season</span><span>Cumulative goals by matchday</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Arial Narrow', Arial, sans-serif; text-transform:uppercase; font-weight:800; letter-spacing:0.01em;">The crossing at matchday 20</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The bars unfold into the season: lines show when the lead changed.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Questions from the studio">
+    <header class="presentation-header"><span>Studio Q & A</span><span>Post-match</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; font-family:'Arial Narrow', Arial, sans-serif; text-transform:uppercase; font-weight:800; letter-spacing:0.01em;">Questions from the studio</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="br-qa" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Why not give the boot to Varga?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">The award counts goals, not rates - Varga missed seven matches injured.</p></div>
+      </details>
+      <details class="accordion-item" name="br-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>How many penalties were in Okoye’s 28?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Five - 23 of his 28 came from open play.</p></div>
+      </details>
+      <details class="accordion-item" name="br-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Who is the one to watch next year?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Mensah: 10 goals in the last 14 matchdays - his best run yet.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The penalty question always comes.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Takeaways">
+    <header class="presentation-header"><span>Full-time analysis</span><span>Four points</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">▶</span><span>Races are about the second half of the season.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">▶</span><span>Rates and totals tell different stories - show both.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">▶</span><span>A bar race shows who led; a line shows when it changed.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">▶</span><span>Animate the ranking, not just the values.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Pundit-length: thirty seconds.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-anim-in="blocksIn" data-anim-in-direction="west" data-anim-in-blocks="5" data-anim-in-color="#FF4D00" aria-label="Closing">
+    <div aria-hidden="true" style="position:absolute; top:70px; right:112px; display:flex; gap:0; font:800 1.6rem/1 'Arial Narrow', Arial, sans-serif; text-transform:uppercase;">
+      <span style="background:#FF4D00; color:#0C0E12; padding:0.7rem 1.2rem;">Live</span>
+      <span style="background:#FFFFFF; color:#0C0E12; padding:0.7rem 1.2rem;">Matchday 34</span>
+    </div>
+    <div aria-hidden="true" style="position:absolute; left:0; bottom:0; width:100%; height:18px; background:repeating-linear-gradient(-45deg, #FF4D00 0 24px, transparent 24px 48px); opacity:0.8;"></div>
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-family:'Arial Narrow', Arial, sans-serif; text-transform:uppercase; font-weight:800; letter-spacing:0.01em;">That’s full time</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">A fictional league and synthetic goals - the race, the re-rank and the crossing are the pattern.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">Sign off like a broadcast.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) - build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-race');
+    const TEXT = '#FFFFFF', MUTED = '#8A93A6', ORANGE = '#FF4D00', DIM = 'rgba(255,255,255,.22)';
+    const days = [5, 10, 15, 20, 25, 30, 34];
+    // [player, club color, cumulative goals at the matchdays above, goals per 90]
+    const players = [
+      ['M. Okoye', '#FF4D00', [3, 7, 11, 15, 19, 24, 28], 0.82],
+      ['L. Brandt', '#3DA5FF', [5, 8, 12, 14, 17, 21, 26], 0.79],
+      ['T. Varga', '#FFD23F', [2, 6, 9, 14, 18, 20, 23], 0.84],
+      ['J. Silva', '#9B5DE5', [4, 6, 10, 12, 15, 19, 22], 0.71],
+      ['K. Mensah', '#00C49A', [1, 4, 8, 11, 16, 18, 21], 0.69],
+      ['R. Ito', '#C9CED8', [3, 5, 7, 10, 12, 15, 17], 0.55],
+    ];
+    const G = { left: 250, right: 190, top: 320, bottom: 150 };
+    const names = players.map((p) => p[0]);
+    const bar = (frame, extra = {}) => ({
+      grid: G,
+      xAxis: { type: 'value', max: 30, axisLabel: { color: MUTED }, splitLine: { lineStyle: { color: DIM } } },
+      yAxis: { type: 'category', data: names, inverse: true, max: names.length - 1, animationDuration: 600, animationDurationUpdate: 1100,
+               axisLine: { show: false }, axisLabel: { color: TEXT, fontWeight: 800 } },
+      series: [{ id: 'goals', type: 'bar', barWidth: '64%', realtimeSort: true, animationDurationUpdate: 1100, animationEasingUpdate: 'linear',
+        data: players.map((p) => ({ name: p[0], value: p[2][frame], itemStyle: { color: p[1], borderRadius: 0 } })),
+        label: { show: true, position: 'right', valueAnimation: true, color: TEXT, fontWeight: 800 } }],
+      graphic: [{ id: 'md', type: 'text', right: 190, top: 262, style: { text: 'MATCHDAY ' + days[frame], fill: 'rgba(255,77,0,.9)', font: "800 44px 'Arial Narrow', Arial, sans-serif" } }],
+      ...extra,
+    });
+    const last = days.length - 1;
+    const byRate = players.slice().sort((a, b) => b[3] - a[3]);
+
+    df$.shadcn.chart.deck(deck, {
+      base: { tooltip: { trigger: 'item' } },
+      states: {
+        race: bar(0),
+        final: bar(last, { graphic: [{ id: 'md', type: 'text', right: 190, top: 262, style: { text: 'FULL TIME', fill: 'rgba(255,77,0,.9)', font: "800 44px 'Arial Narrow', Arial, sans-serif" } }] }),
+        per90: {
+          grid: G,
+          xAxis: { type: 'value', max: 1, interval: 0.25, axisLabel: { color: MUTED } },
+          yAxis: { type: 'category', inverse: true, data: byRate.map((p) => p[0]), axisLine: { show: false }, axisLabel: { color: TEXT, fontWeight: 800 } },
+          series: [{ id: 'goals', type: 'bar', barWidth: '64%',
+            data: byRate.map((p) => ({ name: p[0], value: p[3], itemStyle: { color: p[0] === 'T. Varga' ? p[1] : DIM, borderRadius: 0 } })),
+            label: { show: true, position: 'right', formatter: (p) => p.value.toFixed(2), color: TEXT, fontWeight: 800 } }],
+        },
+        season: {
+          legend: { top: 300, right: 190, textStyle: { color: TEXT } },
+          grid: { left: 150, right: 230, top: 370, bottom: 150 },
+          xAxis: { type: 'category', data: days.map((d) => 'MD ' + d), boundaryGap: false, axisLabel: { color: TEXT, fontWeight: 700 } },
+          yAxis: { type: 'value', max: 30, axisLabel: { color: MUTED }, splitLine: { lineStyle: { color: DIM } } },
+          series: players.slice(0, 3).map((p) => ({ id: p[0] === 'M. Okoye' ? 'goals' : p[0], name: p[0], type: 'line', data: p[2], symbolSize: 14,
+            lineStyle: { color: p[1], width: 6 }, itemStyle: { color: p[1] }, endLabel: { show: true, formatter: '{a}  {c}', color: TEXT, fontWeight: 800 } })),
+        },
+      },
+    });
+
+    // the live replay: while the race slide is on air, tick one matchday frame
+    // every 1.2s into the SAME stage instance (merge - realtimeSort re-ranks)
+    const stageEl = deck.querySelector('.presentation-stage');
+    const raceSlide = deck.querySelector('[data-chart-state="race"]');
+    let timer = 0;
+    const stop = () => { clearInterval(timer); timer = 0; };
+    new MutationObserver(() => {
+      stop();
+      if (!raceSlide.hasAttribute('data-active')) return;
+      let frame = 0;
+      timer = setInterval(() => {
+        frame += 1;
+        const inst = df$.shadcn.chart.instance(stageEl);
+        if (!inst || frame > last) return stop();
+        inst.setOption({
+          series: [{ id: 'goals', data: players.map((p) => ({ name: p[0], value: p[2][frame], itemStyle: { color: p[1], borderRadius: 0 } })) }],
+          graphic: [{ id: 'md', type: 'text', right: 190, top: 262, style: { text: 'MATCHDAY ' + days[frame], fill: 'rgba(255,77,0,.9)', font: "800 44px 'Arial Narrow', Arial, sans-serif" } }],
+        });
+      }, 1200);
+    }).observe(raceSlide, { attributes: true, attributeFilter: ['data-active'] });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 09-bar-race (Sports Broadcast) - a fictional league, synthetic goals.</p>
+<SourceFiles component="presentation" />
+</DocPage>

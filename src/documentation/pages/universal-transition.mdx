@@ -1,0 +1,212 @@
+---
+title: "Universal Transition - Presentation"
+description: "Kinetic Typography design language presenting a music festival’s 120,000 tickets by sales channel as a 12-slide deck - the same five channels morph from bars to donut to dots to revenue bars on one continuous chart."
+slug: "universal-transition"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="universal-transition" title="Universal Transition" component="presentation">
+  Kinetic Typography: black stage, enormous type and one orange - 120,000 festival tickets, five sales channels, and one dataset that never cuts away: it morphs.
+</PageHeader>
+
+```html example label="Kinetic Typography" schema="none" height="26" hint="Slides zoom in from small and zoom out (df$.anim zoomIn scale 0.6 / zoomOut, declared on the deck); orange curtains mark the breaks. One deck-level chart (df$.shadcn.chart.deck) keeps the same five named channels through four forms: bars → donut → sized dots → revenue bars. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-morph" data-anim-in="zoomIn" data-anim-in-scale="0.6" data-anim-out="zoomOut" style="--presentation-ink:#111111;--presentation-ink-foreground:#FFFFFF;--presentation-paper:#F5F4F0;--presentation-paper-foreground:#111111;--presentation-accent:#FF3E00;font-family:Arial, Helvetica, sans-serif;" tabindex="-1" aria-label="120,000 tickets - one dataset, four forms">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="Festival tickets by sales channel, 120,000 in total: app 46,000, web 38,000, box office 17,000, resellers 12,000, partners 7,000, morphing from bars to a donut to sized dots to revenue bars"></div>
+  <section class="slide" data-slide data-theme="ink" aria-label="Cover">
+    <p aria-hidden="true" style="position:absolute; right:-40px; bottom:-80px; margin:0; font:900 26rem/0.8 'Arial Black', Impact, sans-serif; color:#FF3E00; opacity:0.9; letter-spacing:-0.06em;">120K</p>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Universal transition · Kinetic Typography</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-family:'Arial Black', Impact, sans-serif; text-transform:uppercase; letter-spacing:-0.03em; font-size:10rem;">Sold out</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">A three-day festival, 120,000 tickets, five ways to buy one.</p>
+    <p class="presentation-note">The giant number is the whole cover.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="bars" style="justify-content:flex-start;" aria-label="Bars">
+    <header class="presentation-header"><span>Rank it</span><span>Tickets by channel</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Arial Black', Impact, sans-serif; text-transform:uppercase; letter-spacing:-0.03em; font-size:3.2rem;">Rank it: the app wins</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Bars answer: which channel is biggest?</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="donut" style="justify-content:flex-start;" aria-label="Donut">
+    <header class="presentation-header"><span>Compose it</span><span>Share of 120,000</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Arial Black', Impact, sans-serif; text-transform:uppercase; letter-spacing:-0.03em; font-size:3.2rem;">Compose it: 70% online</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The same five bars fold into a ring.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="dots" style="justify-content:flex-start;" aria-label="Dots">
+    <header class="presentation-header"><span>Distribute it</span><span>Tickets × average price</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Arial Black', Impact, sans-serif; text-transform:uppercase; letter-spacing:-0.03em; font-size:3.2rem;">Distribute it: resellers charge most</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The ring bursts into dots - x is volume, y is average price.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Key figures">
+    <p class="presentation-eyebrow" data-df-entrance="fade">Three numbers from the box office</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:'Arial Black', Impact, sans-serif; text-transform:uppercase; letter-spacing:-0.03em;"><span data-count="120">120</span>K</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">tickets, sold out in 19 days</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#FF3E00; font-family:'Arial Black', Impact, sans-serif; text-transform:uppercase; letter-spacing:-0.03em;"><span data-count="70">70</span>%</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">bought on the app or the web</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:'Arial Black', Impact, sans-serif; text-transform:uppercase; letter-spacing:-0.03em;">€<span data-count="19.4">19.4</span>M</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">ticket revenue</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">The box office still sold 17,000 - mostly day tickets on the gate.</p>
+    <p class="presentation-note">Three numbers, huge type.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Festival" style="overflow:hidden;">
+    <video autoplay muted loop playsinline aria-hidden="true" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.55; mix-blend-mode:screen;">
+      <source src="videos/demo.webm" type="video/webm" />
+      <source src="videos/demo.mp4" type="video/mp4" />
+    </video>
+    <div aria-hidden="true" style="position:absolute; inset:0; background:linear-gradient(90deg, #111111 30%, rgba(255,62,0,.3));"></div>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Three days</p>
+    <h2 class="presentation-title" data-df-entrance="blur" style="position:relative; font-size:5rem; max-width:1100px; font-family:'Arial Black', Impact, sans-serif; text-transform:uppercase; letter-spacing:-0.03em; font-size:4.5rem;">Forty acts, two stages, one field</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:400ms; position:relative; max-width:900px;">The loop is the mood; the chart is the business behind it.</p>
+    <p class="presentation-note">Let the loop breathe for a moment.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="north" data-anim-in-blocks="5" data-anim-in-color="#FF3E00" aria-label="Channel table">
+    <header class="presentation-header"><span>The ledger</span><span>By channel</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" data-density="spacious" style="font-size:1.7rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">Festival tickets by sales channel (synthetic).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">Channel</th><th class="table-head" style="text-align:right">Tickets</th><th class="table-head" style="text-align:right">Avg price</th><th class="table-head" style="text-align:right">Revenue</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row"><td class="table-cell">App</td><td class="table-cell" style="text-align:right">46,000</td><td class="table-cell" style="text-align:right">€161</td><td class="table-cell" style="text-align:right">€7.4 M</td></tr>
+          <tr class="table-row"><td class="table-cell">Web</td><td class="table-cell" style="text-align:right">38,000</td><td class="table-cell" style="text-align:right">€166</td><td class="table-cell" style="text-align:right">€6.3 M</td></tr>
+          <tr class="table-row"><td class="table-cell">Box office</td><td class="table-cell" style="text-align:right">17,000</td><td class="table-cell" style="text-align:right">€129</td><td class="table-cell" style="text-align:right">€2.2 M</td></tr>
+          <tr class="table-row"><td class="table-cell">Resellers</td><td class="table-cell" style="text-align:right">12,000</td><td class="table-cell" style="text-align:right">€217</td><td class="table-cell" style="text-align:right">€2.6 M</td></tr>
+          <tr class="table-row"><td class="table-cell">Partners</td><td class="table-cell" style="text-align:right">7,000</td><td class="table-cell" style="text-align:right">€129</td><td class="table-cell" style="text-align:right">€0.9 M</td></tr>
+        </tbody>
+        <tfoot>
+          <tr class="table-row"><td class="table-cell">Total</td><td class="table-cell" style="text-align:right;font-weight:700">120,000</td><td class="table-cell" style="text-align:right;font-weight:700">€162</td><td class="table-cell" style="text-align:right;font-weight:700">€19.4 M</td></tr>
+        </tfoot>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Resellers: fewest tickets, highest price.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-family:'Arial Black', Impact, sans-serif; text-transform:uppercase; letter-spacing:-0.03em; font-size:3.2rem;">“The app queue opened at nine. By ten past, a third of the festival was gone.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#FF3E00; color:#111111;"><span class="avatar-fallback">ZC</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Zoë Carter<br /><span style="opacity:0.7; font-size:1.4rem;">Festival ticketing lead - fictional</span></p>
+    </div>
+    <p class="presentation-note">The ten-minute story.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="revenue" style="justify-content:flex-start;" aria-label="Revenue">
+    <header class="presentation-header"><span>Earn it</span><span>Revenue by channel, € M</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Arial Black', Impact, sans-serif; text-transform:uppercase; letter-spacing:-0.03em; font-size:3.2rem;">Earn it: €19.4 M</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The dots land as revenue bars - same names, fourth form.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Questions from the promoters">
+    <header class="presentation-header"><span>Q & A</span><span>Promoters</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; font-family:'Arial Black', Impact, sans-serif; text-transform:uppercase; letter-spacing:-0.03em; font-size:3rem;">Questions from the promoters</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="ut-qa" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Should we cap resale prices?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">A cap at face value +10% would cut reseller revenue by about €0.7 M - and fan complaints by most of it.</p></div>
+      </details>
+      <details class="accordion-item" name="ut-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Why keep the box office?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Day tickets and last-minute buyers: 60% of its sales were on the festival days.</p></div>
+      </details>
+      <details class="accordion-item" name="ut-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Next year: more app?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">The app sold fastest; its queue needs capacity for 30,000 users at once.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The resale question is the hot one.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Takeaways">
+    <header class="presentation-header"><span>Takeaways</span><span>Never cut away</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">→</span><span>Morph the same data instead of cutting between charts.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">→</span><span>Stable names carry identity across forms.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">→</span><span>Online sold 70% - plan the queue, not just the stage.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">→</span><span>Resale is small in volume and big in attention.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Fast read, big type.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-anim-in="blocksIn" data-anim-in-direction="south" data-anim-in-blocks="5" data-anim-in-color="#FF3E00" aria-label="Closing">
+    <p aria-hidden="true" style="position:absolute; right:-40px; bottom:-80px; margin:0; font:900 26rem/0.8 'Arial Black', Impact, sans-serif; color:#FF3E00; opacity:0.9; letter-spacing:-0.06em;">120K</p>
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-family:'Arial Black', Impact, sans-serif; text-transform:uppercase; letter-spacing:-0.03em; font-size:8rem;">Never cut away</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">A synthetic festival - one dataset in four forms is the real technique.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">Hold on the closing line.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) - build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-morph');
+    const TEXT = '#FFFFFF', MUTED = '#8A8A8A', ORANGE = '#FF3E00';
+    // [channel, tickets (k), average price €, revenue € M, color]
+    const ch = [['App', 46, 161, 7.4, ORANGE], ['Web', 38, 166, 6.3, '#FFFFFF'], ['Box office', 17, 129, 2.2, '#3977FF'], ['Resellers', 12, 217, 2.6, '#00D8A7'], ['Partners', 7, 129, 0.9, '#FFE100']];
+    // identity contract: one series id, the channel NAME on every data item
+    const item = (c, value) => ({ name: c[0], value, itemStyle: { color: c[4] } });
+    const bigLabel = { color: TEXT, fontWeight: 900, fontFamily: "'Arial Black', Impact, sans-serif" };
+    const G = { left: 150, right: 150, top: 330, bottom: 150 };
+
+    df$.shadcn.chart.deck(deck, {
+      base: { tooltip: { trigger: 'item' } },
+      states: {
+        bars: {
+          grid: G,
+          xAxis: { type: 'category', data: ch.map((c) => c[0]), axisLabel: { ...bigLabel, fontSize: 26 } },
+          yAxis: { type: 'value', max: 50, axisLabel: { color: MUTED, formatter: '{value}k' }, splitLine: { lineStyle: { color: 'rgba(255,255,255,.08)' } } },
+          series: [{ id: 'tickets', type: 'bar', barWidth: '54%', data: ch.map((c) => item(c, c[1])), itemStyle: { borderRadius: [10, 10, 0, 0] },
+            label: { show: true, position: 'top', formatter: '{c}k', ...bigLabel } }],
+        },
+        donut: {
+          series: [{ id: 'tickets', type: 'pie', radius: ['26%', '48%'], center: ['50%', '64%'], data: ch.map((c) => item(c, c[1])),
+            itemStyle: { borderColor: '#111111', borderWidth: 6 },
+            label: { formatter: (p) => p.name + '  ' + Math.round(p.percent) + '%', ...bigLabel, fontSize: 26 }, labelLine: { lineStyle: { color: MUTED }, length: 20, length2: 30 } }],
+        },
+        dots: {
+          grid: { left: 190, right: 190, top: 340, bottom: 150 },
+          xAxis: { type: 'value', min: 0, max: 50, name: 'tickets (thousands)', nameLocation: 'middle', nameGap: 52, axisLabel: { color: MUTED } },
+          yAxis: { type: 'value', min: 100, max: 240, name: 'average price €', nameLocation: 'middle', nameGap: 76, axisLabel: { color: MUTED }, splitLine: { lineStyle: { color: 'rgba(255,255,255,.08)' } } },
+          series: [{ id: 'tickets', type: 'scatter', data: ch.map((c) => ({ ...item(c, [c[1], c[2]]), symbolSize: 30 + c[3] * 9 })),
+            label: { show: true, formatter: '{b}', position: 'top', distance: 12, ...bigLabel, fontSize: 24 } }],
+        },
+        revenue: {
+          grid: { left: 280, right: 190, top: 330, bottom: 150 },
+          xAxis: { type: 'value', max: 8, axisLabel: { color: MUTED, formatter: '€{value}M' }, splitLine: { lineStyle: { color: 'rgba(255,255,255,.08)' } } },
+          yAxis: { type: 'category', inverse: true, data: ch.map((c) => c[0]), axisLine: { show: false }, axisLabel: { ...bigLabel, fontSize: 24 } },
+          series: [{ id: 'tickets', type: 'bar', barWidth: '58%', data: ch.map((c) => item(c, c[3])), itemStyle: { borderRadius: [0, 10, 10, 0] },
+            label: { show: true, position: 'right', formatter: '€{c} M', ...bigLabel } }],
+        },
+      },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 27-universal-transition (Kinetic Typography) - a synthetic festival.</p>
+<SourceFiles component="presentation" />
+</DocPage>

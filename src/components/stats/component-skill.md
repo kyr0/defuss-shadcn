@@ -17,9 +17,9 @@ fonts. No counters, no animation libraries.
 ---
 
 ## Native Web APIs
-- [`font-variant-numeric`](https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant-numeric#tabular-nums) — aligned digit columns
-- [CSS Grid](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout) — 2-up metric grid beside the photo
-- [Container queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries) — side-by-side only when wide
+- [`font-variant-numeric`](https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant-numeric#tabular-nums) - aligned digit columns
+- [CSS Grid](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout) - 2-up metric grid beside the photo
+- [Container queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries) - side-by-side only when wide
 
 ---
 
@@ -64,6 +64,6 @@ Link CTAs compose the [Button](../button/component-skill.md) `link` variant; `.m
 ---
 
 ## Notes
-- Values are prose (`12,500+`, `38% faster`) — use `Intl.NumberFormat` in JS only if values must be localized at runtime.
-- The metric's left rule is decorative; don't reach for [Separator](../separator/component-skill.md) per item — borders scale with the text.
+- Values are prose (`12,500+`, `38% faster`) - use `Intl.NumberFormat` in JS only if values must be localized at runtime.
+- The metric's left rule is decorative; don't reach for [Separator](../separator/component-skill.md) per item - borders scale with the text.
 - Keep metric CTA links to ≤1 per stat; more turns proof into navigation.

@@ -17,11 +17,11 @@ panel switching. Follows the WAI-ARIA Tabs design pattern.
 ---
 
 ## Native Web APIs
-- [WAI-ARIA Tabs pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/) — role contract (`tablist`, `tab`, `tabpanel`) and roving tabindex keyboard navigation
-- [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has) — auto-detects vertical orientation for layout switching
-- [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) — keyboard-only focus ring on tabs and panels
-- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) — suppresses tab transition animations
-- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) — maps active tab indicator to system `Highlight`
+- [WAI-ARIA Tabs pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/) - role contract (`tablist`, `tab`, `tabpanel`) and roving tabindex keyboard navigation
+- [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has) - auto-detects vertical orientation for layout switching
+- [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) - keyboard-only focus ring on tabs and panels
+- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) - suppresses tab transition animations
+- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) - maps active tab indicator to system `Highlight`
 
 ---
 
@@ -118,7 +118,7 @@ The `line` variant preserves its trigger's roomier base padding at every step (`
 ## Vertical layout
 
 For vertical tabs, set `aria-orientation="vertical"` on the tablist. The CSS
-uses `:has()` to detect the orientation and adjust layout automatically — no
+uses `:has()` to detect the orientation and adjust layout automatically - no
 inline styles needed:
 
 ```html
@@ -146,11 +146,11 @@ inline styles needed:
 
 ### Vertical CSS
 
-The vertical layout is handled automatically via `:has()` — when the tablist has
+The vertical layout is handled automatically via `:has()` - when the tablist has
 `aria-orientation="vertical"`, the `.tabs` container switches to flex row layout.
 No additional CSS is needed beyond what's in the main CSS block above.
 
-The JavaScript already handles vertical orientation — arrow keys switch to
+The JavaScript already handles vertical orientation - arrow keys switch to
 Up/Down based on `aria-orientation`.
 
 ---
@@ -183,8 +183,8 @@ The registry global is `df$.shadcn.tabsApi` / `df$.shadcn.tabsStates`.
 
 ## Notes
 
-- Only the active tab is in the tab order (`tabindex="0"`) — inactive tabs use `tabindex="-1"`
-- Arrow keys cycle through tabs (wrap around) — this is the roving tabindex pattern
+- Only the active tab is in the tab order (`tabindex="0"`) - inactive tabs use `tabindex="-1"`
+- Arrow keys cycle through tabs (wrap around) - this is the roving tabindex pattern
 - The active panel uses `tabindex="0"` so it can receive focus from the tab trigger
 - Use `hidden` attribute on inactive panels for accessibility (screen readers skip them)
 - Disabled tabs should have `disabled` attribute and be skipped by keyboard navigation

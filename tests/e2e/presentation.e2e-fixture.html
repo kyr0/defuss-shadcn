@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>Presentation E2E Fixture - defuss-shadcn</title>
+  <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css">
+  <!-- entrances come from the shared motion component (same as consumers) -->
+  <link rel="stylesheet" href="/dist/components/motion/motion.css">
+  <link rel="stylesheet" href="/dist/components/presentation/presentation.css">
+  <style>body { margin: 0; background: #888; }</style>
+</head>
+<body>
+  <!-- the documented default configuration: ink+paper slides, the shared
+       entrance vocabulary, a staggered list, draw-in path, counter, slide
+       chrome (header line + slash number), controls, progress, notes -->
+  <section class="presentation" id="deck" tabindex="-1" aria-label="Fixture deck" style="height:450px;">
+    <section class="slide" data-slide id="s1" data-theme="ink" aria-label="Cover">
+      <p class="presentation-eyebrow" data-df-entrance="wipe">Fixture · QBR</p>
+      <h1 class="presentation-title" data-df-entrance="up" style="--df-motion-delay:150ms;">Title</h1>
+      <p class="presentation-lede" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring);"><span data-count="42">42</span></p>
+      <span class="presentation-slide-number"></span>
+      <p class="presentation-note">note one</p>
+    </section>
+    <section class="slide" data-slide id="s2" data-theme="paper" aria-label="Curve">
+      <header class="presentation-header"><span>Trend</span><span>Q3</span></header>
+      <h2 class="presentation-title" data-df-entrance="left" style="font-size:3rem;">Draw + wipe</h2>
+      <svg width="400" height="120" viewBox="0 0 400 120" aria-hidden="true">
+        <path data-df-draw pathLength="1" fill="none" stroke="currentColor" stroke-width="4" d="M0 110 C 100 10, 300 110, 400 10" />
+      </svg>
+      <p class="presentation-lede" data-df-entrance="wipe-up" style="font-size:1.4rem;">rising reveal</p>
+      <p class="presentation-lede" data-df-entrance="iris" style="font-size:1.4rem;">spotlight open</p>
+      <span class="presentation-slide-number"></span>
+      <p class="presentation-note">note two</p>
+    </section>
+    <section class="slide" data-slide id="s3" data-theme="ink" aria-label="Vocabulary">
+      <ul data-df-stagger id="vocab" style="margin:0; padding:0; list-style:none; display:grid; grid-template-columns:repeat(3, 1fr); gap:1rem; font-family:var(--font-mono); font-size:1.2rem;">
+        <li data-df-entrance="up">up</li>
+        <li data-df-entrance="down">down</li>
+        <li data-df-entrance="left">left</li>
+        <li data-df-entrance="right">right</li>
+        <li data-df-entrance="fade">fade</li>
+      </ul>
+      <span class="presentation-slide-number"></span>
+      <p class="presentation-note">note three</p>
+    </section>
+    <div class="presentation-controls">
+      <button class="presentation-control" data-presentation-action="prev" aria-label="Previous">←</button>
+      <span class="presentation-counter">1 / 3</span>
+      <button class="presentation-control" data-presentation-action="next" aria-label="Next">→</button>
+      <button class="presentation-control" data-presentation-action="notes" aria-label="Notes">N</button>
+      <button class="presentation-control" data-presentation-action="fullscreen" aria-label="Fullscreen">⛶</button>
+    </div>
+    <progress class="presentation-progress" max="3" value="1"></progress>
+  </section>
+
+  <!-- art-direction overrides: 4:3 artboard + custom ink palette -->
+  <section class="presentation" id="custom" tabindex="-1" style="--presentation-width:1024;--presentation-height:768;--presentation-ink:#0A1E4A;--presentation-accent:#F472B6;height:300px;">
+    <section class="slide" data-slide data-theme="ink"><h1 class="presentation-title">Custom</h1></section>
+    <section class="slide" data-slide data-theme="paper"><h1 class="presentation-title">Second</h1></section>
+  </section>
+
+  <!-- data-loop ring + authored start slide -->
+  <section class="presentation" id="loopy" tabindex="-1" data-loop data-current-slide="1" style="height:260px;">
+    <section class="slide" data-slide data-theme="ink"><h1 class="presentation-title">A</h1></section>
+    <section class="slide" data-slide data-theme="paper"><h1 class="presentation-title">B</h1></section>
+    <section class="slide" data-slide data-theme="ink"><h1 class="presentation-title">C</h1></section>
+  </section>
+  <!-- slide transitions (df$.anim, declared on the deck + a curtain slide),
+       an autoplay video that runs only on stage, and a component on a paper
+       slide picking up the slide's re-pointed tokens -->
+  <section class="presentation" id="anim-deck" data-anim-in="slideIn" data-anim-out="fadeOut" data-anim-in-duration="600" data-anim-out-duration="600" tabindex="-1" style="height:260px;">
+    <section class="slide" data-slide id="a1" data-theme="ink"><h1 class="presentation-title">One</h1></section>
+    <section class="slide" data-slide id="a2" data-theme="paper"><p id="a2-cell" style="color:var(--foreground); background:var(--muted);">cell</p></section>
+    <section class="slide" data-slide id="a3" data-theme="ink" data-anim-in="blocksIn" data-anim-in-blocks="4" data-anim-in-duration="1200" data-anim-in-color="#0d1424">
+      <video id="a3-video" autoplay muted loop playsinline src="/dist/documentation/videos/demo.webm"></video>
+    </section>
+  </section>
+  <script type="module" src="/dist/components/core.js"></script>
+  <script type="module" src="/dist/components/presentation/presentation.js"></script>
+</body>
+</html>

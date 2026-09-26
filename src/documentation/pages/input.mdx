@@ -1,6 +1,6 @@
 ---
 title: "Input"
-description: "Input component — text inputs with variants, sizes, icons, and validation states."
+description: "Input component - text inputs with variants, sizes, icons, and validation states."
 slug: "input"
 ---
 
@@ -47,16 +47,16 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, CodeBlock, De
   </SkillField>
 
   <SkillField label="Notes">
-<SkillText dense>• Every demo below is an editable CodeExample — the shown source IS what renders. Edit it, hit Reset, or drive the State tab (controls generated from <code>input.schema.json</code>).</SkillText>
-  <SkillText dense>• State controls mutate the <code>[data-example-root]</code> element — examples mark it where the schema applies</SkillText>
+<SkillText dense>• Every demo below is an editable CodeExample - the shown source IS what renders. Edit it, hit Reset, or drive the State tab (controls generated from <code>input.schema.json</code>).</SkillText>
+  <SkillText dense>• State controls mutate the <code>[data-example-root]</code> element - examples mark it where the schema applies</SkillText>
   <SkillText dense>• Always pair inputs with <code>&lt;label&gt;</code> using matching <code>for</code>/<code>id</code></SkillText>
-  <SkillText dense>• Textarea auto-grows via <code>field-sizing: content</code> — zero JavaScript</SkillText>
+  <SkillText dense>• Textarea auto-grows via <code>field-sizing: content</code> - zero JavaScript</SkillText>
   <SkillText dense>• Use <code>readonly</code> for non-editable values the user can still select/copy</SkillText>
   <p class="text-muted-foreground m-0">• Use semantic <code>type</code> values (<code>email</code>, <code>tel</code>, <code>url</code>, <code>search</code>, <code>password</code>, <code>number</code>) for mobile keyboards and validation</p>
   </SkillField>
 </SkillPanel>
 
-Every example on this page is one executable source: the editor bytes and the sandboxed preview are the same string — editing the code changes the preview (no second render tree can drift from the sample).
+Every example on this page is one executable source: the editor bytes and the sandboxed preview are the same string - editing the code changes the preview (no second render tree can drift from the sample).
 
 ```html example label="Default" hint="Standard text input with label." height="9.5"
 <label class="label" for="email">Email</label>
@@ -79,17 +79,17 @@ Every example on this page is one executable source: the editor bytes and the sa
 </div>
 ```
 
-```html example label="Disabled" hint="Non-interactive at 50% opacity — flip the disabled row in the State tab." height="9.5"
+```html example label="Disabled" hint="Non-interactive at 50% opacity - flip the disabled row in the State tab." height="9.5"
 <input data-example-root class="input" type="text" disabled placeholder="Disabled" />
 ```
 
-```html example label="Invalid" hint="aria-invalid with a .field-error message — native validation styling." height="11"
+```html example label="Invalid" hint="aria-invalid with a .field-error message - native validation styling." height="11"
 <label class="label" for="invalid-email">Email</label>
 <input data-example-root class="input" type="email" id="invalid-email" aria-invalid="true" value="not-an-email" aria-describedby="invalid-email-err" />
 <p class="field-error" id="invalid-email-err">Please enter a valid email address.</p>
 ```
 
-```html example label="Required" hint="Just the required attribute — the label's red star renders automatically, and the State tab toggles it live." height="11"
+```html example label="Required" hint="Just the required attribute - the label's red star renders automatically, and the State tab toggles it live." height="11"
 <label class="label" for="name">Name</label>
 <input data-example-root class="input" type="text" id="name" required placeholder="Jane Doe" />
 ```
@@ -104,13 +104,13 @@ Every example on this page is one executable source: the editor bytes and the sa
 </div>
 ```
 
-```html example label="File" hint="Native file picker — the selector button is styled automatically." height="11"
+```html example label="File" hint="Native file picker - the selector button is styled automatically." height="11"
 <label class="label" for="picture">Picture</label>
 <input data-example-root class="input" type="file" id="picture" aria-describedby="picture-desc" />
 <p class="field-description" id="picture-desc">Select a picture to upload.</p>
 ```
 
-```html example label="Textarea" hint="<textarea> with the .input class. Auto-grows with content via field-sizing: content — zero JS." height="11"
+```html example label="Textarea" hint="<textarea> with the .input class. Auto-grows with content via field-sizing: content - zero JS." height="11"
 <label class="label" for="message">Message</label>
 <textarea data-example-root class="input" id="message" placeholder="Your message..."></textarea>
 ```
@@ -158,12 +158,12 @@ Every example on this page is one executable source: the editor bytes and the sa
 
 ## States
 
-Machine contract: the table below is verified against <a href="../schemas/input.schema.json"><code>input.schema.json</code></a> by <code>bun run verify</code> — state names, types, enum values and defaults must match in both directions. The CodeExample State tabs render their controls from exactly these rows (hint <code>editor</code> hints included), and state values observed from the live DOM win over schema defaults.
+Machine contract: the table below is verified against <a href="../schemas/input.schema.json"><code>input.schema.json</code></a> by <code>bun run verify</code> - state names, types, enum values and defaults must match in both directions. The CodeExample State tabs render their controls from exactly these rows (hint <code>editor</code> hints included), and state values observed from the live DOM win over schema defaults.
 
 ```states
 | State | Type | Values | Default | Description |
 | --- | --- | --- | --- | --- |
-| `value` | `string` | — | `"Hello world"` | Current field value. Examples may set another value — the panel observes the DOM first. |
+| `value` | `string` | — | `"Hello world"` | Current field value. Examples may set another value - the panel observes the DOM first. |
 | `disabled` | `boolean` | `true`, `false` | `false` | Disables interaction (native `disabled` property). |
 | `readonly` | `boolean` | `true`, `false` | `false` | Read-only value, selectable/copyable (`readonly` attribute; muted styling). |
 | `required` | `boolean` | `true`, `false` | `false` | Marks the field required (`required` attribute; the adjacent `.label` renders its star automatically). |

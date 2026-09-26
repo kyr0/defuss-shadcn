@@ -1,5 +1,5 @@
 "use strict";
-// -- themes.js — theme data for the doc-site theme switcher ----------
+// -- themes.js - theme data for the doc-site theme switcher ----------
 // Classic head script: runs BEFORE the library runtime (all.js, a deferred
 // module, installs the callable df$), so the data stages in this IIFE and
 // merges into df$.shadcn.docs on DOMContentLoaded.
@@ -9,7 +9,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         var ns = globalThis.df$ && globalThis.df$.shadcn;
         if (!ns)
-            return; // library failed to load — theme UI degrades
+            return; // library failed to load - theme UI degrades
         var live = (ns.docs = ns.docs || {});
         for (var k in docs)
             if (!(k in live))
@@ -20,8 +20,12 @@
     // All available themes from tweakcn.com built-in presets.
     // Each theme has light and dark token overrides that map
     // directly to the CSS custom properties in default-semantic-tokens.css.
-    // Font, shadow, spacing, and tracking tokens are excluded
-    // to avoid layout shifts on the doc site.
+    // Shadow, spacing, and tracking tokens are excluded to avoid layout shifts
+    // on the doc site. Font tokens are the theme's identity and MAY be declared
+    // (both modes) - a theme whose fonts must load from a CDN carries them in a
+    // `links:` array (strict JSON: defuss-JSX-as-JSON <link> VNodes); build.ts
+    // ships that as theme/<id>.json and df$.shadcn.loadTheme() mounts the links
+    // when the theme applies (see src/shared/theme-links.ts).
     // Explicit global (not `var`): consumed as docs.THEMES by theme-switcher.js
     // and layout.js; the assignment keeps the cross-file contract while satisfying
     // oxlint's no-unused-vars.
@@ -729,7 +733,10 @@
                     "sidebar-primary": "#9db18c", "sidebar-primary-foreground": "#fdfbf6",
                     "sidebar-accent": "#eae5d9", "sidebar-accent-foreground": "#5c4b3e",
                     "sidebar-border": "#e5e0d4", "sidebar-ring": "#9db18c",
-                    radius: "0.425rem"
+                    radius: "0.425rem",
+                    "font-sans": "Merriweather, serif",
+                    "font-serif": "'Source Serif 4', serif",
+                    "font-mono": "JetBrains Mono, monospace"
                 },
                 dark: {
                     background: "#3a3529", foreground: "#ede4d4",
@@ -746,9 +753,22 @@
                     "sidebar-primary": "#8a9f7b", "sidebar-primary-foreground": "#2a2521",
                     "sidebar-accent": "#a18f5c", "sidebar-accent-foreground": "#2a2521",
                     "sidebar-border": "#5a5345", "sidebar-ring": "#8a9f7b",
-                    radius: "0.425rem"
+                    radius: "0.425rem",
+                    "font-sans": "Merriweather, serif",
+                    "font-serif": "'Source Serif 4', serif",
+                    "font-mono": "JetBrains Mono, monospace"
                 }
-            }
+            },
+            // tweakcn ships these fonts as next/font imports; without Next.js they
+            // ride as defuss-JSX-as-JSON <link> VNodes - build.ts emits the JSON
+            // sidecar, df$.shadcn.loadTheme() mounts them (see shared/theme-links.ts)
+            links: [
+                { "type": "link", "attributes": { "rel": "preconnect", "href": "https://fonts.googleapis.com" } },
+                { "type": "link", "attributes": { "rel": "preconnect", "href": "https://fonts.gstatic.com", "crossorigin": "" } },
+                { "type": "link", "attributes": { "rel": "stylesheet", "href": "https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap" } },
+                { "type": "link", "attributes": { "rel": "stylesheet", "href": "https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,700&display=swap" } },
+                { "type": "link", "attributes": { "rel": "stylesheet", "href": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&display=swap" } }
+            ]
         },
         {
             id: "solar-dusk",

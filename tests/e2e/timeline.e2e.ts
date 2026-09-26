@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: timeline is CSS-only — the 10px dot, the 1px rail each item draws via
+ * Why: timeline is CSS-only - the 10px dot, the 1px rail each item draws via
  * ::before (suppressed on the last item), and the active-dot recolor.
  */
 await cssSmoke('timeline', [

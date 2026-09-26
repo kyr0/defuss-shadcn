@@ -1,0 +1,226 @@
+---
+title: "Election Shift Arrows - Presentation"
+description: "Transit Infographic design language presenting the change in turnout across twelve city districts as a 12-slide deck - arrows along a metro line that re-rank, grow into turnout levels and fly into an age scatter, one morphing chart."
+slug: "election-shift-arrows"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="election-shift-arrows" title="Election Shift Arrows" component="presentation">
+  Transit Infographic: white boards, one signal-red line and station dots - how turnout moved in twelve districts of a fictional city between two elections, read along the metro line that connects them.
+</PageHeader>
+
+```html example label="Transit Infographic" schema="none" height="26" hint="Slides slide along the line and fade out (df$.anim slideIn, declared on the deck); red curtains mark the breaks. One deck-level chart (df$.shadcn.chart.deck): arrows at each station re-rank by change, grow into 2025 turnout levels, then fly into a scatter against the share of young residents. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-shift" data-anim-in="slideIn" data-anim-in-distance="160px" data-anim-out="fadeOut" style="--presentation-ink:#15252D;--presentation-ink-foreground:#F2F5F6;--presentation-paper:#FFFFFF;--presentation-paper-foreground:#15252D;--presentation-accent:#E33F32;font-family:'Segoe UI', Frutiger, Arial, sans-serif;" tabindex="-1" aria-label="Turnout along Line 1 - twelve districts, two elections">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="Change in turnout between 2021 and 2025 in twelve districts along a metro line: University up 11.5 points, Hilltop down 5.4; turnout levels in 2025; and change against the share of residents under 30"></div>
+  <section class="slide" data-slide data-theme="paper" aria-label="Cover">
+    <svg aria-hidden="true" width="1600" height="220" viewBox="0 0 1600 220" style="position:absolute; left:0; bottom:40px;">
+      <path d="M-20 110 H520 Q560 110 590 80 L660 20 H1620" fill="none" stroke="#E33F32" stroke-width="16" stroke-linecap="round" />
+      <circle cx="120" cy="110" r="15" fill="#FFFFFF" stroke="#15252D" stroke-width="6" /><circle cx="260" cy="110" r="15" fill="#FFFFFF" stroke="#15252D" stroke-width="6" /><circle cx="400" cy="110" r="15" fill="#FFFFFF" stroke="#15252D" stroke-width="6" /><circle cx="700" cy="20" r="15" fill="#FFFFFF" stroke="#15252D" stroke-width="6" /><circle cx="860" cy="20" r="15" fill="#FFFFFF" stroke="#15252D" stroke-width="6" /><circle cx="1020" cy="20" r="15" fill="#FFFFFF" stroke="#15252D" stroke-width="6" /><circle cx="1180" cy="20" r="15" fill="#FFFFFF" stroke="#15252D" stroke-width="6" /><circle cx="1340" cy="20" r="15" fill="#FFFFFF" stroke="#15252D" stroke-width="6" /><circle cx="1500" cy="20" r="15" fill="#FFFFFF" stroke="#15252D" stroke-width="6" />
+    </svg>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Shift arrows · Transit Infographic</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-family:'Segoe UI', Frutiger, Arial, sans-serif; font-weight:700; letter-spacing:-0.01em; font-size:6.25rem;">Turnout along Line 1</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">Twelve districts, two elections, one question per stop: did more people vote?</p>
+    <p class="presentation-note">The line is the grammar of the whole deck.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="stops" style="justify-content:flex-start;" aria-label="Along the line">
+    <header class="presentation-header"><span>Line 1</span><span>Turnout change 2021 → 2025, points</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Segoe UI', Frutiger, Arial, sans-serif; font-weight:700; letter-spacing:-0.01em;">Seven stops up, five down</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Up arrows teal, down arrows red - read the line left to right.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="ranked" style="justify-content:flex-start;" aria-label="Ranked">
+    <header class="presentation-header"><span>Line 1</span><span>Sorted by change</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Segoe UI', Frutiger, Arial, sans-serif; font-weight:700; letter-spacing:-0.01em;">University leads: +11.5 points</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The stations re-order by change; the arrows travel with them.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="levels" style="justify-content:flex-start;" aria-label="Levels">
+    <header class="presentation-header"><span>Turnout 2025</span><span>% who voted</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Segoe UI', Frutiger, Arial, sans-serif; font-weight:700; letter-spacing:-0.01em;">Central votes most - Airport Rd least</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The arrows grow into this year’s turnout levels.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Key figures">
+    <p class="presentation-eyebrow" data-df-entrance="fade">Three numbers for the city clerk</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:'Segoe UI', Frutiger, Arial, sans-serif; font-weight:700; letter-spacing:-0.01em;"><span data-count="60.3">60.3</span>%</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">city-wide turnout in 2025</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#00897B; font-family:'Segoe UI', Frutiger, Arial, sans-serif; font-weight:700; letter-spacing:-0.01em;">+<span data-count="2.1">2.1</span> pts</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">versus 2021</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#E33F32; font-family:'Segoe UI', Frutiger, Arial, sans-serif; font-weight:700; letter-spacing:-0.01em;">+<span data-count="11.5">11.5</span> pts</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">University - the biggest jump</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">The city average barely moved. Underneath, young districts surged and old ones slipped.</p>
+    <p class="presentation-note">Average versus spread - again.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="On the street">
+    <header class="presentation-header"><span>Getting there</span><span>Polling day</span></header>
+    <div style="display:flex; gap:4.5rem; align-items:center; margin-top:3.5rem;">
+      <figure class="image" data-ratio="4/3" data-df-entrance="left" style="--df-motion-delay:150ms; flex:0 0 700px; margin:0;">
+        <img src="https://picsum.photos/id/22/960/720" alt="A person in a dark coat walking across a road with white lane markings" loading="lazy" width="960" height="720" style="width:100%; height:100%; object-fit:cover;" />
+        <figcaption class="image-caption" style="font-size:1.25rem;">On the way to vote (stock photo).</figcaption>
+      </figure>
+      <div style="flex:1 1 0; min-width:0;">
+        <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; font-family:'Segoe UI', Frutiger, Arial, sans-serif; font-weight:700; letter-spacing:-0.01em;">Nine polling stations moved next to metro stops</h2>
+        <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:300ms; font-size:1.7rem;">The four biggest gains are all at stops where a polling station moved within 300 m of the platform.</p>
+      </div>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Access, not enthusiasm, may be the story.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="east" data-anim-in-blocks="6" data-anim-in-color="#E33F32" aria-label="Station table">
+    <header class="presentation-header"><span>Timetable</span><span>Turnout by stop</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" style="font-size:1.45rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">Turnout by district along Line 1, 2021 and 2025 (fictional city).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">Stop</th><th class="table-head" style="text-align:right">2021</th><th class="table-head" style="text-align:right">2025</th><th class="table-head" style="text-align:right">Change</th><th class="table-head" style="text-align:right">Under 30</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row"><td class="table-cell">University</td><td class="table-cell" style="text-align:right">48.9%</td><td class="table-cell" style="text-align:right">60.4%</td><td class="table-cell" style="text-align:right">+11.5</td><td class="table-cell" style="text-align:right">47%</td></tr>
+          <tr class="table-row"><td class="table-cell">Docklands</td><td class="table-cell" style="text-align:right">51.2%</td><td class="table-cell" style="text-align:right">59.8%</td><td class="table-cell" style="text-align:right">+8.6</td><td class="table-cell" style="text-align:right">38%</td></tr>
+          <tr class="table-row"><td class="table-cell">Central</td><td class="table-cell" style="text-align:right">64.0%</td><td class="table-cell" style="text-align:right">70.2%</td><td class="table-cell" style="text-align:right">+6.2</td><td class="table-cell" style="text-align:right">31%</td></tr>
+          <tr class="table-row"><td class="table-cell">Riverside</td><td class="table-cell" style="text-align:right">61.2%</td><td class="table-cell" style="text-align:right">66.8%</td><td class="table-cell" style="text-align:right">+5.6</td><td class="table-cell" style="text-align:right">24%</td></tr>
+          <tr class="table-row"><td class="table-cell">Parkview</td><td class="table-cell" style="text-align:right">66.7%</td><td class="table-cell" style="text-align:right">65.9%</td><td class="table-cell" style="text-align:right">−0.8</td><td class="table-cell" style="text-align:right">18%</td></tr>
+          <tr class="table-row"><td class="table-cell">Old Mill</td><td class="table-cell" style="text-align:right">58.4%</td><td class="table-cell" style="text-align:right">55.1%</td><td class="table-cell" style="text-align:right">−3.3</td><td class="table-cell" style="text-align:right">16%</td></tr>
+          <tr class="table-row"><td class="table-cell">Hilltop</td><td class="table-cell" style="text-align:right">69.5%</td><td class="table-cell" style="text-align:right">64.1%</td><td class="table-cell" style="text-align:right">−5.4</td><td class="table-cell" style="text-align:right">12%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Seven of twelve stops - the extremes and the middle.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-family:'Segoe UI', Frutiger, Arial, sans-serif; font-weight:700; letter-spacing:-0.01em; font-size:3rem;">“We put the ballot box where the students already were - at the station. Turnout followed the footfall.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#E33F32; color:#FFFFFF;"><span class="avatar-fallback">JT</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Jonas Tamm<br /><span style="opacity:0.7; font-size:1.4rem;">City elections office - fictional</span></p>
+    </div>
+    <p class="presentation-note">The operational explanation.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="age" style="justify-content:flex-start;" aria-label="Age">
+    <header class="presentation-header"><span>Why</span><span>Change × share of residents under 30</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Segoe UI', Frutiger, Arial, sans-serif; font-weight:700; letter-spacing:-0.01em;">Younger districts moved up</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The arrow tips fly into a scatter against age.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Questions from the council">
+    <header class="presentation-header"><span>Q & A</span><span>Council committee</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; font-family:'Segoe UI', Frutiger, Arial, sans-serif; font-weight:700; letter-spacing:-0.01em;">Questions from the council</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="sa-qa" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Is age the cause?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Partly - young districts are also where the polling stations moved; the two effects overlap.</p></div>
+      </details>
+      <details class="accordion-item" name="sa-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Why did Hilltop fall?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Its polling station moved 1.4 km away from the old town hall; turnout fell most among over-70s.</p></div>
+      </details>
+      <details class="accordion-item" name="sa-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>What do we change next time?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Keep the station-side polling places and add a shuttle for Hilltop and Old Mill.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Hilltop is the fairness question.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Takeaways">
+    <header class="presentation-header"><span>Next stops</span><span>Recommendations</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">●</span><span>Arrows show direction and size in one mark.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">●</span><span>A flat city average can hide a large reshuffle.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">●</span><span>Polling places near transit lifted young districts.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">●</span><span>Protect access for older districts when stations move.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Four stops, then terminus.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-anim-in="blocksIn" data-anim-in-direction="west" data-anim-in-blocks="6" data-anim-in-color="#E33F32" aria-label="Closing">
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-family:'Segoe UI', Frutiger, Arial, sans-serif; font-weight:700; letter-spacing:-0.01em;">Direction and size in one mark</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">A fictional city and synthetic turnout - the shift arrow is the real grammar.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">Terminus.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) - build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-shift');
+    const TEXT = '#15252D', MUTED = '#7C8A91', UP = '#00897B', DOWN = '#E33F32';
+    // [stop, turnout 2021, turnout 2025, share under 30 %] - in line order
+    const stops = [['Riverside', 61.2, 66.8, 24], ['Old Mill', 58.4, 55.1, 16], ['Central', 64.0, 70.2, 31], ['Market', 55.3, 57.9, 22], ['University', 48.9, 60.4, 47], ['Parkview', 66.7, 65.9, 18],
+      ['Docklands', 51.2, 59.8, 38], ['Hilltop', 69.5, 64.1, 12], ['Northgate', 57.6, 58.2, 21], ['Lakeside', 63.3, 61.0, 15], ['Foundry', 52.8, 57.4, 29], ['Airport Rd', 49.7, 46.5, 19]];
+    const ch = (s) => Math.round((s[2] - s[1]) * 10) / 10;
+    const G = { left: 150, right: 150, top: 330, bottom: 170 };
+    // shaft (bar from 0 to change) + head (triangle at the tip) + station dot on the zero line
+    const arrows = (list) => ({
+      grid: G,
+      xAxis: { type: 'category', data: list.map((s) => s[0]), position: 'bottom', axisLine: { show: false }, axisLabel: { color: TEXT, fontWeight: 700, interval: 0, rotate: 30 } },
+      yAxis: { type: 'value', min: -8, max: 14, interval: 4, axisLabel: { color: MUTED, formatter: (v) => (v > 0 ? '+' : '') + v } },
+      series: [
+        { id: 'shaft', type: 'bar', barWidth: 8, data: list.map((s) => ({ name: s[0], value: ch(s), itemStyle: { color: ch(s) >= 0 ? UP : DOWN, borderRadius: 0 } })) },
+        { id: 'tip', type: 'scatter', symbol: 'triangle', symbolSize: 30,
+          data: list.map((s) => ({ name: s[0], value: [s[0], ch(s)], symbolRotate: ch(s) >= 0 ? 0 : 180, itemStyle: { color: ch(s) >= 0 ? UP : DOWN }, label: { position: ch(s) >= 0 ? 'top' : 'bottom' } })),
+          label: { show: true, distance: 14, formatter: (p) => (p.value[1] > 0 ? '+' : '') + p.value[1], color: TEXT, fontWeight: 700 } },
+        { id: 'line', type: 'line', data: list.map(() => 0), symbol: 'circle', symbolSize: 22, z: 1, silent: true,
+          lineStyle: { color: DOWN, width: 12 }, itemStyle: { color: '#FFFFFF', borderColor: TEXT, borderWidth: 5 } },
+      ],
+    });
+    const byChange = stops.slice().sort((a, b) => ch(b) - ch(a));
+
+    df$.shadcn.chart.deck(deck, {
+      base: { tooltip: { trigger: 'item' } },
+      states: {
+        stops: arrows(stops),
+        ranked: arrows(byChange),
+        levels: {
+          grid: G,
+          xAxis: { type: 'category', data: byChange.map((s) => s[0]), axisLabel: { color: TEXT, fontWeight: 700, interval: 0, rotate: 30 } },
+          yAxis: { type: 'value', min: 0, max: 80, interval: 20, axisLabel: { color: MUTED, formatter: '{value}%' } },
+          series: [
+            { id: 'shaft', type: 'bar', barWidth: '46%', data: byChange.map((s) => ({ name: s[0], value: s[2], itemStyle: { color: s[0] === 'Central' ? UP : s[0] === 'Airport Rd' ? DOWN : '#9FB3BD', borderRadius: [6, 6, 0, 0] } })),
+              label: { show: true, position: 'top', formatter: '{c}%', color: TEXT, fontWeight: 700 } },
+          ],
+        },
+        age: {
+          grid: { left: 190, right: 190, top: 330, bottom: 150 },
+          xAxis: { type: 'value', min: 5, max: 50, name: 'residents under 30', nameLocation: 'middle', nameGap: 52, axisLabel: { color: MUTED, formatter: '{value}%' } },
+          yAxis: { type: 'value', min: -8, max: 14, name: 'turnout change, pts', nameLocation: 'middle', nameGap: 70, axisLabel: { color: MUTED } },
+          series: [{ id: 'tip', type: 'scatter', symbolSize: 26,
+            data: stops.map((s) => ({ name: s[0], value: [s[3], ch(s)], itemStyle: { color: ch(s) >= 0 ? UP : DOWN, borderColor: '#FFFFFF', borderWidth: 3 } })),
+            label: { show: true, formatter: '{b}', position: 'right', distance: 12, color: TEXT, fontWeight: 700 },
+            labelLayout: { moveOverlap: 'shiftY' },
+            markLine: { symbol: 'none', silent: true, lineStyle: { color: MUTED, type: 'dashed' }, label: { show: false }, data: [{ yAxis: 0 }] } }],
+        },
+      },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 26-election-shift-arrows (Transit Infographic) - a fictional city and synthetic turnout.</p>
+<SourceFiles component="presentation" />
+</DocPage>

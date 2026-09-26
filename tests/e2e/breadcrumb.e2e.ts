@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: breadcrumb is CSS-only — verify the list resets to a flex row with
+ * Why: breadcrumb is CSS-only - verify the list resets to a flex row with
  * exact gaps/size, the ellipsis reserves a square hit area, and the current
  * page renders as foreground text (not a muted link).
  */

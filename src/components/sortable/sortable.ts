@@ -8,7 +8,7 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-// defussQuery: the callable runtime — order restoration moves existing nodes
+// defussQuery: the callable runtime - order restoration moves existing nodes
 // through query .append(), drops/reorders through query .before()/.after(),
 // and drag/active flags ride query scalar writes (§3 sortable row: native
 // moves already keep identity; the shared adapter is the win, no morph).
@@ -31,7 +31,7 @@ const sortableLabels = (list) =>
 function triggerStateChange(list, stateName, config) {
   if (stateName !== 'default') return;
   // one query move of the existing nodes in snapshot order (§3: .append on
-  // one parent — nodes are MOVED, never re-created, handlers survive)
+  // one parent - nodes are MOVED, never re-created, handlers survive)
   dfDollar(list).append(list._defaultOrder ?? []);
   if (config?.index !== undefined) {
     const item = dfDollar(list).find('.sortable-item')[Number(config.index)];
@@ -117,7 +117,7 @@ document.querySelectorAll('.sortable:not([data-init])').forEach((list) => {
     getAllItems().forEach((el) => { dfDollar(el).data('active', null).attr('tabindex', '-1'); });
     if (item) {
       dfDollar(item).data('active', '').attr('tabindex', '0');
-      // mirror the active position onto the LIST root — the schema's
+      // mirror the active position onto the LIST root - the schema's
       // activeIndex observation reads one stable attribute instead of
       // scanning children (and survives item reorder/moves)
       list.dataset.activeIndex = String(getItems().indexOf(item));

@@ -7,7 +7,7 @@
 
    What lives here, and what doesn't:
    - Geometry (display, flex/grid axes, gap/margin/padding scale,
-     widths) is NOT duplicated here — every doc page loads the
+     widths) is NOT duplicated here - every doc page loads the
      shipped theme/utils/sizing.css + theme/utils/layout.css modules, whose
      utilities are dogfooded directly (scripts/lib/audit.ts counts
      them as defined). Typography can't move there: the sizing
@@ -36,7 +36,7 @@
    many pages. Keep declarations byte-identical to the styles they
    replaced so refactored pages render exactly as before. */
 
-/* Display section heading — the <H2> component renders this class. */
+/* Display section heading - the <H2> component renders this class. */
 .h2-display {
   font-family: var(--font-display);
   font-size: 1.375rem;
@@ -79,7 +79,7 @@
 .row-title { margin: 0; font-size: 0.875rem; font-weight: 500; }
 .meta-xs { margin: 0; font-size: 0.75rem; color: var(--muted-foreground); }
 
-/* Card-title/description overrides — compound selectors: all.css (the
+/* Card-title/description overrides - compound selectors: all.css (the
    component bundle, incl. .card-title/.card-description) loads AFTER this
    sheet, so a single class would lose. */
 .card-title.card-title-xs { font-size: 0.875rem; }
@@ -127,7 +127,7 @@
 .states-table td code { white-space: nowrap; }
 .states-table td { text-wrap: pretty; } /* prose columns break evenly, no orphans */
 
-/* Visualization helpers for demo CONTENT — moved out of css/layout.css (site
+/* Visualization helpers for demo CONTENT - moved out of css/layout.css (site
    chrome) so the CodeExample sandbox sees them: the bridge mirrors this sheet
    into every iframe (STYLE_FRAGMENTS), not the chrome sheet. */
 .demo-tile {
@@ -181,4 +181,4 @@
 .swatch-val { margin-left: auto; font-size: 0.75rem; color: var(--muted-foreground); font-family: var(--font-mono); }
 
 /* Accessibility: `.sr-only` ships in theme/utils/accessibility.css (loaded on every
-   doc page by DocPage) — dogfooded, not redefined here. */
+   doc page by DocPage) - dogfooded, not redefined here. */

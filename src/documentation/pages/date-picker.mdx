@@ -1,6 +1,6 @@
 ---
 title: "Date Picker"
-description: "Date Picker component — native date inputs with calendar popover."
+description: "Date Picker component - native date inputs with calendar popover."
 slug: "date-picker"
 ---
 
@@ -9,7 +9,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <DocPage meta={meta}>
 
 <PageHeader slug="date-picker" title="Date Picker" component="date-picker">
-  A date selection input. Built on native <code>&lt;input type="date"&gt;</code> and <code>&lt;input type="datetime-local"&gt;</code> — the browser provides the calendar UI.
+  A date selection input. Built on native <code>&lt;input type="date"&gt;</code> and <code>&lt;input type="datetime-local"&gt;</code> - the browser provides the calendar UI.
 </PageHeader>
 
 <SkillPanel component="date-picker">
@@ -32,8 +32,8 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 
   <SkillField label="Notes">
-<SkillText dense>• Reuses the <code>.input</code> class — the native date picker provides the calendar UI.</SkillText>
-  <SkillText dense>• No custom calendar implementation needed — the browser handles it.</SkillText>
+<SkillText dense>• Reuses the <code>.input</code> class - the native date picker provides the calendar UI.</SkillText>
+  <SkillText dense>• No custom calendar implementation needed - the browser handles it.</SkillText>
   <SkillText dense>• The calendar popup is rendered by the OS/browser and cannot be styled.</SkillText>
   <p class="text-muted-foreground m-0">• For a fully custom date picker, a custom calendar component would be needed.</p>
   </SkillField>
@@ -51,7 +51,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <input class="date-input" type="date" min="2024-01-01" max="2026-12-31">
 ```
 
-```html example label="Sizes" hint="Same ladder as .input via data-size — md is 2.25rem, so date fields row-align with text inputs."
+```html example label="Sizes" hint="Same ladder as .input via data-size - md is 2.25rem, so date fields row-align with text inputs."
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Extra small</span>
   <input class="date-input flex-1" type="date" value="2026-09-12" data-size="xs" aria-label="Date xs" style="max-width:12rem;" ></input>
@@ -75,7 +75,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 <StatesSection>
-  <p class="text-sm text-muted-foreground">Machine contract — verified against <a href="../schemas/date-picker.schema.json"><code>date-picker.schema.json</code></a> by <code>bun run verify</code>:</p>
+  <p class="text-sm text-muted-foreground">Machine contract - verified against <a href="../schemas/date-picker.schema.json"><code>date-picker.schema.json</code></a> by <code>bun run verify</code>:</p>
 
 ```states
 | State | Type | Values | Default | Description |

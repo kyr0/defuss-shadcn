@@ -3,7 +3,7 @@ import { chromium, type Locator, type Page } from 'playwright';
 import { startServer } from './server.ts';
 
 /**
- * Why: CodeExample's contract is three-way sync — editing the code re-renders
+ * Why: CodeExample's contract is three-way sync - editing the code re-renders
  * the preview AND updates the State panel; a panel edit serializes into the
  * code; real keystrokes inside the sandbox flow to BOTH. Only plain Playwright
  * can drive trusted input into the opaque-origin srcdoc frame (Vitest browser
@@ -38,7 +38,7 @@ const mirrorOf = (card: Locator, key: string) =>
     (el, k) => JSON.parse((el as HTMLElement).dataset.stateValues ?? '{}')[k] as unknown,
     key,
   );
-// hidden panels are still assertable — property reads need no visibility
+// hidden panels are still assertable - property reads need no visibility
 const editorVal = (card: Locator) =>
   card.evaluate((el) => (el.querySelector('.code-example-src') as HTMLTextAreaElement).value);
 const stateVal = (card: Locator, name: string) =>
@@ -117,7 +117,7 @@ try {
         await sb.locator('.resizer[data-resizing]').count(),
         'drag live while held',
       );
-      // release OVER THE HOST (outside the iframe) — the sandbox sees no up:
+      // release OVER THE HOST (outside the iframe) - the sandbox sees no up:
       const ofr = (await rcard.locator('iframe').boundingBox())!;
       await rpage.mouse.move(ofr.x + ofr.width - 8, ofr.y - 40, { steps: 4 }); // over host chrome
       await rpage.mouse.up();
@@ -126,7 +126,7 @@ try {
         'host-relayed release ended the drag',
         3000,
       );
-      // re-enter and move: a STUCK drag would resize here — the box must hold
+      // re-enter and move: a STUCK drag would resize here - the box must hold
       const w1 = await sizeOf();
       await rpage.mouse.move(hb.x + hb.width / 2 + 120, hb.y + hb.height / 2 + 120, { steps: 6 });
       await rpage.waitForTimeout(120);
@@ -134,6 +134,56 @@ try {
     });
     await rpage.close();
   }
+
+  await check('G: Shiki paints the editor and follows every edit (plain editor without the CDN)', async () => {
+    const shiki = await page.evaluate(() => typeof (globalThis as any).df$?.shadcn?.docs?.__shikiCodeToHtml === 'function');
+    if (!shiki) {
+      console.log('    (skipped: Shiki CDN unavailable — the plain editor is the intended fallback)');
+      assert.equal(await card.evaluate((el) => el.classList.contains('ce-hl')), false, 'no paint → text stays visible');
+      return;
+    }
+    // the tab toggles — open it only if an earlier check left it closed
+    if (await card.locator('[data-panel="code"]').evaluate((p) => (p as HTMLElement).hidden)) await clickTab(card, 'code');
+    const layer = () =>
+      card.evaluate((el) => ({
+        painted: el.classList.contains('ce-hl'),
+        spans: el.querySelectorAll('.code-example-hl span').length,
+        same: el.querySelector('.code-example-hl')!.textContent!.replace(/\n$/, '') === (el.querySelector('.code-example-src') as HTMLTextAreaElement).value,
+      }));
+    await waitFor(async () => (await layer()).painted, 'paint layer lands');
+    const before = await layer();
+    assert.ok(before.spans > 0 && before.same, 'coloured layer mirrors the source');
+    await card.locator('.code-example-src').click();
+    await page.keyboard.press('End');
+    await page.keyboard.type(' <b>hl</b>');
+    await waitFor(async () => (await layer()).same, 'layer follows typing');
+    await card.locator('.code-example-reset').click();
+    await waitFor(async () => (await layer()).same, 'layer follows Reset (programmatic write)');
+  });
+
+  await check('F: first zoom step starts from 100 %, not min=25 (Auto seeds 100)', async () => {
+    const z = card.locator('.code-example-vp-z');
+    const zval = () => z.evaluate((el) => (el as HTMLInputElement).value);
+    assert.equal(await zval(), '', 'zoom starts on Auto');
+    await z.focus();
+    await page.keyboard.press('ArrowDown');
+    assert.equal(await zval(), '95', 'ArrowDown from Auto steps from 100');
+    await waitFor(async () => (await card.evaluate((el) => (el as HTMLElement).dataset.vpZoom)) === '95', 'zoom applied');
+    // back to Auto; a click-in without a change reverts to Auto on blur
+    await z.fill('');
+    await z.dispatchEvent('input');
+    await z.blur();
+    await z.click();
+    assert.equal(await zval(), '100', 'click-in seeds 100');
+    await page.keyboard.type('60');
+    assert.equal(await zval(), '60', 'typing replaces the selected seed');
+    await z.fill('');
+    await z.dispatchEvent('input');
+    await z.blur();
+    await z.click();
+    await z.blur();
+    assert.equal(await zval(), '', 'untouched seed reverts to Auto');
+  });
 } finally {
   await browser.close();
   stop();

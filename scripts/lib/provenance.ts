@@ -2,8 +2,8 @@
  * Why: core.js/all.js embed the defuss-morph + defuss-query runtimes, so the
  * MIT attribution must travel WITH the shipped artifact (plans/
  * defuss-query-morph-integration.md §6 "per-release provenance notices").
- * The stamp is deterministic — defuss-shadcn version + pinned upstream
- * versions + SHA-256 of each LICENSE file — so regenerating a release renders
+ * The stamp is deterministic - defuss-shadcn version + pinned upstream
+ * versions + SHA-256 of each LICENSE file - so regenerating a release renders
  * byte-identical notices, and a verify gate catches drift like stats.json.
  * Pure module (no fs/crypto): callers pass the computed hashes in, so
  * tests/provenance.test.ts can pin the contract in browser mode.
@@ -30,7 +30,7 @@ export interface ProvenanceInput {
   upstreams: UpstreamInfo[];
   /**
    * Distinct upstream LICENSE texts, same order as `upstreams` (deduped by
-   * hash by the caller — both upstreams share one MIT text today, so one
+   * hash by the caller - both upstreams share one MIT text today, so one
    * paragraph covers both).
    */
   licenseTexts: string[];
@@ -51,14 +51,14 @@ export function provenancePointer(input: ProvenanceInput): string {
 }
 
 /**
- * dist/components/NOTICE.txt — the per-release provenance notice shipped next
+ * dist/components/NOTICE.txt - the per-release provenance notice shipped next
  * to the artifacts that embed the upstream runtimes.
  */
 export function provenanceNotice(input: ProvenanceInput): string {
   const rows = input.upstreams
     .map(
       (u) =>
-        `- ${u.name}@${u.version} (pinned "${u.pinned}" in package.json)\n  license: ${u.license} — LICENSE sha256 ${u.licenseSha256}`,
+        `- ${u.name}@${u.version} (pinned "${u.pinned}" in package.json)\n  license: ${u.license} - LICENSE sha256 ${u.licenseSha256}`,
     )
     .join('\n');
   // One section per DISTINCT license text (caller orders licenseTexts by

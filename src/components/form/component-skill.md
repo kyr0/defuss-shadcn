@@ -1,7 +1,7 @@
 ---
 name: Form
 type: MOL
-why: Layout conventions — label/control/error slots and :user-invalid validation styling — around native form semantics.
+why: Layout conventions - label/control/error slots and :user-invalid validation styling - around native form semantics.
 when: Composing multiple inputs into one labeled, validated submit.
 where: dist/components/form/form.css
 supportedStates: default
@@ -15,13 +15,13 @@ supportedStates: default
 ---
 
 ## Native Web APIs
-- [`<form>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form) — native form with submission, validation, and reset
-- [`<fieldset>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset) — groups related fields with `<legend>`
-- [Constraint Validation API](https://developer.mozilla.org/en-US/docs/Web/HTML/Constraint_validation) — native browser validation (`required`, `pattern`, `min`, `max`, `minlength`, `maxlength`)
-- [`:user-valid` / `:user-invalid`](https://developer.mozilla.org/en-US/docs/Web/CSS/:user-invalid) — post-interaction validation styling without JS
-- [`aria-describedby`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-describedby) — connects descriptions and errors to inputs
-- [`aria-invalid`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-invalid) — marks invalid form controls for assistive technology
-- [`FormData`](https://developer.mozilla.org/en-US/docs/Web/API/FormData) — native form serialization
+- [`<form>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form) - native form with submission, validation, and reset
+- [`<fieldset>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset) - groups related fields with `<legend>`
+- [Constraint Validation API](https://developer.mozilla.org/en-US/docs/Web/HTML/Constraint_validation) - native browser validation (`required`, `pattern`, `min`, `max`, `minlength`, `maxlength`)
+- [`:user-valid` / `:user-invalid`](https://developer.mozilla.org/en-US/docs/Web/CSS/:user-invalid) - post-interaction validation styling without JS
+- [`aria-describedby`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-describedby) - connects descriptions and errors to inputs
+- [`aria-invalid`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-invalid) - marks invalid form controls for assistive technology
+- [`FormData`](https://developer.mozilla.org/en-US/docs/Web/API/FormData) - native form serialization
 
 ---
 
@@ -110,7 +110,7 @@ supportedStates: default
 | Attribute | Element | Values | Description |
 |---|---|---|---|
 | `data-orientation` | `.form-field` | `horizontal` | Places label beside the control instead of stacked above |
-| `data-invalid` | `.form-field` | (presence) | Marks field as invalid — description text turns destructive color |
+| `data-invalid` | `.form-field` | (presence) | Marks field as invalid - description text turns destructive color |
 | `data-disabled` | `.form-field-row` | (presence) | Reduces opacity on the row |
 
 ---
@@ -136,7 +136,7 @@ supportedStates: default
 - `.form-actions` provides a flex row for submit/reset buttons.
 - `.form-fieldset` styles native `<fieldset>` with legend and description.
 - `.form-group` is a vertical stack for grouping multiple inline fields.
-- No JavaScript needed for basic forms — use native Constraint Validation.
+- No JavaScript needed for basic forms - use native Constraint Validation.
 - Prefer `:user-valid` / `:user-invalid` for post-interaction validation styling (defined in input.css).
 - Compose with Label, Input, Textarea, Select, Checkbox, Radio Group, Switch, Slider, etc.
 - `data-invalid` on `.form-field` turns the description text to destructive color; use alongside `aria-invalid="true"` on the control.

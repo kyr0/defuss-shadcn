@@ -1,7 +1,7 @@
 ---
 name: Context Menu
 type: ATM
-why: Popover anchored to the pointer position on contextmenu — no positioning library involved.
+why: Popover anchored to the pointer position on contextmenu - no positioning library involved.
 when: Secondary per-item actions invoked with right-click or long-press.
 where: dist/components/context-menu/context-menu.css + dist/components/context-menu/context-menu.js
 supportedStates: default, open
@@ -15,8 +15,8 @@ Popover API triggered by right-click.
 
 ## Native Web APIs
 
-- [`popover` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/popover) — native popover
-- [`contextmenu` event](https://developer.mozilla.org/en-US/docs/Web/API/Element/contextmenu_event) — right-click trigger
+- [`popover` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/popover) - native popover
+- [`contextmenu` event](https://developer.mozilla.org/en-US/docs/Web/API/Element/contextmenu_event) - right-click trigger
 
 ## Structure
 
@@ -36,13 +36,13 @@ Set `data-density` on the `.context-menu` root; container padding and item rows 
 | Value | Effect |
 | --- | --- |
 | `compact` | Container 0.125rem, items 0.25rem |
-| `comfortable` | 0.25rem / 0.375rem — identical to the unsized default |
+| `comfortable` | 0.25rem / 0.375rem - identical to the unsized default |
 | `spacious` | 0.375rem / 0.5rem |
 
 ## States
 
 The api is bound **per menu popover**. Declared states: `default` (closed)
-· `open` (shown; `{ x, y }` config positions it — viewport top-left when
+· `open` (shown; `{ x, y }` config positions it - viewport top-left when
 no pointer coordinates exist).
 
 ```js

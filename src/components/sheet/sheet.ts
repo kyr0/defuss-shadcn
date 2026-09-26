@@ -70,7 +70,7 @@ document.querySelectorAll('dialog.sheet:not([data-init])').forEach((sheet) => {
   });
   sheet.addEventListener('close', () => {
     // `close` fires AFTER the exit transition (display allow-discrete), so a
-    // fast re-open can beat it — a stale event must not downgrade an open
+    // fast re-open can beat it - a stale event must not downgrade an open
     // sheet back to 'default' or yank focus out of it while it's showing.
     if (sheet.open) return;
     // reflect the actual UI state: any close path (Escape, backdrop, close

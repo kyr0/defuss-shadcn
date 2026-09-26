@@ -1,0 +1,236 @@
+---
+title: "Parliament Hemicycle - Presentation"
+description: "Civic Parchment design language presenting a fictional national assembly as a 12-slide deck - 400 seats on an arc that light up a coalition, merge into party bars and end on seat changes, one morphing chart."
+slug: "parliament-hemicycle"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="parliament-hemicycle" title="Parliament Hemicycle" component="presentation">
+  Civic Parchment: aged paper, iron-gall ink and one bordeaux seal - the new Assembly of the fictional Republic of Veldmark, 400 seats, and the arithmetic of who can govern.
+</PageHeader>
+
+```html example label="Civic Parchment" schema="none" height="26" hint="Slides wipe in like a turned page and fade out (df$.anim, declared on the deck); bordeaux curtains open the data and the ending. One deck-level chart (df$.shadcn.chart.deck): 400 seat dots light up the progressive coalition, then merge into one bar per party (universalTransition by group) and re-sort into seat changes. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-hemicycle" data-anim-in="wipeIn" data-anim-in-direction="east" data-anim-out="fadeOut" style="--presentation-ink:#27231D;--presentation-ink-foreground:#F6EDD9;--presentation-paper:#ECE3CF;--presentation-paper-foreground:#27231D;--presentation-accent:#8A2E2A;font-family:Baskerville, Georgia, serif;" tabindex="-1" aria-label="The new Assembly - 400 seats of the fictional Republic of Veldmark">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="Seats in a fictional 400-seat assembly: Civic Union 128, Social Democrats 96, Green Alliance 74, Liberal Forum 41, Rural Party 37, independents 24; a progressive coalition reaches 211 of the 201 needed"></div>
+  <section class="slide" data-slide data-theme="paper" aria-label="Cover">
+    <svg aria-hidden="true" width="420" height="420" viewBox="0 0 420 420" style="position:absolute; right:160px; top:200px; opacity:0.85;">
+      <circle cx="210" cy="210" r="190" fill="none" stroke="#8A2E2A" stroke-width="6" />
+      <circle cx="210" cy="210" r="160" fill="none" stroke="#8A2E2A" stroke-width="2" stroke-dasharray="4 10" />
+      <path d="M90 250 A120 120 0 0 1 330 250" fill="none" stroke="#27231D" stroke-width="22" stroke-dasharray="6 8" />
+      <text x="210" y="300" text-anchor="middle" font-family="Baskerville, Georgia, serif" font-size="42" fill="#8A2E2A">400</text>
+    </svg>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Parliament hemicycle · Civic Parchment</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-family:Baskerville, Georgia, serif; font-weight:400; letter-spacing:0; font-size:6.5rem; max-width:850px;">The new Assembly</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">400 seats, six groups, 201 needed to govern - the fictional Republic of Veldmark after its election.</p>
+    <p class="presentation-note">The seal sets the civic register.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="chamber" style="justify-content:flex-start;" aria-label="The chamber">
+    <header class="presentation-header"><span>The chamber</span><span>400 seats · 201 for a majority</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Baskerville, Georgia, serif; font-weight:400; letter-spacing:0;">No group comes close alone</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Every dot is a seat, left to right across the arc.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="coalition" style="justify-content:flex-start;" aria-label="A coalition">
+    <header class="presentation-header"><span>Arithmetic</span><span>Social Democrats + Greens + Liberals</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Baskerville, Georgia, serif; font-weight:400; letter-spacing:0;">A progressive coalition: 211 seats</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Three groups light up; ten seats to spare.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="parties" style="justify-content:flex-start;" aria-label="Seats by group">
+    <header class="presentation-header"><span>Seats</span><span>Seats per group</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Baskerville, Georgia, serif; font-weight:400; letter-spacing:0;">Civic Union is largest - and in opposition</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The dots merge into one bar per group.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Key figures">
+    <p class="presentation-eyebrow" data-df-entrance="fade">Three numbers from election night</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:Baskerville, Georgia, serif; font-weight:400; letter-spacing:0;"><span data-count="201">201</span></p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">seats needed to govern</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#8A2E2A; font-family:Baskerville, Georgia, serif; font-weight:400; letter-spacing:0;"><span data-count="211">211</span></p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">seats for the progressive coalition</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:Baskerville, Georgia, serif; font-weight:400; letter-spacing:0;"><span data-count="3">3</span></p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">groups in the governing coalition</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">A grand coalition (224) and a centre-right one (206) were possible too - the progressive 211 formed.</p>
+    <p class="presentation-note">Three paths to 201 - the drama of the night.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="The capital">
+    <header class="presentation-header"><span>The capital</span><span>Election night</span></header>
+    <div style="display:flex; gap:4.5rem; align-items:center; margin-top:3.5rem;">
+      <figure class="image" data-ratio="4/3" data-df-entrance="wipe" style="--df-motion-delay:150ms; flex:0 0 700px; margin:0;">
+        <img src="https://picsum.photos/id/61/960/720" alt="Black-and-white aerial view over the rooftops of an old town" loading="lazy" width="960" height="720" style="width:100%; height:100%; object-fit:cover;" />
+        <figcaption class="image-caption" style="font-size:1.25rem;">The old town at dawn (stock photo).</figcaption>
+      </figure>
+      <div style="flex:1 1 0; min-width:0;">
+        <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; font-family:Baskerville, Georgia, serif; font-weight:400; letter-spacing:0;">The city voted, the arc decides</h2>
+        <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:300ms; font-size:1.7rem;">Turnout reached 71%, the highest in twenty years - and every tenth seat changed hands.</p>
+      </div>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Place and people before arithmetic.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="north" data-anim-in-blocks="5" data-anim-in-color="#8A2E2A" aria-label="Seat table">
+    <header class="presentation-header"><span>Official result</span><span>Seats and change</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" style="font-size:1.7rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">Assembly of Veldmark, seats by group (fictional).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">Group</th><th class="table-head" style="text-align:right">Seats</th><th class="table-head" style="text-align:right">Change</th><th class="table-head" style="text-align:right">Share</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row"><td class="table-cell">Civic Union</td><td class="table-cell" style="text-align:right">128</td><td class="table-cell" style="text-align:right">−14</td><td class="table-cell" style="text-align:right">32%</td></tr>
+          <tr class="table-row"><td class="table-cell">Social Democrats</td><td class="table-cell" style="text-align:right">96</td><td class="table-cell" style="text-align:right">−6</td><td class="table-cell" style="text-align:right">24%</td></tr>
+          <tr class="table-row"><td class="table-cell">Green Alliance</td><td class="table-cell" style="text-align:right">74</td><td class="table-cell" style="text-align:right">+22</td><td class="table-cell" style="text-align:right">19%</td></tr>
+          <tr class="table-row"><td class="table-cell">Liberal Forum</td><td class="table-cell" style="text-align:right">41</td><td class="table-cell" style="text-align:right">+9</td><td class="table-cell" style="text-align:right">10%</td></tr>
+          <tr class="table-row"><td class="table-cell">Rural Party</td><td class="table-cell" style="text-align:right">37</td><td class="table-cell" style="text-align:right">−5</td><td class="table-cell" style="text-align:right">9%</td></tr>
+          <tr class="table-row"><td class="table-cell">Independents</td><td class="table-cell" style="text-align:right">24</td><td class="table-cell" style="text-align:right">−6</td><td class="table-cell" style="text-align:right">6%</td></tr>
+        </tbody>
+        <tfoot>
+          <tr class="table-row"><td class="table-cell">Total</td><td class="table-cell" style="text-align:right;font-weight:700">400</td><td class="table-cell" style="text-align:right;font-weight:700">0</td><td class="table-cell" style="text-align:right;font-weight:700">100%</td></tr>
+        </tfoot>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The Greens are the story of the night: +22.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-family:Baskerville, Georgia, serif; font-weight:400; letter-spacing:0; font-size:3.2rem;">“We did not win the most seats. We won the seats that make every majority possible.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#8A2E2A; color:#F6EDD9;"><span class="avatar-fallback">MK</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Mira Kaldén<br /><span style="opacity:0.7; font-size:1.4rem;">Green Alliance leader - fictional</span></p>
+    </div>
+    <p class="presentation-note">The kingmaker quote.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="change" style="justify-content:flex-start;" aria-label="Seat change">
+    <header class="presentation-header"><span>Change</span><span>Seats vs last election</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Baskerville, Georgia, serif; font-weight:400; letter-spacing:0;">The Greens gained what the Civic Union lost</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The same bars, now as gains and losses around zero.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Questions from the press">
+    <header class="presentation-header"><span>Press room</span><span>Morning after</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; font-family:Baskerville, Georgia, serif; font-weight:400; letter-spacing:0;">Questions from the press</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="ph-qa" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Why not a grand coalition?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">It had the most seats (224) but the two leaders ruled it out during the campaign.</p></div>
+      </details>
+      <details class="accordion-item" name="ph-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>How stable is 211?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Ten seats of margin - about the size of the Liberal Forum’s rebel wing.</p></div>
+      </details>
+      <details class="accordion-item" name="ph-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Do the independents matter?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Only if the coalition splits: 24 seats cannot make a majority with any single group.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The stability question is the one to take seriously.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Takeaways">
+    <header class="presentation-header"><span>Findings</span><span>For the record</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">§</span><span>Seats become spatial on an arc - majorities read at a glance.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">§</span><span>The largest group is not the governing group.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">§</span><span>Small parties decide which majority forms.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">§</span><span>Show the majority line; everything else is arithmetic.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Findings, entered into the record.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-anim-in="blocksIn" data-anim-in-direction="south" data-anim-in-blocks="5" data-anim-in-color="#8A2E2A" aria-label="Closing">
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-family:Baskerville, Georgia, serif; font-weight:400; letter-spacing:0;">Seats become spatial</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">A fictional republic, a synthetic result - the hemicycle is the real instrument.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">Close on the instrument.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) - build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-hemicycle');
+    const TEXT = '#27231D', MUTED = '#8C8272', DIM = 'rgba(39,35,29,.14)';
+    // left → right across the chamber
+    const groups = [['Green Alliance', 74, '#4E7A3A', 22], ['Social Democrats', 96, '#B0413E', -6], ['Liberal Forum', 41, '#D8A31A', 9], ['Civic Union', 128, '#27231D', -14], ['Rural Party', 37, '#6F5B3E', -5], ['Independents', 24, '#A69C8A', -6]];
+    const coalition = ['Social Democrats', 'Green Alliance', 'Liberal Forum'];
+    // seat positions: 10 rows, seats per row proportional to radius, sorted by angle → wedges
+    const rows = 10, inner = 36, outer = 94, total = 400;
+    const radii = Array.from({ length: rows }, (_, r) => inner + (r * (outer - inner)) / (rows - 1));
+    const sumR = radii.reduce((a, b) => a + b, 0);
+    const seats = [];
+    radii.forEach((rad, r) => {
+      const n = r === rows - 1 ? total - seats.length : Math.round((total * rad) / sumR);
+      for (let i = 0; i < n; i++) { const a = Math.PI * (1 - i / (n - 1)); seats.push({ a, x: Math.cos(a) * rad, y: Math.sin(a) * rad }); }
+    });
+    seats.sort((p, q) => q.a - p.a);
+    const arc = (lit) => {
+      let at = 0;
+      return {
+        grid: { left: 190, right: 190, top: 300, bottom: 110 },
+        xAxis: { type: 'value', min: -100, max: 100, show: false },
+        yAxis: { type: 'value', min: -6, max: 98, show: false },
+        legend: { top: 262, right: 112, textStyle: { color: TEXT } },
+        graphic: [{ type: 'text', left: 'center', top: 650, style: { text: lit ? '211' : '201', fill: lit ? '#8A2E2A' : TEXT, font: "400 72px Baskerville, Georgia, serif" } },
+                  { type: 'text', left: 'center', top: 740, style: { text: lit ? 'progressive coalition' : 'needed to govern', fill: MUTED, font: "400 26px Baskerville, Georgia, serif" } }],
+        series: groups.map(([n, s, c]) => {
+          const data = seats.slice(at, at + s).map((p) => [p.x, p.y]);
+          at += s;
+          return { id: n, name: n, type: 'scatter', dataGroupId: n, symbolSize: 15, data,
+            universalTransition: { enabled: true, divideShape: 'split' },
+            itemStyle: { color: !lit || coalition.includes(n) ? c : DIM } };
+        }),
+      };
+    };
+    const bars = (list, value, fmt, axis) => ({
+      grid: { left: 300, right: 190, top: 330, bottom: 150 },
+      xAxis: axis,
+      yAxis: { type: 'category', inverse: true, data: list.map((g) => g[0]), axisLine: { show: false }, axisLabel: { color: TEXT } },
+      series: [{ id: 'seats', type: 'bar', barWidth: '60%', universalTransition: { enabled: true, divideShape: 'split' },
+        data: list.map((g) => ({ name: g[0], value: g[value], groupId: g[0], itemStyle: { color: g[2], borderRadius: 0 }, label: { position: g[value] < 0 ? 'left' : 'right' } })),
+        label: { show: true, formatter: fmt, color: TEXT, fontWeight: 700 } }],
+    });
+    const bySeats = groups.slice().sort((a, b) => b[1] - a[1]);
+    const byChange = groups.slice().sort((a, b) => b[3] - a[3]);
+
+    df$.shadcn.chart.deck(deck, {
+      base: { tooltip: { trigger: 'item' } },
+      states: {
+        chamber: arc(false),
+        coalition: arc(true),
+        parties: bars(bySeats, 1, '{c}', { type: 'value', max: 140, axisLabel: { color: MUTED },
+          splitLine: { lineStyle: { color: 'rgba(39,35,29,.1)' } } }),
+        change: bars(byChange, 3, (p) => (p.value > 0 ? '+' : '') + p.value, { type: 'value', min: -20, max: 30, axisLabel: { color: MUTED },
+          splitLine: { lineStyle: { color: 'rgba(39,35,29,.1)' } } }),
+      },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 23-parliament-hemicycle (Civic Parchment) - a fictional republic and synthetic result.</p>
+<SourceFiles component="presentation" />
+</DocPage>

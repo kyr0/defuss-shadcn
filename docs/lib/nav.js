@@ -1,12 +1,12 @@
 /**
  * Why: the docs sidebar, prev/next pager, search index, and page chrome all
  * derive from this one list. Historically NAV lived inside layout.ts (runtime)
- * and was regex-parsed by scripts/lib/search-index.ts (build time) — two
+ * and was regex-parsed by scripts/lib/search-index.ts (build time) - two
  * consumers, one stringly-typed source. With defuss-ssg the nav is rendered
  * statically per page, so the data moves here: importable by TSX components
  * AND build plugins alike, no parsing.
  *
- * Labels are plain text (JSX escapes `&` → `&amp;` on render — the serialized
+ * Labels are plain text (JSX escapes `&` → `&amp;` on render - the serialized
  * pages stay byte-identical to the old hand-written ones).
  */
 /** The one section rendered expanded on first load; every other section
@@ -18,6 +18,7 @@ export const NAV = [
             { label: 'Installation', href: 'installation.html' },
             { label: 'How to Use', href: 'how-to-use.html' },
             { label: 'Component Skills', href: 'component-skills.html' },
+            { label: 'Verified Agentic Engineering (VAE)', href: 'architecture.html' },
             { label: 'Changelog', href: 'changelog.html' },
         ] },
     { heading: 'Guides', items: [
@@ -26,11 +27,32 @@ export const NAV = [
             { label: 'Data Attribute API', href: 'data-attribute-api.html' },
             { label: 'State API', href: 'state-api.html' },
             { label: 'DOM Querying & Morphing', href: 'dom-querying.html' },
-            { label: 'Verified Agentic Engineering (VAE)', href: 'architecture.html' },
             { label: 'Cascade Layers', href: 'cascade-layers.html' },
             { label: 'JavaScript Modules', href: 'es-modules.html' },
             { label: 'Native Web APIs', href: 'native-web-apis.html' },
-            { label: 'Animations', href: 'animations.html' },
+            {
+                label: 'Animations',
+                href: 'animations.html',
+                children: [
+                    { label: 'Motion', href: 'motion.html' },
+                    { label: 'Animation Canvas', href: 'anim-canvas.html' },
+                    { label: 'Fade', href: 'anim-fade.html', type: 'ATM' },
+                    { label: 'Slide Up', href: 'anim-up.html', type: 'ATM' },
+                    { label: 'Slide Down', href: 'anim-down.html', type: 'ATM' },
+                    { label: 'Slide Left', href: 'anim-left.html', type: 'ATM' },
+                    { label: 'Slide Right', href: 'anim-right.html', type: 'ATM' },
+                    { label: 'Zoom', href: 'anim-zoom.html', type: 'ATM' },
+                    { label: 'Zoom Out', href: 'anim-zoom-out.html', type: 'ATM' },
+                    { label: 'Pop', href: 'anim-pop.html', type: 'ATM' },
+                    { label: 'Spin', href: 'anim-spin.html', type: 'ATM' },
+                    { label: 'Flip', href: 'anim-flip.html', type: 'ATM' },
+                    { label: 'Skew', href: 'anim-skew.html', type: 'ATM' },
+                    { label: 'Blur', href: 'anim-blur.html', type: 'ATM' },
+                    { label: 'Wipe', href: 'anim-wipe.html', type: 'ATM' },
+                    { label: 'Wipe Up', href: 'anim-wipe-up.html', type: 'ATM' },
+                    { label: 'Iris', href: 'anim-iris.html', type: 'ATM' },
+                ],
+            },
             {
                 label: 'Sizing',
                 href: 'sizing.html',
@@ -85,7 +107,11 @@ export const NAV = [
             { label: 'Type Badge', href: 'type-badge.html' },
             { label: 'Avatar', href: 'avatar.html' },
             { label: 'Card', href: 'card.html' },
-            { label: 'Image', href: 'image.html' },
+            {
+                label: 'Image',
+                href: 'image.html',
+                children: [{ label: 'Image Gallery', href: 'image-gallery.html', type: 'MOL' }],
+            },
             { label: 'Statistic', href: 'statistic.html' },
             { label: 'Table', href: 'table.html' },
             { label: 'Collapsible', href: 'collapsible.html' },
@@ -95,6 +121,15 @@ export const NAV = [
             { label: 'Carousel', href: 'carousel.html' },
             { label: 'Scroll Area', href: 'scroll-area.html' },
             { label: 'Sortable', href: 'sortable.html' },
+        ] },
+    { heading: 'Charts', items: [
+            { label: 'Chart', href: 'chart.html' },
+            { label: 'Comparison', href: 'charts-comparison.html', type: 'MOL' },
+            { label: 'Change over time', href: 'charts-change.html', type: 'MOL' },
+            { label: 'Distribution', href: 'charts-distribution.html', type: 'MOL' },
+            { label: 'Composition', href: 'charts-composition.html', type: 'MOL' },
+            { label: 'Election', href: 'charts-election.html', type: 'MOL' },
+            { label: 'Narrative', href: 'charts-narrative.html', type: 'MOL' },
         ] },
     { heading: 'Feedback & Status', items: [
             { label: 'Spinner', href: 'spinner.html' },
@@ -127,6 +162,44 @@ export const NAV = [
             { label: 'Sidebar', href: 'sidebar.html' },
             { label: 'Resizer', href: 'resizer.html' },
         ] },
+    { heading: 'Presentations', items: [
+            { label: 'Presentation', href: 'presentation.html' },
+            { label: 'Deck Gallery', href: 'presentations.html', children: [
+                    { label: 'The System in Numbers', href: 'system-in-numbers.html' },
+                    { label: 'Editorial Highlight Bars', href: 'editorial-highlight-bars.html' },
+                    { label: 'Lollipop Ranking', href: 'lollipop-ranking.html' },
+                    { label: 'Dumbbell Before/After', href: 'dumbbell-before-after.html' },
+                    { label: 'Slopegraph', href: 'slopegraph.html' },
+                    { label: 'Diverging Bars', href: 'diverging-bars.html' },
+                    { label: 'Waterfall', href: 'waterfall.html' },
+                    { label: 'Normalized Stack', href: 'normalized-stack.html' },
+                    { label: 'Bump Ranking', href: 'bump-ranking.html' },
+                    { label: 'Bar Race', href: 'bar-race.html' },
+                    { label: 'Confidence Band', href: 'confidence-band.html' },
+                    { label: 'Annotated Time Series', href: 'annotated-timeseries.html' },
+                    { label: 'Small Multiples', href: 'small-multiples.html' },
+                    { label: 'Scatter Quadrants', href: 'scatter-quadrants.html' },
+                    { label: 'Jittered Distribution', href: 'jittered-distribution.html' },
+                    { label: 'Heatmap Matrix', href: 'heatmap-matrix.html' },
+                    { label: 'Calendar Heatmap', href: 'calendar-heatmap.html' },
+                    { label: 'Theme River', href: 'theme-river.html' },
+                    { label: 'Treemap', href: 'treemap.html' },
+                    { label: 'Sunburst', href: 'sunburst.html' },
+                    { label: 'Sankey', href: 'sankey.html' },
+                    { label: 'Chord', href: 'chord.html' },
+                    { label: 'Editorial Gauge', href: 'editorial-gauge.html' },
+                    { label: 'Parliament Hemicycle', href: 'parliament-hemicycle.html' },
+                    { label: 'Election Majority Bar', href: 'election-majority-bar.html' },
+                    { label: 'Election Hex Cartogram', href: 'election-hex-cartogram.html' },
+                    { label: 'Election Shift Arrows', href: 'election-shift-arrows.html' },
+                    { label: 'Universal Transition', href: 'universal-transition.html' },
+                    { label: 'Waffle Dot Matrix', href: 'waffle-dot-matrix.html' },
+                    { label: 'Boxplot', href: 'boxplot.html' },
+                    { label: 'Violin - Custom Series', href: 'violin-custom.html' },
+                    { label: 'Custom Wind Vectors', href: 'custom-wind-vectors.html' },
+                    { label: 'Story State Machine', href: 'story-state-machine.html' },
+                ] },
+        ] },
     { heading: 'Marketing', items: [
             { label: 'Site Header', href: 'site-header.html' },
             { label: 'Hero', href: 'hero.html' },
@@ -147,7 +220,7 @@ export const NAV = [
 export function flattenNav(items) {
     return items.flatMap((i) => [i, ...flattenNav(i.children ?? [])]);
 }
-/** Flat ordered list of all pages — the prev/next pager's universe. */
+/** Flat ordered list of all pages - the prev/next pager's universe. */
 export const ALL_PAGES = NAV.flatMap((s) => flattenNav(s.items));
 /** The section heading a page belongs to (drives the always-open rule). */
 export function sectionOf(href) {
@@ -163,5 +236,22 @@ export function labelOf(href) {
             return hit.label;
     }
     return null;
+}
+/** The breadcrumb trail for a page - the sidebar's structural depth:
+ * [section heading] for top-level pages, [section heading, parent label] for
+ * sub-pages. The leaf (the page slug) is appended by the caller. Returns []
+ * for pages outside NAV (the `sidebar coverage` gate forbids those). */
+export function breadcrumbFor(href) {
+    for (const s of NAV) {
+        for (const item of s.items) {
+            if (item.href === href)
+                return [s.heading];
+            for (const child of item.children ?? []) {
+                if (child.href === href)
+                    return [s.heading, item.label];
+            }
+        }
+    }
+    return [];
 }
 //# sourceMappingURL=nav.js.map

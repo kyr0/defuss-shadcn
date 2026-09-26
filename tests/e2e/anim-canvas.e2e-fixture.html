@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>Animation Canvas E2E Fixture - defuss-shadcn</title>
+  <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css">
+  <link rel="stylesheet" href="/dist/components/anim-canvas/anim-canvas.css">
+  <style>
+    /* fixture-only slide dressing (fast animations keep the test quick) */
+    main { padding: 1rem; display: flex; flex-direction: column; gap: 2rem; }
+    .anim-canvas { max-width: 640px; }
+    .fx-slide { display: flex; flex-direction: column; justify-content: center; padding: 2rem; }
+    .fx-slide h2 { margin: 0 0 0.5rem; font-size: 2rem; }
+    .fx-slide p { margin: 0; }
+    #s1 { background: #312e81; color: #e0e7ff; }
+    #s2 { background: #78350f; color: #fef3c7; }
+    #s3 { background: #064e3b; color: #d1fae5; }
+    #s4 { background: #4c0519; color: #ffe4e6; }
+  </style>
+</head>
+<body>
+  <main>
+    <!-- 2×2 board: every direction wired, mixed data-anim-* declarations -->
+    <div class="anim-canvas" id="board" aria-label="Fixture board" data-pan-duration="5"
+         style="--anim-canvas-width: 640; --anim-canvas-height: 360">
+      <section class="anim-canvas-slide fx-slide" id="s1" data-active aria-label="Slide one"
+               data-east="s2" data-south="s3"
+               data-anim-in="slideIn" data-anim-in-duration="5"
+               data-anim-out="slideOut" data-anim-out-duration="5">
+        <h2>Slide one</h2>
+        <p>slideIn/slideOut</p>
+      </section>
+      <section class="anim-canvas-slide fx-slide" id="s2" aria-label="Slide two"
+               data-west="s1" data-south="s4"
+               data-anim-in="blocksIn" data-anim-in-direction="north" data-anim-in-duration="5" data-anim-in-blocks="2" data-anim-in-stagger="1" data-anim-in-color="rgb(14, 165, 233)"
+               data-anim-out="blocksOut" data-anim-out-direction="north" data-anim-out-duration="5" data-anim-out-blocks="2" data-anim-out-stagger="1">
+        <h2>Slide two</h2>
+        <p>blocksIn/blocksOut curtain</p>
+      </section>
+      <section class="anim-canvas-slide fx-slide" id="s3" aria-label="Slide three"
+               data-north="s1" data-east="s4"
+               data-anim-in="irisIn" data-anim-in-origin="50% 50%" data-anim-in-duration="5"
+               data-anim-out="irisOut" data-anim-out-origin="50% 50%" data-anim-out-duration="5">
+        <h2>Slide three</h2>
+        <p>irisIn/irisOut</p>
+      </section>
+      <section class="anim-canvas-slide fx-slide" id="s4" aria-label="Slide four"
+               data-north="s2" data-west="s3"
+               data-anim-in="slideIn" data-anim-in-duration="5"
+               data-anim-out="slideOut" data-anim-out-duration="5">
+        <h2>Slide four</h2>
+        <p>slideIn/slideOut</p>
+      </section>
+      <div class="anim-canvas-controls">
+        <button type="button" class="anim-canvas-control" data-anim-canvas-go="west" aria-label="West slide">←</button>
+        <button type="button" class="anim-canvas-control" data-anim-canvas-go="north" aria-label="North slide">↑</button>
+        <button type="button" class="anim-canvas-control" data-anim-canvas-go="south" aria-label="South slide">↓</button>
+        <button type="button" class="anim-canvas-control" data-anim-canvas-go="east" aria-label="East slide">→</button>
+        <button type="button" class="anim-canvas-control" data-anim-canvas-go="overview" aria-label="Toggle overview">⛶</button>
+      </div>
+    </div>
+
+    <!-- second minimal canvas: per-instance isolation -->
+    <div class="anim-canvas" id="mini" aria-label="Fixture mini" data-pan-duration="5"
+         style="--anim-canvas-width: 640; --anim-canvas-height: 360">
+      <section class="anim-canvas-slide fx-slide" id="a" data-active aria-label="A"
+               data-east="b" data-anim-in-duration="5" data-anim-out-duration="5">
+        <h2>Mini A</h2>
+      </section>
+      <section class="anim-canvas-slide fx-slide" id="b" aria-label="B"
+               data-west="a" data-anim-in-duration="5" data-anim-out-duration="5">
+        <h2>Mini B</h2>
+      </section>
+    </div>
+  </main>
+  <script type="module" src="/dist/components/core.js"></script>
+  <script type="module" src="/dist/components/anim-canvas/anim-canvas.js"></script>
+</body>
+</html>

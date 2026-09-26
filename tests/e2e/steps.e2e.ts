@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: steps is CSS-only — the status circle scale (32px default, sm/lg)
+ * Why: steps is CSS-only - the status circle scale (32px default, sm/lg)
  * and the connector line + per-status recolor. Indicator circles are read
  * literally; status colors assert as distinct (theme tokens).
  */

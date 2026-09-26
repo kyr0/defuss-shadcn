@@ -7,7 +7,7 @@ import { startServer } from './server.ts';
  * (pill + line variants, a disabled tab, mirroring the doc page) over HTTP in
  * a real browser, then verifies click activation, ARIA/panel wiring, keyboard
  * navigation (arrows skip disabled, Home/End), roving tabindex, and the
- * per-tab named State API — the same files consumers copy from dist/,
+ * per-tab named State API - the same files consumers copy from dist/,
  * unmodified.
  */
 
@@ -74,7 +74,7 @@ try {
 
   await check('line variant styles selection with an underline (tabs.css)', async () => {
     // the underline is a 2px border whose color flips transparent -> primary.
-    // .tab-trigger has `transition: all 150ms` — the previous check just
+    // .tab-trigger has `transition: all 150ms` - the previous check just
     // toggled the selection via Home, so settle before reading the color
     // (measured mid-fade it's a blend, matching neither endpoint).
     await page.waitForTimeout(250);

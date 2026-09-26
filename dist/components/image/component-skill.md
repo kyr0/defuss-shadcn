@@ -15,14 +15,16 @@ supportedStates: default, error
 
 ## Native Web APIs
 
-- [`<figure>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure) — self-contained content with optional caption
-- [`<figcaption>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figcaption) — caption for the figure
-- [`<dialog>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog) — native modal for fullscreen lightbox preview
-- [`::backdrop`](https://developer.mozilla.org/en-US/docs/Web/CSS/::backdrop) — overlay behind lightbox dialog
-- [`loading="lazy"`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#loading) — native lazy loading
-- [`object-fit`](https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit) — how image fills its container
-- [`aspect-ratio`](https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio) — intrinsic aspect ratio control
-- [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) — entry animation for lightbox
+- [`<figure>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure) - self-contained content with optional caption
+- [`<figcaption>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figcaption) - caption for the figure
+- [`<dialog>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog) - native modal for fullscreen lightbox preview
+- [`::backdrop`](https://developer.mozilla.org/en-US/docs/Web/CSS/::backdrop) - overlay behind lightbox dialog
+- [`loading="lazy"`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#loading) - native lazy loading
+- [`object-fit`](https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit) - how image fills its container
+- [`aspect-ratio`](https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio) - intrinsic aspect ratio control
+- [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) - entry animation for lightbox
+- [`Image()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/Image) - off-DOM preload of the standard source before the progressive swap
+- [`matchMedia()`](https://developer.mozilla.org/en-US/docs/Web/API/Window/matchMedia) - `(min-resolution: 2dppx)` picks the high-res source on retina displays
 
 ## Structure
 
@@ -58,10 +60,24 @@ supportedStates: default, error
 </figure>
 ```
 
+### With a lightbox-only original
+```html
+<figure class="image" data-preview>
+  <img src="photo-800.jpg" data-src-full="photo-2400.jpg" alt="Description" />
+</figure>
+```
+
 ### With aspect ratio
 ```html
 <figure class="image" data-ratio="16/9">
   <img src="photo.jpg" alt="Description" />
+</figure>
+```
+
+### With progressive sources
+```html
+<figure class="image">
+  <img src="photo.jpg" data-src-low="photo-low.jpg" data-src-high="photo@2x.jpg" alt="Description" />
 </figure>
 ```
 
@@ -99,12 +115,15 @@ supportedStates: default, error
 
 ## Attributes
 
-| Attribute      | Effect                                    |
-| -------------- | ----------------------------------------- |
-| `data-preview` | Enables click-to-preview lightbox         |
-| `data-ratio`   | Sets aspect ratio                         |
-| `data-fit`     | Sets object-fit mode                      |
-| `data-radius`  | Sets border radius variant                |
+| Attribute       | Effect                                                              |
+| --------------- | ------------------------------------------------------------------- |
+| `data-preview`  | Enables click-to-preview lightbox                                   |
+| `data-ratio`    | Sets aspect ratio                                                   |
+| `data-fit`      | Sets object-fit mode                                                |
+| `data-radius`   | Sets border radius variant                                          |
+| `data-src-low`  | Low-res placeholder, shown (blurred) until the real source is ready |
+| `data-src-high` | High-res source for ≥2dppx displays and lightbox zoom               |
+| `data-src-full` | Large original shown only in the lightbox (with `data-preview`)     |
 
 ## Lightbox
 
@@ -116,6 +135,8 @@ When `data-preview` is set, clicking the image opens a fullscreen `<dialog>` lig
 - Click backdrop to close
 
 The lightbox dialog is created once and shared by all preview-enabled images.
+
+With `data-src-full` on the img, the lightbox shows that original instead of the inline source. The page never downloads it: the lightbox opens at once with the already-loaded inline image, sized to the frame the original will fill (up to 90vw × 85vh), preloads the original off-DOM and swaps it in without a layout jump. The figure keeps its own `src`, and the zoom-in `data-src-high` upgrade is skipped (the original already covers it).
 
 ## Accessibility
 
@@ -145,50 +166,6 @@ The registry global is `df$.shadcn.imageApi` / `df$.shadcn.imageStates`.
 - Use `loading="lazy"` on images below the fold for performance.
 - Lightbox supports keyboard: Escape closes, Tab navigates controls.
 - Multiple images with `data-preview` share a single dialog instance.
-- While the lightbox is modal, `html:has(dialog.image-lightbox:modal)` sets `overflow: hidden` + `scrollbar-gutter: stable` — the page behind cannot scroll and its position is preserved for when the lightbox closes (no JS scroll-lock).
-# Image
-
-## Native basis
-
-`<img>` element wrapped in a `<figure>` with optional `<figcaption>`. Uses CSS `aspect-ratio` for controlled dimensions.
-
-## Native Web APIs
-
-- [`<figure>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure) — self-contained content with optional caption
-- [`<figcaption>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figcaption) — caption for the figure
-- [`aspect-ratio`](https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio) — intrinsic aspect ratio control
-
-## Structure
-
-```html
-<!-- Basic image -->
-<figure class="image">
-  <img src="https://example.com/photo.jpg" alt="Description" />
-</figure>
-
-<!-- Image with caption -->
-<figure class="image">
-  <img src="https://example.com/photo.jpg" alt="Description" />
-  <figcaption class="image-caption">Photo caption text</figcaption>
-</figure>
-
-<!-- Image with aspect ratio -->
-<figure class="image" data-ratio="16/9">
-  <img src="https://example.com/photo.jpg" alt="Description" />
-</figure>
-```
-
-## Ratios (`data-ratio`)
-
-| Value   | Aspect ratio |
-|---------|-------------|
-| `1/1`   | Square       |
-| `4/3`   | Standard     |
-| `16/9`  | Widescreen   |
-| `21/9`  | Ultra-wide   |
-
-## Accessibility
-
-- `<img>` must have a descriptive `alt` attribute
-- Decorative images should use `alt=""`
-- `<figcaption>` provides visible caption text
+- While the lightbox is modal, `html:has(dialog.image-lightbox:modal)` sets `overflow: hidden` + `scrollbar-gutter: stable` - the page behind cannot scroll and its position is preserved for when the lightbox closes (no JS scroll-lock).
+- Progressive sources: with `data-src-low`, the img swaps to the low-res URL at init and carries `data-loading` (CSS blurs it) until the standard `src` - preloaded off-DOM via `new Image()` - is ready and swapped in. If the browser already fetched the standard `src` before the component JS ran, the swap is simply instant.
+- With `data-src-high`, the high-res source replaces the standard one on ≥2dppx displays (`matchMedia('(min-resolution: 2dppx)')`); on lower densities it stays unloaded until the first lightbox zoom-in, which upgrades both the lightbox and the figure img (once - later zooms reuse it).

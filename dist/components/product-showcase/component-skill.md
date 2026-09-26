@@ -1,7 +1,7 @@
 ---
 name: Product Showcase
 type: BLK
-why: A poster frame + one real <button> starts a native <video controls> — the browser draws every playback affordance once the video is visible.
+why: A poster frame + one real <button> starts a native <video controls> - the browser draws every playback affordance once the video is visible.
 when: Hero pairing or standalone product video; a static screenshot needs only the poster <img> (drop the video and button).
 where: dist/components/product-showcase/product-showcase.css + dist/components/product-showcase/product-showcase.js
 supportedStates: default, playing
@@ -11,7 +11,7 @@ supportedStates: default, playing
 
 ## Native basis
 
-`<figure>` wrapper with three stacked layers — poster `<img>`, `<video controls>`,
+`<figure>` wrapper with three stacked layers - poster `<img>`, `<video controls>`,
 and a circular play `<button>`. Clicking the button (or pressing Enter on it —
 it's a real button) flips `data-state` to `playing`: CSS hides the poster and
 button, reveals the video, and JS starts muted playback. From then on the UA
@@ -21,13 +21,13 @@ state back so the poster returns.
 ---
 
 ## Native Web APIs
-- [(`<video>`)](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video) — native playback UI + `controls`
-- [(`<source type>`)](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source) — codec fallback (webm → mp4)
-- [`preload="metadata"`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video#preload) — cheap first paint once revealed
-- [`aspect-ratio`](https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio) — stable 5:3 box, zero layout shift on the swap
-- [(`popovertarget`-free first click)](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button) — a real `<button>` gets keyboard + AT support for free
-- [(`<track>`)](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track) — captions for real videos
-- [Media pause event](https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/pause_event) — native pause reflects back to the `default` state
+- [(`<video>`)](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video) - native playback UI + `controls`
+- [(`<source type>`)](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source) - codec fallback (webm → mp4)
+- [`preload="metadata"`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video#preload) - cheap first paint once revealed
+- [`aspect-ratio`](https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio) - stable 5:3 box, zero layout shift on the swap
+- [(`popovertarget`-free first click)](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button) - a real `<button>` gets keyboard + AT support for free
+- [(`<track>`)](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track) - captions for real videos
+- [Media pause event](https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/pause_event) - native pause reflects back to the `default` state
 
 ---
 
@@ -63,7 +63,7 @@ document.querySelector('.mk-showcase').api.setState('playing');
 document.querySelector('.mk-showcase').api.getState(); // → { name: 'playing', config: {} }
 ```
 
-`setState('playing')` plays **muted** — programmatic play must not violate the
+`setState('playing')` plays **muted** - programmatic play must not violate the
 autoplay policy or blast audio in a screenshot run. A native pause (or media
 end) routes back through `setState('default')`, rewinds to `currentTime = 0`,
 and restores the poster.
@@ -83,8 +83,8 @@ and restores the poster.
 ---
 
 ## Notes
-- Ship both webm (VP9/AV1) and mp4 (H.264) `<source>`s — Safari wants mp4, Firefox prefers webm.
+- Ship both webm (VP9/AV1) and mp4 (H.264) `<source>`s - Safari wants mp4, Firefox prefers webm.
 - Captions are a hard accessibility requirement for real product videos: add `<track kind="captions" src="captions.vtt" default>`.
-- The video's `opacity: 0` keeps it in the layout so swapping is a pure visibility flip — no reflow, no poster flash.
+- The video's `opacity: 0` keeps it in the layout so swapping is a pure visibility flip - no reflow, no poster flash.
 - Posters via `<img>` (not `video poster`) because the poster is shown before the video element even preloads; the browser only fetches `preload="metadata"` content once it's revealed.
-- The play button lives at `inset: auto; margin: auto` inside the full-inset layer — a native centering trick that survives any icon size.
+- The play button lives at `inset: auto; margin: auto` inside the full-inset layer - a native centering trick that survives any icon size.

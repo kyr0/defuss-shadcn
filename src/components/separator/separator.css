@@ -18,10 +18,10 @@
       align-self: stretch;
     }
 
-    /* Decorative — hidden from assistive technology */
+    /* Decorative - hidden from assistive technology */
     &[aria-hidden="true"],
     &[role="none"] {
-      /* No visual change — purely semantic */
+      /* No visual change - purely semantic */
     }
   }
 

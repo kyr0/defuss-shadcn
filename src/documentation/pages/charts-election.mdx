@@ -1,0 +1,186 @@
+---
+title: "Charts · Election"
+description: "Election-night chart patterns on the chart component - editorial gauge, parliament hemicycle, majority bar, hex cartogram and swing arrows, themed from the design tokens."
+slug: "charts-election"
+---
+
+import { DocPage, PageHeader, DocLink, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="charts-election" title="Charts · Election" component="chart">
+  Election-night patterns on the <DocLink href="chart.html">chart</DocLink> component: a single-value editorial gauge, seat visualizations (parliament hemicycle, majority bar, hex cartogram) and district-level swing arrows. Every demo mounts through <code>df$.shadcn.chart.mount()</code> or declarative <code>data-chart</code> - palette, typography and tooltip chrome come from the active theme's tokens in light and dark.
+</PageHeader>
+
+```html example label="Editorial gauge" schema="none" height="27" previewStyle="align-items:flex-start;" hint="One number, editorially large: a round-capped progress arc over a muted track and an oversized readout. A second, pointer-only gauge series marks the 65% benchmark on the same scale - fully declarative."
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <figcaption>
+    <h3 class="chart-title">Positive outlook at 77%</h3>
+    <p class="chart-dek">Share of respondents expecting improvement, benchmark 65%.</p>
+  </figcaption>
+  <div class="chart" role="img" aria-label="Gauge showing positive outlook at 77 percent against a benchmark of 65"
+       data-chart='{"series":[{"type":"gauge","center":["50%","60%"],"radius":"92%","startAngle":200,"endAngle":-20,"min":0,"max":100,"progress":{"show":true,"width":22,"roundCap":true,"itemStyle":{"color":"var(--chart-2)"}},"axisLine":{"roundCap":true,"lineStyle":{"width":22,"color":[[1,"var(--muted)"]]}},"axisTick":{"show":false},"splitLine":{"show":false},"axisLabel":{"show":false},"pointer":{"show":false},"anchor":{"show":false},"title":{"offsetCenter":[0,"28%"],"fontSize":14,"color":"var(--muted-foreground)"},"detail":{"valueAnimation":true,"formatter":"{value}%","offsetCenter":[0,"-6%"],"fontSize":56,"fontWeight":700,"color":"var(--foreground)"},"data":[{"value":77,"name":"positive outlook"}]},{"type":"gauge","center":["50%","60%"],"radius":"92%","startAngle":200,"endAngle":-20,"min":0,"max":100,"axisLine":{"show":false},"axisTick":{"show":false},"splitLine":{"show":false},"axisLabel":{"show":false},"progress":{"show":false},"anchor":{"show":false},"title":{"show":false},"detail":{"show":false},"pointer":{"icon":"rect","length":"16%","width":3,"offsetCenter":[0,"-88%"],"itemStyle":{"color":"var(--foreground)"}},"data":[{"value":65}]}]}'></div>
+  <div class="chart-source">Synthetic data · adapted from echarts-feat 22-editorial-gauge</div>
+</figure>
+```
+
+```html example label="Parliament hemicycle" schema="none" height="27" previewStyle="align-items:flex-start;" hint="280 seats as dots on eight arcs. Seats are sorted by angle before parties are assigned, so every group forms a wedge from floor to back row - the real chamber layout - and the majority count sits in the well."
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <figcaption>
+    <h3 class="chart-title">The chamber, 280 seats</h3>
+    <p class="chart-dek">Seat distribution by group - 141 needed for a majority.</p>
+  </figcaption>
+  <div class="chart" data-size="lg" role="img" aria-label="Parliament hemicycle of 280 seats: group A 102, group B 76, group C 48, group D 31, other 23"></div>
+  <div class="chart-source">Synthetic data · adapted from echarts-feat 23-parliament-hemicycle</div>
+</figure>
+<script>
+window.addEventListener('load', () => {
+  const el = document.querySelector('.chart');
+  // neighbours alternate light/dark so adjacent blocks stay distinct on ramp palettes
+  const parties = [['Group A', 102, 'var(--chart-2)'], ['Group B', 76, 'var(--chart-5)'], ['Group C', 48, 'var(--chart-1)'],
+                   ['Group D', 31, 'var(--chart-3)'], ['Other', 23, 'color-mix(in oklch, var(--foreground) 25%, transparent)']];
+  // seat positions: 8 rows, seats per row proportional to the row radius
+  const rows = 8, total = 280, inner = 38, outer = 92;
+  const radii = Array.from({ length: rows }, (_, r) => inner + (r * (outer - inner)) / (rows - 1));
+  const sum = radii.reduce((a, b) => a + b, 0);
+  const seats = [];
+  radii.forEach((radius, r) => {
+    const n = r === rows - 1 ? total - seats.length : Math.round((total * radius) / sum);
+    for (let i = 0; i < n; i++) {
+      const a = Math.PI * (1 - i / (n - 1));
+      seats.push({ a, x: Math.cos(a) * radius, y: Math.sin(a) * radius });
+    }
+  });
+  seats.sort((p, q) => q.a - p.a); // left → right across all rows = wedges
+  let at = 0;
+  const series = parties.map(([name, n, color]) => {
+    const data = seats.slice(at, at + n).map((s) => [s.x, s.y]);
+    at += n;
+    return { name: name + ' · ' + n, type: 'scatter', data, symbolSize: 9, itemStyle: { color } };
+  });
+  df$.shadcn.chart.mount(el, {
+    legend: { bottom: 0 },
+    grid: { left: 0, right: 0, top: 8, bottom: 40 },
+    xAxis: { type: 'value', min: -100, max: 100, show: false },
+    yAxis: { type: 'value', min: -4, max: 98, show: false },
+    graphic: [{ type: 'text', left: 'center', top: '66%', style: { text: '141', fontSize: 34, fontWeight: 700, fill: 'var(--foreground)', align: 'center' } },
+              { type: 'text', left: 'center', top: '78%', style: { text: 'for a majority', fontSize: 13, fill: 'var(--muted-foreground)', align: 'center' } }],
+    series,
+  });
+});
+</script>
+```
+
+```html example label="Majority bar" schema="none" height="22" previewStyle="align-items:flex-start;" hint="One stacked bar carries the whole result; a markLine at the majority threshold is the only annotation the pattern needs. Segment colors and in-bar labels are token references - the label ink is the card color, so it reads on every theme."
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <figcaption>
+    <h3 class="chart-title">300 seats, 151 to govern</h3>
+    <p class="chart-dek">Group A falls short of the majority line on its own.</p>
+  </figcaption>
+  <div class="chart" data-size="sm" role="img" aria-label="Stacked seat bar of 300 seats with a majority marker at 151: group A 122, group B 88, group C 43, group D 19, other 28"
+       data-chart='{"legend":{"bottom":0,"left":0},"grid":{"left":0,"right":0,"top":36,"bottom":40},"xAxis":{"type":"value","min":0,"max":300,"show":false},"yAxis":{"type":"category","data":["Seats"],"show":false},"series":[{"name":"Group A","type":"bar","stack":"seats","data":[122],"barWidth":52,"itemStyle":{"color":"var(--chart-2)","borderRadius":[6,0,0,6]},"label":{"show":true,"position":"insideLeft","distance":12,"color":"var(--card)","fontWeight":700,"fontSize":15},"markLine":{"symbol":"none","silent":true,"lineStyle":{"color":"var(--foreground)","type":"solid","width":2},"label":{"formatter":"majority · 151","position":"end","color":"var(--foreground)","fontWeight":600},"data":[{"xAxis":151}]}},{"name":"Group B","type":"bar","stack":"seats","data":[88],"itemStyle":{"color":"var(--chart-5)","borderRadius":0},"label":{"show":true,"position":"insideLeft","distance":12,"color":"var(--card)","fontWeight":700,"fontSize":15}},{"name":"Group C","type":"bar","stack":"seats","data":[43],"itemStyle":{"color":"var(--chart-1)","borderRadius":0},"label":{"show":true,"color":"var(--foreground)","fontWeight":700}},{"name":"Group D","type":"bar","stack":"seats","data":[19],"itemStyle":{"color":"var(--chart-3)","borderRadius":0}},{"name":"Other","type":"bar","stack":"seats","data":[28],"itemStyle":{"color":"color-mix(in oklch, var(--foreground) 22%, transparent)","borderRadius":[0,6,6,0]}}]}'></div>
+  <div class="chart-source">Synthetic data · adapted from echarts-feat 24-election-majority-bar</div>
+</figure>
+```
+
+```html example label="Hex cartogram" schema="none" height="27" previewStyle="align-items:flex-start;" hint="Every district one hexagon: equal visual weight regardless of geographic size - drawn with a custom renderItem, one series per winning group so the legend comes for free. The cell outline is resolved inside renderItem with df$.shadcn.chart.color(), so theme switches repaint it."
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <figcaption>
+    <h3 class="chart-title">Districts at equal weight</h3>
+    <p class="chart-dek">A hex cartogram keeps small urban districts as visible as large rural ones.</p>
+  </figcaption>
+  <div class="chart" data-size="lg" role="img" aria-label="Hexagon cartogram of 70 synthetic districts colored by winning group"></div>
+  <div class="chart-source">Synthetic data · adapted from echarts-feat 25-election-hex-cartogram</div>
+</figure>
+<script>
+window.addEventListener('load', () => {
+  const el = document.querySelector('.chart');
+  const groups = [['Group A', 'var(--chart-2)'], ['Group B', 'var(--chart-5)'], ['Group C', 'var(--chart-1)'], ['Group D', 'var(--chart-3)']];
+  const cells = [[], [], [], []];
+  let n = 0;
+  for (let r = 0; r < 7; r++) for (let c = 0; c < 11; c++) {
+    if ((r === 0 && (c < 2 || c > 8)) || (r === 6 && (c < 1 || c > 9))) continue;
+    const party = (r * 3 + c * 5 + (c > 6 ? 1 : 0)) % 4;
+    cells[party].push([c + (r % 2) * 0.5, (6 - r) * 0.866, 'D' + ++n]);
+  }
+  const hex = (cx, cy, s) => Array.from({ length: 6 }, (_, i) => {
+    const a = Math.PI / 3 * i + Math.PI / 6;
+    return [cx + s * Math.cos(a), cy + s * Math.sin(a)];
+  });
+  df$.shadcn.chart.mount(el, {
+    legend: { bottom: 0 },
+    tooltip: { formatter: (p) => p.data[2] + ' · ' + p.seriesName },
+    grid: { left: 0, right: 0, top: 8, bottom: 40 },
+    xAxis: { type: 'value', min: -0.8, max: 11.3, show: false },
+    yAxis: { type: 'value', min: -0.8, max: 6, show: false },
+    series: groups.map(([name, color], g) => ({
+      name, type: 'custom', data: cells[g], itemStyle: { color },
+      renderItem: (p, api) => {
+        const pt = api.coord([api.value(0), api.value(1)]);
+        const s = Math.min(api.size([1, 0])[0], api.size([0, 0.866])[1] / 0.866) * 0.56;
+        return { type: 'polygon', shape: { points: hex(pt[0], pt[1], s) },
+          style: { fill: api.visual('color'), stroke: df$.shadcn.chart.color(el, '--card'), lineWidth: 2 } };
+      },
+    })),
+  });
+});
+</script>
+```
+
+```html example label="Swing arrows" schema="none" height="27" previewStyle="align-items:flex-start;" hint="One arrow per district, direction and length encode the shift in percentage points - right toward group A (var(--chart-2)), left toward group B (var(--destructive)). Colors resolve inside renderItem, so a theme switch repaints the field."
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <figcaption>
+    <h3 class="chart-title">Which way the districts moved</h3>
+    <p class="chart-dek">← shift to group B · shift to group A → (percentage points).</p>
+  </figcaption>
+  <div class="chart" role="img" aria-label="Grid of swing arrows showing district-level shifts between two groups in percentage points"></div>
+  <div class="chart-source">Synthetic data · adapted from echarts-feat 26-election-shift-arrows</div>
+</figure>
+<script>
+window.addEventListener('load', () => {
+  const el = document.querySelector('.chart');
+  const pts = [];
+  for (let r = 0; r < 6; r++) for (let c = 0; c < 9; c++) {
+    const swing = Math.sin(c * 0.9 + r * 1.4) * 8;
+    pts.push([c, r, +swing.toFixed(1), 'D' + (r * 9 + c + 1)]);
+  }
+  df$.shadcn.chart.mount(el, {
+    grid: { left: 24, right: 24, top: 16, bottom: 16 },
+    xAxis: { type: 'value', min: -0.5, max: 8.5, show: false },
+    yAxis: { type: 'value', min: -0.5, max: 5.5, show: false },
+    series: [{
+      type: 'custom', data: pts,
+      renderItem: (p, api) => {
+        const start = api.coord([api.value(0), api.value(1)]);
+        const unit = api.size([1, 0])[0] / 20; // one pp ≈ 1/20 of a column
+        const dx = api.value(2) * unit;
+        const dir = dx >= 0 ? 1 : -1;
+        const end = [start[0] + dx, start[1]];
+        const col = df$.shadcn.chart.color(el, dx >= 0 ? '--chart-2' : '--destructive');
+        const head = Math.min(9, Math.abs(dx));
+        return { type: 'group', children: [
+          { type: 'circle', shape: { cx: start[0], cy: start[1], r: 2.5 }, style: { fill: df$.shadcn.chart.color(el, '--muted-foreground') } },
+          { type: 'line', shape: { x1: start[0], y1: start[1], x2: end[0] - dir * head * 0.6, y2: end[1] }, style: { stroke: col, lineWidth: 3, lineCap: 'round' } },
+          { type: 'polygon', shape: { points: [[end[0], end[1]], [end[0] - dir * head, end[1] - head * 0.6], [end[0] - dir * head, end[1] + head * 0.6]] }, style: { fill: col } },
+        ] };
+      },
+      tooltip: { formatter: (p) => p.data[3] + ' · ' + (p.data[2] > 0 ? '+' : '') + p.data[2] + ' pp' },
+    }],
+  });
+});
+</script>
+```
+
+<p class="text-sm text-muted-foreground">Patterns adapted from the ECharts design-language lab (echarts-feat/), re-skinned on the design tokens via the chart theme adapter. Colors are written as <code>var(--token)</code> (or <code>color-mix()</code> over tokens) - the runtime resolves them to sRGB for ECharts and re-resolves them after every theme or dark-mode switch.</p>
+
+<SourceFiles component="chart">
+  <SourceNote for="css">The chart sizing surface and editorial frame these patterns mount into.</SourceNote>
+  <SourceNote for="js">The runtime every demo on this page converges on: token theme adapter, token-reference resolution, mount/resize lifecycle, chartStory, the deck stage and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

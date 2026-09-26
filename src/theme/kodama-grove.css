@@ -1,4 +1,4 @@
-/* Kodama Grove theme — generated from src/documentation/runtime/themes.ts by scripts/build.ts. Edit themes.ts, not this file. */
+/* Kodama Grove theme - generated from src/documentation/runtime/themes.ts by scripts/build.ts. Edit themes.ts, not this file. */
 
 :root {
   --background: #e4d7b0;
@@ -34,6 +34,9 @@
   --sidebar-border: #e5e0d4;
   --sidebar-ring: #9db18c;
   --radius: 0.425rem;
+  --font-sans: Merriweather, serif;
+  --font-serif: 'Source Serif 4', serif;
+  --font-mono: JetBrains Mono, monospace;
 }
 
 .dark {
@@ -70,4 +73,7 @@
   --sidebar-border: #5a5345;
   --sidebar-ring: #8a9f7b;
   --radius: 0.425rem;
+  --font-sans: Merriweather, serif;
+  --font-serif: 'Source Serif 4', serif;
+  --font-mono: JetBrains Mono, monospace;
 }

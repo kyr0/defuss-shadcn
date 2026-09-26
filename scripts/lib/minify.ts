@@ -26,7 +26,7 @@ export const BUNDLE_ARTIFACTS: ReadonlySet<string> = new Set([
   // its .js.map / .min.* twins are DERIVED_ARTIFACT matches already
   'components/core.js',
   // core.css = the 4 theme util sheets concatenated by bundle.ts
-  // (plans/core-bundle.md) — generated, no src/ counterpart; its
+  // (plans/core-bundle.md) - generated, no src/ counterpart; its
   // .min.css/.min.css.map twins match DERIVED_ARTIFACT already
   'components/core.css',
   'components/core.min.css.map',
@@ -42,7 +42,7 @@ export function isDerivedArtifact(relPath: string): boolean {
 
 /**
  * Every shipped component file must have its minified twin (CSS: one; JS: min
- * + both source maps, per AGENTS.md — the Installation page advertises them,
+ * + both source maps, per AGENTS.md - the Installation page advertises them,
  * so a missing twin is user-facing breakage). `present` = dist-relative paths
  * that exist non-empty. Returns human-readable problem lines; empty = OK.
  */
@@ -51,7 +51,7 @@ export function minifyArtifactProblems(present: ReadonlySet<string>): string[] {
   for (const rel of present) {
     const m = rel.match(/^components\/([^/]+)\/\1\.(css|js)$/);
     if (!m) continue;
-    // strip exactly `.{ext}` (3 or 4 chars) — a fixed slice(0,-4) would eat a
+    // strip exactly `.{ext}` (3 or 4 chars) - a fixed slice(0,-4) would eat a
     // character of every .js component name
     const base = rel.slice(0, -(m[2].length + 1));
     const required =
@@ -61,7 +61,7 @@ export function minifyArtifactProblems(present: ReadonlySet<string>): string[] {
     for (const need of required) if (!present.has(need)) problems.push(`dist/${need} missing`);
   }
   // core.js is a top-level bundle artifact (no component folder) but ships
-  // the same min twins — consumers load core.min.js exactly like all.min.js
+  // the same min twins - consumers load core.min.js exactly like all.min.js
   if (present.has('components/core.js')) {
     for (const need of ['components/core.min.js', 'components/core.js.map', 'components/core.min.js.map']) {
       if (!present.has(need)) problems.push(`dist/${need} missing`);

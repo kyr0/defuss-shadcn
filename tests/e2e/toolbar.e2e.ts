@@ -5,10 +5,10 @@ import { startServer } from './server.ts';
 /**
  * Why: E2E smoke test for the shipped toolbar component. Loads the fixture
  * (formatting toolbar with nested toggle groups, actions toolbar with a
- * disabled button, vertical toolbar — mirroring the doc page) over HTTP in a
+ * disabled button, vertical toolbar - mirroring the doc page) over HTTP in a
  * real browser, then verifies the roving tabindex, arrow/Home/End movement,
  * disabled-item skipping, vertical orientation, and the named State API
- * (getState().config.rovingIndex) — the same files consumers copy from
+ * (getState().config.rovingIndex) - the same files consumers copy from
  * dist/, unmodified.
  */
 
@@ -107,7 +107,7 @@ try {
     page.$eval(`#${id}`, (el) => (el as HTMLElement).api!.getState().config.rovingIndex);
 
   await check('state API: getState reports the live rovingIndex', async () => {
-    // enabled items: Undo(0) Redo(1) Paste(2) — Copy is skipped entirely
+    // enabled items: Undo(0) Redo(1) Paste(2) - Copy is skipped entirely
     assert.equal(await rovingIndex(page, 'tb-actions'), 2, 'roving stop followed the End key');
   });
 

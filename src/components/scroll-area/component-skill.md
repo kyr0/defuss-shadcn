@@ -1,7 +1,7 @@
 ---
 name: Scroll Area
 type: ATM
-why: Overflow container with styled scrollbars and edge fade — pure CSS.
+why: Overflow container with styled scrollbars and edge fade - pure CSS.
 when: Fixed-height regions that scroll: menu bodies, sidebars, code panes.
 where: dist/components/scroll-area/scroll-area.css
 supportedStates: default
@@ -15,12 +15,12 @@ CSS overflow with custom-styled scrollbars using both standard and Webkit scroll
 
 ## Native Web APIs
 
-- [`overflow`](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow) — scrollable container
-- [`scrollbar-width`](https://developer.mozilla.org/en-US/docs/Web/CSS/scrollbar-width) — standard thin scrollbar (Firefox, Chrome 121+)
-- [`scrollbar-color`](https://developer.mozilla.org/en-US/docs/Web/CSS/scrollbar-color) — standard scrollbar colors
-- [`scrollbar-gutter`](https://developer.mozilla.org/en-US/docs/Web/CSS/scrollbar-gutter) — reserves space for scrollbar to prevent layout shift
-- [`overscroll-behavior`](https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior) — prevents scroll chaining to parent containers
-- [`::-webkit-scrollbar`](https://developer.mozilla.org/en-US/docs/Web/CSS/::-webkit-scrollbar) — Webkit custom scrollbar styling
+- [`overflow`](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow) - scrollable container
+- [`scrollbar-width`](https://developer.mozilla.org/en-US/docs/Web/CSS/scrollbar-width) - standard thin scrollbar (Firefox, Chrome 121+)
+- [`scrollbar-color`](https://developer.mozilla.org/en-US/docs/Web/CSS/scrollbar-color) - standard scrollbar colors
+- [`scrollbar-gutter`](https://developer.mozilla.org/en-US/docs/Web/CSS/scrollbar-gutter) - reserves space for scrollbar to prevent layout shift
+- [`overscroll-behavior`](https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior) - prevents scroll chaining to parent containers
+- [`::-webkit-scrollbar`](https://developer.mozilla.org/en-US/docs/Web/CSS/::-webkit-scrollbar) - Webkit custom scrollbar styling
 
 ## Structure
 
@@ -48,7 +48,7 @@ For a scroll area the whitespace policy is the scrollbar gutter itself.
 | Value | Effect |
 | --- | --- |
 | `compact` | scrollbar thumb 4px |
-| `comfortable` | thumb 6px — identical to the unsized default |
+| `comfortable` | thumb 6px - identical to the unsized default |
 | `spacious` | thumb 8px (standard `scrollbar-width: medium`) |
 
 ## Accessibility
@@ -61,4 +61,4 @@ For a scroll area the whitespace policy is the scrollbar gutter itself.
 - Uses both `scrollbar-width: thin` / `scrollbar-color` (standard, cross-browser) and `::-webkit-scrollbar` (legacy Webkit) for maximum compatibility.
 - `scrollbar-gutter: stable` prevents layout shift when content grows enough to trigger a scrollbar.
 - `overscroll-behavior: contain` is especially important when used inside overlays (dialogs, sheets, popovers) to prevent background scroll.
-- Pure CSS — no JavaScript required.
+- Pure CSS - no JavaScript required.

@@ -1,0 +1,9 @@
+{
+  "name": "defuss-shadcn",
+  "plugins": [
+    {
+      "name": "defuss-shadcn",
+      "source": "./"
+    }
+  ]
+}

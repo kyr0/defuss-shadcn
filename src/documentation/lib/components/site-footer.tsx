@@ -1,6 +1,6 @@
 import type { Props } from 'defuss';
 
-/** Site footer — statically rendered (was a runtime insertAdjacentHTML). */
+/** Site footer - statically rendered (was a runtime insertAdjacentHTML). */
 export function SiteFooter(_props: Props) {
   return (
     <footer class="site-footer">

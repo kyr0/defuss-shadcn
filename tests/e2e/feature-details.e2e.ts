@@ -1,7 +1,7 @@
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: feature-details is CSS-only — at wide containers the two features
+ * Why: feature-details is CSS-only - at wide containers the two features
  * split with a visible 1px rule between them and the card row goes 4-up;
  * below that it stacks (covered by the container query in CSS).
  */

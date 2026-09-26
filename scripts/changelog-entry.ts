@@ -10,7 +10,7 @@
  *     → sets the entry's hash field (second commit of the rule)
  *
  * Entries are rendered by src/documentation/lib/components/changelog-entries.tsx
- * (HTML-escaped except the gate-allowlisted inline tags — same rule the old
+ * (HTML-escaped except the gate-allowlisted inline tags - same rule the old
  * HTML entries followed).
  */
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -34,7 +34,7 @@ function save(entries: Entry[]): void {
   writeFileSync(FILE, JSON.stringify({ entries }, null, 2) + '\n');
 }
 
-/** Commit messages are text — escape markup chars so they render as prose
+/** Commit messages are text - escape markup chars so they render as prose
  * (ChangelogEntries injects them raw; the gate allows only inline tags). */
 const esc = (s: string): string =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');

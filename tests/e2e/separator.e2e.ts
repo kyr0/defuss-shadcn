@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: separator is CSS-only — verify the 1px horizontal rule stretches
+ * Why: separator is CSS-only - verify the 1px horizontal rule stretches
  * full width, the vertical orientation swaps the axis and stretches to the
  * flex row's height, and the labelled variant lays out label + rules.
  */

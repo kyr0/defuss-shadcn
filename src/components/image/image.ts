@@ -1,15 +1,16 @@
 /* -- Image component ----------------------------------------- */
-/* Fallback on error + lightbox preview for [data-preview].    */
-/* Named-state API bound per figure so agents/tests can show   */
-/* the fallback without a network failure (AGENTS.md "State     */
+/* Fallback on error, progressive sources (data-src-low /        */
+/* data-src-high) + lightbox preview for [data-preview].         */
+/* Named-state API bound per figure so agents/tests can show     */
+/* the fallback without a network failure (AGENTS.md "State       */
 /* API").                                                        */
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-// defussQuery: the callable runtime — error flag + lightbox control writes
+// defussQuery: the callable runtime - error flag + lightbox control writes
 // ride query scalars, the sheet mounts through query .append(); the lightbox
 // template is a trusted static markup string (§3 image row, §5.1: lightbox
-// content re-renders are the real morph path when added — the toolbar is a
+// content re-renders are the real morph path when added - the toolbar is a
 // static singleton, so it stays a one-shot render).
 import { defussGlobals, defussQuery } from '../../shared/state-api.js';
 
@@ -25,7 +26,7 @@ const imageStates = ['default', 'error'];
 function triggerStateChange(figure, stateName, _config) {
   const img = dfDollar(figure).find('img')[0];
   if (!img) return;
-  // data-error is the CSS fallback marker — set/removed via query data scalars
+  // data-error is the CSS fallback marker - set/removed via query data scalars
   switch (stateName) {
     case 'default':
       dfDollar(img).data('error', null);
@@ -85,6 +86,33 @@ document.querySelectorAll('.image:not([data-init])').forEach((figure) => {
     dfDollar(img).data('error', null);
     figure.dataset.stateName = 'default';
   });
+
+  /* -- Progressive sources (data-src-low / data-src-high) -------
+     Why: data-src-low paints a cheap placeholder while the real
+     source preloads off-DOM (new Image()); data-src-high is a
+     retina-only upgrade - paying its bytes on 1dppx displays (or
+     before a lightbox zoom-in) would waste bandwidth. */
+  const srcLow = img.dataset.srcLow;
+  const srcHigh = img.dataset.srcHigh;
+  if (srcLow || srcHigh) {
+    const retina = !!srcHigh && globalThis.matchMedia('(min-resolution: 2dppx)').matches;
+    const finalSrc = retina ? srcHigh : img.getAttribute('src');
+    if (retina) img.dataset.srcHighLoaded = ''; // first zoom-in must not re-fetch
+    if (srcLow && finalSrc) {
+      dfDollar(img).data('loading', ''); // CSS blurs the placeholder
+      img.src = srcLow;
+      const preload = new Image();
+      // either way the img gets the real source - its own load/error
+      // listeners above then settle the State API marker
+      preload.onload = preload.onerror = () => {
+        img.src = finalSrc;
+        dfDollar(img).data('loading', null);
+      };
+      preload.src = finalSrc;
+    } else if (retina) {
+      img.src = srcHigh;
+    }
+  }
 });
 }
 
@@ -94,6 +122,7 @@ new MutationObserver(init).observe(document, { childList: true, subtree: true })
 /* -- Lightbox ------------------------------------------------ */
 let lightbox = null;
 let lightboxImg = null;
+let lightboxFigure = null; // figure the lightbox is showing (high-res upgrade target)
 let zoom = 1;
 let rotation = 0;
 
@@ -105,7 +134,7 @@ function getLightbox() {
   lightbox.setAttribute('aria-label', 'Image preview');
 
   // trusted static toolbar markup through query's .html() (§5.1: sanctioned
-  // render path — a static singleton template, no user content)
+  // render path - a static singleton template, no user content)
   dfDollar(lightbox).html(`
     <div class="image-lightbox-content">
       <img src="" alt="" />
@@ -139,7 +168,10 @@ function getLightbox() {
     if (!btn) return;
 
     const action = btn.dataset.action;
-    if (action === 'zoom-in')      zoom = Math.min(zoom + 0.25, 5);
+    if (action === 'zoom-in') {
+      zoom = Math.min(zoom + 0.25, 5);
+      upgradeLightboxToHigh(); // the first zoom earns the high-res bytes
+    }
     else if (action === 'zoom-out') zoom = Math.max(zoom - 0.25, 0.25);
     else if (action === 'rotate-left')  rotation -= 90;
     else if (action === 'rotate-right') rotation += 90;
@@ -158,20 +190,51 @@ function getLightbox() {
   return lightbox;
 }
 
+/* Why: the high-res source earns its bytes only once the user actually
+   zooms - the first zoom-in swaps lightbox AND figure img, never sooner. */
+function upgradeLightboxToHigh() {
+  if (!lightboxFigure) return;
+  const img = dfDollar(lightboxFigure).find('img')[0];
+  if (img && img.dataset.srcFull) return; // the lightbox already shows the original
+  const srcHigh = img && img.dataset.srcHigh;
+  if (!srcHigh || img.dataset.srcHighLoaded !== undefined) return;
+  img.dataset.srcHighLoaded = '';
+  img.src = srcHigh;
+  if (lightboxImg) lightboxImg.src = srcHigh;
+}
+
 function applyTransform() {
   if (lightboxImg) {
     dfDollar(lightboxImg).css('transform', `scale(${zoom}) rotate(${rotation}deg)`);
   }
 }
 
-function openLightbox(src, alt) {
+function openLightbox(figure) {
   const lb = getLightbox();
   zoom = 1;
   rotation = 0;
+  const img = dfDollar(figure).find('img')[0];
+  lightboxFigure = figure;
   const $img = dfDollar(lightboxImg);
   // consumer-provided src flows in via <img> attributes already (§5.2: the
   // figure's own src/alt are the trusted source, attr writes mirror them)
-  $img.attr('src', src).attr('alt', alt || '').css('transform', null);
+  $img.attr('src', img.src).attr('alt', img.alt || '').css('transform', null).css('width', null);
+  /* data-src-full: the lightbox-only original (much larger than the inline
+     src). Why: the page should never pay for it - only an actual preview
+     does. The cached inline src opens instantly, pre-sized to the fitted
+     frame the original will fill; the original preloads off-DOM and swaps
+     in without a layout jump (the width lock is released on swap). */
+  const srcFull = img.dataset.srcFull;
+  if (srcFull) {
+    const ratio = img.naturalWidth && img.naturalHeight ? img.naturalWidth / img.naturalHeight : 0;
+    if (ratio) $img.css('width', `min(90vw, calc(85vh * ${ratio.toFixed(4)}))`);
+    const full = new Image();
+    full.onload = () => {
+      if (lightboxFigure !== figure || !lb.open) return; // closed / another image meanwhile
+      $img.attr('src', srcFull).css('width', null);
+    };
+    full.src = srcFull;
+  }
   lb.showModal(); // native dialog protocol stays native
 }
 
@@ -186,6 +249,6 @@ if (!document.__imagePreviewInit) {
     const img = dfDollar(figure).find('img')[0];
     if (!img || dfDollar(img).data('error') !== undefined) return;
 
-    openLightbox(img.src, img.alt);
+    openLightbox(figure);
   });
 }

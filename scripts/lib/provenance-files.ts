@@ -16,7 +16,7 @@ const UPSTREAMS = ['defuss-morph', 'defuss-query'] as const;
 /**
  * Resolve the provenance input from the repo root: our version + pins from
  * package.json, each upstream's installed version/license/LICENSE hash from
- * node_modules. Throws on missing files — a build without the installed
+ * node_modules. Throws on missing files - a build without the installed
  * upstreams is a broken workspace, not a "no provenance" situation.
  */
 export function collectProvenance(root: string): ProvenanceInput {
@@ -41,7 +41,7 @@ export function collectProvenance(root: string): ProvenanceInput {
       licenseSha256: createHash('sha256').update(licenseBytes).digest('hex'),
     };
   });
-  // distinct license texts, in upstream order (deduped by hash — both
+  // distinct license texts, in upstream order (deduped by hash - both
   // upstreams share one MIT text today)
   const seen = new Map<string, string>();
   for (const u of upstreams) {

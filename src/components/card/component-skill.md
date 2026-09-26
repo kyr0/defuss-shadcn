@@ -1,8 +1,8 @@
 ---
 name: Card
 type: MOL
-why: Token-backed surface with header/content/footer slots — one container for anything boxed.
-when: Grouping related content and actions on a page — dashboards, lists, modal bodies.
+why: Token-backed surface with header/content/footer slots - one container for anything boxed.
+when: Grouping related content and actions on a page - dashboards, lists, modal bodies.
 where: dist/components/card/card.css
 supportedStates: default
 ---
@@ -16,8 +16,8 @@ No JavaScript required.
 ---
 
 ## Native Web APIs
-- [CSS Container Queries (`@container`)](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries) — responsive layout based on card container width
-- [`aspect-ratio`](https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio) — intrinsic ratio for card media images
+- [CSS Container Queries (`@container`)](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries) - responsive layout based on card container width
+- [`aspect-ratio`](https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio) - intrinsic ratio for card media images
 
 ---
 
@@ -128,13 +128,13 @@ Set `data-density` on the `.card` root; header/content/footer paddings scale tog
 | Value | Effect |
 | --- | --- |
 | `compact` | Section padding 1rem (header+footer-only gap 0.75rem) |
-| `comfortable` | Section padding 1.5rem — identical to the unsized default |
+| `comfortable` | Section padding 1.5rem - identical to the unsized default |
 | `spacious` | Section padding 2rem (gap 1.5rem) |
 
 ## Notes
 
-- Card is a container pattern — its children define its purpose
-- Avoid deeply nesting cards (card inside card) — use `--muted` surface instead
+- Card is a container pattern - its children define its purpose
+- Avoid deeply nesting cards (card inside card) - use `--muted` surface instead
 - For interactive cards (click to navigate), wrap in `<a>` and apply card classes to it
 - `card-footer` uses `padding-top: 0` to avoid double-spacing with `card-content`
-- For a card grid, use CSS Grid on the parent — the card itself has no layout opinion
+- For a card grid, use CSS Grid on the parent - the card itself has no layout opinion

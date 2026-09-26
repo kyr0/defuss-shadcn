@@ -3,7 +3,7 @@ import { chromium, type Page } from 'playwright';
 import { startServer } from '../server.ts';
 
 /**
- * Why: CSS-only components (no .js) have no behavior to drive — their shipped
+ * Why: CSS-only components (no .js) have no behavior to drive - their shipped
  * contract is the stylesheet itself. This shared runner loads each component's
  * fixture (every documented variant/size instantiated) and asserts the CSS
  * actually applies: literal computed values for fixed px/keyword properties,
@@ -42,7 +42,7 @@ export async function cssSmoke(component: string, checks: Check[]): Promise<void
   try {
     const page = await browser.newPage();
     await page.goto(`${server.url}/tests/e2e/${component}.e2e-fixture.html`);
-    // fixture files carry ids per variant/size — make sure they all rendered
+    // fixture files carry ids per variant/size - make sure they all rendered
     await page.waitForFunction(() => document.body.childElementCount > 0);
 
     for (const c of checks) {

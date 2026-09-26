@@ -1,0 +1,126 @@
+---
+title: "Iris - Animations"
+description: "The iris reveal: a clip-path circle that opens or closes around a configurable origin, driven by the df$.anim engine."
+slug: "anim-iris"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="anim-iris" title="Iris" component="motion" />
+
+The iris is a `clip-path: circle()` reveal - the visible region grows from a point into a full circle (`irisIn`) or collapses back into a point (`irisOut`). It is not directional; instead the **origin** is the star config: the circle opens and closes around any `'x y'` position you pass (default `'50% 50%'`). Everything below is driven by the imperative engine - `df$.anim.irisIn.*()` and `df$.anim.irisOut.*()` - whose generated keyframes make origin, duration and easing true runtime config.
+
+```html example label="In / out, origins and lifecycle" schema="none" hint="irisIn opens a circle at the chosen origin, irisOut closes toward it. Pick an origin, tune duration and easing, then drive the full lifecycle - Pause, Resume, Finish and Reset act on the last-used channel."
+<style>
+  #anim-iris-target {
+    width: 160px;
+    height: 100px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+</style>
+<div style="display:flex; flex-direction:column; gap:0.85rem;">
+  <div id="anim-iris-target">Iris me</div>
+  <div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.4rem;">
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-iris-in">In</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-iris-out">Out</button>
+    <span style="width:1px; height:1.25rem; background:var(--border);"></span>
+    <button class="btn" data-variant="outline" data-size="sm" data-anim-iris-origin="50% 50%" aria-pressed="true">Center</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-anim-iris-origin="0% 0%" aria-pressed="false">Top-left</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-anim-iris-origin="100% 100%" aria-pressed="false">Bottom-right</button>
+    <span style="width:1px; height:1.25rem; background:var(--border);"></span>
+    <button class="btn" data-variant="outline" data-size="sm" data-anim-iris-lifecycle="pause">Pause</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-anim-iris-lifecycle="resume">Resume</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-anim-iris-lifecycle="finish">Finish</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-anim-iris-lifecycle="reset">Reset</button>
+  </div>
+  <div style="display:flex; align-items:center; gap:0.75rem;">
+    <label for="anim-iris-duration" class="text-sm">Duration</label>
+    <input class="input" id="anim-iris-duration" type="number" min="50" step="50" value="1500" style="width:6rem;" />
+    <label for="anim-iris-easing" class="text-sm">Easing</label>
+    <select class="select" id="anim-iris-easing">
+      <option value="cubic-bezier(0.16, 1, 0.3, 1)" selected>ease-out</option>
+      <option value="linear">linear</option>
+      <option value="ease-in-out">ease-in-out</option>
+      <option value="cubic-bezier(0.34, 1.56, 0.64, 1)">spring</option>
+    </select>
+  </div>
+</div>
+<script type="module">
+  // all.js (core → df$) boots after example scripts in the sandbox - reference
+  // df$ only at event time, never at parse time
+  let currentOrigin = '50% 50%';
+  let lastChannel = 'irisIn'; // Pause/Resume/Finish/Reset act on the last play
+  const target = document.getElementById('anim-iris-target');
+  const config = () => ({
+    origin: currentOrigin,
+    duration: Number(document.getElementById('anim-iris-duration').value) || 600,
+    easing: document.getElementById('anim-iris-easing').value,
+  });
+
+  document.getElementById('anim-iris-in').addEventListener('click', () => {
+    lastChannel = 'irisIn';
+    df$.anim.irisIn.play(target, config());
+  });
+  document.getElementById('anim-iris-out').addEventListener('click', () => {
+    lastChannel = 'irisOut';
+    df$.anim.irisOut.play(target, config());
+  });
+
+  document.querySelectorAll('[data-anim-iris-origin]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      currentOrigin = btn.dataset.animIrisOrigin;
+      document.querySelectorAll('[data-anim-iris-origin]').forEach((b) =>
+        b.setAttribute('aria-pressed', String(b === btn)),
+      );
+    });
+  });
+
+  document.querySelectorAll('[data-anim-iris-lifecycle]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      df$.anim[lastChannel][btn.dataset.animIrisLifecycle](target);
+    });
+  });
+</script>
+```
+
+```html example label="Scroll-bound iris" schema="none" hint="The same channel, bound to scroll instead of time: scrolling the stage scrubs the iris open - the parallax use. Reset re-binds it."
+<div id="anim-iris-scroll-stage" style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg);">
+  <div style="height: 600px; display: grid; place-items: center;">
+    <div id="anim-iris-scroll-target" style="width: 160px; height: 100px; display: grid; place-items: center; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); color: var(--card-foreground); font-size: 0.85rem; font-weight: 600;">
+      Scroll me open
+    </div>
+  </div>
+</div>
+<button class="btn" data-variant="outline" data-size="sm" id="anim-iris-scroll-bind" style="margin-top:0.75rem;">Bind to scroll</button>
+<script type="module">
+  document.getElementById('anim-iris-scroll-bind').addEventListener('click', () => {
+    const scroller = document.getElementById('anim-iris-scroll-stage');
+    const el = document.getElementById('anim-iris-scroll-target');
+    df$.anim.irisIn.reset(el); // re-clicking re-binds deterministically
+    df$.anim.irisIn.play(el, { origin: '50% 50%', scroll: { target: scroller, axis: 'y' } });
+  });
+</script>
+```
+
+Press **Bind to scroll**, then scroll the stage: the scroll position scrubs the iris open. Passing `{ target: 'viewport' }` instead of an element binds the same progress to page scroll - the parallax use for presentations.
+
+## Config axes
+
+- **`origin`** - `'x y'` position the circle opens from / closes toward (default `'50% 50%'`; demo: center, top-left `0% 0%`, bottom-right `100% 100%`).
+- **`duration`** - total time in ms (default `1500`).
+- **`easing`** - any CSS easing (default `cubic-bezier(0.16, 1, 0.3, 1)`).
+
+<SourceFiles component="motion" section="css">
+  <SourceNote for="css">The shared motion stylesheet - the declarative <code>data-df-entrance</code> twin of this page's <code>df$.anim</code> channels: the <code>--df-motion-…</code> tunables, the fifteen <code>df-enter-…</code> keyframes and the reduced-motion flattening.</SourceNote>
+</SourceFiles>
+
+</DocPage>

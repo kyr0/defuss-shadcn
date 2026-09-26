@@ -2,7 +2,7 @@
 name: Number Input
 type: ATM
 why: Input plus stepper buttons bound to native min/max/step and arrow-key behavior.
-when: Numeric values where nudging or a bounded range matters — quantity, price.
+when: Numeric values where nudging or a bounded range matters - quantity, price.
 where: dist/components/number-input/number-input.css + dist/components/number-input/number-input.js
 supportedStates: default
 ---
@@ -15,7 +15,7 @@ supportedStates: default
 ---
 
 ## Native Web APIs
-- [`<input type="number">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/number) — native number input with built-in validation and step increment
+- [`<input type="number">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/number) - native number input with built-in validation and step increment
 
 ---
 

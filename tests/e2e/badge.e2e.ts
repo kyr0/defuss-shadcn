@@ -1,7 +1,7 @@
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: badge is CSS-only — the shipped contract is badge.css itself. This
+ * Why: badge is CSS-only - the shipped contract is badge.css itself. This
  * verifies the base geometry (hardcoded px values) actually applies and that
  * the three documented variants render with genuinely distinct token-derived
  * colors (theme-value-agnostic distinctness, not hardcoded oklch).

@@ -3,11 +3,11 @@
  * (plans/cmp-schemas-and-codeexample.md §7/§22). A fenced block whose info
  * string carries the `example` directive becomes
  * `<CodeExample source={…} component=… label=… hint=… />` with the fence body
- * passed verbatim — the editor and the sandbox can never diverge because there
+ * passed verbatim - the editor and the sandbox can never diverge because there
  * is only ever one source string. The same plugin renders the canonical
  * ```states table fence into `<StatesTable>` (plan §13: the table is the
  * machine contract verify compares against <name>.schema.json, and without
- * remark-gfm a bare table would render as pipe prose — the fence keeps the
+ * remark-gfm a bare table would render as pipe prose - the fence keeps the
  * authored bytes and the rendered page identical).
  *
  * The component import is injected as an `mdxjsEsm` node carrying a hand-built
@@ -17,7 +17,7 @@
  * top-level imports. Pages therefore never need to import CodeExample by hand.
  */
 /** Parse a States pipe table (```states fence body) into row data. Mirrors
- * scripts/lib/schema.ts findStatesTable — kept intentionally tiny; the docs
+ * scripts/lib/schema.ts findStatesTable - kept intentionally tiny; the docs
  * parity gate re-parses with the canonical script-side parser, so a drift here
  * only affects rendering, never the gate verdict. */
 export function parseStatesTable(body) {
@@ -28,7 +28,7 @@ export function parseStatesTable(body) {
     if (rows.length < 2)
         return []; // header + separator = a valid empty contract
     // backticks are KEPT verbatim: the renderer (StatesTable) turns every
-    // backticked span into a <code> chip — stripping outer backticks here broke
+    // backticked span into a <code> chip - stripping outer backticks here broke
     // multi-token cells (`true`, `false` → true<code>, </code>false)
     const cells = (l) => l
         .replace(/^\|/, '')
@@ -63,7 +63,7 @@ const jsxAttr = (name, value) => ({
 /**
  * HTML void elements close themselves; for everything else self-closing syntax
  * is only valid in foreign content (inside <svg>/<math>). In HTML flow a fence
- * line like `<div class="timeline-dot" />` OPENS an unclosed element — the
+ * line like `<div class="timeline-dot" />` OPENS an unclosed element - the
  * parser ignores the slash and nests every following sibling inside the dot
  * (that is the "Activity Feed smashed" bug). Authoring JSX-style fences is
  * natural, so the plugin normalizes here instead of nagging every page: one
@@ -78,12 +78,12 @@ export function normalizeFenceHtml(src) {
 }
 function codeExampleNode(node, pageComponent) {
     const attrs = fenceAttrs(node.meta ?? '');
-    // the ONE source (shown + executed) — normalize before it fans out
+    // the ONE source (shown + executed) - normalize before it fans out
     const attributes = [jsxAttr('source', normalizeFenceHtml(node.value) + '\n')];
-    // plan §23: the page's component is the default schema — an explicit
+    // plan §23: the page's component is the default schema - an explicit
     // component="…" only overrides it when a page demonstrates another component.
     // schema="none" opts the card out entirely (guide-page utility demos have no
-    // contract: no State tab, no schema binding) — verify honors the same attr.
+    // contract: no State tab, no schema binding) - verify honors the same attr.
     const component = attrs.schema === 'none' ? '' : (attrs.component ?? pageComponent);
     if (component)
         attributes.push(jsxAttr('component', component));

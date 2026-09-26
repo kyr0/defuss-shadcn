@@ -7,13 +7,13 @@ import { collectProvenance } from './lib/provenance-files.ts';
 /**
  * Why: doc pages (and CDN consumers who want everything) used to carry 68
  * component <link> tags + 27 module <script> tags. This step ships a single
- * bundle instead — dist/components/all.css + all.js — so pages include one
+ * bundle instead - dist/components/all.css + all.js - so pages include one
  * stylesheet and one module script. The per-component files stay shipped for
  * pick-what-you-need installs; verify's `cross-page imports` gate mandates the
  * bundle includes on every doc page.
  *
  * JS: bundled from the src/*.ts modules with Bun.build (NOT string
- * concatenation — every component module redeclares `const df$`,
+ * concatenation - every component module redeclares `const df$`,
  * `function init()`, etc., which only stays valid inside real module scopes;
  * bundling from src/ also keeps one shared copy of the shared layer instead
  * of one per component). The readable all.js + all.js.map maps back to the
@@ -21,7 +21,7 @@ import { collectProvenance } from './lib/provenance-files.ts';
  * any other dist/components/*.js.
  *
  * core.js (plans/defuss-query-morph-integration.md §2.3/§2.6): the same inputs as
- * all.js minus the components — one defuss-morph + one defuss-query + the
+ * all.js minus the components - one defuss-morph + one defuss-query + the
  * defuss-shadcn-shared layer behind the guarded bootstrap of src/core/
  * index.ts. all.js embeds the SAME core payload first (its entry imports
  * src/core/index.ts before any component), so "all alone" and "core +
@@ -30,7 +30,7 @@ import { collectProvenance } from './lib/provenance-files.ts';
  *
  * CSS: concatenation is safe because every component stylesheet lives in
  * `@layer components` with flat-specificity, prefixed class selectors and
- * resolves tokens via var(--*) at runtime — source order is not load-bearing,
+ * resolves tokens via var(--*) at runtime - source order is not load-bearing,
  * so alphabetical (deterministic) order is fine. all.min.css (+ the one
  * .min.css.map in the system) is derived by minify.ts.
  *
@@ -44,7 +44,7 @@ const DIST_COMPONENTS = join(ROOT, 'dist', 'components');
 const TMP = join(ROOT, 'tmp');
 
 // per-release provenance (§6): the core artifacts embed defuss-morph +
-// defuss-query, so the MIT attribution ships INSIDE them — a pointer comment
+// defuss-query, so the MIT attribution ships INSIDE them - a pointer comment
 // (versions + LICENSE hashes) before the source-map line, and the full
 // notice as NOTICE.txt beside them.
 const PROVENANCE = collectProvenance(ROOT);
@@ -67,12 +67,12 @@ if (names.length === 0) {
   process.exit(1);
 }
 
-/** stamp the sourceMappingURL comment — must be the LAST line of the file */
+/** stamp the sourceMappingURL comment - must be the LAST line of the file */
 function linkSourceMap(file: string, mapName: string): void {
   writeFileSync(file, `${readFileSync(file, 'utf8').trimEnd()}\n//# sourceMappingURL=${mapName}\n`);
 }
 
-// 1. core bundle: morph + query + shared behind the guarded bootstrap — the
+// 1. core bundle: morph + query + shared behind the guarded bootstrap - the
 //    runtime every component binds to, shipped as its own artifact AND
 //    embedded first inside all.js below (§2.6 step 1 + step 3).
 const core = await Bun.build({
@@ -93,7 +93,7 @@ linkSourceMap(join(DIST_COMPONENTS, 'core.js'), 'core.js.map');
 stampProvenance(join(DIST_COMPONENTS, 'core.js')); // §6 provenance pointer
 
 // 2. JS bundle: core payload first (its module body installs df$ +
-//    df$.shadcn.shared before any component evaluates — §2.6 step 4), then
+//    df$.shadcn.shared before any component evaluates - §2.6 step 4), then
 //    one side-effect import per interactive component (each module
 //    self-initializes + registers its own MutationObserver on import).
 const jsNames = names.filter((n) => existsSync(join(SRC_COMPONENTS, n, `${n}.ts`)));
@@ -119,7 +119,7 @@ if (!result.success) {
   for (const log of result.logs) console.error(`  ${log}`);
   process.exit(1);
 }
-// Bun.build writes all.js.map but only stamps a debugId comment — link the map
+// Bun.build writes all.js.map but only stamps a debugId comment - link the map
 // explicitly (must be the LAST line of the file)
 linkSourceMap(join(DIST_COMPONENTS, 'all.js'), 'all.js.map');
 stampProvenance(join(DIST_COMPONENTS, 'all.js')); // §6 provenance pointer
@@ -134,7 +134,7 @@ writeFileSync(join(DIST_COMPONENTS, 'NOTICE.txt'), provenanceNotice(PROVENANCE))
 //     safe for the same reasons all.css is: @layer + flat specificity +
 //     runtime token resolution. Lives beside core.js (not dist/core/): the
 //     two are one install pair and the docs/README already reference
-//     components/core.js — divergence recorded in the plan.
+//     components/core.js - divergence recorded in the plan.
 const CORE_CSS_SHEETS = [
   'default-semantic-tokens.css',
   'sizing.css',

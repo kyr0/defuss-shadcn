@@ -1,6 +1,6 @@
 ---
 title: "Accordion"
-description: "Accordion component — collapsible sections using <details>/<summary>."
+description: "Accordion component - collapsible sections using <details>/<summary>."
 slug: "accordion"
 ---
 
@@ -52,19 +52,19 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 
   <SkillField label="Notes">
-<SkillText dense>• <code>&lt;details&gt;/&lt;summary&gt;</code> is the most accessible accordion implementation — it works with zero JS and zero ARIA</SkillText>
+<SkillText dense>• <code>&lt;details&gt;/&lt;summary&gt;</code> is the most accessible accordion implementation - it works with zero JS and zero ARIA</SkillText>
   <SkillText dense>• For single-open behavior, the <code>toggle</code> event on <code>&lt;details&gt;</code> fires after the state changes</SkillText>
   <SkillText dense>• The <code>open</code> attribute is the source of truth for whether an item is expanded</SkillText>
-  <SkillText dense>• Avoid nesting accordions — use a flat list with clear headings instead</SkillText>
-  <SkillText dense>• A non-collapsible single accordion never closes its last open item — the attempt is denied in the cancellable <code>beforetoggle</code> event (<code>preventDefault()</code>), so the click is a silent no-op; reopening in <code>toggle</code> would flicker</SkillText>
-  <SkillText dense>• The chevron rotation relies on <code>details\[open\] &gt;</code> selector — this is pure CSS</SkillText>
-  <SkillText dense>• Content height animation uses <code>::details-content</code> pseudo-element with <code>block-size</code> transition and <code>@starting-style</code> for the enter animation — fully CSS-only, no JS measurement needed</SkillText>
+  <SkillText dense>• Avoid nesting accordions - use a flat list with clear headings instead</SkillText>
+  <SkillText dense>• A non-collapsible single accordion never closes its last open item - the attempt is denied in the cancellable <code>beforetoggle</code> event (<code>preventDefault()</code>), so the click is a silent no-op; reopening in <code>toggle</code> would flicker</SkillText>
+  <SkillText dense>• The chevron rotation relies on <code>details\[open\] &gt;</code> selector - this is pure CSS</SkillText>
+  <SkillText dense>• Content height animation uses <code>::details-content</code> pseudo-element with <code>block-size</code> transition and <code>@starting-style</code> for the enter animation - fully CSS-only, no JS measurement needed</SkillText>
   <SkillText dense>• Set <code>data-type="single"</code> for accordion behavior (only one open); omit for disclosure list (any number open)</SkillText>
   <p class="text-muted-foreground m-0">• Set <code>data-collapsible</code> alongside <code>data-type="single"</code> to allow all items to be closed</p>
   </SkillField>
 </SkillPanel>
 
-```html example label="Multi-open" hint="Default behavior — multiple items can be open simultaneously. Uses native &lt;details&gt;/&lt;summary&gt; with zero JavaScript." height="20"
+```html example label="Multi-open" hint="Default behavior - multiple items can be open simultaneously. Uses native &lt;details&gt;/&lt;summary&gt; with zero JavaScript." height="20"
 <div class="accordion" style="max-width:28rem;width:100%;">
   <details class="accordion-item" open>
     <summary class="accordion-trigger">
@@ -102,7 +102,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </div>
 ```
 
-```html example label="Single-open" hint="Only one item can be open at a time. Add data-type='single' to the wrapper — a small JS handler closes siblings on toggle." height="20"
+```html example label="Single-open" hint="Only one item can be open at a time. Add data-type='single' to the wrapper - a small JS handler closes siblings on toggle." height="20"
 <div class="accordion" data-type="single" style="max-width:28rem;width:100%;">
   <details class="accordion-item" open>
     <summary class="accordion-trigger">
@@ -160,13 +160,13 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
   <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
-    <li><code>default</code> — the authored markup, snapshotted when the component initializes</li>
-    <li><code>all-open</code> — every <code>&lt;details&gt;</code> item expanded (single-open enforcement suspended)</li>
-    <li><code>all-closed</code> — every item collapsed, even without <code>data-collapsible</code></li>
+    <li><code>default</code> - the authored markup, snapshotted when the component initializes</li>
+    <li><code>all-open</code> - every <code>&lt;details&gt;</code> item expanded (single-open enforcement suspended)</li>
+    <li><code>all-closed</code> - every item collapsed, even without <code>data-collapsible</code></li>
   </ul>
   <p class="text-sm text-muted-foreground">The single-open demo carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/accordion-\{state\}.png</code>.</p>
 
-Machine contract — verified against <a href="../schemas/accordion.schema.json"><code>accordion.schema.json</code></a> by <code>bun run verify</code>:
+Machine contract - verified against <a href="../schemas/accordion.schema.json"><code>accordion.schema.json</code></a> by <code>bun run verify</code>:
 
 ```states
 | State | Type | Values | Default | Description |
@@ -180,7 +180,7 @@ Machine contract — verified against <a href="../schemas/accordion.schema.json"
 <SourceFiles component="accordion" section="css" />
 
 <SourceFiles component="accordion" section="js">
-  <SourceNote for="js">Only needed for single-open mode (when <code>data-type="single"</code> is set). Multi-open accordions use zero JavaScript — native <code>&lt;details&gt;</code> handles everything.</SourceNote>
+  <SourceNote for="js">Only needed for single-open mode (when <code>data-type="single"</code> is set). Multi-open accordions use zero JavaScript - native <code>&lt;details&gt;</code> handles everything.</SourceNote>
 </SourceFiles>
 
 </DocPage>

@@ -1,0 +1,188 @@
+---
+title: "Animation Canvas"
+description: "Animation Canvas component - a chess-board slide canvas: slides side by side on one board, arrow-key navigation with per-slide df$.anim transitions, and a zoom-out overview with click-to-zoom."
+slug: "anim-canvas"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="anim-canvas" title="Animation Canvas" component="anim-canvas">
+  A chess-board slide canvas: slides sit side by side on one board, the viewport frames exactly one of them (1:1), arrow keys move directionally, and a zoomed-out <strong>overview</strong> shows the whole board at once - click a tile to zoom back in. Every slide transition is the shared <code>df$.anim</code> engine, declared in markup per slide; the canvas ships no animation of its own.
+</PageHeader>
+
+<SkillPanel component="anim-canvas">
+  <SkillField label="Native basis">
+<SkillText><code>.anim-canvas</code> viewport + <code>.anim-canvas-slide</code> sections. JS moves the slides into one <code>.anim-canvas-board</code> layer carrying the pan/zoom transform (<code>transform-origin: 0 0</code>); positions derive by BFS from the relation map. Scaling is a <code>ResizeObserver</code> on the root.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Element/animate" title="board pan/zoom + every engine keyframe"><code>el.animate()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver" title="board units → viewport scale; no window.resize math"><code>ResizeObserver</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/inert" title="off-stage slides leave tab order and AT"><code>inert</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/data-*" title="relation map + animation declarations are data attributes"><code>data-*</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/transform" title="board units → viewport mapping"><code>transform</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="engine durations + board pan collapse (built in, required)"><code>prefers-reduced-motion</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Attributes">
+<SkillRow>
+    <code>data-active</code>
+    <code>data-east</code>
+    <code>data-west</code>
+    <code>data-north</code>
+    <code>data-south</code>
+    <code>data-anim-in</code>
+    <code>data-anim-out</code>
+    <code>data-overview</code>
+    <code>data-current-slide</code>
+    <code>data-pan-duration</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Notes">
+<p class="text-muted-foreground m-0">• Animations are engine names - see the <DocLink href="motion.html">Motion</DocLink> vocabulary and the per-animation deep dives (fade/slide/zoom/pop/spin/flip/skew/blur/wipe/iris + the blocks roll-over). • The blocks pair is always one curtain: the cover builds on the slide you leave, the board pans underneath, the reveal plays on the slide you arrive at - a declared <code>blocksOut</code> never replays on the old slide. • Arrow keys never swallow a direction that has no neighbor.</p>
+  </SkillField>
+</SkillPanel>
+
+```html example label="A 2×2 board with mixed transitions" component="anim-canvas" height="28" hint="Four slides on one board: s1↔s2 east/west, s1↔s3 south/north, s2↔s4 south/north, s3↔s4 east/west. Click the canvas, then drive it with the arrow keys; O or Escape zooms out to the overview, clicking a tile zooms back in. Each slide declares its own df$.anim pair: s2 enters under a blocks curtain painted var(--primary) via data-anim-in-color (always give blend-overs a visible color), s3 opens as an iris, s1 and s4 slide with the travel direction. The State tab drives the same canvas through the schema (slide id + overview)."
+<style>
+  .ac-demo-slide {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 4rem 5rem;
+  }
+  .ac-demo-slide h2 {
+    margin: 0 0 1rem;
+    font-size: 4rem;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+  .ac-demo-slide p {
+    margin: 0;
+    font-size: 1.6rem;
+    opacity: 0.85;
+  }
+  #ac-1 { background: #312e81; color: #e0e7ff; }
+  #ac-2 { background: #78350f; color: #fef3c7; }
+  #ac-3 { background: #064e3b; color: #d1fae5; }
+  #ac-4 { background: #4c0519; color: #ffe4e6; }
+</style>
+<div class="anim-canvas" id="ac-demo" aria-label="Demo board">
+  <section class="anim-canvas-slide ac-demo-slide" id="ac-1" data-active aria-label="One"
+           data-east="ac-2" data-south="ac-3"
+           data-anim-in="slideIn" data-anim-out="slideOut">
+    <h2>One board, four slides</h2>
+    <p>Slides sit side by side like a chess board - the viewport frames exactly one.</p>
+  </section>
+  <section class="anim-canvas-slide ac-demo-slide" id="ac-2" aria-label="Two"
+           data-west="ac-1" data-south="ac-4"
+           data-anim-in="blocksIn" data-anim-in-direction="north" data-anim-in-blocks="6" data-anim-in-stagger="70" data-anim-in-color="var(--primary)"
+           data-anim-out="blocksOut" data-anim-out-direction="north">
+    <h2>Blocks roll over</h2>
+    <p>The composite blocksIn/blocksOut pair composes as a curtain: cover, pan underneath, roll off.</p>
+  </section>
+  <section class="anim-canvas-slide ac-demo-slide" id="ac-3" aria-label="Three"
+           data-north="ac-1" data-east="ac-4"
+           data-anim-in="irisIn" data-anim-in-origin="50% 50%"
+           data-anim-out="irisOut" data-anim-out-origin="50% 50%">
+    <h2>Iris from the center</h2>
+    <p>irisIn opens a clip-path circle around the declared origin.</p>
+  </section>
+  <section class="anim-canvas-slide ac-demo-slide" id="ac-4" aria-label="Four"
+           data-north="ac-2" data-west="ac-3"
+           data-anim-in="slideIn" data-anim-out="slideOut">
+    <h2>Overview on O</h2>
+    <p>Zoom out, see the whole board, click a tile to zoom back in.</p>
+  </section>
+  <div class="anim-canvas-controls">
+    <button type="button" class="anim-canvas-control" data-anim-canvas-go="west" aria-label="West slide">←</button>
+    <button type="button" class="anim-canvas-control" data-anim-canvas-go="north" aria-label="North slide">↑</button>
+    <button type="button" class="anim-canvas-control" data-anim-canvas-go="south" aria-label="South slide">↓</button>
+    <button type="button" class="anim-canvas-control" data-anim-canvas-go="east" aria-label="East slide">→</button>
+    <button type="button" class="anim-canvas-control" data-anim-canvas-go="overview" aria-label="Toggle overview">⛶</button>
+  </div>
+</div>
+```
+
+```html example label="Curtain color (blend-over)" schema="none" hint="Every blend-over animation takes an explicit color so the cover is SEEN against the slide - never let it inherit into invisibility. blocksIn covers the card with five staggered panels painted the picked color; blocksOut rolls them back off."
+<style>
+  #ac-curtain-target {
+    width: 220px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+    font-weight: 600;
+  }
+</style>
+<div style="display:flex; flex-direction:column; gap:0.75rem; align-items:flex-start;">
+  <div id="ac-curtain-target">Cover me</div>
+  <div style="display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center;">
+    <select class="select" id="ac-curtain-color" aria-label="Curtain color">
+      <option value="var(--primary)" selected>primary</option>
+      <option value="var(--secondary)">secondary</option>
+      <option value="var(--destructive)">destructive</option>
+      <option value="#111827">#111827</option>
+    </select>
+    <button class="btn" data-variant="outline" data-size="sm" id="ac-curtain-in">blocksIn (cover)</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="ac-curtain-out">blocksOut (reveal)</button>
+    <button class="btn" data-variant="ghost" data-size="sm" id="ac-curtain-reset">Reset</button>
+  </div>
+</div>
+<script type="module">
+  // all.js (core → df$.anim) boots after example scripts in the sandbox —
+  // reference df$ only at event time
+  const opts = () => ({
+    direction: 'north',
+    blocks: 5,
+    stagger: 90,
+    color: document.getElementById('ac-curtain-color').value,
+  });
+  document.getElementById('ac-curtain-in').addEventListener('click', () =>
+    df$.anim.blocksIn.play(document.getElementById('ac-curtain-target'), opts()));
+  document.getElementById('ac-curtain-out').addEventListener('click', () =>
+    df$.anim.blocksOut.play(document.getElementById('ac-curtain-target'), opts()));
+  document.getElementById('ac-curtain-reset').addEventListener('click', () => {
+    df$.anim.blocksIn.reset(document.getElementById('ac-curtain-target'));
+    df$.anim.blocksOut.reset(document.getElementById('ac-curtain-target'));
+  });
+</script>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - one slide framed 1:1; <code>setState('default', \{ slide: 's2' \})</code> focuses that slide, bare <code>setState('default')</code> re-frames the active one</li>
+    <li><code>overview</code> - the whole board zoomed out (<code>data-overview</code>); every slide is a clickable tile that zooms back in</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The demo card carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code>.</p>
+
+Machine contract - verified against <a href="../schemas/anim-canvas.schema.json"><code>anim-canvas.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `slide` | `string` | `—` | `—` | Active slide id - `setState('default', { slide: '<id>' })`; mirrored as `data-current-slide` on `.anim-canvas` and updated by arrow keys, controls and overview clicks. |
+| `overview` | `boolean` | `true`, `false` | `false` | Zoomed-out board view (`data-overview` on the root) - `setState('overview')` / `setState('overview', { value: false })`. |
+```
+
+</StatesSection>
+
+<SourceFiles component="anim-canvas" section="css">
+  <SourceNote for="css">The canvas surface: viewport + board layer, card-ish slides, the overview tile affordance (cursor, radius, ring hover), optional directional chrome, and the required reduced-motion / forced-colors blocks. All motion is the shared engine - this sheet animates nothing.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="anim-canvas" section="js">
+  <SourceNote for="js">The runtime: relation-map BFS with fail-loud validation, ResizeObserver scaling, WAAPI board pan (1ms under prefers-reduced-motion), keyboard via the shared bindGlobalKeys, overview with click-to-zoom, and the State API - every slide transition plays through <code>df$.anim</code> channels by name.</SourceNote>
+</SourceFiles>
+
+</DocPage>

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: spinner is CSS-only — the rotate keyframes + the four documented
+ * Why: spinner is CSS-only - the rotate keyframes + the four documented
  * sizes are the contract. Verify each size maps to its literal box and that
  * the 1s linear rotation actually runs.
  */

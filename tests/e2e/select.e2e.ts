@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: select is CSS-only — the appearance:none + inline-SVG chevron restyle
+ * Why: select is CSS-only - the appearance:none + inline-SVG chevron restyle
  * is the whole control. Verify the 36px md-step box with chevron padding, the custom
  * chevron background, sm/lg sizes, disabled, and the invalid border.
  */
@@ -50,7 +50,7 @@ await cssSmoke('select', [
   },
   {
     // issue #32: the empty option must stay selectable so it doubles as the
-    // clear/reset entry — select a value, then select the placeholder again
+    // clear/reset entry - select a value, then select the placeholder again
     label: 'placeholder is selectable and clears a made selection (issue #32)',
     run: async (page) => {
       const disabled = await page.$eval('#se-default option[value=""]', (el) => (el as HTMLOptionElement).disabled);

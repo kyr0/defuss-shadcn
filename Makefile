@@ -1,4 +1,4 @@
-# defuss-shadcn — maintainer shortcuts (thin wrappers around bun scripts)
+# defuss-shadcn - maintainer shortcuts (thin wrappers around bun scripts)
 # KISS: every target delegates to package.json so there is one source of truth.
 
 .DEFAULT_GOAL := help
@@ -39,7 +39,7 @@ purge-cdn: ## Purge jsDelivr @latest cache for all dist assets (run after deploy
 	bun run purge-cdn
 
 # Full pipeline: fast checks first, compile + bundle + minify, then the docs
-# SSG build (defuss-ssg renders dist/documentation — before screenshots: the
+# SSG build (defuss-ssg renders dist/documentation - before screenshots: the
 # docs pages are part of every component's fingerprint), screenshots, docs
 # mirror, gate + tests. Calls scripts/build.ts directly because `bun run build`
 # would run verify BEFORE the screenshots could be refreshed.

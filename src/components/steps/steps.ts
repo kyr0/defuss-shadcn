@@ -1,9 +1,9 @@
 // -- Steps ----------------------------------------------------
 // Turns the static step markup into a live progress tracker. The <ol class=
 // "steps"> carries its contract as data attributes (data-active-step /
-// data-error-step); this script maps them onto the items — steps before the
+// data-error-step); this script maps them onto the items - steps before the
 // active one render `data-status="complete"`, the active one `current`, an
-// optional error step `error` — and makes data-clickable steps interactive
+// optional error step `error` - and makes data-clickable steps interactive
 // (AGENTS.md "State API").
 //
 // Attribute-driven (same reason as pagination.ts): the sandbox bridge writes
@@ -28,7 +28,7 @@ const numAttr = (el: HTMLElement, key: string, fallback: number): number => {
 
 /**
  * Map the attribute contract onto the items: statuses + aria-current. Pure
- * function of the attributes — idempotent, safe to run after every change.
+ * function of the attributes - idempotent, safe to run after every change.
  */
 function renderSteps(ol: HTMLElement): void {
   const items = Array.from(ol.querySelectorAll<HTMLElement>('.step'));
@@ -39,7 +39,7 @@ function renderSteps(ol: HTMLElement): void {
   // (what a boolean checkbox mutation writes) meaning "the ACTIVE step failed"
   const raw = ol.dataset.errorStep ?? '';
   const error = raw === 'true' ? active : parseInt(raw, 10) || 0;
-  // guarded write — same-value setAttribute fires a MO record (re-render loop)
+  // guarded write - same-value setAttribute fires a MO record (re-render loop)
   if (ol.dataset.activeStep !== String(active)) ol.dataset.activeStep = String(active);
   items.forEach((item, i) => {
     const n = i + 1;
@@ -112,7 +112,7 @@ function init(): void {
     // enhancement; the e2e fixture's static statuses stay stable)
     if (ol.hasAttribute('data-active-step')) renderSteps(ol);
     // attribute-driven re-map: panel edits (bridge writes data attrs) and
-    // setState both land here — the attributes ARE the state
+    // setState both land here - the attributes ARE the state
     new MutationObserver(() => {
       if (ol.hasAttribute('data-active-step')) renderSteps(ol);
     }).observe(ol, {

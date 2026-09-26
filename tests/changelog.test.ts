@@ -134,7 +134,7 @@ describe('changelogDataMarkupProblems', () => {
       {
         version: 'v2.0.0',
         date: 'd',
-        commits: ['a <strong>fix</strong> to <code>video</code> — see <a href="#">the docs</a> & <code>&lt;video&gt;</code> handling'],
+        commits: ['a <strong>fix</strong> to <code>video</code> - see <a href="#">the docs</a> & <code>&lt;video&gt;</code> handling'],
       },
     ]);
     expect(changelogDataMarkupProblems(json)).toEqual([]);

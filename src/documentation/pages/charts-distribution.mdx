@@ -1,0 +1,229 @@
+---
+title: "Distribution Charts"
+description: "Distribution and density chart patterns with the chart component: confidence bands, quadrant scatter, jittered strips, matrix and calendar heatmaps, boxplots, and a custom-series violin - all themed from the design tokens."
+slug: "charts-distribution"
+---
+
+import { DocPage, PageHeader, DocLink, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="charts-distribution" title="Distribution Charts" component="chart">
+  Statistical patterns for showing <strong>spread and density</strong> rather than single values: confidence bands, quadrant scatter, jittered strips, matrix and calendar heatmaps, boxplots, and a custom-series violin. Every demo mounts through the <DocLink href="chart.html">chart component</DocLink>, so palette, typography and chrome come from the active theme's tokens in light and dark.
+</PageHeader>
+
+```html example label="Confidence band" schema="none" hint="A forecast line with a shaded uncertainty band - two silent stacked lines form the interval (base + span), the estimate rides on top. Fully declarative: data-chart is plain JSON, and 'var(--chart-2)' / color-mix() token references resolve at runtime." previewStyle="align-items:flex-start;" height="27"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <h3 class="chart-title">Estimate with 95% confidence band</h3>
+  <p class="chart-dek">The band widens where the forecast is less certain; the dashed marker separates observed from forecast months.</p>
+  <div class="chart" role="img" aria-label="Line chart of a monthly estimate rising from 42 to 72, with a confidence band that widens toward December and a dashed forecast marker at July"
+       data-chart='{"grid":{"top":32},"tooltip":{"trigger":"axis"},"xAxis":{"type":"category","boundaryGap":false,"data":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]},"yAxis":{"type":"value","min":35,"max":90},"series":[{"type":"line","stack":"band","data":[40,42,46,48,51,53,55,57,58,59,60,60],"symbol":"none","lineStyle":{"opacity":0},"silent":true,"tooltip":{"show":false}},{"type":"line","stack":"band","data":[4,6,6,7,8,10,12,14,16,18,20,24],"symbol":"none","lineStyle":{"opacity":0},"areaStyle":{"color":"color-mix(in oklch, var(--chart-2) 18%, transparent)"},"silent":true,"tooltip":{"show":false}},{"name":"Estimate","type":"line","data":[42,45,49,51,55,58,61,64,66,68,70,72],"smooth":0.35,"showSymbol":false,"lineStyle":{"width":3,"color":"var(--chart-2)"},"itemStyle":{"color":"var(--chart-2)"},"markLine":{"symbol":"none","silent":true,"label":{"formatter":"forecast →","position":"end","color":"var(--muted-foreground)"},"lineStyle":{"type":"dashed","color":"var(--muted-foreground)"},"data":[{"xAxis":"Jul"}]}}]}'></div>
+  <figcaption class="chart-source">Synthetic data · adapted from echarts-feat 10-confidence-band</figcaption>
+</figure>
+```
+
+```html example label="Quadrant scatter" schema="none" hint="Position answers two questions at once: growth on x, performance on y, bubble size as a third variable. markLine splits the plane into quadrants at 50/50, a faint markArea marks the stars corner, and the leader is var(--primary)." previewStyle="align-items:flex-start;" height="35"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <h3 class="chart-title">Portfolio position</h3>
+  <p class="chart-dek">Ten business units by growth and performance; bubble area is revenue, the leader is highlighted.</p>
+  <div id="quadrant-chart" class="chart" data-size="lg" role="img" aria-label="Bubble scatter of ten business units by growth and performance, split into quadrants at 50, with unit J highlighted"></div>
+  <figcaption class="chart-source">Synthetic data · adapted from echarts-feat 13-scatter-quadrants</figcaption>
+</figure>
+<script>
+  // all.js (df$) boots AFTER example scripts in the sandbox - reference it
+  // only once the window has loaded, never at parse time.
+  window.addEventListener('load', () => {
+    const pts = [['A',76,68,34],['B',61,72,24],['C',84,42,30],['D',44,55,22],['E',35,31,16],['F',52,47,18],['G',72,53,25],['H',26,76,14],['I',57,25,19],['J',90,82,38]];
+    df$.shadcn.chart.mount(document.getElementById('quadrant-chart'), {
+      grid: { top: 16, left: 36, bottom: 36 },
+      xAxis: { type: 'value', min: 0, max: 100, name: 'Growth →', nameLocation: 'middle', nameGap: 30, splitLine: { show: false } },
+      yAxis: { type: 'value', min: 0, max: 100, name: 'Performance →', nameLocation: 'middle', nameGap: 34 },
+      series: [{
+        type: 'scatter',
+        data: pts.map((p) => ({ name: p[0], value: [p[1], p[2], p[3]],
+          itemStyle: { color: p[0] === 'J' ? 'var(--primary)' : 'color-mix(in oklch, var(--chart-2) 70%, transparent)' } })),
+        symbolSize: (v) => v[2] * 1.15,
+        itemStyle: { borderColor: 'var(--card)', borderWidth: 1.5 },
+        label: { show: true, formatter: '{b}', position: 'top', fontWeight: 600 },
+        markLine: { symbol: 'none', silent: true, label: { show: false },
+          lineStyle: { color: 'var(--muted-foreground)', type: 'dashed', opacity: 0.6 },
+          data: [{ xAxis: 50 }, { yAxis: 50 }] },
+        markArea: { silent: true, itemStyle: { color: 'color-mix(in oklch, var(--chart-2) 7%, transparent)' },
+          label: { show: true, position: 'insideTopRight', color: 'var(--muted-foreground)', fontWeight: 600 },
+          data: [[{ name: 'Stars', xAxis: 50, yAxis: 50 }, { xAxis: 100, yAxis: 100 }]] },
+      }],
+    });
+  });
+</script>
+```
+
+```html example label="Jittered strip" schema="none" hint="Every observation stays visible - deterministic jitter spreads the points of each group instead of collapsing them into a bar, and one subgroup is highlighted with var(--chart-2) while the rest recede." previewStyle="align-items:flex-start;" height="35"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <h3 class="chart-title">Score distribution by group</h3>
+  <p class="chart-dek">168 individual scores across four groups; group C is highlighted, the rest fall back to the muted ink.</p>
+  <div id="strip-chart" class="chart" data-size="lg" role="img" aria-label="Jittered strip plot of 168 scores across four groups, group C highlighted"></div>
+  <figcaption class="chart-source">Synthetic data · adapted from echarts-feat 14-jittered-distribution</figcaption>
+</figure>
+<script>
+  window.addEventListener('load', () => {
+    const groups = ['Group A', 'Group B', 'Group C', 'Group D'];
+    const data = [];
+    for (let g = 0; g < 4; g++) {
+      for (let i = 0; i < 42; i++) {
+        const base = 35 + g * 9;
+        const v = Math.max(5, Math.min(95, base + Math.sin(i * 1.7 + g) * 15 + (i % 7) * 1.1));
+        const jitter = (((i * 37) % 17) - 8) / 24;
+        data.push({ value: [+v.toFixed(1), g + jitter],
+          itemStyle: g === 2 ? { color: 'var(--chart-2)', opacity: 0.85 } : { color: 'var(--muted-foreground)', opacity: 0.35 } });
+      }
+    }
+    df$.shadcn.chart.mount(document.getElementById('strip-chart'), {
+      grid: { top: 16 },
+      xAxis: { type: 'value', min: 0, max: 100, axisLabel: { formatter: '{value}%' } },
+      // ticks sit exactly on the group rows (customValues), not on min + n·interval
+      yAxis: { type: 'value', min: -0.6, max: 3.6, inverse: true, splitLine: { show: false },
+        axisLabel: { customValues: [0, 1, 2, 3], formatter: (v) => groups[v], color: 'var(--foreground)', fontWeight: 500 } },
+      series: [{ type: 'scatter', data, symbolSize: 9, emphasis: { scale: 1.6, itemStyle: { opacity: 1 } } }],
+    });
+  });
+</script>
+```
+
+```html example label="Heatmap matrix" schema="none" hint="A correlation-style matrix: the visualMap gradient is written in token references (destructive → muted → chart-2), so the scale re-themes with the page instead of carrying its own palette." previewStyle="align-items:flex-start;" height="35"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <h3 class="chart-title">Criteria correlation matrix</h3>
+  <p class="chart-dek">Six survey criteria compared pairwise; the diagonal is the self-correlation, labels keep the exact values readable.</p>
+  <div id="matrix-chart" class="chart" data-size="lg" role="img" aria-label="Heatmap matrix of pairwise correlations between six criteria, from minus one to plus one"></div>
+  <figcaption class="chart-source">Synthetic data · adapted from echarts-feat 15-heatmap-matrix</figcaption>
+</figure>
+<script>
+  window.addEventListener('load', () => {
+    const cats = ['Speed', 'Quality', 'Cost', 'Trust', 'Reach', 'Ease'];
+    const data = [];
+    for (let y = 0; y < 6; y++) {
+      for (let x = 0; x < 6; x++) {
+        const v = x === y ? 1 : Math.max(-1, Math.min(1, Math.sin((x + 1) * (y + 2)) * 0.72));
+        data.push([x, y, +v.toFixed(2)]);
+      }
+    }
+    df$.shadcn.chart.mount(document.getElementById('matrix-chart'), {
+      grid: { top: 36 },
+      xAxis: { type: 'category', data: cats, axisLine: { show: false } },
+      yAxis: { type: 'category', data: cats, axisLine: { show: false }, axisLabel: { color: 'var(--foreground)', fontWeight: 500 } },
+      visualMap: { min: -1, max: 1, orient: 'horizontal', right: 0, top: 0, itemWidth: 12, itemHeight: 160,
+        inRange: { color: ['var(--destructive)', 'var(--muted)', 'var(--chart-2)'] }, text: ['+1', '−1'] },
+      series: [{
+        type: 'heatmap', data,
+        label: { show: true, formatter: (p) => p.value[2].toFixed(2), color: 'var(--foreground)', fontWeight: 600 },
+        itemStyle: { borderColor: 'var(--card)', borderWidth: 3, borderRadius: 6 },
+        emphasis: { itemStyle: { borderColor: 'var(--foreground)', borderWidth: 2 } },
+      }],
+    });
+  });
+</script>
+```
+
+```html example label="Calendar heatmap" schema="none" hint="A whole year in one glance - daily volume on the calendar coordinate system, with the visualMap gradient from var(--muted) to var(--chart-2) and card-colored gaps between the days, so it follows the active theme." previewStyle="align-items:flex-start;" height="27"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <h3 class="chart-title">Daily activity, 2026</h3>
+  <p class="chart-dek">Compact daily volume that preserves weekly and seasonal rhythm - incidents, commits, sign-ups.</p>
+  <div id="calendar-chart" class="chart" data-size="sm" role="img" aria-label="Calendar heatmap of daily activity for the year 2026, values from 0 to about 58"></div>
+  <figcaption class="chart-source">Synthetic data · adapted from echarts-feat 16-calendar-heatmap</figcaption>
+</figure>
+<script>
+  window.addEventListener('load', () => {
+    const start = new Date('2026-01-01T00:00:00Z');
+    const data = [];
+    for (let i = 0; i < 365; i++) {
+      const d = new Date(start);
+      d.setUTCDate(d.getUTCDate() + i);
+      const v = Math.round(20 + 18 * Math.sin(i / 17) + 10 * Math.sin(i / 5) + ((i * 13) % 11));
+      data.push([d.toISOString().slice(0, 10), Math.max(0, v)]);
+    }
+    df$.shadcn.chart.mount(document.getElementById('calendar-chart'), {
+      tooltip: { formatter: (p) => p.value[0] + ' · ' + p.value[1] },
+      visualMap: { min: 0, max: 58, show: false, inRange: { color: ['var(--muted)', 'var(--chart-2)'] } },
+      calendar: { top: 28, left: 36, right: 8, bottom: 8, cellSize: ['auto', 'auto'], range: '2026',
+        splitLine: { show: false },
+        itemStyle: { color: 'transparent', borderColor: 'var(--card)', borderWidth: 3 },
+        yearLabel: { show: false }, monthLabel: { nameMap: 'en' }, dayLabel: { firstDay: 1, nameMap: ['S', 'M', 'T', 'W', 'T', 'F', 'S'] } },
+      series: [{ type: 'heatmap', coordinateSystem: 'calendar', data, itemStyle: { borderRadius: 2 } }],
+    });
+  });
+</script>
+```
+
+```html example label="Boxplot" schema="none" hint="Spread before average: median, quartiles and whiskers per group, outliers as a scatter overlay. Five-number summaries are plain JSON, so data-chart is enough - the tinted fill is a color-mix() over var(--chart-2)." previewStyle="align-items:flex-start;" height="27"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <h3 class="chart-title">Response time by service</h3>
+  <p class="chart-dek">Five services compared on their full latency distribution (ms); the dots are outlier requests.</p>
+  <div class="chart" role="img" aria-label="Boxplot of response time for five services A to E, with four outlier points"
+       data-chart='{"grid":{"top":16},"xAxis":{"type":"category","data":["Auth","Search","Catalog","Checkout","Media"],"axisLabel":{"color":"var(--foreground)","fontWeight":500}},"yAxis":{"type":"value","min":0,"max":80},"series":[{"name":"Latency","type":"boxplot","boxWidth":["30%","46%"],"data":[[18,27,34,45,58],[22,33,41,52,64],[15,24,31,39,49],[30,39,47,56,71],[12,19,28,36,54]],"itemStyle":{"color":"color-mix(in oklch, var(--chart-2) 16%, transparent)","borderColor":"var(--chart-2)","borderWidth":2}},{"name":"Outliers","type":"scatter","data":[[0,66],[1,72],[3,76],[4,61]],"symbolSize":9,"itemStyle":{"color":"var(--destructive)"}}]}'></div>
+  <figcaption class="chart-source">Synthetic data · adapted from echarts-feat 29-boxplot</figcaption>
+</figure>
+```
+
+```html example label="Violin (custom series)" schema="none" hint="ECharts has no violin type - a custom renderItem series draws each density polygon via api.coord. The colors are resolved INSIDE renderItem with df$.shadcn.chart.color(), so a theme switch (which re-renders) repaints them too." previewStyle="align-items:flex-start;" height="27"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <h3 class="chart-title">Density shape by group</h3>
+  <p class="chart-dek">Full distribution silhouettes for four groups - where a boxplot compresses, a violin shows the modes. Group B is highlighted.</p>
+  <div id="violin-chart" class="chart" role="img" aria-label="Violin plot of four distributions A to D, each drawn as a custom density polygon"></div>
+  <figcaption class="chart-source">Synthetic data · adapted from echarts-feat 30-violin-custom</figcaption>
+</figure>
+<script>
+  window.addEventListener('load', () => {
+    const el = document.getElementById('violin-chart');
+    const cats = ['Group A', 'Group B', 'Group C', 'Group D'];
+    const data = [];
+    for (let c = 0; c < 4; c++) {
+      const pts = [];
+      for (let y = 10; y <= 90; y += 2) {
+        const center = 42 + c * 7;
+        const spread = 13 + c * 2;
+        const dens = Math.exp(-Math.pow(y - center, 2) / (2 * spread * spread)) * (0.65 + 0.35 * Math.cos(y * 0.22 + c));
+        pts.push([y, Math.max(0, dens)]);
+      }
+      data.push(pts);
+    }
+    df$.shadcn.chart.mount(el, {
+      grid: { top: 16 },
+      xAxis: { type: 'category', data: cats, axisLabel: { color: 'var(--foreground)', fontWeight: 500 } },
+      yAxis: { type: 'value', min: 0, max: 100 },
+      series: [{
+        type: 'custom',
+        data: cats.map((_, i) => [i]),
+        renderItem: (p, api) => {
+          const pts = data[p.dataIndex];
+          const cx = api.coord([p.dataIndex, 0])[0];
+          const maxW = api.size([1, 0])[0] * 0.42;
+          const left = pts.map(([y, d]) => [cx - d * maxW, api.coord([p.dataIndex, y])[1]]);
+          const right = pts.slice().reverse().map(([y, d]) => [cx + d * maxW, api.coord([p.dataIndex, y])[1]]);
+          const hot = p.dataIndex === 1;
+          const color = df$.shadcn.chart.color(el, hot ? '--chart-2' : '--muted-foreground');
+          return {
+            type: 'polygon',
+            shape: { points: left.concat(right), smooth: 0.3 },
+            style: { fill: df$.shadcn.chart.color(el, color, hot ? 0.35 : 0.16), stroke: color, lineWidth: 1.5 },
+          };
+        },
+      }],
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground">Patterns adapted from the ECharts design-language lab (echarts-feat/), re-skinned on the design tokens via the chart theme adapter. Colors are written as <code>var(--token)</code> (or <code>color-mix()</code> over tokens) - the runtime resolves them to sRGB for ECharts and re-resolves them after every theme or dark-mode switch.</p>
+
+<SourceFiles component="chart">
+  <SourceNote for="css">The chart sizing surface and editorial frame these patterns mount into.</SourceNote>
+  <SourceNote for="js">The runtime every demo on this page converges on: token theme adapter, token-reference resolution, mount/resize lifecycle, chartStory, the deck stage and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

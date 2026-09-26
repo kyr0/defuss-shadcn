@@ -1,7 +1,7 @@
 ---
 name: Toggle
 type: ATM
-why: Two-state button carrying aria-pressed — activation is native.
+why: Two-state button carrying aria-pressed - activation is native.
 when: A single on/off action: mute, bold, favorite.
 where: dist/components/toggle/toggle.css + dist/components/toggle/toggle.js
 supportedStates: default, pressed
@@ -19,12 +19,12 @@ buttons (bold, italic, underline) or feature toggles.
 ---
 
 ## Native Web APIs
-- [`<button>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button) — native clickable element with built-in keyboard handling
-- [`aria-pressed`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-pressed) — communicates toggle on/off state to assistive technology
-- [`color-mix()`](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix) — derived hover color for pressed state
-- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) — suppresses color/background transitions
-- [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) — adds visible borders in high-contrast mode
-- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) — maps pressed state to system Highlight in Windows High Contrast Mode
+- [`<button>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button) - native clickable element with built-in keyboard handling
+- [`aria-pressed`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-pressed) - communicates toggle on/off state to assistive technology
+- [`color-mix()`](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix) - derived hover color for pressed state
+- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) - suppresses color/background transitions
+- [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) - adds visible borders in high-contrast mode
+- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) - maps pressed state to system Highlight in Windows High Contrast Mode
 
 ---
 
@@ -86,14 +86,14 @@ buttons (bold, italic, underline) or feature toggles.
 
 | Attribute         | Element    | Value               |
 |--------------------|-----------|----------------------|
-| `aria-pressed`     | `<button>` | `"true"` or `"false"` — toggled on click |
+| `aria-pressed`     | `<button>` | `"true"` or `"false"` - toggled on click |
 | `aria-label`       | `<button>` | Required for icon-only toggles |
 
 ---
 
 ## States
 
-Declared states: `default` (unpressed — the authored `aria-pressed` value is
+Declared states: `default` (unpressed - the authored `aria-pressed` value is
 restored) · `pressed` (`aria-pressed="true"`).
 
 ```js
@@ -106,7 +106,7 @@ The api is bound per button; the registry global is
 
 ## Notes
 
-- The toggle is just a button with `aria-pressed` — no custom elements needed.
+- The toggle is just a button with `aria-pressed` - no custom elements needed.
 - Icon-only toggles must have `aria-label` for screen readers.
 - For toggle groups (e.g., text alignment), wrap in a container with `role="group"` and `aria-label`.
 - The pressed state uses `--accent` / `--accent-foreground` to match shadcn conventions.

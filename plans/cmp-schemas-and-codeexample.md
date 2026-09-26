@@ -541,7 +541,7 @@ Require a canonical form on every component page:
 
 | State | Type | Values | Default | Description |
 | --- | --- | --- | --- | --- |
-| `value` | `string` | — | `"Hello world"` | Current field value. |
+| `value` | `string` | - | `"Hello world"` | Current field value. |
 | `disabled` | `boolean` | `true`, `false` | `false` | Disables interaction. |
 | `type` | `enum` | `text`, `email`, `password` | `text` | Input behavior. |
 ```
@@ -1023,7 +1023,7 @@ CI/prepublish/docs deployment must run it.
 
 Do not try to add schema metadata without simultaneously fixing docs divergence.
 
-### Phase 1 — infrastructure
+### Phase 1 - infrastructure
 
 Implement:
 
@@ -1038,7 +1038,7 @@ States verifier
 example verifier
 ```
 
-### Phase 2 — one complete component
+### Phase 2 - one complete component
 
 Use `input` first:
 
@@ -1053,7 +1053,7 @@ browser test → verified
 
 Prove complete vertical slice.
 
-### Phase 3 — difficult components
+### Phase 3 - difficult components
 
 Next:
 
@@ -1076,7 +1076,7 @@ composite state
 
 Only extend schema vocabulary if one of these demonstrates a real missing primitive.
 
-### Phase 4 — migrate every component
+### Phase 4 - migrate every component
 
 For every existing component:
 

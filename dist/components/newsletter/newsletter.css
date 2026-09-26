@@ -1,6 +1,6 @@
 /* -- Newsletter (marketing) ----------------------------------------
    Two-column sign-up band: copy left, inline email form right. The
-   form is a real <form> + <input type="email"> — browser validation
+   form is a real <form> + <input type="email"> - browser validation
    and the native keyboard work for free. */
 
 @layer components {

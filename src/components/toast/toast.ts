@@ -1,7 +1,7 @@
 // -- Toast -----------------------------------------------------
 // Programmatic toast notification API.
 // Exposes df$.toast with show/success/warning/info/error/dismiss
-// (AGENTS.md "No window globals" — everything lives under the one namespace).
+// (AGENTS.md "No window globals" - everything lives under the one namespace).
 // Named-state API (AGENTS.md "State API") bound to the region container:
 // its observable state is which toasts are visible, so 'default' clears the
 // region (same code path as toast.dismiss()) and getState() reports
@@ -10,7 +10,7 @@
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 // defussQuery: the callable runtime for toast mounting/lifecycle (§3 of the
-// morph integration plan — mount via query .append(), dismiss via .remove()).
+// morph integration plan - mount via query .append(), dismiss via .remove()).
 import { defussGlobals, defussQuery } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
@@ -42,7 +42,7 @@ export const toastApi = {
   getState(container) {
     return {
       name: container.dataset.stateName || 'default',
-      // live count — reflects df$.toast.show() and auto-dismiss, not just setState
+      // live count - reflects df$.toast.show() and auto-dismiss, not just setState
       config: { ...container._stateConfig, count: container.querySelectorAll('.toast').length },
     };
   },
@@ -55,7 +55,7 @@ const DURATION = 4000;
 const MAX_VISIBLE = 3;
 
 // Per-toast callbacks live in a WeakMap so the container's ONE delegated
-// click listener can find them — dynamically created toasts never get their
+// click listener can find them - dynamically created toasts never get their
 // own listeners, so no per-element cleanup is ever needed.
 const toastCallbacks = new WeakMap();
 
@@ -87,7 +87,7 @@ const toastDismiss = (el, callback) => {
   el.animate(
     [{ opacity: 1, transform: 'translateY(0)' }, { opacity: 0, transform: 'translateY(0.5rem)' }],
     { duration: 200, easing: 'ease', fill: 'forwards' }
-  // dismissal through query's exact .remove() — AFTER the exit animation and
+  // dismissal through query's exact .remove() - AFTER the exit animation and
   // popover teardown (§5.2: removal still disposes owned state first)
   ).finished.then(() => { try { el.hidePopover(); } catch {} dfDollar(el).remove(); stackToasts(container); if (callback) callback(); });
 };
@@ -112,12 +112,12 @@ const toastCreate = (options) => {
     destructive: '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>'
   };
   // Build toast DOM (§5.1 boundary: static icon markup rides query .html(),
-  // user-supplied title/description stay literal text via .text() — never an
+  // user-supplied title/description stay literal text via .text() - never an
   // HTML sink, §5.2; insertions go through query's exact .append() ops)
   const contentEl = document.createElement('div');
   contentEl.className = 'toast-content';
   if (variant && icons[variant]) {
-    // the query factory parses a leading-`<` string as markup (§5.2) — the
+    // the query factory parses a leading-`<` string as markup (§5.2) - the
     // trusted static icon flows in through one query append op
     dfDollar(contentEl).append(dfDollar(icons[variant]));
   }
@@ -138,7 +138,7 @@ const toastCreate = (options) => {
     dfDollar(actionBtn).text(action.label); // literal action label (§5.2)
     dfDollar(actionsDiv).append(actionBtn); dfDollar(el).append(actionsDiv);
   }
-  // mount through query's exact .append() — the node itself is inserted
+  // mount through query's exact .append() - the node itself is inserted
   // (identity + delegated listeners kept, §3 toast row of the morph plan)
   dfDollar(toastContainer).append(el); el.showPopover();
   stackToasts(toastContainer);
@@ -152,7 +152,7 @@ const toastCreate = (options) => {
 // Delegated wiring: close/action clicks on ANY toast (including ones created
 // later) are handled by one listener on the container. Guarded per container
 // with data-init and re-run by the MutationObserver, per the component
-// lifecycle contract (AGENTS.md) — survives SPA navigation replacing the body.
+// lifecycle contract (AGENTS.md) - survives SPA navigation replacing the body.
 function init() {
   document.querySelectorAll('#toast-container:not([data-init])').forEach((container) => {
     container.dataset.init = '';

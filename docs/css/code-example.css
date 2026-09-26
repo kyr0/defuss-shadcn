@@ -76,7 +76,7 @@
     font-size: 0.75rem;
     padding: 0 0.375rem;
   }
-  /* zoom carries a 2–3 digit % — the field can be half as wide (after the
+  /* zoom carries a 2–3 digit % - the field can be half as wide (after the
      generic rule: same specificity, source order wins) */
   .code-example-size input.code-example-vp-z {
     width: 3.5rem;
@@ -99,10 +99,10 @@
   /* -- device frame (phone/tablet modes) ---------------------- */
   /* the sandbox iframe is wrapped in .ce-screen > .ce-device; device modes
      pin the device box (runtime sets inline W/H from the fields) and the CSS
-     bezel + island + home indicator scale with it — a dark fixed-color shell
+     bezel + island + home indicator scale with it - a dark fixed-color shell
      reads as hardware in both themes (like real device frames) */
   .ce-screen {
-    /* the .preview stage is a flex row — the screen must GROW into it
+    /* the .preview stage is a flex row - the screen must GROW into it
        (flex:1), otherwise shrink-to-fit collapses the iframe to min-content
        and Full mode renders a narrow sliver instead of the card width */
     display: block;
@@ -147,11 +147,11 @@
   /* Preview resize handles: the shipped `resizer` component (dogfooded) wraps
      .ce-device and owns handle geometry/cursors/focus (the old SE-only grip is
      retired). Here the WRAPPER is the canvas box: it fills .ce-screen (over the
-     component's fit-content default) and vpApply writes its width/height — so
+     component's fit-content default) and vpApply writes its width/height - so
      .ce-device just fills it and handles sit exactly on the canvas edges.
      Handles overhang 3px, inside the stage's 0.75rem padding → never clipped. */
   /* compound selector: same @layer as the component's own .resizer rule, and
-     all.min.css loads after this sheet — two classes win the cascade */
+     all.min.css loads after this sheet - two classes win the cascade */
   .ce-screen .ce-resizer {
     display: block;
     width: 100%;
@@ -163,7 +163,7 @@
     height: 100%; /* device modes: the wrapper carries the pinned height */
   }
   .ce-resizer[data-resizing] {
-    outline-offset: 0; /* the stage clips (measured modes) — keep the marker inside */
+    outline-offset: 0; /* the stage clips (measured modes) - keep the marker inside */
   }
   /* notch pill (phone only, like the iPhone 15 vector reference) */
   .ce-device-island {
@@ -199,7 +199,7 @@
     width: 7.5rem;
     height: 0.4375rem;
   }
-  /* landscape "holding": the runtime swaps W/H AND flags the screen — the
+  /* landscape "holding": the runtime swaps W/H AND flags the screen - the
      island slides to the left edge (vertical), the home bar to the right */
   .ce-screen[data-mode='phone'][data-landscape] .ce-device-island {
     top: 50%;
@@ -232,7 +232,7 @@
     align-items: center;
     gap: 0.3rem;
   }
-  /* lucide glyph on Copy/Reset — sized to sit beside the 0.75rem label */
+  /* lucide glyph on Copy/Reset - sized to sit beside the 0.75rem label */
   .code-example-toolbar button svg.lucide {
     width: 0.875rem;
     height: 0.875rem;
@@ -264,6 +264,39 @@
   .code-example-panel[hidden] {
     display: none;
   }
+  .code-example-panel[data-panel='code'] {
+    position: relative;
+  }
+  /* Copy floats top-right over the code editor - it lives inside the code
+     panel, so it appears exactly when the editor is open (the panel's hidden
+     attribute owns visibility; no JS state to keep in sync) */
+  .code-example-copy {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    appearance: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--background);
+    color: var(--muted-foreground);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.625rem;
+    box-shadow: var(--shadow-2xs);
+  }
+  .code-example-copy:hover {
+    color: var(--foreground);
+    background: var(--muted);
+  }
+  .code-example-copy svg.lucide {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
 
   .code-example-src {
     display: block;
@@ -279,10 +312,62 @@
     line-height: 1.5;
     padding: 0.75rem;
     min-height: 6rem;
+    /* wrapping + gutter pinned so the paint layer below breaks lines identically */
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    word-break: normal;
+    scrollbar-gutter: stable;
   }
   .code-example-src:focus-visible {
     outline: 2px solid var(--ring);
     outline-offset: -2px;
+  }
+
+  /* Shiki paint layer under the editor (runtime/code-example.ts). A div, not a
+     <pre>: the unlayered docs `pre` rule would win over this layer. Same box
+     metrics as .code-example-src; shown only once a paint landed (.ce-hl) */
+  .code-example-hl {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    visibility: hidden;
+    padding: 0.75rem;
+    color: var(--foreground);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    word-break: normal;
+    scrollbar-gutter: stable;
+  }
+  .code-example-hl span {
+    color: var(--shiki-light);
+  }
+  html.dark .code-example-hl span {
+    color: var(--shiki-dark);
+  }
+  .code-example.ce-hl .code-example-hl {
+    visibility: visible;
+  }
+  .code-example.ce-hl .code-example-src {
+    position: relative;
+    color: transparent;
+    caret-color: var(--foreground);
+  }
+  .code-example.ce-hl .code-example-src::selection {
+    color: transparent;
+    background: color-mix(in oklch, var(--ring) 30%, transparent);
+  }
+  @media (forced-colors: active) {
+    /* system colours own the editor: no paint layer, plain text */
+    .code-example.ce-hl .code-example-hl {
+      visibility: hidden;
+    }
+    .code-example.ce-hl .code-example-src {
+      color: CanvasText;
+    }
   }
 
   /* schema-generated state controls */
@@ -367,15 +452,110 @@
     margin: 0;
   }
 
+  /* -- fullscreen ------------------------------------------------ */
+  /* The toolbar's Fullscreen button puts the WHOLE CARD into native
+     fullscreen (a rejected request - docs page embedded without
+     allow="fullscreen" - falls back to the .ce-fs fixed overlay, same
+     layout). The stage fills the screen, the complete toolbar docks at the
+     bottom, open Code/State panels sit between them: device modes, W×H,
+     zoom, rotate and the resize handles keep working exactly as in the
+     page. Label + hint are page context and step aside; the X exit button
+     docks top-right. */
+  .code-example-full-exit {
+    display: none;
+  }
+  .code-example:fullscreen,
+  .code-example.ce-fs {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    background: var(--background);
+    overflow: hidden;
+  }
+  .code-example.ce-fs {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+  }
+  .code-example:fullscreen > p,
+  .code-example.ce-fs > p {
+    display: none;
+  }
+  .code-example:fullscreen .preview,
+  .code-example.ce-fs .preview {
+    order: 1;
+    /* basis 0: the stage takes exactly the space left by panels + toolbar —
+       never its (zoomed) content's height, which would feed back into the
+       auto-fit zoom */
+    flex: 1 1 0;
+    min-height: 0;
+    /* the runtime writes overflow per device mode for the in-page card; in
+       fullscreen the stage always scrolls whatever does not fit */
+    overflow: auto !important;
+    border-radius: 0;
+    border-inline: 0;
+    border-top: 0;
+    position: relative;
+  }
+  .code-example:fullscreen .code-example-panel,
+  .code-example.ce-fs .code-example-panel {
+    order: 2;
+    flex: 0 1 auto;
+    max-height: 40vh;
+    overflow: auto;
+    border-radius: 0;
+    border-inline: 0;
+  }
+  .code-example:fullscreen .code-example-toolbar,
+  .code-example.ce-fs .code-example-toolbar {
+    order: 3;
+    flex: none;
+    border-radius: 0;
+    border-inline: 0;
+    border-bottom: 0;
+    border-top: 1px solid var(--border);
+    padding: 0.375rem 0.75rem;
+  }
+  /* measured modes (full / desktop) fill the stage height instead of
+     shrink-wrapping short content; device modes keep their own box */
+  .code-example:fullscreen .ce-screen:not([data-mode='phone']):not([data-mode='tablet']) .code-example-frame,
+  .code-example.ce-fs .ce-screen:not([data-mode='phone']):not([data-mode='tablet']) .code-example-frame {
+    min-height: calc(100dvh - 6.5rem) !important;
+  }
+  .code-example:fullscreen .code-example-full-exit,
+  .code-example.ce-fs .code-example-full-exit {
+    display: inline-flex;
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    z-index: 5;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: color-mix(in oklch, var(--background) 85%, transparent);
+    color: var(--foreground);
+    cursor: pointer;
+  }
+  .code-example:fullscreen .code-example-full-exit:hover,
+  .code-example.ce-fs .code-example-full-exit:hover {
+    background: var(--muted);
+  }
+
   /* Phones: the labeled toolbar can't fit ~320px (five quick buttons plus
-     the size fields exceed the card's min-content) — buttons go icon-only
+     the size fields exceed the card's min-content) - buttons go icon-only
      (aria-label/title carry the name) and the fields shrink. Same fix every
      CodeExample page needs at phone width, guide or component page alike. */
   @media (max-width: 30rem) {
     .code-example-vp span,
     .code-example-tab span,
     .code-example-copy span,
-    .code-example-reset span {
+    .code-example-reset span,
+    .code-example-full span {
       display: none;
     }
     .code-example-size input[type='number'] {

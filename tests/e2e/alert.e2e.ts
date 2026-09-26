@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: alert is CSS-only — verify the flex layout + literal child geometry
+ * Why: alert is CSS-only - verify the flex layout + literal child geometry
  * apply, and that the destructive variant recolors the whole alert (border +
  * title + icon share the destructive token, distinct from the default).
  */

@@ -1,0 +1,132 @@
+---
+title: "Skew - Animations"
+description: "The skewIn/skewOut animation channels: a directional shear entrance and exit driven imperatively by df$.anim, with full lifecycle control and scroll binding."
+slug: "anim-skew"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="anim-skew" title="Skew" component="motion">
+  A directional shear: the element leans in from a slant (or exits into one) while fading. Ships as the paired <code>skewIn</code>/<code>skewOut</code> channels, each with four orientation variants - <code>west</code>/<code>east</code> skew on the X axis, <code>north</code>/<code>south</code> on the Y axis. In-variants start skewed from the named edge, out-variants exit toward it. Everything is driven by <code>df$.anim.skewIn</code> and <code>df$.anim.skewOut</code>.
+</PageHeader>
+
+```html example label="In / out, directions and lifecycle" schema="none" hint="Pick a direction, then run In or Out. Pause freezes mid-flight, Resume continues, Finish jumps to the end state, Reset unwinds back to the authored style. Duration and easing apply to the next play()."
+<style>
+  #anim-skew-target {
+    width: 160px; height: 100px;
+    display: grid; place-items: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card); color: var(--card-foreground);
+    font-weight: 600;
+  }
+  #anim-skew-demo button[data-dir][aria-pressed="true"] {
+    background: var(--accent); color: var(--accent-foreground);
+  }
+</style>
+<div id="anim-skew-demo" style="display:grid; gap:0.75rem; justify-items:start;">
+  <div id="anim-skew-target">skew me</div>
+  <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-skew-in">In</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-skew-out">Out</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-dir="north" aria-pressed="false">N</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-dir="south" aria-pressed="false">S</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-dir="west" aria-pressed="true">W</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-dir="east" aria-pressed="false">E</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-skew-pause">Pause</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-skew-resume">Resume</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-skew-finish">Finish</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-skew-reset">Reset</button>
+  </div>
+  <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+    <label class="label" for="anim-skew-duration">Duration</label>
+    <input class="input" id="anim-skew-duration" type="number" min="50" step="50" value="1500" style="width:6rem;" />
+    <label class="label" for="anim-skew-easing">Easing</label>
+    <select class="select" id="anim-skew-easing">
+      <option value="cubic-bezier(0.16, 1, 0.3, 1)" selected>ease-out (default)</option>
+      <option value="ease">ease</option>
+      <option value="ease-in-out">ease-in-out</option>
+      <option value="linear">linear</option>
+      <option value="cubic-bezier(0.34, 1.56, 0.64, 1)">spring</option>
+    </select>
+  </div>
+</div>
+<script type="module">
+  // df$ is installed by all.js, which boots after example scripts - reference
+  // it at event time only. lastChannel tracks the most recent play() so the
+  // lifecycle buttons act on the animation actually on the element.
+  let direction = 'west';
+  let lastChannel = 'skewIn';
+
+  const target = document.getElementById('anim-skew-target');
+  const config = () => ({
+    direction,
+    duration: Number(document.getElementById('anim-skew-duration').value) || 1500,
+    easing: document.getElementById('anim-skew-easing').value,
+  });
+
+  document.getElementById('anim-skew-in').addEventListener('click', () => {
+    lastChannel = 'skewIn';
+    df$.anim.skewIn.play(target, config());
+  });
+  document.getElementById('anim-skew-out').addEventListener('click', () => {
+    lastChannel = 'skewOut';
+    df$.anim.skewOut.play(target, config());
+  });
+
+  document.querySelectorAll('#anim-skew-demo [data-dir]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      direction = btn.dataset.dir;
+      document.querySelectorAll('#anim-skew-demo [data-dir]')
+        .forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+    });
+  });
+
+  document.getElementById('anim-skew-pause').addEventListener('click', () => df$.anim[lastChannel].pause(target));
+  document.getElementById('anim-skew-resume').addEventListener('click', () => df$.anim[lastChannel].resume(target));
+  document.getElementById('anim-skew-finish').addEventListener('click', () => df$.anim[lastChannel].finish(target));
+  document.getElementById('anim-skew-reset').addEventListener('click', () => df$.anim[lastChannel].reset(target));
+</script>
+```
+
+```html example label="Scroll-bound skew" schema="none" hint="Progress is tied to the stage's scroll position instead of time: pass scroll: { target, axis }. Scroll the stage - the box un-skews as you descend. Reset unwinds the binding (and re-arms the demo)."
+<div id="anim-skew-stage" style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem;">
+  <div style="height: 600px; display: grid; align-content: space-between; justify-items: center;">
+    <div id="anim-skew-scroll-target" style="width: 160px; height: 100px; display: grid; place-items: center; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); color: var(--card-foreground); font-weight: 600;">scroll-driven</div>
+    <p class="text-sm text-muted-foreground" style="margin:0;">end of the scroll range - fully un-skewed</p>
+  </div>
+</div>
+<button class="btn" data-variant="outline" data-size="sm" id="anim-skew-scroll-reset" style="margin-top:0.5rem;">Reset</button>
+<script type="module">
+  // bound lazily on first scroll so df$ is only touched at event time;
+  // reset() unbinds the scroll link, so re-arm the flag afterwards.
+  const scroller = document.getElementById('anim-skew-stage');
+  const target = document.getElementById('anim-skew-scroll-target');
+  let bound = false;
+  scroller.addEventListener('scroll', () => {
+    if (bound) return;
+    bound = true;
+    df$.anim.skewIn.play(target, { direction: 'west', scroll: { target: scroller, axis: 'y' } });
+  }, { passive: true });
+  document.getElementById('anim-skew-scroll-reset').addEventListener('click', () => {
+    df$.anim.skewIn.reset(target);
+    bound = false;
+  });
+</script>
+```
+
+Passing `scroll: { target: 'viewport' }` instead of an element binds progress to the page's own scroll - the parallax use for presentations, where elements un-skew as the section scrolls into view.
+
+## Config axes
+
+- **`direction`** - `'north' | 'south' | 'east' | 'west'` (default `'west'` here; the engine's own fallback is `'north'`). `west`/`east` shear on the X axis (`skewX`), `north`/`south` on the Y axis (`skewY`).
+- **`duration`** - total duration in ms (default `1500`).
+- **`easing`** - any CSS easing (default `cubic-bezier(0.16, 1, 0.3, 1)`).
+
+<SourceFiles component="motion" section="css">
+  <SourceNote for="css">The shared motion stylesheet - the declarative <code>data-df-entrance</code> twin of this page's <code>df$.anim</code> channels: the <code>--df-motion-…</code> tunables, the fifteen <code>df-enter-…</code> keyframes and the reduced-motion flattening.</SourceNote>
+</SourceFiles>
+
+</DocPage>

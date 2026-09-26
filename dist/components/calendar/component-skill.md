@@ -2,7 +2,7 @@
 name: Calendar
 type: ATM
 why: Month grid with keyboard navigation and selection state via the State API.
-when: Displaying or selecting days inside a larger date UI — pair with a popover for a full picker.
+when: Displaying or selecting days inside a larger date UI - pair with a popover for a full picker.
 where: dist/components/calendar/calendar.css + dist/components/calendar/calendar.js
 supportedStates: default
 ---
@@ -15,9 +15,9 @@ supportedStates: default
 
 ## Native Web APIs
 
-- [`<table>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table) — tabular grid for the month
-- [`role="grid"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/grid_role) — ARIA grid pattern for 2D keyboard navigation
-- [`<button>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button) — navigation and day selection buttons
+- [`<table>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table) - tabular grid for the month
+- [`role="grid"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/grid_role) - ARIA grid pattern for 2D keyboard navigation
+- [`<button>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button) - navigation and day selection buttons
 
 ## Structure
 
@@ -66,7 +66,7 @@ supportedStates: default
 The grid renders through the core `df$` runtime: `df$(grid).morph(nextHtml)`
 (see the "DOM Querying & Morphing" guide). Each day `<td>` is generated with a
 stable `id` (`<calendar id>-<ISO date>`, e.g. `cal-1-2026-04-15`) and a
-`data-cal-date` attribute carrying that ISO date — morph matches by id, so
+`data-cal-date` attribute carrying that ISO date - morph matches by id, so
 re-renders move/reuse day nodes instead of replacing them (focus survives a
 selection re-render; a keyboard-activated cell regains focus). The grid
 mirrors the selection as `data-selected-date` (ISO) for a stable read target.
@@ -77,7 +77,7 @@ positions.
 
 The calendar's observable state is its view: visible month + selected day.
 Declared states: `default` (reset to today's month, no selection;
-`{ year, month, day }` config — 0-based month — navigates/selects).
+`{ year, month, day }` config - 0-based month - navigates/selects).
 `getState().config` reports the live `year`/`month`/`selected`.
 
 ```js
@@ -96,7 +96,7 @@ Set `data-density` on the `.calendar` root. A whitespace policy, not a zoom: onl
 | Value | Effect |
 | --- | --- |
 | `compact` | frame 0.5rem, day cells 1.75rem (hit-area 1.5rem) |
-| `comfortable` | frame 0.75rem, day cells 2.25rem (hit-area 2rem) — identical to the unsized default |
+| `comfortable` | frame 0.75rem, day cells 2.25rem (hit-area 2rem) - identical to the unsized default |
 | `spacious` | frame 1rem, day cells 2.75rem (hit-area 2.5rem) |
 
 ## Accessibility

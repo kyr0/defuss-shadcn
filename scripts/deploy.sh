@@ -12,7 +12,7 @@ set -euo pipefail
 #
 # This is a RELEASE deploy. It:
 #   1. Bumps the version in package.json (the docs header badge is stamped
-#      from it at docs build time — no second version literal exists)
+#      from it at docs build time - no second version literal exists)
 #   2. Generates a changelog entry from git commits (all messages since the
 #      last release)
 #   3. Commits to dev, then a SECOND commit embeds that commit's short hash
@@ -82,7 +82,7 @@ echo "✅ Updated version in package.json (docs header badge is stamped from it 
 # Generate changelog entry from git commits since last tag.
 # Two-commit rule (verify's "changelog ↔ version" gate): the entry goes into
 # src/documentation/data/changelog.json with the version bump, then a SECOND
-# commit stamps this commit's short hash into the entry — proof of when the
+# commit stamps this commit's short hash into the entry - proof of when the
 # entry was authored.
 LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
 DATE=$(date +"%B %d, %Y")
@@ -104,7 +104,7 @@ bun scripts/changelog-entry.ts add "${NEW_VERSION}" "${DATE}" "${COMMIT_LINES[@]
 
 echo "✅ Added changelog entry for v${NEW_VERSION}"
 
-# Regenerate everything from the bumped sources — compile, screenshots (layout.ts
+# Regenerate everything from the bumped sources - compile, screenshots (layout.ts
 # is a screenshot input), docs mirror, verify, tests, e2e (same gates as CI).
 make build
 
@@ -147,7 +147,7 @@ if command -v gh &> /dev/null; then
     --target main
   echo "✅ Created GitHub Release for v${NEW_VERSION}"
 else
-  echo "⚠️  gh CLI not found — skipping GitHub Release (install: https://cli.github.com)"
+  echo "⚠️  gh CLI not found - skipping GitHub Release (install: https://cli.github.com)"
 fi
 
 # Switch back to dev

@@ -1,7 +1,7 @@
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: site-header is CSS-only — the contract is that the flex header lays
+ * Why: site-header is CSS-only - the contract is that the flex header lays
  * out brand/nav/actions, the container query reveals the nav at wide
  * containers, and the sticky variant actually sticks. The nav composes the
  * navigation-menu component: trigger buttons with popovertarget + popover
@@ -70,8 +70,8 @@ await cssSmoke('site-header', [
         };
       });
       await page.keyboard.press('Escape');
-      if (r.posAnchor === 'normal') throw new Error('position-anchor not applied — anchor wiring did not run');
-      if (!(r.gap >= 0 && r.gap < 24)) throw new Error(`panel ${r.gap}px from trigger bottom — not anchored below`);
+      if (r.posAnchor === 'normal') throw new Error('position-anchor not applied - anchor wiring did not run');
+      if (!(r.gap >= 0 && r.gap < 24)) throw new Error(`panel ${r.gap}px from trigger bottom - not anchored below`);
       if (!r.aligned) throw new Error('panel left edge not aligned with trigger');
     },
   },
@@ -91,7 +91,7 @@ await cssSmoke('site-header', [
         return { gap: p.getBoundingClientRect().top - t.getBoundingClientRect().bottom };
       });
       await page.keyboard.press('Escape');
-      if (!(r.gap >= 0 && r.gap < 24)) throw new Error(`sticky panel ${r.gap}px from trigger bottom — not anchored`);
+      if (!(r.gap >= 0 && r.gap < 24)) throw new Error(`sticky panel ${r.gap}px from trigger bottom - not anchored`);
     },
   },
 ]);

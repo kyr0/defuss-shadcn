@@ -1,8 +1,8 @@
 ---
 name: Popover
 type: ATM
-why: Native Popover API with CSS anchor positioning — show, dismiss, and placement owned by the browser.
-when: Lightweight panel anchored to a trigger — info, mini-forms, menus.
+why: Native Popover API with CSS anchor positioning - show, dismiss, and placement owned by the browser.
+when: Lightweight panel anchored to a trigger - info, mini-forms, menus.
 where: dist/components/popover/popover.css + dist/components/popover/popover.js
 supportedStates: default, open
 ---
@@ -11,17 +11,17 @@ supportedStates: default, open
 
 ## Native basis
 
-`popover` attribute — native Popover API with CSS anchor positioning for placement.
+`popover` attribute - native Popover API with CSS anchor positioning for placement.
 
 ## Native Web APIs
 
-- [`popover` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/popover) — native popover API with light-dismiss (click outside / Escape)
-- [`popovertarget`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#popovertarget) — declarative button→popover wiring with no JS
-- [CSS Anchor Positioning](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning) — positions popover relative to trigger via `position-area`
-- [`position-area`](https://developer.mozilla.org/en-US/docs/Web/CSS/position-area) — grid-based anchor positioning for side/align placement
-- [`position-try-fallbacks`](https://developer.mozilla.org/en-US/docs/Web/CSS/position-try-fallbacks) — automatic flip when popover overflows viewport
-- [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) — entry animation starting values
-- [`transition-behavior: allow-discrete`](https://developer.mozilla.org/en-US/docs/Web/CSS/transition-behavior) — enables transitions on `display` property
+- [`popover` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/popover) - native popover API with light-dismiss (click outside / Escape)
+- [`popovertarget`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#popovertarget) - declarative button→popover wiring with no JS
+- [CSS Anchor Positioning](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning) - positions popover relative to trigger via `position-area`
+- [`position-area`](https://developer.mozilla.org/en-US/docs/Web/CSS/position-area) - grid-based anchor positioning for side/align placement
+- [`position-try-fallbacks`](https://developer.mozilla.org/en-US/docs/Web/CSS/position-try-fallbacks) - automatic flip when popover overflows viewport
+- [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) - entry animation starting values
+- [`transition-behavior: allow-discrete`](https://developer.mozilla.org/en-US/docs/Web/CSS/transition-behavior) - enables transitions on `display` property
 
 ## Structure
 
@@ -57,7 +57,7 @@ supportedStates: default, open
 | Attribute | Element | Values | Default | Description |
 |---|---|---|---|---|
 | `popover` | `.popover` | `"auto"` | `"auto"` | Enables native Popover API |
-| `popovertarget` | trigger `<button>` | popover `id` | — | Declarative trigger wiring |
+| `popovertarget` | trigger `<button>` | popover `id` | - | Declarative trigger wiring |
 | `data-side` | `.popover` | `top`, `right`, `bottom`, `left` | `bottom` | Which side of the trigger to position |
 | `data-align` | `.popover` | `start`, `center`, `end` | `center` | Alignment along the side axis |
 
@@ -69,7 +69,7 @@ Set `data-density` on the `.popover` root. A whitespace policy, not a zoom: only
 | Value | Effect |
 | --- | --- |
 | `compact` | content padding 0.75rem |
-| `comfortable` | content padding 1rem — identical to the unsized default |
+| `comfortable` | content padding 1rem - identical to the unsized default |
 | `spacious` | content padding 1.25rem |
 
 ## ARIA
@@ -104,7 +104,7 @@ The api is bound per popover element; the registry global is
 ## Notes
 
 - The popover renders in the **top layer**, so it appears above all other content regardless of `z-index`.
-- CSS anchor positioning (`position-area`) handles placement — the JS only assigns unique anchor names per trigger–popover pair.
+- CSS anchor positioning (`position-area`) handles placement - the JS only assigns unique anchor names per trigger–popover pair.
 - `position-try-fallbacks: flip-block` (or `flip-inline` for left/right sides) automatically repositions when the popover would overflow the viewport.
 - The `popover` attribute defaults to `"auto"` which provides light-dismiss behavior. Use `popover="manual"` if you need the popover to stay open until explicitly closed.
-- Do not place the `.popover` element inside scroll containers — it renders in the top layer and will not scroll with parent content.
+- Do not place the `.popover` element inside scroll containers - it renders in the top layer and will not scroll with parent content.

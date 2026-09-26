@@ -1,7 +1,7 @@
 ---
 name: Checkbox
 type: ATM
-why: Native input[type=checkbox] including the indeterminate state — themed with accent-color, no custom widget.
+why: Native input[type=checkbox] including the indeterminate state - themed with accent-color, no custom widget.
 when: Independent on/off selections in a form, one or many at once.
 where: dist/components/checkbox/checkbox.css
 supportedStates: default
@@ -15,14 +15,14 @@ supportedStates: default
 ---
 
 ## Native Web APIs
-- [`<input type="checkbox">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox) — native toggle control with built-in keyboard and form support
-- [`:checked`](https://developer.mozilla.org/en-US/docs/Web/CSS/:checked) — matches checked state
-- [`:indeterminate`](https://developer.mozilla.org/en-US/docs/Web/CSS/:indeterminate) — matches the indeterminate (mixed) state
-- [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) — keyboard-only focus ring
-- [`:user-invalid`](https://developer.mozilla.org/en-US/docs/Web/CSS/:user-invalid) — post-interaction validation styling
-- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) — suppresses transitions
-- [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) — thicker borders for high-contrast preference
-- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) — reverts to native checkbox in Windows High Contrast Mode
+- [`<input type="checkbox">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox) - native toggle control with built-in keyboard and form support
+- [`:checked`](https://developer.mozilla.org/en-US/docs/Web/CSS/:checked) - matches checked state
+- [`:indeterminate`](https://developer.mozilla.org/en-US/docs/Web/CSS/:indeterminate) - matches the indeterminate (mixed) state
+- [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) - keyboard-only focus ring
+- [`:user-invalid`](https://developer.mozilla.org/en-US/docs/Web/CSS/:user-invalid) - post-interaction validation styling
+- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) - suppresses transitions
+- [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) - thicker borders for high-contrast preference
+- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) - reverts to native checkbox in Windows High Contrast Mode
 
 ---
 
@@ -97,7 +97,7 @@ All keyboard behavior is provided natively by `<input type="checkbox">`.
 - Use `<label>` with `for` to associate the label text.
 - Use `<fieldset>` + `<legend>` for checkbox groups.
 - Use `aria-invalid="true"` for validation errors.
-- Point `aria-describedby` from the control to the `.field-description`'s `id` — visual proximity alone never reaches a screen reader.
+- Point `aria-describedby` from the control to the `.field-description`'s `id` - visual proximity alone never reaches a screen reader.
 - Use `indeterminate` property via JS for the indeterminate (mixed) state.
 
 ---
@@ -105,6 +105,6 @@ All keyboard behavior is provided natively by `<input type="checkbox">`.
 ## Notes
 
 - Styled with `appearance: none` and a custom checkmark via `::after` pseudo-element.
-- The checkmark uses a CSS-only approach — no SVG or icon font needed.
+- The checkmark uses a CSS-only approach - no SVG or icon font needed.
 - Indeterminate state is set via JavaScript: `checkbox.indeterminate = true;`.
 - In `forced-colors: active`, the checkbox reverts to `appearance: auto` so Windows High Contrast Mode controls rendering.

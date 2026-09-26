@@ -9,7 +9,7 @@ export function escapeHtmlAttr(s: string): string {
 }
 
 /** Escape a source file's text for embedding as visible code (text child of
- * <code>) — the component functions pass the RAW string as a JSX text child;
+ * <code>) - the component functions pass the RAW string as a JSX text child;
  * defuss's serializer performs this same escaping on output, so components
  * should pass raw text and never pre-escape. This helper exists for spots
  * that build HTML strings directly (dangerouslySetInnerHTML). */

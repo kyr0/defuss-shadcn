@@ -10,6 +10,15 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      transition: filter 200ms ease;
+    }
+
+    /* -- Progressive placeholder --------------------------------
+       Why: the low-res stand-in (data-src-low) shows blurred until the
+       real source is preloaded and swapped in; 8px is a hardcoded filter
+       value per the token boundary (no --* token for filters). */
+    & > img[data-loading] {
+      filter: blur(8px);
     }
 
     /* -- Fit variants ---------------------------------------- */
@@ -173,6 +182,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .image > img,
     dialog.image-lightbox,
     dialog.image-lightbox::backdrop,
     .image-lightbox-content > img {

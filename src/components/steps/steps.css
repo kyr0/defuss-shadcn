@@ -125,7 +125,7 @@
     .step[data-status='error']:not(:last-child)::after { background: Mark; }
   }
   /* -- Density ----------------------------------------------------
-     data-density on the .steps root scales the flex gaps only — the size
+     data-density on the .steps root scales the flex gaps only - the size
      ladder owns indicator/typography, size and density stay independent.
      comfortable == the unsized default (.5rem / .125rem). */
   .steps:where([data-density="compact"]) {

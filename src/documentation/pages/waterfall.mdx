@@ -1,0 +1,242 @@
+---
+title: "Waterfall - Presentation"
+description: "Art Deco Night design language presenting a cinema chain’s revenue bridge as a 12-slide deck - one chart morphing from waterfall to running total, ranked movers and a revenue donut."
+slug: "waterfall"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="waterfall" title="Waterfall" component="presentation">
+  Art Deco Night: navy lacquer, gold hairlines and centered symmetry - a fictional cinema chain explains how 2025 revenue was built, contributor by contributor, on one chart that morphs from slide to slide.
+</PageHeader>
+
+```html example label="Art Deco Night" schema="none" height="26" hint="Every slide comes and goes through the df$.anim engine - an iris by default (data-anim-in on the deck), gold curtains (blocksIn) at the section breaks. One deck-level chart (df$.shadcn.chart.deck) plays every chart slide: the waterfall grows a running-total thread, folds into a ranked movers chart and morphs into the revenue donut. Click the deck and use ← / →, N for notes." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-waterfall" data-anim-in="irisIn" data-anim-out="fadeOut" style="--presentation-ink:#07111F;--presentation-ink-foreground:#F8E8B6;--presentation-paper:#F8E8B6;--presentation-paper-foreground:#0A1727;--presentation-accent:#E2B857;font-family:Georgia, 'Times New Roman', serif;" tabindex="-1" aria-label="Aurora Cinemas - the 2025 revenue bridge">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="Revenue bridge of Aurora Cinemas from 48.2 to 55.3 million euros, morphing into a running total, a ranking of movers and a revenue donut"></div>
+  <section class="slide" data-slide data-theme="ink" aria-label="Cover">
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Waterfall · Art Deco Night</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; text-transform:uppercase; letter-spacing:0.03em; font-weight:400; font-size:6.25rem;">How 2025 reached €55.3 M</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">Aurora Cinemas turned last year’s €48.2 M into a record - six moves, two of them against us.</p>
+    <p aria-hidden="true" style="letter-spacing:1.5rem; color:#E2B857; font-size:1.75rem; margin:2.5rem 0 0;">◆ ◆ ◆</p>
+    <p class="presentation-note">Open on the result; the deck is the explanation.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="bridge" style="justify-content:flex-start;" aria-label="The bridge">
+    <header class="presentation-header"><span>The bridge</span><span>€ M · 2024 → 2025</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; text-transform:uppercase; letter-spacing:0.03em; font-weight:400;">Four gains, two losses, one record year</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Let the bars build - the invisible baseline does the heavy lifting.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="thread" style="justify-content:flex-start;" aria-label="Running total">
+    <header class="presentation-header"><span>Second reading</span><span>The gold thread</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; text-transform:uppercase; letter-spacing:0.03em; font-weight:400;">The running total never fell back to the start</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Same data, cumulative instead of incremental.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="movers" style="justify-content:flex-start;" aria-label="Movers ranked">
+    <header class="presentation-header"><span>Third reading</span><span>Ranked by size</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; text-transform:uppercase; letter-spacing:0.03em; font-weight:400;">Tickets carried the year - the streaming window hurt most</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Out of journey order, the bars answer: what mattered most?</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="The movers">
+    <p class="presentation-eyebrow" data-df-entrance="fade">Three numbers for the board</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#5AB7A5; font-weight:400;">+€<span data-count="6.4">6.4</span> M</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">from ticket sales - attendance up 11%</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#E2B857; font-weight:400;">−€<span data-count="4.8">4.8</span> M</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">lost to the shorter streaming window</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-weight:400;">+<span data-count="14.7">14.7</span>%</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">revenue growth, the best since opening</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">The fight between the first two numbers is next year’s budget meeting.</p>
+    <p class="presentation-note">Name the fight, then let the room argue about it.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="In the auditorium">
+    <header class="presentation-header"><span>Why it worked</span><span>Attendance +11%</span></header>
+    <div style="display:flex; gap:4.5rem; align-items:center; margin-top:3.5rem;">
+      <div style="flex:1 1 0; min-width:0;">
+        <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; text-transform:uppercase; letter-spacing:0.03em; font-weight:400;">People came back for the big screen</h2>
+        <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:300ms; font-size:1.7rem;">Premium seats and event nights turned a film into an evening out - the ticket line is attendance, not price.</p>
+      </div>
+      <figure class="image" data-ratio="4/3" data-df-entrance="iris" style="--df-motion-delay:150ms; flex:0 0 700px; margin:0;">
+        <img src="https://picsum.photos/id/117/960/720" alt="Silhouettes of an audience in a dark hall facing a bright stage light" loading="lazy" width="960" height="720" style="width:100%; height:100%; object-fit:cover;" />
+        <figcaption class="image-caption" style="font-size:1.25rem;">Event night, main auditorium (stock photo).</figcaption>
+      </figure>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">One image, one reason: the room was full again.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="north" data-anim-in-blocks="6" aria-label="The bridge as a table">
+    <header class="presentation-header"><span>The bridge</span><span>Step by step</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" style="font-size:1.45rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">Aurora Cinemas revenue bridge, € millions (fictional).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">Step</th><th class="table-head" style="text-align:right">Change</th><th class="table-head" style="text-align:right">Running total</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row"><td class="table-cell">2024 revenue</td><td class="table-cell" style="text-align:right">—</td><td class="table-cell" style="text-align:right">48.2</td></tr>
+          <tr class="table-row"><td class="table-cell">Tickets</td><td class="table-cell" style="text-align:right">+6.4</td><td class="table-cell" style="text-align:right">54.6</td></tr>
+          <tr class="table-row"><td class="table-cell">Streaming window</td><td class="table-cell" style="text-align:right">−4.8</td><td class="table-cell" style="text-align:right">49.8</td></tr>
+          <tr class="table-row"><td class="table-cell">Concessions</td><td class="table-cell" style="text-align:right">+3.1</td><td class="table-cell" style="text-align:right">52.9</td></tr>
+          <tr class="table-row"><td class="table-cell">Energy costs</td><td class="table-cell" style="text-align:right">−1.9</td><td class="table-cell" style="text-align:right">51.0</td></tr>
+          <tr class="table-row"><td class="table-cell">Premium seats</td><td class="table-cell" style="text-align:right">+2.7</td><td class="table-cell" style="text-align:right">53.7</td></tr>
+          <tr class="table-row"><td class="table-cell">Private events</td><td class="table-cell" style="text-align:right">+1.6</td><td class="table-cell" style="text-align:right">55.3</td></tr>
+        </tbody>
+        <tfoot>
+          <tr class="table-row"><td class="table-cell">2025 revenue</td><td class="table-cell" style="text-align:right;font-weight:700">+7.1 net</td><td class="table-cell" style="text-align:right;font-weight:700">55.3</td></tr>
+        </tfoot>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The chart walks the journey; the table reconciles it to the cent.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-weight:400;">“We stopped arguing about the total the day we saw the streaming bar hanging below the line.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem;"><span class="avatar-fallback">MO</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Mara Okafor<br /><span style="opacity:0.7; font-size:1.4rem;">CFO, Aurora Cinemas - 9 budget cycles</span></p>
+    </div>
+    <p class="presentation-note">Pause two beats after the quote.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="mix" style="justify-content:flex-start;" aria-label="Revenue mix">
+    <header class="presentation-header"><span>Where it came from</span><span>2025 · €55.3 M</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; text-transform:uppercase; letter-spacing:0.03em; font-weight:400;">Tickets are half the house - concessions a quarter</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The same names, reframed as shares of the final total.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Questions from the board">
+    <header class="presentation-header"><span>Q & A</span><span>Asked in the meeting</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; text-transform:uppercase; letter-spacing:0.03em; font-weight:400;">Questions from the board</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="wf-qa" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Is the ticket gain price or volume?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Volume: attendance rose 11% while the average ticket price moved less than 2%.</p></div>
+      </details>
+      <details class="accordion-item" name="wf-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Can we win back the streaming window?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Partly - two distributors offered a 45-day window for premium titles in exchange for guaranteed screens.</p></div>
+      </details>
+      <details class="accordion-item" name="wf-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Why keep a loss-making energy line?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">It is not a line we can drop: the 2026 heat-pump retrofit halves it from year two.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Open one answer at a time - the accordion keeps only one open.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Takeaways">
+    <header class="presentation-header"><span>Takeaways</span><span>For 2026</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">◆</span><span>Protect the ticket engine - it produced 90% of the net gain.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">◆</span><span>Negotiate the streaming window before it costs another €5 M.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">◆</span><span>Premium seats paid back in one year; roll them out to two more sites.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">◆</span><span>Hedge energy: the smallest loss is also the most predictable one.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Thirty seconds - do not walk the list.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-anim-in="blocksIn" data-anim-in-direction="south" data-anim-in-blocks="8" aria-label="Closing">
+    <p aria-hidden="true" style="letter-spacing:1.5rem; color:#E2B857; font-size:1.75rem; margin:0 0 2rem;">◆ ◆ ◆</p>
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; text-transform:uppercase; letter-spacing:0.03em; font-weight:400;">Every total is a story of parts</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">€48.2 M to €55.3 M in six moves - fictional cinema, real pattern.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">Close on the pattern, not the numbers.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) - build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-waterfall');
+    const INK = '#F8E8B6', MUTED = '#8F856D', GOLD = '#E2B857', TEAL = '#5AB7A5', THREAD = '#F2D675';
+    const G = { left: 150, right: 130, top: 320, bottom: 150 };
+
+    // the waterfall transform: invisible baseline + signed bars + running total
+    const steps = [['Tickets', 6.4], ['Streaming window', -4.8], ['Concessions', 3.1], ['Energy', -1.9], ['Premium seats', 2.7], ['Private events', 1.6]];
+    const labels = ['2024', ...steps.map((s) => s[0]), '2025'];
+    let run = 48.2;
+    const base = [0], gain = [48.2], loss = ['-'], totals = [48.2];
+    for (const [, d] of steps) {
+      if (d >= 0) { base.push(run); gain.push(d); loss.push('-'); run += d; }
+      else { run += d; base.push(run); gain.push('-'); loss.push(-d); }
+      run = Math.round(run * 10) / 10;
+      totals.push(run);
+    }
+    base.push(0); gain.push(run); loss.push('-'); totals.push(run);
+    const named = (arr) => arr.map((v, i) => ({ name: labels[i], value: v }));
+    const money = (v) => (v === '-' ? '' : v);
+
+    const bridgeAxes = {
+      grid: G,
+      xAxis: { type: 'category', data: labels, axisLabel: { interval: 0, width: 160, overflow: 'break', lineHeight: 24, fontSize: 20, color: INK, fontWeight: 700 } },
+      yAxis: { type: 'value', min: 0, max: 60, interval: 15, axisLabel: { color: MUTED } },
+    };
+    const bridge = [
+      { id: 'base', type: 'bar', stack: 'w', silent: true, data: named(base), itemStyle: { color: 'transparent' } },
+      { id: 'gain', type: 'bar', stack: 'w', barWidth: '58%', data: named(gain),
+        itemStyle: { color: (p) => (p.dataIndex === 0 || p.dataIndex === labels.length - 1 ? INK : TEAL) },
+        label: { show: true, position: 'top', formatter: (p) => money(p.value), color: INK, fontWeight: 700 } },
+      { id: 'loss', type: 'bar', stack: 'w', barWidth: '58%', data: named(loss), itemStyle: { color: GOLD },
+        label: { show: true, position: 'bottom', formatter: (p) => (p.value === '-' ? '' : '−' + p.value), color: INK, fontWeight: 700 } },
+    ];
+
+    // ranked movers: the SAME series ids and item names, now horizontal
+    const ranked = steps.slice().sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]));
+
+    df$.shadcn.chart.deck(deck, {
+      base: { color: [TEAL, GOLD, INK, MUTED, THREAD], tooltip: { trigger: 'item' } },
+      states: {
+        bridge: { ...bridgeAxes, series: bridge },
+        thread: { ...bridgeAxes, series: [...bridge,
+          { id: 'total', type: 'line', data: named(totals), z: 5, symbolSize: 16, step: false,
+            lineStyle: { color: THREAD, width: 4 }, itemStyle: { color: THREAD, borderColor: '#07111F', borderWidth: 3 } }] },
+        movers: {
+          grid: { left: 330, right: 170, top: 320, bottom: 140 },
+          xAxis: { type: 'value', min: -8, max: 8, axisLabel: { color: MUTED, formatter: (v) => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v) } },
+          yAxis: { type: 'category', inverse: true, data: ranked.map((s) => s[0]), axisLine: { show: false }, axisLabel: { color: INK, fontWeight: 700 } },
+          series: [
+            { id: 'gain', type: 'bar', stack: 'm', barWidth: '62%', data: ranked.map(([n, d]) => ({ name: n, value: d > 0 ? d : '-' })),
+              itemStyle: { color: TEAL }, label: { show: true, position: 'right', formatter: (p) => (p.value === '-' ? '' : '+' + p.value), color: INK, fontWeight: 700 } },
+            { id: 'loss', type: 'bar', stack: 'm', barWidth: '62%', data: ranked.map(([n, d]) => ({ name: n, value: d < 0 ? d : '-' })),
+              itemStyle: { color: GOLD }, label: { show: true, position: 'left', formatter: (p) => (p.value === '-' ? '' : '−' + Math.abs(p.value)), color: INK, fontWeight: 700 } },
+          ],
+        },
+        mix: {
+          series: [{ id: 'gain', type: 'pie', radius: ['30%', '54%'], center: ['50%', '64%'],
+            color: [TEAL, GOLD, THREAD, '#9FC9C0', MUTED],
+            itemStyle: { borderColor: '#07111F', borderWidth: 4, borderRadius: 6 },
+            label: { formatter: '{b}\n€{c} M', color: INK, fontWeight: 700, lineHeight: 34 },
+            labelLine: { length: 26, length2: 36, lineStyle: { color: MUTED } },
+            data: [['Tickets', 29.1], ['Concessions', 14.6], ['Premium seats', 6.2], ['Private events', 3.4], ['Advertising', 2.0]].map(([n, v]) => ({ name: n, value: v })) }],
+        },
+      },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 06-waterfall (Art Deco Night) - a fictional cinema chain, synthetic figures.</p>
+<SourceFiles component="presentation" />
+</DocPage>

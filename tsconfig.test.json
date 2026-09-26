@@ -2,7 +2,7 @@
   // Why: tests/ is TypeScript run directly by bun and by Vitest browser mode
   // (which transpiles .ts natively). This config exists so editors and
   // `bunx tsc -p tsconfig.test.json --noEmit` type-check the test tree
-  // strictly — catching typos in element ids/api before CI. Not used at runtime.
+  // strictly - catching typos in element ids/api before CI. Not used at runtime.
   "extends": "./tsconfig.scripts.json",
   "compilerOptions": {
     // vitest/browser module resolution needs bundler semantics + the

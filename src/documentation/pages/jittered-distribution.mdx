@@ -1,0 +1,215 @@
+---
+title: "Jittered Distribution - Presentation"
+description: "Organic Data Garden design language presenting raspberry yield per plant under four growing methods as a 12-slide deck - every plant as a dot, then groups collapsing into mean bars and boxplots, one morphing chart."
+slug: "jittered-distribution"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="jittered-distribution" title="Jittered Distribution" component="presentation">
+  Organic Data Garden: cream paper, moss green and one berry red - 160 raspberry plants, four growing methods, every single plant kept visible before anyone quotes an average.
+</PageHeader>
+
+```html example label="Organic Data Garden" schema="none" height="26" hint="Slides grow in and blur out (df$.anim zoomIn / blurOut, declared on the deck); berry-red curtains mark the breaks. One deck-level chart (df$.shadcn.chart.deck): 160 plants as jittered dots, the hydroponic spread highlighted, the dots merging into their mean bars (universalTransition by group), then re-splitting into boxplots. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-jitter" data-anim-in="zoomIn" data-anim-in-scale="0.92" data-anim-out="blurOut" style="--presentation-ink:#26351F;--presentation-ink-foreground:#F3F0DF;--presentation-paper:#F3F0DF;--presentation-paper-foreground:#26351F;--presentation-accent:#D85C41;font-family:'Trebuchet MS', Arial, sans-serif;" tabindex="-1" aria-label="Four ways to grow raspberries - every plant counted">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="Raspberry yield per plant in kilograms for 160 plants under four growing methods: open field averages 1.12, raised bed 1.39, polytunnel 1.91, hydroponic 2.24 with the widest spread"></div>
+  <section class="slide" data-slide data-theme="paper" aria-label="Cover">
+    <svg aria-hidden="true" width="520" height="620" viewBox="0 0 520 620" style="position:absolute; right:90px; top:150px;">
+      <path d="M260 600C250 420 240 260 260 40" stroke="#26351F" stroke-width="10" fill="none" stroke-linecap="round" />
+      <path d="M258 420C160 400 90 330 70 240C170 250 240 320 258 420Z" fill="#5E7F3E" />
+      <path d="M262 300C360 280 430 210 450 120C350 130 280 200 262 300Z" fill="#7C9E55" />
+      <path d="M256 190C190 170 150 110 150 50C220 60 250 120 256 190Z" fill="#5E7F3E" />
+      <circle cx="330" cy="470" r="34" fill="#D85C41" /><circle cx="372" cy="506" r="30" fill="#C04A33" /><circle cx="318" cy="522" r="28" fill="#D85C41" />
+    </svg>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Jittered distribution · Organic Data Garden</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-family:'Trebuchet MS', Arial, sans-serif; font-weight:700; letter-spacing:-0.015em; font-size:6rem; max-width:900px;">Four ways to grow a raspberry</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">160 plants, one season, every plant weighed - before anyone quotes an average.</p>
+    <p class="presentation-note">The drawing sets the season; the dots will do the rest.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="plants" style="justify-content:flex-start;" aria-label="Every plant">
+    <header class="presentation-header"><span>The harvest</span><span>kg per plant · 40 plants per method</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Trebuchet MS', Arial, sans-serif; font-weight:700; letter-spacing:-0.015em;">Every plant, one dot</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Jitter spreads each row so no plant hides behind another.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="hydro" style="justify-content:flex-start;" aria-label="Hydroponic spread">
+    <header class="presentation-header"><span>The harvest</span><span>Hydroponic highlighted</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Trebuchet MS', Arial, sans-serif; font-weight:700; letter-spacing:-0.015em;">Hydroponics: the best plants - and some of the worst</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">One colour for one question: why is hydroponics so uneven?</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="means" style="justify-content:flex-start;" aria-label="Means">
+    <header class="presentation-header"><span>Averages</span><span>Mean kg per plant</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Trebuchet MS', Arial, sans-serif; font-weight:700; letter-spacing:-0.015em;">The averages say: go hydroponic</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Forty dots merge into one bar per method - watch the spread disappear.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Key figures">
+    <p class="presentation-eyebrow" data-df-entrance="fade">Three numbers from the harvest</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#D85C41; font-family:'Trebuchet MS', Arial, sans-serif; font-weight:700; letter-spacing:-0.015em;"><span data-count="2.24">2.24</span> kg</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">mean per plant, hydroponic</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:'Trebuchet MS', Arial, sans-serif; font-weight:700; letter-spacing:-0.015em;"><span data-count="0.25">0.25</span> kg</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">middle-half spread in the polytunnel - the tightest</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:'Trebuchet MS', Arial, sans-serif; font-weight:700; letter-spacing:-0.015em;"><span data-count="1.73">1.73</span> kg</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">gap between the best and worst hydroponic plant</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">The average rewards hydroponics. The spread rewards the polytunnel.</p>
+    <p class="presentation-note">Average versus reliability - the growers’ real choice.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="The fruit">
+    <header class="presentation-header"><span>Quality</span><span>Brix and size</span></header>
+    <div style="display:flex; gap:4.5rem; align-items:center; margin-top:3.5rem;">
+      <div style="flex:1 1 0; min-width:0;">
+        <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; font-family:'Trebuchet MS', Arial, sans-serif; font-weight:700; letter-spacing:-0.015em;">Bigger harvests, same sweetness</h2>
+        <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:300ms; font-size:1.7rem;">Sugar content (8.9–9.4 °Brix) barely differed between methods. Yield did - reliability even more.</p>
+      </div>
+      <figure class="image" data-ratio="4/3" data-df-entrance="zoom" style="--df-motion-delay:150ms; flex:0 0 700px; margin:0;">
+        <img src="https://picsum.photos/id/102/960/720" alt="A few ripe raspberries on a light surface in warm, soft light" loading="lazy" width="960" height="720" style="width:100%; height:100%; object-fit:cover;" />
+        <figcaption class="image-caption" style="font-size:1.25rem;">Harvest week 31 (stock photo).</figcaption>
+      </figure>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Quality is not the trade-off here - reliability is.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="south" data-anim-in-blocks="5" data-anim-in-color="#D85C41" aria-label="Yield table">
+    <header class="presentation-header"><span>The data</span><span>kg per plant, 40 plants each</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" data-density="spacious" style="font-size:1.7rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">Raspberry yield per plant by growing method, one season (synthetic trial).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">Method</th><th class="table-head" style="text-align:right">Mean</th><th class="table-head" style="text-align:right">Median</th><th class="table-head" style="text-align:right">Middle half</th><th class="table-head" style="text-align:right">Range</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row"><td class="table-cell">Open field</td><td class="table-cell" style="text-align:right">1.12</td><td class="table-cell" style="text-align:right">1.13</td><td class="table-cell" style="text-align:right">0.89 – 1.32</td><td class="table-cell" style="text-align:right">0.57 – 1.62</td></tr>
+          <tr class="table-row"><td class="table-cell">Raised bed</td><td class="table-cell" style="text-align:right">1.39</td><td class="table-cell" style="text-align:right">1.38</td><td class="table-cell" style="text-align:right">1.18 – 1.62</td><td class="table-cell" style="text-align:right">1.02 – 1.84</td></tr>
+          <tr class="table-row" style="font-weight:700"><td class="table-cell">Polytunnel</td><td class="table-cell" style="text-align:right">1.91</td><td class="table-cell" style="text-align:right">1.91</td><td class="table-cell" style="text-align:right">1.80 – 2.05</td><td class="table-cell" style="text-align:right">1.52 – 2.32</td></tr>
+          <tr class="table-row"><td class="table-cell">Hydroponic</td><td class="table-cell" style="text-align:right">2.24</td><td class="table-cell" style="text-align:right">2.24</td><td class="table-cell" style="text-align:right">2.00 – 2.46</td><td class="table-cell" style="text-align:right">1.49 – 3.22</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The ranges are the argument - read the last column.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-family:'Trebuchet MS', Arial, sans-serif; font-weight:700; letter-spacing:-0.015em; font-size:3rem;">“In hydroponics one pump fault ruins a whole rack. In the tunnel, a bad day costs you one plant.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#D85C41; color:#F3F0DF;"><span class="avatar-fallback">GF</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Greta Falk<br /><span style="opacity:0.7; font-size:1.4rem;">Soft-fruit grower - 9 seasons, 4 methods</span></p>
+    </div>
+    <p class="presentation-note">The grower explains the spread.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="box" style="justify-content:flex-start;" aria-label="Boxplots">
+    <header class="presentation-header"><span>Spread</span><span>Median, middle half, range</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Trebuchet MS', Arial, sans-serif; font-weight:700; letter-spacing:-0.015em;">Reliability is a shape, not a number</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The bars re-open into boxplots: the polytunnel box is the narrowest.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Questions from the co-op">
+    <header class="presentation-header"><span>Q & A</span><span>Growers’ co-op</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; font-family:'Trebuchet MS', Arial, sans-serif; font-weight:700; letter-spacing:-0.015em;">Questions from the co-op</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="jd-qa" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Which method would you plant next year?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Polytunnel for reliable volume; hydroponics only with redundant pumps.</p></div>
+      </details>
+      <details class="accordion-item" name="jd-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Were the open-field plants unlucky?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Two weeks of June rain cost them about 0.2 kg per plant - the gap would remain.</p></div>
+      </details>
+      <details class="accordion-item" name="jd-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Is 40 plants per method enough?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">For means, yes; for the extremes, the next trial doubles it.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The co-op wants a recommendation - give it.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Takeaways">
+    <header class="presentation-header"><span>Takeaways</span><span>For next season</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">❀</span><span>Show every observation before summarising it.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">❀</span><span>Hydroponics: highest mean, widest spread - engineer the risk away.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">❀</span><span>The polytunnel is the reliable middle.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">❀</span><span>Open field is cheapest; weather sets its ceiling.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Plain lessons, garden pace.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-anim-in="blocksIn" data-anim-in-direction="north" data-anim-in-blocks="5" data-anim-in-color="#D85C41" aria-label="Closing">
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-family:'Trebuchet MS', Arial, sans-serif; font-weight:700; letter-spacing:-0.015em;">Every plant counts</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">A synthetic trial of 160 plants - keep every observation visible.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">End on the principle.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) - build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-jitter');
+    const TEXT = '#26351F', MUTED = '#8A8F74', BERRY = '#D85C41', LEAF = '#5E7F3E', DIM = 'rgba(38,53,31,.28)';
+    const methods = ['Open field', 'Raised bed', 'Polytunnel', 'Hydroponic'];
+    const kg = [[0.8,1.57,1.13,1.3,0.95,0.81,0.9,0.8,1.14,1.41,1.62,1.32,0.71,1.1,1.09,1.11,1.6,1.35,1.32,0.88,0.97,0.87,1.13,1.23,1.18,1.22,1.09,0.57,0.6,0.89,1.47,1.5,1.25,1.15,0.77,0.85,1.15,1.33,1.29,1.56],[1.1,1.27,1.23,1.37,1.47,1.82,1.68,1.35,1.19,1.17,1.06,1.56,1.7,1.56,1.62,1.16,1.11,1.09,1.67,1.71,1.84,1.7,1.08,1.23,1.39,1.2,1.68,1.48,1.8,1.24,1.13,1.18,1.18,1.41,1.66,1.44,1.56,1.52,1.02,1.07],[1.89,1.92,1.91,1.7,1.88,1.73,1.91,2.1,2.17,2.08,1.8,1.9,1.82,1.65,2.11,2.2,2.32,1.93,1.96,1.66,1.74,1.91,1.9,1.94,1.98,2.01,1.72,1.52,1.85,2.15,1.9,2.15,1.69,1.68,1.52,1.86,2.05,2.25,2.11,1.97],[1.62,1.95,2.22,3.09,2.85,2.85,2.26,1.49,2.24,1.83,2.41,2.99,2.74,1.9,1.51,1.57,2.07,2.41,2.42,2.27,2.07,2.15,2.11,1.67,2,2.28,3.22,2.16,2.47,1.78,2.1,2.46,2.52,2.43,2.58,2.53,2.39,1.49,2.16,2.24]];
+    const mean = (a) => Math.round((a.reduce((s, v) => s + v, 0) / a.length) * 100) / 100;
+    const G = { left: 250, right: 150, top: 330, bottom: 150 };
+    const xKg = { type: 'value', min: 0, max: 3.5, interval: 0.5, axisLabel: { color: MUTED, formatter: '{value} kg' } };
+    const yRows = { type: 'value', min: -0.6, max: 3.6, inverse: true, splitLine: { show: false },
+      axisLabel: { customValues: [0, 1, 2, 3], formatter: (v) => methods[v], color: TEXT, fontWeight: 700 } };
+    // one scatter series per method: dataGroupId lets the 40 dots MERGE into
+    // their method's mean bar (universalTransition by group) and split again
+    const dots = (color) => methods.map((m, g) => ({
+      id: m, type: 'scatter', dataGroupId: m, symbolSize: 16, universalTransition: { enabled: true, divideShape: 'split' },
+      data: kg[g].map((v, i) => [v, g + ((((i * 37) % 17) - 8) / 26)]),
+      itemStyle: { color: color(g), opacity: 0.8 },
+    }));
+
+    df$.shadcn.chart.deck(deck, {
+      base: { tooltip: { trigger: 'item' } },
+      states: {
+        plants: { grid: G, xAxis: xKg, yAxis: yRows, series: dots(() => LEAF) },
+        hydro: { grid: G, xAxis: xKg, yAxis: yRows, series: dots((g) => (g === 3 ? BERRY : DIM)) },
+        means: {
+          grid: G, xAxis: xKg,
+          yAxis: { type: 'category', inverse: true, data: methods, axisLine: { show: false }, axisLabel: { color: TEXT, fontWeight: 700 } },
+          series: [{ id: 'means', type: 'bar', barWidth: '46%', universalTransition: { enabled: true, divideShape: 'split' },
+            data: methods.map((m, g) => ({ value: mean(kg[g]), groupId: m, itemStyle: { color: g === 3 ? BERRY : LEAF } })),
+            label: { show: true, position: 'right', formatter: '{c} kg', color: TEXT, fontWeight: 700 } }],
+        },
+        box: {
+          grid: G, xAxis: xKg,
+          yAxis: { type: 'category', inverse: true, data: methods, axisLine: { show: false }, axisLabel: { color: TEXT, fontWeight: 700 } },
+          series: [{ id: 'means', type: 'boxplot', boxWidth: [30, 70],
+            data: [[0.57, 0.89, 1.13, 1.32, 1.62], [1.02, 1.18, 1.38, 1.62, 1.84], [1.52, 1.8, 1.91, 2.05, 2.32], [1.49, 2.0, 2.24, 2.46, 3.22]],
+            itemStyle: { color: 'rgba(94,127,62,.22)', borderColor: TEXT, borderWidth: 3 } }],
+        },
+      },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 14-jittered-distribution (Organic Data Garden) - a synthetic growing trial.</p>
+<SourceFiles component="presentation" />
+</DocPage>

@@ -13,7 +13,7 @@ const contextMenuStates = ['default', 'open'];
 
 /**
  * UI side of setState (per menu popover): 'open' shows the menu at { x, y }
- * (falling back to the top-left of the viewport — there is no pointer event
+ * (falling back to the top-left of the viewport - there is no pointer event
  * to anchor to); 'default' hides it.
  */
 function triggerStateChange(menu, stateName, config) {
@@ -64,10 +64,10 @@ let pendingOpen = null;
 /* Timestamp of the last right-button release (0 = never, i.e. page start) —
    see the contextmenu handler: the gesture normally fires contextmenu at
    button-DOWN (open must wait for the release), but some engines dispatch it
-   AFTER the pointerup — then the gesture is already over and opening is safe. */
+   AFTER the pointerup - then the gesture is already over and opening is safe. */
 let lastRightUp = 0;
 
-/* Document-level open-on-release — registered once (AGENTS.md delegation
+/* Document-level open-on-release - registered once (AGENTS.md delegation
    pattern). WHY release and not the contextmenu event itself: macOS fires
    contextmenu at mouse-DOWN, and an auto popover shown while the right button
    is still held is light-dismissed by the platform the moment it goes up —
@@ -113,7 +113,7 @@ function init() {
     }
     // right-button already released (gesture order: pointerup → contextmenu)
     // → opening now can't be light-dismissed. lastRightUp===0 (page never saw a
-    // right release) must NOT qualify — otherwise early page loads take this
+    // right release) must NOT qualify - otherwise early page loads take this
     // branch for a still-held button (0 - now is meaningless).
     if (lastRightUp > 0 && performance.now() - lastRightUp < 100) {
       openMenuAt(menu, e.clientX, e.clientY);

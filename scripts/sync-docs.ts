@@ -4,7 +4,7 @@ import { mirrorFiles, mirrorTransform } from './lib/mirror.ts';
 
 /**
  * Why: GitHub Pages publishes ./docs with no build step, and ./docs is the
- * documentation SITE — dist/documentation/* plus the SEO files — not a copy
+ * documentation SITE - dist/documentation/* plus the SEO files - not a copy
  * of the whole dist/ tree. The pages' `../components/…` and `../theme/…`
  * references are rewritten to the jsDelivr GitHub CDN (see lib/mirror.ts),
  * so the shipped tree needs nothing but the site itself.
@@ -15,7 +15,7 @@ const DIST = join(ROOT, 'dist');
 const OUT = join(ROOT, 'docs');
 
 if (!existsSync(DIST)) {
-  console.error('sync-docs: dist/ missing — run `bun run build` first');
+  console.error('sync-docs: dist/ missing - run `bun run build` first');
   process.exit(1);
 }
 
@@ -33,5 +33,5 @@ for (const { src, rel } of mirrorFiles(DIST)) {
 }
 
 console.log(
-  `sync-docs: ${count} files → docs/ (documentation site only, incl. 404.html fallback; ../component & ../theme refs rewritten to the jsDelivr CDN — ready for GitHub Pages)`,
+  `sync-docs: ${count} files → docs/ (documentation site only, incl. 404.html fallback; ../component & ../theme refs rewritten to the jsDelivr CDN - ready for GitHub Pages)`,
 );

@@ -1,0 +1,107 @@
+---
+title: "Blur - Animations"
+description: "The blur channel in depth - a focus pull with paired blurIn/blurOut variants, driven imperatively by df$.anim with duration and easing config plus scroll binding."
+slug: "anim-blur"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="anim-blur" title="Blur" component="motion">
+  Blur is the focus-pull animation of the <code>df$.anim</code> engine: the element sharpens out of a <code>blur(12px)</code> haze (<code>blurIn</code>) or dissolves back into it (<code>blurOut</code>), fading in opacity along the way. It is not directional - the blur radiates from the element itself - and both variants are driven entirely by <code>df$.anim.blurIn</code> / <code>df$.anim.blurOut</code>.
+</PageHeader>
+
+```html example label="In / out and lifecycle" schema="none" hint="blurIn pulls the card into focus, blurOut lets it dissolve; Pause / Resume / Finish / Reset act on the last-used channel. Duration and easing are plain per-play options."
+<style>
+  #anim-blur-target {
+    display: grid;
+    place-items: center;
+    width: 160px;
+    height: 100px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+</style>
+<div id="anim-blur-target">Blur me</div>
+<div style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:0.75rem;">
+  <button class="btn" data-variant="outline" data-size="sm" id="anim-blur-in">In</button>
+  <button class="btn" data-variant="outline" data-size="sm" id="anim-blur-out">Out</button>
+  <button class="btn" data-variant="outline" data-size="sm" id="anim-blur-pause">Pause</button>
+  <button class="btn" data-variant="outline" data-size="sm" id="anim-blur-resume">Resume</button>
+  <button class="btn" data-variant="outline" data-size="sm" id="anim-blur-finish">Finish</button>
+  <button class="btn" data-variant="outline" data-size="sm" id="anim-blur-reset">Reset</button>
+</div>
+<div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.75rem; margin-top:0.75rem; font-size:0.875rem;">
+  <label for="anim-blur-duration">Duration (ms)</label>
+  <input class="input" style="width:6rem;" type="number" id="anim-blur-duration" min="0" step="50" value="1500" />
+  <label for="anim-blur-easing">Easing</label>
+  <select class="select" id="anim-blur-easing">
+    <option value="cubic-bezier(0.16, 1, 0.3, 1)" selected>default</option>
+    <option value="linear">linear</option>
+    <option value="ease">ease</option>
+    <option value="ease-in-out">ease-in-out</option>
+    <option value="cubic-bezier(0.34, 1.56, 0.64, 1)">spring</option>
+  </select>
+</div>
+<script type="module">
+  // df$ (all.js) boots after example scripts in the sandbox - reference it
+  // only at event time, never at parse time.
+  const target = document.getElementById('anim-blur-target');
+  const config = () => ({
+    duration: Number(document.getElementById('anim-blur-duration').value) || undefined,
+    easing: document.getElementById('anim-blur-easing').value,
+  });
+  let lastChannel = 'blurIn'; // lifecycle controls act on the last play
+  document.getElementById('anim-blur-in').addEventListener('click', () => {
+    lastChannel = 'blurIn';
+    df$.anim.blurIn.play(target, config());
+  });
+  document.getElementById('anim-blur-out').addEventListener('click', () => {
+    lastChannel = 'blurOut';
+    df$.anim.blurOut.play(target, config());
+  });
+  document.getElementById('anim-blur-pause').addEventListener('click', () => df$.anim[lastChannel].pause(target));
+  document.getElementById('anim-blur-resume').addEventListener('click', () => df$.anim[lastChannel].resume(target));
+  document.getElementById('anim-blur-finish').addEventListener('click', () => df$.anim[lastChannel].finish(target));
+  document.getElementById('anim-blur-reset').addEventListener('click', () => df$.anim[lastChannel].reset(target));
+</script>
+```
+
+```html example label="Scroll binding" schema="none" hint="opts.scroll ties the animation's progress to a scroll position instead of time - scroll the stage and the card sharpens. Built on the platform's ScrollTimeline with a scrubbing fallback."
+<div id="anim-blur-scroller" style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg)">
+  <div style="height: 600px; display: grid; place-items: center;">
+    <div id="anim-blur-scroll-target" style="display: grid; place-items: center; width: 160px; height: 100px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); color: var(--card-foreground); font-size: 0.875rem; font-weight: 500;">Scroll-driven</div>
+  </div>
+</div>
+<script type="module">
+  // df$ boots after example scripts in the sandbox - bind on load,
+  // never at parse time.
+  const bindScrollBlur = () => {
+    const scroller = document.getElementById('anim-blur-scroller');
+    const target = document.getElementById('anim-blur-scroll-target');
+    df$.anim.blurIn.play(target, { scroll: { target: scroller, axis: 'y' } });
+  };
+  if (document.readyState === 'complete') bindScrollBlur();
+  else window.addEventListener('load', bindScrollBlur);
+</script>
+```
+
+Passing `{ target: 'viewport' }` instead of an element binds progress to the page's own scroll - the parallax use case for presentations, where a slide element sharpens as it scrolls into view.
+
+## Config axes
+
+- **duration** - total runtime in ms (default `1500`); a number input in the demo above.
+- **easing** - any CSS easing string (default `cubic-bezier(0.16, 1, 0.3, 1)`); the demo offers a few presets.
+
+Both channels also accept the shared `delay` option and honor `prefers-reduced-motion` automatically; `df$.anim.<channel>.state(el)` reports `idle` / `running` / `paused` / `finished`.
+
+<SourceFiles component="motion" section="css">
+  <SourceNote for="css">The shared motion stylesheet - the declarative <code>data-df-entrance</code> twin of this page's <code>df$.anim</code> channels: the <code>--df-motion-…</code> tunables, the fifteen <code>df-enter-…</code> keyframes and the reduced-motion flattening.</SourceNote>
+</SourceFiles>
+
+</DocPage>

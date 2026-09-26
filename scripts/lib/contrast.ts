@@ -121,24 +121,47 @@ export function parseThemes(source: string): ThemeEntry[] {
       modes[mode] = tokens;
     }
     const label = chunk.match(/label:\s*"([^"]*)"/)?.[1] ?? starts[i][1];
-    entries.push({ id: starts[i][1], label, modes });
+    // optional `links: [...]` - resource links (fonts) the theme needs at
+    // runtime, authored as STRICT JSON (double quotes) so this is the one
+    // honest parse; build.ts ships it verbatim as <id>.json, and a malformed
+    // array fails the build here instead of the consumer's font loader.
+    let links: Record<string, unknown>[] | undefined;
+    const linksAt = chunk.search(/\n\s*links:/);
+    if (linksAt !== -1) {
+      const open = chunk.indexOf('[', linksAt);
+      const close = findMatchingBracket(chunk, open);
+      if (open === -1 || close === -1)
+        throw new Error(`themes.ts: theme "${starts[i][1]}" has an unterminated links array`);
+      try {
+        links = JSON.parse(chunk.slice(open, close + 1));
+      } catch (e) {
+        throw new Error(`themes.ts: theme "${starts[i][1]}" links must be valid JSON - ${e}`);
+      }
+    }
+    entries.push({ id: starts[i][1], label, modes, ...(links ? { links } : {}) });
   }
   return entries;
 }
 
-export type ThemeEntry = { id: string; label: string; modes: Record<string, Record<string, string>> };
+export type ThemeEntry = {
+  id: string;
+  label: string;
+  modes: Record<string, Record<string, string>>;
+  /** resource <link> VNodes (defuss-JSX-as-JSON) the theme loads at runtime */
+  links?: Record<string, unknown>[];
+};
 
 /** WCAG AA minimum contrast for normal-size text. */
 export const WCAG_AA = 4.5;
 
 /**
- * Why: "default" isn't in themes.ts — its tokens live in the shipped
+ * Why: "default" isn't in themes.ts - its tokens live in the shipped
  * default-semantic-tokens.css. This extracts the sidebar token values from
  * the :root/.dark blocks so the contrast gate covers the default theme too
  * (it had the washed-out active-pill bug the user reported).
  */
 export function defaultTokenModes(source: string): Record<string, Record<string, string>> {
-  // token blocks are flat declarations — match each block's braces exactly
+  // token blocks are flat declarations - match each block's braces exactly
   // once (index-based slicing breaks if comments mention ".dark" early)
   const grab = (re: RegExp): Record<string, string> => {
     const block = source.match(re)?.[0] ?? '';
@@ -156,18 +179,18 @@ export function defaultTokenModes(source: string): Record<string, Record<string,
  * Why: the doc-site nav lives on --sidebar, so its two guaranteed-readable
  * pairings are sidebar-accent-foreground/on-sidebar-accent (active/hover)
  * and sidebar-foreground/on-sidebar (idle). tweakcn presets drift apart in
- * taste — but these are the accessibility floor, and the bug class that
+ * taste - but these are the accessibility floor, and the bug class that
  * bit us is pairing text against the *wrong* background token. This
  * measures both pairs per theme/mode (default theme included) so verify
  * fails with the exact theme/mode named; unparsable colors are skipped,
  * not silently passed.
  */
 /**
- * Why: a theme's shape is part of its identity — ChatGPT is pill-round,
+ * Why: a theme's shape is part of its identity - ChatGPT is pill-round,
  * Doom64 is hard-square. light and dark are two palettes of ONE theme, so
  * `radius` must be declared identically in both modes (themes.ts shipped
  * radius in light blocks only, so dark mode silently fell back to the
- * default rounding — AGENTS.md "Theme radius consistency").
+ * default rounding - AGENTS.md "Theme radius consistency").
  */
 export function radiusConsistencyProblems(themes: ThemeEntry[]): string[] {
   const problems: string[] = [];
@@ -176,7 +199,7 @@ export function radiusConsistencyProblems(themes: ThemeEntry[]): string[] {
     const dark = t.modes.dark?.radius;
     if (!light && !dark) continue; // theme opts into the default radius
     if (light !== dark)
-      problems.push(`${t.id}: radius "${light ?? '(unset)'}" (light) ≠ "${dark ?? '(unset)'}" (dark) — both modes must declare the same value`);
+      problems.push(`${t.id}: radius "${light ?? '(unset)'}" (light) ≠ "${dark ?? '(unset)'}" (dark) - both modes must declare the same value`);
   }
   return problems;
 }
@@ -204,6 +227,28 @@ export function sidebarContrastProblems(
     }
   }
   return problems;
+}
+
+/** Index of the `]` matching the `[` at `open` (string-aware; braces inside
+ * array items are skipped - only bracket depth counts). -1 if unbalanced. */
+function findMatchingBracket(s: string, open: number): number {
+  if (open === -1) return -1;
+  let depth = 0;
+  let inStr = false;
+  for (let i = open; i < s.length; i++) {
+    const c = s[i];
+    if (inStr) {
+      if (c === '"' && s[i - 1] !== '\\') inStr = false;
+      continue;
+    }
+    if (c === '"') inStr = true;
+    else if (c === '[') depth++;
+    else if (c === ']') {
+      depth--;
+      if (depth === 0) return i;
+    }
+  }
+  return -1;
 }
 
 /** Index of the `}` matching the `{` at `open` (string-aware). -1 if unbalanced. */

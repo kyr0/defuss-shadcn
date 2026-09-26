@@ -1,10 +1,10 @@
-# Core Bundle Plan — `core.js` / `core.css` for the modularized path
+# Core Bundle Plan - `core.js` / `core.css` for the modularized path
 
 > Status: **implemented** (2026-09-19; core.js landed earlier via
 > [defuss-query-morph-integration.md](defuss-query-morph-integration.md) §2.6; core.css +
 > stats + e2e + docs complete this revision).
 > **Divergence from §5:** the pair ships inside `dist/components/` (next to `all.*` +
-> `NOTICE.txt`), NOT in a `dist/core/` folder — one install folder, and the README/
+> `NOTICE.txt`), NOT in a `dist/core/` folder - one install folder, and the README/
 > Installation quick starts already referenced `components/core.js`; a folder move would
 > only churn every existing URL. `core.css` = concat of the four theme util sheets (fixed
 > order: tokens → sizing → layout → accessibility), min twin + map enforced by the
@@ -16,7 +16,7 @@
 > §5.3: modular, all-alone, no-core, conflict fixtures). Companion: the morph plan's §2.1
 > premise, completed.
 >
-> **Idea:** today consumers pick one of two extremes — the fat `all.css`/`all.js`
+> **Idea:** today consumers pick one of two extremes - the fat `all.css`/`all.js`
 > bundle, or per-component files PLUS four separate theme stylesheets PLUS their own
 > defuss tag. The core bundle collapses the "modularized" path into two includes:
 > **`core.css`** (tokens + sizing + layout + accessibility) and **`core.js`**
@@ -39,22 +39,22 @@ dist/core/
 
 **`core.css` content (fixed concat order, same files pick-what-you-need users link today):**
 
-1. `theme/utils/default-semantic-tokens.css` — tokens first; everything else reads `var(--*)`
+1. `theme/utils/default-semantic-tokens.css` - tokens first; everything else reads `var(--*)`
 2. `theme/utils/sizing.css`
 3. `theme/utils/layout.css`
 4. `theme/utils/accessibility.css`
 
 Concat is safe for the same reasons `all.css` is: `@layer` + flat specificity + tokens
-resolved at runtime. (The four stay shipped individually — core is an alternative, not
+resolved at runtime. (The four stay shipped individually - core is an alternative, not
 a replacement.)
 
-**`core.js` content (built, not concatenated) — `src/core/index.ts`:**
+**`core.js` content (built, not concatenated) - `src/core/index.ts`:**
 
 1. **defuss-morph** via the npm library entry (tree-shaken ESM, not the 19 KiB UMD) and
    explicit registration onto the callable global:
 
    ```ts
-   // src/core/index.ts — the df$ provider for hosts that don't load defuss.
+   // src/core/index.ts - the df$ provider for hosts that don't load defuss.
    import { morph, updateDomWithVdom, /* … */ } from 'defuss-morph';
    import { defussGlobals } from '../shared/state-api.js';   // ensures df$.shadcn
 
@@ -66,10 +66,10 @@ a replacement.)
    ```
 
    This also settles the morph plan's open spike question (c): nothing depends on UMD
-   interop — core.js registers the same surface explicitly. Load-order safety is
+   interop - core.js registers the same surface explicitly. Load-order safety is
    preserved both ways (defuss-first: `??=` and property-assign over the existing
    callable; core-first: the UMD preserves and extends ours).
-2. **The shared JS utilities** — `defussGlobals()` (`df$.shadcn` namespace ensure) and
+2. **The shared JS utilities** - `defussGlobals()` (`df$.shadcn` namespace ensure) and
    the `src/shared/morph.ts` accessor (§2.2 of the morph plan) so per-component files
    and third-party page code call the SAME functions. Anything future that joins
    `src/shared/` and is page-runtime code lands here; build-time-only helpers don't.
@@ -89,7 +89,7 @@ prerequisite); they lose nothing.
 
 ## 2. Build & gates
 
-- **`scripts/bundle.ts`** already concatenates CSS and Bun.builds JS — it gains a
+- **`scripts/bundle.ts`** already concatenates CSS and Bun.builds JS - it gains a
   second entry pair (`core.css` file list; `core.js` with `sourcemap: 'linked'`),
   writing into `dist/core/`. No new script, no new tool.
 - **`scripts/minify.ts`** walks the dist tree → core files get their `.min` twins +
@@ -98,7 +98,7 @@ prerequisite); they lose nothing.
 - **`dist 1:1` orphan gate:** `CORE_ARTIFACTS = new Set(['core/core.css', …8 files])`
   joins `BUNDLE_ARTIFACTS` in the allow-list (generated, like the all.* twins); the
   src-side counterpart `src/core/index.ts` is docs-SSG-exempt like `src/shared/`.
-- **Freshness:** no new gate needed — a rebuild always regenerates core.*; byte drift
+- **Freshness:** no new gate needed - a rebuild always regenerates core.*; byte drift
   against `docs/` is already caught by `docs mirror fresh`.
 
 ## 3. Stats (measured, published, shown)
@@ -109,12 +109,12 @@ prerequisite); they lose nothing.
   mirror the existing `bundle` field + `EMPTY_BUNDLE` default; pure, so
   [`tests/stats.test.ts`](../tests/stats.test.ts) pins the passthrough in browser mode).
 - **Getting Started (`index.mdx`)**: [`StatsCards`](../src/documentation/lib/components/stats-claim.tsx)
-  gains a fifth Statistic card — **"Core bundle"** → `formatKiB(stats.core.totalSizeGzMinified)`
+  gains a fifth Statistic card - **"Core bundle"** → `formatKiB(stats.core.totalSizeGzMinified)`
   (+ description "core.js + core.css, min+gz"). The `stats claim` *sentence* gate stays
   untouched (README parity unaffected); the existing `stats.json fresh` gate keeps the
-  card honest — sizes can't drift from the tree.
+  card honest - sizes can't drift from the tree.
 - Optional (same commit if done): Installation's "pick what you need" section and the
-  README modular-install snippet mention core + its numbers — README/index parity
+  README modular-install snippet mention core + its numbers - README/index parity
   window applies.
 
 ## 4. Workstreams
@@ -125,7 +125,7 @@ prerequisite); they lose nothing.
 2. **Stats** (¼ day): `aggregateStats` core param + `stats.ts` measurement;
    StatsCards fifth card; `tests/stats.test.ts` extension.
 3. **Proof it replaces the path** (¼ day): new e2e
-   `tests/e2e/core.e2e-fixture.html` + `core.e2e.ts` — loads ONLY `core.css` +
+   `tests/e2e/core.e2e-fixture.html` + `core.e2e.ts` - loads ONLY `core.css` +
    `core.js` + two components (one CSS-only e.g. badge, one interactive e.g. dialog),
    asserts tokens live (`--primary` resolves), utilities apply (`.flex` geometry),
    `df$` callable + `df$.morph` present, and the interactive component initializes —
@@ -136,26 +136,26 @@ prerequisite); they lose nothing.
 
 ## 5. Decisions & non-goals
 
-- **`dist/core/`, not `dist/components/core.*`** — core is the *foundation* folder
+- **`dist/core/`, not `dist/components/core.*`** - core is the *foundation* folder
   (CSS content is theme-side); URL `…/dist/core/core.css` reads honestly and keeps the
   components folder purely per-component.
-- **No `core.*` auto-inclusion in docs pages** — the site dogfoods `all.js` (dogfooding
+- **No `core.*` auto-inclusion in docs pages** - the site dogfoods `all.js` (dogfooding
   claim in the index); core is a consumer-facing install mode, proven by its e2e.
 - **No component trimming / no `core.{js,css}.map` for readable files beyond the four
-  listed twins + maps** — same artifact discipline as the all.* bundle.
+  listed twins + maps** - same artifact discipline as the all.* bundle.
 - **Dependency note:** core.js is the first shipped artifact to embed defuss-morph;
   `stats.json` + the new card make its weight visible at all times (currently ~8 KiB
-  gz estimated after tree-shaking + minify — the card, not this file, is the number of
+  gz estimated after tree-shaking + minify - the card, not this file, is the number of
   record).
 - **Deferred:** an `all.css`/`all.js` ↔ `core + Σ components` parity e2e (core.e2e's
   two-component fixture is the smoke version); a `core` taxonomy of optional sub-
-  bundles (e.g. core-minus-accessibility) — YAGNI until someone asks.
+  bundles (e.g. core-minus-accessibility) - YAGNI until someone asks.
 
 ## 6. Definition of done
 
 - eight `dist/core/` artifacts generated by `bun run build`, twins enforced by the
   min-gate, orphan-gate allow-listed, verify OK;
 - `stats.json` carries `core: {…}` and the Getting Started card shows it;
-- `core.e2e.ts` green (tokens, utilities, callable `df$`, component init — no all.js);
+- `core.e2e.ts` green (tokens, utilities, callable `df$`, component init - no all.js);
 - Installation/How to Use show the two-include modular path; README claim updated in
   parity if touched.

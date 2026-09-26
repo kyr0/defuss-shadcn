@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: card is CSS-only — verify the surface (border, overflow clip, inline
+ * Why: card is CSS-only - verify the surface (border, overflow clip, inline
  * container for the @container query), literal paddings/type, and that the
  * documented container query (<280px) actually swaps to compact paddings.
  */

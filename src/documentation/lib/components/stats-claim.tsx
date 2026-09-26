@@ -18,13 +18,13 @@ function loadStats(): StatsDoc {
 const formatKiB = (bytes: number): string => `${(bytes / 1024).toFixed(1)} KiB`;
 
 /** The measured-footprint sentence. Must stay byte-identical to
- * scripts/lib/stats.ts statsClaimText — verify's `stats claim` gate compares
+ * scripts/lib/stats.ts statsClaimText - verify's `stats claim` gate compares
  * README.md and the rendered index page against that function's output. */
 export function statsClaimText(doc: StatsDoc): string {
   return (
-    `${doc.total} components — ${doc.withJs} with JavaScript, ${doc.withoutJs} CSS-only` +
-    ` — ${formatKiB(doc.totalSizeGzMinified)} minified + compressed` +
-    ` — ${formatKiB(doc.bundle.totalSizeGzMinified)} as the all.css/all.js bundle`
+    `${doc.total} components - ${doc.withJs} with JavaScript, ${doc.withoutJs} CSS-only` +
+    ` - ${formatKiB(doc.totalSizeGzMinified)} minified + compressed` +
+    ` - ${formatKiB(doc.bundle.totalSizeGzMinified)} as the all.css/all.js bundle`
   );
 }
 
@@ -88,8 +88,7 @@ export function StatsCards(_props: Props) {
         <p class="statistic-title">Core runtime</p>
         <p class="statistic-value">{formatKiB(s.core.totalSizeGzMinified)}</p>
         <p class="statistic-description">
-          <code>core.min.js</code> + <code>core.min.css</code> — query + morph +
-          shared + theme utilities, gzip
+          <code>core.min.js</code> + <code>core.min.css</code>, gzip
         </p>
       </div>
     </div>

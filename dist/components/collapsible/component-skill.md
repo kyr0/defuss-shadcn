@@ -2,7 +2,7 @@
 name: Collapsible
 type: ATM
 why: A single <details> disclosure with smooth height animation via interpolate-size.
-when: Revealing or hiding one content region — an accordion of exactly one item, e.g. advanced options.
+when: Revealing or hiding one content region - an accordion of exactly one item, e.g. advanced options.
 where: dist/components/collapsible/collapsible.css
 supportedStates: default
 ---
@@ -15,10 +15,10 @@ supportedStates: default
 
 ## Native Web APIs
 
-- [`<details>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details) — native disclosure widget
-- [`<summary>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/summary) — visible heading/trigger
-- [`::details-content`](https://developer.mozilla.org/en-US/docs/Web/CSS/::details-content) — pseudo-element for content animation
-- [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) — entry animation starting values
+- [`<details>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details) - native disclosure widget
+- [`<summary>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/summary) - visible heading/trigger
+- [`::details-content`](https://developer.mozilla.org/en-US/docs/Web/CSS/::details-content) - pseudo-element for content animation
+- [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) - entry animation starting values
 
 ## Structure
 
@@ -42,11 +42,11 @@ Set `data-density` on the `.collapsible` root. A whitespace policy, not a zoom: 
 | Value | Effect |
 | --- | --- |
 | `compact` | trigger 0.5rem 0.75rem, content 0 0.75rem 0.5rem |
-| `comfortable` | trigger 0.75rem 1rem, content 0 1rem 0.75rem — identical to the unsized default |
+| `comfortable` | trigger 0.75rem 1rem, content 0 1rem 0.75rem - identical to the unsized default |
 | `spacious` | trigger 1rem 1.25rem, content 0 1.25rem 1rem |
 
 ## Accessibility
 
-- `<details>`/`<summary>` is natively accessible — keyboard and screen reader support built in
+- `<details>`/`<summary>` is natively accessible - keyboard and screen reader support built in
 - No additional ARIA attributes needed
 - Summary text should clearly describe the hidden content

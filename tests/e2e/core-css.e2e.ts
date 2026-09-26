@@ -6,7 +6,7 @@ import { startServer } from './server.ts';
  * Why: prove core.css carries the whole theme base (plans/core-bundle.md) —
  * the fixture loads ONLY core.css + core.js + two per-component files, with
  * all.css/all.js deliberately absent (asserted first). Checks the four sheets
- * really took effect: tokens resolve, .flex/.w-4/.sr-only apply — then that a
+ * really took effect: tokens resolve, .flex/.w-4/.sr-only apply - then that a
  * CSS-only (badge) and an interactive (dialog) component work through that
  * single fixed sheet pair. Complements core.e2e.ts (the runtime contract):
  * this file is the CSS half of the modular path.

@@ -13,7 +13,7 @@ const TYPE_NAMES: Record<ComponentType, string> = {
   TPL: 'Template',
 };
 
-/** Doc-page title badge — renders byte-identical to taxonomy.ts typeBadgeHtml. */
+/** Doc-page title badge - renders byte-identical to taxonomy.ts typeBadgeHtml. */
 export function TypeBadge({ type }: { type: ComponentType } & Props) {
   return (
     <span class="type-badge" data-type={type} title={TYPE_NAMES[type]}>
@@ -22,7 +22,7 @@ export function TypeBadge({ type }: { type: ComponentType } & Props) {
   );
 }
 
-/** Sidebar/palette badge — title carries the code itself (matches the old
+/** Sidebar/palette badge - title carries the code itself (matches the old
  * layout.ts typeBadge()). */
 export function NavTypeBadge({ type }: { type: ComponentType } & Props) {
   return (

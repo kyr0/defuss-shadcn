@@ -1,7 +1,7 @@
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: testimonials is CSS-only — the risky parts are the floating review
+ * Why: testimonials is CSS-only - the risky parts are the floating review
  * overlay (must blur + translucent over any photo) and the star group
  * sizing; the quote scales to the wide size step.
  */

@@ -1,6 +1,6 @@
 ---
 title: "Toggle Group"
-description: "Toggle Group component — a set of toggles that work together with single or multi-select."
+description: "Toggle Group component - a set of toggles that work together with single or multi-select."
 slug: "toggle-group"
 ---
 
@@ -55,10 +55,10 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 
   <SkillField label="Data attributes">
-<SkillText dense>• <code>data-type</code> — <code>single</code> (default) or <code>multiple</code></SkillText>
-  <SkillText dense>• <code>data-orientation</code> — <code>vertical</code> for vertical layout</SkillText>
-  <SkillText dense>• <code>data-spacing</code> — adds gap, restores individual radii</SkillText>
-  <SkillText>• <code>data-disabled</code> — disables all items in the group</SkillText>
+<SkillText dense>• <code>data-type</code> - <code>single</code> (default) or <code>multiple</code></SkillText>
+  <SkillText dense>• <code>data-orientation</code> - <code>vertical</code> for vertical layout</SkillText>
+  <SkillText dense>• <code>data-spacing</code> - adds gap, restores individual radii</SkillText>
+  <SkillText>• <code>data-disabled</code> - disables all items in the group</SkillText>
   </SkillField>
 
   <SkillField label="Keyboard">
@@ -128,7 +128,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </div>
 ```
 
-```html example label="Sizes" hint="The full five-step scale — set data-size on the group and every child .toggle follows."
+```html example label="Sizes" hint="The full five-step scale - set data-size on the group and every child .toggle follows."
 <div style="display:flex;flex-direction:column;gap:1.0rem;align-items:center;padding:2.5rem 0;">
   <div class="toggle-group" role="group" aria-label="Size xs" data-type="single" data-size="xs">
     <button class="toggle" aria-pressed="true">
@@ -260,17 +260,17 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
   <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
-    <li><code>default</code> — enabled (items clickable and focusable)</li>
-    <li><code>disabled</code> — sets the documented <code>data-disabled</code> attribute (CSS dims items, <code>pointer-events: none</code>)</li>
+    <li><code>default</code> - enabled (items clickable and focusable)</li>
+    <li><code>disabled</code> - sets the documented <code>data-disabled</code> attribute (CSS dims items, <code>pointer-events: none</code>)</li>
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/toggle-group-\{state\}.png</code>.</p>
 
-Machine contract — verified against <a href="../schemas/toggle-group.schema.json"><code>toggle-group.schema.json</code></a> by <code>bun run verify</code>:
+Machine contract - verified against <a href="../schemas/toggle-group.schema.json"><code>toggle-group.schema.json</code></a> by <code>bun run verify</code>:
 
 ```states
 | State | Type | Values | Default | Description |
 | --- | --- | --- | --- | --- |
-| `disabled` | `boolean` | `true`, `false` | `false` | Whole group disabled (`data-disabled` on `.toggle-group` — all toggles inert). |
+| `disabled` | `boolean` | `true`, `false` | `false` | Whole group disabled (`data-disabled` on `.toggle-group` - all toggles inert). |
 ```
 
 </StatesSection>

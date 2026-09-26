@@ -1,6 +1,6 @@
 ---
 title: "Steps"
-description: "Steps component — multi-step progress indicator for workflows."
+description: "Steps component - multi-step progress indicator for workflows."
 slug: "steps"
 ---
 
@@ -184,7 +184,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </li>
 ```
 
-```html example label="Sizes" hint="The full five-step scale via data-size on .steps — the default equals md."
+```html example label="Sizes" hint="The full five-step scale via data-size on .steps - the default equals md."
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Extra small</span>
   <ol class="steps" data-size="xs" style="max-width:22rem;width:100%;flex:1;">
@@ -297,13 +297,13 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">The runtime declares the single <code>default</code> state; the editable contract below lives on the nav/list as <code>data-*</code> attributes, driven per instance through the bound <code>api</code> or the State tab:</p>
-  <p class="text-sm text-muted-foreground">Machine contract — verified against <a href="../schemas/steps.schema.json"><code>steps.schema.json</code></a> by <code>bun run verify</code>:</p>
+  <p class="text-sm text-muted-foreground">Machine contract - verified against <a href="../schemas/steps.schema.json"><code>steps.schema.json</code></a> by <code>bun run verify</code>:</p>
 
 ```states
 | State | Type | Values | Default | Description |
 | --- | --- | --- | --- | --- |
 | `activeStep` | `number` | `—` | `2` | Index of the current step (1-based); earlier steps render `complete`. Set by the panel or by clicking a clickable step. |
-| `errorStep` | `number` | `—` | `0` | Index rendered with the destructive error status (`0` = none) — mirrors the `activeStepError` intent as an index the CSS can key. |
+| `errorStep` | `number` | `—` | `0` | Index rendered with the destructive error status (`0` = none) - mirrors the `activeStepError` intent as an index the CSS can key. |
 | `size` | `enum` | `xs`, `sm`, `md`, `lg`, `xl` | `"md"` | Indicator + type scale (display sizes). |
 | `activeStepError` | `boolean` | `true`, `false` | `false` | Marks the CURRENT step with the destructive error status (true = the active step failed, false clears). Equivalent to setting `errorStep` to the active index. |
 ```
@@ -311,7 +311,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </StatesSection>
 
 <SourceFiles component="steps" section="js">
-  <SourceNote for="js">The optional progressive-enhancement layer: a <code>data-active-step="N"</code> list has its item statuses mapped (<code>< N</code> complete, <code>= N</code> current, optional <code>data-error-step</code> destructive — the literal <code>true</code> marks the active step), <code>aria-current="step"</code> follows, and <code>data-clickable</code> steps become real controls (click / Enter / Space). Authored <code>data-status</code> markup without <code>data-active-step</code> renders exactly as written.</SourceNote>
+  <SourceNote for="js">The optional progressive-enhancement layer: a <code>data-active-step="N"</code> list has its item statuses mapped (<code>< N</code> complete, <code>= N</code> current, optional <code>data-error-step</code> destructive - the literal <code>true</code> marks the active step), <code>aria-current="step"</code> follows, and <code>data-clickable</code> steps become real controls (click / Enter / Space). Authored <code>data-status</code> markup without <code>data-active-step</code> renders exactly as written.</SourceNote>
 </SourceFiles>
 
 <SourceFiles component="steps" section="css">

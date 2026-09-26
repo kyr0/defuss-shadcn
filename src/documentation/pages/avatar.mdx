@@ -1,6 +1,6 @@
 ---
 title: "Avatar"
-description: "Avatar component — circular user images with fallback initials."
+description: "Avatar component - circular user images with fallback initials."
 slug: "avatar"
 ---
 
@@ -68,7 +68,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </div>
 ```
 
-```html example label="Sizes" hint="The full five-step scale via data-size — the default equals md."
+```html example label="Sizes" hint="The full five-step scale via data-size - the default equals md."
 <div style="display:flex;gap:1.0rem;align-items:center;">
   <span class="avatar" data-size="xs">
     <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn"></img>
@@ -148,12 +148,12 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
   <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
-    <li><code>default</code> — image shown (or fallback when there is no image)</li>
-    <li><code>error</code> — the broken-image look, forced without a network failure (same DOM changes a real <code>error</code> event makes)</li>
+    <li><code>default</code> - image shown (or fallback when there is no image)</li>
+    <li><code>error</code> - the broken-image look, forced without a network failure (same DOM changes a real <code>error</code> event makes)</li>
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/avatar-\{state\}.png</code>.</p>
 
-Machine contract — verified against <a href="../schemas/avatar.schema.json"><code>avatar.schema.json</code></a> by <code>bun run verify</code>:
+Machine contract - verified against <a href="../schemas/avatar.schema.json"><code>avatar.schema.json</code></a> by <code>bun run verify</code>:
 
 ```states
 | State | Type | Values | Default | Description |

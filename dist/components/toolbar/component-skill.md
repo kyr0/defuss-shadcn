@@ -15,10 +15,10 @@ supportedStates: default
 ---
 
 ## Native Web APIs
-- [`role="toolbar"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/toolbar_role) — a container for grouped controls
-- [`aria-orientation`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-orientation) — declares layout direction
-- [WAI-ARIA Toolbar Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/) — keyboard navigation specification
-- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) — maps toolbar border to system `ButtonText` in Windows High Contrast Mode
+- [`role="toolbar"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/toolbar_role) - a container for grouped controls
+- [`aria-orientation`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-orientation) - declares layout direction
+- [WAI-ARIA Toolbar Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/) - keyboard navigation specification
+- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) - maps toolbar border to system `ButtonText` in Windows High Contrast Mode
 
 ---
 
@@ -53,13 +53,13 @@ supportedStates: default
 
 ## Sizes
 
-Set `data-size` on the `.toolbar` root. The toolbar and its direct `.btn` / `.toggle` controls scale together — set the size once on the root.
+Set `data-size` on the `.toolbar` root. The toolbar and its direct `.btn` / `.toggle` controls scale together - set the size once on the root.
 
 | `data-size` | Effect |
 |-------------|--------|
 | `xs` | chrome 0.125rem, controls 1.75rem tall (0.75rem font) |
 | `sm` | chrome 0.1875rem, controls 2rem tall (0.8125rem font) |
-| `md` | chrome 0.25rem, controls 2.25rem tall — identical to the unsized default (.btn default) |
+| `md` | chrome 0.25rem, controls 2.25rem tall - identical to the unsized default (.btn default) |
 | `lg` | chrome 0.375rem, controls 2.75rem tall (1rem font) |
 | `xl` | chrome 0.5rem, controls 3.25rem tall (1.125rem font) |
 
@@ -100,6 +100,6 @@ The api is bound per toolbar; the registry global is
 ## Notes
 
 - Toolbars compose Toggle Groups, Button Groups, Buttons, and Separators.
-- The toolbar handles roving tabindex — only one item is in the tab order at a time.
+- The toolbar handles roving tabindex - only one item is in the tab order at a time.
 - Use vertical separators between logical groups of controls.
-- The toolbar does not enforce selection logic — that's handled by the child components.
+- The toolbar does not enforce selection logic - that's handled by the child components.

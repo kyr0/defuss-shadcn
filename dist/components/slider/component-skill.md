@@ -1,8 +1,8 @@
 ---
 name: Slider
 type: ATM
-why: Native range input with styled track and thumb — keyboard and announcement are built in.
-when: Continuous numeric values or ranges — volume, price bounds.
+why: Native range input with styled track and thumb - keyboard and announcement are built in.
+when: Continuous numeric values or ranges - volume, price bounds.
 where: dist/components/slider/slider.css + dist/components/slider/slider.js
 supportedStates: default, disabled
 ---
@@ -10,22 +10,22 @@ supportedStates: default, disabled
 # Pattern: Slider
 
 ## Native basis
-`<input type="range">` — native range input with built-in keyboard, touch, and assistive technology support.
+`<input type="range">` - native range input with built-in keyboard, touch, and assistive technology support.
 
 ---
 
 ## Native Web APIs
-- [`<input type="range">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/range) — native range control with keyboard and touch support
-- [`::-webkit-slider-thumb`](https://developer.mozilla.org/en-US/docs/Web/CSS/::-webkit-slider-thumb) — custom thumb styling (WebKit/Blink)
-- [`::-webkit-slider-runnable-track`](https://developer.mozilla.org/en-US/docs/Web/CSS/::-webkit-slider-runnable-track) — custom track styling (WebKit/Blink)
-- [`::-moz-range-thumb`](https://developer.mozilla.org/en-US/docs/Web/CSS/::-moz-range-thumb) — custom thumb styling (Firefox)
-- [`::-moz-range-track`](https://developer.mozilla.org/en-US/docs/Web/CSS/::-moz-range-track) — custom track styling (Firefox)
-- [`::-moz-range-progress`](https://developer.mozilla.org/en-US/docs/Web/CSS/::-moz-range-progress) — filled portion of track (Firefox)
-- [`<output>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output) — displays computed/live result value
-- [`color-mix()`](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix) — hover state color derivation
-- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) — suppresses animations for motion-sensitive users
-- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) — Windows High Contrast Mode support
-- [WAI-ARIA Slider pattern](https://www.w3.org/WAI/ARIA/apg/patterns/slider/) — canonical keyboard and ARIA reference
+- [`<input type="range">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/range) - native range control with keyboard and touch support
+- [`::-webkit-slider-thumb`](https://developer.mozilla.org/en-US/docs/Web/CSS/::-webkit-slider-thumb) - custom thumb styling (WebKit/Blink)
+- [`::-webkit-slider-runnable-track`](https://developer.mozilla.org/en-US/docs/Web/CSS/::-webkit-slider-runnable-track) - custom track styling (WebKit/Blink)
+- [`::-moz-range-thumb`](https://developer.mozilla.org/en-US/docs/Web/CSS/::-moz-range-thumb) - custom thumb styling (Firefox)
+- [`::-moz-range-track`](https://developer.mozilla.org/en-US/docs/Web/CSS/::-moz-range-track) - custom track styling (Firefox)
+- [`::-moz-range-progress`](https://developer.mozilla.org/en-US/docs/Web/CSS/::-moz-range-progress) - filled portion of track (Firefox)
+- [`<output>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output) - displays computed/live result value
+- [`color-mix()`](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix) - hover state color derivation
+- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) - suppresses animations for motion-sensitive users
+- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) - Windows High Contrast Mode support
+- [WAI-ARIA Slider pattern](https://www.w3.org/WAI/ARIA/apg/patterns/slider/) - canonical keyboard and ARIA reference
 
 ---
 
@@ -109,7 +109,7 @@ Track thickness and thumb diameter scale together (the WebKit thumb margin re-ce
 
 | Attribute | Element | Purpose |
 |-----------|---------|---------|
-| `role="slider"` | `<input>` | Implicit from `type="range"` — do not add manually |
+| `role="slider"` | `<input>` | Implicit from `type="range"` - do not add manually |
 | `aria-valuenow` | `<input>` | Implicit from `value` attribute |
 | `aria-valuemin` | `<input>` | Implicit from `min` attribute |
 | `aria-valuemax` | `<input>` | Implicit from `max` attribute |
@@ -124,7 +124,7 @@ Track thickness and thumb diameter scale together (the WebKit thumb margin re-ce
 ## States
 
 Declared states: `default` (enabled; `{ value }` config presets the position)
-· `disabled` (native `disabled` attribute — greyed and inert).
+· `disabled` (native `disabled` attribute - greyed and inert).
 
 ```js
 document.querySelector('#volume').api.setState('disabled');

@@ -8,17 +8,17 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <DocPage meta={meta}>
 
-<PageHeader slug="container" title="Container" crumb="layout / container" introStyle="max-width:38rem;">
-  Centered, bounded content with logical gutters. Query containment remains a separate, explicit choice. Every code block is the live demo — the shown source is the executed source, and each card carries a device toolbar that really resizes the sandbox.
+<PageHeader slug="container" title="Container" introStyle="max-width:38rem;">
+  Centered, bounded content with logical gutters. Query containment remains a separate, explicit choice. Every code block is the live demo - the shown source is the executed source, and each card carries a device toolbar that really resizes the sandbox.
 </PageHeader>
 
 <h2 id="bounded" class="h2-display">Bound and center content</h2>
 
-<DocText><code>container</code> has a 100% border-box inline size, an 80rem maximum, automatic inline margins and four density-adjusted base units of inline padding. The cap includes gutters. It does not change display or create a query container. Each instance owns its parameters: a nested container applies its own cap and gutter, not the outer ones. Resize the demo with the toolbar: the vertical ruler lines (one every 12px) mark the frame's width — as the frame outgrows each cap, that box stops growing and centers.</DocText>
+<DocText><code>container</code> has a 100% border-box inline size, an 80rem maximum, automatic inline margins and four density-adjusted base units of inline padding. The cap includes gutters. It does not change display or create a query container. Each instance owns its parameters: a nested container applies its own cap and gutter, not the outer ones. Resize the demo with the toolbar: the vertical ruler lines (one every 12px) mark the frame's width - as the frame outgrows each cap, that box stops growing and centers.</DocText>
 
 ```html example schema="none"
 <div class="demo-stripes p-6" data-demo="container">
-  <p class="demo-label" style="text-align:center;">▼ frame width — the boxes clamp at their caps and center ▼</p>
+  <p class="demo-label" style="text-align:center;">▼ frame width - the boxes clamp at their caps and center ▼</p>
   <div class="container" style="--layout-max:36rem;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--background);">
     <p class="text-sm" style="margin:0;text-align:center;">Outer container: max-width clamps, gutters keep content off the edge.</p>
     <div class="container" style="--layout-max:20rem;margin-top:0.75rem;border:1px dashed var(--border);border-radius:var(--radius-md);background:var(--background);">
@@ -32,7 +32,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <h2 id="real-world" class="h2-display">Real world: a bounded article section</h2>
 
-<DocText>The everyday use: a page section that stays readable on any screen. The heading, lead and cards share one <code>container</code> — no media queries, no wrapper divs. Resize with the toolbar and watch the content clamp and center as a unit.</DocText>
+<DocText>The everyday use: a page section that stays readable on any screen. The heading, lead and cards share one <code>container</code> - no media queries, no wrapper divs. Resize with the toolbar and watch the content clamp and center as a unit.</DocText>
 
 ```html example schema="none"
 <div class="demo-stripes p-6">
@@ -67,7 +67,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <h2 id="queries" class="h2-display">A query boundary is explicit</h2>
 
-<DocText><code>query</code> opts an element into inline-size containment under the name <code>layout</code>, so descendants can react to the space the component actually gets — not to the viewport. Both boxes below carry the same markup; the narrow one renders stacked, the fluid one flips to a title/actions row, driven only by each container's own inline size. Because the card's toolbar really resizes the sandbox, switching it to Phone carries the fluid box below the 24rem threshold and back.</DocText>
+<DocText><code>query</code> opts an element into inline-size containment under the name <code>layout</code>, so descendants can react to the space the component actually gets - not to the viewport. Both boxes below carry the same markup; the narrow one renders stacked, the fluid one flips to a title/actions row, driven only by each container's own inline size. Because the card's toolbar really resizes the sandbox, switching it to Phone carries the fluid box below the 24rem threshold and back.</DocText>
 
 ```html example schema="none"
 <style>
@@ -86,7 +86,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="stack gap-4">
   <div>
-    <p class="demo-label">inline-size: 14rem — always below the 24rem threshold, stacked</p>
+    <p class="demo-label">inline-size: 14rem - always below the 24rem threshold, stacked</p>
     <div class="query cq-demo-narrow demo-outline p-3">
       <div class="flex flex-col gap-2 cq-demo-row">
         <strong style="font-size:0.875rem;">Workspace</strong>
@@ -98,7 +98,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     </div>
   </div>
   <div>
-    <p class="demo-label">fluid — flips to a row at ≥ 24rem; switch the card to Phone to see it stack again</p>
+    <p class="demo-label">fluid - flips to a row at ≥ 24rem; switch the card to Phone to see it stack again</p>
     <div class="query demo-outline p-3">
       <div class="flex flex-col gap-2 cq-demo-row">
         <strong style="font-size:0.875rem;">Workspace</strong>
@@ -112,7 +112,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </div>
 ```
 
-<DocText>The query selects the nearest ancestor named <code>layout</code>. It styles a descendant, not the query container itself. Inline-size containment changes intrinsic sizing, so it is opt-in; a shrink-to-fit query wrapper needs an externally determined width — the narrow demo sets <code>inline-size</code> explicitly for exactly this reason. The custom rule is unlayered, so it overrides the <code>flex-col</code> helper intentionally. Use literal query thresholds; custom properties are not breakpoint variables in size-query conditions.</DocText>
+<DocText>The query selects the nearest ancestor named <code>layout</code>. It styles a descendant, not the query container itself. Inline-size containment changes intrinsic sizing, so it is opt-in; a shrink-to-fit query wrapper needs an externally determined width - the narrow demo sets <code>inline-size</code> explicitly for exactly this reason. The custom rule is unlayered, so it overrides the <code>flex-col</code> helper intentionally. Use literal query thresholds; custom properties are not breakpoint variables in size-query conditions.</DocText>
 
 <div class="sep" />
 

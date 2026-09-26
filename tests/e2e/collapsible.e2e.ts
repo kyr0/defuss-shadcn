@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: collapsible is a CSS-only native <details> disclosure — verify the
+ * Why: collapsible is a CSS-only native <details> disclosure - verify the
  * trigger geometry, the bordered clipped surface, and that the chevron's
  * 180° rotation tracks the [open] state (the only state signal here).
  */

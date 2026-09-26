@@ -63,13 +63,13 @@ df$.accordionApi = accordionApi;
 df$.accordionStates = accordionStates;
 
 function init() {
-  // the State API binds to EVERY accordion — all-open/all-closed are generic
+  // the State API binds to EVERY accordion - all-open/all-closed are generic
   // batch states independent of the single-open behavior below; data-api is
   // this loop's own marker so data-init stays the exclusive-toggle marker
   document.querySelectorAll('.accordion:not([data-api])').forEach((accordion) => {
     accordion.dataset.api = '';
     const items = accordion.querySelectorAll('.accordion-item');
-    // snapshot the authored markup — that is the 'default' state to return to
+    // snapshot the authored markup - that is the 'default' state to return to
     accordion._defaultOpen = Array.from(items).map((item) => item.open);
     // bind-scope the api per instance: `$('#x').api.setState('all-open')`
     accordion.api = {
@@ -99,7 +99,7 @@ function init() {
           });
         } else if (!collapsible) {
           // fallback for browsers without beforetoggle (which the deny above
-          // needs): reopen, accepting the flicker — better than losing the
+          // needs): reopen, accepting the flicker - better than losing the
           // single-open guarantee. Modern browsers never reach this branch
           // because a denied beforetoggle fires no toggle event at all.
           const anyOpen = Array.from(items).some((i) => i.open);

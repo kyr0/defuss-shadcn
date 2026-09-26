@@ -1,6 +1,6 @@
 ---
 title: "Slider"
-description: "Slider component — range inputs with custom track and thumb styling."
+description: "Slider component - range inputs with custom track and thumb styling."
 slug: "slider"
 ---
 
@@ -14,7 +14,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <SkillPanel component="slider">
   <SkillField label="Native basis">
-<SkillText><code>&lt;input type="range"&gt;</code> — native range input with built-in keyboard, touch, and assistive technology support.</SkillText>
+<SkillText><code>&lt;input type="range"&gt;</code> - native range input with built-in keyboard, touch, and assistive technology support.</SkillText>
   </SkillField>
 
   <SkillField label="Web Platform APIs">
@@ -37,15 +37,15 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 
   <SkillField label="Data attributes">
-<SkillText><code>data-orientation="vertical"</code> — renders as a vertical slider.</SkillText>
+<SkillText><code>data-orientation="vertical"</code> - renders as a vertical slider.</SkillText>
   </SkillField>
 
   <SkillField label="Keyboard">
-<SkillText dense>• <kbd>Right Arrow</kbd> / <kbd>Up Arrow</kbd> — increase value by one step</SkillText>
-  <SkillText dense>• <kbd>Left Arrow</kbd> / <kbd>Down Arrow</kbd> — decrease value by one step</SkillText>
-  <SkillText dense>• <kbd>Home</kbd> — set to minimum value</SkillText>
-  <SkillText dense>• <kbd>End</kbd> — set to maximum value</SkillText>
-  <SkillText>• <kbd>Page Up</kbd> / <kbd>Page Down</kbd> — increase/decrease by larger step</SkillText>
+<SkillText dense>• <kbd>Right Arrow</kbd> / <kbd>Up Arrow</kbd> - increase value by one step</SkillText>
+  <SkillText dense>• <kbd>Left Arrow</kbd> / <kbd>Down Arrow</kbd> - decrease value by one step</SkillText>
+  <SkillText dense>• <kbd>Home</kbd> - set to minimum value</SkillText>
+  <SkillText dense>• <kbd>End</kbd> - set to maximum value</SkillText>
+  <SkillText>• <kbd>Page Up</kbd> / <kbd>Page Down</kbd> - increase/decrease by larger step</SkillText>
   </SkillField>
 
   <SkillField label="Accessibility">
@@ -106,7 +106,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </div>
 ```
 
-```html example label="Sizes" hint="{'Track and thumb scale together via '}data-size{' on the '}{''}{' — the default equals '}md."
+```html example label="Sizes" hint="{'Track and thumb scale together via '}data-size{' on the '}{''}{' - the default equals '}md."
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Extra small</span>
   <input class="slider flex-1" type="range" value="60" data-size="xs" aria-label="Volume xs" style="max-width:16rem;"></input>
@@ -132,17 +132,17 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
   <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
-    <li><code>default</code> — enabled (authored <code>disabled</code> attribute restored; optional <code>\{ value \}</code> config presets the position)</li>
-    <li><code>disabled</code> — native <code>disabled</code> attribute: greyed track/thumb, no pointer or keyboard input</li>
+    <li><code>default</code> - enabled (authored <code>disabled</code> attribute restored; optional <code>\{ value \}</code> config presets the position)</li>
+    <li><code>disabled</code> - native <code>disabled</code> attribute: greyed track/thumb, no pointer or keyboard input</li>
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/slider-\{state\}.png</code>.</p>
 
-Machine contract — verified against <a href="../schemas/slider.schema.json"><code>slider.schema.json</code></a> by <code>bun run verify</code>:
+Machine contract - verified against <a href="../schemas/slider.schema.json"><code>slider.schema.json</code></a> by <code>bun run verify</code>:
 
 ```states
 | State | Type | Values | Default | Description |
 | --- | --- | --- | --- | --- |
-| `disabled` | `boolean` | `true`, `false` | `false` | Native disabled state — interaction off, muted styling. |
+| `disabled` | `boolean` | `true`, `false` | `false` | Native disabled state - interaction off, muted styling. |
 | `value` | `number` | `—` | `50` | Live slider value; set through the State API (`setState('default', { value })`) and read from `input.value`, so dragging updates it too. |
 ```
 

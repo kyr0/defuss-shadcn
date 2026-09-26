@@ -15,15 +15,15 @@ supportedStates: default, open
 
 ## Native Web APIs
 
-- [`<nav>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav) — navigation landmark
-- [`popover` API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API) — dropdown panels without JS show/hide
-- [`popovertarget`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#popovertarget) — declarative button→popover trigger
-- [CSS Anchor Positioning](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning) — positions dropdown relative to trigger
-- [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) — entry animation for popover
-- [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) — keyboard-only focus ring
-- [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has) — rotates chevron when dropdown is open
-- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) — suppresses animations
-- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) — maps dropdown border to system color
+- [`<nav>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav) - navigation landmark
+- [`popover` API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API) - dropdown panels without JS show/hide
+- [`popovertarget`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#popovertarget) - declarative button→popover trigger
+- [CSS Anchor Positioning](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning) - positions dropdown relative to trigger
+- [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) - entry animation for popover
+- [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) - keyboard-only focus ring
+- [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has) - rotates chevron when dropdown is open
+- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) - suppresses animations
+- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) - maps dropdown border to system color
 
 ---
 
@@ -64,7 +64,7 @@ Set `data-density` on the `.nav-menu` nav. A whitespace policy, not a zoom: only
 | Value | Effect |
 | --- | --- |
 | `compact` | top-level item gap 0.125rem |
-| `comfortable` | gap 0.25rem — identical to the unsized default |
+| `comfortable` | gap 0.25rem - identical to the unsized default |
 | `spacious` | gap 0.375rem |
 
 ## Sizes
@@ -116,9 +116,9 @@ The api is bound per `.nav-menu-content` element; the registry global is
 
 ## Notes
 
-- The `popover` API handles open/close — no JS click handlers needed.
+- The `popover` API handles open/close - no JS click handlers needed.
 - `popovertarget` on the button declaratively toggles the popover. No `togglePopover()` calls.
 - CSS anchor positioning aligns the dropdown to its trigger. The JS only sets unique `anchor-name` / `position-anchor` pairs.
-- The chevron rotates via `:has(+ .nav-menu-content:popover-open)` — no JS class toggling.
+- The chevron rotates via `:has(+ .nav-menu-content:popover-open)` - no JS class toggling.
 - Icon-only triggers must have `aria-label`.
 - Dropdown content typically contains `nav-menu-content-link` items with a title and optional description.

@@ -1,0 +1,88 @@
+/* -- Chart component -----------------------------------------------------
+   The sizing surface + editorial frame for the ECharts mount (chart.ts owns
+   the runtime: theme adapter, resize, story). The mount itself is a plain
+   block with three height presets via data-size; .chart-frame is the
+   card-like bordered wrapper (title/dek/source chrome) for editorial
+   data-storytelling. Tokens only (AGENTS.md token boundary rule). */
+
+@layer components {
+  .chart {
+    width: 100%;
+    height: 20rem;
+
+    &[data-size='sm'] {
+      height: 14rem;
+    }
+    &[data-size='lg'] {
+      height: 28rem;
+    }
+
+    /* ECharts animates internally (canvas/svg), but the mount itself never
+       transitions - reduced motion is handled in the JS base option */
+    @media (prefers-reduced-motion: reduce) {
+      & * {
+        transition: none !important;
+      }
+    }
+  }
+
+  /* the editorial frame: chart + headline + dek + source line, card-like */
+  .chart-frame {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+  }
+
+  .chart-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: var(--tracking-normal);
+    text-wrap: balance;
+  }
+
+  .chart-dek {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--muted-foreground);
+    text-wrap: pretty;
+  }
+
+  .chart-source {
+    margin: 0;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: var(--muted-foreground);
+  }
+
+  @media (prefers-contrast: more) {
+    .chart-frame {
+      border-width: 2px;
+    }
+    .chart-dek,
+    .chart-source {
+      color: var(--foreground);
+    }
+  }
+
+  /* Windows High Contrast Mode: frame + chrome fall back to system colors */
+  @media (forced-colors: active) {
+    .chart-frame {
+      border-color: CanvasText;
+      background: Canvas;
+      color: CanvasText;
+    }
+    .chart-title,
+    .chart-dek,
+    .chart-source {
+      color: CanvasText;
+    }
+  }
+}

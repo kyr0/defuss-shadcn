@@ -1,0 +1,23 @@
+{
+  "name": "defuss-shadcn",
+  "description": "Create beautiful web apps, visualizations, charts, websites and presentations with standalone HTML/CSS/JS and shadcn components",
+  "version": "0.9.0",
+  "author": {
+    "name": "Aron Homberg",
+    "url": "https://github.com/kyr0"
+  },
+  "homepage": "https://github.com/kyr0/defuss-shadcn",
+  "repository": "https://github.com/kyr0/defuss-shadcn",
+  "license": "MIT",
+  "keywords": [
+    "ui-design",
+    "ui-components",
+    "webapp",
+    "prototyping",
+    "frontend",
+    "presentations",
+    "charts",
+    "visualization",
+    "animation"
+  ]
+}

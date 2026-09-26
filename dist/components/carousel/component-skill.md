@@ -1,7 +1,7 @@
 ---
 name: Carousel
 type: ATM
-why: Native scroll-snap track with prev/next controls — scrolling, swiping, and snapping stay browser features.
+why: Native scroll-snap track with prev/next controls - scrolling, swiping, and snapping stay browser features.
 when: Presenting a finite set of large items (hero slides, galleries) one or a few at a time.
 where: dist/components/carousel/carousel.css + dist/components/carousel/carousel.js
 supportedStates: default
@@ -15,16 +15,16 @@ CSS `scroll-snap` on an overflow container, with `IntersectionObserver` for acti
 
 ## Native Web APIs
 
-- [`scroll-snap-type`](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-snap-type) — mandatory snap scrolling for horizontal and vertical axes
-- [`scroll-snap-align`](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-snap-align) — snap-point alignment per slide
-- [`scroll-snap-stop`](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-snap-stop) — forces snap to each slide (prevents fast-scroll skip)
-- [`overscroll-behavior`](https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior) — prevents scroll chaining to parent
-- [`IntersectionObserver`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver) — tracks which slide is currently visible without scroll listeners
-- [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) — keyboard-only focus rings on buttons and dots
-- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) — suppresses smooth scroll and transitions
-- [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) — increases border widths for high-contrast mode
-- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) — Windows High Contrast Mode support
-- [WAI-ARIA Carousel pattern](https://www.w3.org/WAI/ARIA/apg/patterns/carousel/) — `role="region"`, `aria-roledescription="carousel"`, slide groups
+- [`scroll-snap-type`](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-snap-type) - mandatory snap scrolling for horizontal and vertical axes
+- [`scroll-snap-align`](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-snap-align) - snap-point alignment per slide
+- [`scroll-snap-stop`](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-snap-stop) - forces snap to each slide (prevents fast-scroll skip)
+- [`overscroll-behavior`](https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior) - prevents scroll chaining to parent
+- [`IntersectionObserver`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver) - tracks which slide is currently visible without scroll listeners
+- [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) - keyboard-only focus rings on buttons and dots
+- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) - suppresses smooth scroll and transitions
+- [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) - increases border widths for high-contrast mode
+- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) - Windows High Contrast Mode support
+- [WAI-ARIA Carousel pattern](https://www.w3.org/WAI/ARIA/apg/patterns/carousel/) - `role="region"`, `aria-roledescription="carousel"`, slide groups
 
 ## Structure
 
@@ -166,17 +166,17 @@ The api is bound per carousel; the registry global is
 
 ## Notes
 
-- **No library needed** — built entirely on CSS scroll-snap + IntersectionObserver.
+- **No library needed** - built entirely on CSS scroll-snap + IntersectionObserver.
 - **Dots are morph-rendered** (see the "DOM Querying & Morphing" guide): an
   empty `.carousel-dots` is filled by `df$(dots).morph()` with stable
   `<carousel id>-dot-<i>` ids; out-of-band slide add/remove reconciles the
   dot list in one keyed pass (retained dots keep node identity).
-  Consumer-authored dots are never re-rendered — only `aria-current` is
+  Consumer-authored dots are never re-rendered - only `aria-current` is
   flagged.
-- **Slide sizing** — default is `flex: 0 0 100%`. Override `flex` on `.carousel-slide` to show multiple slides (e.g., `calc(33.333% - 0.667rem)` for 3-up).
-- **Gap / spacing** — controlled by the `gap` property on `.carousel-viewport` (default `1rem`).
-- **Dot auto-generation** — if `.carousel-dots` is present but empty, dots are auto-created by JS from the slide count.
-- **Autoplay pauses** — on `mouseenter` and `focusin`, restarts on `mouseleave` and `focusout` (per WAI-ARIA APG).
-- **Reduced motion** — `prefers-reduced-motion: reduce` removes smooth scrolling and all transitions.
-- **Scroll containment** — `overscroll-behavior: contain` prevents parent page scrolling when at carousel edges.
-- **Buttons disabled at edges** — in non-loop mode, prev is disabled at first slide, next at last slide.
+- **Slide sizing** - default is `flex: 0 0 100%`. Override `flex` on `.carousel-slide` to show multiple slides (e.g., `calc(33.333% - 0.667rem)` for 3-up).
+- **Gap / spacing** - controlled by the `gap` property on `.carousel-viewport` (default `1rem`).
+- **Dot auto-generation** - if `.carousel-dots` is present but empty, dots are auto-created by JS from the slide count.
+- **Autoplay pauses** - on `mouseenter` and `focusin`, restarts on `mouseleave` and `focusout` (per WAI-ARIA APG).
+- **Reduced motion** - `prefers-reduced-motion: reduce` removes smooth scrolling and all transitions.
+- **Scroll containment** - `overscroll-behavior: contain` prevents parent page scrolling when at carousel edges.
+- **Buttons disabled at edges** - in non-loop mode, prev is disabled at first slide, next at last slide.

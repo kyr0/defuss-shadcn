@@ -5,15 +5,26 @@ import { startServer } from './server.ts';
 /**
  * Why: E2E smoke test for the shipped image component. Loads the fixture
  * (loaded image, broken image with fallback, ratio + caption, preview
- * figure — mirroring the doc page) over HTTP in a real browser, then
- * verifies the fallback logic for real network failures, ratio CSS, the
- * lightbox (open + toolbar transforms + close), and the per-figure named
- * State API — the same files consumers copy from dist/, unmodified.
+ * figure, progressive-sources figure - mirroring the doc page) over HTTP in
+ * a real browser, then verifies the fallback logic for real network failures,
+ * ratio CSS, the lightbox (open + toolbar transforms + close), the per-figure
+ * named State API, and the progressive sources (low-res placeholder loads and
+ * shows first, retina high-res swap at init, zoom-triggered high-res upgrade)
+ * - the same files consumers copy from dist/, unmodified.
  */
 
 const FIXTURE = '/tests/e2e/image.e2e-fixture.html';
 const server = startServer();
 const browser = await chromium.launch();
+
+// 1×1 transparent PNG - route interception bypasses the filesystem, but the
+// bytes must still decode as an image or the component's error fallback fires
+const TINY_PNG = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+  'base64',
+);
+const imgRequested: string[] = [];
+const imgFulfilled: string[] = [];
 
 const fallbackShown = (page: Page, id: string) =>
   page.$eval(`#${id} .image-fallback`, (el) => getComputedStyle(el).display !== 'none');
@@ -34,6 +45,20 @@ try {
   // deterministic network failure: abort .invalid-host requests instead of
   // waiting on real DNS (slow/flaky when 26 chromiums run in parallel)
   await page.route((url) => url.hostname.endsWith('.invalid'), (route) => route.abort('failed'));
+  // progressive sources: the fixture's /img/*.png files do not exist on disk —
+  // intercept and fulfill the synthetic PNG, recording request/fulfillment
+  // order. The lazy figure's standard source is delayed 500ms so the low-res
+  // phase (placeholder under data-loading) is deterministically observable,
+  // including the steady-state blur AFTER the 200ms filter transition.
+  await page.route('**/img/*.png', async (route) => {
+    const path = new URL(route.request().url()).pathname;
+    imgRequested.push(path);
+    if (path.endsWith('/lazy-standard.png')) await new Promise((r) => setTimeout(r, 500));
+    // the lightbox original arrives late, so its pre-sized placeholder phase is observable
+    if (path.endsWith('/full.png')) await new Promise((r) => setTimeout(r, 400));
+    await route.fulfill({ body: TINY_PNG, contentType: 'image/png' });
+    imgFulfilled.push(path);
+  });
   await page.goto(`${server.url}${FIXTURE}`);
 
   await check('image.js initialized figures (data-init)', async () => {
@@ -149,12 +174,12 @@ try {
     assert.ok(before > 0, 'fixture page is scrollable');
     await page.click('#im-preview img');
     await page.waitForFunction(() => document.querySelector('.image-lightbox')?.matches(':modal'));
-    // wheel over the fullscreen lightbox — must not scroll the page behind
+    // wheel over the fullscreen lightbox - must not scroll the page behind
     await page.mouse.move(640, 360);
     await page.mouse.wheel(0, 500);
     await page.waitForTimeout(100);
     const during = await page.evaluate(() => document.scrollingElement!.scrollTop);
-    // close FIRST (guarded) — a failed assert must not leave the modal open
+    // close FIRST (guarded) - a failed assert must not leave the modal open
     // and cascade into the click-based checks below
     await page.click('.image-lightbox [data-action="close"]');
     await page.waitForFunction(() => !document.querySelector('.image-lightbox')!.matches(':open'));
@@ -178,6 +203,141 @@ try {
       false,
       'errored images are inert to preview',
     );
+  });
+
+  // -- Progressive sources (data-src-low / data-src-high) ----------------------
+  // Chromium requests a markup-level src before deferred module JS can swap it
+  // (the component tolerates this: "the swap is simply instant"), so literal
+  // request order is not assertable - what IS deterministic: the placeholder
+  // FULFILLS and shows first (the feature's promise), then the swap settles.
+
+  await check('progressive: static figure settles on the standard source', async () => {
+    await page.waitForFunction(() => {
+      const img = document.querySelector('#im-progressive img')!;
+      return !img.hasAttribute('data-loading') && (img as HTMLImageElement).currentSrc.endsWith('/img/standard.png');
+    });
+  });
+
+  await check('progressive: low placeholder loads and shows first, then swaps to standard', async () => {
+    // inserted lazily (after first paint) with unique URLs, so its requests
+    // are isolated from the static figure's parse-time ones
+    await page.evaluate(() => {
+      const fig = document.createElement('figure');
+      fig.className = 'image';
+      fig.id = 'im-lazy';
+      fig.style.maxWidth = '320px';
+      const img = document.createElement('img');
+      img.src = '/img/lazy-standard.png';
+      img.dataset.srcLow = '/img/lazy-low.png';
+      img.alt = 'Lazy progressive';
+      fig.appendChild(img);
+      document.body.appendChild(fig);
+    });
+    // low-res phase: placeholder showing under data-loading, CSS blur applied
+    await page.waitForFunction(() => {
+      const img = document.querySelector('#im-lazy img');
+      return !!img && img.hasAttribute('data-loading') && (img as HTMLImageElement).currentSrc.endsWith('/img/lazy-low.png');
+    });
+    // poll the computed style: filter TRANSITIONS to blur(8px) over 200ms, so
+    // a one-shot read right at the marker could catch a mid-transition value
+    await page.waitForFunction(
+      () => getComputedStyle(document.querySelector('#im-lazy img')!).filter === 'blur(8px)',
+    );
+    // settle: swapped to the standard source, marker + blur gone (the
+    // out-transition needs another 200ms - poll it to completion too)
+    await page.waitForFunction(() => {
+      const img = document.querySelector('#im-lazy img');
+      return !!img && !img.hasAttribute('data-loading') && (img as HTMLImageElement).currentSrc.endsWith('/img/lazy-standard.png');
+    });
+    await page.waitForFunction(
+      () => getComputedStyle(document.querySelector('#im-lazy img')!).filter === 'none',
+    );
+    // fulfillment order: the placeholder LOADED first (the delayed standard
+    // source only completes after the swap target is preloaded)
+    const lowAt = imgFulfilled.indexOf('/img/lazy-low.png');
+    const standardAt = imgFulfilled.indexOf('/img/lazy-standard.png');
+    assert.ok(lowAt !== -1 && standardAt !== -1, `both lazy sources requested, got ${JSON.stringify(imgRequested)}`);
+    assert.ok(lowAt < standardAt, 'low-res loaded before the standard source');
+  });
+
+  await check('progressive: high-res source is never requested on 1dppx displays', async () => {
+    assert.equal(
+      imgRequested.filter((p) => p === '/img/high.png').length,
+      0,
+      'no high-res request before any zoom',
+    );
+  });
+
+  await check('progressive: first lightbox zoom-in upgrades to the high-res source', async () => {
+    await page.click('#im-progressive img');
+    await page.waitForFunction(() => document.querySelector('.image-lightbox')?.matches(':open'));
+    const highReq = page.waitForRequest('**/img/high.png');
+    await page.click('.image-lightbox [data-action="zoom-in"]');
+    await highReq;
+    await page.waitForFunction(
+      () => (document.querySelector('.image-lightbox-content > img') as HTMLImageElement).currentSrc.endsWith('/img/high.png'),
+    );
+    assert.ok(
+      await page.$eval('#im-progressive img', (el) => (el as HTMLImageElement).currentSrc.endsWith('/img/high.png')),
+      'figure img upgraded too',
+    );
+    // a second zoom-in reuses the loaded source (no re-fetch)
+    const highCount = imgRequested.filter((p) => p === '/img/high.png').length;
+    await page.click('.image-lightbox [data-action="zoom-in"]');
+    await page.waitForTimeout(150);
+    assert.equal(imgRequested.filter((p) => p === '/img/high.png').length, highCount, 'no duplicate high-res request');
+    // leave the lightbox closed behind us
+    await page.click('.image-lightbox [data-action="close"]');
+    await page.waitForFunction(() => !document.querySelector('.image-lightbox')!.matches(':open'));
+  });
+
+  await check('data-src-full: the lightbox loads the original; the page never does', async () => {
+    assert.equal(imgRequested.includes('/img/full.png'), false, 'original not fetched before a preview');
+    const inline = await page.$eval('#im-full img', (el) => (el as HTMLImageElement).src);
+    await page.click('#im-full img');
+    await page.waitForFunction(() => document.querySelector('.image-lightbox')?.matches(':open'));
+    // opens at once with the cached inline image, pre-sized to the fitted frame
+    const early = await page.$eval('.image-lightbox-content > img', (el) => ({ src: (el as HTMLImageElement).src, width: (el as HTMLElement).style.width }));
+    assert.equal(early.src, inline, 'inline image shows while the original loads');
+    assert.match(early.width, /^min\(90vw/, 'placeholder locked to the fitted frame');
+    await page.waitForFunction(
+      () => (document.querySelector('.image-lightbox-content > img') as HTMLImageElement).currentSrc.endsWith('/img/full.png'),
+    );
+    assert.equal(await page.$eval('.image-lightbox-content > img', (el) => (el as HTMLElement).style.width), '', 'width lock released on swap');
+    assert.equal(await page.$eval('#im-full img', (el) => (el as HTMLImageElement).src), inline, 'figure keeps its own src');
+    // zoom-in: the original already covers it - no data-src-high fetch
+    await page.click('.image-lightbox [data-action="zoom-in"]');
+    await page.waitForTimeout(150);
+    assert.equal(imgRequested.includes('/img/full-high.png'), false, 'zoom-in skips the high-res upgrade');
+    await page.click('.image-lightbox [data-action="close"]');
+    await page.waitForFunction(() => !document.querySelector('.image-lightbox')!.matches(':open'));
+    // a plain preview afterwards opens unlocked (no stale width from the original)
+    await page.click('#im-preview img');
+    await page.waitForFunction(() => document.querySelector('.image-lightbox')?.matches(':open'));
+    assert.equal(await page.$eval('.image-lightbox-content > img', (el) => (el as HTMLElement).style.width), '', 'no width lock without data-src-full');
+    await page.click('.image-lightbox [data-action="close"]');
+    await page.waitForFunction(() => !document.querySelector('.image-lightbox')!.matches(':open'));
+  });
+
+  await check('progressive: ≥2dppx displays settle on the high-res source', async () => {
+    const retina = await browser.newContext({ deviceScaleFactor: 2 });
+    const page2 = await retina.newPage();
+    try {
+      const requested2: string[] = [];
+      await page2.route((url) => url.hostname.endsWith('.invalid'), (route) => route.abort('failed'));
+      await page2.route('**/img/*.png', async (route) => {
+        requested2.push(new URL(route.request().url()).pathname);
+        await route.fulfill({ body: TINY_PNG, contentType: 'image/png' });
+      });
+      await page2.goto(`${server.url}${FIXTURE}`);
+      await page2.waitForFunction(() => {
+        const img = document.querySelector('#im-progressive img');
+        return !!img && !img.hasAttribute('data-loading') && (img as HTMLImageElement).currentSrc.endsWith('/img/high.png');
+      });
+      assert.ok(requested2.includes('/img/high.png'), 'high-res source was requested');
+    } finally {
+      await retina.close();
+    }
   });
 } finally {
   await browser.close();

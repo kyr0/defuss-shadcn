@@ -1,6 +1,6 @@
 /* -- Pricing (marketing) -------------------------------------------
    Section head + billing toggle (composed from the tabs component) +
-   plan cards. The featured plan upgrades its border — no layout shift. */
+   plan cards. The featured plan upgrades its border - no layout shift. */
 
 @layer components {
   .mk-pricing {
@@ -15,7 +15,7 @@
   }
 
   /* centered stack: eyebrow/title/desc + toggle all share the section's
-     center line (align-items, not text-align — the toggle is a box) */
+     center line (align-items, not text-align - the toggle is a box) */
   .mk-pricing-head { display: flex; flex-direction: column; align-items: center; gap: 1.25rem; }
 
   .mk-pricing-eyebrow { color: var(--primary); font-size: 1rem; font-weight: 500; }
@@ -30,7 +30,7 @@
 
   .mk-pricing-desc { margin: 0; max-width: 42rem; color: var(--muted-foreground); font-size: 1rem; text-wrap: pretty; }
 
-  /* Segmented billing toggle: real radios + :has() — keyboard, screen
+  /* Segmented billing toggle: real radios + :has() - keyboard, screen
      readers, and form semantics work natively; one checked radio flips
      every plan's price pair, which per-tab aria-controls could not. */
   .mk-pricing-billing {
@@ -59,7 +59,7 @@
       box-shadow: var(--shadow-2xs);
     }
 
-    /* keyboard focus lands on the radio — show the ring on its label */
+    /* keyboard focus lands on the radio - show the ring on its label */
     & label:has(input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
   }
 

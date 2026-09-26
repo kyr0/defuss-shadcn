@@ -2,7 +2,7 @@ import { COMPONENT_TYPES, type ComponentType } from './taxonomy.ts';
 
 /**
  * Why: consumers and agents want one machine-readable answer to "how big is
- * this system" without walking dist/ themselves — counts per taxonomy type,
+ * this system" without walking dist/ themselves - counts per taxonomy type,
  * the JS/CSS-only split, and per-component byte sizes (readable, minified,
  * gzipped). scripts/stats.ts measures dist/components/ and publishes
  * dist/stats.json; this module holds the pure aggregation so
@@ -13,7 +13,7 @@ import { COMPONENT_TYPES, type ComponentType } from './taxonomy.ts';
 /** Filename of the generated document, relative to dist/. */
 export const STATS_FILE = 'stats.json';
 
-/** KiB with one decimal — 136136 → "132.9 KiB". The ONE size format the
+/** KiB with one decimal - 136136 → "132.9 KiB". The ONE size format the
  *  README and the doc-site index are allowed to advertise; verify's
  *  `stats claim` gate compares this exact rendering, so bytes → prose can
  *  never drift into stale or invented numbers. */
@@ -54,7 +54,7 @@ export type BundleStats = {
   totalSizeGzMinified: number;
 };
 
-/** Zero bundle — the default when none was measured (keeps the doc shape stable). */
+/** Zero bundle - the default when none was measured (keeps the doc shape stable). */
 export const EMPTY_BUNDLE: BundleStats = {
   jsSize: 0,
   jsSizeMinified: 0,
@@ -75,7 +75,7 @@ export type StatsDoc = {
   totalSizeGz: number;
   totalSizeGzMinified: number;
   bundle: BundleStats;
-  /** core.js + core.min.js (morph + query + shared) — the modular path's fixed cost */
+  /** core.js + core.min.js (morph + query + shared) - the modular path's fixed cost */
   core: BundleStats;
   components: Record<string, ComponentStats>;
 };
@@ -86,9 +86,9 @@ export type StatsDoc = {
  * component list. Totals are derived from the per-component parts (never
  * passed in), `byType` is zero-initialized for all five taxonomy types so
  * the shape is stable, and the components map keeps caller (alphabetical)
- * order — the document is deterministic byte-for-byte across builds. The
+ * order - the document is deterministic byte-for-byte across builds. The
  * bundle block is measured by the caller (fs + gzip) and passes through
- * untouched — the bundle is an ALTERNATIVE way to consume the same components,
+ * untouched - the bundle is an ALTERNATIVE way to consume the same components,
  * so its bytes are never folded into the per-component totals.
  */
 export function aggregateStats(
@@ -146,18 +146,18 @@ export function buildStatsText(
 /**
  * Why: the single sentence README.md and the doc-site index must state
  * verbatim (counts + the production KiB footprint, generated from
- * dist/stats.json). Human-facing prose that a machine can check — "we lack
+ * dist/stats.json). Human-facing prose that a machine can check - "we lack
  * information or information is outdated" becomes a failing gate, not a
  * silent lie. Only minified+compressed sizes are claimed: that's the
  * payload a consumer actually ships; the raw-gzip figures stay in stats.json.
- * The bundle figure covers both all.min.* files together — the two requests
+ * The bundle figure covers both all.min.* files together - the two requests
  * a bundle consumer actually makes.
  */
 export function statsClaimText(doc: StatsDoc): string {
   return (
-    `${doc.total} components — ${doc.withJs} with JavaScript, ${doc.withoutJs} CSS-only` +
-    ` — ${formatKiB(doc.totalSizeGzMinified)} minified + compressed` +
-    ` — ${formatKiB(doc.bundle.totalSizeGzMinified)} as the all.css/all.js bundle`
+    `${doc.total} components - ${doc.withJs} with JavaScript, ${doc.withoutJs} CSS-only` +
+    ` - ${formatKiB(doc.totalSizeGzMinified)} minified + compressed` +
+    ` - ${formatKiB(doc.bundle.totalSizeGzMinified)} as the all.css/all.js bundle`
   );
 }
 
@@ -167,7 +167,7 @@ const normalizeForClaim = (text: string): string =>
   text.replace(/<[^>]+>/g, ' ').replace(/[*\u00a0]/g, '').replace(/\s+/g, ' ');
 
 /**
- * Why: verify's `stats claim` gate — one function for both files (same
+ * Why: verify's `stats claim` gate - one function for both files (same
  * contract as readmeCssOnlyProblems). The sentence must appear contiguously
  * (markup between words breaks the match on purpose: the claim must be
  * stated as one thought, prominently, not scattered across the page).
@@ -175,5 +175,5 @@ const normalizeForClaim = (text: string): string =>
 export function statsClaimProblems(text: string, file: string, doc: StatsDoc): string[] {
   const claim = statsClaimText(doc);
   if (normalizeForClaim(text).includes(claim)) return [];
-  return [`${file} does not state the current footprint verbatim — expected: "${claim}"`];
+  return [`${file} does not state the current footprint verbatim - expected: "${claim}"`];
 }

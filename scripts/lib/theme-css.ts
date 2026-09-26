@@ -1,7 +1,7 @@
 /**
  * Why: the tweakcn presets in src/documentation/runtime/themes.ts are the
  * single token-theme dataset (swatch dots + the contrast gate read it), but
- * consumers need theme files they can drop in next to — or in place of —
+ * consumers need theme files they can drop in next to - or in place of —
  * default-semantic-tokens.css. This pure core renders one preset into that
  * stylesheet shape; scripts/build.ts regenerates src/theme/<id>.css from it
  * on every build (same regenerate-in-src pattern as SKILL.md), and
@@ -21,7 +21,7 @@ export function themeFileName(id: string): string {
   return `${id}.css`;
 }
 
-/** `:root`/`.dark` block from a token map — keys are token names without `--`. */
+/** `:root`/`.dark` block from a token map - keys are token names without `--`. */
 function tokenBlock(selector: string, tokens: Record<string, string>): string {
   const decls = Object.entries(tokens).map(([k, v]) => `  --${k}: ${v};`).join('\n');
   return `${selector} {\n${decls}\n}`;
@@ -29,7 +29,7 @@ function tokenBlock(selector: string, tokens: Record<string, string>): string {
 
 /**
  * Why: one preset → one standalone theme stylesheet. Light tokens land in
- * `:root`, dark in `.dark` — loading the file after default-semantic-tokens.css
+ * `:root`, dark in `.dark` - loading the file after default-semantic-tokens.css
  * overrides it in both modes (same source order ⇒ higher cascade position),
  * and dark-mode toggling needs no JS because `.dark` already matches `html.dark`.
  * Returns null for style-less presets (`default` = the token file itself).
@@ -39,9 +39,29 @@ export function themeCssText(theme: ThemeLike): string | null {
   const dark = theme.modes.dark;
   if (!light && !dark) return null;
   const blocks: string[] = [
-    `/* ${theme.label} theme — generated from src/documentation/runtime/themes.ts by scripts/build.ts. Edit themes.ts, not this file. */`,
+    `/* ${theme.label} theme - generated from src/documentation/runtime/themes.ts by scripts/build.ts. Edit themes.ts, not this file. */`,
   ];
   if (light) blocks.push(tokenBlock(':root', light));
   if (dark) blocks.push(tokenBlock('.dark', dark));
   return `${blocks.join('\n\n')}\n`;
+}
+
+/** The generated sidecar's filename for a theme id. */
+export function themeJsonFileName(id: string): string {
+  return `${id}.json`;
+}
+
+/**
+ * Why: a theme can need runtime resources (Google-Fonts <link>s) that a plain
+ * stylesheet cannot express. themes.ts carries them as defuss-JSX-as-JSON
+ * VNodes ({type:'link', attributes:{…}}); build.ts ships each theme's links
+ * verbatim as theme/<id>.json and df$.shadcn.loadTheme() (src/shared/
+ * theme-links.ts) fetches + mounts them. Returns null when the theme declares
+ * none - themes without links ship NO sidecar (the loader's 404 path is the
+ * "no resources" contract; verify's `theme JSON fresh` gate covers drift for
+ * the ones that do). Deterministic: 2-space JSON + trailing newline.
+ */
+export function themeJsonText(theme: ThemeLike & { links?: Record<string, unknown>[] }): string | null {
+  if (!theme.links || theme.links.length === 0) return null;
+  return `${JSON.stringify({ schema: 'v1', links: theme.links }, null, 2)}\n`;
 }

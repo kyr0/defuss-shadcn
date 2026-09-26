@@ -16,7 +16,7 @@ export interface AriaRef {
 export const DESCRIPTION_HOSTS = ['input', 'select', 'textarea', 'fieldset'];
 
 /**
- * Why: issue #18's fixed pattern puts `aria-describedby` ON the field — an
+ * Why: issue #18's fixed pattern puts `aria-describedby` ON the field - an
  * `aria-describedby` on some unrelated wrapper element does nothing for the
  * person focused in the control. Every `.field-description`/`.field-error`
  * id that IS referenced must be referenced by at least one host element.
@@ -35,7 +35,7 @@ export function fieldDescriptionOwnerProblems(
     if (!referrers.some((r) => r.tag && DESCRIPTION_HOSTS.includes(r.tag))) {
       const who = referrers.map((r) => `<${r.tag ?? '?'}>`).join('/');
       problems.push(
-        `${name}: #${t.id} (.${t.cls}) is only referenced by ${who} — aria-describedby must sit on the ${DESCRIPTION_HOSTS.join('/')} itself`,
+        `${name}: #${t.id} (.${t.cls}) is only referenced by ${who} - aria-describedby must sit on the ${DESCRIPTION_HOSTS.join('/')} itself`,
       );
     }
   }
@@ -43,7 +43,7 @@ export function fieldDescriptionOwnerProblems(
 }
 
 /**
- * Why: the #18 bug class has a second half — a wiring that *exists* but does
+ * Why: the #18 bug class has a second half - a wiring that *exists* but does
  * not resolve. `aria-describedby="foo"` is dead weight unless exactly ONE
  * element on the page carries `id="foo"`: a typo/renamed id dangles (nothing
  * announced), a duplicated id resolves unpredictably across AT. Pure function
@@ -57,9 +57,9 @@ export function ariaDescribedByProblems(name: string, refs: AriaRef[], ids: stri
   for (const ref of refs) {
     for (const token of ref.tokens) {
       const n = counts.get(token) ?? 0;
-      if (n === 0) problems.push(`${name}: ${ref.owner} references #${token} — no element has that id`);
+      if (n === 0) problems.push(`${name}: ${ref.owner} references #${token} - no element has that id`);
       else if (n > 1)
-        problems.push(`${name}: ${ref.owner} references #${token} — ${n} elements share the id (must be exactly one)`);
+        problems.push(`${name}: ${ref.owner} references #${token} - ${n} elements share the id (must be exactly one)`);
     }
   }
   return problems;
@@ -68,12 +68,12 @@ export function ariaDescribedByProblems(name: string, refs: AriaRef[], ids: stri
 /**
  * Why: deterministic parity for the `.field-*` helper classes
  * (`.field-description`, `.field-error`, …). When a component's CSS styles a
- * field class it SHIPS that feature — so the component skill and its doc page
+ * field class it SHIPS that feature - so the component skill and its doc page
  * must describe it too. This is the same drift class check 15 pins for
  * `data-variant`/`data-size` (CSS is the source of truth, docs silently rot),
  * but those checks never look at components without variant/size selectors —
  * `form.css` styles `.field-description` yet has none, so field features
- * needed their own gate. Pure string analysis: no fs, no browser — fully
+ * needed their own gate. Pure string analysis: no fs, no browser - fully
  * deterministic and unit-testable (tests/fields.test.ts).
  */
 
@@ -101,7 +101,7 @@ export interface FieldComponent {
 /**
  * Problems for a set of components: for every `.field-*` class a component CSS
  * styles, the class name must appear in BOTH the component skill and the doc
- * page. Returns one line per missing artifact — empty when everything is
+ * page. Returns one line per missing artifact - empty when everything is
  * described. (Aria wiring of the live demos is a separate concern, gated by
  * verify's `field description wiring` check.)
  */

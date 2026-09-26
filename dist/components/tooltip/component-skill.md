@@ -1,7 +1,7 @@
 ---
 name: Tooltip
 type: ATM
-why: popover="hint" anchored label — shows on hover/focus without stealing dismissals from other popovers.
+why: popover="hint" anchored label - shows on hover/focus without stealing dismissals from other popovers.
 when: Brief clarifying text for icon-only controls; never for essential information.
 where: dist/components/tooltip/tooltip.css + dist/components/tooltip/tooltip.js
 supportedStates: default, visible
@@ -15,12 +15,12 @@ Popover API (`popover="hint"`) for hover/focus hint popups with CSS anchor posit
 
 ## Native Web APIs
 
-- [`popover` attribute (`hint`)](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/popover) — native popover with light dismiss, doesn't close `auto` popovers
-- [CSS Anchor Positioning](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning) — tether tooltip to trigger element
-- [`position-area`](https://developer.mozilla.org/en-US/docs/Web/CSS/position-area) — declarative anchor-relative placement on a 3×3 grid
-- [`position-try-fallbacks`](https://developer.mozilla.org/en-US/docs/Web/CSS/position-try-fallbacks) — automatic collision avoidance (flip-block, flip-inline)
-- [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) — entry animation starting values
-- [`transition-behavior: allow-discrete`](https://developer.mozilla.org/en-US/docs/Web/CSS/transition-behavior) — animate `display: none` transitions
+- [`popover` attribute (`hint`)](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/popover) - native popover with light dismiss, doesn't close `auto` popovers
+- [CSS Anchor Positioning](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning) - tether tooltip to trigger element
+- [`position-area`](https://developer.mozilla.org/en-US/docs/Web/CSS/position-area) - declarative anchor-relative placement on a 3×3 grid
+- [`position-try-fallbacks`](https://developer.mozilla.org/en-US/docs/Web/CSS/position-try-fallbacks) - automatic collision avoidance (flip-block, flip-inline)
+- [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) - entry animation starting values
+- [`transition-behavior: allow-discrete`](https://developer.mozilla.org/en-US/docs/Web/CSS/transition-behavior) - animate `display: none` transitions
 
 ## Structure
 
@@ -111,7 +111,7 @@ The api is bound per tooltip element; the registry global is
 - **Group behavior**: Once any tooltip becomes visible, subsequent tooltips in the document open instantly (skip delay). After 400 ms with no tooltip visible, the delay resets.
 - **Collision avoidance**: Uses `position-try-fallbacks: flip-block, flip-inline` to automatically reposition when near viewport edges.
 - **Scroll dismiss**: Open tooltips are automatically hidden when the page scrolls.
-- **Escape dismiss**: Handled natively by `popover="hint"` — no extra JS needed.
+- **Escape dismiss**: Handled natively by `popover="hint"` - no extra JS needed.
 - **Keyboard**: Tooltip shows on focus, hides on blur. Focus stays on trigger.
 - **Disabled triggers**: Wrap a disabled button in a `<span>` with `data-tooltip-trigger` since disabled elements don't fire mouse/focus events.
 - **Arrow**: Add `<div data-arrow></div>` inside the tooltip for a connecting caret. Arrow positioning is automatic based on `data-side`. The caret sits outside the border box, so `.tooltip` sets `overflow: visible` (overriding the UA popover `overflow: auto`, which would clip the caret and render a scrollbar).

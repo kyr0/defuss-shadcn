@@ -1,0 +1,111 @@
+---
+title: "Pop - Animations"
+description: "The springy overshoot scale animation - popIn grows the element from 0.65 through a 1.07 overshoot back to 1, popOut reverses it - driven imperatively by df$.anim.popIn / df$.anim.popOut."
+slug: "anim-pop"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="anim-pop" title="Pop" component="motion">
+  Pop is the springy overshoot of the <code>df$.anim</code> engine: <code>popIn</code> scales the element in from 0.65 through a 1.07 overshoot that settles at 1, <code>popOut</code> reverses the curve on the way out. It is not directional - there is no edge to start from, only scale - and everything is driven imperatively through <code>df$.anim.popIn</code> and <code>df$.anim.popOut</code> (<code>play</code>, <code>pause</code>, <code>resume</code>, <code>finish</code>, <code>reset</code>, <code>state</code>).
+</PageHeader>
+
+```html example label="In / out and lifecycle" schema="none" hint="popIn scales the card 0.65 → 1.07 → 1 (the overshoot IS the pop); popOut plays the curve backwards. Pause/Resume/Finish/Reset act on whichever channel ran last; duration and easing apply to the next play()."
+<style>
+  #anim-pop-target {
+    width: 160px;
+    height: 100px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+    font-weight: 600;
+  }
+</style>
+<div style="display:flex; flex-direction:column; align-items:flex-start; gap:1rem;">
+  <div id="anim-pop-target">pop</div>
+  <div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.5rem;">
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-pop-in">In</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-pop-out">Out</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-pop-pause">Pause</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-pop-resume">Resume</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-pop-finish">Finish</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-pop-reset">Reset</button>
+  </div>
+  <div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.75rem;">
+    <label class="label" for="anim-pop-duration">Duration (ms)</label>
+    <input class="input" type="number" id="anim-pop-duration" value="1500" min="50" step="50" style="width:6rem;" />
+    <label class="label" for="anim-pop-easing">Easing</label>
+    <select class="select" id="anim-pop-easing">
+      <option value="cubic-bezier(0.16, 1, 0.3, 1)" selected>cubic-bezier(0.16, 1, 0.3, 1) - default</option>
+      <option value="ease">ease</option>
+      <option value="ease-in-out">ease-in-out</option>
+      <option value="linear">linear</option>
+      <option value="cubic-bezier(.34, 1.56, .64, 1)">cubic-bezier(.34, 1.56, .64, 1) - extra springy</option>
+    </select>
+  </div>
+</div>
+<script type="module">
+  // all.js (df$) boots after example scripts in the sandbox - touch df$ only
+  // at event time, never at parse time
+  const target = document.getElementById('anim-pop-target');
+  const durationInput = document.getElementById('anim-pop-duration');
+  const easingSelect = document.getElementById('anim-pop-easing');
+  let lastChannel = 'popIn';
+  const config = () => ({
+    duration: Number(durationInput.value) || 1500,
+    easing: easingSelect.value,
+  });
+
+  document.getElementById('anim-pop-in').addEventListener('click', () => {
+    lastChannel = 'popIn';
+    df$.anim.popIn.play(target, config());
+  });
+  document.getElementById('anim-pop-out').addEventListener('click', () => {
+    lastChannel = 'popOut';
+    df$.anim.popOut.play(target, config());
+  });
+  for (const action of ['pause', 'resume', 'finish', 'reset']) {
+    document
+      .getElementById(`anim-pop-${action}`)
+      .addEventListener('click', () => df$.anim[lastChannel][action](target));
+  }
+</script>
+```
+
+```html example label="Scroll binding (parallax)" schema="none" hint="Pass opts.scroll and scroll position - not time - drives the animation progress. Here the scroller's own offset scrubs popIn over its full scroll range (ScrollTimeline where the platform has it, a rAF-throttled scrub elsewhere)."
+<div id="anim-pop-scroller" style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem;">
+  <div style="height: 600px; display: flex; flex-direction: column; align-items: center; justify-content: space-between;">
+    <span class="text-sm text-muted-foreground">Scroll down - the scroll position pops the card in ↓</span>
+    <div id="anim-pop-scroll-target" style="width:160px; height:100px; display:grid; place-items:center; border:1px solid var(--border); border-radius:var(--radius-lg); background:var(--card); color:var(--card-foreground); font-weight:600;">pop</div>
+    <span class="text-sm text-muted-foreground">↑ fully popped at the bottom</span>
+  </div>
+</div>
+<script type="module">
+  // no user control here - the binding applies once all.js (df$) has booted
+  const scroller = document.getElementById('anim-pop-scroller');
+  const target = document.getElementById('anim-pop-scroll-target');
+  const bind = () => df$.anim.popIn.play(target, { scroll: { target: scroller, axis: 'y' } });
+  if (document.readyState === 'complete') bind();
+  else window.addEventListener('load', bind, { once: true });
+</script>
+```
+
+The same binding with `{ target: 'viewport' }` ties progress to the page's own scroll instead of an element's - the parallax use for presentations.
+
+## Config axes
+
+`popIn` / `popOut` take the shared `df$.anim` options; the axes that matter for pop are:
+
+- **`duration`** - total time in ms (default `1500`); under `prefers-reduced-motion` the engine collapses it to 1 ms.
+- **`easing`** - any CSS easing (default `cubic-bezier(0.16, 1, 0.3, 1)`); the overshoot is in the keyframes, so even `linear` keeps the pop shape - a springier bezier just exaggerates it.
+
+<SourceFiles component="motion" section="css">
+  <SourceNote for="css">The shared motion stylesheet - the declarative <code>data-df-entrance</code> twin of this page's <code>df$.anim</code> channels: the <code>--df-motion-…</code> tunables, the fifteen <code>df-enter-…</code> keyframes and the reduced-motion flattening.</SourceNote>
+</SourceFiles>
+
+</DocPage>

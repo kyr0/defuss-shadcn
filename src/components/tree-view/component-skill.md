@@ -15,9 +15,9 @@ Nested `<ul>` elements with `role="tree"` / `role="treeitem"` ARIA pattern for h
 
 ## Native Web APIs
 
-- [`<ul>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul) — nested list structure
-- [Tree View WAI-ARIA pattern](https://www.w3.org/WAI/ARIA/apg/patterns/treeview/) — ARIA tree roles and keyboard navigation
-- [`<details>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details) — native expand/collapse for branches
+- [`<ul>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul) - nested list structure
+- [Tree View WAI-ARIA pattern](https://www.w3.org/WAI/ARIA/apg/patterns/treeview/) - ARIA tree roles and keyboard navigation
+- [`<details>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details) - native expand/collapse for branches
 
 ## Structure
 
@@ -70,7 +70,7 @@ Set `data-density` on the `.tree` root; the row `padding-block` scales. The stru
 | Value | Effect |
 | --- | --- |
 | `compact` | Row padding-block 0.125rem |
-| `comfortable` | 0.25rem — identical to the unsized default |
+| `comfortable` | 0.25rem - identical to the unsized default |
 | `spacious` | 0.375rem |
 
 ## Accessibility

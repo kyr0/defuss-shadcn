@@ -1,6 +1,6 @@
 ---
 title: "Sortable"
-description: "Sortable component — drag-and-drop reorderable lists."
+description: "Sortable component - drag-and-drop reorderable lists."
 slug: "sortable"
 ---
 
@@ -41,17 +41,17 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 
   <SkillField label="State attributes (managed by JS)">
-<SkillText dense>• <code>data-dragging</code> — item being dragged</SkillText>
-  <SkillText dense>• <code>data-over="before|after"</code> — drop indicator position</SkillText>
-  <SkillText dense>• <code>data-active</code> — keyboard-focused item</SkillText>
-  <SkillText>• <code>aria-disabled="true"</code> — non-interactive item</SkillText>
+<SkillText dense>• <code>data-dragging</code> - item being dragged</SkillText>
+  <SkillText dense>• <code>data-over="before|after"</code> - drop indicator position</SkillText>
+  <SkillText dense>• <code>data-active</code> - keyboard-focused item</SkillText>
+  <SkillText>• <code>aria-disabled="true"</code> - non-interactive item</SkillText>
   </SkillField>
 
   <SkillField label="Keyboard">
-<SkillText dense>• <code>↑</code> / <code>↓</code> — navigate items (vertical)</SkillText>
-  <SkillText dense>• <code>←</code> / <code>→</code> — navigate items (horizontal)</SkillText>
-  <SkillText dense>• <code>Alt + Arrow</code> — reorder focused item</SkillText>
-  <SkillText>• <code>Home</code> / <code>End</code> — jump to first/last item</SkillText>
+<SkillText dense>• <code>↑</code> / <code>↓</code> - navigate items (vertical)</SkillText>
+  <SkillText dense>• <code>←</code> / <code>→</code> - navigate items (horizontal)</SkillText>
+  <SkillText dense>• <code>Alt + Arrow</code> - reorder focused item</SkillText>
+  <SkillText>• <code>Home</code> / <code>End</code> - jump to first/last item</SkillText>
   </SkillField>
 </SkillPanel>
 
@@ -249,11 +249,11 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
   <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
-    <li><code>default</code> — authored item order; <code>setState('default')</code> restores that order after any drag/keyboard moves, <code>\{ index \}</code> activates one item, and <code>getState().config</code> reports the live <code>order</code> + <code>activeIndex</code></li>
+    <li><code>default</code> - authored item order; <code>setState('default')</code> restores that order after any drag/keyboard moves, <code>\{ index \}</code> activates one item, and <code>getState().config</code> reports the live <code>order</code> + <code>activeIndex</code></li>
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/sortable-\{state\}.png</code>.</p>
 
-Machine contract — verified against <a href="../schemas/sortable.schema.json"><code>sortable.schema.json</code></a> by <code>bun run verify</code>:
+Machine contract - verified against <a href="../schemas/sortable.schema.json"><code>sortable.schema.json</code></a> by <code>bun run verify</code>:
 
 
 ```states

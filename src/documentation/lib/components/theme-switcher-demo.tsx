@@ -4,7 +4,7 @@ import { themeFiles } from '../repo';
 /**
  * Why: the shipped theme-switcher component's menu is data-driven, so the
  * demo renders the real menu from the generated theme files in dist/theme/
- * (build.ts runs before build:docs — the manifest IS the file tree). What a
+ * (build.ts runs before build:docs - the manifest IS the file tree). What a
  * reader sees, copies, and what the e2e fixture instantiates stay the same
  * set by construction.
  */

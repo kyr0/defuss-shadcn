@@ -2,11 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>core.css e2e fixture — the modular CSS path (no all.css)</title>
+    <title>core.css e2e fixture - the modular CSS path (no all.css)</title>
     <!-- THE MODULAR CSS PATH (plans/core-bundle.md): the fixed pair is
          core.css (tokens + sizing + layout + accessibility) + core.js, then
          only the per-component files used below. all.css is deliberately NOT
-         loaded — core.css must carry the whole theme base by itself. -->
+         loaded - core.css must carry the whole theme base by itself. -->
     <link rel="stylesheet" href="/dist/components/core.css" />
     <link rel="stylesheet" href="/dist/components/badge/badge.css" />
     <link rel="stylesheet" href="/dist/components/dialog/dialog.css" />
@@ -26,7 +26,7 @@
     <!-- CSS-only component through the same base sheet -->
     <span class="badge" id="b-default" data-variant="default">Default</span>
 
-    <!-- interactive component: dialog — initialized by core.js alone -->
+    <!-- interactive component: dialog - initialized by core.js alone -->
     <button class="btn" id="open-dlg" data-dialog-trigger="dlg" aria-haspopup="dialog">Open</button>
     <dialog id="dlg" class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-title">
       <div class="dialog-content">

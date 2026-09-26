@@ -3,6 +3,7 @@
   "components": {
     "accordion": "./accordion.schema.json",
     "alert-dialog": "./alert-dialog.schema.json",
+    "anim-canvas": "./anim-canvas.schema.json",
     "avatar": "./avatar.schema.json",
     "calendar": "./calendar.schema.json",
     "carousel": "./carousel.schema.json",
@@ -22,6 +23,7 @@
     "number-input": "./number-input.schema.json",
     "pagination": "./pagination.schema.json",
     "popover": "./popover.schema.json",
+    "presentation": "./presentation.schema.json",
     "product-showcase": "./product-showcase.schema.json",
     "progress": "./progress.schema.json",
     "radio": "./radio.schema.json",

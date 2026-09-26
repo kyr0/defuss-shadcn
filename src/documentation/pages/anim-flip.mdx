@@ -1,0 +1,117 @@
+---
+title: "Flip - Animations"
+description: "The flipIn / flipOut animation channels - a 3D perspective turn around rotateX (north/south) or rotateY (west/east), driven by df$.anim."
+slug: "anim-flip"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="anim-flip" title="Flip" component="motion">
+  A 3D card turn on the Web Animations API: the element rotates away from (or back into) the flat plane under a <code>perspective(900px)</code>, fading as it goes.
+</PageHeader>
+
+Flip is the rotational reveal: the element tips through 70° on a shared 900px perspective while cross-fading, so it reads as a card turning over rather than a plain fade. It ships as the paired channels <code>flipIn</code> / <code>flipOut</code>, each directional: <code>north</code> and <code>south</code> flip around <code>rotateX</code> (a horizontal hinge), <code>west</code> and <code>east</code> around <code>rotateY</code> (a vertical hinge). In-variants start tipped toward the named edge, out-variants exit toward it. Everything below is driven by <code>df$.anim.flipIn</code> / <code>df$.anim.flipOut</code> - <code>play</code>, <code>pause</code>, <code>resume</code>, <code>finish</code>, <code>reset</code>.
+
+```html example label="In / out, directions and lifecycle" schema="none" hint="flipIn starts tipped toward the selected edge, flipOut exits toward it. Pause/Resume/Finish/Reset act on whichever channel ran last - Reset unwinds the fill state entirely."
+<style>
+  #anim-flip-target {
+    width: 160px;
+    height: 100px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+    font-weight: 600;
+  }
+</style>
+<div style="display:flex; flex-direction:column; gap:0.85rem;">
+  <div id="anim-flip-target">Flip me</div>
+  <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-flip-in">In</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-flip-out">Out</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-flip-dir="north" aria-pressed="true">N</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-flip-dir="south" aria-pressed="false">S</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-flip-dir="west" aria-pressed="false">W</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-flip-dir="east" aria-pressed="false">E</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-flip-op="pause">Pause</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-flip-op="resume">Resume</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-flip-op="finish">Finish</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-flip-op="reset">Reset</button>
+  </div>
+  <div style="display:flex; align-items:center; gap:0.75rem;">
+    <label for="anim-flip-duration" class="text-sm">Duration</label>
+    <input class="input" id="anim-flip-duration" type="number" min="50" step="50" value="1500" style="width:6rem;" />
+    <label for="anim-flip-easing" class="text-sm">Easing</label>
+    <select class="select" id="anim-flip-easing">
+      <option value="cubic-bezier(0.16, 1, 0.3, 1)" selected>ease-out (default)</option>
+      <option value="linear">linear</option>
+      <option value="ease-in-out">ease-in-out</option>
+      <option value="cubic-bezier(0.34, 1.56, 0.64, 1)">overshoot</option>
+    </select>
+  </div>
+</div>
+<script type="module">
+  // df$ boots after example scripts in the sandbox - touch it only at event time.
+  let direction = 'north';
+  let channel = 'flipIn'; // Pause/Resume/Finish/Reset act on the last-used channel
+  const target = () => document.getElementById('anim-flip-target');
+  const config = () => ({
+    direction,
+    duration: Number(document.getElementById('anim-flip-duration').value) || 1500,
+    easing: document.getElementById('anim-flip-easing').value,
+  });
+
+  document.getElementById('anim-flip-in').addEventListener('click', () => {
+    channel = 'flipIn';
+    df$.anim.flipIn.play(target(), config());
+  });
+  document.getElementById('anim-flip-out').addEventListener('click', () => {
+    channel = 'flipOut';
+    df$.anim.flipOut.play(target(), config());
+  });
+  document.querySelectorAll('[data-flip-dir]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      direction = btn.dataset.flipDir;
+      document.querySelectorAll('[data-flip-dir]').forEach((b) =>
+        b.setAttribute('aria-pressed', String(b === btn)));
+    });
+  });
+  document.querySelectorAll('[data-flip-op]').forEach((btn) => {
+    btn.addEventListener('click', () => df$.anim[channel][btn.dataset.flipOp](target()));
+  });
+</script>
+```
+
+```html example label="Scroll-bound flip" schema="none" hint="The scroller's progress drives flipIn: at the top the card is tipped away, at the bottom it rests flat. ScrollTimeline where the platform has it, a rAF-throttled scrub elsewhere."
+<div id="anim-flip-stage" style="height:220px; overflow-y:auto; border:1px solid var(--border); border-radius:var(--radius-lg); padding:1rem;">
+  <div style="height:600px; display:flex; align-items:flex-end;">
+    <div id="anim-flip-scroll-target" style="width:160px; height:100px; display:grid; place-items:center; border:1px solid var(--border); border-radius:var(--radius-lg); background:var(--card); color:var(--card-foreground); font-weight:600;">Scroll-driven</div>
+  </div>
+</div>
+<script type="module">
+  // binds on click so the demo only takes over the scroll position on demand
+  document.getElementById('anim-flip-stage').addEventListener('click', () => {
+    df$.anim.flipIn.play(document.getElementById('anim-flip-scroll-target'), {
+      scroll: { target: document.getElementById('anim-flip-stage'), axis: 'y' },
+    });
+  }, { once: true });
+</script>
+```
+
+Passing `{ target: 'viewport' }` (the default) instead of an element binds progress to the page scroll itself - the parallax use for presentations, where a flip unfolds as its section scrolls into place.
+
+## Configuration
+
+- <code>direction</code> - <code>'north' | 'south' | 'east' | 'west'</code>; north/south rotate around the X axis, west/east around the Y axis (default <code>'north'</code>). In-variants start tipped toward the edge, out-variants exit toward it.
+- <code>duration</code> - total duration in ms (default <code>1500</code>).
+- <code>easing</code> - any CSS easing (default <code>cubic-bezier(0.16, 1, 0.3, 1)</code>).
+
+<SourceFiles component="motion" section="css">
+  <SourceNote for="css">The shared motion stylesheet - the declarative <code>data-df-entrance</code> twin of this page's <code>df$.anim</code> channels: the <code>--df-motion-…</code> tunables, the fifteen <code>df-enter-…</code> keyframes and the reduced-motion flattening.</SourceNote>
+</SourceFiles>
+
+</DocPage>

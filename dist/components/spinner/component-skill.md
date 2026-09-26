@@ -15,9 +15,9 @@ CSS `@keyframes` animation on an SVG element. No JavaScript required.
 
 ## Native Web APIs
 
-- [`@keyframes`](https://developer.mozilla.org/en-US/docs/Web/CSS/@keyframes) — CSS animation for continuous rotation
-- [`role="status"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/status_role) — ARIA live region for loading state
-- [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG) — scalable vector graphic for the spinner icon
+- [`@keyframes`](https://developer.mozilla.org/en-US/docs/Web/CSS/@keyframes) - CSS animation for continuous rotation
+- [`role="status"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/status_role) - ARIA live region for loading state
+- [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG) - scalable vector graphic for the spinner icon
 
 ## Structure
 

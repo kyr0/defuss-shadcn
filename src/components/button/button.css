@@ -45,7 +45,7 @@
     }
 
     /* Loading state (aria-busy + a .spinner child): a disabled button must
-       freeze its spinner — "pending" is signaled by the dimming, a frozen
+       freeze its spinner - "pending" is signaled by the dimming, a frozen
        wheel is the accepted pattern; only an ENABLED busy button spins. */
     &:disabled .spinner,
     &[aria-disabled="true"] .spinner {
@@ -67,7 +67,7 @@
       /* --secondary is near-white in light themes, so an opacity fade would
          wash the button further into the page background (invisible hover).
          Mixing in the foreground color instead darkens light themes and
-         lightens dark ones — always moving away from the page surface. */
+         lightens dark ones - always moving away from the page surface. */
       &:hover {
         background-color: color-mix(in oklch, var(--secondary) 85%, var(--secondary-foreground));
       }

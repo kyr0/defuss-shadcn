@@ -1,6 +1,6 @@
 ---
 title: "Resizer"
-description: "Resizer component — wrap any single container and drag handles on its sides and corners, in pixels or w-/h- classes."
+description: "Resizer component - wrap any single container and drag handles on its sides and corners, in pixels or w-/h- classes."
 slug: "resizer"
 ---
 
@@ -10,7 +10,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 <PageHeader slug="resizer" title="Resizer" component="resizer">
   Wraps <strong>one</strong> container element and makes it resizable via draggable handles on
-  any subset of its sides and corners — either pixel-perfect (inline styles) or class-based
+  any subset of its sides and corners - either pixel-perfect (inline styles) or class-based
   (the <code>w-\*</code>/<code>h-\*</code> utilities stay the source of truth). This documentation
   site dogfoods it: the preview box of every <DocLink href="how-to-use.html">CodeExample</DocLink>
   carries resizer handles on all 8 positions.
@@ -25,7 +25,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <SkillRow>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture" title="drag continues outside the handle without document listeners"><code>setPointerCapture()</code></ApiPill>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/touch-action" title="the browser yields the gesture to the drag"><code>touch-action</code></ApiPill>
-    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/separator_role" title="a draggable divider — exactly what the role describes"><code>role="separator"</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/separator_role" title="a draggable divider - exactly what the role describes"><code>role="separator"</code></ApiPill>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent" title="resizer-resize lets consumers mirror the live size"><code>CustomEvent</code></ApiPill>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver" title="data-width/data-height writes (State tab) apply back into the box"><code>MutationObserver</code></ApiPill>
   </SkillRow>
@@ -39,17 +39,17 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 
   <SkillField label="Variants (data attributes)">
-<SkillText dense>• <code>data-handles</code> — space list of <code>n e s w ne nw se sw</code>, or <code>all</code> (default <code>se</code>)</SkillText>
-  <SkillText dense>• <code>data-resize-mode</code> — <code>px</code> (default) | <code>classes</code> | <code>controlled</code></SkillText>
-  <SkillText dense>• <code>data-axis</code> — <code>both</code> (default) | <code>w</code> | <code>h</code>; handles the axis forbids are never placed</SkillText>
-  <SkillText dense>• <code>data-min</code>/<code>data-max</code> — clamp in px (80 / 2000; per-axis <code>data-min-w</code> … override), <code>data-step</code> quantizes drags</SkillText>
+<SkillText dense>• <code>data-handles</code> - space list of <code>n e s w ne nw se sw</code>, or <code>all</code> (default <code>se</code>)</SkillText>
+  <SkillText dense>• <code>data-resize-mode</code> - <code>px</code> (default) | <code>classes</code> | <code>controlled</code></SkillText>
+  <SkillText dense>• <code>data-axis</code> - <code>both</code> (default) | <code>w</code> | <code>h</code>; handles the axis forbids are never placed</SkillText>
+  <SkillText dense>• <code>data-min</code>/<code>data-max</code> - clamp in px (80 / 2000; per-axis <code>data-min-w</code> … override), <code>data-step</code> quantizes drags</SkillText>
   <p class="text-muted-foreground m-0">• <code>data-w-classes</code>/<code>data-h-classes</code> replace the classes ladder with your own token list</p>
   </SkillField>
 
   <SkillField label="Accessibility">
 <SkillText dense>• Handles are focusable <code>role="separator"</code> controls with a position-naming <code>aria-label</code>; edge handles carry <code>aria-orientation</code></SkillText>
   <SkillText dense>• Keyboard parity: Arrow keys resize (Right/Up grow, Left/Down shrink, Shift ×10), Home/End jump to the clamp bounds</SkillText>
-  <p class="text-muted-foreground m-0">• While dragging, the wrapper carries <code>data-resizing</code> — a dashed outline plus a filled handle</p>
+  <p class="text-muted-foreground m-0">• While dragging, the wrapper carries <code>data-resizing</code> - a dashed outline plus a filled handle</p>
   </SkillField>
 </SkillPanel>
 
@@ -57,12 +57,12 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <div class="resizer" data-handles="se" data-min="120">
   <div class="card" style="width:20rem;height:10rem;padding:1rem;">
     <h3 class="card-title">Panel</h3>
-    <p class="card-description" style="margin-top:0.5rem;">Drag the corner. The runtime writes style.width / style.height — pixel-perfect, no quantization.</p>
+    <p class="card-description" style="margin-top:0.5rem;">Drag the corner. The runtime writes style.width / style.height - pixel-perfect, no quantization.</p>
   </div>
 </div>
 ```
 
-```html example label="All sides + corners" hint="data-handles='all' places all 8 handles — every side AND every corner drags independently." component="resizer" height="16"
+```html example label="All sides + corners" hint="data-handles='all' places all 8 handles - every side AND every corner drags independently." component="resizer" height="16"
 <div class="resizer" data-handles="all" data-min="120">
   <div class="card" style="width:18rem;height:12rem;padding:1rem;">
     <h3 class="card-title">Canvas</h3>
@@ -71,7 +71,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 ```
 
-```html example label="Width only" hint="data-axis='w' keeps the height owned by the content — the n/s handles are never placed, and corners drag width only." component="resizer" height="14"
+```html example label="Width only" hint="data-axis='w' keeps the height owned by the content - the n/s handles are never placed, and corners drag width only." component="resizer" height="14"
 <div class="resizer" data-handles="w e" data-axis="w" data-min="140" data-max="520">
   <div class="card" style="width:16rem;padding:1rem;">
     <h3 class="card-title">Report</h3>
@@ -84,16 +84,16 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <div class="resizer" data-handles="all" data-resize-mode="classes">
   <div class="card w-64 h-40" style="padding:1rem;">
     <h3 class="card-title">Card</h3>
-    <p class="card-description" style="margin-top:0.5rem;">Authored w-64 h-40. Drags snap to the nearest w-N / h-N token (4 px steps) — no inline styles.</p>
+    <p class="card-description" style="margin-top:0.5rem;">Authored w-64 h-40. Drags snap to the nearest w-N / h-N token (4 px steps) - no inline styles.</p>
   </div>
 </div>
 ```
 
-```html example label="Controlled" hint="data-resize-mode='controlled' writes NOTHING — the component only measures and fires resizer-resize, so the consumer owns the size (this is how the CodeExample preview toolbar uses it)." component="resizer" height="16"
+```html example label="Controlled" hint="data-resize-mode='controlled' writes NOTHING - the component only measures and fires resizer-resize, so the consumer owns the size (this is how the CodeExample preview toolbar uses it)." component="resizer" height="16"
 <div class="resizer" data-handles="all" data-resize-mode="controlled" data-min="120">
   <div class="card" style="width:18rem;height:11rem;padding:1rem;">
     <h3 class="card-title">Consumer owns the box</h3>
-    <p class="card-description" style="margin-top:0.5rem;">Live size below — updated from the <code>resizer-resize</code> event, not from any style the component writes.</p>
+    <p class="card-description" style="margin-top:0.5rem;">Live size below - updated from the <code>resizer-resize</code> event, not from any style the component writes.</p>
     <output class="mono-meta" id="rs-controlled" style="display:block;margin-top:0.5rem;">288 × 176</output>
   </div>
 </div>
@@ -112,9 +112,9 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 ## Resizing a Sidebar
 
-The same component on a real <DocLink href="sidebar.html">Sidebar</DocLink> — first with pixel sizes (inline styles the runtime writes), then class-based, where the size lives in <code>w-\*</code>/<code>h-\*</code> utility classes only:
+The same component on a real <DocLink href="sidebar.html">Sidebar</DocLink> - first with pixel sizes (inline styles the runtime writes), then class-based, where the size lives in <code>w-\*</code>/<code>h-\*</code> utility classes only:
 
-```html example component="resizer" label="Sidebar — pixels" hint="Every side + corner drags the panel; the size lands as inline px on the aside. data-state-name='default' declares the expanded state deliberately — that is the component's own opt-out from auto-collapse, so the rail shrinks continuously (labels clip first) instead of snapping to the icon dock. The width transition is suspended while dragging, so the box tracks the pointer exactly." height="24" mode="desktop" previewStyle="margin:1rem;"
+```html example component="resizer" label="Sidebar - pixels" hint="Every side + corner drags the panel; the size lands as inline px on the aside. data-state-name='default' declares the expanded state deliberately - that is the component's own opt-out from auto-collapse, so the rail shrinks continuously (labels clip first) instead of snapping to the icon dock. The width transition is suspended while dragging, so the box tracks the pointer exactly." height="24" mode="desktop" previewStyle="margin:1rem;"
 <div class="resizer" data-handles="all" data-min="220" data-max="560" data-min-h="160" data-max-h="480">
   <aside class="app-sidebar" data-state-name="default" style="width:24rem;height:18rem;border-radius:var(--radius-lg);">
     <div class="sidebar-header">
@@ -134,7 +134,7 @@ The same component on a real <DocLink href="sidebar.html">Sidebar</DocLink> — 
 </div>
 ```
 
-```html example component="resizer" label="Sidebar — classes" hint="data-resize-mode='classes': dragging swaps w-N/h-N utilities on the aside — inspect the Code tab while you drag and the class attribute is the only thing that changes. data-state-name keeps the rail expanded at every ladder step (no icon-dock snap) — down to w-16 it just clips." height="24" mode="desktop" previewStyle="margin:1rem;"
+```html example component="resizer" label="Sidebar - classes" hint="data-resize-mode='classes': dragging swaps w-N/h-N utilities on the aside - inspect the Code tab while you drag and the class attribute is the only thing that changes. data-state-name keeps the rail expanded at every ladder step (no icon-dock snap) - down to w-16 it just clips." height="24" mode="desktop" previewStyle="margin:1rem;"
 <div class="resizer" data-handles="all" data-resize-mode="classes" data-min="220" data-max="560" data-min-h="160" data-max-h="480">
   <aside class="app-sidebar w-96 h-72" data-state-name="default" style="border-radius:var(--radius-lg);">
     <div class="sidebar-header">
@@ -155,9 +155,9 @@ The same component on a real <DocLink href="sidebar.html">Sidebar</DocLink> — 
 ```
 
 <StatesSection>
-  <p class="text-sm text-muted-foreground m-0 mb-3">The <code>default</code> state restores the size the markup was authored with (snapshotted at init); <code>setState('default', \{ width, height \})</code> applies an explicit px size instead, and <code>getState().config</code> always reports the live box plus the active mode. The wrapper mirrors the live size onto <code>data-width</code>/<code>data-height</code>, and external writes to those attributes are applied back — that is the loop the State tab uses.</p>
+  <p class="text-sm text-muted-foreground m-0 mb-3">The <code>default</code> state restores the size the markup was authored with (snapshotted at init); <code>setState('default', \{ width, height \})</code> applies an explicit px size instead, and <code>getState().config</code> always reports the live box plus the active mode. The wrapper mirrors the live size onto <code>data-width</code>/<code>data-height</code>, and external writes to those attributes are applied back - that is the loop the State tab uses.</p>
 
-Machine contract — verified against <a href="../schemas/resizer.schema.json"><code>resizer.schema.json</code></a> by <code>bun run verify</code>:
+Machine contract - verified against <a href="../schemas/resizer.schema.json"><code>resizer.schema.json</code></a> by <code>bun run verify</code>:
 
 
 ```states
@@ -167,7 +167,7 @@ Machine contract — verified against <a href="../schemas/resizer.schema.json"><
 | `height` | `number` | `—` | `160` | Live height in px, mirrored on `data-height` (dropped while `data-axis="w"`). |
 ```
 
-The action `reset` dispatches <code>resizer-reset</code> on the wrapper — equivalent to <code>setState('default')</code>.
+The action `reset` dispatches <code>resizer-reset</code> on the wrapper - equivalent to <code>setState('default')</code>.
 
 </StatesSection>
 

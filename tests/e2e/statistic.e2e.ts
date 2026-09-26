@@ -2,9 +2,9 @@ import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: statistic is CSS-only — the type scale (muted 13px title, bold 30px
+ * Why: statistic is CSS-only - the type scale (muted 13px title, bold 30px
  * value) plus the two hardcoded trend colors (green/red per the token
- * boundary rule — status colors are literals, not tokens).
+ * boundary rule - status colors are literals, not tokens).
  */
 await cssSmoke('statistic', [
   {

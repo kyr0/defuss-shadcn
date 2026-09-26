@@ -1,5 +1,5 @@
 /**
- * defuss-shadcn — Token Layer
+ * defuss-shadcn - Token Layer
  * Semantic CSS custom properties matching the tweakcn.com export format.
  * OKLCH color space. Full surface/foreground pair model.
  *
@@ -45,7 +45,7 @@
   --sidebar-foreground:      oklch(0.1450 0 0);
   --sidebar-primary:         oklch(0.2050 0 0);
   --sidebar-primary-foreground: oklch(0.9850 0 0);
-  /* 0.97 was within 1.1 contrast of --sidebar — the active nav pill read as
+  /* 0.97 was within 1.1 contrast of --sidebar - the active nav pill read as
      "no background at all"; 0.94 keeps 12+ text contrast and separates */
   --sidebar-accent:          oklch(0.9400 0 0);
   --sidebar-accent-foreground: oklch(0.2050 0 0);
@@ -67,7 +67,7 @@
 
   /* -- Radius --------------------------------------------------- */
   --radius:                  0.625rem;
-  /* Derived — matches tweakcn/shadcn scale */
+  /* Derived - matches tweakcn/shadcn scale */
   --radius-sm:               calc(var(--radius) - 4px);
   --radius-md:               calc(var(--radius) - 2px);
   --radius-lg:               var(--radius);

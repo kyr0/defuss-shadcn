@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: textarea is CSS-only — verify the 80px min box with content-based
+ * Why: textarea is CSS-only - verify the 80px min box with content-based
  * auto-grow (field-sizing), vertical-only resize, disabled dimming + resize
  * lock, and the aria-invalid border recolor.
  */

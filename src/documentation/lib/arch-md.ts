@@ -1,9 +1,9 @@
 /**
- * ARCH.md → .arch-prose body HTML — verbatim port of the retired
+ * ARCH.md → .arch-prose body HTML - verbatim port of the retired
  * scripts/lib/arch-page.ts renderer (the architecture page stays a generated
  * render of the manifesto; verify's architecture gate regenerates the body
  * from ARCH.md and compares against the built page). Pure string functions —
- * no JSX — so both the TSX component and verify.ts can import it.
+ * no JSX - so both the TSX component and verify.ts can import it.
  */
 
 const REPO_FILE_BASE = 'https://github.com/kyr0/defuss-shadcn/blob/main/';
@@ -61,7 +61,7 @@ export function archBodyHtml(md: string): string {
       const body: string[] = [];
       i++;
       while (i < lines.length && !lines[i].startsWith('```')) body.push(lines[i++]);
-      // the mermaid flowchart renders as its source text — no runtime needed
+      // the mermaid flowchart renders as its source text - no runtime needed
       out.push(`<pre><code class="language-${lang}">${esc(body.join('\n'))}</code></pre>`);
       continue;
     }

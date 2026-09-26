@@ -3,12 +3,12 @@ import { resolve } from 'node:path';
 
 /**
  * Why: fixtures reference component files by absolute path (/dist/...) exactly
- * like the real site, so E2E tests need an HTTP origin — ES modules are blocked
+ * like the real site, so E2E tests need an HTTP origin - ES modules are blocked
  * over file://. A static server rooted at the repo root serves both the
  * fixtures (tests/e2e/) and the components (dist/) with zero extra deps.
  */
 
-/** Repo root — server serves everything under it. */
+/** Repo root - server serves everything under it. */
 const ROOT = resolve(import.meta.dirname, '../..');
 
 const MIME: Record<string, string> = {
@@ -19,6 +19,9 @@ const MIME: Record<string, string> = {
   '.md': 'text/plain; charset=utf-8',
   '.svg': 'image/svg+xml',
   '.woff2': 'font/woff2',
+  '.webm': 'video/webm',
+  '.mp4': 'video/mp4',
+  '.png': 'image/png',
 };
 
 /** Starts the fixture server on a random port; resolves to { url, stop }. */
@@ -27,7 +30,7 @@ export function startServer(): { url: string; stop: () => void } {
     port: 0,
     async fetch(req) {
       const path = decodeURIComponent(new URL(req.url).pathname);
-      // only expose the two trees tests need — nothing else from the repo
+      // only expose the two trees tests need - nothing else from the repo
       if (!path.startsWith('/tests/e2e/') && !path.startsWith('/dist/')) {
         return new Response('Forbidden', { status: 403 });
       }

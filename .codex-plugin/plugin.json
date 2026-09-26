@@ -1,0 +1,42 @@
+{
+  "name": "defuss-shadcn",
+  "description": "Build beautiful web apps, charts, websites and presentations in pure HTML/CSS/JS with shadcn components and defuss",
+  "version": "0.9.0",
+  "author": {
+    "name": "Aron Homberg",
+    "url": "https://github.com/kyr0"
+  },
+  "homepage": "https://github.com/kyr0/defuss-shadcn",
+  "repository": "https://github.com/kyr0/defuss-shadcn",
+  "license": "MIT",
+  "keywords": [
+    "ui-design",
+    "ui-components",
+    "webapp",
+    "prototyping",
+    "frontend",
+    "presentations",
+    "charts",
+    "visualization",
+    "animation"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Defuss Shadcn",
+    "shortDescription": "Create beautiful web apps, visualizations, charts, websites and presentations with standalone HTML/CSS/JS and shadcn components",
+    "longDescription": "",
+    "developerName": "Aron Homberg",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/kyr0/defuss-shadcn",
+    "defaultPrompt": [
+      "Make an architecture diagram of my app.",
+      "Create a flowchart for this decision process.",
+      "Redraw this Mermaid diagram at the right size and detail level."
+    ],
+    "brandColor": "#b5523a"
+  }
+}

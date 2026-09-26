@@ -1,0 +1,130 @@
+---
+title: "Wipe Up - Animations"
+description: "The clip-path wipe entrance/exit - reveal from the bottom edge, driven imperatively by df$.anim.wipeIn / wipeOut with direction, duration and easing config."
+slug: "anim-wipe-up"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="anim-wipe-up" title="Wipe Up" component="motion">
+  A <code>clip-path</code> reveal: the element is clipped to a zero-height sliver at one edge and the inset animates open until nothing is clipped - the imperative twin of <code>data-df-entrance="wipe-up"</code> on the Motion page. It ships as a paired channel - <code>df$.anim.wipeIn</code> reveals, <code>df$.anim.wipeOut</code> conceals - and both are directional: <code>north</code>/<code>south</code>/<code>east</code>/<code>west</code> pick the edge the wipe starts from (in) or exits toward (out); <code>south</code> is the classic wipe up from the bottom. Everything below is driven by <code>df$.anim.wipeIn</code> / <code>df$.anim.wipeOut</code>.
+</PageHeader>
+
+```html example label="In / out, directions and lifecycle" schema="none" hint="wipeIn starts clipped to the named edge and opens; wipeOut closes toward it. Direction buttons pick the edge, Pause/Resume/Finish/Reset act on whichever channel ran last."
+<style>
+  #anim-wipe-up-target {
+    width: 160px; height: 100px;
+    display: grid; place-items: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card); color: var(--card-foreground);
+    font-size: 0.85rem;
+  }
+</style>
+<div style="display:flex; flex-direction:column; gap:0.75rem;">
+  <div id="anim-wipe-up-target">wipe up</div>
+  <div style="display:flex; flex-wrap:wrap; gap:0.4rem; align-items:center;">
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-wipe-up-in">In</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-wipe-up-out">Out</button>
+    <span style="width:1px; height:1.4rem; background:var(--border);"></span>
+    <button class="btn" data-variant="outline" data-size="sm" data-dir="north">N</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-dir="south" aria-pressed="true">S</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-dir="west">W</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-dir="east">E</button>
+    <span style="width:1px; height:1.4rem; background:var(--border);"></span>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-wipe-up-pause">Pause</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-wipe-up-resume">Resume</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-wipe-up-finish">Finish</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-wipe-up-reset">Reset</button>
+  </div>
+  <div style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center; font-size:0.85rem;">
+    <label style="display:flex; align-items:center; gap:0.4rem;">
+      Duration
+      <input class="input" id="anim-wipe-up-duration" type="number" min="50" step="50" value="1500" style="width:6rem;" />
+    </label>
+    <label style="display:flex; align-items:center; gap:0.4rem;">
+      Easing
+      <select class="select" id="anim-wipe-up-easing">
+        <option value="cubic-bezier(0.16, 1, 0.3, 1)" selected>default (ease-out-expo)</option>
+        <option value="linear">linear</option>
+        <option value="ease-in-out">ease-in-out</option>
+        <option value="cubic-bezier(0.34, 1.56, 0.64, 1)">overshoot</option>
+      </select>
+    </label>
+  </div>
+</div>
+<script type="module">
+  // df$ (all.js) boots after example scripts in the sandbox - reference it
+  // only at event time, never at parse time.
+  const target = document.getElementById('anim-wipe-up-target');
+  const durationInput = document.getElementById('anim-wipe-up-duration');
+  const easingSelect = document.getElementById('anim-wipe-up-easing');
+  let direction = 'south';        // wipe up from the bottom edge
+  let lastChannel = 'wipeIn';     // Pause/Resume/Finish/Reset act on this one
+
+  const config = () => ({
+    direction,
+    duration: Number(durationInput.value) || 600,
+    easing: easingSelect.value,
+  });
+
+  document.getElementById('anim-wipe-up-in').addEventListener('click', () => {
+    lastChannel = 'wipeIn';
+    df$.anim.wipeIn.play(target, config());
+  });
+  document.getElementById('anim-wipe-up-out').addEventListener('click', () => {
+    lastChannel = 'wipeOut';
+    df$.anim.wipeOut.play(target, config());
+  });
+
+  document.querySelectorAll('[data-dir]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      direction = btn.dataset.dir;
+      document.querySelectorAll('[data-dir]').forEach((b) => {
+        if (b === btn) b.setAttribute('aria-pressed', 'true');
+        else b.removeAttribute('aria-pressed');
+      });
+    });
+  });
+
+  document.getElementById('anim-wipe-up-pause').addEventListener('click', () => df$.anim[lastChannel].pause(target));
+  document.getElementById('anim-wipe-up-resume').addEventListener('click', () => df$.anim[lastChannel].resume(target));
+  document.getElementById('anim-wipe-up-finish').addEventListener('click', () => df$.anim[lastChannel].finish(target));
+  document.getElementById('anim-wipe-up-reset').addEventListener('click', () => df$.anim[lastChannel].reset(target));
+</script>
+```
+
+```html example label="Scroll binding" schema="none" hint="opts.scroll ties progress to a scroll position instead of time - here the scroller's own y offset scrubs the reveal. Scroll the stage."
+<div id="anim-wipe-up-scroller" style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem;">
+  <div style="height: 600px; display:flex; flex-direction:column; justify-content:flex-end; align-items:center;">
+    <div id="anim-wipe-up-scroll-target" style="width: 160px; height: 100px; display:grid; place-items:center; border:1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); color: var(--card-foreground); font-size:0.85rem;">scroll me</div>
+  </div>
+</div>
+<script type="module">
+  // all.js (df$) boots after example scripts in the sandbox - bind in the
+  // load handler, never at parse time. play() with a scroll binding hands the
+  // animation to a ScrollTimeline (or the rAF fallback): progress IS the
+  // scroller's relative y position, direction 'south' reveals from the bottom.
+  window.addEventListener('load', () => {
+    const scroller = document.getElementById('anim-wipe-up-scroller');
+    const scrollTarget = document.getElementById('anim-wipe-up-scroll-target');
+    df$.anim.wipeIn.play(scrollTarget, { direction: 'south', scroll: { target: scroller, axis: 'y' } });
+  });
+</script>
+```
+
+Pass `{ target: 'viewport' }` (or omit `target`) instead of an element to bind progress to the page's own scroll - the parallax use for presentations, where a long page scroll drives the wipe.
+
+## Config axes
+
+- **`direction`** - `'north' | 'south' | 'east' | 'west'`, the edge the wipe starts from (`wipeIn`) or exits toward (`wipeOut`); `'south'` is the wipe-up reveal from the bottom.
+- **`duration`** - total time in ms (default 1500).
+- **`easing`** - any CSS easing (default `cubic-bezier(0.16, 1, 0.3, 1)`).
+
+<SourceFiles component="motion" section="css">
+  <SourceNote for="css">The shared motion stylesheet - the declarative <code>data-df-entrance</code> twin of this page's <code>df$.anim</code> channels: the <code>--df-motion-…</code> tunables, the fifteen <code>df-enter-…</code> keyframes and the reduced-motion flattening.</SourceNote>
+</SourceFiles>
+
+</DocPage>

@@ -1,12 +1,12 @@
 /**
  * Why: every component carries exactly one atomic-design type (ATM | MOL | ORG |
- * BLK | TPL) that must stay identical in three artifacts — the sidebar badge,
+ * BLK | TPL) that must stay identical in three artifacts - the sidebar badge,
  * the skill frontmatter, and the doc page badge. This module is the single
  * source of truth (fs-free so scripts and tests share it): the allowed set and
  * the pure doc-page injection used identically by the bootstrap script and
  * verify's drift gate. Badge colors (taxonomy spec: cyan/blue/violet/amber/
  * slate + dark variants) live in documentation/css/layout.css as
- * `.type-badge[data-type=…]` rules — markup stays class-only, one place to recolor.
+ * `.type-badge[data-type=…]` rules - markup stays class-only, one place to recolor.
  */
 
 /** Allowed types (taxonomy: Atom, Molecule, Organism, Block, Template). */
@@ -23,7 +23,7 @@ export const TYPE_NAMES: Record<ComponentType, string> = {
 };
 
 /** Why: badge markup is generated (never hand-written) so the exact string is
- * byte-stable and greppable — layout.ts (sidebar) and every doc page embed this
+ * byte-stable and greppable - layout.ts (sidebar) and every doc page embed this
  * identical markup, and verify's `Component doc page type badge` gate compares
  * it per page against the skill frontmatter. All visual styling (the taxonomy
  * colors, light + dark) lives in documentation/css/layout.css, keyed by
@@ -33,7 +33,7 @@ export function typeBadgeHtml(type: ComponentType): string {
 }
 
 /** Why: the exact <h1> every component doc page opens its page-header with (the
- * component-name title) — the badge rides that heading's baseline. Shared
+ * component-name title) - the badge rides that heading's baseline. Shared
  * between the generator and any caller so they anchor identically. */
 export const BADGE_ANCHOR =
   '<h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">';
@@ -52,7 +52,7 @@ export function injectTypeBadge(html: string, type: ComponentType): string {
   const at = html.indexOf(BADGE_ANCHOR);
   if (at === -1) throw new Error('doc page has no page-title <h1> to anchor the type badge');
   const close = html.indexOf('</h1>', at);
-  if (close === -1) throw new Error('doc page title <h1> is never closed — cannot anchor the type badge');
+  if (close === -1) throw new Error('doc page title <h1> is never closed - cannot anchor the type badge');
   // drop a previously injected badge (with its leading gap) so a re-run just swaps the type
   const title = html
     .slice(at + BADGE_ANCHOR.length, close)

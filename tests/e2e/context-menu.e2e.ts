@@ -7,7 +7,7 @@ import { startServer } from './server.ts';
  * fixture (right-click trigger + menu popover, mirroring the doc page) over
  * HTTP in a real browser, then verifies the contextmenu open (pointer
  * positioning), item-click close, Escape close (with the named-state sync),
- * and the per-menu named State API ({ x, y } open preset) — the same files
+ * and the per-menu named State API ({ x, y } open preset) - the same files
  * consumers copy from dist/, unmodified.
  */
 
@@ -47,8 +47,8 @@ try {
 
   await check('menu opens only AFTER the right-button release (no light-dismiss on mouse-up)', async () => {
     // regression: opening during the hold made the platform light-dismiss the
-    // auto popover the moment the button went up — the menu vanished on release
-    // scoped to the original demo trigger — the density instances below add more
+    // auto popover the moment the button went up - the menu vanished on release
+    // scoped to the original demo trigger - the density instances below add more
     const box = (await page.locator('[data-context-menu="demo-ctx"]').boundingBox())!;
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
     await page.mouse.down({ button: 'right' });

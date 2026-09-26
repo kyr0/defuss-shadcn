@@ -1766,6 +1766,32 @@ function debounce(fn, wait2) {
   };
   return wrapped;
 }
+// src/shared/keys.ts
+var handlers = new Set;
+var listening = false;
+var isEditable = (target) => target instanceof HTMLElement && (target.isContentEditable || target.closest('input, textarea, select, [contenteditable="true"]') !== null);
+function onKeydown(event) {
+  if (isEditable(event.target))
+    return;
+  for (const handler of handlers) {
+    if (handler(event) === true)
+      break;
+  }
+}
+function bindGlobalKeys(handler) {
+  handlers.add(handler);
+  if (!listening && typeof document !== "undefined") {
+    listening = true;
+    document.addEventListener("keydown", onKeydown);
+  }
+  return () => {
+    handlers.delete(handler);
+    if (handlers.size === 0 && listening) {
+      listening = false;
+      document.removeEventListener("keydown", onKeydown);
+    }
+  };
+}
 // src/shared/query.ts
 var MORPH_METHODS = [
   "morph",
@@ -1790,6 +1816,657 @@ function defussQuery() {
     }
   }
   throw new Error(RUNTIME_INCOMPLETE);
+}
+// src/shared/motion.ts
+var ENTRANCES = [
+  "up",
+  "down",
+  "left",
+  "right",
+  "zoom",
+  "zoom-out",
+  "pop",
+  "spin",
+  "flip",
+  "skew",
+  "blur",
+  "wipe",
+  "wipe-up",
+  "iris",
+  "fade"
+];
+var active = new WeakMap;
+var owned = (el, prefix) => el.getAnimations({ subtree: false }).filter((a) => typeof a.animationName === "string" && a.animationName.startsWith(prefix));
+function trigger(el, attr, effect, prefix, options = {}) {
+  const style = el.style;
+  if (effect !== undefined)
+    el.setAttribute(attr, effect);
+  const animations = owned(el, prefix);
+  for (const animation of animations)
+    animation.cancel();
+  style.setProperty("--df-motion-base-opacity", getComputedStyle(el).opacity);
+  if (options.duration !== undefined)
+    style.setProperty("--df-motion-duration", `${options.duration}ms`);
+  if (options.delay !== undefined)
+    style.setProperty("--df-motion-delay", `${options.delay}ms`);
+  if (options.easing !== undefined)
+    style.setProperty("--df-motion-ease", options.easing);
+  if (options.distance !== undefined)
+    style.setProperty("--df-motion-distance", options.distance);
+  for (const animation of animations)
+    animation.play();
+  active.set(el, animations);
+  const finished = Promise.all(animations.map((a) => a.finished.catch(() => {
+    return;
+  }))).then(() => {
+    if (active.get(el) !== animations)
+      return;
+    active.delete(el);
+  });
+  return {
+    finished,
+    cancel() {
+      if (active.get(el) !== animations)
+        return;
+      animations.forEach((a) => a.cancel());
+      active.delete(el);
+      el.removeAttribute(attr);
+    }
+  };
+}
+function entrance(element, effect, options = {}) {
+  const current = element.getAttribute("data-df-entrance") ?? undefined;
+  const target = effect ?? current;
+  if (target !== undefined && !ENTRANCES.includes(target)) {
+    throw new Error(`motion: unknown entrance "${target}" (supported: ${ENTRANCES.join(", ")})`);
+  }
+  return trigger(element, "data-df-entrance", target, "df-enter-", options);
+}
+function draw(element, options = {}) {
+  return trigger(element, "data-df-draw", undefined, "df-draw", options);
+}
+function revealAttr(direction, delay) {
+  const dir = ENTRANCES.includes(String(direction)) ? String(direction) : "up";
+  const ms = delay === undefined ? -1 : Math.max(0, Number(delay) || 0);
+  const attrs = { "data-df-entrance": dir };
+  if (ms > 0)
+    attrs.style = `--df-motion-delay:${ms}ms`;
+  return attrs;
+}
+
+// src/shared/presentation.ts
+function coerceIndex(raw, fallback) {
+  const n = typeof raw === "number" ? raw : parseInt(String(raw), 10);
+  return Number.isFinite(n) ? Math.trunc(n) : fallback;
+}
+function clampIndex(raw, count) {
+  if (count <= 0)
+    return 0;
+  return Math.min(count - 1, Math.max(0, coerceIndex(raw, 0)));
+}
+var COUNT_KEY = "_presentationCount";
+function animateCount(el, opts = {}) {
+  const num = (raw, fallback) => {
+    const n = typeof raw === "number" ? raw : Number(raw);
+    return Number.isFinite(n) ? n : fallback;
+  };
+  const to = opts.to ?? num(el.dataset.count, 0);
+  const from = opts.from ?? num(el.dataset.countFrom, 0);
+  const duration = Math.max(0, opts.duration ?? num(el.dataset.countDuration, 1200));
+  const delay = Math.max(0, opts.delay ?? num(el.dataset.countDelay, 0));
+  const decimals = opts.decimals ?? num(el.dataset.countDecimals, String(to).split(".")[1]?.length ?? 0);
+  const fmt = opts.format ?? ((n) => new Intl.NumberFormat(undefined, {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals
+  }).format(n));
+  const stop = el[COUNT_KEY];
+  if (typeof stop === "function")
+    stop();
+  let raf = 0;
+  let timer = 0;
+  const settle = () => {
+    el.textContent = fmt(to);
+  };
+  const reduced = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const start = () => {
+    if (reduced || duration === 0 || from === to) {
+      settle();
+      return;
+    }
+    const t0 = performance.now();
+    const tick = (now) => {
+      const p = Math.min(1, (now - t0) / duration);
+      const eased = 1 - (1 - p) ** 3;
+      el.textContent = p >= 1 ? fmt(to) : fmt(from + (to - from) * eased);
+      if (p < 1)
+        raf = requestAnimationFrame(tick);
+    };
+    el.textContent = fmt(from);
+    raf = requestAnimationFrame(tick);
+  };
+  const cancel = () => {
+    cancelAnimationFrame(raf);
+    clearTimeout(timer);
+    if (el[COUNT_KEY] === cancel)
+      delete el[COUNT_KEY];
+  };
+  el[COUNT_KEY] = cancel;
+  if (delay > 0)
+    timer = setTimeout(start, delay);
+  else
+    start();
+  return cancel;
+}
+var PRESENTATION_NOT_INITIALIZED = "ddf$: presentation element is not initialized - load dist/components/presentation/presentation.js (or all.js) first";
+function presentationScope(el) {
+  const mount = el?.closest(".presentation") ?? (typeof document !== "undefined" ? document.querySelector(".presentation") : null);
+  if (!mount)
+    throw new Error("ddf$: no .presentation element found");
+  const slides = () => Array.from(mount.querySelectorAll(":scope > [data-slide]"));
+  const apply = (index) => {
+    const api = mount.api;
+    if (!api)
+      throw new Error(PRESENTATION_NOT_INITIALIZED);
+    api.setState("default", { index });
+    return coerceIndex(mount.dataset.currentSlide, index);
+  };
+  return {
+    el: mount,
+    slides,
+    count: () => slides().length,
+    index: () => coerceIndex(mount.dataset.currentSlide, 0),
+    goTo: (index) => apply(clampIndex(index, slides().length)),
+    next: () => apply(Math.min(slides().length - 1, coerceIndex(mount.dataset.currentSlide, 0) + 1)),
+    prev: () => apply(Math.max(0, coerceIndex(mount.dataset.currentSlide, 0) - 1)),
+    first: () => apply(0),
+    last: () => apply(slides().length - 1),
+    fullscreen: () => mount.hasAttribute("data-fullscreen"),
+    toggleFullscreen: (on) => {
+      const api = mount.api;
+      if (!api)
+        throw new Error(PRESENTATION_NOT_INITIALIZED);
+      const want = on ?? !mount.hasAttribute("data-fullscreen");
+      api.setState("fullscreen", { value: want });
+      return want;
+    }
+  };
+}
+function installDdf(namespace) {
+  const existing = Reflect.get(globalThis, "ddf$");
+  if (existing !== undefined) {
+    throw new Error("defuss-shadcn: globalThis.ddf$ is already defined - core installs the shared library exactly once");
+  }
+  Reflect.set(globalThis, "ddf$", namespace);
+  return namespace;
+}
+// src/shared/anim.ts
+var ANIM_NAMES = [
+  "fadeIn",
+  "fadeOut",
+  "slideIn",
+  "slideOut",
+  "zoomIn",
+  "zoomOut",
+  "popIn",
+  "popOut",
+  "spinIn",
+  "spinOut",
+  "flipIn",
+  "flipOut",
+  "skewIn",
+  "skewOut",
+  "blurIn",
+  "blurOut",
+  "wipeIn",
+  "wipeOut",
+  "irisIn",
+  "irisOut",
+  "blocksIn",
+  "blocksOut"
+];
+var DEFAULT_DURATION = 1500;
+var DEFAULT_EASING = "cubic-bezier(0.16, 1, 0.3, 1)";
+var DEFAULT_DISTANCE = "24px";
+var DEFAULT_BLUR = "12px";
+var DEFAULT_ANGLE = "12deg";
+var DEFAULT_SPIN = "0.5turn";
+var DEFAULT_ZOOM_SCALE = 0.8;
+var DEFAULT_ORIGIN = "50% 50%";
+var DEFAULT_BLOCKS = 5;
+var DEFAULT_STAGGER = 90;
+var DIRECTIONS = ["north", "south", "east", "west"];
+function coerceDirection(value, fallback) {
+  return DIRECTIONS.includes(value) ? value : fallback;
+}
+function offsetFor(direction, distance) {
+  switch (direction) {
+    case "north":
+      return `translate(0px, calc(-1 * ${distance}))`;
+    case "south":
+      return `translate(0px, ${distance})`;
+    case "west":
+      return `translate(calc(-1 * ${distance}), 0px)`;
+    case "east":
+      return `translate(${distance}, 0px)`;
+  }
+}
+function insetFor(direction) {
+  switch (direction) {
+    case "north":
+      return "inset(0px 0px 100% 0px)";
+    case "south":
+      return "inset(100% 0px 0px 0px)";
+    case "west":
+      return "inset(0px 100% 0px 0px)";
+    case "east":
+      return "inset(0px 0px 0px 100%)";
+  }
+}
+function animKeyframes(name, opts = {}, ctx = { baseOpacity: 1 }) {
+  const direction = coerceDirection(opts.direction, "north");
+  const distance = opts.distance ?? DEFAULT_DISTANCE;
+  const origin = opts.origin ?? DEFAULT_ORIGIN;
+  const base = ctx.baseOpacity;
+  switch (name) {
+    case "fadeIn":
+      return [{ opacity: 0 }, { opacity: base }];
+    case "fadeOut":
+      return [{ opacity: base }, { opacity: 0 }];
+    case "slideIn":
+      return [
+        { transform: offsetFor(direction, distance), opacity: 0 },
+        { transform: "translate(0px, 0px)", opacity: base }
+      ];
+    case "slideOut":
+      return [
+        { transform: "translate(0px, 0px)", opacity: base },
+        { transform: offsetFor(direction, distance), opacity: 0 }
+      ];
+    case "zoomIn":
+      return [
+        { transform: `scale(${opts.scale ?? DEFAULT_ZOOM_SCALE})`, opacity: 0, transformOrigin: origin },
+        { transform: "scale(1)", opacity: base, transformOrigin: origin }
+      ];
+    case "zoomOut":
+      return [
+        { transform: "scale(1)", opacity: base, transformOrigin: origin },
+        { transform: `scale(${opts.scale ?? DEFAULT_ZOOM_SCALE})`, opacity: 0, transformOrigin: origin }
+      ];
+    case "popIn":
+      return [
+        { transform: "scale(0.65)", opacity: 0, offset: 0 },
+        { transform: "scale(1.07)", opacity: base, offset: 0.65 },
+        { transform: "scale(1)", opacity: base, offset: 1 }
+      ];
+    case "popOut":
+      return [
+        { transform: "scale(1)", opacity: base, offset: 0 },
+        { transform: "scale(1.07)", opacity: base, offset: 0.35 },
+        { transform: "scale(0.65)", opacity: 0, offset: 1 }
+      ];
+    case "spinIn":
+      return [
+        { transform: `rotate(-${DEFAULT_SPIN})`, opacity: 0 },
+        { transform: "rotate(0deg)", opacity: base }
+      ];
+    case "spinOut":
+      return [
+        { transform: "rotate(0deg)", opacity: base },
+        { transform: `rotate(${DEFAULT_SPIN})`, opacity: 0 }
+      ];
+    case "flipIn": {
+      const axis = direction === "north" || direction === "south" ? "rotateX" : "rotateY";
+      const sign = direction === "north" || direction === "west" ? 1 : -1;
+      return [
+        { transform: `perspective(900px) ${axis}(${sign * 70}deg)`, opacity: 0 },
+        { transform: `perspective(900px) ${axis}(0deg)`, opacity: base }
+      ];
+    }
+    case "flipOut": {
+      const axis = direction === "north" || direction === "south" ? "rotateX" : "rotateY";
+      const sign = direction === "north" || direction === "west" ? -1 : 1;
+      return [
+        { transform: `perspective(900px) ${axis}(0deg)`, opacity: base },
+        { transform: `perspective(900px) ${axis}(${sign * 70}deg)`, opacity: 0 }
+      ];
+    }
+    case "skewIn": {
+      const horizontal = direction === "east" || direction === "west";
+      const axis = horizontal ? "skewX" : "skewY";
+      const sign = direction === "west" || direction === "south" ? 1 : -1;
+      return [
+        { transform: `${axis}(calc(${sign} * ${DEFAULT_ANGLE}))`, opacity: 0 },
+        { transform: `${axis}(0deg)`, opacity: base }
+      ];
+    }
+    case "skewOut": {
+      const horizontal = direction === "east" || direction === "west";
+      const axis = horizontal ? "skewX" : "skewY";
+      const sign = direction === "west" || direction === "south" ? -1 : 1;
+      return [
+        { transform: `${axis}(0deg)`, opacity: base },
+        { transform: `${axis}(calc(${sign} * ${DEFAULT_ANGLE}))`, opacity: 0 }
+      ];
+    }
+    case "blurIn":
+      return [
+        { filter: `blur(${DEFAULT_BLUR})`, opacity: 0 },
+        { filter: "blur(0px)", opacity: base }
+      ];
+    case "blurOut":
+      return [
+        { filter: "blur(0px)", opacity: base },
+        { filter: `blur(${DEFAULT_BLUR})`, opacity: 0 }
+      ];
+    case "wipeIn":
+      return [{ clipPath: insetFor(direction) }, { clipPath: "inset(0px 0px 0px 0px)" }];
+    case "wipeOut":
+      return [{ clipPath: "inset(0px 0px 0px 0px)" }, { clipPath: insetFor(direction) }];
+    case "irisIn":
+      return [
+        { clipPath: `circle(0% at ${origin})` },
+        { clipPath: `circle(150% at ${origin})` }
+      ];
+    case "irisOut":
+      return [
+        { clipPath: `circle(150% at ${origin})` },
+        { clipPath: `circle(0% at ${origin})` }
+      ];
+    default:
+      throw new Error(`anim: "${name}" is composite - it has no element keyframes`);
+  }
+}
+var instances = new WeakMap;
+var instanceFor = (el, name) => instances.get(el)?.get(name);
+var reducedMotion = () => typeof globalThis.matchMedia === "function" && globalThis.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function dropInstance(el, name) {
+  const map = instances.get(el);
+  if (!map)
+    return;
+  map.delete(name);
+  if (map.size === 0)
+    instances.delete(el);
+}
+function storeInstance(el, name, instance) {
+  let map = instances.get(el);
+  if (!map) {
+    map = new Map;
+    instances.set(el, map);
+  }
+  map.set(name, instance);
+}
+function deriveState(animations) {
+  if (animations.length === 0)
+    return "idle";
+  const states = animations.map((a) => a.playState);
+  if (states.every((s) => s === "finished"))
+    return "finished";
+  if (states.every((s) => s === "paused"))
+    return "paused";
+  if (states.some((s) => s === "running" || s === "pending"))
+    return "running";
+  return "idle";
+}
+function bindScroll(animations, scroll, totalMs) {
+  const axis = scroll.axis ?? "y";
+  const target = scroll.target ?? "viewport";
+  const [rangeFrom, rangeTo] = scroll.range ?? [0, 1];
+  const supportsTimeline = !scroll.forceFallback && typeof globalThis.ScrollTimeline === "function";
+  if (supportsTimeline) {
+    const source = target === "viewport" ? document.scrollingElement ?? document.documentElement : target;
+    const TimelineCtor = globalThis.ScrollTimeline;
+    const timeline = new TimelineCtor({ source, axis: axis === "x" ? "inline" : "block" });
+    for (const animation of animations) {
+      animation.pause();
+      animation.timeline = timeline;
+      animation.play();
+    }
+    return () => {
+      for (const animation of animations)
+        animation.timeline = document.timeline;
+    };
+  }
+  for (const animation of animations)
+    animation.pause();
+  const progress = () => {
+    let p;
+    if (target === "viewport") {
+      const doc = document.documentElement;
+      p = axis === "y" ? doc.scrollTop / Math.max(1, doc.scrollHeight - doc.clientHeight) : doc.scrollLeft / Math.max(1, doc.scrollWidth - doc.clientWidth);
+    } else {
+      p = axis === "y" ? target.scrollTop / Math.max(1, target.scrollHeight - target.clientHeight) : target.scrollLeft / Math.max(1, target.scrollWidth - target.clientWidth);
+    }
+    return rangeFrom + Math.min(1, Math.max(0, p)) * (rangeTo - rangeFrom);
+  };
+  const apply = () => {
+    const time = progress() * totalMs;
+    for (const animation of animations)
+      animation.currentTime = time;
+  };
+  let queued = false;
+  const onScroll = () => {
+    if (queued)
+      return;
+    queued = true;
+    requestAnimationFrame(() => {
+      queued = false;
+      apply();
+    });
+  };
+  const listenTarget = target === "viewport" ? globalThis : target;
+  listenTarget.addEventListener("scroll", onScroll, { passive: true });
+  apply();
+  return () => listenTarget.removeEventListener("scroll", onScroll);
+}
+function timingFor(opts, durationOverride) {
+  return {
+    duration: durationOverride ?? (reducedMotion() ? 1 : opts.duration ?? DEFAULT_DURATION),
+    delay: reducedMotion() ? 0 : opts.delay ?? 0,
+    easing: opts.easing ?? DEFAULT_EASING,
+    fill: "both"
+  };
+}
+function playBlocks(el, name, opts) {
+  const host = el;
+  const direction = coerceDirection(opts.direction, "north");
+  const count = Math.max(1, Math.round(opts.blocks ?? DEFAULT_BLOCKS));
+  const stagger = Math.max(0, opts.stagger ?? DEFAULT_STAGGER);
+  const timing = timingFor(opts);
+  const duration = timing.duration;
+  const horizontal = direction === "east" || direction === "west";
+  const authoredPosition = host.style.position;
+  if (getComputedStyle(host).position === "static")
+    host.style.position = "relative";
+  const overlay = document.createElement("div");
+  overlay.setAttribute("data-df-anim-blocks", "");
+  overlay.setAttribute("aria-hidden", "true");
+  Object.assign(overlay.style, {
+    position: "absolute",
+    inset: "0",
+    display: "flex",
+    flexDirection: horizontal ? "row" : "column",
+    pointerEvents: "none",
+    zIndex: "1",
+    overflow: "hidden"
+  });
+  const animations = [];
+  for (let i = 0;i < count; i++) {
+    const block = document.createElement("div");
+    Object.assign(block.style, {
+      flex: "1 1 0%",
+      background: opts.color ?? "currentColor",
+      outline: `1px solid ${opts.color ?? "currentColor"}`,
+      transformOrigin: horizontal ? direction === "west" ? "left" : "right" : direction === "north" ? "top" : "bottom"
+    });
+    overlay.append(block);
+    const axis = horizontal ? "scaleX" : "scaleY";
+    const index = name === "blocksIn" ? i : count - 1 - i;
+    const keyframes = name === "blocksIn" ? [{ transform: `${axis}(0)` }, { transform: `${axis}(1)` }] : [{ transform: `${axis}(1)` }, { transform: `${axis}(0)` }];
+    animations.push(block.animate(keyframes, { ...timing, delay: timing.delay + index * stagger }));
+  }
+  host.append(overlay);
+  const cleanup = () => {
+    overlay.remove();
+    host.style.position = authoredPosition;
+  };
+  if (name === "blocksOut") {
+    Promise.all(animations.map((a) => a.finished.catch(() => {
+      return;
+    }))).then(() => {
+      if (instanceFor(el, name)?.cleanup)
+        cleanup();
+    });
+  }
+  return {
+    animations,
+    cleanup,
+    totalMs: timing.delay + (count - 1) * stagger + duration
+  };
+}
+function playAnim(name, el, opts = {}) {
+  if (!ANIM_NAMES.includes(name)) {
+    throw new Error(`anim: unknown animation "${name}" (supported: ${ANIM_NAMES.join(", ")})`);
+  }
+  resetAnim(name, el);
+  const composite = name === "blocksIn" || name === "blocksOut";
+  const timing = timingFor(opts);
+  let animations;
+  let cleanup = null;
+  let totalMs;
+  if (composite) {
+    const built = playBlocks(el, name, opts);
+    animations = built.animations;
+    cleanup = built.cleanup;
+    totalMs = built.totalMs;
+  } else {
+    const ctx = { baseOpacity: Number(getComputedStyle(el).opacity) || 1 };
+    animations = [el.animate(animKeyframes(name, opts, ctx), timing)];
+    totalMs = timing.delay + timing.duration;
+  }
+  let unbind = null;
+  if (opts.scroll)
+    unbind = bindScroll(animations, opts.scroll, totalMs);
+  const instance = {
+    animations,
+    unbind,
+    cleanup,
+    finished: Promise.all(animations.map((a) => a.finished.catch(() => {
+      return;
+    }))).then(() => {
+      return;
+    })
+  };
+  storeInstance(el, name, instance);
+  return {
+    finished: instance.finished,
+    pause: () => animations.forEach((a) => a.pause()),
+    resume: () => animations.forEach((a) => a.play()),
+    finish: () => animations.forEach((a) => a.finish()),
+    reset: () => resetAnim(name, el),
+    state: () => deriveState(animations)
+  };
+}
+function resetAnim(name, el) {
+  const instance = instanceFor(el, name);
+  if (!instance)
+    return;
+  for (const animation of instance.animations)
+    animation.cancel();
+  instance.unbind?.();
+  instance.cleanup?.();
+  dropInstance(el, name);
+}
+function channelFor(name) {
+  return {
+    play: (el, opts) => playAnim(name, el, opts),
+    pause: (el) => instanceFor(el, name)?.animations.forEach((a) => a.pause()),
+    resume: (el) => instanceFor(el, name)?.animations.forEach((a) => a.play()),
+    finish: (el) => instanceFor(el, name)?.animations.forEach((a) => a.finish()),
+    reset: (el) => resetAnim(name, el),
+    state: (el) => {
+      const instance = instanceFor(el, name);
+      return instance ? deriveState(instance.animations) : "idle";
+    }
+  };
+}
+var anim = Object.freeze(Object.assign(Object.fromEntries(ANIM_NAMES.map((name) => [name, channelFor(name)])), { names: ANIM_NAMES }));
+// src/shared/theme-links.ts
+var LINK_ATTR = "data-df-theme-link";
+var inflight = new Map;
+function themeJsonHref(id) {
+  const tokens2 = document.getElementById("tokens-css") ?? document.querySelector('link[href*="default-semantic-tokens.css"]');
+  if (tokens2)
+    return new URL(`../${id}.json`, tokens2.href).href;
+  return `${id}.json`;
+}
+function parseThemeLinks(text) {
+  let raw;
+  try {
+    raw = JSON.parse(text);
+  } catch (e) {
+    throw new Error(`theme links: invalid JSON - ${e instanceof Error ? e.message : e}`);
+  }
+  const file = raw;
+  if (!file || file.schema !== "v1")
+    throw new Error('theme links: $.schema must be "v1"');
+  if (!Array.isArray(file.links))
+    throw new Error("theme links: $.links must be an array");
+  for (const [i, node] of file.links.entries()) {
+    if (!node || node.type !== "link")
+      throw new Error(`theme links: $.links[${i}].type must be "link" (got ${JSON.stringify(node && node.type)})`);
+    if (!node.attributes || typeof node.attributes !== "object")
+      throw new Error(`theme links: $.links[${i}].attributes must be an object`);
+  }
+  return { schema: "v1", links: file.links };
+}
+function clearThemeLinks() {
+  document.querySelectorAll(`link[${LINK_ATTR}]`).forEach((el) => el.remove());
+}
+function applyThemeLinks(themeId, links) {
+  if (!document.getElementById("df-theme-links")) {
+    const marker = document.createElement("template");
+    marker.id = "df-theme-links";
+    document.head.append(marker);
+  }
+  clearThemeLinks();
+  for (const node of links) {
+    const rel = node.attributes.rel ?? "";
+    const href = node.attributes.href ?? "";
+    const existing = document.querySelector(`link[rel="${CSS.escape(rel)}"][href="${CSS.escape(href)}"]`);
+    if (existing)
+      continue;
+    const link = document.createElement("link");
+    for (const [name, value] of Object.entries(node.attributes))
+      link.setAttribute(name, String(value));
+    link.setAttribute(LINK_ATTR, themeId);
+    document.head.append(link);
+  }
+}
+function loadTheme(id) {
+  if (!id || id === "default") {
+    clearThemeLinks();
+    return Promise.resolve();
+  }
+  let pending = inflight.get(id);
+  if (!pending) {
+    pending = (async () => {
+      try {
+        const res = await fetch(themeJsonHref(id));
+        return res.ok ? parseThemeLinks(await res.text()) : null;
+      } catch (e) {
+        if (e instanceof SyntaxError || e instanceof Error && e.message.startsWith("theme links"))
+          throw e;
+        return null;
+      }
+    })();
+    inflight.set(id, pending);
+  }
+  return pending.then((file) => {
+    if (file)
+      applyThemeLinks(id, file.links);
+    else
+      clearThemeLinks();
+  });
 }
 
 // src/shared/state-api.ts
@@ -1825,13 +2502,48 @@ var SHARED_ABI = "0.9.0";
 // src/core/index.ts
 var existing = Reflect.get(globalThis, "df$");
 if (existing !== undefined) {
-  throw new Error("defuss-shadcn core: globalThis.df$ is already defined — load core OR all, never both and never twice");
+  throw new Error("defuss-shadcn core: globalThis.df$ is already defined - load core OR all, never both and never twice");
 }
 var df = createDf$(exports_dist);
 Reflect.set(globalThis, "df$", df);
 var shadcn = df.shadcn ??= {};
-shadcn.shared = { abi: SHARED_ABI, defussGlobals, safeShowPopover, defussQuery, debounce };
+shadcn.shared = {
+  abi: SHARED_ABI,
+  defussGlobals,
+  safeShowPopover,
+  defussQuery,
+  debounce,
+  animateCount,
+  clampIndex,
+  coerceIndex,
+  presentationScope,
+  revealAttr,
+  entrance,
+  draw,
+  anim,
+  bindGlobalKeys,
+  loadTheme
+};
+Reflect.set(df, "anim", anim);
+shadcn.anim = anim;
+installDdf({
+  abi: SHARED_ABI,
+  defussGlobals,
+  safeShowPopover,
+  defussQuery,
+  debounce,
+  presentation: presentationScope,
+  animateCount,
+  revealAttr,
+  entrance,
+  draw,
+  anim,
+  bindGlobalKeys,
+  loadTheme,
+  clampIndex,
+  coerceIndex
+});
 
-//# debugId=0FD6712EE038191864756E2164756E21
+//# debugId=D7254108AEB4476C64756E2164756E21
 /* defuss-shadcn v0.9.0 runtime provenance: bundles defuss-morph@0.1.1 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.1.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=core.js.map

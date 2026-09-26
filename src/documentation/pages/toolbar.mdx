@@ -1,6 +1,6 @@
 ---
 title: "Toolbar"
-description: "Toolbar component — a container for grouping action buttons, toggles, and separators."
+description: "Toolbar component - a container for grouping action buttons, toggles, and separators."
 slug: "toolbar"
 ---
 
@@ -34,14 +34,14 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 
   <SkillField label="Data attributes">
-<SkillText>• <code>data-orientation</code> — values: <code>vertical</code></SkillText>
+<SkillText>• <code>data-orientation</code> - values: <code>vertical</code></SkillText>
   </SkillField>
 
   <SkillField label="Notes">
 <SkillText dense>• Toolbars compose Toggle Groups, Button Groups, Buttons, and Separators.</SkillText>
-  <SkillText dense>• The toolbar handles roving tabindex — only one item is in the tab order at a time.</SkillText>
+  <SkillText dense>• The toolbar handles roving tabindex - only one item is in the tab order at a time.</SkillText>
   <SkillText dense>• Use vertical separators between logical groups of controls.</SkillText>
-  <p class="text-muted-foreground m-0">• The toolbar does not enforce selection logic — that's handled by the child components.</p>
+  <p class="text-muted-foreground m-0">• The toolbar does not enforce selection logic - that's handled by the child components.</p>
   </SkillField>
 </SkillPanel>
 
@@ -96,7 +96,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </div>
 ```
 
-```html example label="Sizes" hint="Set data-size on the .toolbar root and the chrome plus its .btn / .toggle controls scale together — the ladder mirrors the button sizes (md matches the unsized default)."
+```html example label="Sizes" hint="Set data-size on the .toolbar root and the chrome plus its .btn / .toggle controls scale together - the ladder mirrors the button sizes (md matches the unsized default)."
 <div class="flex flex-wrap gap-4" style="align-items:flex-start;">
   <div class="toolbar" role="toolbar" aria-label="Size xs" data-size="xs">
     <button class="btn" type="button">xs</button>
@@ -134,11 +134,11 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
   <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
-    <li><code>default</code> — roving tabindex at the authored position (first item); <code>setState('default', \{ focus: n \})</code> parks the roving stop on item <em>n</em> instead, and <code>getState().config.rovingIndex</code> reports where it currently is</li>
+    <li><code>default</code> - roving tabindex at the authored position (first item); <code>setState('default', \{ focus: n \})</code> parks the roving stop on item <em>n</em> instead, and <code>getState().config.rovingIndex</code> reports where it currently is</li>
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/toolbar-\{state\}.png</code>.</p>
 
-Machine contract — verified against <a href="../schemas/toolbar.schema.json"><code>toolbar.schema.json</code></a> by <code>bun run verify</code>:
+Machine contract - verified against <a href="../schemas/toolbar.schema.json"><code>toolbar.schema.json</code></a> by <code>bun run verify</code>:
 
 
 ```states

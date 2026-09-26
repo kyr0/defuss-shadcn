@@ -6,7 +6,7 @@ import { startServer } from './server.ts';
  * Why: E2E smoke test for the shipped navigation-menu component. Loads the
  * fixture (two dropdown menus, mirroring the doc page) over HTTP in a real
  * browser, then verifies anchor wiring, popovertarget toggling, the chevron
- * rotation (`:has()` rule), and the named State API — the same files
+ * rotation (`:has()` rule), and the named State API - the same files
  * consumers copy from dist/, unmodified.
  */
 
@@ -71,7 +71,7 @@ try {
   });
 
   await check('chevron rotates while open (:has + :popover-open)', async () => {
-    // :has() repaint can lag one frame behind the top-layer change — poll it
+    // :has() repaint can lag one frame behind the top-layer change - poll it
     await page.waitForFunction(() => {
       const svg = document.querySelector('[popovertarget="nav-resources"] svg');
       return getComputedStyle(svg!).transform.startsWith('matrix(-1');

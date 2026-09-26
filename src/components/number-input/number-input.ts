@@ -41,7 +41,7 @@ export const numberInputApi = {
     const input = getInput(wrapper);
     return {
       name: wrapper.dataset.stateName || 'default',
-      // live value — reflects stepper clicks and typing, not just setState
+      // live value - reflects stepper clicks and typing, not just setState
       config: { ...wrapper._stateConfig, value: input ? input.value : '' },
     };
   },

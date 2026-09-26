@@ -1,9 +1,9 @@
 /**
  * Why: dist/SKILL.md is the single discovery point for a 3rd-party agent
- * dropped into the library — it explains integration, philosophy, and the
+ * dropped into the library - it explains integration, philosophy, and the
  * dist/ layout once, then indexes every component skill. It must never drift
  * from the skills themselves, so it is GENERATED: the static prose lives in
- * src/SKILL_tpl.md (template — never inlined here, per repo rule) and the
+ * src/SKILL_tpl.md (template - never inlined here, per repo rule) and the
  * per-component index is parsed from each component-skill.md's frontmatter
  * (name/why/when/where/supportedStates). build.ts regenerates src/SKILL.md
  * (which the 1:1 copy ships to dist/); verify.ts compares against this exact
@@ -26,7 +26,7 @@ export const SKILL_OUTPUT_FILE = 'SKILL.md';
 export const SKILL_COMPONENTS_MARKER = '<!-- COMPONENTS -->';
 
 /**
- * Why: a tiny line-based YAML subset parser — the frontmatter is a flat
+ * Why: a tiny line-based YAML subset parser - the frontmatter is a flat
  * `key: value` map by contract, so a real YAML dependency would be
  * disproportionate (and this library ships zero dependencies).
  * Returns null when the block is absent, incomplete, or malformed.
@@ -59,7 +59,7 @@ export type SkillEntry = SkillMeta & { folder: string };
 export function renderSkillEntry(e: SkillEntry): string {
   const states = e.supportedStates.split(',').map((s) => s.trim()).filter(Boolean);
   // screenshot naming follows scripts/create-screenshots.ts: default state is
-  // {name}.png, others {name}-{state}.png — spell them out so the agent never
+  // {name}.png, others {name}-{state}.png - spell them out so the agent never
   // has to guess (the repo root is one level up from dist/SKILL.md)
   const shots = states
     .map((s) => `screenshots/{light,dark}/${e.folder}${s === 'default' ? '' : `-${s}`}.png`)
@@ -78,7 +78,7 @@ export function renderSkillEntry(e: SkillEntry): string {
   ].join('\n');
 }
 
-/** Why: pure assembly (template + entries → final text) — fs-free so
+/** Why: pure assembly (template + entries → final text) - fs-free so
  * tests/skill.test.ts (Vitest browser mode, no node:fs) can pin it. */
 export function assembleSkillText(template: string, entries: SkillEntry[]): string {
   const index = entries.map(renderSkillEntry).join('\n');

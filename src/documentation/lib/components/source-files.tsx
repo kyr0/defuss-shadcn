@@ -19,7 +19,7 @@ export function SourceNote({ children, ...rest }: Props & { for?: string }) {
 /**
  * The #source-css / #source-js sections. The component's actual source file
  * is read from src/components/ at build time and embedded (escaped by the
- * JSX serializer) — the doc pages can never drift from the shipped code,
+ * JSX serializer) - the doc pages can never drift from the shipped code,
  * which retires the sync-css-snippets / sync-js-snippets scripts.
  *
  * `section` renders just one of the two (for pages that interleave other

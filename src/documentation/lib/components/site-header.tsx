@@ -18,7 +18,7 @@ export function SiteHeader(_props: Props) {
           <img src="images/favicon.webp" alt="defuss-shadcn logo" class="header-brand-logo" />
           <span class="header-brand-name">defuss<em>-shadcn</em></span>
         </a>
-        {/* Sidebar dock toggle — rides where the version badge used to sit,
+        {/* Sidebar dock toggle - rides where the version badge used to sit,
             right behind the brand. Desktop click docks the docs sidebar to
             zero width (same data-state flip sidebar.js applies for
             ⌘B/Ctrl+B, wired in layout.ts); below 64rem the same button
@@ -105,7 +105,7 @@ export function SiteHeader(_props: Props) {
         </div>
         <div class="theme-grid" id="theme-grid"></div>
       </div>
-      {/* Docs-wide search palette — the shipped command component, fed by the
+      {/* Docs-wide search palette - the shipped command component, fed by the
           generated search index (filled at runtime from js/search-index.js).
           First dialog.command in document order, so command.js's Cmd/Ctrl+K
           targets it, not any in-page demo. */}

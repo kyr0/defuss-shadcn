@@ -7,9 +7,9 @@ import { SiteFooter } from './site-footer';
 export interface DocPageMeta {
   title: string;
   description: string;
-  /** page file name without extension — drives og:url, active nav, prev/next */
+  /** page file name without extension - drives og:url, active nav, prev/next */
   slug: string;
-  /** full <title>/og:title override when it doesn't follow the "{title} — defuss-shadcn" pattern (index) */
+  /** full <title>/og:title override when it doesn't follow the "{title} - defuss-shadcn" pattern (index) */
   fullTitle?: string;
 }
 
@@ -20,13 +20,13 @@ export interface DocPageProps extends Props {
 }
 
 /**
- * The whole page shell — <html>, <head> (meta/og/twitter + the 4 synchronous
+ * The whole page shell - <html>, <head> (meta/og/twitter + the 4 synchronous
  * head scripts + the stylesheet chain in its load-bearing order), <body>
  * chrome (header, sidebar, TOC shell, footer) and the end-of-body scripts.
  * Replaces the ~40 lines of boilerplate every doc page used to repeat.
  */
 export function DocPage({ meta, mainStyle, children }: DocPageProps) {
-  const title = meta.fullTitle ?? `${meta.title} — defuss-shadcn`;
+  const title = meta.fullTitle ?? `${meta.title} - defuss-shadcn`;
   const url = `https://kyr0.github.io/defuss-shadcn/documentation/${meta.slug}.html`;
   // partition: <PageOverlay> children render as direct body children (demo
   // dialogs/popovers), everything else is main content
@@ -57,7 +57,7 @@ export function DocPage({ meta, mainStyle, children }: DocPageProps) {
         <meta name="twitter:description" content={meta.description} />
         <title>{title}</title>
         {/* id="tokens-css": anchor for the runtime theme switcher (and the
-            shipped theme-switcher component) — generated theme files
+            shipped theme-switcher component) - generated theme files
             (../theme/<id>.css) are inserted right after this sheet */}
         <link id="tokens-css" rel="stylesheet" href="../theme/utils/default-semantic-tokens.css" />
         {/* head scripts load AFTER the token sheet: theme-switcher.js applies
@@ -90,7 +90,7 @@ export function DocPage({ meta, mainStyle, children }: DocPageProps) {
         </div>
         {/* Re-apply remembered nav toggles before first paint. Sections ship
             collapsed by default (except Introduction and the section holding
-            the current page — see SiteNav); the stored map is
+            the current page - see SiteNav); the stored map is
             heading → '1'|'0' for every explicit user toggle. The section of
             the current page is never hidden. The docked-sidebar state set here
             is only visible at desktop widths (CSS keys the hide there), so it

@@ -1,0 +1,214 @@
+---
+title: "Annotated Time Series - Presentation"
+description: "Sunday Magazine design language presenting the first year of a new tram line as a 12-slide deck - a ridership line that gains its annotations, zooms into the fare cut and folds into a weekday profile, one morphing chart."
+slug: "annotated-timeseries"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="annotated-timeseries" title="Annotated Time Series" component="presentation">
+  Sunday Magazine Longform: warm paper, serif headlines and a single editorial red - the first year of the T7 tram line, told as a line that earns its annotations one event at a time.
+</PageHeader>
+
+```html example label="Sunday Magazine Longform" schema="none" height="26" hint="Slides slide gently in and fade out (df$.anim, declared on the deck); red curtains open the data and the ending. One deck-level chart (df$.shadcn.chart.deck): the ridership line gains its event annotations, zooms into the fare-cut weeks, then folds into the weekday profile. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-annotated" data-anim-in="slideIn" data-anim-in-distance="80px" data-anim-out="fadeOut" style="--presentation-ink:#1C1715;--presentation-ink-foreground:#FBF6EF;--presentation-paper:#FBF6EF;--presentation-paper-foreground:#1C1715;--presentation-accent:#C23B22;font-family:Georgia, 'Times New Roman', serif;" tabindex="-1" aria-label="Line T7 - the first year of a new tram">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="Weekly average daily ridership of tram line T7 over its first 52 weeks, rising from 8,700 to 21,600, with a strike dip, a festival record and a fare cut, then ridership by weekday"></div>
+  <section class="slide" data-slide data-theme="paper" aria-label="Cover">
+    <p aria-hidden="true" style="position:absolute; left:112px; top:80px; margin:0; font-size:12rem; line-height:1; color:#C23B22; opacity:0.9;">T7</p>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Annotated time series · Sunday Magazine</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-weight:400; letter-spacing:-0.015em; font-size:5.5rem; max-width:1150px; margin-top:6rem;">The year a tram line found its riders</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">Fifty-two weeks of line T7 - a strike, a festival, a fare cut and one snowstorm.</p>
+    <p class="presentation-note">Longform pace: let the cover breathe.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="line" style="justify-content:flex-start;" aria-label="The year">
+    <header class="presentation-header"><span>The year</span><span>Riders per day, weekly average</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:400; letter-spacing:-0.015em;">From 8,700 to 21,600 riders a day</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The bare line first - the shape before the story.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="events" style="justify-content:flex-start;" aria-label="Events">
+    <header class="presentation-header"><span>The year</span><span>Annotated</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:400; letter-spacing:-0.015em;">Every bump has a name</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The annotations arrive - now the line is an argument.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="fare" style="justify-content:flex-start;" aria-label="Fare cut">
+    <header class="presentation-header"><span>Week 36</span><span>Weeks 30–46</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:400; letter-spacing:-0.015em;">The fare cut added 14% overnight - and it stayed</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Zoom into the step: before and after the €1 fare.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Key figures">
+    <p class="presentation-eyebrow" data-df-entrance="fade">Three numbers from line T7</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-weight:400; letter-spacing:-0.015em;"><span data-count="21.6">21.6</span>k</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">riders per day at the end of year one</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#C23B22; font-weight:400; letter-spacing:-0.015em;"><span data-count="26.8">26.8</span>k</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">the record - festival week 30</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-weight:400; letter-spacing:-0.015em;">+<span data-count="14">14</span>%</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">after the fare cut in week 36</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">The forecast said 18,000 by year three. The line passed it in week 25.</p>
+    <p class="presentation-note">The forecast comparison is the headline for the council.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="The road beside it">
+    <header class="presentation-header"><span>Beside the line</span><span>Ring road</span></header>
+    <div style="display:flex; gap:4.5rem; align-items:center; margin-top:3.5rem;">
+      <figure class="image" data-ratio="4/3" data-df-entrance="wipe" style="--df-motion-delay:150ms; flex:0 0 700px; margin:0;">
+        <img src="https://picsum.photos/id/88/960/720" alt="Aerial view of cars on a multi-lane road with lane markings" loading="lazy" width="960" height="720" style="width:100%; height:100%; object-fit:cover;" />
+        <figcaption class="image-caption" style="font-size:1.25rem;">The ring road at rush hour (stock photo).</figcaption>
+      </figure>
+      <div style="flex:1 1 0; min-width:0;">
+        <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; font-weight:400; letter-spacing:-0.015em;">Every full tram is forty cars off the ring road</h2>
+        <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:300ms; font-size:1.7rem;">Traffic counts on the parallel ring road fell 9% in the same year - the quiet second chart of this story.</p>
+      </div>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The photo makes the second effect visible.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="west" data-anim-in-blocks="5" data-anim-in-color="#C23B22" aria-label="Event table">
+    <header class="presentation-header"><span>The events</span><span>Riders per day, weekly average</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" style="font-size:1.45rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">Line T7, selected weeks of the first year (synthetic).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">Week</th><th class="table-head" style="text-align:right">Event</th><th class="table-head" style="text-align:right">Riders/day</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row"><td class="table-cell">1</td><td class="table-cell" style="text-align:right">Opening</td><td class="table-cell" style="text-align:right">8,700</td></tr>
+          <tr class="table-row"><td class="table-cell">19</td><td class="table-cell" style="text-align:right">Transit strike</td><td class="table-cell" style="text-align:right">2,100</td></tr>
+          <tr class="table-row"><td class="table-cell">25</td><td class="table-cell" style="text-align:right">Passes the 3-year forecast</td><td class="table-cell" style="text-align:right">18,300</td></tr>
+          <tr class="table-row" style="font-weight:700"><td class="table-cell">30</td><td class="table-cell" style="text-align:right">Summer festival</td><td class="table-cell" style="text-align:right">26,800</td></tr>
+          <tr class="table-row"><td class="table-cell">36</td><td class="table-cell" style="text-align:right">€1 fare introduced</td><td class="table-cell" style="text-align:right">21,800</td></tr>
+          <tr class="table-row"><td class="table-cell">48</td><td class="table-cell" style="text-align:right">Snowstorm</td><td class="table-cell" style="text-align:right">14,900</td></tr>
+          <tr class="table-row"><td class="table-cell">52</td><td class="table-cell" style="text-align:right">Year one ends</td><td class="table-cell" style="text-align:right">21,600</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The table is the caption list of the chart.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-weight:400; letter-spacing:-0.015em; font-size:2.9rem;">“The strike week was the best advert we ever had. People missed the tram - that is when we knew it had become theirs.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#C23B22; color:#FBF6EF;"><span class="avatar-fallback">EL</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Elif Lange<br /><span style="opacity:0.7; font-size:1.4rem;">Line manager, T7 - from the first day</span></p>
+    </div>
+    <p class="presentation-note">The human reading of the dip.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="weekday" style="justify-content:flex-start;" aria-label="Weekdays">
+    <header class="presentation-header"><span>The week</span><span>Average riders per day, weeks 36–52</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:400; letter-spacing:-0.015em;">A commuter line: Sunday is less than half of Tuesday</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The year folds into seven bars.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Letters to the editor">
+    <header class="presentation-header"><span>Letters</span><span>Readers ask</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; font-weight:400; letter-spacing:-0.015em;">Letters to the editor</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="at-qa" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Was the festival spike a one-off?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Yes - ridership returned to 16,900 the week after; it is annotated so nobody mistakes it for a trend.</p></div>
+      </details>
+      <details class="accordion-item" name="at-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Did the fare cut pay for itself?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Not yet: revenue per week is 31% lower, the council budgets it as congestion relief.</p></div>
+      </details>
+      <details class="accordion-item" name="at-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Why is winter lower?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Mostly the snowstorm week; without it, December averages 22,200.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Readers’ questions, magazine-style.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Takeaways">
+    <header class="presentation-header"><span>Coda</span><span>What the year taught</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">❧</span><span>Annotate the anomalies, or someone will extrapolate them.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">❧</span><span>Price moved ridership faster than any campaign did.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">❧</span><span>A commuter line lives and dies on weekday capacity.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">❧</span><span>Year two starts where the forecast expected year three.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Coda, not a list - read it slowly.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-anim-in="blocksIn" data-anim-in-direction="east" data-anim-in-blocks="5" data-anim-in-color="#C23B22" aria-label="Closing">
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-weight:400; letter-spacing:-0.015em;">Annotations turn a line into an argument</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">A fictional tram line, synthetic riders - the editorial layer is the real pattern.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">End on the craft.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) - build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-annotated');
+    const TEXT = '#1C1715', MUTED = '#8A7F76', RED = '#C23B22', AREA = 'rgba(194,59,34,.10)';
+    const riders = [8.7,9.3,9.5,10.1,11.4,12.4,12.6,12.6,13.1,14.2,14.9,14.8,14.7,15.2,16.1,16.5,16.3,16.1,2.1,17.4,17.6,17.3,17.1,17.6,18.3,18.4,16.1,16,16.5,26.8,16.9,16.5,16.4,18.9,19.4,21.8,21.2,21.3,22,22.4,21.9,21.4,21.6,22.3,22.5,22,21.5,14.9,22.6,22.6,22,21.6];
+    const weeks = riders.map((_, i) => 'W' + (i + 1));
+    const G = { left: 150, right: 190, top: 330, bottom: 150 };
+    const line = (from, to, extra = {}) => ({
+      grid: G,
+      xAxis: { type: 'category', data: weeks.slice(from, to), boundaryGap: false, axisLabel: { color: MUTED, interval: to - from > 20 ? 4 : 1 } },
+      yAxis: { type: 'value', min: 0, max: 30, interval: 10, axisLabel: { color: MUTED, formatter: '{value}k' } },
+      series: [{ id: 'riders', name: 'Riders per day', type: 'line', data: riders.slice(from, to).map((v, i) => ({ name: weeks[from + i], value: v })),
+        showSymbol: false, smooth: 0.2, lineStyle: { color: TEXT, width: 4 }, itemStyle: { color: TEXT },
+        areaStyle: { color: AREA }, endLabel: { show: true, formatter: '{c}k', color: TEXT, fontWeight: 700 }, ...extra }],
+    });
+    const pin = (w, text) => ({ coord: [w, riders[+w.slice(1) - 1]], value: text });
+
+    df$.shadcn.chart.deck(deck, {
+      base: { tooltip: { trigger: 'axis' } },
+      states: {
+        line: line(0, 52),
+        events: line(0, 52, {
+          markPoint: { symbol: 'circle', symbolSize: 16, itemStyle: { color: RED, borderColor: '#FBF6EF', borderWidth: 3 },
+            label: { show: true, position: 'top', distance: 14, formatter: '{c}', color: RED, fontStyle: 'italic', fontWeight: 700 },
+            data: [{ ...pin('W1', 'Opening'), label: { position: 'right', distance: 14 } }, { ...pin('W19', 'Strike'), label: { position: 'bottom' } }, pin('W30', 'Festival'), { ...pin('W48', 'Snow'), label: { position: 'bottom' } }] },
+          markLine: { symbol: 'none', silent: true, lineStyle: { color: RED, type: 'dashed', width: 2 }, label: { formatter: '€1 fare', color: RED, fontStyle: 'italic', position: 'insideEndTop' }, data: [{ xAxis: 'W36' }] },
+          markArea: { silent: true, itemStyle: { color: 'rgba(28,23,21,.05)' }, label: { color: MUTED, fontStyle: 'italic' }, data: [[{ name: 'Summer holidays', xAxis: 'W27' }, { xAxis: 'W33' }]] },
+        }),
+        fare: line(29, 46, {
+          markLine: { symbol: 'none', silent: true, lineStyle: { color: RED, type: 'dashed', width: 2 }, label: { formatter: '€1 fare', color: RED, fontStyle: 'italic', position: 'insideEndTop' }, data: [{ xAxis: 'W36' }] },
+          markArea: { silent: true, itemStyle: { color: AREA }, label: { color: RED, fontWeight: 700 }, data: [[{ name: '+14%', xAxis: 'W36' }, { xAxis: 'W44' }]] },
+        }),
+        weekday: {
+          grid: G,
+          xAxis: { type: 'category', data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], axisLabel: { color: TEXT, fontWeight: 700 } },
+          yAxis: { type: 'value', min: 0, max: 30, interval: 10, axisLabel: { color: MUTED, formatter: '{value}k' } },
+          series: [{ id: 'riders', type: 'bar', barWidth: '52%',
+            data: [22.4, 23.1, 23.0, 22.8, 21.2, 13.6, 9.8].map((v, i) => ({ value: v, itemStyle: { color: i >= 5 ? MUTED : TEXT } })),
+            label: { show: true, position: 'top', formatter: '{c}k', color: TEXT, fontWeight: 700 } }],
+        },
+      },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 11-annotated-timeseries (Sunday Magazine Longform) - a fictional tram line, synthetic ridership.</p>
+<SourceFiles component="presentation" />
+</DocPage>

@@ -4,10 +4,10 @@ import { startServer } from './server.ts';
 
 /**
  * Why: E2E smoke test for the shipped avatar component. Loads the fixture
- * (image avatar, fallback-only avatar, small-size broken image — mirroring
+ * (image avatar, fallback-only avatar, small-size broken image - mirroring
  * the doc page) over HTTP in a real browser, then verifies the fallback
  * reveal via CSS :has(), the real network-error path, sizes, and the
- * per-wrapper named State API — the same files consumers copy from dist/,
+ * per-wrapper named State API - the same files consumers copy from dist/,
  * unmodified.
  */
 
@@ -56,7 +56,7 @@ try {
   });
 
   await check('real network error hides the image and reveals the fallback', async () => {
-    // av-sm loads from an .invalid host — the error event must fire
+    // av-sm loads from an .invalid host - the error event must fire
     await page.waitForFunction(
       () => document.querySelector('#av-sm .avatar-image')!.hasAttribute('data-error'),
     );

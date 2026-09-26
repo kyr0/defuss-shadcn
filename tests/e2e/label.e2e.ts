@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: label is CSS-only — geometry is literal; the dimming states are the
+ * Why: label is CSS-only - geometry is literal; the dimming states are the
  * interesting part: [data-disabled] and the pure-CSS :has(+ :disabled)
  * sibling rule must both yield 0.7 opacity without any JS.
  */
@@ -31,7 +31,7 @@ await cssSmoke('label', [
   },
   {
     // the documented for↔id contract (issue #17): clicking the label focuses
-    // the control its `for` points at — proof the pairing is intact
+    // the control its `for` points at - proof the pairing is intact
     label: 'clicking the label focuses the control named by its for/id pairing',
     run: async (page) => {
       await page.click('#lb-plain');
@@ -41,7 +41,7 @@ await cssSmoke('label', [
   },
   {
     // the required star renders from CSS alone (:has(+ input[required])::after)
-    // — content carries the NBSP + asterisk, destructive color
+    // - content carries the NBSP + asterisk, destructive color
     label: ':has(+ input[required]) renders the decorative star via ::after',
     run: async (page) => {
       const style = await page.$eval('#lb-required', (el) => {

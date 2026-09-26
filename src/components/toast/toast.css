@@ -22,7 +22,7 @@
 
   /* -- Toast ---------------------------------------------------- */
   .toast {
-    /* Top layer (popover="manual") bypasses the container's flex layout — the
+    /* Top layer (popover="manual") bypasses the container's flex layout - the
        UA sheet would CENTER every toast (inset:0 + margin:auto). Pin each toast
        to its container's corner instead and stack via --toast-stack, which the
        component JS measures (toast.ts stackToasts) since heights vary. */
@@ -47,7 +47,7 @@
       transform: translateY(0);
     }
 
-    /* -- Corner placement (top layer — see note above) ------------
+    /* -- Corner placement (top layer - see note above) ------------
        --toast-stack: measured px offset of the stack below this toast;
        the first toast is 0, so default bottom-right lands at the edge. */
     [data-position="bottom-right"] & { bottom: calc(1rem + var(--toast-stack, 0px)); right: 1rem; }
@@ -59,7 +59,7 @@
 
     /* -- Sizes + Density ------------------------------------------
        data-size scales the toast's width envelope (sm/md/lg, md == the
-       unsized default); data-density is the whitespace policy — padding and
+       unsized default); data-density is the whitespace policy - padding and
        the content gap at the shared 0.75 / 1 / 1.25 ratio, comfortable ==
        the unsized default. Both live on the .toast element itself. */
     &[data-size="sm"] { min-width: 16rem; max-width: 20rem; }
@@ -172,7 +172,7 @@
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all
-   components — AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
    `none` keeps transitionend/animationend (and discrete display flips)
    firing so JS state machines that await them keep working. */
 @media (prefers-reduced-motion: reduce) {

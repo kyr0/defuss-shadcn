@@ -1,7 +1,7 @@
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: pricing is CSS-only but has real BEHAVIOR — the billing toggle flips
+ * Why: pricing is CSS-only but has real BEHAVIOR - the billing toggle flips
  * every plan's price pair through `:has()`. This checks geometry (featured
  * 2px border, 48px price) and drives the radio to prove the year/month swap.
  */
@@ -49,7 +49,7 @@ await cssSmoke('pricing', [
     },
   },
   {
-    label: 'yearly shows, monthly hides — and the radio flips them',
+    label: 'yearly shows, monthly hides - and the radio flips them',
     run: async (page) => {
       const visible = () =>
         page.evaluate(() => ({

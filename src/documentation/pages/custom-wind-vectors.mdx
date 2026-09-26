@@ -1,0 +1,233 @@
+---
+title: "Custom Wind Vectors - Presentation"
+description: "Meteorological Radar design language presenting a coastal storm as a 12-slide deck - a custom-series wind field whose arrows turn and grow as the storm crosses between 06:00, 12:00 and 18:00, then gust curves at three stations."
+slug: "custom-wind-vectors"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="custom-wind-vectors" title="Custom Wind Vectors" component="presentation">
+  Meteorological Radar: night-blue scope, ice-white linework and a warning yellow - a fictional autumn storm crossing a coastline, drawn as a field of wind arrows that turn, grow and fade as it passes.
+</PageHeader>
+
+```html example label="Meteorological Radar" schema="none" height="26" hint="Slides sweep in and fade (df$.anim wipeIn / fadeOut, declared on the deck); yellow warning curtains mark the breaks. One deck-level chart (df$.shadcn.chart.deck): the same custom renderItem series (stable id) animates every arrow - direction, length and colour - as the storm moves from 06:00 to 12:00 to 18:00, then the field gives way to gust curves. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-wind" data-anim-in="wipeIn" data-anim-in-direction="west" data-anim-out="fadeOut" style="--presentation-ink:#071929;--presentation-ink-foreground:#ECF8FF;--presentation-paper:#ECF8FF;--presentation-paper-foreground:#071929;--presentation-accent:#FFCE42;font-family:Arial, Helvetica, sans-serif;" tabindex="-1" aria-label="Storm Ilse - a coastal storm hour by hour">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="Wind field of a fictional storm over a coastline at 06:00, 12:00 and 18:00: a rotating low moves east and peaks at midday with gusts of 142 km/h; then gusts at three coastal stations over the day"></div>
+  <section class="slide" data-slide data-theme="ink" aria-label="Cover">
+    <svg aria-hidden="true" width="640" height="640" viewBox="0 0 640 640" style="position:absolute; right:110px; top:140px;">
+      <circle cx="320" cy="320" r="300" fill="none" stroke="#2A5C7A" stroke-width="2" /><circle cx="320" cy="320" r="225" fill="none" stroke="#2A5C7A" stroke-width="2" /><circle cx="320" cy="320" r="150" fill="none" stroke="#2A5C7A" stroke-width="2" /><circle cx="320" cy="320" r="75" fill="none" stroke="#2A5C7A" stroke-width="2" />
+      <path d="M320 20 V620 M20 320 H620" stroke="#2A5C7A" stroke-width="2" />
+      <path d="M320 320 L320 20 A300 300 0 0 1 532 108 Z" fill="rgba(255,206,66,.22)" />
+      <path d="M390 250 q60 -30 90 20 q20 50 -40 70 q-70 20 -90 -30 q-10 -40 40 -60" fill="none" stroke="#FFCE42" stroke-width="10" stroke-linecap="round" />
+    </svg>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Wind vectors · Meteorological Radar</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-family:Arial, Helvetica, sans-serif; font-weight:700; letter-spacing:-0.02em; font-size:6rem; max-width:800px;">Storm Ilse, hour by hour</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">One autumn day, one coastline, a low that crossed it in twelve hours.</p>
+    <p class="presentation-note">Radar sweep on the cover - the field comes next.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="t06" style="justify-content:flex-start;" aria-label="06:00">
+    <header class="presentation-header"><span>06:00</span><span>Wind at 10 m · arrows = direction, length = speed</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Arial, Helvetica, sans-serif; font-weight:700; letter-spacing:-0.02em;">Morning: the low sits offshore</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Every arrow is a grid point; the swirl is the low.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="t12" style="justify-content:flex-start;" aria-label="12:00">
+    <header class="presentation-header"><span>12:00</span><span>Peak</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Arial, Helvetica, sans-serif; font-weight:700; letter-spacing:-0.02em;">Midday: landfall, gusts to 142 km/h</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The arrows turn and lengthen - the same series, re-rendered.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="t18" style="justify-content:flex-start;" aria-label="18:00">
+    <header class="presentation-header"><span>18:00</span><span>Weakening</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Arial, Helvetica, sans-serif; font-weight:700; letter-spacing:-0.02em;">Evening: inland and weakening</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The swirl moves east and the arrows shorten.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Key figures">
+    <p class="presentation-eyebrow" data-df-entrance="fade">Storm summary</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#FFCE42; font-family:Arial, Helvetica, sans-serif; font-weight:700; letter-spacing:-0.02em;"><span data-count="142">142</span> km/h</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">peak gust at the coast, 13:10</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:Arial, Helvetica, sans-serif; font-weight:700; letter-spacing:-0.02em;"><span data-count="55">55</span> km/h</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">forward speed of the low</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:Arial, Helvetica, sans-serif; font-weight:700; letter-spacing:-0.02em;"><span data-count="38000">38000</span></p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">homes briefly without power</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">The warning went out at 05:00 - seven hours before landfall.</p>
+    <p class="presentation-note">Lead time is the success metric.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Radar" style="overflow:hidden;">
+    <video autoplay muted loop playsinline aria-hidden="true" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.55; mix-blend-mode:screen;">
+      <source src="videos/demo.webm" type="video/webm" />
+      <source src="videos/demo.mp4" type="video/mp4" />
+    </video>
+    <div aria-hidden="true" style="position:absolute; inset:0; background:linear-gradient(90deg, #071929 38%, rgba(255,206,66,.16));"></div>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">The warning</p>
+    <h2 class="presentation-title" data-df-entrance="blur" style="position:relative; font-size:5rem; max-width:1100px; font-family:Arial, Helvetica, sans-serif; font-weight:700; letter-spacing:-0.02em;">Seven hours of warning</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:400ms; position:relative; max-width:900px;">Ferries stopped at 09:00, schools closed at 10:00 - the arrows on the next slides are why.</p>
+    <p class="presentation-note">Ambient loop behind the operational story.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="west" data-anim-in-blocks="6" data-anim-in-color="#FFCE42" aria-label="Station table">
+    <header class="presentation-header"><span>Observations</span><span>Peak gusts, km/h</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" data-density="spacious" style="font-size:1.7rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">Peak gusts at three coastal stations during Storm Ilse (fictional).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">Station</th><th class="table-head" style="text-align:right">Peak gust</th><th class="table-head" style="text-align:right">Time</th><th class="table-head" style="text-align:right">Mean wind</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row"><td class="table-cell">Harbour Mole</td><td class="table-cell" style="text-align:right">142</td><td class="table-cell" style="text-align:right">13:10</td><td class="table-cell" style="text-align:right">88</td></tr>
+          <tr class="table-row"><td class="table-cell">Dune Point</td><td class="table-cell" style="text-align:right">131</td><td class="table-cell" style="text-align:right">12:40</td><td class="table-cell" style="text-align:right">81</td></tr>
+          <tr class="table-row"><td class="table-cell">Inland Airfield</td><td class="table-cell" style="text-align:right">104</td><td class="table-cell" style="text-align:right">15:20</td><td class="table-cell" style="text-align:right">62</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The coast took the brunt; inland lost a third of the gust.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-family:Arial, Helvetica, sans-serif; font-weight:700; letter-spacing:-0.02em; font-size:2.9rem;">“The arrows made the forecast visible. People saw the swirl on the evening news and stayed home the next morning.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#FFCE42; color:#071929;"><span class="avatar-fallback">SV</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Sanne Visser<br /><span style="opacity:0.7; font-size:1.4rem;">Duty forecaster - fictional</span></p>
+    </div>
+    <p class="presentation-note">Visualization as public safety.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="gusts" style="justify-content:flex-start;" aria-label="Gusts">
+    <header class="presentation-header"><span>Stations</span><span>Gusts over the day, km/h</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Arial, Helvetica, sans-serif; font-weight:700; letter-spacing:-0.02em;">The coast peaked first - and hardest</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The field gives way to three station curves.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Questions from the press">
+    <header class="presentation-header"><span>Briefing</span><span>Press briefing</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; font-family:Arial, Helvetica, sans-serif; font-weight:700; letter-spacing:-0.02em;">Questions from the briefing</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="wv-qa" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Was it a hurricane?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">No - hurricane force is about 118 km/h sustained; Ilse reached that only in gusts.</p></div>
+      </details>
+      <details class="accordion-item" name="wv-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Why was inland calmer?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Friction over land slows the wind; the same storm lost a third of its gust strength 40 km inland.</p></div>
+      </details>
+      <details class="accordion-item" name="wv-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>How good was the forecast?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Landfall was predicted within 40 minutes and 20 km of where it happened.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The hurricane question is guaranteed.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Takeaways">
+    <header class="presentation-header"><span>Debrief</span><span>For the next storm</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">▲</span><span>Custom glyphs belong on standard chart infrastructure.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">▲</span><span>Show the field changing - one frame hides the motion.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">▲</span><span>Seven hours of lead time closed schools before landfall.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">▲</span><span>Coastal stations need their own gust thresholds.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Debrief tone.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-anim-in="blocksIn" data-anim-in-direction="east" data-anim-in-blocks="6" data-anim-in-color="#FFCE42" aria-label="Closing">
+    <svg aria-hidden="true" width="640" height="640" viewBox="0 0 640 640" style="position:absolute; right:110px; top:140px;">
+      <circle cx="320" cy="320" r="300" fill="none" stroke="#2A5C7A" stroke-width="2" /><circle cx="320" cy="320" r="225" fill="none" stroke="#2A5C7A" stroke-width="2" /><circle cx="320" cy="320" r="150" fill="none" stroke="#2A5C7A" stroke-width="2" /><circle cx="320" cy="320" r="75" fill="none" stroke="#2A5C7A" stroke-width="2" />
+      <path d="M320 20 V620 M20 320 H620" stroke="#2A5C7A" stroke-width="2" />
+      <path d="M320 320 L320 20 A300 300 0 0 1 532 108 Z" fill="rgba(255,206,66,.22)" />
+      <path d="M390 250 q60 -30 90 20 q20 50 -40 70 q-70 20 -90 -30 q-10 -40 40 -60" fill="none" stroke="#FFCE42" stroke-width="10" stroke-linecap="round" />
+    </svg>
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-family:Arial, Helvetica, sans-serif; font-weight:700; letter-spacing:-0.02em;">Custom geometry, standard infrastructure</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">A fictional storm with a synthetic wind field - renderItem on real axes is the pattern.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">End on the technique.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) - build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-wind');
+    const TEXT = '#ECF8FF', MUTED = '#6F93AA', YELLOW = '#FFCE42';
+    const cols = 16, rows = 8;
+    // a rotating low centred at (cx, cy) with peak speed v (km/h); background westerly flow
+    const field = (cx, cy, v) => {
+      const pts = [];
+      for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+        const dx = x - cx, dy = y - cy, r = Math.hypot(dx, dy) + 0.6;
+        const swirl = v * Math.min(1, 1.6 / r) * Math.exp(-r / 7);
+        const u = 18 + swirl * (-dy / r), w = swirl * (dx / r);
+        pts.push([x, y, Math.round(Math.hypot(u, w)), Math.atan2(w, u)]);
+      }
+      return pts;
+    };
+    const coast = 6.5; // the coastline runs north–south at x = 6.5
+    const wind = (cx, cy, v) => ({
+      grid: { left: 150, right: 190, top: 330, bottom: 150 },
+      xAxis: { type: 'value', min: -0.5, max: cols - 0.5, show: false },
+      yAxis: { type: 'value', min: -0.5, max: rows - 0.5, show: false, inverse: true },
+      // bound to the arrow field only - the 2-D coastline has no speed dimension
+      visualMap: { show: true, seriesIndex: 0, dimension: 2, min: 10, max: 140, orient: 'vertical', right: 40, top: 360, itemHeight: 300, itemWidth: 18,
+        text: ['km/h', ''], textStyle: { color: TEXT }, inRange: { color: ['#2A5C7A', '#7CC4E8', YELLOW, '#FF6B3D'] } },
+      series: [{ id: 'wind', type: 'custom', data: field(cx, cy, v),
+        renderItem: (p, api) => {
+          const [px, py] = api.coord([api.value(0), api.value(1)]);
+          const a = api.value(3), len = 18 + api.value(2) * 0.42, col = api.visual('color');
+          const hx = Math.cos(a) * len / 2, hy = Math.sin(a) * len / 2;
+          return { type: 'group', x: px, y: py, children: [
+            { type: 'line', shape: { x1: -hx, y1: -hy, x2: hx, y2: hy }, style: { stroke: col, lineWidth: 4, lineCap: 'round' }, transition: ['shape', 'style'] },
+            { type: 'polygon', shape: { points: [[hx, hy], [hx - Math.cos(a - 0.5) * 12, hy - Math.sin(a - 0.5) * 12], [hx - Math.cos(a + 0.5) * 12, hy - Math.sin(a + 0.5) * 12]] },
+              style: { fill: col }, transition: ['shape', 'style'] },
+          ] };
+        } },
+        { id: 'coast', type: 'line', data: [[coast, -0.5], [coast, rows - 0.5]], showSymbol: false, silent: true, lineStyle: { color: TEXT, width: 3, type: 'dashed', opacity: 0.6 },
+          markPoint: { symbol: 'circle', symbolSize: 1, label: { show: true, formatter: 'COAST', color: MUTED, fontWeight: 700, offset: [0, -20] }, data: [{ coord: [coast, -0.5] }] } }],
+    });
+
+    df$.shadcn.chart.deck(deck, {
+      base: { tooltip: { show: false } },
+      states: {
+        t06: wind(3, 3.5, 90),
+        t12: wind(7, 3.5, 150),
+        t18: wind(11.5, 3, 95),
+        gusts: {
+          legend: { top: 300, right: 190, textStyle: { color: TEXT } },
+          grid: { left: 150, right: 190, top: 370, bottom: 150 },
+          xAxis: { type: 'category', data: ['06', '08', '10', '12', '14', '16', '18', '20', '22'], boundaryGap: false, axisLabel: { color: MUTED, formatter: '{value}:00' } },
+          yAxis: { type: 'value', min: 0, max: 160, interval: 40, axisLabel: { color: MUTED }, splitLine: { lineStyle: { color: 'rgba(236,248,255,.08)' } } },
+          series: [
+            { id: 'harbour', name: 'Harbour Mole', type: 'line', smooth: 0.3, data: [58, 76, 104, 136, 139, 112, 84, 66, 52], lineStyle: { color: YELLOW, width: 5 }, itemStyle: { color: YELLOW }, symbolSize: 12 },
+            { id: 'dune', name: 'Dune Point', type: 'line', smooth: 0.3, data: [54, 72, 101, 129, 124, 98, 77, 60, 49], lineStyle: { color: '#7CC4E8', width: 4 }, itemStyle: { color: '#7CC4E8' }, symbolSize: 10 },
+            { id: 'inland', name: 'Inland Airfield', type: 'line', smooth: 0.3, data: [31, 40, 57, 78, 96, 101, 83, 61, 44], lineStyle: { color: MUTED, width: 4 }, itemStyle: { color: MUTED }, symbolSize: 10 },
+          ],
+        },
+      },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 31-custom-wind-vectors (Meteorological Radar) - a fictional storm and synthetic wind field.</p>
+<SourceFiles component="presentation" />
+</DocPage>

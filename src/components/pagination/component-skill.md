@@ -1,7 +1,7 @@
 ---
 name: Pagination
 type: MOL
-why: Numbered page links in a nav > ol with aria-current="page" on the active page — a composition of button atoms (page/prev/next).
+why: Numbered page links in a nav > ol with aria-current="page" on the active page - a composition of button atoms (page/prev/next).
 when: Splitting long lists or tables across pages.
 where: dist/components/pagination/pagination.css
 supportedStates: default
@@ -11,18 +11,18 @@ supportedStates: default
 
 ## Native basis
 
-`<nav>` + `<ul>` + `<a>` links for page navigation. Pure CSS — no JavaScript required.
+`<nav>` + `<ul>` + `<a>` links for page navigation. Pure CSS - no JavaScript required.
 
 ---
 
 ## Native Web APIs
 
-- [`<nav>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav) — navigation landmark for screen readers
-- [`aria-current="page"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current) — identifies the active page
-- [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) — keyboard-only focus ring
-- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) — suppresses hover transitions
-- [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) — thickens borders when high-contrast requested
-- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) — maps active page border and hover to system colors
+- [`<nav>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav) - navigation landmark for screen readers
+- [`aria-current="page"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current) - identifies the active page
+- [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) - keyboard-only focus ring
+- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) - suppresses hover transitions
+- [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) - thickens borders when high-contrast requested
+- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) - maps active page border and hover to system colors
 
 ---
 
@@ -99,12 +99,12 @@ Set `data-size` on the `.pagination` nav; page links, prev/next and the ellipsis
 ---
 ## Density
 
-Set `data-density` on the `.pagination` nav; only the inter-cell gap scales — the size ladder owns cell dimensions, so size and density stay independent axes (ratio `0.75` / `1` / `1.25`, matching `sizing.css`).
+Set `data-density` on the `.pagination` nav; only the inter-cell gap scales - the size ladder owns cell dimensions, so size and density stay independent axes (ratio `0.75` / `1` / `1.25`, matching `sizing.css`).
 
 | Value | Effect |
 | --- | --- |
 | `compact` | List gap 0.125rem |
-| `comfortable` | Gap 0.25rem — identical to the unsized default |
+| `comfortable` | Gap 0.25rem - identical to the unsized default |
 | `spacious` | Gap 0.5rem |
 
 ## ARIA
@@ -127,19 +127,19 @@ Set `data-density` on the `.pagination` nav; only the inter-cell gap scales — 
 | `Shift + Tab` | Moves focus to the previous pagination link |
 | `Enter` | Activates the focused link |
 
-All links are native `<a>` elements — keyboard navigation works automatically.
+All links are native `<a>` elements - keyboard navigation works automatically.
 
 ---
 
 ## Notes
 
-- Use `<a>` elements for page links — they support native keyboard focus and navigation.
+- Use `<a>` elements for page links - they support native keyboard focus and navigation.
 - Mark the active page with `aria-current="page"` and the `.pagination-active` class.
 - On the first page, add `aria-disabled="true"` to the Previous link. On the last page, add it to Next.
-- Use `<span class="pagination-ellipsis" aria-hidden="true">` for the "…" indicator — it's not a link.
+- Use `<span class="pagination-ellipsis" aria-hidden="true">` for the "…" indicator - it's not a link.
 - Chevron SVG icons are preferred over text arrows for visual consistency.
 - CSS uses logical properties (`padding-inline`) for automatic RTL support.
-- No JavaScript required — this is a purely CSS component.
+- No JavaScript required - this is a purely CSS component.
 
 ## States
 

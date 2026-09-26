@@ -1,0 +1,225 @@
+---
+title: "Diverging Bars - Presentation"
+description: "Neo-Brutalist Zine design language presenting support for a four-day work week by industry as a 12-slide deck - net bars that split into support vs oppose, scatter against remote work and land on pilot results, one morphing chart."
+slug: "diverging-bars"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="diverging-bars" title="Diverging Bars" component="presentation">
+  Neo-Brutalist Zine: acid yellow, hard black outlines and one alarm red - who wants a four-day week, told with diverging bars that split, scatter and regroup on one chart.
+</PageHeader>
+
+```html example label="Neo-Brutalist Zine" schema="none" height="26" hint="Slides pop in and skew out (df$.anim, declared on the deck); red curtains slam between sections. One deck-level chart (df$.shadcn.chart.deck): net bars split into support vs oppose, fly into a remote-work scatter, then regroup as pilot results. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-diverging" data-anim-in="popIn" data-anim-out="skewOut" style="--presentation-ink:#111111;--presentation-ink-foreground:#FFFDF4;--presentation-paper:#FFE550;--presentation-paper-foreground:#111111;--presentation-accent:#FF3B30;font-family:Arial, Helvetica, sans-serif;" tabindex="-1" aria-label="The four-day week - who is for it">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="Net support for a four-day week by industry, from plus 48 in tech to minus 27 in finance, split into support and opposition, plotted against remote-work share, and pilot results"></div>
+  <section class="slide" data-slide data-theme="paper" aria-label="Cover">
+    <div aria-hidden="true" style="position:absolute; right:140px; top:130px; rotate:9deg; background:#FF3B30; color:#FFFDF4; border:6px solid #111; box-shadow:14px 14px 0 #111; padding:1.5rem 2.5rem; font:900 3rem/1 'Arial Black', Arial, sans-serif;">4 DAYS?</div>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Diverging bars · Neo-Brutalist Zine</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-family:'Arial Black', Arial, sans-serif; text-transform:uppercase; letter-spacing:-0.02em; font-size:6rem; max-width:1050px;">Who wants a four-day week?</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">8 industries, 12,400 workers asked - and a zero line that splits the room.</p>
+    <p class="presentation-note">Loud on purpose: the sticker is the question.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="net" style="justify-content:flex-start;" aria-label="Net support">
+    <header class="presentation-header"><span>Net support</span><span>support − oppose, % points</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Arial Black', Arial, sans-serif; text-transform:uppercase; letter-spacing:-0.02em;">Tech says yes. Finance says no.</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Everything right of zero wants it; everything left does not.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="split" style="justify-content:flex-start;" aria-label="Support vs oppose">
+    <header class="presentation-header"><span>The split</span><span>% of workers</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Arial Black', Arial, sans-serif; text-transform:uppercase; letter-spacing:-0.02em;">Nowhere is it unanimous</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The net bars split into their two halves - even tech has 16% against.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="remote" style="justify-content:flex-start;" aria-label="Remote work">
+    <header class="presentation-header"><span>Why</span><span>net support × remote-capable jobs</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Arial Black', Arial, sans-serif; text-transform:uppercase; letter-spacing:-0.02em;">Flexibility predicts support - except in finance</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The bars become dots: x is how many jobs can be done remotely.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Key figures">
+    <p class="presentation-eyebrow" data-df-entrance="fade">Three numbers</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:'Arial Black', Arial, sans-serif; text-transform:uppercase; letter-spacing:-0.02em;">+<span data-count="48">48</span></p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">net support in tech</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#FF3B30; font-family:'Arial Black', Arial, sans-serif; text-transform:uppercase; letter-spacing:-0.02em;">−<span data-count="27">27</span></p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">net support in finance</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:'Arial Black', Arial, sans-serif; text-transform:uppercase; letter-spacing:-0.02em;"><span data-count="56">56</span>/61</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">pilot firms kept the four-day week</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">The people who tried it mostly kept it. The people who did not try it mostly fear it.</p>
+    <p class="presentation-note">The pilot number is the pivot of the talk.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Time">
+    <header class="presentation-header"><span>The real question</span><span>32 hours, same pay</span></header>
+    <div style="display:flex; gap:4.5rem; align-items:center; margin-top:3.5rem;">
+      <div style="flex:1 1 0; min-width:0;">
+        <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; font-family:'Arial Black', Arial, sans-serif; text-transform:uppercase; letter-spacing:-0.02em;">It is not about Fridays. It is about hours.</h2>
+        <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:300ms; font-size:1.7rem;">Every pilot kept pay flat and cut hours to 32. The hard part was meetings, not Fridays.</p>
+      </div>
+      <figure class="image" data-ratio="4/3" data-df-entrance="skew" style="--df-motion-delay:150ms; flex:0 0 700px; margin:0;">
+        <img src="https://picsum.photos/id/4/960/720" alt="A person with a wristwatch writing in a notebook beside a laptop" loading="lazy" width="960" height="720" style="width:100%; height:100%; object-fit:cover;" />
+        <figcaption class="image-caption" style="font-size:1.25rem;">Planning a shorter week (stock photo).</figcaption>
+      </figure>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Hours, not days - say it twice.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="east" data-anim-in-blocks="4" data-anim-in-color="#FF3B30" aria-label="Survey table">
+    <header class="presentation-header"><span>The survey</span><span>12,400 workers</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" style="font-size:1.45rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">Would you want a 32-hour, four-day week at the same pay? (synthetic survey).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">Industry</th><th class="table-head" style="text-align:right">Support</th><th class="table-head" style="text-align:right">Neutral</th><th class="table-head" style="text-align:right">Oppose</th><th class="table-head" style="text-align:right">Net</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row"><td class="table-cell">Tech</td><td class="table-cell" style="text-align:right">64%</td><td class="table-cell" style="text-align:right">20%</td><td class="table-cell" style="text-align:right">16%</td><td class="table-cell" style="text-align:right">+48</td></tr>
+          <tr class="table-row"><td class="table-cell">Design & media</td><td class="table-cell" style="text-align:right">60%</td><td class="table-cell" style="text-align:right">21%</td><td class="table-cell" style="text-align:right">19%</td><td class="table-cell" style="text-align:right">+41</td></tr>
+          <tr class="table-row"><td class="table-cell">Education</td><td class="table-cell" style="text-align:right">51%</td><td class="table-cell" style="text-align:right">20%</td><td class="table-cell" style="text-align:right">29%</td><td class="table-cell" style="text-align:right">+22</td></tr>
+          <tr class="table-row"><td class="table-cell">Healthcare</td><td class="table-cell" style="text-align:right">44%</td><td class="table-cell" style="text-align:right">21%</td><td class="table-cell" style="text-align:right">35%</td><td class="table-cell" style="text-align:right">+9</td></tr>
+          <tr class="table-row"><td class="table-cell">Retail</td><td class="table-cell" style="text-align:right">38%</td><td class="table-cell" style="text-align:right">18%</td><td class="table-cell" style="text-align:right">44%</td><td class="table-cell" style="text-align:right">−6</td></tr>
+          <tr class="table-row"><td class="table-cell">Logistics</td><td class="table-cell" style="text-align:right">34%</td><td class="table-cell" style="text-align:right">18%</td><td class="table-cell" style="text-align:right">48%</td><td class="table-cell" style="text-align:right">−14</td></tr>
+          <tr class="table-row"><td class="table-cell">Manufacturing</td><td class="table-cell" style="text-align:right">30%</td><td class="table-cell" style="text-align:right">19%</td><td class="table-cell" style="text-align:right">51%</td><td class="table-cell" style="text-align:right">−21</td></tr>
+          <tr class="table-row"><td class="table-cell">Finance</td><td class="table-cell" style="text-align:right">28%</td><td class="table-cell" style="text-align:right">17%</td><td class="table-cell" style="text-align:right">55%</td><td class="table-cell" style="text-align:right">−27</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Neutral is not nothing - a fifth of every industry is undecided.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-family:'Arial Black', Arial, sans-serif; text-transform:uppercase; letter-spacing:-0.02em; font-size:2.8rem;">“Our shifts cannot shrink. A four-day week for the office means a five-day week for the warehouse.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#FFE550; color:#111; border:4px solid #111;"><span class="avatar-fallback">DK</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Dana Kowalczyk<br /><span style="opacity:0.7; font-size:1.4rem;">Logistics shift lead - 140 people on rota</span></p>
+    </div>
+    <p class="presentation-note">The opposition has a real argument - give it the stage.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="pilot" style="justify-content:flex-start;" aria-label="Pilot results">
+    <header class="presentation-header"><span>The pilot</span><span>61 firms · 12 months · vs prior year</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Arial Black', Arial, sans-serif; text-transform:uppercase; letter-spacing:-0.02em;">What changed in the pilot firms</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The dots regroup as pilot outcomes: less of the bad, revenue flat to up.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Questions from the floor">
+    <header class="presentation-header"><span>Q & A</span><span>Union meeting</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; font-family:'Arial Black', Arial, sans-serif; text-transform:uppercase; letter-spacing:-0.02em;">Questions from the floor</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="dv-qa" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Did productivity drop?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Revenue per firm rose 2% on average - within noise, but not down.</p></div>
+      </details>
+      <details class="accordion-item" name="dv-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>What about shift work?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Pilots used rotating fourth days; 9 of the 61 firms ran 24/7 operations.</p></div>
+      </details>
+      <details class="accordion-item" name="dv-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Why did 5 firms stop?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Client coverage: all five were small agencies with one client each.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Take the productivity question head-on.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Takeaways">
+    <header class="presentation-header"><span>Takeaways</span><span>No fluff</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">■</span><span>Support tracks flexibility - start where the work can move.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">■</span><span>Finance is the outlier: remote-capable, still opposed. Ask why.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">■</span><span>Design shift work first, or the warehouse pays for the office.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">■</span><span>Pilot, measure, keep what works - 56 of 61 did.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Short, loud, done.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-anim-in="blocksIn" data-anim-in-direction="west" data-anim-in-blocks="4" data-anim-in-color="#FF3B30" aria-label="Closing">
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-family:'Arial Black', Arial, sans-serif; text-transform:uppercase; letter-spacing:-0.02em;">Zero is a line, not an answer</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">Synthetic survey, real debate - every bar left of zero is a conversation to have.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">End loud.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) - build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-diverging');
+    const INK = '#111111', RED = '#FF3B30', GREY = 'rgba(17,17,17,.28)';
+    // [industry, support, neutral, oppose, remote-capable jobs %]
+    const rows = [['Tech', 64, 20, 16, 78], ['Design & media', 60, 21, 19, 70], ['Education', 51, 20, 29, 35], ['Healthcare', 44, 21, 35, 18], ['Retail', 38, 18, 44, 12], ['Logistics', 34, 18, 48, 15], ['Manufacturing', 30, 19, 51, 10], ['Finance', 28, 17, 55, 62]];
+    const net = (r) => r[1] - r[3];
+    const G = { left: 300, right: 170, top: 320, bottom: 150 };
+    const cats = { type: 'category', inverse: true, data: rows.map((r) => r[0]), axisLine: { show: false }, axisLabel: { color: INK, fontWeight: 900 } };
+    const brutal = { borderColor: INK, borderWidth: 3, borderRadius: 0 };
+    const signed = (v) => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v);
+
+    df$.shadcn.chart.deck(deck, {
+      base: { tooltip: { trigger: 'item' } },
+      states: {
+        net: {
+          grid: G, yAxis: cats,
+          xAxis: { type: 'value', min: -40, max: 60, interval: 20, axisLabel: { color: INK, formatter: signed } },
+          series: [{ id: 'support', type: 'bar', barWidth: '60%',
+            data: rows.map((r) => ({ name: r[0], value: net(r), itemStyle: { ...brutal, color: net(r) >= 0 ? INK : RED }, label: { position: net(r) >= 0 ? 'right' : 'left' } })),
+            label: { show: true, formatter: (p) => signed(p.value), color: INK, fontWeight: 900 } }],
+        },
+        split: {
+          grid: G, yAxis: cats,
+          legend: { top: 290, right: 170, textStyle: { color: INK, fontWeight: 700 } },
+          xAxis: { type: 'value', min: -60, max: 80, interval: 20, axisLabel: { color: INK, formatter: (v) => Math.abs(v) + '%' } },
+          series: [
+            { id: 'oppose', name: 'Oppose', type: 'bar', stack: 's', barWidth: '60%', data: rows.map((r) => ({ name: r[0], value: -r[3] })), itemStyle: { ...brutal, color: RED },
+              label: { show: true, position: 'left', formatter: (p) => Math.abs(p.value) + '%', color: INK, fontWeight: 700 } },
+            { id: 'support', name: 'Support', type: 'bar', stack: 's', data: rows.map((r) => ({ name: r[0], value: r[1] })), itemStyle: { ...brutal, color: INK },
+              label: { show: true, position: 'right', formatter: '{c}%', color: INK, fontWeight: 700 } },
+          ],
+        },
+        remote: {
+          grid: { left: 190, right: 170, top: 330, bottom: 150 },
+          xAxis: { type: 'value', min: 0, max: 90, name: 'jobs that can be done remotely', nameLocation: 'middle', nameGap: 52, axisLabel: { color: INK, formatter: '{value}%' } },
+          yAxis: { type: 'value', min: -40, max: 60, name: 'net support', nameLocation: 'middle', nameGap: 76, axisLabel: { color: INK, formatter: signed },
+                   splitLine: { lineStyle: { color: GREY } } },
+          series: [{ id: 'support', type: 'scatter', symbol: 'rect',
+            data: rows.map((r) => ({ name: r[0], value: [r[4], net(r)], symbolSize: 34, itemStyle: { ...brutal, color: r[0] === 'Finance' ? RED : INK } })),
+            label: { show: true, formatter: '{b}', position: 'right', distance: 14, color: INK, fontWeight: 900 } }],
+        },
+        pilot: {
+          grid: { left: 300, right: 170, top: 330, bottom: 150 },
+          xAxis: { type: 'value', min: -50, max: 20, interval: 10, axisLabel: { color: INK, formatter: (v) => signed(v) + '%' } },
+          yAxis: { type: 'category', inverse: true, data: ['Resignations', 'Burnout score', 'Sick days', 'Overtime', 'Revenue'], axisLine: { show: false }, axisLabel: { color: INK, fontWeight: 900 } },
+          series: [{ id: 'support', type: 'bar', barWidth: '60%',
+            data: [['Resignations', -41], ['Burnout score', -31], ['Sick days', -28], ['Overtime', -19], ['Revenue', 2]].map(([n, v]) => ({ name: n, value: v, itemStyle: { ...brutal, color: v > 0 ? INK : RED }, label: { position: v > 0 ? 'right' : 'left' } })),
+            label: { show: true, formatter: (p) => signed(p.value) + '%', color: INK, fontWeight: 900 } }],
+        },
+      },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 05-diverging-bars (Neo-Brutalist Zine) - synthetic survey and pilot figures.</p>
+<SourceFiles component="presentation" />
+</DocPage>

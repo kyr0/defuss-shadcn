@@ -2,20 +2,20 @@
 // -- site.js -------------------------------------------------
 // Doc-site-only script for the defuss-shadcn documentation site.
 // Component behavior lives in dist/components/*.js.
-// No ES modules — works with file:// protocol.
+// No ES modules - works with file:// protocol.
 // Include via <script src="js/site.js" defer></script>
 (function () {
     'use strict';
     // Single-namespace globals (AGENTS.md "No window globals"): docs data
-    // lives under df$.shadcn.docs — never on window. This classic script runs
+    // lives under df$.shadcn.docs - never on window. This classic script runs
     // BEFORE the library runtime (all.js, a deferred module, installs the
     // callable df$), so `docs` stages locally here and merges into the live
-    // namespace on DOMContentLoaded — after every module has executed.
+    // namespace on DOMContentLoaded - after every module has executed.
     var docs = {};
     document.addEventListener('DOMContentLoaded', function () {
         var ns = globalThis.df$ && globalThis.df$.shadcn;
         if (!ns)
-            return; // library failed to load — docs chrome degrades
+            return; // library failed to load - docs chrome degrades
         var live = (ns.docs = ns.docs || {});
         for (var k in docs)
             if (!(k in live))
@@ -27,13 +27,13 @@
     // layout reflows DURING the smooth scroll (shiki swapping every code block
     // in, web-font swaps, late-loading CDN CSS on the published site), the
     // browser stops at the stale offset and the clicked heading ends up hidden
-    // under the fixed header — or with a gap above it. Once scrolling settles,
+    // under the fixed header - or with a gap above it. Once scrolling settles,
     // re-align once if the heading missed its resting spot (scroll-padding-top).
-    // Reader input (wheel/touch/key) aborts the correction — we never fight
+    // Reader input (wheel/touch/key) aborts the correction - we never fight
     // someone who started scrolling themselves.
     var realignCancel = null;
     function realignWhenSettled(id) {
-        // A newer jump supersedes any pending correction — an uncancelled one
+        // A newer jump supersedes any pending correction - an uncancelled one
         // would yank the page back to the previous heading mid-next-scroll.
         if (realignCancel)
             realignCancel();
@@ -58,13 +58,13 @@
             // scrollIntoView's resting offset is the scroller's scroll-padding-top
             var pad = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
             var delta = t.getBoundingClientRect().top - pad;
-            // >1px: the page settled at a stale offset — correct it instantly.
+            // >1px: the page settled at a stale offset - correct it instantly.
             // A target below `pad` that can't scroll further clamps harmlessly.
             if (Math.abs(delta) > 1)
                 window.scrollTo({ top: window.scrollY + delta });
         }
         // any scroll event re-arms the settle timer; check runs 150ms after the last.
-        // ponytail: one correction after scrolling goes quiet — a reflow landing
+        // ponytail: one correction after scrolling goes quiet - a reflow landing
         // AFTER that window (very slow CDN) could still drift; upgrade path is a
         // ResizeObserver on <main> that re-arms arm() while the page is unstable.
         function arm() {
@@ -78,7 +78,7 @@
         addEventListener('touchstart', abort, { once: true, passive: true, capture: true });
         addEventListener('keydown', abort, { once: true, capture: true });
         realignCancel = cleanup;
-        arm(); // an instant jump fires no scroll event — the initial arm covers it
+        arm(); // an instant jump fires no scroll event - the initial arm covers it
     }
     // Cross-file contract (same discipline as THEMES/onPageReady): layout.ts's
     // palette jumps scroll to headings the same way and need the same correction.
@@ -90,7 +90,7 @@
         document.getElementById('icon-sun').style.display = isDark ? 'block' : 'none';
         document.getElementById('icon-moon').style.display = isDark ? 'none' : 'block';
         localStorage.setItem('defuss-shadcn-theme', isDark ? 'light' : 'dark');
-        // theme files carry :root + .dark — the class switch re-themes by
+        // theme files carry :root + .dark - the class switch re-themes by
         // itself; only the favicon derives from live tokens
         if (docs.updateFavicon)
             docs.updateFavicon();
@@ -163,7 +163,33 @@
             });
             pairs.push({ toggle: toggle, wrapper: wrapper });
         });
-        if (!pairs.length)
+        // CodeExamples carry their source in a Code panel behind a toggle tab —
+        // the page-wide button opens/closes those too. Plain DOM (tab aria-pressed
+        // + panel hidden, exactly what the runtime's setTab writes), so lazily
+        // booted examples that are not initialized yet follow along as well.
+        var examples = Array.prototype.slice.call(main.querySelectorAll('.code-example'));
+        function exampleOpen(ex) {
+            var tab = ex.querySelector('.code-example-tab[data-tab="code"]');
+            return !!tab && tab.getAttribute('aria-pressed') === 'true';
+        }
+        function setExample(ex, open) {
+            var tab = ex.querySelector('.code-example-tab[data-tab="code"]');
+            var panel = ex.querySelector('.code-example-panel[data-panel="code"]');
+            if (!tab || !panel)
+                return;
+            tab.setAttribute('aria-pressed', String(open));
+            panel.hidden = !open;
+            if (open) {
+                // one lower panel at a time (the runtime's radio semantics)
+                var stateTab = ex.querySelector('.code-example-tab[data-tab="state"]');
+                var statePanel = ex.querySelector('.code-example-panel[data-panel="state"]');
+                if (stateTab)
+                    stateTab.setAttribute('aria-pressed', 'false');
+                if (statePanel)
+                    statePanel.hidden = true;
+            }
+        }
+        if (!pairs.length && !examples.length)
             return;
         // Collapse-all / Expand-all toolbar
         var toolbar = document.createElement('div');
@@ -172,21 +198,32 @@
         allBtn.className = 'code-collapse-all-btn';
         allBtn.innerHTML = CODE_ICON + ' Collapse all code';
         toolbar.appendChild(allBtn);
-        syncAllBtn(); // blocks start collapsed — the button must offer "Expand all"
+        syncAllBtn(); // blocks start collapsed - the button must offer "Expand all"
         // Place toolbar inside the sticky header (after the last child)
         var pageHeader = main.querySelector('.page-header');
         if (pageHeader) {
             pageHeader.appendChild(toolbar);
         }
         else {
-            pairs[0].wrapper.insertAdjacentElement('beforebegin', toolbar);
+            (pairs.length ? pairs[0].wrapper : examples[0]).insertAdjacentElement('beforebegin', toolbar);
+        }
+        function isAllCollapsed() {
+            return (pairs.every(function (p) { return p.wrapper.classList.contains('code-collapsed'); }) &&
+                examples.every(function (ex) { return !exampleOpen(ex); }));
         }
         function syncAllBtn() {
-            var allCollapsed = pairs.every(function (p) { return p.wrapper.classList.contains('code-collapsed'); });
-            allBtn.innerHTML = CODE_ICON + (allCollapsed ? ' Expand all code' : ' Collapse all code');
+            allBtn.innerHTML = CODE_ICON + (isAllCollapsed() ? ' Expand all code' : ' Collapse all code');
         }
+        // a single example's Code/State tab changes the page-wide state too (the
+        // runtime's own click handler runs first; re-read on the next tick)
+        main.addEventListener('click', function (ev) {
+            var t = ev.target;
+            if (t && t.closest && t.closest('.code-example-tab'))
+                setTimeout(syncAllBtn, 0);
+        });
         allBtn.addEventListener('click', function () {
-            var allCollapsed = pairs.every(function (p) { return p.wrapper.classList.contains('code-collapsed'); });
+            var allCollapsed = isAllCollapsed();
+            examples.forEach(function (ex) { setExample(ex, allCollapsed); });
             pairs.forEach(function (p) {
                 if (allCollapsed) {
                     p.wrapper.classList.remove('code-collapsed');
@@ -206,7 +243,7 @@
     // Why: layout demos (auto-fit grids, wrapping flex, container queries) only
     // make sense when the reader can change the available width. Any .demo with
     // data-viewport gets a toolbar (Mobile/Tablet/Desktop/Full) that resizes its
-    // .demo-viewport — the "mini browser" the demo renders into. Container
+    // .demo-viewport - the "mini browser" the demo renders into. Container
     // queries react because the width really changes; no iframes involved.
     var VP_SIZES = [['Mobile', 360], ['Tablet', 768], ['Desktop', 1024], ['Full', null]];
     function initViewportStages() {
@@ -284,13 +321,13 @@
     // Register content initializer with SPA router
     // (runs on initial load AND after each SPA navigation)
     // onPageReady lives in layout.js's staging until DOMContentLoaded merges
-    // both into the live df$.shadcn.docs — register after that point
+    // both into the live df$.shadcn.docs - register after that point
     document.addEventListener('DOMContentLoaded', function () {
         docs.onPageReady(initPageContent);
     });
     // The Component Skill `<details>` (with its `[data-spec-href]` link in the
     // summary) toggles natively. It renders as a sibling AFTER .page-header
-    // (statically — the old runtime used to move it there).
+    // (statically - the old runtime used to move it there).
     // -- On DOM ready (one-time setup + initial content init) -
     document.addEventListener('DOMContentLoaded', function () {
         // Sync dark mode icon state
@@ -301,15 +338,15 @@
             sun.style.display = isDark ? 'none' : 'block';
         if (moon)
             moon.style.display = isDark ? 'block' : 'none';
-        // Bind theme toggle (once — header persists across SPA navs)
+        // Bind theme toggle (once - header persists across SPA navs)
         var themeBtn = document.getElementById('theme-toggle');
         if (themeBtn)
             themeBtn.addEventListener('click', toggleDark);
         // Handle hash-link clicks (TOC "On This Page", built-with pills, etc.)
         // Default anchor scroll doesn't always work after SPA navigation, so we
-        // scrollIntoView — but its end offset is computed AT CLICK TIME. Any reflow
+        // scrollIntoView - but its end offset is computed AT CLICK TIME. Any reflow
         // during the smooth scroll (shiki swapping every code block in, web fonts
-        // swapping, late jsDelivr CSS on the published CDN site — issue #2) leaves
+        // swapping, late jsDelivr CSS on the published CDN site - issue #2) leaves
         // the scroll stopped at a stale offset: the clicked heading ends up hidden
         // under the fixed header (or a gap above it). So once scrolling settles we
         // re-align once; any reader input aborts so we never fight the user.

@@ -5,7 +5,7 @@ import { NavTypeBadge } from './type-badge';
 
 /**
  * Why: the docs sidebar dogfoods the shipped `sidebar` component (see
- * dist/components/sidebar/) — .app-sidebar shell, .sidebar-content scroller,
+ * dist/components/sidebar/) - .app-sidebar shell, .sidebar-content scroller,
  * .sidebar-group sections, .sidebar-submenu parents, .sidebar-link links.
  * Collapse rides the component's data-state; the header's panel-left toggle
  * (site-header.tsx + layout.ts) and sidebar.js's ⌘B shortcut are its
@@ -17,7 +17,7 @@ import { NavTypeBadge } from './type-badge';
  * current page; DocPage's pre-paint script re-applies remembered toggles.
  * `nav-link` rides the component's `sidebar-link` class: it is the router's
  * navigation/hook contract (SPA intercept, active marking, prefetch), not
- * styling — the component's CSS owns the look.
+ * styling - the component's CSS owns the look.
  */
 
 const CHEVRON = (
@@ -28,7 +28,8 @@ const CHEVRON = (
 
 /** One sidebar link: component .sidebar-link + the router's .nav-link hook. */
 function NavItemLink({ item, active }: { item: NavItem; active: string }) {
-  const type = readSkillMeta(item.href.replace(/\.html$/, ''))?.type;
+  // explicit page-level type (sub-pages) wins; component pages read the skill
+  const type = item.type ?? readSkillMeta(item.href.replace(/\.html$/, ''))?.type;
   const isActive = item.href === active;
   return (
     <a
@@ -42,12 +43,14 @@ function NavItemLink({ item, active }: { item: NavItem; active: string }) {
   );
 }
 
-/** Parent page with sub-pages (Sizing → Width & Height, …) — the component's
+/** Parent page with sub-pages (Sizing → Width & Height, …) - the component's
  * .sidebar-submenu pattern. The label is the parent page link (click
  * navigates); clicking elsewhere on the row toggles the submenu. */
 function NavItemSubmenu({ item, active }: { item: NavItem; active: string }) {
   const kids = item.children ?? [];
   const containsActive = item.href === active || kids.some((k) => k.href === active);
+  // a parent that IS a component (Image → Image Gallery) keeps its own badge
+  const type = item.type ?? readSkillMeta(item.href.replace(/\.html$/, ''))?.type;
   return (
     <details class="sidebar-submenu" {...(containsActive ? { open: '' } : {})}>
       <summary>
@@ -57,6 +60,7 @@ function NavItemSubmenu({ item, active }: { item: NavItem; active: string }) {
           {...(item.href === active ? { 'aria-current': 'page' } : {})}
         >
           <span>{item.label}</span>
+          {type ? <NavTypeBadge type={type} /> : null}
         </a>
         {CHEVRON}
       </summary>

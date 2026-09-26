@@ -1,0 +1,222 @@
+---
+title: "Slopegraph - Presentation"
+description: "Terminal Data Noir design language presenting the shift in programming languages asked for in job ads, 2020–2025, as a 12-slide deck - slopes that isolate the risers, then morph from change bars into the 2025 ranking."
+slug: "slopegraph"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="slopegraph" title="Slopegraph" component="presentation">
+  Terminal Data Noir: phosphor green on black, monospace everywhere - which languages employers asked for in 2020 versus 2025, told as slopes, deltas and a final ranking.
+</PageHeader>
+
+```html example label="Terminal Data Noir" schema="none" height="26" hint="Slides wipe in like a terminal redraw and blur out (df$.anim, declared on the deck); a green curtain opens the data section. One deck-level chart (df$.shadcn.chart.deck) carries the slopes, isolates the risers, then morphs the change bars into the 2025 ranking. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-slope" data-anim-in="wipeIn" data-anim-in-direction="west" data-anim-out="blurOut" style="--presentation-ink:#050706;--presentation-ink-foreground:#C9FFD8;--presentation-paper:#0C140F;--presentation-paper-foreground:#C9FFD8;--presentation-accent:#43FF76;font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;" tabindex="-1" aria-label="Languages in job ads 2020 to 2025 - terminal deck">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="Share of job ads mentioning seven programming languages in 2020 and 2025: TypeScript up 10 points, Python up 8, Java down 7"></div>
+  <section class="slide" data-slide data-theme="ink" aria-label="Cover">
+    <p aria-hidden="true" style="position:absolute; inset-block-start:7%; inset-inline-start:7%; margin:0; font-size:1.4rem; color:#43FF76; opacity:0.8;">$ jobs --languages --since 2020 ▍</p>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Slopegraph · Terminal Data Noir</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-weight:700; letter-spacing:-0.02em; font-size:5.5rem;">What employers asked for, 2020 → 2025</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">Seven languages, 184,000 job ads, two snapshots - direction before magnitude.</p>
+    <p class="presentation-note">The prompt line is decoration - the deck talks like a terminal.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="slope" style="justify-content:flex-start;" aria-label="All slopes">
+    <header class="presentation-header"><span>share_of_ads</span><span>% of ads · 2020 → 2025</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:700; letter-spacing:-0.02em;">Four up, three down</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Green climbs, red slides. Read the direction first, the numbers second.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="risers" style="justify-content:flex-start;" aria-label="Risers">
+    <header class="presentation-header"><span>share_of_ads</span><span>filter: rising</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:700; letter-spacing:-0.02em;">TypeScript doubled - Rust grew fivefold from a tiny base</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The fallers dim; the risers keep their light.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="delta" style="justify-content:flex-start;" aria-label="Change in points">
+    <header class="presentation-header"><span>delta_pp</span><span>percentage points</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:700; letter-spacing:-0.02em;">Net change: +10 for TypeScript, −7 for Java</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Slopes become deltas - one bar per language.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Key figures">
+    <p class="presentation-eyebrow" data-df-entrance="fade">Three numbers for the hiring plan</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#43FF76; font-weight:700; letter-spacing:-0.02em;">+<span data-count="10">10</span> pp</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">TypeScript - the biggest climb</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-weight:700; letter-spacing:-0.02em;"><span data-count="29">29</span>%</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">of all ads now ask for Python</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#FF5F56; font-weight:700; letter-spacing:-0.02em;">−<span data-count="7">7</span> pp</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">Java - still third, but falling</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">Python and TypeScript together appear in almost half of all ads.</p>
+    <p class="presentation-note">Shares overlap: an ad can ask for more than one language.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="At the desk">
+    <header class="presentation-header"><span>context</span><span>ads sampled weekly</span></header>
+    <div style="display:flex; gap:4.5rem; align-items:center; margin-top:3.5rem;">
+      <figure class="image" data-ratio="4/3" data-df-entrance="blur" style="--df-motion-delay:150ms; flex:0 0 700px; margin:0;">
+        <img src="https://picsum.photos/id/60/960/720" alt="Top-down view of a desk with a keyboard, a tablet, notebooks and a mouse" loading="lazy" width="960" height="720" style="width:100%; height:100%; object-fit:cover;" />
+        <figcaption class="image-caption" style="font-size:1.25rem;">A developer’s desk (stock photo).</figcaption>
+      </figure>
+      <div style="flex:1 1 0; min-width:0;">
+        <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; font-weight:700; letter-spacing:-0.02em;">One stack per team, many stacks per ad</h2>
+        <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:300ms; font-size:1.7rem;">The typical 2025 ad lists 2.4 languages, up from 1.8 - full-stack roles pull TypeScript along with everything else.</p>
+      </div>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Explain the overlap before someone asks.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="west" data-anim-in-blocks="8" data-anim-in-stagger="40" data-anim-in-color="#43FF76" aria-label="Share table">
+    <header class="presentation-header"><span>SELECT *</span><span>% of job ads</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" style="font-size:1.45rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">Share of job ads mentioning each language (synthetic sample of 184,000 ads).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">Language</th><th class="table-head" style="text-align:right">2020</th><th class="table-head" style="text-align:right">2025</th><th class="table-head" style="text-align:right">Δ pp</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row"><td class="table-cell">Python</td><td class="table-cell" style="text-align:right">21</td><td class="table-cell" style="text-align:right">29</td><td class="table-cell" style="text-align:right">+8</td></tr>
+          <tr class="table-row" style="font-weight:700"><td class="table-cell">TypeScript</td><td class="table-cell" style="text-align:right">9</td><td class="table-cell" style="text-align:right">19</td><td class="table-cell" style="text-align:right">+10</td></tr>
+          <tr class="table-row"><td class="table-cell">Java</td><td class="table-cell" style="text-align:right">24</td><td class="table-cell" style="text-align:right">17</td><td class="table-cell" style="text-align:right">−7</td></tr>
+          <tr class="table-row"><td class="table-cell">C#</td><td class="table-cell" style="text-align:right">13</td><td class="table-cell" style="text-align:right">12</td><td class="table-cell" style="text-align:right">−1</td></tr>
+          <tr class="table-row"><td class="table-cell">Go</td><td class="table-cell" style="text-align:right">4</td><td class="table-cell" style="text-align:right">8</td><td class="table-cell" style="text-align:right">+4</td></tr>
+          <tr class="table-row"><td class="table-cell">PHP</td><td class="table-cell" style="text-align:right">11</td><td class="table-cell" style="text-align:right">6</td><td class="table-cell" style="text-align:right">−5</td></tr>
+          <tr class="table-row"><td class="table-cell">Rust</td><td class="table-cell" style="text-align:right">1</td><td class="table-cell" style="text-align:right">5</td><td class="table-cell" style="text-align:right">+4</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Every number on one screen, for the follow-up.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-weight:700; letter-spacing:-0.02em; font-size:2.8rem;">“We stopped writing “JavaScript” in our ads. Nobody applies for it anymore - they apply for TypeScript.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#43FF76; color:#050706;"><span class="avatar-fallback">RN</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Rafael Nunes<br /><span style="opacity:0.7; font-size:1.4rem;">Engineering recruiter - 1,300 roles filled</span></p>
+    </div>
+    <p class="presentation-note">The quote explains the TypeScript jump better than any chart.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="rank" style="justify-content:flex-start;" aria-label="2025 ranking">
+    <header class="presentation-header"><span>ORDER BY share_2025</span><span>% of ads · 2025</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:700; letter-spacing:-0.02em;">The 2025 league table</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The delta bars regrow into the 2025 shares and re-sort.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Questions from the team">
+    <header class="presentation-header"><span>Q & A</span><span>engineering all-hands</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; font-weight:700; letter-spacing:-0.02em;">Questions from the team</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="sl-qa" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Is Java dying?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">No - 17% of ads is still a third place. It is losing share to TypeScript on the backend, not disappearing.</p></div>
+      </details>
+      <details class="accordion-item" name="sl-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Why does Rust matter at 5%?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Growth from 1% signals where infrastructure teams are heading; salaries in those ads are 18% above median.</p></div>
+      </details>
+      <details class="accordion-item" name="sl-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Should we rewrite anything?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">No. Hire for the language, train for the stack - the ads are a lagging indicator.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The Java question always comes first.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Takeaways">
+    <header class="presentation-header"><span>takeaways</span><span>exit 0</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">></span><span>TypeScript is the default for new web roles - write it into the ad.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">></span><span>Python keeps growing on the back of data and AI work.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">></span><span>Java and PHP still fill a quarter of ads combined: do not drop them.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">></span><span>Watch Rust and Go - small shares, steep slopes.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Read, then open the floor.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-anim-in="blocksIn" data-anim-in-direction="east" data-anim-in-blocks="8" data-anim-in-stagger="40" data-anim-in-color="#43FF76" aria-label="Closing">
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-weight:700; letter-spacing:-0.02em;">Direction before magnitude</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">Seven lines, two dates - synthetic ads, a familiar shift.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">End on the rule.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) - build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-slope');
+    const TEXT = '#C9FFD8', MUTED = '#5E8B6B', UP = '#43FF76', DOWN = '#FF5F56', DIM = 'rgba(201,255,216,.16)';
+    // [language, 2020 %, 2025 %]
+    const langs = [['Python', 21, 29], ['TypeScript', 9, 19], ['Java', 24, 17], ['C#', 13, 12], ['Go', 4, 8], ['PHP', 11, 6], ['Rust', 1, 5]];
+    const up = (l) => l[2] >= l[1];
+
+    const slopes = (focusRisers) => ({
+      grid: { left: 330, right: 330, top: 330, bottom: 140 },
+      xAxis: { type: 'category', data: ['2020', '2025'], boundaryGap: false, axisLine: { show: false }, axisLabel: { color: TEXT, fontWeight: 700 } },
+      yAxis: { type: 'value', min: 0, max: 30, show: false },
+      series: langs.map((l) => {
+        const color = focusRisers && !up(l) ? DIM : up(l) ? UP : DOWN;
+        return {
+          id: l[0], name: l[0], type: 'line', data: [l[1], l[2]], symbolSize: 16,
+          lineStyle: { color, width: 4 }, itemStyle: { color },
+          label: { show: true, position: 'left', distance: 16, formatter: (p) => (p.dataIndex === 0 ? l[0] + '  ' + l[1] + '%' : ''), color: focusRisers && !up(l) ? MUTED : TEXT },
+          endLabel: { show: true, distance: 16, formatter: l[0] + '  ' + l[2] + '%', color: focusRisers && !up(l) ? MUTED : TEXT },
+          labelLayout: { moveOverlap: 'shiftY' },
+        };
+      }),
+    });
+    const byDelta = langs.slice().sort((a, b) => (b[2] - b[1]) - (a[2] - a[1]));
+    const by2025 = langs.slice().sort((a, b) => b[2] - a[2]);
+    const cats = (list) => ({ type: 'category', inverse: true, data: list.map((l) => l[0]), axisLine: { show: false }, axisLabel: { color: TEXT, fontWeight: 700 } });
+
+    df$.shadcn.chart.deck(deck, {
+      base: { tooltip: { trigger: 'item' } },
+      states: {
+        slope: slopes(false),
+        risers: slopes(true),
+        delta: {
+          grid: { left: 260, right: 190, top: 320, bottom: 150 },
+          xAxis: { type: 'value', min: -10, max: 12, axisLabel: { color: MUTED, formatter: (v) => (v > 0 ? '+' : '') + v } },
+          yAxis: cats(byDelta),
+          series: [{ id: 'bars', type: 'bar', barWidth: '56%',
+            data: byDelta.map((l) => ({ name: l[0], value: l[2] - l[1], itemStyle: { color: up(l) ? UP : DOWN } })),
+            label: { show: true, position: 'right', formatter: (p) => (p.value > 0 ? '+' : '') + p.value + ' pp', color: TEXT, fontWeight: 700 } }],
+        },
+        rank: {
+          grid: { left: 260, right: 190, top: 320, bottom: 150 },
+          xAxis: { type: 'value', max: 32, axisLabel: { color: MUTED, formatter: '{value}%' } },
+          yAxis: cats(by2025),
+          series: [{ id: 'bars', type: 'bar', barWidth: '56%',
+            data: by2025.map((l) => ({ name: l[0], value: l[2], itemStyle: { color: l[0] === 'Python' || l[0] === 'TypeScript' ? UP : 'rgba(67,255,118,.35)' } })),
+            label: { show: true, position: 'right', formatter: '{c}%', color: TEXT, fontWeight: 700 } }],
+        },
+      },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 04-slopegraph (Terminal Data Noir) - synthetic job-ad sample.</p>
+<SourceFiles component="presentation" />
+</DocPage>

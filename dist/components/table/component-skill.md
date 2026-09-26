@@ -1,7 +1,7 @@
 ---
 name: Table
 type: ATM
-why: Semantic <table> — headers, captions, and sort state stay accessible.
+why: Semantic <table> - headers, captions, and sort state stay accessible.
 when: Tabular data in rows and columns; never div grids.
 where: dist/components/table/table.css
 supportedStates: default
@@ -15,11 +15,11 @@ supportedStates: default
 
 ## Native Web APIs
 
-- [`<table>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table) — tabular data container
-- [`<thead>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/thead) — table header group
-- [`<tbody>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tbody) — table body group
-- [`<tfoot>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tfoot) — table footer group
-- [`<caption>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/caption) — table caption
+- [`<table>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table) - tabular data container
+- [`<thead>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/thead) - table header group
+- [`<tbody>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tbody) - table body group
+- [`<tfoot>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tfoot) - table footer group
+- [`<caption>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/caption) - table caption
 
 ## Structure
 
@@ -55,12 +55,12 @@ supportedStates: default
 
 ## Density
 
-Set `data-density` on the `.table` root; head/cell/caption padding scales (typography unchanged — density is a whitespace policy, not a zoom).
+Set `data-density` on the `.table` root; head/cell/caption padding scales (typography unchanged - density is a whitespace policy, not a zoom).
 
 | Value | Effect |
 | --- | --- |
 | `compact` | Cell padding 0.375rem 0.625rem |
-| `comfortable` | Cell padding 0.75rem 1rem — identical to the unsized default |
+| `comfortable` | Cell padding 0.75rem 1rem - identical to the unsized default |
 | `spacious` | Cell padding 1rem 1.25rem |
 
 ## Accessibility

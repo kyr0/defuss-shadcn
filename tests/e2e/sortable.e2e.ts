@@ -7,7 +7,7 @@ import { startServer } from './server.ts';
  * (vertical list + horizontal list with a locked item, mirroring the doc
  * page) over HTTP in a real browser, then verifies roving focus, Alt+Arrow
  * reordering, the live-region announcements, the change event, locked items,
- * and the named State API (order restore + live order/activeIndex) — the same
+ * and the named State API (order restore + live order/activeIndex) - the same
  * files consumers copy from dist/, unmodified.
  */
 

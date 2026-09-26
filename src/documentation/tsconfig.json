@@ -7,7 +7,7 @@
   // Why it exists: these files match no other tsconfig (the root one globs
   // src/**/*.ts only, with rootDir→dist), so the TS language server would
   // otherwise fall back to its inferred project and assume the React JSX
-  // runtime — erroring ts(2875) on every .tsx. Pointing the JSX factory at
+  // runtime - erroring ts(2875) on every .tsx. Pointing the JSX factory at
   // defuss (which ships its own ./jsx-runtime types) matches the real build.
   "compilerOptions": {
     "target": "esnext",
@@ -22,7 +22,7 @@
     "noEmit": true,
     "skipLibCheck": true,
     // Same strip-types policy as the root build configs: this tree is
-    // JS-style code that has never been type-checked — full checking would
+    // JS-style code that has never been type-checked - full checking would
     // only flood the editor with pre-existing noise.
     "noCheck": true
   },

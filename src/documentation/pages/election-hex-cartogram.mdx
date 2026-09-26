@@ -1,0 +1,223 @@
+---
+title: "Election Hex Cartogram - Presentation"
+description: "Election Night Newspaper design language presenting a fictional county’s rail-link referendum as a 12-slide deck - 64 equal hexagons that recolour by margin, fly into a distance scatter and merge into band averages, one morphing chart."
+slug: "election-hex-cartogram"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="election-hex-cartogram" title="Election Hex Cartogram" component="presentation">
+  Election Night Newspaper: newsprint, headline serif and the classic red - a fictional county votes on a new rail line, and 64 equal-area hexagons show who wanted it and why.
+</PageHeader>
+
+```html example label="Election Night Newspaper" schema="none" height="26" hint="Slides wipe in like a page being set and fade out (df$.anim, declared on the deck); red curtains open the data and the ending. One deck-level chart (df$.shadcn.chart.deck): 64 hexagons re-colour from winner to margin, fly into a scatter of distance-to-the-line against Yes share, then merge into three band averages (universalTransition by group). Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-hex" data-anim-in="wipeIn" data-anim-in-direction="north" data-anim-out="fadeOut" style="--presentation-ink:#17202A;--presentation-ink-foreground:#F7F3E8;--presentation-paper:#FFFCF4;--presentation-paper-foreground:#17202A;--presentation-accent:#B3182B;font-family:Georgia, 'Times New Roman', serif;" tabindex="-1" aria-label="The rail-link referendum - Kestrel County, 64 districts">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="Referendum on a rail link in 64 districts of a fictional county: 40 districts voted yes, overall 53.5 percent; support falls with distance from the planned line, from 64 percent within 10 km to 45 percent beyond 20 km"></div>
+  <section class="slide" data-slide data-theme="paper" aria-label="Cover">
+    <div aria-hidden="true" style="position:absolute; inset-inline:112px; top:72px; display:flex; justify-content:space-between; border-block:4px double currentColor; padding-block:0.6rem; font:700 1.5rem/1 Georgia, serif; text-transform:uppercase; letter-spacing:0.12em;">
+      <span>The Kestrel Courier</span><span>Referendum special</span><span>Late edition</span>
+    </div>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Hex cartogram · Election Night Newspaper</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-family:Georgia, 'Times New Roman', serif; font-weight:700; letter-spacing:-0.01em; font-size:6rem; max-width:1150px;">Yes to the rail link - narrowly</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">Kestrel County voted 53.5% Yes. Sixty-four districts, one hexagon each, one clear pattern.</p>
+    <p class="presentation-note">Newspaper register: headline, deck, then the map.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="map" style="justify-content:flex-start;" aria-label="The map">
+    <header class="presentation-header"><span>The result</span><span>64 districts · one hexagon each</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Georgia, 'Times New Roman', serif; font-weight:700; letter-spacing:-0.01em;">40 districts said Yes, 24 said No</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Equal cells: a small town counts as much as a wide valley.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="margin" style="justify-content:flex-start;" aria-label="Margin">
+    <header class="presentation-header"><span>The result</span><span>Shaded by Yes share</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Georgia, 'Times New Roman', serif; font-weight:700; letter-spacing:-0.01em;">The Yes is strongest down the middle</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Same cells, now shaded by how strongly each district voted.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="distance" style="justify-content:flex-start;" aria-label="Distance">
+    <header class="presentation-header"><span>Why</span><span>Distance to the planned line × Yes share</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Georgia, 'Times New Roman', serif; font-weight:700; letter-spacing:-0.01em;">The closer to the line, the bigger the Yes</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The hexagons leave the map and line up by distance.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Key figures">
+    <p class="presentation-eyebrow" data-df-entrance="fade">Three numbers from the count</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#1F6F8B; font-family:Georgia, 'Times New Roman', serif; font-weight:700; letter-spacing:-0.01em;"><span data-count="53.5">53.5</span>%</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">Yes across the county</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:Georgia, 'Times New Roman', serif; font-weight:700; letter-spacing:-0.01em;"><span data-count="40">40</span>/64</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">districts voted Yes</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#B3182B; font-family:Georgia, 'Times New Roman', serif; font-weight:700; letter-spacing:-0.01em;"><span data-count="19">19</span> pts</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">gap between districts near and far from the line</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">The vote was not town against country. It was near the line against far from it.</p>
+    <p class="presentation-note">Reframe the story - that is the scoop.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="The valley">
+    <header class="presentation-header"><span>Far from the line</span><span>Western wards</span></header>
+    <div style="display:flex; gap:4.5rem; align-items:center; margin-top:3.5rem;">
+      <div style="flex:1 1 0; min-width:0;">
+        <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; font-family:Georgia, 'Times New Roman', serif; font-weight:700; letter-spacing:-0.01em;">Out west, the line runs past - not through</h2>
+        <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:300ms; font-size:1.7rem;">Districts more than 20 km from a planned station voted No by an average of ten points.</p>
+      </div>
+      <figure class="image" data-ratio="4/3" data-df-entrance="wipe" style="--df-motion-delay:150ms; flex:0 0 700px; margin:0;">
+        <img src="https://picsum.photos/id/67/960/720" alt="Black-and-white view of rolling hills and a wide valley with scattered trees" loading="lazy" width="960" height="720" style="width:100%; height:100%; object-fit:cover;" />
+        <figcaption class="image-caption" style="font-size:1.25rem;">The western valley (stock photo).</figcaption>
+      </figure>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Give the No side its landscape.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="north" data-anim-in-blocks="6" data-anim-in-color="#B3182B" aria-label="Band table">
+    <header class="presentation-header"><span>The count</span><span>By distance to the line</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" data-density="spacious" style="font-size:1.7rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">Yes share by distance band, 64 districts (fictional referendum).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">Distance to line</th><th class="table-head" style="text-align:right">Districts</th><th class="table-head" style="text-align:right">Yes (avg)</th><th class="table-head" style="text-align:right">Won by</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row"><td class="table-cell">Up to 10 km</td><td class="table-cell" style="text-align:right">19</td><td class="table-cell" style="text-align:right">64.1%</td><td class="table-cell" style="text-align:right">Yes</td></tr>
+          <tr class="table-row"><td class="table-cell">10 – 20 km</td><td class="table-cell" style="text-align:right">23</td><td class="table-cell" style="text-align:right">53.2%</td><td class="table-cell" style="text-align:right">Yes</td></tr>
+          <tr class="table-row"><td class="table-cell">Over 20 km</td><td class="table-cell" style="text-align:right">22</td><td class="table-cell" style="text-align:right">44.8%</td><td class="table-cell" style="text-align:right">No</td></tr>
+        </tbody>
+        <tfoot>
+          <tr class="table-row"><td class="table-cell">County</td><td class="table-cell" style="text-align:right;font-weight:700">64</td><td class="table-cell" style="text-align:right;font-weight:700">53.5%</td><td class="table-cell" style="text-align:right;font-weight:700">Yes</td></tr>
+        </tfoot>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The whole argument in three rows.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-family:Georgia, 'Times New Roman', serif; font-weight:700; letter-spacing:-0.01em; font-size:3rem;">“Nobody in my village is against trains. We are against paying for a station we will never see.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#B3182B; color:#F7F3E8;"><span class="avatar-fallback">RH</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Rhys Hollins<br /><span style="opacity:0.7; font-size:1.4rem;">Parish councillor, western valley - fictional</span></p>
+    </div>
+    <p class="presentation-note">The No voice, fairly quoted.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="bands" style="justify-content:flex-start;" aria-label="Bands">
+    <header class="presentation-header"><span>Summary</span><span>Average Yes by distance band</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Georgia, 'Times New Roman', serif; font-weight:700; letter-spacing:-0.01em;">Three bands, three answers</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The dots merge into their band averages.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Readers ask">
+    <header class="presentation-header"><span>Readers ask</span><span>Letters desk</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; font-family:Georgia, 'Times New Roman', serif; font-weight:700; letter-spacing:-0.01em;">Readers ask</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="hx-qa" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Why hexagons instead of a map?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Real districts differ tenfold in area; equal hexagons stop big empty districts dominating the picture.</p></div>
+      </details>
+      <details class="accordion-item" name="hx-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Is the result binding?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Yes - above the 40% turnout quorum (turnout was 61%).</p></div>
+      </details>
+      <details class="accordion-item" name="hx-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>What about a western branch?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">The county promised a feasibility study; the far band would need two new stations.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The hexagon question must be answered.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Takeaways">
+    <header class="presentation-header"><span>Analysis</span><span>Page 3</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">¶</span><span>Equal-area cells keep every district visible.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">¶</span><span>The pattern was distance, not town versus country.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">¶</span><span>A narrow county-wide Yes hides a clear local No.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">¶</span><span>The western branch is the next political fight.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Analysis column tone.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-anim-in="blocksIn" data-anim-in-direction="south" data-anim-in-blocks="6" data-anim-in-color="#B3182B" aria-label="Closing">
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-family:Georgia, 'Times New Roman', serif; font-weight:700; letter-spacing:-0.01em;">Equal cells, fair picture</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">A fictional county and synthetic votes - the cartogram is the real instrument.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">Close the edition.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) - build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-hex');
+    const TEXT = '#17202A', MUTED = '#7A7F86', YES = '#1F6F8B', NO = '#B3182B';
+    // [col, row, km to the planned line, yes %]
+    const d = [[0,0,26.3,42.4],[1,0,19.3,53.7],[2,0,12.3,56.1],[3,0,5.3,60.7],[4,0,1.8,70.1],[5,0,8.8,64],[6,0,15.8,50.6],[7,0,22.8,43.6],[0,1,25.6,43.3],[1,1,18.6,46.5],[2,1,11.6,58.7],[3,1,4.6,68.9],[4,1,8.1,59.7],[5,1,15.1,50.9],[6,1,22.1,49.5],[7,1,29.1,42],[0,2,27.8,40.5],[1,2,20.8,52.2],[2,2,13.8,54.8],[3,2,6.8,59],[4,2,3.3,68.2],[5,2,10.3,62.6],[6,2,17.3,49.3],[7,2,24.3,41.8],[0,3,24.8,44.5],[1,3,17.8,47.3],[2,3,10.8,59.2],[3,3,3.8,69.9],[4,3,7.3,60.8],[5,3,14.3,51.5],[6,3,21.3,50.1],[7,3,28.3,43.1],[0,4,28.9,39],[1,4,21.9,51],[2,4,14.9,54],[3,4,7.9,57.8],[4,4,4.4,66.8],[5,4,11.4,61.6],[6,4,18.4,48.4],[7,4,25.4,40.4],[0,5,23.4,46.3],[1,5,16.4,48.8],[2,5,9.4,60.3],[3,5,2.4,71.4],[4,5,5.9,62.6],[5,5,12.9,52.8],[6,5,19.9,51.3],[7,5,26.9,44.8],[0,6,29.2,38.4],[1,6,22.2,50.7],[2,6,15.2,54],[3,6,8.2,57.4],[4,6,4.7,66.1],[5,6,11.7,61.4],[6,6,18.7,48.4],[7,6,25.7,39.8],[0,7,23.7,46.3],[1,7,16.7,48.5],[2,7,9.7,59.7],[3,7,2.7,71.1],[4,7,6.2,62.6],[5,7,13.2,52.4],[6,7,20.2,50.7],[7,7,27.2,44.7]];
+    const bands = [['Up to 10 km', (x) => x[2] <= 10, 64.1], ['10–20 km', (x) => x[2] > 10 && x[2] <= 20, 53.2], ['Over 20 km', (x) => x[2] > 20, 44.8]];
+    const HEX = 'path://M0,-1L0.866,-0.5L0.866,0.5L0,1L-0.866,0.5L-0.866,-0.5Z';
+    // blend two hex colors by t (0..1) - the margin shading
+    const mix = (a, b, t) => '#' + [1, 3, 5].map((i) => Math.round(parseInt(a.slice(i, i + 2), 16) * (1 - t) + parseInt(b.slice(i, i + 2), 16) * t).toString(16).padStart(2, '0')).join('');
+    const shade = (y) => (y >= 50 ? mix('#DCEBF0', YES, Math.min(1, (y - 50) / 20)) : mix('#F6DADF', NO, Math.min(1, (50 - y) / 12)));
+    const winner = (y) => (y >= 50 ? YES : NO);
+    // equal x/y scale on the artboard keeps the hexagons regular: 62px per unit
+    const mapAxes = {
+      grid: { left: 524, right: 524, top: 300, bottom: 122 },
+      xAxis: { type: 'value', min: -0.7, max: 8.2, show: false },
+      yAxis: { type: 'value', min: -0.8, max: 6.9, inverse: true, show: false },
+    };
+    const series = (pos, color, size) => bands.map(([name, test]) => ({
+      id: name, name, type: 'scatter', dataGroupId: name, universalTransition: { enabled: true, divideShape: 'split' },
+      symbol: size ? HEX : 'circle', symbolSize: size ?? 20,
+      data: d.filter(test).map((x) => ({ value: pos(x), itemStyle: { color: color(x[3]), borderColor: '#FFFCF4', borderWidth: size ? 0 : 2 } })),
+    }));
+    const hexPos = (x) => [x[0] + (x[1] % 2) * 0.5, x[1] * 0.866];
+
+    df$.shadcn.chart.deck(deck, {
+      base: { tooltip: { trigger: 'item' } },
+      states: {
+        map: { ...mapAxes, series: series(hexPos, winner, [58, 70]),
+          graphic: [{ type: 'text', left: 180, top: 520, style: { text: 'YES 40', fill: YES, font: "700 44px Georgia, serif" } },
+                    { type: 'text', right: 180, top: 520, style: { text: 'NO 24', fill: NO, font: "700 44px Georgia, serif" } }] },
+        margin: { ...mapAxes, series: series(hexPos, shade, [58, 70]) },
+        distance: {
+          grid: { left: 190, right: 190, top: 330, bottom: 150 },
+          xAxis: { type: 'value', min: 0, max: 30, name: 'km to the planned line', nameLocation: 'middle', nameGap: 52, axisLabel: { color: MUTED } },
+          yAxis: { type: 'value', min: 35, max: 75, name: 'Yes %', nameLocation: 'middle', nameGap: 70, axisLabel: { color: MUTED, formatter: '{value}%' } },
+          series: series((x) => [x[2], x[3]], winner).map((s, i) => (i === 0 ? { ...s,
+            markLine: { symbol: 'none', silent: true, lineStyle: { color: TEXT, type: 'dashed', width: 2 }, label: { formatter: '50%', color: TEXT }, data: [{ yAxis: 50 }] } } : s)),
+        },
+        bands: {
+          grid: { left: 300, right: 190, top: 330, bottom: 150 },
+          xAxis: { type: 'value', min: 0, max: 80, axisLabel: { color: MUTED, formatter: '{value}%' } },
+          yAxis: { type: 'category', inverse: true, data: bands.map((b) => b[0]), axisLine: { show: false }, axisLabel: { color: TEXT, fontWeight: 700 } },
+          series: [{ id: 'bands', type: 'bar', barWidth: '56%', universalTransition: { enabled: true, divideShape: 'split' },
+            data: bands.map(([name, , v]) => ({ value: v, groupId: name, itemStyle: { color: winner(v), borderRadius: 0 } })),
+            label: { show: true, position: 'right', formatter: '{c}%', color: TEXT, fontWeight: 700 },
+            markLine: { symbol: 'none', silent: true, lineStyle: { color: TEXT, type: 'dashed', width: 2 }, label: { formatter: '50%', color: TEXT }, data: [{ xAxis: 50 }] } }],
+        },
+      },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 25-election-hex-cartogram (Election Night Newspaper) - a fictional county and synthetic votes.</p>
+<SourceFiles component="presentation" />
+</DocPage>

@@ -21,7 +21,7 @@ export function readmeCssOnlyProblems(text: string, file: string, actual: Actual
   const match = text.match(STAT_RE);
   if (!match)
     return [
-      `${file} does not state how many components need no JavaScript — expected "${actual.cssOnly} of ${actual.total} components need no JavaScript"`,
+      `${file} does not state how many components need no JavaScript - expected "${actual.cssOnly} of ${actual.total} components need no JavaScript"`,
     ];
   const cssOnly = Number(match[1]);
   const total = Number(match[2]);

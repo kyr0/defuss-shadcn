@@ -1,6 +1,6 @@
 ---
 title: "Image"
-description: "Image component — figure with fallback, lightbox preview, aspect ratio, and caption."
+description: "Image component - figure with fallback, lightbox preview, aspect ratio, and caption."
 slug: "image"
 ---
 
@@ -11,6 +11,8 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <PageHeader slug="image" title="Image" component="image">
   A figure-based image component with fallback, lightbox preview, aspect ratio control, and caption. Built on <code>&lt;figure&gt;</code>, <code>&lt;dialog&gt;</code>, and native CSS.
 </PageHeader>
+
+<p class="text-sm text-muted-foreground mb-6">Sub-pages: <DocLink href="image-gallery.html">Image Gallery</DocLink> - an auto-advancing gallery composed from <code>figure.image</code> slides, with per-slide dwell times and every DOM write routed through defuss-query.</p>
 
 <SkillPanel component="image">
   <SkillField label="Native basis">
@@ -36,14 +38,16 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 
   <SkillField label="Data attributes">
-<SkillText dense>• <code>data-preview</code> — enables click-to-preview lightbox</SkillText>
-  <SkillText dense>• <code>data-ratio</code> — values: <code>1/1</code>, <code>4/3</code>, <code>3/2</code>, <code>16/9</code>, <code>21/9</code>, <code>3/4</code></SkillText>
-  <SkillText dense>• <code>data-fit</code> — values: <code>contain</code>, <code>fill</code>, <code>none</code></SkillText>
-  <SkillText dense>• <code>data-radius</code> — values: <code>none</code>, <code>sm</code>, <code>md</code>, <code>full</code></SkillText>
+<SkillText dense>• <code>data-preview</code> - enables click-to-preview lightbox</SkillText>
+  <SkillText dense>• <code>data-ratio</code> - values: <code>1/1</code>, <code>4/3</code>, <code>3/2</code>, <code>16/9</code>, <code>21/9</code>, <code>3/4</code></SkillText>
+  <SkillText dense>• <code>data-fit</code> - values: <code>contain</code>, <code>fill</code>, <code>none</code></SkillText>
+  <SkillText dense>• <code>data-radius</code> - values: <code>none</code>, <code>sm</code>, <code>md</code>, <code>full</code></SkillText>
+  <SkillText dense>• <code>data-src-low</code> - low-res placeholder, swapped for the real source once preloaded</SkillText>
+  <SkillText dense>• <code>data-src-high</code> - high-res source: used on ≥2dppx displays, or on the first lightbox zoom-in</SkillText>
   </SkillField>
 
   <SkillField label="Notes">
-<p class="text-muted-foreground m-0">• While the lightbox is modal, <code>html:has(dialog.image-lightbox:modal)</code> sets <code>overflow: hidden</code> + <code>scrollbar-gutter: stable</code> — the page behind cannot scroll and its position is preserved for when the lightbox closes (no JS scroll-lock).</p>
+<p class="text-muted-foreground m-0">• While the lightbox is modal, <code>html:has(dialog.image-lightbox:modal)</code> sets <code>overflow: hidden</code> + <code>scrollbar-gutter: stable</code> - the page behind cannot scroll and its position is preserved for when the lightbox closes (no JS scroll-lock).</p>
   </SkillField>
 </SkillPanel>
 
@@ -56,7 +60,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 ```html example label="With Caption" hint="Semantic &lt;figcaption&gt; for descriptive text below the image."
 <figure class="image" style="max-width:400px;">
   <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&amp;h=400&amp;fit=crop" alt="Abstract gradient"></img>
-  <figcaption class="image-caption">Photo by Unsplash — Abstract gradient composition</figcaption>
+  <figcaption class="image-caption">Photo by Unsplash - Abstract gradient composition</figcaption>
 </figure>
 ```
 
@@ -73,10 +77,17 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </figure>
 ```
 
-```html example label="Lightbox Preview" hint="Click the image to open a fullscreen preview with zoom and rotate controls. Uses native &lt;dialog&gt;."
+```html example label="Lightbox Preview" hint="Click the image to open a fullscreen preview with zoom and rotate controls. Uses native &lt;dialog&gt;. data-src-full names a much larger original that only the lightbox loads: the preview opens instantly with the inline image, then swaps in the original once it has downloaded."
 <figure class="image" data-preview style="max-width:400px;">
-  <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&amp;h=400&amp;fit=crop" alt="Mountain landscape"></img>
-  <figcaption class="image-caption">Click to preview — Mountain landscape</figcaption>
+  <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&amp;h=400&amp;fit=crop" data-src-full="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=2400&amp;h=1200&amp;fit=crop&amp;q=85" alt="Mountain landscape"></img>
+  <figcaption class="image-caption">Click to preview - opens the 2400 px original</figcaption>
+</figure>
+```
+
+```html example label="Progressive Loading" hint="data-src-low paints a blurred placeholder while the real image preloads in the background; data-src-high replaces it on ≥2dppx (retina) displays - and, combined with data-preview, on the first lightbox zoom-in."
+<figure class="image" data-preview style="max-width:400px;">
+  <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&amp;h=400&amp;fit=crop" data-src-low="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=32&amp;h=16&amp;fit=crop" data-src-high="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=1600&amp;h=800&amp;fit=crop" alt="Abstract gradient"></img>
+  <figcaption class="image-caption">Progressive: low-res placeholder → standard → high-res on retina/zoom</figcaption>
 </figure>
 ```
 
@@ -142,12 +153,12 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
   <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
-    <li><code>default</code> — image loaded, caption/fallback hidden</li>
-    <li><code>error</code> — <code>.image-fallback</code> revealed (the same state a failed network load produces)</li>
+    <li><code>default</code> - image loaded, caption/fallback hidden</li>
+    <li><code>error</code> - <code>.image-fallback</code> revealed (the same state a failed network load produces)</li>
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/image-\{state\}.png</code>.</p>
 
-Machine contract — verified against <a href="../schemas/image.schema.json"><code>image.schema.json</code></a> by <code>bun run verify</code>:
+Machine contract - verified against <a href="../schemas/image.schema.json"><code>image.schema.json</code></a> by <code>bun run verify</code>:
 
 ```states
 | State | Type | Values | Default | Description |

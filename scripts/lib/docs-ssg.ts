@@ -1,9 +1,9 @@
 /**
- * Why: src/documentation/ is a defuss-ssg project — the doc pages are authored
+ * Why: src/documentation/ is a defuss-ssg project - the doc pages are authored
  * as MDX (pages/) with TSX components (lib/) and client runtime TS (runtime/),
  * while public/ is copied to the output root verbatim by the SSG build. None
  * of these authoring subtrees may be copied 1:1 into dist/ by build.ts or
- * flagged by verify's `dist 1:1` gate — this is the shared exclusion list.
+ * flagged by verify's `dist 1:1` gate - this is the shared exclusion list.
  *
  * Mapping into dist/documentation/:
  *   pages/{name}.mdx        → {name}.html        (defuss-ssg renders)

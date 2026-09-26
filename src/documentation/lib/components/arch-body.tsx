@@ -5,7 +5,7 @@ import { archBodyHtml } from '../arch-md';
 
 /**
  * The Architecture page body: ARCH.md rendered through lib/arch-md.ts (the
- * page stays a generated render of the manifesto — never hand-edited).
+ * page stays a generated render of the manifesto - never hand-edited).
  * Injected raw because the renderer produces trusted HTML strings, not VNodes.
  */
 export function ArchBody(_props: Props) {

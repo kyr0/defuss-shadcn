@@ -14,9 +14,9 @@
     /* -- Content animation (CSS-only) -------------------------
        Two gotchas, both required for the panel to glide:
        1. `::details-content` must attach to the compound (`&::details-content`,
-          NOT `& ::details-content` — the descendant form never matches, the
+          NOT `& ::details-content` - the descendant form never matches, the
           pseudo's originating element is the subject itself).
-       2. `block-size: auto` is a keyword — without interpolate-size the
+       2. `block-size: auto` is a keyword - without interpolate-size the
           0→auto pair is non-interpolable and the transition silently snaps. */
     &::details-content {
       block-size: 0;
@@ -96,7 +96,7 @@
 }
 
 /* Accessibility: reduced motion suppresses the expand/collapse animation
-   (REQUIRED for all components — AGENTS.md "Accessibility CSS"). */
+   (REQUIRED for all components - AGENTS.md "Accessibility CSS"). */
 @media (prefers-reduced-motion: reduce) {
   @layer components {
     .accordion-item::details-content { transition: none; }

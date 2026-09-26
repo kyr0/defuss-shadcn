@@ -2,7 +2,7 @@
 name: Icon
 type: ATM
 why: Consistent 24px stroke wrappers around lucide icons, sized via data-size.
-when: Any icon anywhere in the system — keeps size and stroke uniform across components.
+when: Any icon anywhere in the system - keeps size and stroke uniform across components.
 where: dist/components/icon/icon.css
 supportedStates: default
 ---
@@ -15,12 +15,12 @@ supportedStates: default
 ---
 
 ## Native Web APIs
-- [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/svg) — inline scalable vector graphics (injected by Lucide)
-- [`aria-hidden`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-hidden) — hides decorative icons from screen readers (Lucide sets this by default)
-- [`currentColor`](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#currentcolor_keyword) — icons inherit stroke color from the parent's `color` property
-- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) — suppresses icon animations (e.g., spinning loaders) when user prefers reduced motion
-- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) — maps icon color to system `CanvasText` in Windows High Contrast Mode
-- [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) — increases stroke width when user requests more contrast
+- [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/svg) - inline scalable vector graphics (injected by Lucide)
+- [`aria-hidden`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-hidden) - hides decorative icons from screen readers (Lucide sets this by default)
+- [`currentColor`](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#currentcolor_keyword) - icons inherit stroke color from the parent's `color` property
+- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) - suppresses icon animations (e.g., spinning loaders) when user prefers reduced motion
+- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) - maps icon color to system `CanvasText` in Windows High Contrast Mode
+- [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) - increases stroke width when user requests more contrast
 
 ---
 
@@ -157,12 +157,12 @@ Icons inherit `currentColor` for stroke. Change color with inline styles or toke
 
 ## Notes
 
-- Icons inherit `currentColor` for stroke — they automatically match the parent's text color
+- Icons inherit `currentColor` for stroke - they automatically match the parent's text color
 - Browse all available icons at [lucide.dev/icons](https://lucide.dev/icons/)
 - Lucide provides ~1,500 icons covering every common web app need
 - The CDN script replaces `<i data-lucide="name">` elements with inline SVGs on page load
 - Use `stroke-width` attribute to adjust line thickness (default: `2`)
-- Prefer visually-hidden text (`.sr-only`) over `aria-label` for accessible standalone icons — `aria-label` may not be translated by browser translation tools
-- Add `pointer-events: none` is set in CSS — icons don't capture clicks, so the parent element handles interaction
+- Prefer visually-hidden text (`.sr-only`) over `aria-label` for accessible standalone icons - `aria-label` may not be translated by browser translation tools
+- Add `pointer-events: none` is set in CSS - icons don't capture clicks, so the parent element handles interaction
 - Animations (e.g., `data-animate="spin"` on a loader icon) are suppressed when the user has `prefers-reduced-motion` enabled
 - `prefers-contrast: more` increases stroke width to 2.5 for better visibility

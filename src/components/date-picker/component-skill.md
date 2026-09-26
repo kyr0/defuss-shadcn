@@ -15,8 +15,8 @@ supportedStates: default
 ---
 
 ## Native Web APIs
-- [`<input type="date">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/date) — native date picker with calendar UI
-- [`<input type="datetime-local">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local) — date and time picker
+- [`<input type="date">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/date) - native date picker with calendar UI
+- [`<input type="datetime-local">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local) - date and time picker
 
 ---
 
@@ -56,7 +56,7 @@ Identical to `.input` (md = 2.25rem) so date fields row-align with the other inp
 ---
 ## Notes
 
-- Reuses the `.input` class — the native date picker provides the calendar UI.
-- No custom calendar implementation needed — the browser handles it.
+- Reuses the `.input` class - the native date picker provides the calendar UI.
+- No custom calendar implementation needed - the browser handles it.
 - The calendar popup is rendered by the OS/browser and cannot be styled.
 - For a fully custom date picker, a custom calendar component would be needed.

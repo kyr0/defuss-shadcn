@@ -4,13 +4,13 @@
 // data attributes (AGENTS.md "State API").
 //
 // Contract (all attributes on the .resizer wrapper; the resized box is the
-// wrapper's first element child — the wrapper tracks the child's box):
+// wrapper's first element child - the wrapper tracks the child's box):
 //   data-handles      which handles to place: space list (e.g. "e s se"),
 //                     or "all"; default "se". Handles the axis restricts
 //                     (e.g. n/s under data-axis="w") are never placed —
 //                     changing either attribute re-syncs them live.
 //   data-resize-mode  "px" (pixel-perfect, default) | "classes" (snap to the
-//                     sizing.css w-N / h-N ladder — the class attribute IS
+//                     sizing.css w-N / h-N ladder - the class attribute IS
 //                     the size state) | "controlled" (the runtime writes
 //                     NOTHING and only fires `resizer-resize` events —
 //                     consumers own the size, e.g. the CodeExample toolbar)
@@ -22,14 +22,14 @@
 //   data-w-classes / data-h-classes  classes-mode ladder override: space-list
 //                     of exact tokens (e.g. "w-40 w-48 w-56"); the default
 //                     ladder is the integer w-N/h-N scale 16..96 (4–24 rem)
-//   data-width / data-height     px mirror of the live size — the observation
+//   data-width / data-height     px mirror of the live size - the observation
 //                     surface for the machine contract (the CodeExample State
 //                     tab edits these attributes; a MutationObserver applies
 //                     them back, so panel edits and drags stay in sync)
 //
 // Handles are runtime-made chrome: marked `data-ce-chrome` so the CodeExample
 // sandbox serializer never leaks them into example source. Without JS the
-// markup renders untouched — resizing is intrinsically interactive behavior.
+// markup renders untouched - resizing is intrinsically interactive behavior.
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
@@ -84,7 +84,7 @@ function ladderTokens(wrapper: HTMLElement, axis: 'w' | 'h'): string[] {
 
 // Token → px cache (classes mode). The ladder is static CSS, so one token
 // resolves to one px value per document (--size-base changes would need a
-// reload — no shipped surface does that mid-session). Measured on the resized
+// reload - no shipped surface does that mid-session). Measured on the resized
 // element itself with ONLY the probed token applied (real styles). Keyed per
 // axis because a token like `w-40` measures differently from `h-40`.
 const LADDER_PX = new Map<string, number>();
@@ -122,7 +122,7 @@ function setClassSize(el: HTMLElement, token: string, ladder: string[]): void {
   if (!el.classList.contains(token)) el.classList.add(token);
 }
 
-/** Apply a px size to the target (px mode). Guarded write — same bytes must
+/** Apply a px size to the target (px mode). Guarded write - same bytes must
  *  not fire the sandbox serializer nor a redundant style mutation. */
 function setPxSize(el: HTMLElement, axis: 'w' | 'h', px: number): void {
   const prop = axis === 'w' ? 'width' : 'height';
@@ -138,7 +138,7 @@ function bounds(wrapper: HTMLElement, axis: 'w' | 'h'): [number, number] {
 }
 
 /** CSS `zoom` on the WRAPPER (Chromium serializes it as a number, other
- *  engines may use a percentage — normalize both). The toolbar of the
+ *  engines may use a percentage - normalize both). The toolbar of the
  *  CodeExample zooms the wrapper; `zoom` is not inherited, so it must be read
  *  where it is applied (getBoundingClientRect already includes it). */
 function zoomOf(el: HTMLElement): number {
@@ -148,7 +148,7 @@ function zoomOf(el: HTMLElement): number {
 }
 
 /** Live px size of one axis (the target owns the box). getBoundingClientRect()
- *  already includes any CSS `zoom` on the wrapper, so divide it out — the drag
+ *  already includes any CSS `zoom` on the wrapper, so divide it out - the drag
  *  math works in true layout px (a drag started from a zoomed measure jumps). */
 function currentPx(wrapper: HTMLElement, axis: 'w' | 'h'): number {
   const target = targetOf(wrapper);
@@ -159,10 +159,10 @@ function currentPx(wrapper: HTMLElement, axis: 'w' | 'h'): number {
 }
 
 /**
- * Apply one size change through the configured mode. Everything — drag,
- * keyboard, panel edits, setState — funnels through here, so px/classes/
+ * Apply one size change through the configured mode. Everything - drag,
+ * keyboard, panel edits, setState - funnels through here, so px/classes/
  * controlled differ in exactly this one place. Fires `resizer-resize` with
- * the resulting box (controlled mode reports the requested px — nothing was
+ * the resulting box (controlled mode reports the requested px - nothing was
  * applied yet; consumers own the size).
  */
 function applySize(wrapper: HTMLElement, axis: 'w' | 'h', px: number): void {
@@ -176,7 +176,7 @@ function applySize(wrapper: HTMLElement, axis: 'w' | 'h', px: number): void {
   if (mode === 'classes') {
     const ladder = ladderTokens(wrapper, axis);
     setClassSize(target, nearestToken(wrapper, ladder, wanted, axis), ladder);
-    resolved = currentPx(wrapper, axis); // CSS owns the size — read it back
+    resolved = currentPx(wrapper, axis); // CSS owns the size - read it back
   } else if (mode !== 'controlled') {
     const step = Math.max(1, numAttr(wrapper, 'step', 1));
     resolved = Math.round(wanted / step) * step;
@@ -184,7 +184,7 @@ function applySize(wrapper: HTMLElement, axis: 'w' | 'h', px: number): void {
   }
 
   if (mode !== 'controlled') {
-    // px mirror (the observation surface) — guarded so our own write leaves
+    // px mirror (the observation surface) - guarded so our own write leaves
     // the MutationObserver idle when nothing changed
     const key = axis === 'w' ? 'width' : 'height';
     const value = String(Math.round(resolved));
@@ -264,7 +264,7 @@ function makeHandle(wrapper: HTMLElement, h: Handle): HTMLElement {
 }
 
 /** Place/repair the handle set for the current config (also re-run on live
- *  data-handles / data-axis changes — the CodeExample toolbar flips modes). */
+ *  data-handles / data-axis changes - the CodeExample toolbar flips modes). */
 function syncHandles(wrapper: HTMLElement): void {
   const want = handleSet(wrapper);
   for (const el of Array.from(wrapper.querySelectorAll(':scope > .resizer-handle'))) {
@@ -276,7 +276,7 @@ function syncHandles(wrapper: HTMLElement): void {
 }
 
 /** Keyboard parity (same convention as the CodeExample preview grip):
- *  ArrowRight / ArrowUp grow, ArrowLeft / ArrowDown shrink — Shift ×10,
+ *  ArrowRight / ArrowUp grow, ArrowLeft / ArrowDown shrink - Shift ×10,
  *  Home/End jump to the clamp bounds. Corners drive both axes at once. */
 function handleKeys(wrapper: HTMLElement, handle: HTMLElement, ev: KeyboardEvent): void {
   const sides = handle.dataset.handle;
@@ -298,7 +298,7 @@ function handleKeys(wrapper: HTMLElement, handle: HTMLElement, ev: KeyboardEvent
  *  deltas the position implies, feed applySize (mode-agnostic). The release
  *  may never arrive: pointer capture is document-scoped, so a drag started
  *  inside an iframe and released over the parent page produces no pointerup
- *  here — the drag would stay live and resize on every later move. Three
+ *  here - the drag would stay live and resize on every later move. Three
  *  guards end it: lostpointercapture (capture revoked), pointercancel (the
  *  sandbox bridge re-dispatches it when the HOST reports the release) and a
  *  captured pointermove with buttons === 0 (the button is up; the up event
@@ -313,7 +313,7 @@ function startDrag(wrapper: HTMLElement, handle: HTMLElement, ev: PointerEvent):
   const startY = ev.clientY;
   const startW = currentPx(wrapper, 'w');
   const startH = currentPx(wrapper, 'h');
-  // pointer deltas are SCREEN px; the box works in layout px — undo the zoom
+  // pointer deltas are SCREEN px; the box works in layout px - undo the zoom
   const z = zoomOf(wrapper);
   // sign per edge: handles on the left/top grow the box by NEGATIVE movement
   const dx = side.includes('w') ? -1 : side.includes('e') ? 1 : 0;
@@ -326,13 +326,13 @@ function startDrag(wrapper: HTMLElement, handle: HTMLElement, ev: PointerEvent):
     handle.removeEventListener('pointercancel', onUp);
     handle.removeEventListener('lostpointercapture', onUp);
     // the sandbox bridge dispatches the host-relayed cancel ON document (a
-    // document-dispatched event never bubbles down to the handle) — watch it
+    // document-dispatched event never bubbles down to the handle) - watch it
     // there for exactly the drag's lifetime
     document.removeEventListener('pointercancel', onUp);
   };
   document.addEventListener('pointercancel', onUp);
   const onMove = (e: PointerEvent): void => {
-    // captured moves carry the pressed button — buttons === 0 means the
+    // captured moves carry the pressed button - buttons === 0 means the
     // release happened where we cannot see it (outside this document): end
     if (e.buttons === 0) {
       onUp();
@@ -351,7 +351,7 @@ function init(): void {
   document.querySelectorAll<HTMLElement>('.resizer:not([data-init])').forEach((wrapper) => {
     wrapper.dataset.init = '';
     if (!targetOf(wrapper)) return; // a resizer wraps exactly ONE element
-    // authored snapshot for the 'default' state (computed — works for px and
+    // authored snapshot for the 'default' state (computed - works for px and
     // classes authored alike)
     wrapper._defaultSize = [currentPx(wrapper, 'w'), currentPx(wrapper, 'h')];
     wrapper.api = {
@@ -360,7 +360,7 @@ function init(): void {
     };
     syncHandles(wrapper);
     // native CSS `resize` (e.g. a resizable textarea) would double the
-    // affordances — this component owns the interaction
+    // affordances - this component owns the interaction
     const target = targetOf(wrapper);
     target?.style.setProperty('resize', 'none');
 
@@ -375,7 +375,7 @@ function init(): void {
         const axis: 'w' | 'h' = r.attributeName === 'data-width' ? 'w' : 'h';
         const v = parseFloat(wrapper.dataset[axis === 'w' ? 'width' : 'height'] ?? '');
         // act only on EXTERNAL writes that differ from the live box (our own
-        // mirror write lands here too — same value, so it no-ops)
+        // mirror write lands here too - same value, so it no-ops)
         if (Number.isFinite(v) && Math.abs(currentPx(wrapper, axis) - v) > 0.5) applySize(wrapper, axis, v);
       }
     }).observe(wrapper, { attributes: true, attributeFilter: ['data-width', 'data-height', 'data-handles', 'data-axis'] });

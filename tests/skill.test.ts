@@ -20,7 +20,7 @@ const VALID = `---
 name: Dialog
 type: MOL
 why: Native <dialog> gives focus trap and Escape.
-when: Modals — unless the answer is mandatory.
+when: Modals - unless the answer is mandatory.
 where: dist/components/dialog/dialog.css + dist/components/dialog/dialog.js
 supportedStates: default, open
 ---
@@ -33,7 +33,7 @@ const entry = (over: Partial<SkillEntry> = {}): SkillEntry => ({
   name: 'Dialog',
   type: 'MOL',
   why: 'Native <dialog> gives focus trap and Escape.',
-  when: 'Modals — unless the answer is mandatory.',
+  when: 'Modals - unless the answer is mandatory.',
   where: 'dist/components/dialog/dialog.css + dist/components/dialog/dialog.js',
   supportedStates: 'default, open',
   ...over,
@@ -105,7 +105,7 @@ describe('renderSkillEntry', () => {
 describe('assembleSkillText', () => {
   // fs-free (Vitest browser mode): the real-tree render is pinned by verify's
   // "SKILL.md ↔ skills" gate, which compares against this same function.
-  const template = `# defuss-shadcn — Agent Skill\n\ntokens in theme/utils/default-semantic-tokens.css\n\n# Components\n\n${SKILL_COMPONENTS_MARKER}\n`;
+  const template = `# defuss-shadcn - Agent Skill\n\ntokens in theme/utils/default-semantic-tokens.css\n\n# Components\n\n${SKILL_COMPONENTS_MARKER}\n`;
 
   it('injects the index in place of the marker, preserving template prose', () => {
     const text = assembleSkillText(template, [entry(), entry({ folder: 'badge', name: 'Badge', supportedStates: 'default' })]);

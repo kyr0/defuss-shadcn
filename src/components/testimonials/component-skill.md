@@ -1,7 +1,7 @@
 ---
 name: Testimonials
 type: BLK
-why: A pull-quote plus photo cards with floating review overlays — backdrop-filter and stacking replace any JS layering.
+why: A pull-quote plus photo cards with floating review overlays - backdrop-filter and stacking replace any JS layering.
 when: Social-proof band on a marketing page; for short quotes without photos a plain blockquote is enough.
 where: dist/components/testimonials/testimonials.css
 supportedStates: default
@@ -12,16 +12,16 @@ supportedStates: default
 ## Native basis
 `<blockquote>`/`<figcaption>` semantics; the review card floats over its
 photo with `position` + `z-index` + `color-mix(... transparent)` +
-`backdrop-filter: blur()` — the browser composites it, no libraries.
+`backdrop-filter: blur()` - the browser composites it, no libraries.
 
 ---
 
 ## Native Web APIs
-- [`<blockquote>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote) — quoted-content semantics
-- [`backdrop-filter`](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter) — translucent readable overlay
-- [`color-mix()`](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix) — 80% background tint
-- [`isolation`](https://developer.mozilla.org/en-US/docs/Web/CSS/isolation) — contained stacking context
-- [`prefers-reduced-transparency`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-transparency) — solid overlay fallback
+- [`<blockquote>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote) - quoted-content semantics
+- [`backdrop-filter`](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter) - translucent readable overlay
+- [`color-mix()`](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix) - 80% background tint
+- [`isolation`](https://developer.mozilla.org/en-US/docs/Web/CSS/isolation) - contained stacking context
+- [`prefers-reduced-transparency`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-transparency) - solid overlay fallback
 
 ---
 
@@ -60,7 +60,7 @@ photo with `position` + `z-index` + `color-mix(... transparent)` +
 </section>
 ```
 
-Repeat the star `<svg>` five times; the star polygon above is shortened for brevity — copy the full lucide `star` path (with `fill: currentColor` from `.mk-stars svg`).
+Repeat the star `<svg>` five times; the star polygon above is shortened for brevity - copy the full lucide `star` path (with `fill: currentColor` from `.mk-stars svg`).
 
 ---
 
@@ -68,13 +68,13 @@ Repeat the star `<svg>` five times; the star polygon above is shortened for brev
 
 | Attribute    | Element       | Purpose                                  |
 |--------------|---------------|------------------------------------------|
-| `aria-label` | `.mk-stars`   | "5 out of 5 stars" — SVGs stay hidden    |
+| `aria-label` | `.mk-stars`   | "5 out of 5 stars" - SVGs stay hidden    |
 | `aria-hidden`| star `svg`s   | Decorative once the group is labeled     |
 | `<figcaption>`| card body    | Names the person in the photo            |
 
 ---
 
 ## Notes
-- Star rating is an inline SVG group; label the group, hide the children — never one SR announcement per SVG.
-- The overlay uses `margin-block-start: auto` inside a flex `.mk-testimonial-card` (`items-end`) — the card stays photo-dominant at any aspect.
+- Star rating is an inline SVG group; label the group, hide the children - never one SR announcement per SVG.
+- The overlay uses `margin-block-start: auto` inside a flex `.mk-testimonial-card` (`items-end`) - the card stays photo-dominant at any aspect.
 - Photos need `alt` with the person's name; the role line adds the context a face can't convey.

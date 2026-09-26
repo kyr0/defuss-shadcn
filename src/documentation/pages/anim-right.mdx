@@ -1,0 +1,145 @@
+---
+title: "Slide Right - Animations"
+description: "The slide animation in depth - the target starts at the west edge and glides right into place (slideIn) or exits toward a named edge (slideOut), driven by df$.anim."
+slug: "anim-right"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="anim-right" title="Slide Right" component="motion" />
+
+<p>Slide Right is the WAAPI twin of the motion component's <code>right</code> entrance: the target starts at the west edge and glides right into place. It ships as a pair of channels - <code>slideIn</code> (starts at the named edge) and <code>slideOut</code> (exits toward it) - and both accept the four orientation variants <code>north</code>, <code>south</code>, <code>east</code> and <code>west</code> (default <code>west</code>, matching motion.css's <code>right</code>). Everything below is driven imperatively by <code>df$.anim.slideIn</code> and <code>df$.anim.slideOut</code> - <code>play</code>, <code>pause</code>, <code>resume</code>, <code>finish</code> and <code>reset</code>.</p>
+
+```html example label="In / out, directions and lifecycle" schema="none" hint="In starts the box at the selected edge and slides it home; Out exits toward that edge. Pause / Resume / Finish / Reset act on whichever channel ran last. Direction semantics: in-variants START at the named edge, out-variants EXIT toward it."
+<style>
+  #anim-right-target {
+    width: 160px;
+    height: 100px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  /* .btn carries no aria-pressed styling of its own - mark the active edge */
+  .btn[aria-pressed="true"] {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+</style>
+<div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.5rem; margin-bottom:1rem;">
+  <button class="btn" data-variant="outline" data-size="sm" id="anim-right-in">In</button>
+  <button class="btn" data-variant="outline" data-size="sm" id="anim-right-out">Out</button>
+  <span id="anim-right-dirs" role="group" aria-label="Direction" style="display:inline-flex; gap:0.25rem; margin-inline:0.5rem;">
+    <button class="btn" data-variant="outline" data-size="sm" data-direction="north" aria-pressed="false">N</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-direction="south" aria-pressed="false">S</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-direction="west" aria-pressed="true">W</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-direction="east" aria-pressed="false">E</button>
+  </span>
+  <button class="btn" data-variant="outline" data-size="sm" id="anim-right-pause">Pause</button>
+  <button class="btn" data-variant="outline" data-size="sm" id="anim-right-resume">Resume</button>
+  <button class="btn" data-variant="outline" data-size="sm" id="anim-right-finish">Finish</button>
+  <button class="btn" data-variant="outline" data-size="sm" id="anim-right-reset">Reset</button>
+  <label style="display:inline-flex; align-items:center; gap:0.4rem; font-size:0.8rem; margin-inline-start:0.5rem;">
+    ms
+    <input class="input" type="number" id="anim-right-duration" value="1500" min="50" step="50" style="width:6rem;" />
+  </label>
+  <select class="select" id="anim-right-easing" aria-label="Easing">
+    <option value="cubic-bezier(0.16, 1, 0.3, 1)" selected>ease-out (default)</option>
+    <option value="ease">ease</option>
+    <option value="ease-in-out">ease-in-out</option>
+    <option value="linear">linear</option>
+    <option value="cubic-bezier(.34, 1.56, .64, 1)">overshoot</option>
+  </select>
+</div>
+<div id="anim-right-target">Slide Right</div>
+<script type="module">
+  // all.js (df$) boots after example scripts in the sandbox - reference df$
+  // only inside event handlers, never at parse time. lastChannel is a NAME so
+  // the lifecycle buttons act on whichever variant ran most recently.
+  const target = document.getElementById('anim-right-target');
+  const dirButtons = document.querySelectorAll('#anim-right-dirs [data-direction]');
+  const durationInput = document.getElementById('anim-right-duration');
+  const easingSelect = document.getElementById('anim-right-easing');
+  let currentDirection = 'west'; // default - matches motion.css 'right'
+  let lastChannel = 'slideIn';
+
+  const config = () => ({
+    direction: currentDirection,
+    duration: Number(durationInput.value) || 1500,
+    easing: easingSelect.value,
+  });
+
+  document.getElementById('anim-right-in').addEventListener('click', () => {
+    lastChannel = 'slideIn';
+    df$.anim.slideIn.play(target, config());
+  });
+  document.getElementById('anim-right-out').addEventListener('click', () => {
+    lastChannel = 'slideOut';
+    df$.anim.slideOut.play(target, config());
+  });
+  dirButtons.forEach((btn) =>
+    btn.addEventListener('click', () => {
+      currentDirection = btn.dataset.direction;
+      dirButtons.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+    }),
+  );
+  for (const method of ['pause', 'resume', 'finish', 'reset']) {
+    document
+      .getElementById(`anim-right-${method}`)
+      .addEventListener('click', () => df$.anim[lastChannel][method](target));
+  }
+</script>
+```
+
+```html example label="Scroll-bound slide-in" schema="none" hint="Scroll the stage: the box's slide-in progress is tied to the scroller's y position instead of time (ScrollTimeline where available, a rAF-throttled scrub elsewhere)."
+<style>
+  #anim-right-scroll-target {
+    width: 160px;
+    height: 100px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+</style>
+<div id="anim-right-scroller" style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem;">
+  <div style="height: 600px; display:flex; align-items:flex-start; justify-content:center; font-size:0.8rem; color:var(--muted-foreground);">Scroll down - the slide-in scrubs with the scroll position ↓</div>
+  <div id="anim-right-scroll-target">Slide Right</div>
+</div>
+<script type="module">
+  // bound in the load handler: all.js (df$) boots after example scripts
+  window.addEventListener('load', () => {
+    df$.anim.slideIn.play(document.getElementById('anim-right-scroll-target'), {
+      direction: 'west',
+      scroll: { target: document.getElementById('anim-right-scroller'), axis: 'y' },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Passing <code>scroll: {`{ target: 'viewport' }`}</code> binds progress to the page scroll instead of an element's own scroll offset - the parallax use for presentations.</p>
+
+## Config
+
+<ul>
+  <li><code>direction</code> - <code>'north' | 'south' | 'east' | 'west'</code>, default <code>'west'</code>. slideIn STARTS at the named edge; slideOut EXITS toward it.</li>
+  <li><code>distance</code> - slide travel as any CSS length, default <code>'24px'</code> (e.g. <code>'4rem'</code>, <code>'120px'</code>).</li>
+  <li><code>duration</code> - total duration in ms, default <code>1500</code> (flattens to 1ms under <code>prefers-reduced-motion: reduce</code>).</li>
+  <li><code>easing</code> - any CSS easing, default <code>cubic-bezier(0.16, 1, 0.3, 1)</code>.</li>
+</ul>
+
+<SourceFiles component="motion" section="css">
+  <SourceNote for="css">The shared motion stylesheet - the declarative <code>data-df-entrance</code> twin of this page's <code>df$.anim</code> channels: the <code>--df-motion-…</code> tunables, the fifteen <code>df-enter-…</code> keyframes and the reduced-motion flattening.</SourceNote>
+</SourceFiles>
+
+</DocPage>

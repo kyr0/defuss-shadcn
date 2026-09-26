@@ -8,7 +8,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <DocPage meta={meta}>
 
-<PageHeader slug="spacing" title="Spacing" crumb="sizing / spacing" introStyle="max-width:38rem;">
+<PageHeader slug="spacing" title="Spacing" introStyle="max-width:38rem;">
   One arithmetic spacing scale for gaps, padding and margins, with optional density and direction-aware helpers.
 </PageHeader>
 
@@ -19,7 +19,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 ```html example schema="none"
 <div class="stack gap-8" data-demo="spacing">
   <div>
-    <p class="demo-label">gap-2 — actions that belong together stay close</p>
+    <p class="demo-label">gap-2 - actions that belong together stay close</p>
     <div class="flex flex-wrap gap-2">
       <button class="btn" type="button" data-size="sm">Publish</button>
       <button class="btn" type="button" data-variant="outline" data-size="sm">Preview</button>
@@ -27,7 +27,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     </div>
   </div>
   <div>
-    <p class="demo-label">gap-6 — independent cards get room to breathe</p>
+    <p class="demo-label">gap-6 - independent cards get room to breathe</p>
     <div class="flex flex-wrap gap-6">
       <div class="card" style="width:9rem;">
         <div class="card-header">
@@ -48,10 +48,10 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     </div>
   </div>
   <div>
-    <p class="demo-label">p-6 — padding keeps content off the card's edge</p>
+    <p class="demo-label">p-6 - padding keeps content off the card's edge</p>
     <div class="card p-6" style="max-width:20rem;">
       <p class="row-title">Weekly digest</p>
-      <p class="text-muted-foreground" style="margin:0.25rem 0 0;font-size:0.8125rem;">The same p-6 on every side — no measuring, no magic numbers.</p>
+      <p class="text-muted-foreground" style="margin:0.25rem 0 0;font-size:0.8125rem;">The same p-6 on every side - no measuring, no magic numbers.</p>
     </div>
   </div>
 </div>
@@ -62,19 +62,19 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <h2 id="box-model" class="h2-display">The box model, labeled</h2>
 
-<DocText>Every spacing utility addresses one zone of the box model: <code>m-\*</code> works outside the border (against siblings), <code>p-\*</code> inside it (against content). The physical sides (<code>t/r/b/l</code>) never move; the logical sides (<code>s/e</code>) follow the writing direction. The diagram uses <em>ordinary CSS colors</em> to make the zones visible — the classes label what each zone is.</DocText>
+<DocText>Every spacing utility addresses one zone of the box model: <code>m-\*</code> works outside the border (against siblings), <code>p-\*</code> inside it (against content). The physical sides (<code>t/r/b/l</code>) never move; the logical sides (<code>s/e</code>) follow the writing direction. The diagram uses <em>ordinary CSS colors</em> to make the zones visible - the classes label what each zone is.</DocText>
 
 ```html example schema="none"
 <div class="flex justify-center">
   <div class="demo-tile p-6" data-variant="outline" style="display:block;">
-    <p class="demo-label" style="text-align:center;">m-6 — margin pushes siblings away (outside the border)</p>
+    <p class="demo-label" style="text-align:center;">m-6 - margin pushes siblings away (outside the border)</p>
     <div class="demo-tile p-6" data-variant="secondary" style="display:block;border-style:solid;">
-      <p class="demo-label" style="text-align:center;color:var(--muted-foreground);">p-6 — padding pushes content inward (inside the border)</p>
+      <p class="demo-label" style="text-align:center;color:var(--muted-foreground);">p-6 - padding pushes content inward (inside the border)</p>
       <div class="demo-tile h-16">content</div>
     </div>
     <div class="flex justify-between" style="margin-top:0.5rem;">
-      <span class="demo-label demo-label-inline">ms/me-\* — start/end</span>
-      <span class="demo-label demo-label-inline">mt/mr/mb/ml-\* — physical</span>
+      <span class="demo-label demo-label-inline">ms/me-\* - start/end</span>
+      <span class="demo-label demo-label-inline">mt/mr/mb/ml-\* - physical</span>
     </div>
   </div>
 </div>
@@ -85,7 +85,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <h2 id="gap-axes" class="h2-display">Gap axes</h2>
 
-<DocText><code>gap-x-\*</code> sets <code>column-gap</code>, <code>gap-y-\*</code> sets <code>row-gap</code> — the two axes are independent. A calendar makes that tangible: days of a week sit <code>gap-x-3</code> apart while the weeks stack tightly at <code>gap-y-1</code>.</DocText>
+<DocText><code>gap-x-\*</code> sets <code>column-gap</code>, <code>gap-y-\*</code> sets <code>row-gap</code> - the two axes are independent. A calendar makes that tangible: days of a week sit <code>gap-x-3</code> apart while the weeks stack tightly at <code>gap-y-1</code>.</DocText>
 
 ```html example schema="none"
 <div style="max-width:22rem;">
@@ -122,7 +122,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <h2 id="padding" class="h2-display">Padding families</h2>
 
-<DocText>Padding shares the numeric scale with gap. <code>p-\*</code> pads all four sides; <code>px-\*</code> and <code>py-\*</code> pad the inline and block axes independently — the recipe for chips, badges and inputs; a single-side helper like <code>pt-\*</code> adds space in one direction, useful for optical alignment against a divider or media edge. The dashed outline marks the box edge: the band between it and the filled content is the padding.</DocText>
+<DocText>Padding shares the numeric scale with gap. <code>p-\*</code> pads all four sides; <code>px-\*</code> and <code>py-\*</code> pad the inline and block axes independently - the recipe for chips, badges and inputs; a single-side helper like <code>pt-\*</code> adds space in one direction, useful for optical alignment against a divider or media edge. The dashed outline marks the box edge: the band between it and the filled content is the padding.</DocText>
 
 ```html example schema="none"
 <div class="flex flex-wrap gap-6">
@@ -152,7 +152,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <h2 id="margins" class="h2-display">Centering and pushing with margins</h2>
 
-<DocText>Automatic margins absorb spare space. <code>mx-auto</code> on a fixed-width box centers it in its container — the classic content column. <code>ms-auto</code> on one flex item pushes it, and everything after it, to the inline end — the standard right-aligned toolbar action. Negative margins and margin-based <code>space-x/y</code> shortcuts are intentionally omitted.</DocText>
+<DocText>Automatic margins absorb spare space. <code>mx-auto</code> on a fixed-width box centers it in its container - the classic content column. <code>ms-auto</code> on one flex item pushes it, and everything after it, to the inline end - the standard right-aligned toolbar action. Negative margins and margin-based <code>space-x/y</code> shortcuts are intentionally omitted.</DocText>
 
 ```html example schema="none"
 <div class="stack gap-4">
@@ -171,7 +171,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <h2 id="logical" class="h2-display">Physical vs logical sides</h2>
 
-<DocText>The axis families already follow the writing mode — <code>px-\*</code> is <code>padding-inline</code>, <code>py-\*</code> is <code>padding-block</code>. For single sides there are two families: physical <code>pt/pr/pb/pl-\*</code> always hit the same physical edge, while logical <code>ps/pe-\*</code> follow inline-start and inline-end. The same classes render below in <code>dir="ltr"</code> and in <code>dir="rtl"</code>: the logical box mirrors with the direction, the physical box does not move. The filled band is the content box; the empty bands are the padding.</DocText>
+<DocText>The axis families already follow the writing mode - <code>px-\*</code> is <code>padding-inline</code>, <code>py-\*</code> is <code>padding-block</code>. For single sides there are two families: physical <code>pt/pr/pb/pl-\*</code> always hit the same physical edge, while logical <code>ps/pe-\*</code> follow inline-start and inline-end. The same classes render below in <code>dir="ltr"</code> and in <code>dir="rtl"</code>: the logical box mirrors with the direction, the physical box does not move. The filled band is the content box; the empty bands are the padding.</DocText>
 
 ```html example schema="none"
 <div class="stack gap-4">
@@ -179,21 +179,21 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <p class="demo-label">dir="ltr"</p>
     <div class="stack gap-3">
       <div class="demo-tile ps-4 pe-8" data-variant="outline">
-        <div class="demo-tile h-8" data-variant="muted" style="flex:1;">ps-4 pe-8 — logical</div>
+        <div class="demo-tile h-8" data-variant="muted" style="flex:1;">ps-4 pe-8 - logical</div>
       </div>
       <div class="demo-tile pl-4 pr-8" data-variant="outline">
-        <div class="demo-tile h-8" data-variant="muted" style="flex:1;">pl-4 pr-8 — physical</div>
+        <div class="demo-tile h-8" data-variant="muted" style="flex:1;">pl-4 pr-8 - physical</div>
       </div>
     </div>
   </div>
   <div dir="rtl">
-    <p class="demo-label">dir="rtl" — same classes</p>
+    <p class="demo-label">dir="rtl" - same classes</p>
     <div class="stack gap-3">
       <div class="demo-tile ps-4 pe-8" data-variant="outline">
-        <div class="demo-tile h-8" data-variant="muted" style="flex:1;">ps-4 pe-8 — logical</div>
+        <div class="demo-tile h-8" data-variant="muted" style="flex:1;">ps-4 pe-8 - logical</div>
       </div>
       <div class="demo-tile pl-4 pr-8" data-variant="outline">
-        <div class="demo-tile h-8" data-variant="muted" style="flex:1;">pl-4 pr-8 — physical</div>
+        <div class="demo-tile h-8" data-variant="muted" style="flex:1;">pl-4 pr-8 - physical</div>
       </div>
     </div>
   </div>
@@ -262,7 +262,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </table>
 </div>
 
-<DocText>Every family shares the numeric scale — rendered bar by bar on <DocLink href="width-height.html#available">Width &amp; Height</DocLink> — plus <code>px</code>. Negative margins and margin-based <code>space-x/y</code> shortcuts are intentionally omitted. Gap does not create outer margins and works with wrapping layouts.</DocText>
+<DocText>Every family shares the numeric scale - rendered bar by bar on <DocLink href="width-height.html#available">Width &amp; Height</DocLink> - plus <code>px</code>. Negative margins and margin-based <code>space-x/y</code> shortcuts are intentionally omitted. Gap does not create outer margins and works with wrapping layouts.</DocText>
 
 <div class="sep" />
 

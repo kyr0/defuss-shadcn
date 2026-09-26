@@ -1,6 +1,6 @@
 ---
 title: "Tooltip"
-description: "Tooltip component — hover hints using popover and CSS anchor positioning."
+description: "Tooltip component - hover hints using popover and CSS anchor positioning."
 slug: "tooltip"
 ---
 
@@ -34,16 +34,16 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 
   <SkillField label="Data attributes">
-<SkillText dense>• <code>data-tooltip-trigger</code> — on trigger element, value is the tooltip ID</SkillText>
-  <SkillText dense>• <code>data-side</code> — on tooltip: <code>top</code> | <code>bottom</code> | <code>left</code> | <code>right</code></SkillText>
-  <SkillText dense>• <code>data-align</code> — on tooltip: <code>start</code> | <code>center</code> | <code>end</code></SkillText>
-  <SkillText dense>• <code>data-arrow</code> — on a child <code>&lt;div&gt;</code> inside tooltip for connecting caret</SkillText>
-  <SkillText dense>• <code>data-delay</code> — on trigger element, open delay in ms (default: 700)</SkillText>
-  <SkillText>• <code>data-close-delay</code> — on trigger element, close delay in ms (default: 0)</SkillText>
+<SkillText dense>• <code>data-tooltip-trigger</code> - on trigger element, value is the tooltip ID</SkillText>
+  <SkillText dense>• <code>data-side</code> - on tooltip: <code>top</code> | <code>bottom</code> | <code>left</code> | <code>right</code></SkillText>
+  <SkillText dense>• <code>data-align</code> - on tooltip: <code>start</code> | <code>center</code> | <code>end</code></SkillText>
+  <SkillText dense>• <code>data-arrow</code> - on a child <code>&lt;div&gt;</code> inside tooltip for connecting caret</SkillText>
+  <SkillText dense>• <code>data-delay</code> - on trigger element, open delay in ms (default: 700)</SkillText>
+  <SkillText>• <code>data-close-delay</code> - on trigger element, close delay in ms (default: 0)</SkillText>
   </SkillField>
 
   <SkillField label="Wiring conventions">
-<SkillText>• <code>data-tooltip-trigger</code> on any element — opens the component</SkillText>
+<SkillText>• <code>data-tooltip-trigger</code> on any element - opens the component</SkillText>
   </SkillField>
 </SkillPanel>
 
@@ -166,17 +166,17 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per tooltip through the bound <code>api</code>:</p>
   <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
-    <li><code>default</code> — hidden (the authored state; hover/focus reveal with delay)</li>
-    <li><code>visible</code> — shown immediately, bypassing the hover delay</li>
+    <li><code>default</code> - hidden (the authored state; hover/focus reveal with delay)</li>
+    <li><code>visible</code> - shown immediately, bypassing the hover delay</li>
   </ul>
   <p class="text-sm text-muted-foreground">The first demo carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/tooltip-\{state\}.png</code>.</p>
 
-Machine contract — verified against <a href="../schemas/tooltip.schema.json"><code>tooltip.schema.json</code></a> by <code>bun run verify</code>:
+Machine contract - verified against <a href="../schemas/tooltip.schema.json"><code>tooltip.schema.json</code></a> by <code>bun run verify</code>:
 
 ```states
 | State | Type | Values | Default | Description |
 | --- | --- | --- | --- | --- |
-| `visible` | `boolean` | `true`, `false` | `false` | Hint shown (`popover="hint"` — opening a hint does not dismiss other popovers). |
+| `visible` | `boolean` | `true`, `false` | `false` | Hint shown (`popover="hint"` - opening a hint does not dismiss other popovers). |
 ```
 
 </StatesSection>

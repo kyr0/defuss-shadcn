@@ -1,6 +1,6 @@
 ---
 title: "Label"
-description: "Label component — accessible form labels styled with shadcn tokens."
+description: "Label component - accessible form labels styled with shadcn tokens."
 slug: "label"
 ---
 
@@ -9,7 +9,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <DocPage meta={meta}>
 
 <PageHeader slug="label" title="Label" component="label">
-  Renders an accessible label associated with form controls. Built on the native <code>&lt;label&gt;</code> element with <code>:has()</code> for focus-reactive styling. No JavaScript required. The label’s <code>for</code> and the control’s <code>id</code> must carry the <strong>exact same value</strong> — that pairing <em>is</em> the association: it is what makes clicking the label focus the field and lets a screen reader announce the control’s name. Change one side and leave the other, and the label keeps looking right while quietly stopping working.
+  Renders an accessible label associated with form controls. Built on the native <code>&lt;label&gt;</code> element with <code>:has()</code> for focus-reactive styling. No JavaScript required. The label’s <code>for</code> and the control’s <code>id</code> must carry the <strong>exact same value</strong> - that pairing <em>is</em> the association: it is what makes clicking the label focus the field and lets a screen reader announce the control’s name. Change one side and leave the other, and the label keeps looking right while quietly stopping working.
 </PageHeader>
 
 <SkillPanel component="label">
@@ -35,28 +35,28 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 
   <SkillField label="Accessibility">
-<SkillText dense>• <strong>One value, written twice:</strong> the label’s <code>for</code> and the control’s <code>id</code> must be the exact same string. A mismatch fails silently — the label renders and styles normally but no longer focuses the field or names it for assistive technology.</SkillText>
-  <SkillText dense>• Clicking the label focuses the associated input — this is native <code>&lt;label&gt;</code> behavior.</SkillText>
+<SkillText dense>• <strong>One value, written twice:</strong> the label’s <code>for</code> and the control’s <code>id</code> must be the exact same string. A mismatch fails silently - the label renders and styles normally but no longer focuses the field or names it for assistive technology.</SkillText>
+  <SkillText dense>• Clicking the label focuses the associated input - this is native <code>&lt;label&gt;</code> behavior.</SkillText>
   <SkillText dense>• The required indicator <code>\*</code> uses <code>aria-hidden="true"</code> since the <code>required</code> attribute on the input already conveys the requirement to assistive technology.</SkillText>
   <SkillText dense>• Do not use <code>&lt;label&gt;</code> without a <code>for</code> attribute or a nested input.</SkillText>
   <p class="text-muted-foreground m-0">• In <code>forced-colors</code> mode, label text maps to system <code>LinkText</code> color.</p>
   </SkillField>
 
   <SkillField label="Notes">
-<SkillText dense>• The <code>.label</code> class is intentionally minimal — it styles the label text with appropriate font size, weight, and color.</SkillText>
-  <SkillText dense>• Labels auto-detect disabled state from adjacent controls via <code>:has(+ :disabled)</code> — the explicit <code>data-disabled</code> attribute is also supported.</SkillText>
+<SkillText dense>• The <code>.label</code> class is intentionally minimal - it styles the label text with appropriate font size, weight, and color.</SkillText>
+  <SkillText dense>• Labels auto-detect disabled state from adjacent controls via <code>:has(+ :disabled)</code> - the explicit <code>data-disabled</code> attribute is also supported.</SkillText>
   <SkillText dense>• For inline use with checkboxes, switches, or radios, add <code>style="margin:0;"</code> to remove the default bottom margin.</SkillText>
   <p class="text-muted-foreground m-0">• Labels compose with Input, Textarea, Select, Checkbox, Radio, Switch, and all other form controls.</p>
   </SkillField>
 </SkillPanel>
 
-```html example label="Default" hint="Basic label paired with an input. Click the label to focus the input — for='demo-email' and id='demo-email' must always match; changing one without the other breaks the link."
-<! for and id are one value in two places — keep them identical -->
+```html example label="Default" hint="Basic label paired with an input. Click the label to focus the input - for='demo-email' and id='demo-email' must always match; changing one without the other breaks the link."
+<! for and id are one value in two places - keep them identical -->
 <label class="label" for="email">Email</label>
 <input class="input" type="email" id="email" placeholder="you@example.com">
 ```
 
-```html example label="Required" hint="The red asterisk renders automatically from :has(+ input[required]) — no markup to add or forget."
+```html example label="Required" hint="The red asterisk renders automatically from :has(+ input[required]) - no markup to add or forget."
 <label class="label" for="name">Name</label>
 <input class="input" type="text" id="name" required>
 ```
@@ -67,7 +67,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </label>
 ```
 
-```html example label="Disabled" hint="Dimmed label for disabled fields. The label auto-detects the disabled input via :has() — no data-disabled attribute needed."
+```html example label="Disabled" hint="Dimmed label for disabled fields. The label auto-detects the disabled input via :has() - no data-disabled attribute needed."
 <label class="label" for="disabled">Disabled field</label>
 <input class="input" type="text" id="disabled" disabled>
 ```

@@ -1,7 +1,7 @@
 /* -- Hero (marketing) ---------------------------------------------
-   Centered headline + description + CTAs. Copy-only by design — pair it
+   Centered headline + description + CTAs. Copy-only by design - pair it
    with the Product Showcase block for video. Layout switches on container
-   width, not viewport — the block renders correctly inside a preview box. */
+   width, not viewport - the block renders correctly inside a preview box. */
 
 @layer components {
   .mk-hero {
@@ -54,7 +54,7 @@
 
   .mk-hero-actions { display: flex; flex-direction: column; gap: 0.5rem; width: 100%; }
 
-  /* the section itself is the query container — a container cannot query
+  /* the section itself is the query container - a container cannot query
      itself, so responsive rules target the copy child (descendant) */
   @container mk-hero (min-width: 30rem) {
     .mk-hero-title { font-size: 3.75rem; }

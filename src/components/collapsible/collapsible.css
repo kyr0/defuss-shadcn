@@ -6,9 +6,9 @@
 
     /* Two gotchas, both required for the panel to glide:
        1. `::details-content` must attach to the compound (`&::details-content`,
-          NOT `& ::details-content` — the descendant form never matches, the
+          NOT `& ::details-content` - the descendant form never matches, the
           pseudo's originating element is the subject itself).
-       2. `block-size: auto` is a keyword — without interpolate-size the
+       2. `block-size: auto` is a keyword - without interpolate-size the
           0→auto pair is non-interpolable and the transition silently snaps. */
     &::details-content {
       block-size: 0;
@@ -92,7 +92,7 @@
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all
-   components — AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
    `none` keeps transitionend/animationend (and discrete display flips)
    firing so JS state machines that await them keep working. */
 @media (prefers-reduced-motion: reduce) {

@@ -1,0 +1,355 @@
+/* -- Presentation component ------------------------------------
+   Fixed-coordinate deck runtime: an artboard (default 1600×900) uniformly
+   scaled to the mount, declarative entrance animations, native <progress>
+   advance, presenter notes. Local --presentation-* custom properties are the
+   deck's art-direction contract (literal defaults, token-free on purpose: a
+   slide surface must stay identical under every theme); consumers override
+   them per deck. */
+
+@layer components {
+  .presentation {
+    /* artboard contract - override on the mount for other formats */
+    --presentation-width: 1600;
+    --presentation-height: 900;
+    /* live uniform scale, owned by presentation.js (ResizeObserver) */
+    --presentation-scale: 1;
+    /* slide surfaces (fixed art direction, like the taxonomy badge colors) */
+    --presentation-ink: #0d1424;
+    --presentation-ink-foreground: #e9eef8;
+    --presentation-paper: #ffffff;
+    --presentation-paper-foreground: #101828;
+    --presentation-accent: #38bdf8;
+    /* motion: entrances come from the SHARED motion component (motion.css
+       keyframes + [data-df-entrance]); a deck only tunes the --df-motion-*
+       defaults for its artboard scale - per-element inline vars still win */
+    --presentation-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --presentation-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    /* slow and deliberate: slide transitions (df$.anim, default 1500ms),
+       entrances and the chart stage share one tempo */
+    --presentation-duration: 1500ms;
+    --df-motion-duration: var(--presentation-duration);
+    --df-motion-ease: var(--presentation-out);
+    --df-motion-distance: 3.5rem; /* artboard units - scales with the deck */
+
+    position: relative;
+    display: grid;
+    width: 100%;
+    aspect-ratio: var(--presentation-width) / var(--presentation-height);
+    overflow: hidden;
+    background: var(--presentation-ink);
+    color: var(--presentation-ink-foreground);
+    font-family: var(--font-sans);
+
+    /* fullscreen MODE: when native fullscreen is active this element already
+       owns the viewport; when the request was DENIED (embeds without
+       allow="fullscreen") the same attribute pins it as a fixed overlay —
+       one honest mode, two carriers. */
+    &[data-fullscreen] {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      width: 100vw;
+      height: 100vh;
+      aspect-ratio: auto;
+    }
+
+    & > [data-slide] {
+      position: absolute;
+      inset-block-start: 0;
+      inset-inline-start: 0;
+      inline-size: calc(var(--presentation-width) * 1px);
+      block-size: calc(var(--presentation-height) * 1px);
+      /* uniform artboard scale via zoom, NOT transform: the slide's
+         transform belongs to the df$.anim transitions (slide/zoom/spin/flip
+         keyframes animate transform - a scale() here would be overwritten
+         mid-transition and the slide would jump to artboard size) */
+      zoom: var(--presentation-scale);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: calc(var(--presentation-height) * 0.08px) calc(var(--presentation-width) * 0.07px);
+      box-sizing: border-box;
+      /* the TRANSITION is the df$.anim engine (presentation.js plays a
+         data-anim-out on the leaving slide and a data-anim-in on the
+         arriving one); CSS only says who is on stage: the active slide on
+         top, the leaving slide beneath it until its out-animation ends */
+      visibility: hidden;
+
+      &[data-active],
+      &[data-leaving] {
+        visibility: visible;
+      }
+      &[data-active] {
+        z-index: 1;
+      }
+      &[data-leaving] {
+        z-index: 0;
+      }
+
+      &[data-theme="ink"] {
+        --presentation-surface: var(--presentation-ink);
+        --presentation-on-surface: var(--presentation-ink-foreground);
+      }
+      &[data-theme="paper"] {
+        --presentation-surface: var(--presentation-paper);
+        --presentation-on-surface: var(--presentation-paper-foreground);
+      }
+      &[data-theme] {
+        background: var(--presentation-surface);
+        color: var(--presentation-on-surface);
+        /* shipped components on a slide (table, badge, avatar, button, card)
+           speak the SLIDE's surface, not the page theme: the existing
+           semantic tokens are re-pointed at the deck's art direction, so a
+           paper slide stays legible in dark mode and vice versa */
+        --background: var(--presentation-surface);
+        --foreground: var(--presentation-on-surface);
+        --card: var(--presentation-surface);
+        --card-foreground: var(--presentation-on-surface);
+        --primary: var(--presentation-on-surface);
+        --primary-foreground: var(--presentation-surface);
+        --secondary: color-mix(in oklch, var(--presentation-on-surface) 10%, var(--presentation-surface));
+        --secondary-foreground: var(--presentation-on-surface);
+        --muted: color-mix(in oklch, var(--presentation-on-surface) 7%, var(--presentation-surface));
+        --muted-foreground: color-mix(in oklch, var(--presentation-on-surface) 64%, var(--presentation-surface));
+        --accent: color-mix(in oklch, var(--presentation-on-surface) 10%, var(--presentation-surface));
+        --accent-foreground: var(--presentation-on-surface);
+        --border: color-mix(in oklch, var(--presentation-on-surface) 18%, var(--presentation-surface));
+        --input: color-mix(in oklch, var(--presentation-on-surface) 24%, var(--presentation-surface));
+        --ring: var(--presentation-accent);
+      }
+    }
+
+    /* charts on the artboard read at slide scale: the chart theme adapter
+       derives every label, gap and stroke from --chart-font-size */
+    & .chart {
+      --chart-font-size: 24px;
+    }
+
+    /* -- the chart stage: ONE chart for the whole deck (chart.deck()) -------
+       A deck-level layer in artboard coordinates (same scale transform as
+       the slides) stacked ABOVE them, so every slide keeps its own surface.
+       Slides that name a data-chart-state show it; the chart morphs from
+       state to state while the slides crossfade underneath. Hidden = faded
+       out in step with the slide fade, never unmounted. */
+    & > .presentation-stage {
+      position: absolute;
+      inset-block-start: 0;
+      inset-inline-start: 0;
+      z-index: 2;
+      inline-size: calc(var(--presentation-width) * 1px);
+      block-size: calc(var(--presentation-height) * 1px);
+      transform: scale(var(--presentation-scale));
+      transform-origin: top left;
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transition:
+        opacity var(--presentation-duration) var(--presentation-out),
+        visibility 0s linear var(--presentation-duration);
+
+      &[data-visible] {
+        visibility: visible;
+        opacity: 1;
+        pointer-events: auto;
+        transition: opacity var(--presentation-duration) var(--presentation-out);
+      }
+    }
+    /* a curtain (blocksIn → blocksOut) passes over the SLIDES; the chart
+       stage steps aside while it runs and returns with the arriving slide */
+    &[data-curtain] > .presentation-stage[data-visible] {
+      opacity: 0;
+      transition-duration: 300ms;
+    }
+
+    /* -- entrances: the SHARED motion component owns the vocabulary --------
+       Slides simply carry [data-df-entrance] / [data-df-draw] / [data-df-
+       stagger] elements; the keyframes + --df-motion-* tunables live in
+       motion.css (shipped in the same all.css bundle). The deck runtime
+       REPLAYS every entrance when its slide activates - revisiting a slide
+       re-runs its entrance, and animations (unlike transitions) fire
+       deterministically on first application, so decks animate correctly on
+       load without a rendered "from" state. */
+
+    /* -- in-slide chrome (artboard coordinates, scales with the deck) ------ */
+
+    /* header line: a mono eyebrow strip with a hairline rule, pinned to the
+       slide's top edge - section label left, optional meta right */
+    & .presentation-header {
+      position: absolute;
+      inset-block-start: 0;
+      inset-inline: 0;
+      display: flex;
+      align-items: baseline;
+      gap: 1.25rem;
+      padding: 3.5rem 4.5rem 1.75rem;
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: color-mix(in oklch, currentColor 65%, transparent);
+      border-block-end: 1px solid color-mix(in oklch, currentColor 16%, transparent);
+
+      /* the accent tick gives the line a deliberate start, not a stray rule */
+      &::before {
+        content: '';
+        inline-size: 2.75rem;
+        block-size: 0.3rem;
+        align-self: center;
+        background: var(--presentation-accent);
+      }
+
+      /* the LAST span (meta) rides to the right edge - label stays with the tick */
+      & > :last-child {
+        margin-inline-start: auto;
+      }
+    }
+
+    /* slide number: NN ⁄ NN in the bottom corner - the fraction slash (U+2044)
+       is inherently slanted, so the motif needs no extra decoration. The
+       runtime fills the text; authors just drop the element into a slide. */
+    & .presentation-slide-number {
+      position: absolute;
+      inset-block-end: 2.75rem;
+      /* bottom-LEFT: the bottom-right corner belongs to the deck controls */
+      inset-inline-start: 4.5rem;
+      font-family: var(--font-mono);
+      font-size: 1.6rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: color-mix(in oklch, currentColor 55%, transparent);
+    }
+
+    /* -- chrome (outside slide coordinates, viewport-fixed) -------------- */
+    & .presentation-controls {
+      position: absolute;
+      inset-block-end: 1rem;
+      inset-inline-end: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      z-index: 3;
+    }
+
+    & .presentation-control {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      inline-size: 2rem;
+      block-size: 2rem;
+      padding: 0;
+      border: 1px solid color-mix(in oklch, var(--presentation-paper-foreground) 18%, transparent);
+      border-radius: var(--radius-md);
+      background: color-mix(in oklch, var(--presentation-paper) 82%, transparent);
+      color: var(--presentation-paper-foreground);
+      cursor: pointer;
+      font: inherit;
+      line-height: 1;
+
+      &:hover {
+        background: color-mix(in oklch, var(--presentation-paper) 95%, transparent);
+      }
+      &:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+    }
+
+    & .presentation-counter {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      padding-inline: 0.5rem;
+      color: var(--presentation-ink-foreground);
+      background: color-mix(in oklch, var(--presentation-ink) 60%, transparent);
+      border-radius: var(--radius-sm);
+    }
+
+    /* native <progress> - the platform's completion indicator */
+    & .presentation-progress {
+      position: absolute;
+      inset-block-end: 0;
+      inset-inline: 0;
+      inline-size: 100%;
+      block-size: 3px;
+      margin: 0;
+      border: none;
+      background: color-mix(in oklch, var(--presentation-ink-foreground) 18%, transparent);
+      accent-color: var(--presentation-accent);
+      z-index: 3;
+
+      &::-webkit-progress-bar { background: color-mix(in oklch, var(--presentation-ink-foreground) 18%, transparent); }
+      &::-webkit-progress-value { background: var(--presentation-accent); }
+      &::-moz-progress-bar { background: var(--presentation-accent); }
+    }
+
+    /* presenter notes - hidden until the deck toggles [data-notes] */
+    & .presentation-note {
+      display: none;
+    }
+    &[data-notes] > [data-slide][data-active] > .presentation-note {
+      display: block;
+      position: absolute;
+      inset-block-end: 0;
+      inset-inline: 0;
+      margin: 0;
+      padding: 1.25rem 4rem;
+      font-size: 1.75rem;
+      line-height: 1.4;
+      background: color-mix(in oklch, #000000 82%, transparent);
+      border-block-start: 1px solid color-mix(in oklch, #ffffff 20%, transparent);
+      color: #ffffff;
+    }
+
+    /* slide typography helpers (fixed artboard sizes, not site type scale) */
+    & .presentation-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.7;
+      margin: 0 0 1rem;
+    }
+    & .presentation-title {
+      font-size: 5.5rem;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      font-weight: 700;
+      margin: 0 0 1.5rem;
+      text-wrap: balance;
+    }
+    & .presentation-lede {
+      font-size: 2rem;
+      line-height: 1.4;
+      opacity: 0.85;
+      margin: 0;
+      text-wrap: pretty;
+    }
+  }
+
+  /* accessibility: honor motion + contrast preferences (REQUIRED). Entrances
+     flatten via motion.css's own 1ms rule (keeps the JS finished contract);
+     here only the deck's own slide-fade transition flattens. */
+  @media (prefers-reduced-motion: reduce) {
+    .presentation > [data-slide],
+    .presentation > .presentation-stage {
+      transition: none;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .presentation .presentation-control {
+      border-width: 2px;
+      border-color: var(--presentation-paper-foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .presentation .presentation-control {
+      border-color: CanvasText;
+      color: CanvasText;
+      background: Canvas;
+    }
+    .presentation .presentation-progress {
+      border-block-start: 1px solid CanvasText;
+    }
+  }
+}

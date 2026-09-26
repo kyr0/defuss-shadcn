@@ -1,7 +1,7 @@
 ---
 name: Statistic
 type: ATM
-why: Labelled metric with a delta indicator — tokens and plain text only.
+why: Labelled metric with a delta indicator - tokens and plain text only.
 when: Dashboards showing one value and its trend.
 where: dist/components/statistic/statistic.css
 supportedStates: default
@@ -15,7 +15,7 @@ supportedStates: default
 
 ## Native Web APIs
 
-- [`<div>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div) — generic container
+- [`<div>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div) - generic container
 
 ## Structure
 
@@ -50,5 +50,5 @@ supportedStates: default
 
 ## Accessibility
 
-- Use semantic text content — values are read inline
+- Use semantic text content - values are read inline
 - Trends are conveyed by text, not color alone ("+12.5%")

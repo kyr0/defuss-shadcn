@@ -19,7 +19,10 @@
   --font-sans:               'Geist', sans-serif;
   --font-serif:              'Fraunces', serif;
   --font-mono:               'Geist Mono', monospace;
-  --font-display:            'Fraunces', serif;
+  /* display rides the serif identity: a color theme that ships its own
+     --font-serif (kodama-grove: Source Serif 4) retitles the whole site —
+     var() indirection resolves per element, so the theme's :root wins */
+  --font-display:            var(--font-serif);
 }
 
 /* -- Minimal base reset ------------------------------------ */

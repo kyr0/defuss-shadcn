@@ -6,7 +6,7 @@
        <input> content-box, so `height` would otherwise exclude the 2px frame
        and render 2px taller than the border-box fields (select, button-based
        triggers). With it, every declared height IS the rendered box.
-       The unsized default IS the ladder's md step (2.25rem = 36px) — same
+       The unsized default IS the ladder's md step (2.25rem = 36px) - same
        height, padding and font as [data-size="md"] below, so an unlabeled
        field and an explicit md field are the same control. */
     box-sizing: border-box;
@@ -33,7 +33,7 @@
     /* -- Readonly state -------------------------------------- */
     /* :not(:disabled) is load-bearing: a disabled input ALSO matches
        :read-only, and this rule's specificity (class + pseudo + :not attr)
-       outranks the plain :disabled below — without the exclusion, disabled
+       outranks the plain :disabled below - without the exclusion, disabled
        controls would render with the readonly look (0.7/default). */
     &:read-only:not([type="file"], :disabled) {
       background: var(--muted);

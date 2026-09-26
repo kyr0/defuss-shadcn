@@ -66,7 +66,7 @@
      data-density on the .radio-group root is a whitespace policy: the gap
      between options (and card padding) scale at the shared 0.75 / 1 / 1.25
      ratio; comfortable matches the unsized default. Radio size itself stays
-     fixed — this is spacing, not zoom. */
+     fixed - this is spacing, not zoom. */
   .radio-group:where([data-density="compact"]) {
     gap: 0.25rem;
     &[data-orientation="horizontal"] { gap: 0.75rem; }
@@ -134,7 +134,7 @@
 
   .radio {
     appearance: none;
-    margin: 0; /* kill the UA's ~4px input margin — breaks flex/grid rhythm */
+    margin: 0; /* kill the UA's ~4px input margin - breaks flex/grid rhythm */
     width: 1rem;
     height: 1rem;
     border: 1px solid var(--border);

@@ -2,9 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>core runtime e2e fixture — bootstrap conflicts are rejected, state preserved</title>
+    <title>core runtime e2e fixture - bootstrap conflicts are rejected, state preserved</title>
     <script>
-      // module evaluation errors surface here — the asserts read this array
+      // module evaluation errors surface here - the asserts read this array
       window.__errs = [];
       addEventListener('error', function (e) { window.__errs.push(String((e && e.message) || e)); });
       // a pre-existing FOREIGN df$ runtime: core must reject it, never adopt

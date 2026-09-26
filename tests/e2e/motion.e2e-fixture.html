@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>Motion E2E Fixture - defuss-shadcn</title>
+  <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css">
+  <link rel="stylesheet" href="/dist/components/motion/motion.css">
+  <style>body { margin: 1rem; background: #fff; color: #111; font: 14px/1.4 system-ui; }</style>
+</head>
+<body>
+  <!-- the full vocabulary, one element per direction (docs ↔ e2e parity with
+       the Motion page's vocabulary demo) -->
+  <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px;">
+    <div id="e-up" data-df-entrance="up">up</div>
+    <div id="e-down" data-df-entrance="down">down</div>
+    <div id="e-left" data-df-entrance="left">left</div>
+    <div id="e-right" data-df-entrance="right">right</div>
+    <div id="e-zoom" data-df-entrance="zoom">zoom</div>
+    <div id="e-zoom-out" data-df-entrance="zoom-out">zoom-out</div>
+    <div id="e-pop" data-df-entrance="pop">pop</div>
+    <div id="e-spin" data-df-entrance="spin">spin</div>
+    <div id="e-flip" data-df-entrance="flip">flip</div>
+    <div id="e-skew" data-df-entrance="skew">skew</div>
+    <div id="e-blur" data-df-entrance="blur">blur</div>
+    <div id="e-wipe" data-df-entrance="wipe">wipe</div>
+    <div id="e-wipe-up" data-df-entrance="wipe-up">wipe-up</div>
+    <div id="e-iris" data-df-entrance="iris">iris</div>
+    <div id="e-fade" data-df-entrance="fade">fade</div>
+  </div>
+
+  <!-- stagger grader: children keep their direction, delays grade 0/120/240/360 -->
+  <ul id="stag" data-df-stagger style="list-style:none;padding:0;">
+    <li data-df-entrance="up">a</li>
+    <li data-df-entrance="up">b</li>
+    <li data-df-entrance="up">c</li>
+    <li data-df-entrance="up">d</li>
+  </ul>
+
+  <!-- draw-in: pathLength="1" dash rule + the custom-timing surface -->
+  <svg id="svg" width="200" height="60" viewBox="0 0 200 60" fill="none">
+    <path id="draw-1" data-df-draw pathLength="1" stroke="black" stroke-width="4" d="M5 55 C 60 5, 140 55, 195 5" />
+    <path id="draw-2" data-df-draw pathLength="1" stroke="black" stroke-width="4" style="--df-motion-duration:2s;" d="M5 55 L195 5" />
+  </svg>
+
+  <!-- custom timing on an ancestor cascades into children -->
+  <section id="tuned" style="--df-motion-duration:2.5s; --df-motion-ease:linear; --df-motion-distance:50px;">
+    <div id="tuned-child" data-df-entrance="up">tuned</div>
+  </section>
+</body>
+</html>

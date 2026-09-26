@@ -1,6 +1,6 @@
 /**
  * Why: the provenance stamp is what makes the MIT attribution travel with
- * core/all — the contract (pointer shape, NOTICE sections, hash grouping)
+ * core/all - the contract (pointer shape, NOTICE sections, hash grouping)
  * must not drift silently, since verify compares artifacts byte-wise against
  * a fresh render. Pure contract test (no fs), like tests/minify.test.ts.
  */

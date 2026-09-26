@@ -40,7 +40,7 @@ export const colorPickerApi = {
     const input = getInput(picker);
     return {
       name: picker.dataset.stateName || 'default',
-      // live value — reflects picking and typing, not just setState
+      // live value - reflects picking and typing, not just setState
       config: { ...picker._stateConfig, value: input ? input.value : '' },
     };
   },

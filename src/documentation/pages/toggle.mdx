@@ -1,6 +1,6 @@
 ---
 title: "Toggle"
-description: "Toggle component — a two-state button using native checkbox or button elements."
+description: "Toggle component - a two-state button using native checkbox or button elements."
 slug: "toggle"
 ---
 
@@ -51,7 +51,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 
   <SkillField label="Notes">
-<SkillText dense>• The toggle is just a button with <code>aria-pressed</code> — no custom elements needed.</SkillText>
+<SkillText dense>• The toggle is just a button with <code>aria-pressed</code> - no custom elements needed.</SkillText>
   <SkillText dense>• Icon-only toggles must have <code>aria-label</code> for screen readers.</SkillText>
   <SkillText dense>• For toggle groups (e.g., text alignment), wrap in a container with <code>role="group"</code> and <code>aria-label</code>.</SkillText>
   <p class="text-muted-foreground m-0">• The pressed state uses <code>--accent</code> / <code>--accent-foreground</code> to match shadcn conventions.</p>
@@ -95,7 +95,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <button class="toggle" aria-pressed="false"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" x2="10" y1="4" y2="4"></line><line x1="14" x2="5" y1="20" y2="20"></line><line x1="15" x2="9" y1="4" y2="20"></line></svg> Italic </button>
 ```
 
-```html example label="Size" hint="The full five-step scale via data-size — the default equals md."
+```html example label="Size" hint="The full five-step scale via data-size - the default equals md."
 <div class="flex items-center gap-3">
   <button class="toggle" data-variant="outline" data-size="xs" aria-pressed="false">Extra Small</button>
   <button class="toggle" data-variant="outline" data-size="sm" aria-pressed="false">Small</button>
@@ -115,12 +115,12 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
   <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
-    <li><code>default</code> — unpressed (the authored <code>aria-pressed</code> value is restored by <code>setState('default')</code>)</li>
-    <li><code>pressed</code> — <code>aria-pressed="true"</code>, accent background</li>
+    <li><code>default</code> - unpressed (the authored <code>aria-pressed</code> value is restored by <code>setState('default')</code>)</li>
+    <li><code>pressed</code> - <code>aria-pressed="true"</code>, accent background</li>
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/toggle-\{state\}.png</code>.</p>
 
-Machine contract — verified against <a href="../schemas/toggle.schema.json"><code>toggle.schema.json</code></a> by <code>bun run verify</code>:
+Machine contract - verified against <a href="../schemas/toggle.schema.json"><code>toggle.schema.json</code></a> by <code>bun run verify</code>:
 
 ```states
 | State | Type | Values | Default | Description |

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: progress is CSS-only — the native <progress> restyle is the whole
+ * Why: progress is CSS-only - the native <progress> restyle is the whole
  * contract. Verify the pill geometry (appearance:none, 8px, full-width) and
  * that the webkit value/bar pseudo-elements carry the primary/secondary pair.
  */

@@ -34,7 +34,7 @@
       order: 1;
     }
 
-    /* Collapsed — icon-only rail */
+    /* Collapsed - icon-only rail */
     &[data-state="collapsed"] {
       width: var(--sidebar-width-collapsed, 3.5rem);
 
@@ -52,10 +52,10 @@
       & .sidebar-group > summary svg:last-child { display: none; }
 
       /* The nested-nav indent (0.75rem) would offset submenu icons from the
-         rail column — drop it while collapsed. */
+         rail column - drop it while collapsed. */
       & .sidebar-group > .sidebar-nav { padding-left: 0; }
 
-      /* Submenu summary (e.g. Settings/cog) is NOT a .sidebar-link — it needs
+      /* Submenu summary (e.g. Settings/cog) is NOT a .sidebar-link - it needs
          the same centering or its icon drifts off the icon column. Expanded
          submenu items have no icons, so the nav stays hidden while collapsed. */
       & .sidebar-submenu > summary { justify-content: center; padding: 0.5rem; gap: 0; }
@@ -64,7 +64,7 @@
       & .sidebar-submenu > .sidebar-nav { display: none; }
     }
 
-    /* Hidden on mobile by default — shown via dialog */
+    /* Hidden on mobile by default - shown via dialog */
     @media (max-width: 767px) {
       display: none;
     }
@@ -215,7 +215,7 @@
       list-style: none;
       transition: background-color 150ms ease;
 
-      /* leading icon matches .sidebar-link's 1rem — otherwise lucide's
+      /* leading icon matches .sidebar-link's 1rem - otherwise lucide's
          24px default renders the cog larger than the nav icons */
       & svg:first-child { width: 1rem; height: 1rem; flex-shrink: 0; }
 

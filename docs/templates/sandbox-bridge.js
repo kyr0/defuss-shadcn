@@ -1,5 +1,5 @@
 // Sandbox bridge for the docs CodeExample widget (environment infrastructure
-// only — plan §6: it supplies the bridge + state plumbing, never example
+// only - plan §6: it supplies the bridge + state plumbing, never example
 // behavior; the example source runs verbatim). Injected inline into the srcdoc
 // by runtime/code-example.ts after the example source, so its classic script
 // registers error listeners BEFORE example module scripts run.
@@ -80,7 +80,7 @@
       return;
     }
     if (mop.kind === 'attribute') {
-      // boolean true serializes as 'true', not '' — ARIA enumerations like
+      // boolean true serializes as 'true', not '' - ARIA enumerations like
       // aria-invalid require the literal token ('' would not match [aria-invalid="true"])
       if (value === false || value === null || value === undefined) el.removeAttribute(mop.name);
       else el.setAttribute(mop.name, value === true ? 'true' : String(value));
@@ -94,7 +94,7 @@
   // HTML, with dynamic form properties reflected onto attributes so `value`/
   // `checked` set at runtime appear in the shown code. The host writes this
   // into the CodeExample editor: state changes in the panel are visible in the
-  // source — one source of truth, kept honest in both directions.
+  // source - one source of truth, kept honest in both directions.
   function serializeSource() {
     var out = [];
     for (var el = document.body.firstElementChild; el; el = el.nextElementSibling) {
@@ -104,9 +104,9 @@
       if (el.id === 'toast-container') continue;
       var clone = el.cloneNode(true);
       // runtime chrome INSIDE an example (e.g. the resizer's handles) is the
-      // same environment noise as top-level chrome — never part of the source
+      // same environment noise as top-level chrome - never part of the source
       clone.querySelectorAll('[data-ce-chrome]').forEach(function (n) { n.remove(); });
-      // querySelectorAll never matches SELF — a root-level <input> (the common
+      // querySelectorAll never matches SELF - a root-level <input> (the common
       // example shape) would lose its runtime value without the matches() leg
       var live = el.matches('input, textarea') ? [el] : Array.prototype.slice.call(el.querySelectorAll('input, textarea'));
       var mirror = el.matches('input, textarea')
@@ -137,7 +137,7 @@
       if (!el || !obs) continue;
       // an observation may address a different element than the mutation
       // (e.g. the wrapper owns the State API while the inner <input> carries
-      // the value) — honor its own target when declared
+      // the value) - honor its own target when declared
       var oel = spec.observation && spec.observation.target ? resolve(spec.observation.target) : el;
       if (!oel) continue;
       var v = readMop(oel, obs);
@@ -145,14 +145,14 @@
       // boolean states read through an ATTRIBUTE observation are true when the
       // attribute exists and is not the literal "false" (data-error="" → true,
       // aria-pressed="false" → false); one keyed on a state-NAME attribute
-      // (data-state-name — every State API writes it) are true exactly when the
+      // (data-state-name - every State API writes it) are true exactly when the
       // written name equals the runtime state this row drives
       if (spec.type === 'boolean' && obs.kind === 'attribute' && typeof v === 'string') {
         var rn = spec.mutation && spec.mutation.kind === 'api' ? spec.mutation.name : name;
         v = v !== 'false' && (v === '' || v === 'true' || v === rn);
       }
       // §11: observable DOM value wins; when the observation is NOT available
-      // (missing attribute) fall back to the schema default — never invent one
+      // (missing attribute) fall back to the schema default - never invent one
       if (v === null || v === undefined) v = 'default' in spec ? spec.default : null;
       values[name] = v === undefined ? null : v;
     }
@@ -166,7 +166,7 @@
   var sourceDirty = false;
   // True content height, never the viewport: documentElement.scrollHeight is
   // max(content, viewport), so reporting it once the iframe is taller than the
-  // content echoes the current frame height back +2px — an ratchet that grew
+  // content echoes the current frame height back +2px - an ratchet that grew
   // the preview on every state change. The template's `body{display:flow-root}`
   // makes body border-box + margins the exact content height; scrollHeight is
   // only trusted while it genuinely exceeds the viewport.
@@ -271,7 +271,7 @@
       sync();
     } else if (d.kind === 'pointer-release') {
       // The host saw the pointer come up (or the window blur) while a drag in
-      // THIS document may still hold pointer capture — capture is document-
+      // THIS document may still hold pointer capture - capture is document-
       // scoped, so a release over the parent page is invisible here and the
       // drag would stay live (resizing on every later re-entry move). A
       // synthetic bubbling pointercancel ends any live drag; components not
@@ -288,9 +288,9 @@
 
   // any direct preview interaction re-reads state (§11: DOM is authoritative),
   // and value/attr-changing interactions also mark the source dirty so the
-  // next sync serializes them into the editor — code stays the single truth.
+  // next sync serializes them into the editor - code stays the single truth.
   // (click excluded: it only mirrors state; a click that changes something
-  // fires change/close/toggle too — no spurious editor rewrites on focus clicks)
+  // fires change/close/toggle too - no spurious editor rewrites on focus clicks)
   // scroll: the scroll-area component's observable state IS the scroll position
   ['input', 'change', 'close', 'toggle', 'scroll'].forEach(function (ev) {
     document.addEventListener(ev, function () {

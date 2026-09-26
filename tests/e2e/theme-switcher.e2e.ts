@@ -69,14 +69,14 @@ try {
   await check('trigger click opens menu (popover) + aria-expanded sync', async () => {
     await page.click('#ts1-trigger');
     // the popover's `toggle` event (which syncs aria-expanded) fires async
-    // after the open state flips — wait for BOTH, not just the open flag
+    // after the open state flips - wait for BOTH, not just the open flag
     await page.waitForFunction(
       () =>
         document.querySelector('#ts1-menu')!.matches(':popover-open') &&
         document.querySelector('#ts1-trigger')!.getAttribute('aria-expanded') === 'true',
     );
     assert.equal(await page.getAttribute('#ts1-trigger', 'aria-expanded'), 'true');
-    // menu placed under the trigger by CSS anchor positioning — after the
+    // menu placed under the trigger by CSS anchor positioning - after the
     // 150ms scale() enter transition (getBoundingClientRect includes transforms)
     await page.waitForTimeout(220);
     const geom = await page.evaluate(() => {
@@ -190,6 +190,52 @@ try {
       { timeout: 5000 },
     );
     assert.equal(await primary(page), vercelPrimary, 'theme file drives the live --primary token');
+  });
+
+  await check('font-bearing theme (kodama-grove) mounts its sidecar links + font tokens', async () => {
+    // the shipped loader is part of the core surface the switcher depends on
+    assert.ok(
+      await page.evaluate(() => typeof (globalThis as any).ddf$.loadTheme === 'function'),
+      'ddf$.loadTheme is installed by core',
+    );
+    await page.evaluate(() =>
+      (globalThis as any).df$.shadcn.themeSwitcherApi.select(document.querySelector('#ts1-menu'), 'kodama-grove'),
+    );
+    const link = await themeLink(page);
+    assert.equal(link?.themeId, 'kodama-grove');
+    // the <link> VNodes of theme/kodama-grove.json land in <head>, tagged
+    // with the loader marker - the Google Fonts fetch itself is irrelevant
+    await page.waitForFunction(
+      () =>
+        document.querySelectorAll('link[data-df-theme-link="kodama-grove"]').length >=
+        3 /* 2 preconnects + 3 font sheets (rel/href dedup may merge none here) */,
+      undefined,
+      { timeout: 5000 },
+    );
+    const mounted = await page.evaluate(() =>
+      [...document.querySelectorAll('link[data-df-theme-link="kodama-grove"]')].map((l) => l.getAttribute('href')),
+    );
+    assert.ok(
+      mounted.some((h) => h?.includes('Merriweather')) &&
+        mounted.some((h) => h?.includes('Source+Serif+4')) &&
+        mounted.some((h) => h?.includes('JetBrains+Mono')),
+      `all three font sheets mounted, got ${JSON.stringify(mounted)}`,
+    );
+    // the theme stylesheet carries the font token overrides → live cascade wins
+    await page.waitForFunction(
+      () => getComputedStyle(document.documentElement).getPropertyValue('--font-sans').includes('Merriweather'),
+      undefined,
+      { timeout: 5000 },
+    );
+    // switching back drops every mounted link (no font bleed across themes)
+    await page.evaluate(() =>
+      (globalThis as any).df$.shadcn.themeSwitcherApi.select(document.querySelector('#ts1-menu'), 'default'),
+    );
+    await page.waitForFunction(
+      () => document.querySelectorAll('link[data-df-theme-link]').length === 0,
+      undefined,
+      { timeout: 5000 },
+    );
   });
 
   console.log(failures ? `theme-switcher.e2e: ${failures} FAILED` : 'theme-switcher.e2e: all checks passed');

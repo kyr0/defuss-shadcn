@@ -1,6 +1,6 @@
 ---
 title: "Type Badge"
-description: "Type Badge component — a mono chip marking a component's atomic-design type, one color identity per type."
+description: "Type Badge component - a mono chip marking a component's atomic-design type, one color identity per type."
 slug: "type-badge"
 ---
 
@@ -9,7 +9,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <DocPage meta={meta}>
 
 <PageHeader slug="type-badge" title="Type Badge" component="type-badge">
-  A mono chip marking a component's atomic-design type — one color identity per type (ATM · MOL · ORG · BLK · TPL), identical in light and dark schemes. Pure visual marker, no JavaScript required.
+  A mono chip marking a component's atomic-design type - one color identity per type (ATM · MOL · ORG · BLK · TPL), identical in light and dark schemes. Pure visual marker, no JavaScript required.
 </PageHeader>
 
 <SkillPanel component="type-badge">
@@ -31,16 +31,16 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
   <SkillField label="Types (data-type)">
     <SkillGrid>
-      <Variant name="ATM" description="Atom — cyan" />
-      <Variant name="MOL" description="Molecule — blue" />
-      <Variant name="ORG" description="Organism — violet" />
-      <Variant name="BLK" description="Block — amber" />
-      <Variant name="TPL" description="Template — slate" />
+      <Variant name="ATM" description="Atom - cyan" />
+      <Variant name="MOL" description="Molecule - blue" />
+      <Variant name="ORG" description="Organism - violet" />
+      <Variant name="BLK" description="Block - amber" />
+      <Variant name="TPL" description="Template - slate" />
     </SkillGrid>
   </SkillField>
   <SkillField label="Sizes (data-size)">
     <SkillGrid>
-      <Variant name="xs" description="0.5625rem — the default" />
+      <Variant name="xs" description="0.5625rem - the default" />
       <Variant name="sm" description="0.6875rem" />
       <Variant name="md" description="0.8125rem" />
       <Variant name="lg" description="0.9375rem" />
@@ -49,9 +49,12 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 </SkillPanel>
 
-```html example label="All types" hint="The code is the type; the title tooltip spells it out. Colors are hardcoded per taxonomy identity — a type looks the same under every theme."
+```html example label="All types" hint="The code is the type; the title tooltip spells it out. Colors are hardcoded per taxonomy identity - a type looks the same under every theme."
 <span class="type-badge" data-type="ATM" title="Atom">ATM</span>
 <span class="type-badge" data-type="MOL" title="Molecule">MOL</span>
+<span class="type-badge" data-type="ORG" title="Organism">ORG</span>
+<span class="type-badge" data-type="BLK" title="Block">BLK</span>
+<span class="type-badge" data-type="TPL" title="Template">TPL</span>
 ```
 
 ```html example label="Sizes" hint="data-size scales the chip from the xs default up to xl."

@@ -1,0 +1,132 @@
+---
+title: "Zoom Out - Animations"
+description: "The shrink-in entrance and grow-away exit of the df$.anim zoom pair - driven imperatively via the zoomIn / zoomOut channels."
+slug: "anim-zoom-out"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="anim-zoom-out" title="Zoom Out" component="motion" />
+
+Zoom Out is the shrink-in entrance of the motion vocabulary (`zoom-out` in `motion.css`): the element starts larger than its final size and settles at scale 1. Imperatively it ships as the paired `zoomIn` / `zoomOut` channels - playing `zoomIn` with `scale: 1.1` starts the element at 110% and lands at 100%, while `zoomOut` with the same scale grows the element toward 110% as it fades away. The pair is not directional: it scales around an `origin` instead of traveling from an edge. Everything below is driven by `df$.anim.zoomIn.*()` / `df$.anim.zoomOut.*()` on the shared animation engine.
+
+```html example label="In / out and lifecycle" schema="none" hint="In plays zoomIn with scale 1.1 (starts larger, settles at 1); Out plays zoomOut (grows toward 1.1 while fading). Pause / Resume / Finish / Reset act on the last-used channel; duration and easing apply to the next In / Out play."
+<style>
+  #anim-zoom-out-target {
+    width: 160px;
+    height: 100px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+    font-weight: 600;
+  }
+</style>
+<div id="anim-zoom-out-target">zoom-out</div>
+<div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.5rem; margin-top:1rem;">
+  <button class="btn" data-variant="outline" data-size="sm" id="anim-zoom-out-in">In</button>
+  <button class="btn" data-variant="outline" data-size="sm" id="anim-zoom-out-out">Out</button>
+  <button class="btn" data-variant="outline" data-size="sm" id="anim-zoom-out-pause">Pause</button>
+  <button class="btn" data-variant="outline" data-size="sm" id="anim-zoom-out-resume">Resume</button>
+  <button class="btn" data-variant="outline" data-size="sm" id="anim-zoom-out-finish">Finish</button>
+  <button class="btn" data-variant="outline" data-size="sm" id="anim-zoom-out-reset">Reset</button>
+  <input class="input" id="anim-zoom-out-duration" type="number" value="1500" min="1" step="50" style="width:6rem;" aria-label="Duration in ms" />
+  <select class="select" id="anim-zoom-out-easing" aria-label="Easing">
+    <option value="cubic-bezier(0.16, 1, 0.3, 1)" selected>default ease-out</option>
+    <option value="linear">linear</option>
+    <option value="ease-in-out">ease-in-out</option>
+    <option value="cubic-bezier(0.34, 1.56, 0.64, 1)">springy overshoot</option>
+  </select>
+</div>
+<script type="module">
+  // all.js (df$) boots after example scripts in the sandbox - reference df$
+  // only inside event handlers, never at parse time
+  const target = document.getElementById('anim-zoom-out-target');
+  const durationInput = document.getElementById('anim-zoom-out-duration');
+  const easingSelect = document.getElementById('anim-zoom-out-easing');
+  let lastChannel = 'zoomIn';
+
+  const config = () => ({
+    duration: Number(durationInput.value) || 1500,
+    easing: easingSelect.value,
+    origin: '50% 50%',
+    scale: 1.1, // shrink-in entrance: starts at 110%, settles at 1
+  });
+
+  document.getElementById('anim-zoom-out-in').addEventListener('click', () => {
+    lastChannel = 'zoomIn';
+    df$.anim.zoomIn.play(target, config());
+  });
+  document.getElementById('anim-zoom-out-out').addEventListener('click', () => {
+    lastChannel = 'zoomOut';
+    df$.anim.zoomOut.play(target, config());
+  });
+  document.getElementById('anim-zoom-out-pause').addEventListener('click', () =>
+    df$.anim[lastChannel].pause(target),
+  );
+  document.getElementById('anim-zoom-out-resume').addEventListener('click', () =>
+    df$.anim[lastChannel].resume(target),
+  );
+  document.getElementById('anim-zoom-out-finish').addEventListener('click', () =>
+    df$.anim[lastChannel].finish(target),
+  );
+  document.getElementById('anim-zoom-out-reset').addEventListener('click', () =>
+    df$.anim[lastChannel].reset(target),
+  );
+</script>
+```
+
+```html example label="Scroll-driven progress" schema="none" hint="The same zoomIn play bound to the stage's own scroll offset: progress follows scrolling instead of time. Scroll the frame to shrink the card into place."
+<style>
+  #anim-zoom-out-scroll-target {
+    width: 160px;
+    height: 100px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+    font-weight: 600;
+  }
+</style>
+<div id="anim-zoom-out-scroller" style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg);">
+  <div style="height: 600px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 1rem;">
+    <span style="font-size: 0.85rem; color: var(--muted-foreground);">scroll down</span>
+    <div id="anim-zoom-out-scroll-target">driven by scroll</div>
+    <span style="font-size: 0.85rem; color: var(--muted-foreground);">fully zoomed in</span>
+  </div>
+</div>
+<script type="module">
+  // bind on load: all.js (df$) is ready by then; scroll position, not time,
+  // drives the animation's progress from 0 to 1
+  window.addEventListener('load', () => {
+    df$.anim.zoomIn.play(document.getElementById('anim-zoom-out-scroll-target'), {
+      scale: 1.1,
+      origin: '50% 50%',
+      scroll: { target: document.getElementById('anim-zoom-out-scroller'), axis: 'y' },
+    });
+  });
+</script>
+```
+
+The scroller above is a local container; pass `{ target: 'viewport' }` instead to bind progress to the page's own scroll position - the parallax use for presentations and long-form pages.
+
+## Configuration
+
+The zoom pair accepts these options on `play(el, opts)`:
+
+- `origin` - the `transform-origin` the scale grows or shrinks around (default `'50% 50%'`).
+- `scale` - the scale factor at the far end of the animation (default `0.8`; `1.1` here gives the shrink-in entrance for `zoomIn` and the grow-away exit for `zoomOut`).
+- `duration` - total duration in ms (default `1500`).
+- `easing` - any CSS easing (default `cubic-bezier(0.16, 1, 0.3, 1)`).
+
+<SourceFiles component="motion" section="css">
+  <SourceNote for="css">The shared motion stylesheet - the declarative <code>data-df-entrance</code> twin of this page's <code>df$.anim</code> channels: the <code>--df-motion-…</code> tunables, the fifteen <code>df-enter-…</code> keyframes and the reduced-motion flattening.</SourceNote>
+</SourceFiles>
+
+</DocPage>

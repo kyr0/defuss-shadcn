@@ -1,0 +1,242 @@
+---
+title: "Sunburst — Presentation"
+description: "Celestial Observatory design language presenting one year of telescope time as a 12-slide deck — a sunburst of science fields and programmes that isolates exoplanets, morphs into a treemap of the same hierarchy, then into oversubscription bars, one continuous chart."
+slug: "sunburst"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="sunburst" title="Sunburst" component="presentation">
+  Celestial Observatory: star-field dark, gold and blue light — how a mountain observatory spent 2,200 hours of science time, drawn as rings from field to programme, then re-read as blocks and as demand.
+</PageHeader>
+
+```html example label="Celestial Observatory" schema="none" height="26" hint="Slides open through an iris and blur out (df$.anim irisIn / blurOut, declared on the deck); blue curtains mark the breaks. One deck-level chart (df$.shadcn.chart.deck): the sunburst isolates exoplanets, morphs into a treemap of the same nodes, then into oversubscription per field. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-sunburst" data-anim-in="irisIn" data-anim-out="blurOut" style="--presentation-ink:#020617;--presentation-ink-foreground:#EEF5FF;--presentation-paper:#EEF3FB;--presentation-paper-foreground:#020617;--presentation-accent:#FFB45A;font-family:Palatino, Georgia, serif;" tabindex="-1" aria-label="Where the telescope time went — one year at an observatory">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="Science hours at an observatory in one year as a sunburst of five fields and their programmes, 2,200 hours in total, exoplanets the largest at 660 hours; then the same hierarchy as a treemap and the oversubscription per field"></div>
+  <section class="slide" data-slide data-theme="ink" aria-label="Cover">
+    <svg aria-hidden="true" width="660" height="660" viewBox="0 0 660 660" style="position:absolute; right:100px; top:120px;">
+      <circle cx="330" cy="330" r="310" fill="none" stroke="rgba(238,245,255,.14)" stroke-width="2" />
+      <circle cx="330" cy="330" r="230" fill="none" stroke="rgba(238,245,255,.18)" stroke-width="2" stroke-dasharray="4 10" />
+      <circle cx="330" cy="330" r="150" fill="none" stroke="rgba(109,167,255,.35)" stroke-width="2" />
+      <path d="M330 20 A310 310 0 0 1 625 235" fill="none" stroke="#FFB45A" stroke-width="10" stroke-linecap="round" />
+      <path d="M330 100 A230 230 0 0 1 549 400" fill="none" stroke="#6DA7FF" stroke-width="10" stroke-linecap="round" />
+      <path d="M330 180 A150 150 0 0 1 460 405" fill="none" stroke="#59D4C3" stroke-width="10" stroke-linecap="round" />
+      <circle cx="330" cy="330" r="16" fill="#FFE096" />
+      <circle cx="120" cy="90" r="3" fill="#EEF5FF" opacity=".7" /><circle cx="560" cy="560" r="3" fill="#EEF5FF" opacity=".7" /><circle cx="90" cy="470" r="3" fill="#EEF5FF" opacity=".7" /><circle cx="610" cy="140" r="3" fill="#EEF5FF" opacity=".7" /><circle cx="470" cy="610" r="3" fill="#EEF5FF" opacity=".7" /><circle cx="200" cy="40" r="3" fill="#EEF5FF" opacity=".7" />
+    </svg>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Sunburst · Celestial Observatory</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-family:Palatino, Georgia, serif; font-weight:400; letter-spacing:-0.02em; font-size:6.4rem; max-width:820px; line-height:1;">Where the telescope time went</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px; max-width:700px;">365 nights, 2,920 dark hours, one mirror — and three times more requests than time.</p>
+    <p class="presentation-note">Orbits on the cover; rings of data next.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="rings" style="justify-content:flex-start;" aria-label="All fields">
+    <header class="presentation-header"><span>Science time</span><span>Hours granted, 2025</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Palatino, Georgia, serif; font-weight:400; letter-spacing:-0.02em;">Five fields, twelve programmes</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Inner ring = field, outer ring = programme; angle = hours.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="exo" style="justify-content:flex-start;" aria-label="Exoplanets">
+    <header class="presentation-header"><span>Science time</span><span>Exoplanets highlighted</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Palatino, Georgia, serif; font-weight:400; letter-spacing:-0.02em;">Exoplanets took 30% of the sky</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The other fields dim — transits alone are 380 hours.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="blocks" style="justify-content:flex-start;" aria-label="Blocks">
+    <header class="presentation-header"><span>Hierarchy</span><span>Same data, as area</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Palatino, Georgia, serif; font-weight:400; letter-spacing:-0.02em;">The same hours as blocks</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The rings morph into a treemap — every programme keeps its identity.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Key figures">
+    <p class="presentation-eyebrow" data-df-entrance="fade">Three numbers for the time-allocation committee</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:Palatino, Georgia, serif; font-weight:400; letter-spacing:-0.02em;"><span data-count="2920">2920</span> h</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">of darkness in one year</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#FFB45A; font-family:Palatino, Georgia, serif; font-weight:400; letter-spacing:-0.02em;"><span data-count="2200">2200</span> h</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">went to science — 75%</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:Palatino, Georgia, serif; font-weight:400; letter-spacing:-0.02em;"><span data-count="640">640</span> h</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">lost to cloud, wind and snow</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">Weather took more hours than cosmology got. Nobody can schedule the sky.</p>
+    <p class="presentation-note">The losses frame the allocation.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Night" style="overflow:hidden;">
+    <video autoplay muted loop playsinline aria-hidden="true" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.55; mix-blend-mode:screen;">
+      <source src="videos/demo.webm" type="video/webm" />
+      <source src="videos/demo.mp4" type="video/mp4" />
+    </video>
+    <div aria-hidden="true" style="position:absolute; inset:0; background:linear-gradient(90deg, #020617 40%, rgba(109,167,255,.12));"></div>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Between exposures</p>
+    <h2 class="presentation-title" data-df-entrance="blur" style="position:relative; font-size:5rem; max-width:1100px; font-family:Palatino, Georgia, serif; font-weight:400; letter-spacing:-0.02em;">A night is eight hours long</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:400ms; position:relative; max-width:900px;">A transit lasts three of them; a supernova follow-up needs twenty minutes — every night is a puzzle.</p>
+    <p class="presentation-note">Ambient loop — the dome at work.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="north" data-anim-in-blocks="5" data-anim-in-color="#6DA7FF" aria-label="Allocation table">
+    <header class="presentation-header"><span>Allocation</span><span>Hours, 2025</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" data-density="spacious" style="font-size:1.7rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">Observing hours granted and requested per field (synthetic).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">Field</th><th class="table-head" style="text-align:right">Granted</th><th class="table-head" style="text-align:right">Share</th><th class="table-head" style="text-align:right">Requested</th><th class="table-head" style="text-align:right">Pressure</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row" style="font-weight:700"><td class="table-cell">Exoplanets</td><td class="table-cell" style="text-align:right">660</td><td class="table-cell" style="text-align:right">30%</td><td class="table-cell" style="text-align:right">2,706</td><td class="table-cell" style="text-align:right">4.1×</td></tr>
+          <tr class="table-row"><td class="table-cell">Galaxies</td><td class="table-cell" style="text-align:right">550</td><td class="table-cell" style="text-align:right">25%</td><td class="table-cell" style="text-align:right">1,540</td><td class="table-cell" style="text-align:right">2.8×</td></tr>
+          <tr class="table-row"><td class="table-cell">Stars</td><td class="table-cell" style="text-align:right">440</td><td class="table-cell" style="text-align:right">20%</td><td class="table-cell" style="text-align:right">836</td><td class="table-cell" style="text-align:right">1.9×</td></tr>
+          <tr class="table-row"><td class="table-cell">Cosmology</td><td class="table-cell" style="text-align:right">330</td><td class="table-cell" style="text-align:right">15%</td><td class="table-cell" style="text-align:right">1,122</td><td class="table-cell" style="text-align:right">3.4×</td></tr>
+          <tr class="table-row"><td class="table-cell">Solar system</td><td class="table-cell" style="text-align:right">220</td><td class="table-cell" style="text-align:right">10%</td><td class="table-cell" style="text-align:right">330</td><td class="table-cell" style="text-align:right">1.5×</td></tr>
+        </tbody>
+        <tfoot>
+          <tr class="table-row"><td class="table-cell">Total</td><td class="table-cell" style="text-align:right;font-weight:700">2,200</td><td class="table-cell" style="text-align:right;font-weight:700">100%</td><td class="table-cell" style="text-align:right;font-weight:700">6,534</td><td class="table-cell" style="text-align:right;font-weight:700">3.0×</td></tr>
+        </tfoot>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Pressure = hours requested per hour granted.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-family:Palatino, Georgia, serif; font-weight:400; letter-spacing:-0.02em; font-size:3rem;">“The sunburst ended the “my field is starving” debate. Everyone could see their slice — and how big the sky actually is.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#020617; color:#FFB45A;"><span class="avatar-fallback">TO</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Tomás Okafor<br /><span style="opacity:0.7; font-size:1.4rem;">Chair, time-allocation committee — fictional</span></p>
+    </div>
+    <p class="presentation-note">Shared picture, calmer committee.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="demand" style="justify-content:flex-start;" aria-label="Demand">
+    <header class="presentation-header"><span>Demand</span><span>Hours requested per hour granted</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Palatino, Georgia, serif; font-weight:400; letter-spacing:-0.02em;">Exoplanets are the most oversubscribed</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The blocks unroll into one bar per field.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Questions from the committee">
+    <header class="presentation-header"><span>Q & A</span><span>Time allocation</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; font-family:Palatino, Georgia, serif; font-weight:400; letter-spacing:-0.02em;">Questions from the committee</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="sb-qa" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Why not give exoplanets more?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Their 660 hours already exceed any other field; a 4.1× pressure means even doubling would reject half the requests.</p></div>
+      </details>
+      <details class="accordion-item" name="sb-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>What counts as a lost hour?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Any scheduled dark hour with the dome closed — cloud, wind above 60 km/h, snow or ice.</p></div>
+      </details>
+      <details class="accordion-item" name="sb-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Could a second instrument help?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Only for bright targets: galaxies and cosmology need the full mirror and the darkest nights.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Pressure is the number that matters.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Takeaways">
+    <header class="presentation-header"><span>Takeaways</span><span>For the next call for proposals</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">✦</span><span>A sunburst works when the path — field → programme — is the story.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">✦</span><span>Exoplanets hold 30% of the time and still 4.1× the demand.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">✦</span><span>Weather took 22% of the year; plan for it.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">✦</span><span>Morph the rings into blocks when areas need comparing.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Quiet and orbital.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-anim-in="blocksIn" data-anim-in-direction="south" data-anim-in-blocks="5" data-anim-in-color="#6DA7FF" aria-label="Closing">
+    <svg aria-hidden="true" width="660" height="660" viewBox="0 0 660 660" style="position:absolute; right:100px; top:120px;">
+      <circle cx="330" cy="330" r="310" fill="none" stroke="rgba(238,245,255,.14)" stroke-width="2" />
+      <circle cx="330" cy="330" r="230" fill="none" stroke="rgba(238,245,255,.18)" stroke-width="2" stroke-dasharray="4 10" />
+      <circle cx="330" cy="330" r="150" fill="none" stroke="rgba(109,167,255,.35)" stroke-width="2" />
+      <path d="M330 20 A310 310 0 0 1 625 235" fill="none" stroke="#FFB45A" stroke-width="10" stroke-linecap="round" />
+      <path d="M330 100 A230 230 0 0 1 549 400" fill="none" stroke="#6DA7FF" stroke-width="10" stroke-linecap="round" />
+      <path d="M330 180 A150 150 0 0 1 460 405" fill="none" stroke="#59D4C3" stroke-width="10" stroke-linecap="round" />
+      <circle cx="330" cy="330" r="16" fill="#FFE096" />
+      <circle cx="120" cy="90" r="3" fill="#EEF5FF" opacity=".7" /><circle cx="560" cy="560" r="3" fill="#EEF5FF" opacity=".7" /><circle cx="90" cy="470" r="3" fill="#EEF5FF" opacity=".7" /><circle cx="610" cy="140" r="3" fill="#EEF5FF" opacity=".7" /><circle cx="470" cy="610" r="3" fill="#EEF5FF" opacity=".7" /><circle cx="200" cy="40" r="3" fill="#EEF5FF" opacity=".7" />
+    </svg>
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-family:Palatino, Georgia, serif; font-weight:400; letter-spacing:-0.02em;">Every hour of dark, accounted for</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px; max-width:700px;">Synthetic hours at a fictional observatory — the sunburst is the real way to show a path through a hierarchy.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">End under the stars.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) — build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-sunburst');
+    const TEXT = '#EEF5FF', MUTED = '#71849B', PANEL = '#06101F';
+    const fields = [
+      ['Exoplanets', '#FFB45A', [['Transits', 380], ['Radial velocity', 200], ['Direct imaging', 80]], 4.1],
+      ['Galaxies', '#6DA7FF', [['High-redshift', 300], ['Nearby', 250]], 2.8],
+      ['Stars', '#59D4C3', [['Variables', 180], ['Clusters', 150], ['Binaries', 110]], 1.9],
+      ['Cosmology', '#B58DFF', [['Supernovae', 210], ['Lensing', 120]], 3.4],
+      ['Solar system', '#FFE096', [['Asteroids', 140], ['Comets', 80]], 1.5],
+    ];
+    const sum = (kids) => kids.reduce((s, k) => s + k[1], 0);
+    // one hierarchy for every state — stable names let sunburst and treemap morph node for node
+    const tree = (focus) => fields.map(([n, c, kids]) => {
+      const on = !focus || n === focus, col = on ? c : 'rgba(113,132,155,.28)';
+      return { name: n, value: sum(kids), itemStyle: { color: col },
+        children: kids.map(([k, v]) => ({ name: k, value: v, itemStyle: { color: col, opacity: on ? 0.72 : 1 } })) };
+    });
+    const rings = (focus) => ({
+      series: [{ id: 'hours', type: 'sunburst', data: tree(focus), sort: null, nodeClick: false, center: ['50%', '64%'], radius: ['14%', '66%'],
+        emphasis: { focus: 'ancestor' }, itemStyle: { borderColor: PANEL, borderWidth: 3, borderRadius: 6 },
+        label: { rotate: 'radial', color: '#020617', fontWeight: 700, minAngle: 8 },
+        levels: [{}, { r0: '14%', r: '38%', label: { fontSize: 18 } }, { r0: '38%', r: '66%', label: { fontSize: 16 } }] }],
+    });
+    const pressure = fields.map((f) => [f[0], f[3], f[1]]).sort((a, b) => b[1] - a[1]);
+
+    df$.shadcn.chart.deck(deck, {
+      base: { tooltip: { trigger: 'item' } },
+      states: {
+        rings: rings(null),
+        exo: rings('Exoplanets'),
+        blocks: {
+          series: [{ id: 'hours', type: 'treemap', data: tree(null), roam: false, nodeClick: false, breadcrumb: { show: false }, sort: false,
+            top: 330, left: 150, right: 150, bottom: 110,
+            label: { show: true, color: '#020617', formatter: '{b}\n{c} h', fontWeight: 700, fontSize: 17, lineHeight: 22 },
+            upperLabel: { show: true, height: 36, color: TEXT, fontWeight: 800, fontSize: 17, formatter: '{b} · {c} h' },
+            levels: [
+              { itemStyle: { borderColor: PANEL, borderWidth: 0, gapWidth: 8 }, upperLabel: { show: false } },
+              { itemStyle: { borderColor: PANEL, borderWidth: 5, gapWidth: 3, borderRadius: 8 } },
+              { itemStyle: { borderColor: PANEL, borderWidth: 2, gapWidth: 0, borderRadius: 6 } },
+            ] }],
+        },
+        demand: {
+          grid: { left: 310, right: 220, top: 340, bottom: 140 },
+          xAxis: { type: 'value', axisLabel: { color: MUTED, formatter: '{value}×' }, splitLine: { lineStyle: { color: 'rgba(238,245,255,.08)' } } },
+          yAxis: { type: 'category', inverse: true, data: pressure.map((p) => p[0]), axisLine: { show: false }, axisTick: { show: false }, axisLabel: { color: TEXT } },
+          series: [{ id: 'demand', type: 'bar', barWidth: '56%',
+            data: pressure.map(([n, v, c]) => ({ name: n, value: v, itemStyle: { color: c, borderRadius: [0, 12, 12, 0], shadowColor: c, shadowBlur: 16 } })),
+            label: { show: true, position: 'right', color: TEXT, fontWeight: 700, formatter: '{c}×' },
+            markLine: { symbol: 'none', silent: true, data: [{ xAxis: 3 }], lineStyle: { color: 'rgba(238,245,255,.45)', type: 'dashed', width: 2 },
+              label: { formatter: 'average 3.0×', color: MUTED, position: 'start', distance: 8 } } }],
+        },
+      },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 19-sunburst (Celestial Observatory) — synthetic hours at a fictional observatory.</p>
+<SourceFiles component="presentation" />
+</DocPage>

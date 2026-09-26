@@ -5,7 +5,7 @@
  * both `verify.ts` (hard gate) and unit tests evaluate "does the committed
  * version have a changelog entry, and does that entry carry the git hash of
  * the changelog commit (or a release date for legacy entries)?" without
- * touching the filesystem or git — callers inject those side effects.
+ * touching the filesystem or git - callers inject those side effects.
  */
 
 /** Class of the `<code>` element embedding the changelog commit's short hash. */
@@ -13,7 +13,7 @@ export const CHANGELOG_HASH_CLASS = 'changelog-hash';
 
 /** The repair instruction embedded in every failure: two commits, entry first. */
 export const FIX_TWO_COMMITS =
-  'add the v<version> entry to src/documentation/data/changelog.json in its own commit (all commit messages since the last release), then a second commit that sets its `hash` field to the first commit\'s short hash — `bun run docs` after each (deploy.sh automates both)';
+  'add the v<version> entry to src/documentation/data/changelog.json in its own commit (all commit messages since the last release), then a second commit that sets its `hash` field to the first commit\'s short hash - `bun run docs` after each (deploy.sh automates both)';
 
 export type ChangelogEntry = {
   version: string;
@@ -30,7 +30,7 @@ export type CommitInfo = { exists: true; touchesChangelog: boolean } | null;
 
 /**
  * Why: the changelog data file's shape (what ChangelogEntries renders and
- * deploy.sh mutates). Kept loose — a broken file surfaces as a gate failure
+ * deploy.sh mutates). Kept loose - a broken file surfaces as a gate failure
  * with a clear message rather than an opaque parse error.
  */
 export interface ChangelogDoc {
@@ -76,14 +76,14 @@ function decodeEntities(text: string): string {
 
 /**
  * Inline tags a changelog commit message may contain. Changelog entries are
- * commit messages — prose with code spans and links, never rendered UI.
+ * commit messages - prose with code spans and links, never rendered UI.
  * Anything outside this list is raw markup leaking through (an entry once
  * embedded a live `<video>` and a raw `<hr>`), so the gate rejects it.
  */
 export const CHANGELOG_ALLOWED_TAGS = ['li', 'code', 'strong', 'a', 'span', 'em', 'b', 'i', 'kbd'];
 
 /**
- * Why: enforce "changelog entries stay text" — scan each entry's commit
+ * Why: enforce "changelog entries stay text" - scan each entry's commit
  * strings for tags outside the text allowlist. `<video>` written as text
  * (entities) is fine; a live <video> tag is not.
  */
@@ -100,7 +100,7 @@ export function changelogDataMarkupProblems(jsonText: string): string[] {
       for (const t of c.matchAll(/<(\/?[a-zA-Z][a-zA-Z0-9]*)(?![a-zA-Z0-9])/g)) {
         const name = t[1].replace(/^\//, '').toLowerCase();
         if (!CHANGELOG_ALLOWED_TAGS.includes(name))
-          problems.push(`changelog ${e.version}: commit contains raw <${t[1]}> — escape as <${name}> (entries are text, not UI)`);
+          problems.push(`changelog ${e.version}: commit contains raw <${t[1]}> - escape as <${name}> (entries are text, not UI)`);
       }
     }
   }
@@ -109,7 +109,7 @@ export function changelogDataMarkupProblems(jsonText: string): string[] {
 
 /**
  * Why: the whole "is the changelog honest about the current version?" decision
- * as one pure function — verify.ts feeds it parsed entries plus the two
+ * as one pure function - verify.ts feeds it parsed entries plus the two
  * package.json versions (HEAD vs worktree) and a commit resolver; tests feed
  * it fixtures. Problems fail the build; warnings only inform.
  */
@@ -126,7 +126,7 @@ export function changelogProblems(args: {
   const warnings: string[] = [];
 
   if (!committedVersion) {
-    warnings.push('cannot read the committed package.json version (no git?) — changelog gate skipped');
+    warnings.push('cannot read the committed package.json version (no git?) - changelog gate skipped');
     return { problems, warnings };
   }
 
@@ -141,7 +141,7 @@ export function changelogProblems(args: {
     }
     if (!current.hash) {
       // Once the version is committed the changelog commit hash IS available,
-      // so the date-only escape hatch is legacy-only — new entries need it too.
+      // so the date-only escape hatch is legacy-only - new entries need it too.
       if (current.date) problems.push(`changelog v${committedVersion} entry has a date but no commit hash`);
     } else {
       const info = resolveCommit(current.hash);
@@ -151,7 +151,7 @@ export function changelogProblems(args: {
         );
       else if (!info.touchesChangelog)
         problems.push(
-          `changelog v${committedVersion} hash ${current.hash} points to a commit that does not touch changelog.json — it must be the commit that added the entry`,
+          `changelog v${committedVersion} hash ${current.hash} points to a commit that does not touch changelog.json - it must be the commit that added the entry`,
         );
     }
   }
@@ -162,7 +162,7 @@ export function changelogProblems(args: {
 
   if (worktreeVersion !== committedVersion && !entries.some((e) => e.version === worktreeVersion)) {
     warnings.push(
-      `package.json was bumped to v${worktreeVersion} (not yet committed) — its changelog entry must exist before that version gets committed`,
+      `package.json was bumped to v${worktreeVersion} (not yet committed) - its changelog entry must exist before that version gets committed`,
     );
   }
 

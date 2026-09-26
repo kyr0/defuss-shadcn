@@ -13,7 +13,7 @@ const tooltipStates = ['default', 'visible'];
 
 /**
  * UI side of setState: 'default' hides, 'visible' shows immediately
- * (bypasses the hover delay — a declared state is imperative, not hover-sim).
+ * (bypasses the hover delay - a declared state is imperative, not hover-sim).
  */
 function triggerStateChange(tip, stateName, _config) {
   switch (stateName) {
@@ -71,12 +71,12 @@ document.querySelectorAll('[data-tooltip-trigger]:not([data-init])').forEach((tr
   const tip = document.getElementById(trigger.dataset.tooltipTrigger);
   if (!tip) return;
 
-  // CSS anchor positioning — unique name per trigger-tooltip pair
+  // CSS anchor positioning - unique name per trigger-tooltip pair
   const anchorId = `--tooltip-${tip.id}`;
   trigger.style.anchorName = anchorId;
   tip.style.positionAnchor = anchorId;
 
-  // ARIA — link trigger to tooltip
+  // ARIA - link trigger to tooltip
   trigger.setAttribute('aria-describedby', tip.id);
 
   const delay = Number(trigger.dataset.delay ?? DELAY_DEFAULT);

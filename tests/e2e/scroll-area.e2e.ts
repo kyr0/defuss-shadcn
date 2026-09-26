@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: scroll-area is CSS-only — native scrolling + overscroll isolation +
+ * Why: scroll-area is CSS-only - native scrolling + overscroll isolation +
  * thin styled scrollbars. Verify overflow/position/overscroll/gutter and the
  * standard scrollbar-color property (the webkit pseudo rules can't be read
  * via getComputedStyle, so assert the standards-side equivalent + the sheet).

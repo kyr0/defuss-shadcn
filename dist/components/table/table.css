@@ -76,7 +76,7 @@
      data-density on the .table root scales cell/head/caption padding.
      Scale matches sizing.css (0.75 / 1 / 1.25): comfortable == the unsized
      default (0.75rem 1rem), compact 0.375rem 0.625rem, spacious 1rem 1.25rem.
-     :where() gives these (0,2,0) — an explicit density always beats the
+     :where() gives these (0,2,0) - an explicit density always beats the
      automatic narrow-container compaction below. */
   .table:where([data-density="compact"]) {
     & .table-head, & .table-cell { padding: 0.375rem 0.625rem; }
@@ -99,7 +99,7 @@
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all
-   components — AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
    `none` keeps transitionend/animationend (and discrete display flips)
    firing so JS state machines that await them keep working. */
 @media (prefers-reduced-motion: reduce) {

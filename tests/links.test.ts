@@ -58,7 +58,7 @@ describe('markdownLinkProblems', () => {
   it('passes valid file links and reports dead ones by name', () => {
     expect(markdownLinkProblems([doc('see [guide](./guide.md)')], exists)).toEqual([]);
     expect(markdownLinkProblems([doc('see [nope](./nope.md)')], exists)).toEqual([
-      'docs/readme.md: dead link (./nope.md) — ./nope.md not found',
+      'docs/readme.md: dead link (./nope.md) - ./nope.md not found',
     ]);
   });
 
@@ -81,7 +81,7 @@ describe('markdownLinkProblems', () => {
     const text = '# Intro\n\n## Quick Start!\n\n[ok](#quick-start)';
     expect(markdownLinkProblems([doc(text)], exists)).toEqual([]);
     expect(markdownLinkProblems([doc(text + '\n[bad](#nope)')], exists)).toEqual([
-      'docs/readme.md: dead anchor #nope — no heading with that slug in the file',
+      'docs/readme.md: dead anchor #nope - no heading with that slug in the file',
     ]);
   });
 
@@ -94,11 +94,11 @@ describe('markdownLinkProblems', () => {
     expect(markdownLinkProblems([doc(text)], exists)).toEqual([]);
   });
 
-  it('reports escaped links — they render as literal text, never work', () => {
+  it('reports escaped links - they render as literal text, never work', () => {
     expect(markdownLinkProblems([doc('the \\[Button\\](./guide.md) component')], exists)).toEqual([
-      'docs/readme.md: escaped link "\\[Button\\](./guide.md)" renders as literal text — link it for real (HTML <a href>, or <DocLink href> in .mdx)',
+      'docs/readme.md: escaped link "\\[Button\\](./guide.md)" renders as literal text - link it for real (HTML <a href>, or <DocLink href> in .mdx)',
     ]);
-    // external targets count too — the escape bug is independent of the target
+    // external targets count too - the escape bug is independent of the target
     expect(markdownLinkProblems([doc('\\[X\\](https://x.dev)')], exists)).toHaveLength(1);
   });
 
@@ -110,7 +110,7 @@ describe('markdownLinkProblems', () => {
   it('checks every doc in the batch', () => {
     const bad: MdDoc = { name: 'other.md', text: '[x](./ghost.md)' };
     expect(markdownLinkProblems([doc('[g](./guide.md)'), bad], exists)).toEqual([
-      'other.md: dead link (./ghost.md) — ./ghost.md not found',
+      'other.md: dead link (./ghost.md) - ./ghost.md not found',
     ]);
   });
 });

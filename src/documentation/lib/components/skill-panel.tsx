@@ -4,7 +4,7 @@ import type { Props } from 'defuss';
  * The collapsible Component Skill panel. The scaffolding (details/summary/
  * spec link) is generated; the body stays authored content (it is a curated
  * reading view of the skill, not a 1:1 dump). Rendered as a sibling AFTER
- * .page-header — exactly where site.js used to move it at runtime.
+ * .page-header - exactly where site.js used to move it at runtime.
  */
 export function SkillPanel({ component, children }: Props & { component: string }) {
   return (

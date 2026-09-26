@@ -50,7 +50,7 @@
 
   /* nav collapses below the container breakpoint (source: `hidden md:flex`).
      The nav composes the navigation-menu component (.nav-menu-list /
-     .nav-menu-trigger / .nav-menu-content) — its dropdown popovers are the
+     .nav-menu-trigger / .nav-menu-content) - its dropdown popovers are the
      native Popover API, so the header stays CSS-only. */
   .mk-header-nav { display: none; align-items: center; }
 

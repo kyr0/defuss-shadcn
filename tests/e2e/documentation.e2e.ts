@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { startServer } from './server.ts';
 
 /**
- * Why: the documentation site IS the product's public face — if index.html
+ * Why: the documentation site IS the product's public face - if index.html
  * doesn't render, or the SPA router / sidebar filter break, every consumer
  * and agent reading the docs is misled. This exercises the real shipped
  * dist/documentation/ pages over HTTP: static chrome shell, token +
@@ -15,7 +15,7 @@ import { startServer } from './server.ts';
 
 const PAGE = '/dist/documentation/index.html';
 /** Third-party CDNs the doc pages load (shiki via esm.sh, icons via unpkg);
- *  a sandboxed CI without egress may fail those — only first-party errors count. */
+ *  a sandboxed CI without egress may fail those - only first-party errors count. */
 const VENDOR = /esm\.sh|unpkg\.com|cdnjs|api\.github\.com/;
 
 const server = startServer();
@@ -47,7 +47,7 @@ try {
       openByDefault: [...document.querySelectorAll('details[data-nav-section]')].filter((d) => (d as HTMLDetailsElement).open).length,
     }));
     assert.ok(counts.header, 'site-header did not render the brand');
-    // brand must read "defuss-shadcn" — the pre-fork "shadcn-html" regressed once
+    // brand must read "defuss-shadcn" - the pre-fork "shadcn-html" regressed once
     assert.equal(
       await page.evaluate(() => document.querySelector('.header-brand-name')?.textContent?.trim()),
       'defuss-shadcn',
@@ -77,7 +77,7 @@ try {
       };
     });
     assert.ok(facts.token.length > 0, '--background token not applied (theme CSS missing?)');
-    // the CTA is a flex ITEM, so inline-flex is blockified to flex — assert
+    // the CTA is a flex ITEM, so inline-flex is blockified to flex - assert
     // button.css side effects blockification cannot fake: its fixed height,
     // token-derived background, and non-zero radius (none apply to a bare <a>)
     assert.equal(facts.height, '36px', `button.css height not applied (${facts.height})`);
@@ -115,7 +115,7 @@ try {
 
   await check('Back button restores the previous page', async () => {
     await page.goBack();
-    // popstate fires before the router's fetch+swap finishes — wait on the
+    // popstate fires before the router's fetch+swap finishes - wait on the
     // swapped TITLE, not the pathname (which pops instantly and would race)
     await page.waitForFunction(() => !/Badge/.test(document.title), undefined, { timeout: 5_000 });
     const title = await page.title();
@@ -154,7 +154,7 @@ try {
   });
 
   await check('search: query filters items; Enter navigates to the page', async () => {
-    // 'combobox' matches exactly one entry — the page itself — so Enter's
+    // 'combobox' matches exactly one entry - the page itself - so Enter's
     // click target is unambiguous ('accordion' would first hit the earlier
     // "Accordion animations" section entry)
     const cmdInput = page.locator('#docs-palette .command-input');
@@ -182,7 +182,7 @@ try {
 
   await check('search: section result navigates SPA + scrolls to the heading', async () => {
     // item-click already closed the palette; its focus-restore sets a short
-    // suppress window — wait past it before re-opening via the trigger
+    // suppress window - wait past it before re-opening via the trigger
     await page.waitForTimeout(300);
     await page.click('.header-search-input');
     await page.waitForFunction(() => (document.getElementById('docs-palette') as HTMLDialogElement).open, undefined, { timeout: 5_000 });
@@ -193,7 +193,7 @@ try {
     assert.ok(href && href.startsWith('installation.html#'), `expected an installation section hit, got ${href}`);
     await hit.click();
     const id = href!.slice(href!.indexOf('#') + 1);
-    // SPA swap is async (scrollToWhenReady polls up to 2s) — wait for the element
+    // SPA swap is async (scrollToWhenReady polls up to 2s) - wait for the element
     await page.waitForFunction(
       (sectionId: string) => {
         const el = document.getElementById(sectionId);
@@ -294,7 +294,7 @@ try {
 
   await check('wide-mode toggle releases the main max-width (and persists)', async () => {
     const before = await page.evaluate(() => getComputedStyle(document.querySelector('main')!).maxWidth);
-    assert.notEqual(before, 'none', 'main is unconstrained before toggling — the check proves nothing');
+    assert.notEqual(before, 'none', 'main is unconstrained before toggling - the check proves nothing');
 
     await page.click('#wide-toggle');
     const wide = await page.evaluate(() => ({
@@ -331,7 +331,7 @@ try {
     for (const want of ['AGENTS.MD', 'VERIFIER', 'PROOF LOOP', 'HUMAN EXPERT']) {
       assert.ok(
         state.h2s.some((t) => t.toUpperCase().includes(want)),
-        `h2 for "${want}" missing — page drifted from ARCH.md? (found: ${state.h2s.join(' | ')})`,
+        `h2 for "${want}" missing - page drifted from ARCH.md? (found: ${state.h2s.join(' | ')})`,
       );
     }
   });

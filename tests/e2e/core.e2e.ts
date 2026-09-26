@@ -5,7 +5,7 @@ import { startServer } from './server.ts';
 /**
  * Why: E2E proof of the distribution contract (plans/defuss-query-morph-integration.md
  * §2.3 + §5.3): consumers load core.js + selected components, or all.js alone
- * — both modes expose the callable df$ (query + morph), the shared layer at
+ * - both modes expose the callable df$ (query + morph), the shared layer at
  * df$.shadcn.shared, and initialize components; a missing core fails BEFORE
  * any mutation with the one actionable load-order error; conflicting /
  * duplicate runtimes are rejected without corrupting the winner. Runs the
@@ -103,7 +103,7 @@ try {
     });
     await check('modular: CSS-only component styles apply (tokens live)', async () => {
       const radius = await page.$eval('#css-only', (el) => getComputedStyle(el).borderRadius);
-      assert.notEqual(radius, '0px', 'badge styles not applied — component CSS broken without JS');
+      assert.notEqual(radius, '0px', 'badge styles not applied - component CSS broken without JS');
     });
     await page.close();
   }
@@ -128,7 +128,7 @@ try {
       assert.ok(out.dialog === 'function' && out.toast === 'function' && out.accordion,
         'all.js is missing shipping components');
       assert.ok(out.init, 'dialog did not initialize under all.js');
-      // no separate core/query/morph chunk request — all is self-contained
+      // no separate core/query/morph chunk request - all is self-contained
       await page.waitForTimeout(200);
       const extra = requested.filter((u) => /core(\.min)?\.js|defuss/.test(u));
       assert.deepEqual(extra, [], `all.js fetched external runtime chunks: ${extra.join(', ')}`);

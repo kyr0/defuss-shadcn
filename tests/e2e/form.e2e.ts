@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: form is CSS-only layout glue — verify the 24px field stack, the
+ * Why: form is CSS-only layout glue - verify the 24px field stack, the
  * horizontal orientation switch (row + 8rem label column), the inline row,
  * and the reset fieldset with its legend.
  */

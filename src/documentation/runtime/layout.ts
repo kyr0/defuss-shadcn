@@ -1,24 +1,24 @@
-// -- layout.js — docs chrome runtime --------------------------------------
+// -- layout.js - docs chrome runtime --------------------------------------
 // Pre-paint dark/wide init, SPA router, search palette, theme popover, nav
 // collapse + scroll persistence, TOC active tracking, GitHub stars.
 //
 // The chrome MARKUP (header, sidebar, TOC, prev/next, footer) is static —
 // rendered into every page at build time by defuss-ssg (lib/components/*).
 // This file only wires behavior. Loaded synchronously in <head>.
-// No ES modules — works with file:// protocol.
+// No ES modules - works with file:// protocol.
 
 (function () {
   'use strict';
 
   // Single-namespace globals (AGENTS.md "No window globals"): docs data
-  // lives under df$.shadcn.docs — never on window. This classic script runs
+  // lives under df$.shadcn.docs - never on window. This classic script runs
   // BEFORE the library runtime (all.js, a deferred module, installs the
   // callable df$), so `docs` stages locally here and merges into the live
-  // namespace on DOMContentLoaded — after every module has executed.
+  // namespace on DOMContentLoaded - after every module has executed.
   var docs = {};
   document.addEventListener('DOMContentLoaded', function () {
     var ns = globalThis.df$ && globalThis.df$.shadcn;
-    if (!ns) return; // library failed to load — docs chrome degrades
+    if (!ns) return; // library failed to load - docs chrome degrades
     var live = (ns.docs = ns.docs || {});
     for (var k in docs) if (!(k in live)) live[k] = docs[k];
     docs = live;
@@ -43,14 +43,14 @@
 
   /* React to OS theme changes in real time (only if user hasn't set a manual preference) */
   darkMQ.addEventListener('change', function (e) {
-    if (localStorage.getItem('defuss-shadcn-theme')) return;   // user chose manually — respect it
+    if (localStorage.getItem('defuss-shadcn-theme')) return;   // user chose manually - respect it
     document.documentElement.classList.toggle('dark', e.matches);
     document.documentElement.style.colorScheme = e.matches ? 'dark' : 'light';
     var sun = document.getElementById('icon-sun');
     var moon = document.getElementById('icon-moon');
     if (sun) sun.style.display = e.matches ? 'none' : 'block';
     if (moon) moon.style.display = e.matches ? 'block' : 'none';
-    /* theme files carry :root + .dark — the class switch re-themes by
+    /* theme files carry :root + .dark - the class switch re-themes by
        itself; only the favicon derives from live tokens */
     if (docs.updateFavicon) docs.updateFavicon();
   });
@@ -77,13 +77,13 @@
 
   /* -- Component type badges -----------------------------------
      The palette's nav hits render the same badge the sidebar and doc pages
-     show (taxonomy: ATM/MOL/ORG/BLK/TPL — see AGENTS.md). */
+     show (taxonomy: ATM/MOL/ORG/BLK/TPL - see AGENTS.md). */
   function typeBadge(type) {
     return ' <span class="type-badge" data-type="' + type + '" title="' + type + '">' + type + '</span>';
   }
 
   /* The SPA swap is async; poll briefly for the target heading.
-     ponytail: 100ms × 20 — swap normally lands <200ms; upgrade path is a
+     ponytail: 100ms × 20 - swap normally lands <200ms; upgrade path is a
      hook on navigateTo's completion, not needed while the docs stay static. */
   function scrollToWhenReady(id, attempt) {
     var el = document.getElementById(id);
@@ -102,7 +102,7 @@
      Header + sidebar are static markup now and never swapped by the router,
      so these bindings happen exactly once (DOMContentLoaded). */
   function initChrome() {
-    /* -- Theme swatch grid (data lives in themes.js — building the grid at
+    /* -- Theme swatch grid (data lives in themes.js - building the grid at
           runtime keeps ~40 theme definitions out of every page's HTML) -- */
     var grid = document.getElementById('theme-grid');
     if (grid && docs.THEMES && !grid.hasChildNodes()) {
@@ -173,7 +173,7 @@
       if (expand) expand.style.display = on ? 'none' : 'block';
       if (collapse) collapse.style.display = on ? 'block' : 'none';
     };
-    syncWideBtn(); // the class was applied pre-paint above — reflect it
+    syncWideBtn(); // the class was applied pre-paint above - reflect it
     if (wideBtn) {
       wideBtn.addEventListener('click', function () {
         var on = document.documentElement.classList.toggle('wide');
@@ -197,7 +197,7 @@
     if (list && dialog && trigger && searchWrap && !list.hasChildNodes()) {
       // build lazily on first open: search-index.js (a later head script)
       // merges its staged data into df$.shadcn.docs on DOMContentLoaded —
-      // after this file's own DCL listeners — so reading it here at
+      // after this file's own DCL listeners - so reading it here at
       // initChrome time would see an empty index
       var esc = function (s) { return s.replace(/&/g, '&').replace(/</g, '<').replace(/"/g, '"'); };
       var buildList = function () {
@@ -256,9 +256,9 @@
     /* -- Sidebar dock persistence ----------------------------------
        Persists the sidebar component's dock state (data-state="collapsed")
        for DocPage's pre-paint restore and keeps the header toggle's
-       aria-label honest. Every path that flips it — the header toggle and
+       aria-label honest. Every path that flips it - the header toggle and
        ⌘B/Ctrl+B (sidebar.js's shortcut, which toggles the first .app-sidebar
-       directly) — funnels through this one sync. */
+       directly) - funnels through this one sync. */
     var NAV_DOCK_KEY = 'defuss-shadcn-nav-docked';
     var syncDockState = function () {
       var sidebar = document.querySelector('.site-sidebar');
@@ -276,7 +276,7 @@
        single sidebar collapse control (it replaced both the component's
        footer dock trigger and the old hamburger). Mode-aware:
 
-       - desktop: click docks/undoes the sidebar — the same data-state +
+       - desktop: click docks/undoes the sidebar - the same data-state +
          data-stateName flip sidebar.js applies on ⌘B/Ctrl+B (the stateName
          pins the choice against the component's auto-collapse), persisted
          via syncDockState for DocPage's pre-paint restore;
@@ -291,7 +291,7 @@
         return window.matchMedia('(max-width: 64rem)').matches;
       };
 
-      /* Create backdrop element if not already present — directly after the
+      /* Create backdrop element if not already present - directly after the
          sidebar (the old custom-element wrapper held it inside <site-nav>) */
       var backdrop = document.querySelector('.sidebar-backdrop');
       if (!backdrop) {
@@ -347,7 +347,7 @@
 
     /* -- Nav collapse persistence --------------------------------
        Sections render collapsed by default (except Introduction and the one
-       holding the current page — see SiteNav); the inline script in DocPage
+       holding the current page - see SiteNav); the inline script in DocPage
        re-applies remembered toggles pre-paint. Every explicit user toggle is
        stored as heading → '1'|'0', so expanding a default-collapsed section
        survives reloads exactly like collapsing an open one used to. */
@@ -392,7 +392,7 @@
             updateStarCount(count);
           }
         })
-        .catch(function () { /* silent fail — star count is non-essential */ });
+        .catch(function () { /* silent fail - star count is non-essential */ });
     }
   }
 
@@ -400,7 +400,7 @@
 
   /* -- Sidebar scroll persistence ----------------------------- */
   /* Save scroll position before navigating, restore on load.   */
-  /* (With SPA router, sidebar persists — this handles fallback */
+  /* (With SPA router, sidebar persists - this handles fallback */
   /* cases: first load, hard refresh, external navigation.)     */
   var SCROLL_KEY = 'shadcn-nav-scroll';
 
@@ -420,7 +420,7 @@
       sidebar.scrollTop = parseInt(saved, 10);
       sessionStorage.removeItem(SCROLL_KEY);
     } else {
-      /* First visit — scroll active link into view */
+      /* First visit - scroll active link into view */
       var active = sidebar.querySelector('.nav-link.active');
       if (active) active.scrollIntoView({ block: 'nearest', behavior: 'instant' });
     }
@@ -472,7 +472,7 @@
           /* Swap main content (incl. the static prev/next pager) */
           oldMain.innerHTML = newMain.innerHTML;
 
-          /* The static TOC is per-page — swap it alongside main */
+          /* The static TOC is per-page - swap it alongside main */
           var oldToc = document.querySelector('.site-toc');
           var newToc = doc.querySelector('.site-toc');
           if (oldToc && newToc) oldToc.replaceWith(document.importNode(newToc, true));
@@ -497,7 +497,7 @@
           /* Update current page tracker */
           currentPage = href;
 
-          /* Update active nav link — `.active` for tests/hooks, aria-current
+          /* Update active nav link - `.active` for tests/hooks, aria-current
              for the look: the sidebar component styles [aria-current="page"]
              (unlayered .nav-link.active would override component CSS). */
           document.querySelectorAll('.nav-link').forEach(function (link) {
@@ -507,7 +507,7 @@
             else link.removeAttribute('aria-current');
           });
 
-          /* Reveal every <details> ancestor of the active link — the nav
+          /* Reveal every <details> ancestor of the active link - the nav
              section and, for submenu pages (Width & Height under Sizing),
              the submenu too. A collapsed group must never hide the page you
              just opened; the section's toggle listener persists it. */
@@ -529,14 +529,14 @@
           (docs.__spaInits || []).forEach(function (fn) { fn(); });
 
           /* Component ES modules auto-reinitialize via MutationObserver */
-          /* when the DOM changes — no script re-import needed.         */
+          /* when the DOM changes - no script re-import needed.         */
 
           navigating = false;
         };
 
         /* Use View Transitions API if available. Chromium throws a
            "Transition was skipped. New ViewTransition started" error when two
-           transitions overlap — the `navigating` flag only guards the fetch,
+           transitions overlap - the `navigating` flag only guards the fetch,
            not the async VT, so rapid navs (Enter key + section click) can
            stack them. Track the active transition and swap immediately
            (exactly what a skipped VT does anyway) while one is in flight. */
@@ -576,7 +576,7 @@
      .page-header is `position: sticky` pinned right under the fixed site
      header, so anything scrolled to the plain 4rem scroll-padding-top lands
      under the page-header bar (issue #2 follow-up). The true clearance is
-     site-header + page-header height + a little breathing room — both
+     site-header + page-header height + a little breathing room - both
      content-dependent, so the browser measures it and publishes the value
      as --anchor-pad, which layout.css wires into scroll-padding-top.
      The measurement goes stale whenever the header RE-FLOWS after init —
@@ -639,10 +639,10 @@
   /* Per-page init (runs on DOMContentLoaded + after each SPA navigation) */
   docs.onPageReady(function () {
     initTocTracking();
-    updateAnchorPad(); // page header height differs per page — remeasure
+    updateAnchorPad(); // page header height differs per page - remeasure
     observeAnchorPad(); // re-attach to this page's .page-header element
     /* A fresh load landed with the 4rem fallback padding (this script measured
-       the real clearance only now) — re-align the initial fragment once. */
+       the real clearance only now) - re-align the initial fragment once. */
     if (location.hash.length > 1 && docs.realignWhenSettled) {
       docs.realignWhenSettled(decodeURIComponent(location.hash.slice(1)));
     }

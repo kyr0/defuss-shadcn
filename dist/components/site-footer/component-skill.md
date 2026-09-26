@@ -1,7 +1,7 @@
 ---
 name: Site Footer
 type: BLK
-why: Link columns + social row is pure grid/flex markup in a <footer> landmark — no behavior to script.
+why: Link columns + social row is pure grid/flex markup in a <footer> landmark - no behavior to script.
 when: Bottom of marketing pages; the doc site's own footer is separate chrome (<footer> in layout.js).
 where: dist/components/site-footer/site-footer.css
 supportedStates: default
@@ -17,10 +17,10 @@ queries.
 ---
 
 ## Native Web APIs
-- [`<footer>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/footer) — content-info landmark
-- [`<nav aria-label>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav) — named footer navigation region
-- [CSS Grid](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout) — 1 → 2 → 4 link columns
-- [Badge](../badge/component-skill.md) — "New" pill inside a link
+- [`<footer>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/footer) - content-info landmark
+- [`<nav aria-label>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav) - named footer navigation region
+- [CSS Grid](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout) - 1 → 2 → 4 link columns
+- [Badge](../badge/component-skill.md) - "New" pill inside a link
 
 ---
 
@@ -76,6 +76,6 @@ The rule is the semantic [Separator](../separator/component-skill.md) (`<hr clas
 ---
 
 ## Notes
-- Each column heading is an `<h3>` inside a named `<nav>` — the region outline gives users a column map.
-- Social links need `aria-label`s ("LinkedIn", not "link") — the icon is the label.
+- Each column heading is an `<h3>` inside a named `<nav>` - the region outline gives users a column map.
+- Social links need `aria-label`s ("LinkedIn", not "link") - the icon is the label.
 - Copyright line stays a `<p>`, never a heading; screen-reader users scan landmarks, not boilerplate.

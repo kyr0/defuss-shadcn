@@ -7,7 +7,7 @@ import { startServer } from './server.ts';
  * fixture (trigger + palette, mirroring the doc page) over HTTP in a real
  * browser, then verifies trigger/shortcut opening, search filtering with
  * empty state, keyboard navigation (ArrowDown/Enter), item click dismissal,
- * and the named State API — the same files consumers copy from dist/,
+ * and the named State API - the same files consumers copy from dist/,
  * unmodified.
  */
 

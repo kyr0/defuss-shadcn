@@ -1,0 +1,239 @@
+---
+title: "Small Multiples - Presentation"
+description: "1960s Modernist Grid design language presenting rooftop solar yield by roof orientation as a 12-slide deck - six panels that collapse into one overlay, sum into annual bars and end on a summer-day profile, one morphing chart."
+slug: "small-multiples"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="small-multiples" title="Small Multiples" component="presentation">
+  1960s Modernist Grid: warm grey, black rules and primary blocks - how much a rooftop solar system yields facing south, east, west or flat, told with six identical panels that merge, sum and reframe on one chart.
+</PageHeader>
+
+```html example label="1960s Modernist Grid" schema="none" height="26" hint="Slides flip in and fade out (df$.anim flipIn, declared on the deck); red and blue curtains mark the section breaks. One deck-level chart (df$.shadcn.chart.deck): six small multiples collapse into one overlay, sum into annual bars, then become a summer-day profile. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-multiples" data-anim-in="flipIn" data-anim-out="fadeOut" style="--presentation-ink:#151515;--presentation-ink-foreground:#F9F9F5;--presentation-paper:#E8E8E3;--presentation-paper-foreground:#151515;--presentation-accent:#FF4B32;font-family:'Helvetica Neue', Arial, sans-serif;" tabindex="-1" aria-label="Six roofs, one sun - solar yield by orientation">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="Monthly solar yield per kilowatt-peak for six roof orientations, south 974 kWh per year down to east 769, as small multiples, an overlay, annual bars and a summer-day profile"></div>
+  <section class="slide" data-slide data-theme="paper" aria-label="Cover">
+    <svg aria-hidden="true" width="560" height="900" viewBox="0 0 560 900" style="position:absolute; right:0; top:0;">
+      <rect x="0" y="0" width="560" height="900" fill="#E8E8E3" />
+      <rect x="40" y="60" width="240" height="240" fill="#FF4B32" />
+      <rect x="300" y="60" width="200" height="120" fill="#151515" />
+      <rect x="300" y="200" width="200" height="100" fill="#F2C12E" />
+      <rect x="40" y="320" width="460" height="10" fill="#151515" />
+      <rect x="40" y="350" width="140" height="490" fill="#1F4E9D" />
+      <rect x="200" y="350" width="300" height="490" fill="none" stroke="#151515" stroke-width="10" />
+    </svg>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Small multiples · 1960s Modernist Grid</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-family:'Helvetica Neue', Arial, sans-serif; font-weight:700; letter-spacing:-0.03em; font-size:6.75rem; max-width:900px;">Six roofs, one sun</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">What a rooftop solar system yields, month by month, depending on where the roof faces.</p>
+    <p class="presentation-note">The grid on the right is the whole visual idea: repeat the frame.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="grid" style="justify-content:flex-start;" aria-label="Six panels">
+    <header class="presentation-header"><span>Monthly yield</span><span>kWh per kWp · one scale</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Helvetica Neue', Arial, sans-serif; font-weight:700; letter-spacing:-0.03em;">Same axes, six roofs</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Repeat the frame, vary only the data - the eye compares shapes.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="overlay" style="justify-content:flex-start;" aria-label="Overlay">
+    <header class="presentation-header"><span>Monthly yield</span><span>All six on one axis</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Helvetica Neue', Arial, sans-serif; font-weight:700; letter-spacing:-0.03em;">Overlaid, the differences disappear</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The panels collapse into one chart - and now it is spaghetti.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="annual" style="justify-content:flex-start;" aria-label="Annual">
+    <header class="presentation-header"><span>Per year</span><span>kWh per kWp per year</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Helvetica Neue', Arial, sans-serif; font-weight:700; letter-spacing:-0.03em;">East still makes 79% of south</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Each panel sums into one bar.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Key figures">
+    <p class="presentation-eyebrow" data-df-entrance="fade">Three numbers for your roof</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#FF4B32; font-family:'Helvetica Neue', Arial, sans-serif; font-weight:700; letter-spacing:-0.03em;"><span data-count="974">974</span></p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">kWh per kWp per year, facing south</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:'Helvetica Neue', Arial, sans-serif; font-weight:700; letter-spacing:-0.03em;"><span data-count="79">79</span>%</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">of that, facing east - still worth it</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:'Helvetica Neue', Arial, sans-serif; font-weight:700; letter-spacing:-0.03em;"><span data-count="6">6</span>×</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">more yield in July than in December</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">Orientation changes the yield by a fifth. The season changes it sixfold.</p>
+    <p class="presentation-note">Season beats orientation - say it clearly.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="The sky">
+    <header class="presentation-header"><span>Weather</span><span>Clouds, not angles</span></header>
+    <div style="display:flex; gap:4.5rem; align-items:center; margin-top:3.5rem;">
+      <div style="flex:1 1 0; min-width:0;">
+        <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; font-family:'Helvetica Neue', Arial, sans-serif; font-weight:700; letter-spacing:-0.03em;">Clouds matter more than angles</h2>
+        <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:300ms; font-size:1.7rem;">A cloudy June still beats a clear December. Orientation fine-tunes; latitude and weather decide.</p>
+      </div>
+      <figure class="image" data-ratio="4/3" data-df-entrance="flip" style="--df-motion-delay:150ms; flex:0 0 700px; margin:0;">
+        <img src="https://picsum.photos/id/54/960/720" alt="White clouds drifting over a green mountain summit under a blue sky" loading="lazy" width="960" height="720" style="width:100%; height:100%; object-fit:cover;" />
+        <figcaption class="image-caption" style="font-size:1.25rem;">Summer sky (stock photo).</figcaption>
+      </figure>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The photo is the other variable.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="west" data-anim-in-blocks="4" data-anim-in-color="#1F4E9D" aria-label="Yield table">
+    <header class="presentation-header"><span>The data</span><span>kWh per kWp</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" style="font-size:1.7rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">Modelled yield by roof orientation, mid-European location (synthetic).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">Orientation</th><th class="table-head" style="text-align:right">Jan</th><th class="table-head" style="text-align:right">Jul</th><th class="table-head" style="text-align:right">Year</th><th class="table-head" style="text-align:right">vs south</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row" style="font-weight:700"><td class="table-cell">South</td><td class="table-cell" style="text-align:right">28</td><td class="table-cell" style="text-align:right">135</td><td class="table-cell" style="text-align:right">974</td><td class="table-cell" style="text-align:right">100%</td></tr>
+          <tr class="table-row"><td class="table-cell">South-west</td><td class="table-cell" style="text-align:right">24</td><td class="table-cell" style="text-align:right">130</td><td class="table-cell" style="text-align:right">924</td><td class="table-cell" style="text-align:right">95%</td></tr>
+          <tr class="table-row"><td class="table-cell">South-east</td><td class="table-cell" style="text-align:right">24</td><td class="table-cell" style="text-align:right">128</td><td class="table-cell" style="text-align:right">914</td><td class="table-cell" style="text-align:right">94%</td></tr>
+          <tr class="table-row"><td class="table-cell">Flat (10°)</td><td class="table-cell" style="text-align:right">20</td><td class="table-cell" style="text-align:right">122</td><td class="table-cell" style="text-align:right">852</td><td class="table-cell" style="text-align:right">87%</td></tr>
+          <tr class="table-row"><td class="table-cell">West</td><td class="table-cell" style="text-align:right">16</td><td class="table-cell" style="text-align:right">112</td><td class="table-cell" style="text-align:right">776</td><td class="table-cell" style="text-align:right">80%</td></tr>
+          <tr class="table-row"><td class="table-cell">East</td><td class="table-cell" style="text-align:right">16</td><td class="table-cell" style="text-align:right">111</td><td class="table-cell" style="text-align:right">769</td><td class="table-cell" style="text-align:right">79%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The whole grid in six rows.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-family:'Helvetica Neue', Arial, sans-serif; font-weight:700; letter-spacing:-0.03em; font-size:2.9rem;">“Customers ask for south. Then they see the east-west curve and realise it matches when they are actually home.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#F2C12E; color:#151515;"><span class="avatar-fallback">PB</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Pieter Bakker<br /><span style="opacity:0.7; font-size:1.4rem;">Solar installer - 740 roofs fitted</span></p>
+    </div>
+    <p class="presentation-note">The quote sets up the last chart.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="day" style="justify-content:flex-start;" aria-label="Summer day">
+    <header class="presentation-header"><span>A day in June</span><span>kW per kWp by hour</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Helvetica Neue', Arial, sans-serif; font-weight:700; letter-spacing:-0.03em;">East-west makes less - but earlier and later</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Morning and evening are when households use power.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Questions from homeowners">
+    <header class="presentation-header"><span>Q & A</span><span>Homeowners ask</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; font-family:'Helvetica Neue', Arial, sans-serif; font-weight:700; letter-spacing:-0.03em;">Questions from homeowners</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="sm-qa" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Is a north roof worth it?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Rarely: about 55% of south in this model - only with a very shallow pitch.</p></div>
+      </details>
+      <details class="accordion-item" name="sm-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>East-west or south?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">South for export, east-west for self-use: it covered 39% of household demand versus 31% for south.</p></div>
+      </details>
+      <details class="accordion-item" name="sm-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Does a flat roof need tilting?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">A 10° tilt keeps panels self-cleaning and yields 87% of south - enough for most roofs.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The north question always comes.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Takeaways">
+    <header class="presentation-header"><span>Takeaways</span><span>Four rules</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">■</span><span>Repeat the frame when you compare shapes - small multiples beat overlays.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">■</span><span>East and west roofs still deliver four fifths of south.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">■</span><span>Match the curve to when you use power, not to the maximum.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">■</span><span>Season is the dominant variable - plan storage for winter.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Grid discipline, four lines.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-anim-in="blocksIn" data-anim-in-direction="north" data-anim-in-blocks="4" data-anim-in-color="#FF4B32" aria-label="Closing">
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-family:'Helvetica Neue', Arial, sans-serif; font-weight:700; letter-spacing:-0.03em;">Repeat the frame. Vary the data.</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">Modelled yields, synthetic households - the small-multiple principle is the real takeaway.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">End on the principle.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) - build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-multiples');
+    const TEXT = '#151515', MUTED = '#7D7D76', RED = '#FF4B32', BLUE = '#1F4E9D', YELLOW = '#F2C12E';
+    const months = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
+    const roofs = [
+      ['South', RED, [28, 45, 80, 110, 128, 132, 135, 118, 88, 58, 30, 22]],
+      ['South-west', TEXT, [24, 39, 77, 106, 123, 127, 130, 113, 84, 56, 26, 19]],
+      ['South-east', TEXT, [24, 38, 76, 105, 122, 125, 128, 112, 84, 55, 26, 19]],
+      ['Flat', TEXT, [20, 32, 72, 99, 115, 119, 122, 106, 79, 52, 21, 15]],
+      ['West', BLUE, [16, 26, 66, 91, 106, 110, 112, 98, 73, 48, 17, 13]],
+      ['East', BLUE, [16, 26, 66, 90, 105, 108, 111, 97, 72, 48, 17, 13]],
+    ];
+    const sum = (a) => a.reduce((s, v) => s + v, 0);
+    // six panels in a 3 × 2 artboard grid under the headline
+    const cells = roofs.map((_, i) => ({ left: 150 + (i % 3) * 460, top: 330 + Math.floor(i / 3) * 230, width: 380, height: 150 }));
+    const panel = {
+      grid: cells,
+      title: roofs.map((r, i) => ({ text: r[0], left: cells[i].left, top: cells[i].top - 40, textStyle: { color: TEXT, fontSize: 24, fontWeight: 700 } })),
+      xAxis: cells.map((_, i) => ({ type: 'category', gridIndex: i, data: months, boundaryGap: false, axisLabel: { color: MUTED, fontSize: 16, interval: 2 } })),
+      yAxis: cells.map((_, i) => ({ type: 'value', gridIndex: i, min: 0, max: 150, interval: 75, axisLabel: { show: i % 3 === 0, color: MUTED, fontSize: 16 } })),
+      series: roofs.map(([n, c, v], i) => ({ id: n, name: n, type: 'line', xAxisIndex: i, yAxisIndex: i, data: v, showSymbol: false, smooth: 0.3,
+        lineStyle: { color: c, width: 4 }, areaStyle: { color: c, opacity: 0.12 }, itemStyle: { color: c } })),
+    };
+    const overlay = {
+      legend: { top: 300, right: 150, textStyle: { color: TEXT } },
+      grid: { left: 150, right: 150, top: 370, bottom: 150 },
+      xAxis: { type: 'category', data: months, boundaryGap: false, axisLabel: { color: MUTED } },
+      yAxis: { type: 'value', min: 0, max: 150, axisLabel: { color: MUTED } },
+      series: roofs.map(([n, c, v]) => ({ id: n, name: n, type: 'line', data: v, showSymbol: false, smooth: 0.3, lineStyle: { color: c, width: 3 }, itemStyle: { color: c } })),
+    };
+    const hours = Array.from({ length: 17 }, (_, i) => (i + 5) + ':00');
+
+    df$.shadcn.chart.deck(deck, {
+      base: { tooltip: { trigger: 'item' } },
+      states: {
+        grid: panel,
+        overlay,
+        annual: {
+          grid: { left: 150, right: 150, top: 330, bottom: 150 },
+          xAxis: { type: 'category', data: roofs.map((r) => r[0]), axisLabel: { color: TEXT, fontWeight: 700 } },
+          yAxis: { type: 'value', max: 1000, interval: 250, axisLabel: { color: MUTED } },
+          series: [{ id: 'South', type: 'bar', barWidth: '50%',
+            data: roofs.map(([n, c, v]) => ({ name: n, value: sum(v), itemStyle: { color: c, borderRadius: 0 } })),
+            label: { show: true, position: 'top', color: TEXT, fontWeight: 700 } }],
+        },
+        day: {
+          legend: { top: 300, right: 150, textStyle: { color: TEXT } },
+          grid: { left: 150, right: 150, top: 370, bottom: 150 },
+          xAxis: { type: 'category', data: hours, boundaryGap: false, axisLabel: { color: MUTED, interval: 2 } },
+          yAxis: { type: 'value', max: 0.8, interval: 0.2, axisLabel: { color: MUTED } },
+          series: [
+            { id: 'South', name: 'South', type: 'line', smooth: 0.4, showSymbol: false, lineStyle: { color: RED, width: 5 }, itemStyle: { color: RED }, areaStyle: { color: RED, opacity: 0.12 },
+              data: [0.02, 0.08, 0.18, 0.32, 0.47, 0.6, 0.69, 0.73, 0.72, 0.66, 0.55, 0.41, 0.27, 0.14, 0.06, 0.02, 0] },
+            { id: 'East', name: 'East-west', type: 'line', smooth: 0.4, showSymbol: false, lineStyle: { color: BLUE, width: 5 }, itemStyle: { color: BLUE }, areaStyle: { color: BLUE, opacity: 0.12 },
+              data: [0.05, 0.18, 0.32, 0.43, 0.49, 0.52, 0.53, 0.52, 0.52, 0.51, 0.47, 0.4, 0.3, 0.19, 0.09, 0.03, 0] },
+          ],
+        },
+      },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 12-small-multiples (1960s Modernist Grid) - modelled, synthetic yields.</p>
+<SourceFiles component="presentation" />
+</DocPage>

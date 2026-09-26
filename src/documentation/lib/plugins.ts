@@ -11,12 +11,12 @@ import { readSkillMeta } from './repo';
  * rendered pages.
  */
 
-/** `<!DOCTYPE html>` — MDX/JSX cannot express it, so it is prepended here.
+/** `<!DOCTYPE html>` - MDX/JSX cannot express it, so it is prepended here.
  *  Also strips the `xmlns` the happy-dom serializer adds to inline <svg>
  *  roots (browsers infer it in HTML parsing; the hand-written docs never
  *  carried it), and unescapes entity-escaped text inside <script>/<style>
  *  (the XML serializer escapes < > & there too, but browsers treat both as
- *  raw-text elements — a `i < n` in an inline script must survive). */
+ *  raw-text elements - a `i < n` in an inline script must survive). */
 export const doctypePlugin: SsgPlugin = {
   name: 'doctype',
   phase: 'page-html',
@@ -54,7 +54,7 @@ export interface CollectedSection {
 const collected = new Map<string, CollectedSection[]>();
 
 /**
- * Static TOC: replicates the old runtime buildToc() — candidates are
+ * Static TOC: replicates the old runtime buildToc() - candidates are
  * `main h2, main p.text-sm.font-medium` (excluding `.page-header details`
  * subtrees), headings without an id get `toc-{slug}`, every candidate outside
  * `.preview` gets a § permalink, and the `.site-toc` aside (rendered empty by
@@ -125,7 +125,7 @@ export const tocPlugin: SsgPlugin = {
 };
 
 /**
- * Writes js/search-index.js into the output — same runtime contract as the
+ * Writes js/search-index.js into the output - same runtime contract as the
  * old scripts/lib/search-index.ts (`globalThis.df$.docs.searchIndex
  * = [{t,h,s,d?}, …]`), but sourced from the rendered pages, so section ids
  * always match the static TOC (the old index deep-linked some ids that only
@@ -146,7 +146,8 @@ export const searchIndexPlugin: SsgPlugin = {
           t: item.label,
           h: item.href,
           s: section.heading,
-          ...(meta ? { d: meta.type } : {}),
+          // explicit page-level type (sub-pages) wins over the component skill
+          ...(item.type ? { d: item.type } : meta ? { d: meta.type } : {}),
         });
         for (const sec of collected.get(item.href) ?? []) {
           entries.push({ t: sec.text, h: `${item.href}#${sec.id}`, s: item.label });
@@ -178,7 +179,7 @@ export const searchIndexPlugin: SsgPlugin = {
 
 /** defuss-ssg always emits a hydration runtime ({output}/{components}/) even
  * with zero hydrated components (all docs components live in lib/ on
- * purpose). The docs tree is verified 1:1 — remove the stub. */
+ * purpose). The docs tree is verified 1:1 - remove the stub. */
 export const cleanHydrationRuntimePlugin: SsgPlugin = {
   name: 'clean-hydration-runtime',
   phase: 'post',

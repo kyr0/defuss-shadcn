@@ -1,6 +1,6 @@
 ---
 title: "Alert Dialog"
-description: "Alert Dialog component — confirmation dialogs using native <dialog> element."
+description: "Alert Dialog component - confirmation dialogs using native <dialog> element."
 slug: "alert-dialog"
 ---
 
@@ -9,12 +9,12 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <DocPage meta={meta}>
 
 <PageHeader slug="alert-dialog" title="Alert Dialog" component="alert-dialog">
-  A modal dialog that interrupts the user and requires a response. Unlike a standard dialog, users cannot dismiss it by clicking the backdrop or pressing Escape — they must choose an action. Built on native <code>&lt;dialog&gt;</code>.
+  A modal dialog that interrupts the user and requires a response. Unlike a standard dialog, users cannot dismiss it by clicking the backdrop or pressing Escape - they must choose an action. Built on native <code>&lt;dialog&gt;</code>.
 </PageHeader>
 
 <SkillPanel component="alert-dialog">
   <SkillField label="Native basis">
-<SkillText><code>&lt;dialog&gt;</code> element used as a modal that requires user response. Unlike a standard dialog, it has no backdrop-close and no close button — the user must choose an action.</SkillText>
+<SkillText><code>&lt;dialog&gt;</code> element used as a modal that requires user response. Unlike a standard dialog, it has no backdrop-close and no close button - the user must choose an action.</SkillText>
   </SkillField>
 
   <SkillField label="Web Platform APIs">
@@ -43,17 +43,17 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 
   <SkillField label="Wiring conventions">
-<SkillText dense>• <code>data-alert-dialog-trigger</code> on any element — opens the component</SkillText>
-  <SkillText>• <code>data-alert-dialog-close</code> on any element inside — closes the component</SkillText>
+<SkillText dense>• <code>data-alert-dialog-trigger</code> on any element - opens the component</SkillText>
+  <SkillText>• <code>data-alert-dialog-close</code> on any element inside - closes the component</SkillText>
   </SkillField>
 
   <SkillField label="Accessibility">
-<SkillText dense>• Uses <code>role="alertdialog"</code> instead of <code>role="dialog"</code> — signals interruption</SkillText>
+<SkillText dense>• Uses <code>role="alertdialog"</code> instead of <code>role="dialog"</code> - signals interruption</SkillText>
   <SkillText dense>• <code>aria-labelledby</code> and <code>aria-describedby</code> link to title and description</SkillText>
-  <SkillText dense>• No backdrop click dismiss — user must make an explicit choice</SkillText>
-  <SkillText dense>• Escape key is disabled — user must use the action buttons</SkillText>
+  <SkillText dense>• No backdrop click dismiss - user must make an explicit choice</SkillText>
+  <SkillText dense>• Escape key is disabled - user must use the action buttons</SkillText>
   <SkillText dense>• Focus is trapped inside the dialog via native <code>showModal()</code></SkillText>
-  <p class="text-muted-foreground m-0">• While the alert is modal, <code>html:has(dialog.alert-dialog:modal)</code> sets <code>overflow: hidden</code> + <code>scrollbar-gutter: stable</code> — the page behind cannot scroll and its position is preserved for when the alert closes (no JS scroll-lock)</p>
+  <p class="text-muted-foreground m-0">• While the alert is modal, <code>html:has(dialog.alert-dialog:modal)</code> sets <code>overflow: hidden</code> + <code>scrollbar-gutter: stable</code> - the page behind cannot scroll and its position is preserved for when the alert closes (no JS scroll-lock)</p>
   </SkillField>
 </SkillPanel>
 
@@ -106,7 +106,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <div class="alert-dialog-content">
       <div class="alert-dialog-header">
         <h2 class="alert-dialog-title" id="dacm-title">Comfortable density</h2>
-        <p class="alert-dialog-description">Identical to the unsized default — 1.5rem content padding.</p>
+        <p class="alert-dialog-description">Identical to the unsized default - 1.5rem content padding.</p>
       </div>
       <div class="alert-dialog-footer"><button class="btn" data-variant="outline" data-alert-dialog-close>Close</button></div>
     </div>
@@ -127,12 +127,12 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
   <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
-    <li><code>default</code> — closed (the authored state; only close buttons or the API close it — Escape is blocked)</li>
-    <li><code>open</code> — shown modally via <code>showModal()</code></li>
+    <li><code>default</code> - closed (the authored state; only close buttons or the API close it - Escape is blocked)</li>
+    <li><code>open</code> - shown modally via <code>showModal()</code></li>
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/alert-dialog-\{state\}.png</code>.</p>
 
-Machine contract — verified against <a href="../schemas/alert-dialog.schema.json"><code>alert-dialog.schema.json</code></a> by <code>bun run verify</code>:
+Machine contract - verified against <a href="../schemas/alert-dialog.schema.json"><code>alert-dialog.schema.json</code></a> by <code>bun run verify</code>:
 
 ```states
 | State | Type | Values | Default | Description |

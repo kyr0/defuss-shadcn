@@ -1,7 +1,7 @@
 ---
 name: Progress
 type: ATM
-why: Native <progress value max> — semantics and rendering come free.
+why: Native <progress value max> - semantics and rendering come free.
 when: Completion of a task with a known total; unknown total takes the spinner.
 where: dist/components/progress/progress.css
 supportedStates: default
@@ -15,10 +15,10 @@ supportedStates: default
 
 ## Native Web APIs
 
-- [`<progress>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress) — native HTML progress indicator
-- [`::-webkit-progress-bar`](https://developer.mozilla.org/en-US/docs/Web/CSS/::-webkit-progress-bar) — track pseudo-element (WebKit)
-- [`::-webkit-progress-value`](https://developer.mozilla.org/en-US/docs/Web/CSS/::-webkit-progress-value) — indicator pseudo-element (WebKit)
-- [`::-moz-progress-bar`](https://developer.mozilla.org/en-US/docs/Web/CSS/::-moz-progress-bar) — indicator pseudo-element (Firefox)
+- [`<progress>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress) - native HTML progress indicator
+- [`::-webkit-progress-bar`](https://developer.mozilla.org/en-US/docs/Web/CSS/::-webkit-progress-bar) - track pseudo-element (WebKit)
+- [`::-webkit-progress-value`](https://developer.mozilla.org/en-US/docs/Web/CSS/::-webkit-progress-value) - indicator pseudo-element (WebKit)
+- [`::-moz-progress-bar`](https://developer.mozilla.org/en-US/docs/Web/CSS/::-moz-progress-bar) - indicator pseudo-element (Firefox)
 
 ## Structure
 
@@ -44,6 +44,6 @@ supportedStates: default
 ---
 ## Accessibility
 
-- `<progress>` is natively accessible — screen readers announce the percentage
+- `<progress>` is natively accessible - screen readers announce the percentage
 - The text content inside `<progress>` is the fallback for non-supporting browsers
 - Use `aria-label` if the progress bar lacks a visible label

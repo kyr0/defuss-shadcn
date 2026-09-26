@@ -68,7 +68,7 @@ function init() {
   if (!img) return;
   img.dataset.init = '';
   // catch images that errored BEFORE this script ran (module scripts are
-  // deferred; a fast/local failure can beat init — image.ts does the same)
+  // deferred; a fast/local failure can beat init - image.ts does the same)
   if (img.complete && img.naturalWidth === 0) applyError();
   img.addEventListener('error', applyError);
   function applyError() {

@@ -1,4 +1,4 @@
-/* defuss-shadcn — optional sizing utilities.
+/* defuss-shadcn - optional sizing utilities.
  * Standalone native CSS. No Tailwind, scan, runtime or consumer build.
  * Numeric dimensions = n × --size-base. Spacing additionally uses density.
  * Theme export remains untouched. Place this sheet before component CSS.

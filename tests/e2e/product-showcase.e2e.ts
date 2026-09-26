@@ -4,7 +4,7 @@ import { startServer } from './server.ts';
 
 /**
  * Why: product-showcase swaps a poster frame for the native <video> on a
- * play-button click — the visible contract is the State API's two states
+ * play-button click - the visible contract is the State API's two states
  * ('default' poster, 'playing' video) and CSS keying every layer off
  * [data-state]. This drives the real shipped files through both states and
  * the click itself. AGENTS.md "State API" + "Docs ↔ E2E parity".
@@ -87,7 +87,7 @@ try {
     assert.equal(r.btnHidden, 'hidden');
     assert.equal(r.paused, false, 'setState("playing") must start playback');
     assert.equal(r.muted, true, 'programmatic play must stay muted (autoplay policy)');
-    assert.equal(r.nativeControls, true, 'the browser draws playback UI — no custom chrome');
+    assert.equal(r.nativeControls, true, 'the browser draws playback UI - no custom chrome');
   });
 
   await check("setState('default') pauses, rewinds, and restores the poster", async () => {

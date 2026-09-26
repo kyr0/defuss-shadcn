@@ -2,7 +2,7 @@
 name: Avatar
 type: ATM
 why: Circular image with an initials fallback and an error state exposed through the State API.
-when: Representing a person or entity — alone, stacked in a group, or beside a name.
+when: Representing a person or entity - alone, stacked in a group, or beside a name.
 where: dist/components/avatar/avatar.css + dist/components/avatar/avatar.js
 supportedStates: default, error
 ---
@@ -15,8 +15,8 @@ supportedStates: default, error
 
 ## Native Web APIs
 
-- [`<img>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img) — image element with `onerror` fallback
-- [`:has()` selector](https://developer.mozilla.org/en-US/docs/Web/CSS/:has) — toggle fallback visibility based on image state
+- [`<img>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img) - image element with `onerror` fallback
+- [`:has()` selector](https://developer.mozilla.org/en-US/docs/Web/CSS/:has) - toggle fallback visibility based on image state
 
 ## Structure
 
@@ -67,7 +67,7 @@ supportedStates: default, error
 ## States
 
 The api is bound **per `.avatar` wrapper**. Declared states: `default`
-(image shown) · `error` (forced broken-image look — identical to a real
+(image shown) · `error` (forced broken-image look - identical to a real
 network `error` event).
 
 ```js

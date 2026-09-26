@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: button-group is CSS-only — it stitches sibling buttons into one
+ * Why: button-group is CSS-only - it stitches sibling buttons into one
  * control. Verify the inline-flex stretch, the -1px overlap that hides the
  * shared border, the square inner corners, the 1px separator, and the
  * vertical orientation switch.
@@ -49,7 +49,7 @@ await cssSmoke('button-group', [
     css: { 'flex-direction': 'column', 'align-items': 'stretch' },
   },
   {
-    // issue #13: vertical corners must be symmetric — Top rounded on BOTH
+    // issue #13: vertical corners must be symmetric - Top rounded on BOTH
     // top corners, Bottom on both bottom, middle fully square
     label: 'vertical group corners are symmetric top/bottom (issue #13)',
     run: async (page) => {

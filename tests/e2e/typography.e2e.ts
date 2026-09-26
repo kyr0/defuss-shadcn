@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: typography is CSS-only — the type scale is the contract. Every size is
+ * Why: typography is CSS-only - the type scale is the contract. Every size is
  * hardcoded px so the whole scale asserts literally, including the base-layer
  * body defaults and the modern text-wrap/hanging-punctuation features.
  */

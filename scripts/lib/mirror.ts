@@ -8,7 +8,7 @@ import { walk } from './audit.ts';
  * documentation site (dist/documentation/* + the SEO files), not a copy of
  * the whole dist/ tree. The pages still reference `../components/…` and
  * `../theme/…`, so the mirror rewrites those two prefixes to the jsDelivr
- * GitHub CDN — the same public URLs the documentation itself recommends for
+ * GitHub CDN - the same public URLs the documentation itself recommends for
  * consumers (see es-modules.html). Both sync-docs.ts and verify.ts use this
  * module so the "docs mirror fresh" gate compares against exactly what the
  * sync produces.
@@ -26,7 +26,7 @@ export const CDN_BASE = 'https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/d
 const TRANSFORMED = /\.(html|xml)$/;
 
 /**
- * Live reference to a dist sibling in an HTML tag — a real element attribute,
+ * Live reference to a dist sibling in an HTML tag - a real element attribute,
  * NOT an escaped code sample (`<link href="../…` shows consumers the
  * dist-relative path and must stay verbatim). [^>] cannot span two tags, and
  * escaped samples never contain a literal `<tag`.

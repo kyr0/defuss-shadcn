@@ -1,7 +1,7 @@
 ---
 name: Feature Details
 type: BLK
-why: Two-image feature split with a rule between — a grid with an auto-stretched divider column, no JS.
+why: Two-image feature split with a rule between - a grid with an auto-stretched divider column, no JS.
 when: "Benefits" section of a marketing page; for a feature list without imagery use cards instead.
 where: dist/components/feature-details/feature-details.css
 supportedStates: default
@@ -11,16 +11,16 @@ supportedStates: default
 
 ## Native basis
 CSS Grid (`1fr auto 1fr`) with a stretch divider column that only
-appears at container width ≥ 48rem — below it the stack provides the
+appears at container width ≥ 48rem - below it the stack provides the
 break, so the markup never swaps separators.
 
 ---
 
 ## Native Web APIs
-- [CSS Grid](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout) — `grid-template-columns: 1fr auto 1fr` split
-- [`aspect-ratio`](https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio) — square feature images
-- [Container queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries) — column counts follow the block
-- [`text-wrap`](https://developer.mozilla.org/en-US/docs/Web/CSS/text-wrap) — balance headings, pretty body
+- [CSS Grid](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout) - `grid-template-columns: 1fr auto 1fr` split
+- [`aspect-ratio`](https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio) - square feature images
+- [Container queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries) - column counts follow the block
+- [`text-wrap`](https://developer.mozilla.org/en-US/docs/Web/CSS/text-wrap) - balance headings, pretty body
 
 ---
 
@@ -79,6 +79,6 @@ break, so the markup never swaps separators.
 ---
 
 ## Notes
-- The divider is a styled `<div>` — the visual [Separator](../separator/component-skill.md) component is also correct where a semantic break is wanted; keep one approach per page.
+- The divider is a styled `<div>` - the visual [Separator](../separator/component-skill.md) component is also correct where a semantic break is wanted; keep one approach per page.
 - Feature images need real `alt` text (they carry meaning here, unlike the decorative divider).
 - Icon cards are `div`+`h3` pairs: no link or button until they actually navigate.

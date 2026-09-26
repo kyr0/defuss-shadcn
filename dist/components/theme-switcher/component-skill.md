@@ -1,8 +1,8 @@
 ---
 name: Theme Switcher
 type: MOL
-why: Switches the color theme by loading/unloading ONE generated stylesheet (<link id="theme-css">) — tokens stay static, no JS token objects, dark mode needs no re-apply because each theme file carries :root + .dark.
-when: Live theme pickers for docs sites, previews, or settings pages — unless the theme is fixed at deploy time (then just link the file directly).
+why: Switches the color theme by loading/unloading ONE generated stylesheet (<link id="theme-css">) - tokens stay static, no JS token objects, dark mode needs no re-apply because each theme file carries :root + .dark.
+when: Live theme pickers for docs sites, previews, or settings pages - unless the theme is fixed at deploy time (then just link the file directly).
 where: dist/components/theme-switcher/theme-switcher.css + dist/components/theme-switcher/theme-switcher.js
 supportedStates: default, open
 ---
@@ -13,17 +13,17 @@ supportedStates: default, open
 
 `<button popovertarget>` + `popover` (Popover API) for the dropdown, CSS
 anchor positioning for placement, and the plain `<link rel="stylesheet">`
-element as the theme application mechanism — swapping one link's `href`
+element as the theme application mechanism - swapping one link's `href`
 re-themes the whole page.
 
 ## Native Web APIs
 
-- [`popover`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/popover) + [`popovertarget`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#popovertarget) — declarative dropdown open/close with light dismiss
-- [`<link rel="stylesheet">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link) — the theme *is* a stylesheet; creating/removing one `<link>` applies/resets the theme
-- [`anchor-name` / `anchor()`](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning) — menu placement below the trigger, `position-try-fallbacks: flip-block` for viewport edges
-- [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) + `transition-behavior: allow-discrete` — enter/exit animation across the `display: none` switch
-- [`CustomEvent`](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent) — `defuss-theme-change` keeps multiple switchers (and the doc-site theme grid) in sync
-- [WAI-ARIA menu pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menu-button/) — Arrow/Home/End roving focus, `aria-checked`, Escape (native light dismiss)
+- [`popover`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/popover) + [`popovertarget`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#popovertarget) - declarative dropdown open/close with light dismiss
+- [`<link rel="stylesheet">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link) - the theme *is* a stylesheet; creating/removing one `<link>` applies/resets the theme
+- [`anchor-name` / `anchor()`](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning) - menu placement below the trigger, `position-try-fallbacks: flip-block` for viewport edges
+- [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) + `transition-behavior: allow-discrete` - enter/exit animation across the `display: none` switch
+- [`CustomEvent`](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent) - `defuss-theme-change` keeps multiple switchers (and the doc-site theme grid) in sync
+- [WAI-ARIA menu pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menu-button/) - Arrow/Home/End roving focus, `aria-checked`, Escape (native light dismiss)
 
 ## Structure
 
@@ -57,7 +57,7 @@ re-themes the whole page.
 </div>
 ```
 
-The page must load the token stylesheet with `id="tokens-css"` — theme
+The page must load the token stylesheet with `id="tokens-css"` - theme
 files resolve relative to it, **one folder up** (the shipped layout is
 `theme/<id>.css` beside `theme/utils/default-semantic-tokens.css`).
 `data-theme-base` on the `.theme-switcher` root overrides with an explicit
@@ -108,13 +108,19 @@ globalThis.df$.shadcn.themeSwitcherApi.select(document.querySelector('#ts-menu')
   file's folder, same token shape as `default-semantic-tokens.css`
   (`:root` + `.dark` blocks). This repo generates them from
   `src/documentation/runtime/themes.ts` into `dist/theme/<id>.css`.
+- A theme that ships **fonts** declares them via `font-sans`/`font-serif`/
+  `font-mono` tokens plus a `links:` array in `themes.ts`; build.ts emits
+  `dist/theme/<id>.json` (schema v1, `<link>` VNodes) and selecting that theme
+  also fires `df$.shadcn.loadTheme(id)` - no sidecar (404) simply means the
+  theme needs no resources. Apply `'default'` again and every loaded link is
+  removed (no font bleed).
 - The component **persists to `localStorage`** (`defuss-shadcn-color-theme`)
   and dispatches `defuss-theme-change` (`event.detail.id`) on every change —
   listen to sync your own UI (favicons, previews); multiple switchers on one
   page stay in sync automatically through the same event.
 - `<link>` loads are **async**: components see the new tokens one frame
   later; do not measure theme colors synchronously after `select()`.
-- Items are `<button>`s inside `popover="auto"` — native focus return +
+- Items are `<button>`s inside `popover="auto"` - native focus return +
   Escape. Keyboard: Arrow/Home/End rove, Enter/Space selects, Tab closes
   (light dismiss).
 - Menu scrolls (`max-height`) with `overscroll-behavior: contain` so long

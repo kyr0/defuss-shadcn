@@ -17,7 +17,7 @@ import {
 /**
  * Why: collect the index entries for every component folder, in stable
  * alphabetical order, failing loudly (throw) on the first skill without valid
- * frontmatter — a component without a discoverable entry is the exact failure
+ * frontmatter - a component without a discoverable entry is the exact failure
  * mode SKILL.md exists to prevent.
  */
 export function skillEntries(compsDir: string): SkillEntry[] {
@@ -28,14 +28,14 @@ export function skillEntries(compsDir: string): SkillEntry[] {
     const meta = parseSkillFrontmatter(readFileSync(skill, 'utf8'));
     if (!meta)
       throw new Error(
-        `src/components/${folder}/component-skill.md is missing valid frontmatter (${SKILL_FRONTMATTER_KEYS.join('/')}) — see AGENTS.md "Component skill template"`,
+        `src/components/${folder}/component-skill.md is missing valid frontmatter (${SKILL_FRONTMATTER_KEYS.join('/')}) - see AGENTS.md "Component skill template"`,
       );
     entries.push({ folder, ...meta });
   }
   return entries;
 }
 
-/** Why: the full SKILL.md text — template prose + generated index. Pure
+/** Why: the full SKILL.md text - template prose + generated index. Pure
  * function of src/, so build.ts (write) and verify.ts (compare) share one truth. */
 export function buildSkillText(src: string): string {
   return assembleSkillText(

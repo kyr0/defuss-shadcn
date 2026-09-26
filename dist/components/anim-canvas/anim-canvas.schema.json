@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "name": "anim-canvas",
+  "states": {
+    "slide": {
+      "type": "string",
+      "target": {
+        "kind": "selector",
+        "selector": ".anim-canvas"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "default",
+        "args": {
+          "slide": "@value"
+        }
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-current-slide"
+      },
+      "editor": {
+        "component": "text"
+      }
+    },
+    "overview": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".anim-canvas"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "overview",
+        "args": {
+          "value": "@value"
+        }
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-overview"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {
+    "goEast": {
+      "target": {
+        "kind": "selector",
+        "selector": ".anim-canvas [data-anim-canvas-go=\"east\"]"
+      },
+      "operation": {
+        "kind": "event",
+        "name": "click"
+      }
+    },
+    "goWest": {
+      "target": {
+        "kind": "selector",
+        "selector": ".anim-canvas [data-anim-canvas-go=\"west\"]"
+      },
+      "operation": {
+        "kind": "event",
+        "name": "click"
+      }
+    },
+    "goNorth": {
+      "target": {
+        "kind": "selector",
+        "selector": ".anim-canvas [data-anim-canvas-go=\"north\"]"
+      },
+      "operation": {
+        "kind": "event",
+        "name": "click"
+      }
+    },
+    "goSouth": {
+      "target": {
+        "kind": "selector",
+        "selector": ".anim-canvas [data-anim-canvas-go=\"south\"]"
+      },
+      "operation": {
+        "kind": "event",
+        "name": "click"
+      }
+    },
+    "toggleOverview": {
+      "target": {
+        "kind": "selector",
+        "selector": ".anim-canvas [data-anim-canvas-go=\"overview\"]"
+      },
+      "operation": {
+        "kind": "event",
+        "name": "click"
+      }
+    }
+  }
+}

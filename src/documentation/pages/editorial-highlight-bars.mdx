@@ -1,0 +1,212 @@
+---
+title: "Editorial Highlight Bars - Presentation"
+description: "Swiss International design language presenting a region’s commuting shift as a 10-slide deck - one highlighted bar, recolored, re-ranked by volume and folded into a mode-share donut on a single morphing chart."
+slug: "editorial-highlight-bars"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="editorial-highlight-bars" title="Editorial Highlight Bars" component="presentation">
+  Swiss International: flat paper, a strict left edge and one red decision per slide - a metro region’s commute data told through a highlighted ranking that re-colors, re-ranks and finally folds into a donut, all on one chart.
+</PageHeader>
+
+```html example label="Swiss International" schema="none" height="26" hint="Slides wipe in and fade out through the df$.anim engine (data-anim-in on the deck); red curtains mark the section breaks. One deck-level chart (df$.shadcn.chart.deck) plays the chart slides: the highlight moves from the winner to the losers, the same bars re-rank by volume, then fold into the mode-share donut. Use ← / → inside the deck, N for notes." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-highlight" data-anim-in="wipeIn" data-anim-out="fadeOut" style="--presentation-ink:#111111;--presentation-ink-foreground:#F4F1E8;--presentation-paper:#F4F1E8;--presentation-paper-foreground:#111111;--presentation-accent:#E6392F;font-family:Arial, Helvetica, sans-serif;" tabindex="-1" aria-label="The commute shift - metro region mobility 2021 to 2026">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="Commute modes ranked by growth from 2021 to 2026, e-bike trips up 142 percent, re-ranked by daily volume and shown as a mode-share donut"></div>
+  <section class="slide" data-slide data-theme="paper" aria-label="Cover">
+    <svg aria-hidden="true" width="520" height="900" viewBox="0 0 520 900" style="position:absolute; right:0; top:0;">
+      <rect x="170" y="0" width="350" height="350" fill="#E6392F" />
+      <rect x="170" y="380" width="350" height="2" fill="currentColor" opacity="0.35" />
+      <rect x="170" y="420" width="220" height="2" fill="currentColor" opacity="0.35" />
+    </svg>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Highlight bars · Swiss International</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; letter-spacing:-0.035em; font-weight:700; font-size:6.5rem; max-width:1000px;">The commute shift, 2021–2026</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">Seven ways to cross the metro region every weekday - one of them more than doubled.</p>
+    <p class="presentation-note">One red block, one red bar: the whole deck spends its color once per slide.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="growth" style="justify-content:flex-start;" aria-label="Growth ranking">
+    <header class="presentation-header"><span>Growth</span><span>Trips per weekday · 2021 → 2026</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; letter-spacing:-0.035em; font-weight:700;">E-bike trips grew +142% - nothing else came close</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">One highlighted bar, six in context. Let the red do the talking.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="decline" style="justify-content:flex-start;" aria-label="Declines">
+    <header class="presentation-header"><span>Growth</span><span>The other end</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; letter-spacing:-0.035em; font-weight:700;">Two modes shrank: cars −9%, taxis −17%</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Same bars, the highlight moves - the story is now the bottom of the list.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="volume" style="justify-content:flex-start;" aria-label="Volume ranking">
+    <header class="presentation-header"><span>Volume</span><span>Trips per weekday, thousands · 2026</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; letter-spacing:-0.035em; font-weight:700;">Growth is not volume: e-bikes still rank fifth</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The bars re-rank in place. Cars still carry four times more trips.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Key figures">
+    <p class="presentation-eyebrow" data-df-entrance="fade">Three numbers for the transport board</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#E6392F; letter-spacing:-0.035em; font-weight:700;">+<span data-count="142">142</span>%</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">e-bike trips since 2021</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; letter-spacing:-0.035em; font-weight:700;"><span data-count="97">97</span>k</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">e-bike trips on an average weekday</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; letter-spacing:-0.035em; font-weight:700;">−<span data-count="41">41</span>k</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">fewer car trips per weekday than in 2021</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">The shift is real - and still small enough to lose if the lanes stop growing.</p>
+    <p class="presentation-note">Three numbers, then stop talking.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="On the ground">
+    <header class="presentation-header"><span>On the ground</span><span>Protected lanes since 2023</span></header>
+    <div style="display:flex; gap:4.5rem; align-items:center; margin-top:3.5rem;">
+      <figure class="image" data-ratio="4/3" data-df-entrance="wipe" style="--df-motion-delay:150ms; flex:0 0 700px; margin:0;">
+        <img src="https://picsum.photos/id/76/960/720" alt="A green bicycle leaning against a weathered wooden wall" loading="lazy" width="960" height="720" style="width:100%; height:100%; object-fit:cover;" />
+        <figcaption class="image-caption" style="font-size:1.25rem;">Parked for the day (stock photo).</figcaption>
+      </figure>
+      <div style="flex:1 1 0; min-width:0;">
+        <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; letter-spacing:-0.035em; font-weight:700;">Where the lanes went, the bikes followed</h2>
+        <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:300ms; font-size:1.7rem;">38 km of kerb-protected lanes opened in 2023. E-bike counts on those corridors tripled within eighteen months.</p>
+      </div>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Infrastructure is the cause; the chart is the effect.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="west" data-anim-in-blocks="5" data-anim-in-color="#E6392F" aria-label="Trips by mode">
+    <header class="presentation-header"><span>The data</span><span>Thousands of trips per weekday</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" style="font-size:1.45rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">Metro region weekday trips by main mode (synthetic).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">Mode</th><th class="table-head" style="text-align:right">2021</th><th class="table-head" style="text-align:right">2026</th><th class="table-head" style="text-align:right">Change</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row"><td class="table-cell">Car</td><td class="table-cell" style="text-align:right">453</td><td class="table-cell" style="text-align:right">412</td><td class="table-cell" style="text-align:right">−9%</td></tr>
+          <tr class="table-row"><td class="table-cell">Tram</td><td class="table-cell" style="text-align:right">176</td><td class="table-cell" style="text-align:right">236</td><td class="table-cell" style="text-align:right">+34%</td></tr>
+          <tr class="table-row"><td class="table-cell">Walking</td><td class="table-cell" style="text-align:right">155</td><td class="table-cell" style="text-align:right">188</td><td class="table-cell" style="text-align:right">+21%</td></tr>
+          <tr class="table-row"><td class="table-cell">Bus</td><td class="table-cell" style="text-align:right">126</td><td class="table-cell" style="text-align:right">141</td><td class="table-cell" style="text-align:right">+12%</td></tr>
+          <tr class="table-row" style="font-weight:700"><td class="table-cell">E-bike</td><td class="table-cell" style="text-align:right">40</td><td class="table-cell" style="text-align:right">97</td><td class="table-cell" style="text-align:right">+142%</td></tr>
+          <tr class="table-row"><td class="table-cell">Taxi & ride-hail</td><td class="table-cell" style="text-align:right">37</td><td class="table-cell" style="text-align:right">31</td><td class="table-cell" style="text-align:right">−17%</td></tr>
+          <tr class="table-row"><td class="table-cell">Cargo bike</td><td class="table-cell" style="text-align:right">10</td><td class="table-cell" style="text-align:right">18</td><td class="table-cell" style="text-align:right">+88%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The table is for the follow-up email; the chart is for the room.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; letter-spacing:-0.035em; font-weight:700;">“The e-bike line went vertical the year the protected lanes opened. Paint did nothing; kerbs did everything.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#E6392F; color:#F4F1E8;"><span class="avatar-fallback">LB</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Lena Brandt<br /><span style="opacity:0.7; font-size:1.4rem;">Head of mobility planning - 14 years on the network</span></p>
+    </div>
+    <p class="presentation-note">Let the quote land before the donut.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="share" style="justify-content:flex-start;" aria-label="Mode share">
+    <header class="presentation-header"><span>Mode share</span><span>1.12 M trips per weekday · 2026</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; letter-spacing:-0.035em; font-weight:700;">Cars still take 37% of all trips</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The same seven names, now as shares of the whole weekday.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Questions from the council">
+    <header class="presentation-header"><span>Q & A</span><span>Transport committee</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; letter-spacing:-0.035em; font-weight:700;">Questions from the council</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="hb-qa" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Did cars shrink because people moved away?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">No - the region grew 3% over the period; car trips fell while total trips rose from 997k to 1.12 M.</p></div>
+      </details>
+      <details class="accordion-item" name="hb-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Is cargo-bike growth just delivery firms?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">About half: 9k of the 18k daily trips are commercial deliveries, the rest are families.</p></div>
+      </details>
+      <details class="accordion-item" name="hb-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>What would another 40 km of lanes buy?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">On the 2023 pattern, roughly 50k more e-bike trips per weekday by 2030.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">One answer open at a time keeps the room on one question.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Takeaways">
+    <header class="presentation-header"><span>Takeaways</span><span>For the 2027 plan</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">■</span><span>Build lanes where the e-bike growth already is - the demand is proven.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">■</span><span>Tram capacity is next: +60k trips in five years is a full line.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">■</span><span>Car trips fell 9% without a single restriction.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">■</span><span>Measure volume and growth together - either alone misleads.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Read them once, then open the discussion.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-anim-in="blocksIn" data-anim-in-direction="north" data-anim-in-blocks="4" data-anim-in-color="#E6392F" aria-label="Closing">
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; letter-spacing:-0.035em; font-weight:700;">One red bar. One decision.</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">Synthetic data for a fictional metro region - the pattern is real: highlight the answer, mute the context.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">End on the design rule, not the data.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) - build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-highlight');
+    const INK = '#111111', MUTED = '#8A857B', RED = '#E6392F', GREY = '#CFCAC0';
+    const G = { left: 250, right: 150, top: 320, bottom: 140 };
+    // [mode, growth %, trips per weekday 2026 (thousands)]
+    const modes = [['E-bike', 142, 97], ['Cargo bike', 88, 18], ['Tram', 34, 236], ['Walking', 21, 188], ['Bus', 12, 141], ['Car', -9, 412], ['Taxi & ride-hail', -17, 31]];
+    const byVolume = modes.slice().sort((a, b) => b[2] - a[2]);
+
+    const ranking = (rows, value, color, fmt, xAxis) => ({
+      grid: G,
+      xAxis,
+      yAxis: { type: 'category', inverse: true, data: rows.map((m) => m[0]), axisLine: { show: false }, axisLabel: { color: INK, fontWeight: 700 } },
+      series: [{ id: 'modes', type: 'bar', barWidth: '62%',
+        data: rows.map((m) => ({ name: m[0], value: m[value], itemStyle: { color: color(m) } })),
+        label: { show: true, position: 'right', formatter: fmt, color: INK, fontWeight: 700 } }],
+    });
+    const signed = (p) => (p.value > 0 ? '+' : '−') + Math.abs(p.value) + '%';
+    const growthAxis = { type: 'value', min: -40, max: 160, interval: 40, axisLabel: { color: MUTED, formatter: (v) => v + '%' } };
+
+    df$.shadcn.chart.deck(deck, {
+      base: { tooltip: { trigger: 'item' } },
+      states: {
+        growth: ranking(modes, 1, (m) => (m[0] === 'E-bike' ? RED : GREY), signed, growthAxis),
+        decline: ranking(modes, 1, (m) => (m[1] < 0 ? RED : GREY), signed, growthAxis),
+        volume: ranking(byVolume, 2, (m) => (m[0] === 'E-bike' ? RED : GREY), (p) => p.value + 'k',
+          { type: 'value', max: 450, interval: 150, axisLabel: { color: MUTED, formatter: (v) => v + 'k' } }),
+        share: {
+          series: [{ id: 'modes', type: 'pie', radius: ['30%', '52%'], center: ['50%', '64%'], startAngle: 90,
+            data: byVolume.map((m) => ({ name: m[0], value: m[2], itemStyle: { color: m[0] === 'E-bike' ? RED : m[0] === 'Car' ? INK : GREY } })),
+            itemStyle: { borderColor: '#F4F1E8', borderWidth: 4 },
+            label: { formatter: (p) => p.name + '  ' + Math.round(p.percent) + '%', color: INK, fontWeight: 700 },
+            labelLine: { length: 24, length2: 30, lineStyle: { color: MUTED } } }],
+        },
+      },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 01-editorial-highlight-bars (Swiss International) - a fictional metro region, synthetic figures.</p>
+<SourceFiles component="presentation" />
+</DocPage>

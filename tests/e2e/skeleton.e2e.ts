@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: skeleton is CSS-only — the pulse keyframes are its entire purpose.
+ * Why: skeleton is CSS-only - the pulse keyframes are its entire purpose.
  * Verify the animation is actually running (Web Animations API sees it) and
  * the round modifier overrides the radius.
  */

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: icon is CSS-only — [data-lucide] geometry + size scale + the spin
+ * Why: icon is CSS-only - [data-lucide] geometry + size scale + the spin
  * animation. Sizes are literal px; spin is verified via the Web Animations
  * API so a silent animation regression fails loudly.
  */

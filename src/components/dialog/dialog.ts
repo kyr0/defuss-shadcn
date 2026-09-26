@@ -56,7 +56,7 @@ function init() {
     });
   });
   /* .command excluded: the command component owns its dialogs (own backdrop
-     close, filtering, focus). Without this, dialog.js — which loads first —
+     close, filtering, focus). Without this, dialog.js - which loads first —
      claims them via data-init and command.js's init silently skips them. */
   document.querySelectorAll('dialog:not(.alert-dialog):not(.sheet):not(.command):not([data-init])').forEach((dialog) => {
     dialog.dataset.init = '';
@@ -73,7 +73,7 @@ function init() {
     });
     dialog.addEventListener('close', () => {
       // `close` fires AFTER the exit transition (display allow-discrete), so a
-      // fast re-open can beat it — a stale event must not downgrade an open
+      // fast re-open can beat it - a stale event must not downgrade an open
       // dialog back to 'default' or yank focus out of it while it's showing.
       if (dialog.open) return;
       // reflect the actual UI state: any close path (Escape, backdrop, close

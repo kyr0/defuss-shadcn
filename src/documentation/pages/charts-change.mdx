@@ -1,0 +1,126 @@
+---
+title: "Charts: Change"
+description: "Change-over-time chart patterns on the chart component - waterfall decomposition, normalized stacked bars, bump ranking, and annotated time series, all themed by the token adapter."
+slug: "charts-change"
+---
+
+import { DocPage, PageHeader, DocLink, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="charts-change" title="Charts: Change" component="chart" introStyle="max-width:38rem;">
+  Patterns for showing how values move: a waterfall decomposing a net change, a 100% stack for shifting composition, a bump chart for rank over time, and an annotated time series that turns a line into an argument. Each is one option object on the <DocLink href="chart.html">Chart</DocLink> component - palette, typography and chrome come from the active theme.
+</PageHeader>
+
+```html example label="Waterfall" schema="none" height="27" previewStyle="align-items:flex-start;" hint="Explain how a total was built: a transparent stack base lifts each contributor, gains stack in var(--chart-2), losses hang in var(--destructive), and the Start/End pillars read in foreground ink. axisLabel.interval 0 keeps every step named."
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <h3 class="chart-title">Revenue bridge, start to end</h3>
+  <p class="chart-dek">Churn and FX erase what Product, Pricing and Operations add - the bridge lands at 135.</p>
+  <div id="chg-waterfall" class="chart" role="img" aria-label="Waterfall chart from 120 to 135; gains from Product, Pricing and Operations, losses from Churn and FX"></div>
+  <figcaption class="chart-source">Synthetic data · adapted from echarts-feat 06-waterfall</figcaption>
+</figure>
+<script>
+  window.addEventListener('load', () => {
+    const labels = ['Start', 'Product', 'Pricing', 'Churn', 'FX', 'Operations', 'End'];
+    const changes = [120, 24, 18, -29, -9, 11];
+    let running = 120;
+    const base = [0], gain = [120], loss = ['-'];
+    for (let i = 1; i < changes.length; i++) {
+      const d = changes[i];
+      if (d >= 0) { base.push(running); gain.push(d); loss.push('-'); running += d; }
+      else { running += d; base.push(running); gain.push('-'); loss.push(-d); }
+    }
+    base.push(0); gain.push(running); loss.push('-');
+    const last = labels.length - 1;
+    df$.shadcn.chart.mount(document.getElementById('chg-waterfall'), {
+      grid: { top: 28 },
+      xAxis: { type: 'category', data: labels, axisLabel: { interval: 0, color: 'var(--foreground)', fontWeight: 500 } },
+      yAxis: { type: 'value', min: 0 },
+      series: [
+        { type: 'bar', stack: 'w', silent: true, data: base, itemStyle: { color: 'transparent' }, tooltip: { show: false } },
+        { name: 'Gain', type: 'bar', stack: 'w', barWidth: '56%',
+          data: gain.map((v, i) => ({ value: v, itemStyle: { color: i === 0 || i === last ? 'var(--foreground)' : 'var(--chart-2)' } })),
+          label: { show: true, position: 'top', formatter: (p) => (p.value === '-' ? '' : (p.dataIndex === 0 || p.dataIndex === last ? '' : '+') + p.value), fontWeight: 600 } },
+        { name: 'Loss', type: 'bar', stack: 'w', barWidth: '56%', data: loss,
+          itemStyle: { color: 'var(--destructive)' },
+          label: { show: true, position: 'bottom', formatter: (p) => (p.value === '-' ? '' : '−' + p.value), fontWeight: 600 } },
+      ],
+    });
+  });
+</script>
+```
+
+```html example label="Normalized stack" schema="none" height="27" previewStyle="align-items:flex-start;" hint="Composition changes even when totals do not: a 100% stack compares mix over time. Fully declarative - the data-chart JSON is the whole option; the theme palette colors the four segments and the legend sits on top."
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <h3 class="chart-title">Traffic mix by channel</h3>
+  <p class="chart-dek">Direct declines while Social and Referral grow - shares, not absolutes.</p>
+  <div class="chart" role="img" aria-label="Normalized stacked bars of traffic share by channel from 2022 to 2026; Direct declines from 42 to 27 percent"
+       data-chart='{"legend":{"left":0},"xAxis":{"type":"category","data":["2022","2023","2024","2025","2026"]},"yAxis":{"type":"value","max":100,"axisLabel":{"formatter":"{value}%"}},"series":[{"name":"Direct","type":"bar","stack":"total","barWidth":"52%","itemStyle":{"borderRadius":0},"data":[42,40,35,30,27]},{"name":"Search","type":"bar","stack":"total","itemStyle":{"borderRadius":0},"data":[25,24,25,27,26]},{"name":"Social","type":"bar","stack":"total","itemStyle":{"borderRadius":0},"data":[18,20,22,23,24]},{"name":"Referral","type":"bar","stack":"total","itemStyle":{"borderRadius":[4,4,0,0]},"data":[15,16,18,20,23]}]}'></div>
+  <figcaption class="chart-source">Synthetic data · adapted from echarts-feat 07-normalized-stack</figcaption>
+</figure>
+```
+
+```html example label="Bump ranking" schema="none" height="27" previewStyle="align-items:flex-start;" hint="Ranks crossing is the story: an inverted value axis, one smoothed line per competitor, names as end labels. Declarative - {a} resolves the series name, and emphasis.focus dims the others on hover."
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <h3 class="chart-title">League position by quarter</h3>
+  <p class="chart-dek">Alpha and Beta trade the top spot; Epsilon never leaves the bottom two.</p>
+  <div class="chart" role="img" aria-label="Bump chart of rank over six quarters; Alpha and Beta trade first place, Epsilon stays last"
+       data-chart='{"grid":{"top":16,"right":80},"xAxis":{"type":"category","data":["Q1","Q2","Q3","Q4","Q5","Q6"],"boundaryGap":false},"yAxis":{"type":"value","inverse":true,"min":1,"max":5,"interval":1,"splitLine":{"show":false},"axisLabel":{"formatter":"#{value}"}},"series":[{"name":"Alpha","type":"line","smooth":0.3,"symbolSize":10,"lineStyle":{"width":4},"data":[1,1,2,2,1,1],"endLabel":{"show":true,"formatter":"{a}","distance":10,"fontWeight":600},"emphasis":{"focus":"series"}},{"name":"Beta","type":"line","smooth":0.3,"symbolSize":10,"lineStyle":{"width":4},"data":[2,3,1,1,2,3],"endLabel":{"show":true,"formatter":"{a}","distance":10,"fontWeight":600},"emphasis":{"focus":"series"}},{"name":"Gamma","type":"line","smooth":0.3,"symbolSize":10,"lineStyle":{"width":4},"data":[4,2,3,3,3,2],"endLabel":{"show":true,"formatter":"{a}","distance":10,"fontWeight":600},"emphasis":{"focus":"series"}},{"name":"Delta","type":"line","smooth":0.3,"symbolSize":10,"lineStyle":{"width":4},"data":[3,4,4,5,4,4],"endLabel":{"show":true,"formatter":"{a}","distance":10,"fontWeight":600},"emphasis":{"focus":"series"}},{"name":"Epsilon","type":"line","smooth":0.3,"symbolSize":10,"lineStyle":{"width":4},"data":[5,5,5,4,5,5],"endLabel":{"show":true,"formatter":"{a}","distance":10,"fontWeight":600},"emphasis":{"focus":"series"}}]}'></div>
+  <figcaption class="chart-source">Synthetic data · adapted from echarts-feat 08-bump-ranking</figcaption>
+</figure>
+```
+
+```html example label="Annotated time series" schema="none" height="35" previewStyle="align-items:flex-start;" hint="Annotations turn a line into an argument: a markArea shades the launch window, a markPoint flags the event, and an end label reads the last value. The area fill is a vertical gradient over var(--chart-2) - token colors inside gradients resolve too."
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <h3 class="chart-title">Weekly active users, 18 weeks</h3>
+  <p class="chart-dek">A shaded launch window and one event pin do the editorial work.</p>
+  <div id="chg-annotated" class="chart" data-size="lg" role="img" aria-label="Annotated line chart of weekly active users rising from 32 to 78, with a shaded launch window in weeks 6 to 9 and an event pin in week 8"></div>
+  <figcaption class="chart-source">Synthetic data · adapted from echarts-feat 11-annotated-timeseries</figcaption>
+</figure>
+<script>
+  window.addEventListener('load', () => {
+    const data = [32, 34, 33, 36, 39, 44, 49, 53, 55, 54, 58, 63, 66, 64, 68, 74, 73, 78];
+    const weeks = data.map((_, i) => 'W' + (i + 1));
+    df$.shadcn.chart.mount(document.getElementById('chg-annotated'), {
+      grid: { top: 32, right: 40 },
+      xAxis: { type: 'category', data: weeks, boundaryGap: false, axisLabel: { interval: 2 } },
+      yAxis: { type: 'value', min: 25, max: 85 },
+      tooltip: { trigger: 'axis' },
+      series: [{
+        name: 'Weekly active users', type: 'line', data, smooth: 0.3, symbol: 'none',
+        lineStyle: { width: 3, color: 'var(--chart-2)' },
+        itemStyle: { color: 'var(--chart-2)' },
+        areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [
+          { offset: 0, color: 'color-mix(in oklch, var(--chart-2) 28%, transparent)' },
+          { offset: 1, color: 'color-mix(in oklch, var(--chart-2) 0%, transparent)' } ] } },
+        endLabel: { show: true, distance: 10, formatter: '{c}', fontWeight: 700, fontSize: 15 },
+        markArea: {
+          silent: true,
+          itemStyle: { color: 'color-mix(in oklch, var(--foreground) 6%, transparent)' },
+          label: { color: 'var(--muted-foreground)', fontWeight: 600, distance: 8 },
+          data: [[{ name: 'Launch window', xAxis: 'W6' }, { xAxis: 'W9' }]],
+        },
+        markPoint: {
+          symbol: 'pin', symbolSize: 46,
+          itemStyle: { color: 'var(--primary)' },
+          label: { color: 'var(--primary-foreground)', fontWeight: 700 },
+          data: [{ coord: ['W8', 53], value: 'A' }],
+        },
+      }],
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground">Patterns adapted from the ECharts design-language lab (echarts-feat/), re-skinned on the design tokens via the chart theme adapter. Colors are written as <code>var(--token)</code> (or <code>color-mix()</code> over tokens) - the runtime resolves them to sRGB for ECharts and re-resolves them after every theme or dark-mode switch.</p>
+
+<SourceFiles component="chart">
+  <SourceNote for="css">The chart sizing surface and editorial frame these patterns mount into.</SourceNote>
+  <SourceNote for="js">The runtime every demo on this page converges on: token theme adapter, token-reference resolution, mount/resize lifecycle, chartStory, the deck stage and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

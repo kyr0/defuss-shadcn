@@ -65,7 +65,7 @@
         margin-top: -1px;
       }
 
-      /* Square exactly the BLOCK corners that touch a neighbour — a
+      /* Square exactly the BLOCK corners that touch a neighbour - a
          non-first button squares its top edge, a non-last its bottom
          edge; the base .btn radius keeps every outer corner rounded on
          both sides. No per-corner "restore" overrides: the last block's

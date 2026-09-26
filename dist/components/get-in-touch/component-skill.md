@@ -1,7 +1,7 @@
 ---
 name: Get In Touch
 type: BLK
-why: A bordered contact CTA card — avatar overlap is negative margins + outline, not positioning math.
+why: A bordered contact CTA card - avatar overlap is negative margins + outline, not positioning math.
 when: End-of-page "want to know more?" band; for an actual contact form use Form + Input components.
 where: dist/components/get-in-touch/get-in-touch.css
 supportedStates: default
@@ -18,9 +18,9 @@ forced-colors).
 ---
 
 ## Native Web APIs
-- [Negative margins](https://developer.mozilla.org/en-US/docs/Web/CSS/margin#negative_values) — avatar fan overlap
-- [`outline`](https://developer.mozilla.org/en-US/docs/Web/CSS/outline) — background ring that respects forced-colors
-- [Avatar](../avatar/component-skill.md) — the people row is the component
+- [Negative margins](https://developer.mozilla.org/en-US/docs/Web/CSS/margin#negative_values) - avatar fan overlap
+- [`outline`](https://developer.mozilla.org/en-US/docs/Web/CSS/outline) - background ring that respects forced-colors
+- [Avatar](../avatar/component-skill.md) - the people row is the component
 
 ---
 
@@ -60,5 +60,5 @@ forced-colors).
 
 ## Notes
 - Avatars render grayscale (`filter: grayscale(1)`) for the muted "team" look; dropped under `prefers-reduced-transparency`.
-- `prefers-reduced-motion` has no effect here — nothing animates, which is the point.
+- `prefers-reduced-motion` has no effect here - nothing animates, which is the point.
 - The CTA should trigger a real destination (mailto:, form page); a button that opens a [Dialog](../dialog/component-skill.md) form is the native-enhanced upgrade.

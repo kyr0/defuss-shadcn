@@ -9,7 +9,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <DocPage meta={meta}>
 
 <PageHeader slug="data-attribute-api" title="Data Attribute API" introStyle="max-width:38rem;">
-  In React or Solid, you configure components with props. In defuss-shadcn, data attributes are your props. Every component uses a single CSS class to declare <em>what</em> it is, and <code>data-\*</code> attributes to declare <em>which version</em> — variant, size, orientation, and behavior.
+  In React or Solid, you configure components with props. In defuss-shadcn, data attributes are your props. Every component uses a single CSS class to declare <em>what</em> it is, and <code>data-\*</code> attributes to declare <em>which version</em> - variant, size, orientation, and behavior.
 </PageHeader>
 
 <H2>Props → Data Attributes</H2>
@@ -29,13 +29,13 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 <div style="display:grid;grid-template-columns:auto 1fr;gap:0.75rem 1.5rem;margin-bottom:1.5rem;align-items:baseline;">
   <code style="font-size:0.8125rem;font-weight:600;">class</code>
-  <span class="text-sm text-muted-foreground">Identifies <strong>what</strong> the element is — <code>.btn</code>, <code>.badge</code>, <code>.card</code>, <code>.dialog</code>. One class per component. This is the base selector in CSS.</span>
+  <span class="text-sm text-muted-foreground">Identifies <strong>what</strong> the element is - <code>.btn</code>, <code>.badge</code>, <code>.card</code>, <code>.dialog</code>. One class per component. This is the base selector in CSS.</span>
   <code style="font-size:0.8125rem;font-weight:600;">data-variant</code>
-  <span class="text-sm text-muted-foreground">Selects the visual style — <code>default</code>, <code>outline</code>, <code>ghost</code>, <code>destructive</code>, etc. Think of it as the component's "skin."</span>
+  <span class="text-sm text-muted-foreground">Selects the visual style - <code>default</code>, <code>outline</code>, <code>ghost</code>, <code>destructive</code>, etc. Think of it as the component's "skin."</span>
   <code style="font-size:0.8125rem;font-weight:600;">data-size</code>
-  <span class="text-sm text-muted-foreground">Selects the size — <code>sm</code>, <code>lg</code>, <code>icon</code>, etc. Controls height, padding, and font-size.</span>
+  <span class="text-sm text-muted-foreground">Selects the size - <code>sm</code>, <code>lg</code>, <code>icon</code>, etc. Controls height, padding, and font-size.</span>
   <code style="font-size:0.8125rem;font-weight:600;">data-\*</code>
-  <span class="text-sm text-muted-foreground">Additional axes like <code>data-orientation</code>, <code>data-side</code>, <code>data-position</code> — each controls one independent dimension. Compose freely.</span>
+  <span class="text-sm text-muted-foreground">Additional axes like <code>data-orientation</code>, <code>data-side</code>, <code>data-position</code> - each controls one independent dimension. Compose freely.</span>
 </div>
 
 <p class="text-sm text-muted-foreground mb-8">The CSS combines these with attribute selectors: <code>.btn\[data-variant="outline"\]</code>. No modifier classes, no BEM suffixes, no utility chains.</p>
@@ -59,7 +59,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   <span class="def-term">Uniform API</span>
   <span class="text-sm text-muted-foreground">Every component follows the same pattern. Learn it once, apply everywhere. Easy for AI to generate.</span>
   <span class="def-term">Clean class attribute</span>
-  <span class="text-sm text-muted-foreground">The <code>class</code> attribute stays a single token — <code>class="btn"</code> — not a long chain of modifiers.</span>
+  <span class="text-sm text-muted-foreground">The <code>class</code> attribute stays a single token - <code>class="btn"</code> - not a long chain of modifiers.</span>
 </div>
 
 <div class="sep" />
@@ -350,7 +350,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 <H2>Behavioral attributes</H2>
 
-<p class="text-sm text-muted-foreground mb-5">These wire up JavaScript interactions. They follow the pattern <code>data-\{component\}-trigger</code> and <code>data-\{component\}-close</code> — connecting a button to the element it controls.</p>
+<p class="text-sm text-muted-foreground mb-5">These wire up JavaScript interactions. They follow the pattern <code>data-\{component\}-trigger</code> and <code>data-\{component\}-close</code> - connecting a button to the element it controls.</p>
 
 <CodeCard title="trigger / close pattern" lang="markup" mb="1.5rem"><Dim>{"<!-- The trigger: its value is the ID of the target -->"}</Dim>{"<"}{"button class=\"btn\" data-dialog-trigger=\"confirm\""}{">"}{"\n  Open Dialog\n"}{"<"}{"/button"}{">"}<Dim>{"<!-- The target: matched by ID -->"}</Dim>{"<"}{"dialog id=\"confirm\" class=\"dialog\""}{">"}{"<"}{"div class=\"dialog-content\""}{">"}{"<"}{"p"}{">"}{"Are you sure?"}{"<"}{"/p"}{">"}<Dim>{"<!-- The close: placed inside, closes the nearest parent -->"}</Dim>{"<"}{"button class=\"btn\" data-dialog-close"}{">"}{"Cancel"}{"<"}{"/button"}{">"}{"<"}{"/div"}{">"}{"<"}{"/dialog"}{">"}</CodeCard>
 
@@ -447,7 +447,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 <H2>State attributes</H2>
 
-<p class="text-sm text-muted-foreground mb-5">These are set and removed by JavaScript at runtime to represent UI state. CSS reads them to apply state-specific styles. You don't write these in markup — the JS manages them.</p>
+<p class="text-sm text-muted-foreground mb-5">These are set and removed by JavaScript at runtime to represent UI state. CSS reads them to apply state-specific styles. You don't write these in markup - the JS manages them.</p>
 
 <div class="code-card" style="margin-bottom:2.5rem;">
   <div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
@@ -493,9 +493,9 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 <H2>ARIA attributes as styling hooks</H2>
 
-<p class="text-sm text-muted-foreground mb-5">Where the browser natively provides state APIs — like <code>aria-selected</code>, <code>aria-expanded</code>, or <code>disabled</code> — we style against those directly. No data attributes are needed because the browser already exposes the state.</p>
+<p class="text-sm text-muted-foreground mb-5">Where the browser natively provides state APIs - like <code>aria-selected</code>, <code>aria-expanded</code>, or <code>disabled</code> - we style against those directly. No data attributes are needed because the browser already exposes the state.</p>
 
-<CodeCard title="native state as CSS selectors" lang="css" mb="1.5rem"><Dim>{"/* Tab is selected — use ARIA, not a data attribute */"}</Dim>{"\n.tab-trigger[aria-selected=\"true\"] {\n  color: var(--foreground);\n  border-color: var(--primary);\n}\n\n"}<Dim>{"/* Toggle is pressed — native ARIA attribute */"}</Dim>{"\n.toggle[aria-pressed=\"true\"] {\n  background: var(--accent);\n}\n\n"}<Dim>{"/* Button is disabled — native HTML attribute */"}</Dim>{"\n.btn:disabled {\n  opacity: 0.5;\n  pointer-events: none;\n}"}</CodeCard>
+<CodeCard title="native state as CSS selectors" lang="css" mb="1.5rem"><Dim>{"/* Tab is selected - use ARIA, not a data attribute */"}</Dim>{"\n.tab-trigger[aria-selected=\"true\"] {\n  color: var(--foreground);\n  border-color: var(--primary);\n}\n\n"}<Dim>{"/* Toggle is pressed - native ARIA attribute */"}</Dim>{"\n.toggle[aria-pressed=\"true\"] {\n  background: var(--accent);\n}\n\n"}<Dim>{"/* Button is disabled - native HTML attribute */"}</Dim>{"\n.btn:disabled {\n  opacity: 0.5;\n  pointer-events: none;\n}"}</CodeCard>
 
 <p class="text-sm text-muted-foreground mb-8"><strong>Rule of thumb:</strong> if the browser has a native attribute for a state (<code>disabled</code>, <code>aria-selected</code>, <code>aria-expanded</code>, <code>open</code>), we style against that. Data attributes are only used when no native equivalent exists. </p>
 

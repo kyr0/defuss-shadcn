@@ -8,13 +8,13 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <DocPage meta={meta}>
 
-<PageHeader slug="width-height" title="Width &amp; Height" crumb="sizing / width &amp; height" introStyle="max-width:38rem;">
+<PageHeader slug="width-height" title="Width &amp; Height" introStyle="max-width:38rem;">
   Arithmetic dimensions, fractions, content and viewport sizing, and explicit constraints. Density does not change geometric sizes. Every code block shows exactly the classes that render the demo above it; demos marked with a width toolbar can be resized between Mobile, Tablet and Desktop.
 </PageHeader>
 
 <h2 id="numeric" class="h2-display">Numeric dimensions</h2>
 
-<DocText><code>w-n</code>, <code>h-n</code> and <code>size-n</code> map directly to <code>n × --size-base</code> — <code>w-48</code> is 48 × 4px = 192px at the default root. Width and height are physical axes, matching their CSS names, and density does not change them.</DocText>
+<DocText><code>w-n</code>, <code>h-n</code> and <code>size-n</code> map directly to <code>n × --size-base</code> - <code>w-48</code> is 48 × 4px = 192px at the default root. Width and height are physical axes, matching their CSS names, and density does not change them.</DocText>
 
 ```html example schema="none"
 <div class="stack gap-4" data-demo="width-height">
@@ -22,7 +22,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <div class="demo-tile w-24 h-8">w-24 h-8</div>
   <div class="flex items-center gap-3">
     <div class="demo-tile size-8"></div>
-    <span class="demo-label demo-label-inline">size-8 — same in both axes</span>
+    <span class="demo-label demo-label-inline">size-8 - same in both axes</span>
   </div>
 </div>
 ```
@@ -46,12 +46,12 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 ```
 
 
-<DocText>The classic sidebar/main split — resize the demo with the toolbar and watch it adapt:</DocText>
+<DocText>The classic sidebar/main split - resize the demo with the toolbar and watch it adapt:</DocText>
 
 ```html example schema="none"
 <div class="flex flex-wrap gap-4">
-  <aside class="w-1/3 demo-tile demo-outline h-24" data-variant="muted" style="min-width:8rem;">w-1/3 — Filters</aside>
-  <section class="demo-tile h-24" style="flex:1;min-width:12rem;">w-2/3 — Results</section>
+  <aside class="w-1/3 demo-tile demo-outline h-24" data-variant="muted" style="min-width:8rem;">w-1/3 - Filters</aside>
+  <section class="demo-tile h-24" style="flex:1;min-width:12rem;">w-2/3 - Results</section>
 </div>
 ```
 
@@ -90,7 +90,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 ```html example schema="none"
 <div class="flex gap-4">
   <aside class="demo-tile w-24 shrink-0 h-16">w-24 shrink-0</aside>
-  <main class="flex-1 min-w-0 wrap-anywhere demo-tile h-auto p-2" data-variant="outline" style="justify-content:flex-start;">flex-1 min-w-0 — AnUnusuallyLongIdentifierThatMustWrapInsteadOfWideningThePage</main>
+  <main class="flex-1 min-w-0 wrap-anywhere demo-tile h-auto p-2" data-variant="outline" style="justify-content:flex-start;">flex-1 min-w-0 - AnUnusuallyLongIdentifierThatMustWrapInsteadOfWideningThePage</main>
 </div>
 ```
 
@@ -114,7 +114,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <h2 id="logical" class="h2-display">Logical dimensions</h2>
 
-<DocText><code>inline-\*</code> and <code>block-\*</code> mirror the numeric scale on the writing-mode axes: inline is width in horizontal writing, height in vertical writing. Below, the same classes — <code>inline-40 block-24 ps-4</code> — in three contexts. The filled area is the content box; the gap the <code>ps-4</code> leaves follows inline-start: left in LTR, right in RTL, top in vertical writing.</DocText>
+<DocText><code>inline-\*</code> and <code>block-\*</code> mirror the numeric scale on the writing-mode axes: inline is width in horizontal writing, height in vertical writing. Below, the same classes - <code>inline-40 block-24 ps-4</code> - in three contexts. The filled area is the content box; the gap the <code>ps-4</code> leaves follows inline-start: left in LTR, right in RTL, top in vertical writing.</DocText>
 
 ```html example schema="none"
 <div class="flex flex-wrap gap-6">
@@ -125,13 +125,13 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     </div>
   </div>
   <div dir="rtl">
-    <p class="demo-label">RTL — same classes</p>
+    <p class="demo-label">RTL - same classes</p>
     <div class="demo-tile inline-40 block-24 ps-4" data-variant="outline" style="padding-block:0.25rem;padding-inline-end:0.25rem;">
       <div class="demo-tile h-full" data-variant="muted" style="flex:1;">content</div>
     </div>
   </div>
   <div>
-    <p class="demo-label">vertical-rl — same classes</p>
+    <p class="demo-label">vertical-rl - same classes</p>
     <div class="demo-tile inline-40 block-24 ps-4" data-variant="outline" style="writing-mode:vertical-rl;padding-block:0.25rem;padding-inline-end:0.25rem;">
       <div class="demo-tile" data-variant="muted" style="flex:1;inline-size:100%;">content</div>
     </div>
@@ -144,32 +144,32 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <h2 id="viewport" class="h2-display">Viewport sizes and the app shell</h2>
 
-<DocText><code>h-screen</code> / <code>min-h-screen</code> / <code>max-h-screen</code> are 100vh, with <code>dvh</code>, <code>svh</code> and <code>lvh</code> variants for mobile browser chrome. Their classic use is the app shell — header, fluid content, footer at the bottom even with little content. The demo renders that pattern inside a fixed-height frame; at page level you would write <code>min-h-screen</code> instead of <code>h-full</code>.</DocText>
+<DocText><code>h-screen</code> / <code>min-h-screen</code> / <code>max-h-screen</code> are 100vh, with <code>dvh</code>, <code>svh</code> and <code>lvh</code> variants for mobile browser chrome. Their classic use is the app shell - header, fluid content, footer at the bottom even with little content. The demo renders that pattern inside a fixed-height frame; at page level you would write <code>min-h-screen</code> instead of <code>h-full</code>.</DocText>
 
 ```html example schema="none"
 <div class="demo-outline" style="block-size:16rem;">
   <div class="stack h-full gap-0">
     <header class="demo-tile h-10" style="border-radius:0;">header</header>
-    <div class="flex-1 min-h-0 demo-tile h-auto" data-variant="muted">flex-1 — content fills whatever is left</div>
-    <footer class="demo-tile h-10" data-variant="secondary" style="border-radius:0;">footer — pushed down, never floating mid-page</footer>
+    <div class="flex-1 min-h-0 demo-tile h-auto" data-variant="muted">flex-1 - content fills whatever is left</div>
+    <footer class="demo-tile h-10" data-variant="secondary" style="border-radius:0;">footer - pushed down, never floating mid-page</footer>
   </div>
 </div>
 ```
 
 
-<DocText>Prefer <code>dvh</code> units when content must survive the mobile URL bar collapsing. <code>w-screen</code> is 100vw — it includes the scrollbar and ignores the parent, so <code>w-full</code> is usually the right choice inside a page.</DocText>
+<DocText>Prefer <code>dvh</code> units when content must survive the mobile URL bar collapsing. <code>w-screen</code> is 100vw - it includes the scrollbar and ignores the parent, so <code>w-full</code> is usually the right choice inside a page.</DocText>
 
 <div class="sep" />
 
 <h2 id="app-layout" class="h2-display">Real world: a fixed sidebar and a fluid main</h2>
 
-<DocText>The most common layout on the web: a fixed-width sidebar that never squishes (<code>w-56 shrink-0</code>) next to a main region that takes whatever is left (<code>flex-1 min-w-0</code>). Resize with the toolbar — the sidebar holds 224px while the main column gives.</DocText>
+<DocText>The most common layout on the web: a fixed-width sidebar that never squishes (<code>w-56 shrink-0</code>) next to a main region that takes whatever is left (<code>flex-1 min-w-0</code>). Resize with the toolbar - the sidebar holds 224px while the main column gives.</DocText>
 
 ```html example schema="none"
 <div class="flex gap-4">
-  <aside class="demo-tile w-56 shrink-0 h-40" data-variant="secondary">w-56 shrink-0 — nav</aside>
+  <aside class="demo-tile w-56 shrink-0 h-40" data-variant="secondary">w-56 shrink-0 - nav</aside>
   <main class="flex-1 min-w-0 stack gap-3">
-    <div class="demo-tile h-10">flex-1 — page title bar</div>
+    <div class="demo-tile h-10">flex-1 - page title bar</div>
     <div class="flex gap-3">
       <div class="demo-tile flex-1 h-24" data-variant="muted">flex-1</div>
       <div class="demo-tile flex-1 h-24" data-variant="muted">flex-1</div>
@@ -267,7 +267,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </table>
 </div>
 
-<DocText>The numeric scale, rendered — every bar below is its real class at the default 4px base. Values not listed require ordinary CSS. <code>size-4</code> sets both width and height; it does not set flex-shrink or box-sizing.</DocText>
+<DocText>The numeric scale, rendered - every bar below is its real class at the default 4px base. Values not listed require ordinary CSS. <code>size-4</code> sets both width and height; it does not set flex-shrink or box-sizing.</DocText>
 
 ```html example schema="none"
 <div class="stack gap-2" data-demo="scale">
@@ -434,12 +434,12 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <h2 id="custom" class="h2-display">Application-specific sizes</h2>
 
-<DocText>Values outside the scale are ordinary CSS — a clamped inspector panel and an optimal reading width. Resize with the toolbar: the inspector's <code>clamp()</code> tracks the frame width while the prose column stays at its measure.</DocText>
+<DocText>Values outside the scale are ordinary CSS - a clamped inspector panel and an optimal reading width. Resize with the toolbar: the inspector's <code>clamp()</code> tracks the frame width while the prose column stays at its measure.</DocText>
 
 ```html example schema="none"
 <div class="flex flex-wrap gap-4">
-  <aside class="demo-tile h-32 p-2" data-variant="accent" style="width:clamp(10rem, 35%, 14rem);">inspector — clamp(10rem, 35%, 14rem)</aside>
-  <article class="demo-tile h-auto p-4" data-variant="muted" style="max-inline-size:38ch;flex:1;min-width:14rem;display:block;">article-copy — max-inline-size keeps the measure readable no matter how wide the frame gets. This sentence just fills space to make the line length visible.</article>
+  <aside class="demo-tile h-32 p-2" data-variant="accent" style="width:clamp(10rem, 35%, 14rem);">inspector - clamp(10rem, 35%, 14rem)</aside>
+  <article class="demo-tile h-auto p-4" data-variant="muted" style="max-inline-size:38ch;flex:1;min-width:14rem;display:block;">article-copy - max-inline-size keeps the measure readable no matter how wide the frame gets. This sentence just fills space to make the line length visible.</article>
 </div>
 ```
 

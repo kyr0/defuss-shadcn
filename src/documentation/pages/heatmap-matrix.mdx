@@ -1,0 +1,220 @@
+---
+title: "Heatmap Matrix - Presentation"
+description: "Cyber Matrix design language presenting one week of security alerts as a 12-slide deck - a 7 × 24 heatmap that exposes a 3 a.m. burst, re-cuts by alert type and collapses into an hourly profile, one morphing chart."
+slug: "heatmap-matrix"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="heatmap-matrix" title="Heatmap Matrix" component="presentation">
+  Cyber Matrix: black glass, cyan signal and monospace readouts - a week of security alerts told as texture: the rhythm of the working week, one burst at 3 a.m., and what kind of alert it was.
+</PageHeader>
+
+```html example label="Cyber Matrix" schema="none" height="26" hint="Slides skew in and blur out (df$.anim, declared on the deck); cyan curtains mark the breaks. One deck-level chart (df$.shadcn.chart.deck): the 7 × 24 alert heatmap spotlights the Tuesday 03:00 burst, re-cuts by alert type, then collapses into the hourly profile. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-heatmap" data-anim-in="skewIn" data-anim-out="blurOut" style="--presentation-ink:#030410;--presentation-ink-foreground:#DDFBFF;--presentation-paper:#07091B;--presentation-paper-foreground:#DDFBFF;--presentation-accent:#00F5FF;font-family:ui-monospace, SFMono-Regular, Menlo, monospace;" tabindex="-1" aria-label="One week of alerts - a security operations deck">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="Security alerts per hour over one week as a 7 by 24 heatmap: busy weekday office hours and one burst of 612 alerts on Tuesday at 03:00; then alerts by type and by hour"></div>
+  <section class="slide" data-slide data-theme="ink" aria-label="Cover">
+    <svg aria-hidden="true" width="620" height="900" viewBox="0 0 620 900" style="position:absolute; right:40px; top:0; opacity:0.55;">
+      <g fill="#00F5FF" font-family="ui-monospace, Menlo, monospace" font-size="26">
+        <text x="40" y="120">0x3F 0xA1 0x00 0x7C</text><text x="40" y="170" opacity="0.6">ALERT 03:00 TUE 612</text>
+        <text x="40" y="220" opacity="0.4">0x9B 0x12 0xFF 0x03</text><text x="40" y="270" opacity="0.8">auth.fail &gt;&gt; burst</text>
+        <text x="40" y="320" opacity="0.3">0x44 0x5E 0x6D 0x21</text><text x="40" y="370" opacity="0.6">geo=?? asn=?? rate=hi</text>
+      </g>
+      <rect x="40" y="420" width="540" height="420" fill="none" stroke="#00F5FF" stroke-width="2" stroke-dasharray="6 10" />
+    </svg>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Heatmap matrix · Cyber Matrix</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-weight:700; letter-spacing:-0.01em; font-size:6.25rem; max-width:850px;">One week of alerts</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">21,216 alerts, 168 hours - the pattern is the working week, the anomaly is 03:00.</p>
+    <p class="presentation-note">The readout is decoration; the heatmap is the evidence.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="week" style="justify-content:flex-start;" aria-label="Week heatmap">
+    <header class="presentation-header"><span>SOC / week 42</span><span>Alerts per hour</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:700; letter-spacing:-0.01em;">The alerts keep office hours</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Each cell is one hour. Bright = busy; the texture is the working week.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="burst" style="justify-content:flex-start;" aria-label="The burst">
+    <header class="presentation-header"><span>SOC / week 42</span><span>Anomaly</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:700; letter-spacing:-0.01em;">Tuesday, 03:00 - ten times a normal night hour</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Everything else dims; one cell remains.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="types" style="justify-content:flex-start;" aria-label="By type">
+    <header class="presentation-header"><span>SOC / by type</span><span>Alerts per day by type</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:700; letter-spacing:-0.01em;">It was brute force - 1,190 attempts on one day</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The same matrix, re-cut: rows are alert types now.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Key figures">
+    <p class="presentation-eyebrow" data-df-entrance="fade">Three numbers from the SOC</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-weight:700; letter-spacing:-0.01em;"><span data-count="21216">21216</span></p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">alerts in one week</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#00F5FF; font-weight:700; letter-spacing:-0.01em;"><span data-count="612">612</span></p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">alerts in the single hour Tue 03:00</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-weight:700; letter-spacing:-0.01em;"><span data-count="55">55</span>%</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">during weekday office hours</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">Most alerts follow people. The dangerous ones follow nobody.</p>
+    <p class="presentation-note">The line to remember.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Night shift" style="overflow:hidden;">
+    <video autoplay muted loop playsinline aria-hidden="true" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.55; mix-blend-mode:screen;">
+      <source src="videos/demo.webm" type="video/webm" />
+      <source src="videos/demo.mp4" type="video/mp4" />
+    </video>
+    <div aria-hidden="true" style="position:absolute; inset:0; background:linear-gradient(90deg, #030410 35%, rgba(0,245,255,.18));"></div>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Night shift</p>
+    <h2 class="presentation-title" data-df-entrance="blur" style="position:relative; font-size:5rem; max-width:1100px; font-weight:700; letter-spacing:-0.01em;">Nobody was watching at 03:00 - the rule was</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:400ms; position:relative; max-width:900px;">An automated rate limit blocked the burst after 11 minutes; the analyst read the heatmap at 08:10.</p>
+    <p class="presentation-note">Ambient loop - the automation is the hero.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="north" data-anim-in-blocks="10" data-anim-in-stagger="30" data-anim-in-color="#00F5FF" aria-label="Alerts by type">
+    <header class="presentation-header"><span>SELECT type, day</span><span>Alerts per day</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" style="font-size:1.7rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">Alerts by type and weekday, week 42 (synthetic).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">Type</th><th class="table-head" style="text-align:right">Mon</th><th class="table-head" style="text-align:right">Tue</th><th class="table-head" style="text-align:right">Wed</th><th class="table-head" style="text-align:right">Sat</th><th class="table-head" style="text-align:right">Week</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row"><td class="table-cell">Phishing</td><td class="table-cell" style="text-align:right">980</td><td class="table-cell" style="text-align:right">870</td><td class="table-cell" style="text-align:right">820</td><td class="table-cell" style="text-align:right">210</td><td class="table-cell" style="text-align:right">4,660</td></tr>
+          <tr class="table-row" style="font-weight:700"><td class="table-cell">Brute force</td><td class="table-cell" style="text-align:right">510</td><td class="table-cell" style="text-align:right">1,190</td><td class="table-cell" style="text-align:right">480</td><td class="table-cell" style="text-align:right">420</td><td class="table-cell" style="text-align:right">4,010</td></tr>
+          <tr class="table-row"><td class="table-cell">Policy</td><td class="table-cell" style="text-align:right">830</td><td class="table-cell" style="text-align:right">690</td><td class="table-cell" style="text-align:right">760</td><td class="table-cell" style="text-align:right">310</td><td class="table-cell" style="text-align:right">4,490</td></tr>
+          <tr class="table-row"><td class="table-cell">Malware</td><td class="table-cell" style="text-align:right">640</td><td class="table-cell" style="text-align:right">600</td><td class="table-cell" style="text-align:right">590</td><td class="table-cell" style="text-align:right">380</td><td class="table-cell" style="text-align:right">3,790</td></tr>
+          <tr class="table-row"><td class="table-cell">Anomaly</td><td class="table-cell" style="text-align:right">613</td><td class="table-cell" style="text-align:right">438</td><td class="table-cell" style="text-align:right">597</td><td class="table-cell" style="text-align:right">409</td><td class="table-cell" style="text-align:right">3,611</td></tr>
+          <tr class="table-row"><td class="table-cell">Exfiltration</td><td class="table-cell" style="text-align:right">120</td><td class="table-cell" style="text-align:right">110</td><td class="table-cell" style="text-align:right">95</td><td class="table-cell" style="text-align:right">60</td><td class="table-cell" style="text-align:right">655</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Selected days; the week column sums all seven.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-weight:700; letter-spacing:-0.01em; font-size:3rem;">“The heatmap turned a log file into a picture I could explain to the board in one sentence.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#00F5FF; color:#030410;"><span class="avatar-fallback">NK</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Noor Khalil<br /><span style="opacity:0.7; font-size:1.4rem;">SOC lead - 3 years of week-42 reviews</span></p>
+    </div>
+    <p class="presentation-note">Texture as communication - the thesis.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="hourly" style="justify-content:flex-start;" aria-label="Hourly profile">
+    <header class="presentation-header"><span>SOC / by hour</span><span>Alerts per hour of day, whole week</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:700; letter-spacing:-0.01em;">Collapse the days: the 03:00 spike still stands out</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The matrix folds into 24 bars.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Questions from the board">
+    <header class="presentation-header"><span>Q & A</span><span>Risk committee</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; font-weight:700; letter-spacing:-0.01em;">Questions from the risk committee</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="hm-qa" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Was anything breached?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">No - 1,190 failed logins, zero successful; the rate limit blocked the source range after 11 minutes.</p></div>
+      </details>
+      <details class="accordion-item" name="hm-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Why do alerts follow office hours?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Most are triggered by people: phishing clicks, policy violations, new devices.</p></div>
+      </details>
+      <details class="accordion-item" name="hm-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>What changes now?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Night-time thresholds drop by half, and the heatmap becomes the Monday stand-up slide.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The breach question comes first - answer it first.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Takeaways">
+    <header class="presentation-header"><span>Takeaways</span><span>exit 0</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">></span><span>Turn tables into texture - patterns appear that rows hide.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">></span><span>Night-time alerts deserve their own, tighter thresholds.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">></span><span>Re-cut the same matrix by type to explain an anomaly.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">></span><span>Automate the first response; review the picture in daylight.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Four rules, terminal-style.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-anim-in="blocksIn" data-anim-in-direction="south" data-anim-in-blocks="10" data-anim-in-stagger="30" data-anim-in-color="#00F5FF" aria-label="Closing">
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-weight:700; letter-spacing:-0.01em;">Patterns appear when a table becomes texture</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">One synthetic week - the pattern-and-anomaly reading is the real skill.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">Fade to black on the last line.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) - build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-heatmap');
+    const TEXT = '#DDFBFF', MUTED = '#5C7C88', CYAN = '#00F5FF', BG = '#030410';
+    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const hours = Array.from({ length: 24 }, (_, h) => String(h).padStart(2, '0'));
+    const cells = [[57,66,62,58,67,63,120,138,240,226,212,245,231,217,250,235,221,254,240,123,115,133,62,58],[58,54,63,612,56,64,117,110,227,214,202,189,218,206,193,223,210,197,227,119,112,105,63,59],[62,58,54,63,59,56,123,117,197,227,214,202,189,218,206,193,223,210,197,126,119,112,54,63],[65,62,58,54,63,59,107,123,210,197,227,214,202,189,218,206,193,223,210,110,126,119,58,54],[57,65,62,58,54,63,114,107,223,210,197,227,214,202,189,218,206,193,223,117,110,126,62,58],[47,44,51,48,45,42,69,65,92,105,100,94,107,101,96,90,103,98,92,71,67,63,51,48],[50,47,44,51,48,45,60,69,98,92,105,100,94,107,101,96,90,103,98,61,71,67,44,51]];
+    const types = [['Phishing', [980, 870, 820, 800, 790, 210, 190]], ['Brute force', [510, 1190, 480, 470, 490, 420, 450]], ['Policy', [830, 690, 760, 780, 800, 310, 320]], ['Malware', [640, 600, 590, 610, 600, 380, 370]], ['Anomaly', [613, 438, 597, 587, 560, 409, 407]], ['Exfiltration', [120, 110, 95, 100, 115, 60, 55]]];
+    const G = { left: 190, right: 150, top: 330, bottom: 150 };
+    const cell = { borderColor: BG, borderWidth: 3, borderRadius: 3 };
+    const weekMap = (dimOthers) => ({
+      grid: G,
+      xAxis: { type: 'category', data: hours, axisLine: { show: false }, axisLabel: { color: MUTED, interval: 2 } },
+      yAxis: { type: 'category', data: days, inverse: true, axisLine: { show: false }, axisLabel: { color: TEXT, fontWeight: 700 } },
+      visualMap: { show: false, min: 0, max: 260, inRange: { color: ['#07142A', '#0B4F6C', CYAN] } },
+      series: [{ id: 'alerts', type: 'heatmap', itemStyle: cell,
+        data: cells.flatMap((row, d) => row.map((v, h) => {
+          const hot = d === 1 && h === 3;
+          return { value: [h, d, v], itemStyle: dimOthers && !hot ? { opacity: 0.18 } : hot ? { borderColor: '#FFFFFF', borderWidth: 3 } : {} };
+        })),
+        markPoint: dimOthers ? { symbol: 'pin', symbolSize: 70, itemStyle: { color: CYAN }, label: { color: BG, fontWeight: 700, formatter: '612' }, data: [{ coord: ['03', 'Tue'] }] } : undefined }],
+    });
+
+    df$.shadcn.chart.deck(deck, {
+      base: { tooltip: { trigger: 'item' } },
+      states: {
+        week: weekMap(false),
+        burst: weekMap(true),
+        types: {
+          grid: { left: 260, right: 150, top: 330, bottom: 150 },
+          xAxis: { type: 'category', data: days, axisLine: { show: false }, axisLabel: { color: TEXT, fontWeight: 700 } },
+          yAxis: { type: 'category', data: types.map((t) => t[0]), inverse: true, axisLine: { show: false }, axisLabel: { color: TEXT, fontWeight: 700 } },
+          visualMap: { show: false, min: 0, max: 1200, inRange: { color: ['#07142A', '#0B4F6C', CYAN] } },
+          series: [{ id: 'alerts', type: 'heatmap', itemStyle: cell, label: { show: true, color: TEXT, fontSize: 20 },
+            data: types.flatMap(([, row], t) => row.map((v, d) => [d, t, v])) }],
+        },
+        hourly: {
+          grid: G,
+          xAxis: { type: 'category', data: hours, axisLabel: { color: MUTED, interval: 2 } },
+          yAxis: { type: 'value', max: 1400, interval: 350, axisLabel: { color: MUTED }, splitLine: { lineStyle: { color: 'rgba(221,251,255,.08)' } } },
+          series: [{ id: 'alerts', type: 'bar', barWidth: '62%',
+            data: hours.map((_, h) => { const v = cells.reduce((s, r) => s + r[h], 0); return { value: v, itemStyle: { color: h === 3 ? CYAN : '#0B4F6C' } }; }),
+            label: { show: true, position: 'top', color: CYAN, fontWeight: 700, formatter: (p) => (p.dataIndex === 3 ? p.value : '') } }],
+        },
+      },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 15-heatmap-matrix (Cyber Matrix) - a synthetic week of alerts.</p>
+<SourceFiles component="presentation" />
+</DocPage>

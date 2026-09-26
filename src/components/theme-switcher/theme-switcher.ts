@@ -1,7 +1,7 @@
 // -- Theme Switcher --------------------------------------------
 // Dropdown that switches the color theme by swapping ONE stylesheet:
 // a <link id="theme-css"> pointing at a generated theme file
-// (theme/<id>.css — same token shape as default-semantic-tokens.css).
+// (theme/<id>.css - same token shape as default-semantic-tokens.css).
 // That is the entire mechanism: no JS token objects, no inline overrides —
 // consumers ship theme files and this component loads/unloads them. Each
 // theme file carries `:root` + `.dark` blocks, so dark-mode toggling needs
@@ -9,11 +9,11 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-// defussQuery: the callable runtime — trigger/item state reflects through
+// defussQuery: the callable runtime - trigger/item state reflects through
 // query scalar writes; the theme-sheet link is mounted via query .append(),
 // swatch dots render as markup in one morph pass instead of a
 // createElement+appendChild chain (§3 theme-switcher row).
-import { defussGlobals, defussQuery, safeShowPopover } from '../../shared/state-api.js';
+import { defussGlobals, defussQuery, loadTheme, safeShowPopover } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
@@ -31,12 +31,12 @@ function store(key?: string, value?: string) {
     if (value === null) localStorage.removeItem(key);
     else localStorage.setItem(key, value);
   } catch {
-    /* private mode — theme just won't persist */
+    /* private mode - theme just won't persist */
   }
 }
 
 /**
- * Why: where theme files live is derived, not configured — the shipped
+ * Why: where theme files live is derived, not configured - the shipped
  * layout puts them one folder ABOVE the token file (dist/theme/<id>.css
  * beside dist/theme/utils/default-semantic-tokens.css), so they resolve as
  * `<tokens-dir>/../<id>.css` relative to the loaded token sheet.
@@ -58,13 +58,15 @@ function applyThemeId(root: HTMLElement, id: string) {
   if (!id || id === 'default') {
     link?.remove();
     store(STORAGE_KEY, null);
+    // drop any theme resources (fonts) the active theme had mounted
+    loadTheme('default').catch(() => undefined);
     syncTrigger(root, 'default');
     document.dispatchEvent(new CustomEvent(THEME_EVENT, { detail: { id: 'default' } }));
     return;
   }
   store(STORAGE_KEY, id);
   if (link && link.dataset.themeId === id) {
-    syncTrigger(root, id); // already loaded — idempotent
+    syncTrigger(root, id); // already loaded - idempotent
     return;
   }
   link?.remove();
@@ -80,6 +82,10 @@ function applyThemeId(root: HTMLElement, id: string) {
   // (§5.1: both branches ride query's exact insertion ops)
   if (tokens) dfDollar(tokens).after(link);
   else dfDollar(document.head).append(link);
+  // the theme's runtime resources (font <link>s from theme/<id>.json) ride
+  // with the stylesheet - fire-and-forget: fonts are progressive enhancement
+  // and the loader swallows missing sidecars (404 = theme declares none)
+  loadTheme(id).catch(() => undefined);
   syncTrigger(root, id);
   document.dispatchEvent(new CustomEvent(THEME_EVENT, { detail: { id } }));
 }
@@ -95,7 +101,7 @@ function syncTrigger(root: HTMLElement, id: string) {
   const dot = dfDollar(trigger).find('.theme-switcher-dot')[0];
   const label = dfDollar(trigger).find('.theme-switcher-label')[0];
   const first = active?.dataset.themeColors?.split(',')[0]?.trim();
-  // 'default' (or unknown): no inline dot color — the CSS default IS --primary
+  // 'default' (or unknown): no inline dot color - the CSS default IS --primary
   if (dot) dfDollar(dot).css('background', first || '');
   if (label && (active || id === 'default')) dfDollar(label).text(active?.dataset.themeLabel || 'Default');
   root.dataset.themeId = id; // State API marker stays dataset.*
@@ -152,7 +158,7 @@ function init() {
       (menu.id && document.querySelector(`[popovertarget="${menu.id}"]`))) as HTMLElement | null;
     const getItems = () => Array.from(menu.querySelectorAll<HTMLElement>('.theme-switcher-item'));
 
-    // CSS anchor positioning — trigger names itself, menu follows
+    // CSS anchor positioning - trigger names itself, menu follows
     if (trigger) {
       const anchorId = `--theme-switcher-${menu.id || 'menu'}`;
       dfDollar(trigger).css('anchorName', anchorId);
@@ -167,7 +173,7 @@ function init() {
         first?.focus();
         // the native popover show-command re-focuses the anchor AFTER this
         // handler; one rAF re-focus if it (or a sibling menu's light-dismiss
-        // restore) won the race — guarded so a quick Tab-away isn't stolen
+        // restore) won the race - guarded so a quick Tab-away isn't stolen
         if (first)
           requestAnimationFrame(() => {
             if (menu.matches(':popover-open') && document.activeElement === trigger) first.focus();
@@ -176,7 +182,7 @@ function init() {
     });
 
     // dots visualized from data-theme-colors (keeps authored markup lean):
-    // swatches ride IN the item's markup — one morph pass fills the holder
+    // swatches ride IN the item's markup - one morph pass fills the holder
     // instead of a createElement+appendChild chain (§3 theme-switcher row)
     getItems().forEach((item) => {
       const holder = item.querySelector('.theme-switcher-dots');
@@ -232,7 +238,7 @@ function init() {
 }
 
 // one page-wide listener: any switcher (or the doc-site theme grid) may move
-// the active theme — keep every switcher's trigger honest
+// the active theme - keep every switcher's trigger honest
 document.addEventListener(THEME_EVENT, (e) => {
   const id = (e as CustomEvent<{ id?: string }>).detail?.id || 'default';
   document.querySelectorAll<HTMLElement>('.theme-switcher').forEach((root) => syncTrigger(root, id));

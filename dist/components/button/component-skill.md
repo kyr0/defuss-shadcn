@@ -1,8 +1,8 @@
 ---
 name: Button
 type: ATM
-why: Native <button> styled through data-variant/data-size — disabled, form submission, and focus are browser-provided.
-when: Every single action trigger — forms, dialogs, toolbars.
+why: Native <button> styled through data-variant/data-size - disabled, form submission, and focus are browser-provided.
+when: Every single action trigger - forms, dialogs, toolbars.
 where: dist/components/button/button.css
 supportedStates: default
 ---
@@ -15,12 +15,12 @@ supportedStates: default
 ---
 
 ## Native Web APIs
-- [`<button>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button) — native clickable element with built-in keyboard and form support
-- [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) — keyboard-only focus ring, avoids showing focus on mouse clicks
-- [`commandfor` / `command`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#command) — declarative button→dialog/popover triggers without JS click handlers
-- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) — suppresses hover/focus transitions
-- [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) — adds visible borders to all variants in high-contrast mode
-- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) — maps button border/text to system colors in Windows High Contrast Mode
+- [`<button>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button) - native clickable element with built-in keyboard and form support
+- [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) - keyboard-only focus ring, avoids showing focus on mouse clicks
+- [`commandfor` / `command`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#command) - declarative button→dialog/popover triggers without JS click handlers
+- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) - suppresses hover/focus transitions
+- [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) - adds visible borders to all variants in high-contrast mode
+- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) - maps button border/text to system colors in Windows High Contrast Mode
 
 ---
 
@@ -69,11 +69,11 @@ supportedStates: default
 | `md`        | `2.25rem` | `0 1rem`      | `0.875rem`   | `var(--radius-md)`  |
 | `lg`        | `2.75rem` | `0 2rem`      | `1rem`       | `var(--radius-md)`  |
 | `xl`        | `3.25rem` | `0 2.5rem`    | `1.125rem`   | `var(--radius-md)`  |
-| `icon`      | `2.25rem` | `0` (square)  | —            | `var(--radius-md)`  |
-| `icon-xs`   | `1.75rem` | `0` (square)  | —            | `var(--radius-sm)`  |
-| `icon-sm`   | `2rem`    | `0` (square)  | —            | `var(--radius-md)`  |
-| `icon-lg`   | `2.75rem` | `0` (square)  | —            | `var(--radius-md)`  |
-| `icon-xl`   | `3.25rem` | `0` (square)  | —            | `var(--radius-md)`  |
+| `icon`      | `2.25rem` | `0` (square)  | -            | `var(--radius-md)`  |
+| `icon-xs`   | `1.75rem` | `0` (square)  | -            | `var(--radius-sm)`  |
+| `icon-sm`   | `2rem`    | `0` (square)  | -            | `var(--radius-md)`  |
+| `icon-lg`   | `2.75rem` | `0` (square)  | -            | `var(--radius-md)`  |
+| `icon-xl`   | `3.25rem` | `0` (square)  | -            | `var(--radius-md)`  |
 
 ---
 
@@ -91,6 +91,6 @@ supportedStates: default
 - `secondary` darkens on hover via `color-mix()` instead of an opacity fade —
   `--secondary` is near-white in light themes, so fading would push the button
   *towards* the page background and make the hover effect invisible.
-- The `link` variant resets height and padding — it flows inline.
+- The `link` variant resets height and padding - it flows inline.
 - SVGs inside buttons auto-size to 1rem unless they have a `size-*` class.
 - The button works on `<a>` tags for styled navigation links.

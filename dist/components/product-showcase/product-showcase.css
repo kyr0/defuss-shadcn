@@ -42,7 +42,7 @@
     }
   }
 
-  /* centered circular play button — real <button>, keyboard-focusable;
+  /* centered circular play button - real <button>, keyboard-focusable;
      inset auto + margin auto centers the 64px box in the full-inset cell */
   .mk-showcase-play {
     z-index: 10;

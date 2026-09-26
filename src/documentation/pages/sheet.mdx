@@ -1,6 +1,6 @@
 ---
 title: "Sheet"
-description: "Sheet component — slide-out panels using native <dialog> element."
+description: "Sheet component - slide-out panels using native <dialog> element."
 slug: "sheet"
 ---
 
@@ -40,7 +40,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 
   <SkillField label="Data attributes">
-<SkillText dense>• <code>data-side</code> — values: <code>right</code>, <code>left</code>, <code>top</code>, <code>bottom</code></SkillText>
+<SkillText dense>• <code>data-side</code> - values: <code>right</code>, <code>left</code>, <code>top</code>, <code>bottom</code></SkillText>
   <SkillText dense>• <code>data-sheet-trigger</code></SkillText>
   <SkillText>• <code>data-sheet-close</code></SkillText>
   </SkillField>
@@ -53,15 +53,15 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 
   <SkillField label="Notes">
-<SkillText dense>• While a sheet is modal, <code>html:has(dialog.sheet:modal)</code> sets <code>overflow: hidden</code> + <code>scrollbar-gutter: stable</code> — the page behind cannot scroll and its position is preserved for when the sheet closes (no JS scroll-lock).</SkillText>
+<SkillText dense>• While a sheet is modal, <code>html:has(dialog.sheet:modal)</code> sets <code>overflow: hidden</code> + <code>scrollbar-gutter: stable</code> - the page behind cannot scroll and its position is preserved for when the sheet closes (no JS scroll-lock).</SkillText>
   <SkillText dense>• Right/left sheets have a fixed width of <code>24rem</code> with <code>max-width: 100vw</code> for small screens.</SkillText>
-  <SkillText dense>• Top/bottom sheets are full width with <code>height: auto</code> — they size to their content.</SkillText>
+  <SkillText dense>• Top/bottom sheets are full width with <code>height: auto</code> - they size to their content.</SkillText>
   <SkillText dense>• The selector is <code>dialog.sheet</code> (element + class) to avoid conflicts with <code>dialog.dialog</code>.</SkillText>
   <p class="text-muted-foreground m-0">• The <code>sheet-header</code> has <code>padding-right: 2rem</code> to avoid overlapping the close button.</p>
   </SkillField>
 </SkillPanel>
 
-```html example label="Right" hint="Default side. The sheet slides in from the right edge — commonly used for edit-profile or settings panels." height="26"
+```html example label="Right" hint="Default side. The sheet slides in from the right edge - commonly used for edit-profile or settings panels." height="26"
 <button class="btn" data-variant="outline" data-sheet-trigger="sheet-right" aria-haspopup="dialog">Open Right Sheet</button>
 <dialog id="sheet-right" class="sheet" data-side="right" role="dialog" aria-modal="true" aria-labelledby="sheet-right-title">
   <div class="sheet-content">
@@ -94,7 +94,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </dialog>
 ```
 
-```html example label="Left" hint="Slides in from the left edge — ideal for navigation menus or sidebar-style panels." height="26"
+```html example label="Left" hint="Slides in from the left edge - ideal for navigation menus or sidebar-style panels." height="26"
 <button class="btn" data-variant="outline" data-sheet-trigger="sheet-left" aria-haspopup="dialog">Open Left Sheet</button>
 <dialog id="sheet-left" class="sheet" data-side="left" role="dialog" aria-modal="true" aria-labelledby="sheet-left-title">
   <div class="sheet-content">
@@ -119,7 +119,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </dialog>
 ```
 
-```html example label="Top" hint="Slides down from the top edge — useful for notifications or announcement banners." height="26"
+```html example label="Top" hint="Slides down from the top edge - useful for notifications or announcement banners." height="26"
 <button class="btn" data-variant="outline" data-sheet-trigger="sheet-top" aria-haspopup="dialog">Open Top Sheet</button>
 <dialog id="sheet-top" class="sheet" data-side="top" role="dialog" aria-modal="true" aria-labelledby="sheet-top-title">
   <div class="sheet-content">
@@ -164,7 +164,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </dialog>
 ```
 
-```html example label="Bottom" hint="Slides up from the bottom edge — great for cookie consent, action sheets, or preference panels." height="26"
+```html example label="Bottom" hint="Slides up from the bottom edge - great for cookie consent, action sheets, or preference panels." height="26"
 <button class="btn" data-variant="outline" data-sheet-trigger="sheet-bottom" aria-haspopup="dialog">Open Bottom Sheet</button>
 <dialog id="sheet-bottom" class="sheet" data-side="bottom" role="dialog" aria-modal="true" aria-labelledby="sheet-bottom-title">
   <div class="sheet-content">
@@ -229,7 +229,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <div class="sheet-content">
     <div class="sheet-header">
       <h2 class="sheet-title" id="ds-cm-title">Comfortable density</h2>
-      <p class="sheet-description">Identical to the unsized default — 1.5rem content padding.</p>
+      <p class="sheet-description">Identical to the unsized default - 1.5rem content padding.</p>
     </div>
   </div>
   <button class="sheet-close-x" data-sheet-close aria-label="Close"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg></button>
@@ -248,12 +248,12 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
   <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
-    <li><code>default</code> — closed, off-screen (the authored state; the trigger opens it)</li>
-    <li><code>open</code> — shown modally via <code>showModal()</code>, slid in from its side</li>
+    <li><code>default</code> - closed, off-screen (the authored state; the trigger opens it)</li>
+    <li><code>open</code> - shown modally via <code>showModal()</code>, slid in from its side</li>
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/sheet-\{state\}.png</code>.</p>
 
-Machine contract — verified against <a href="../schemas/sheet.schema.json"><code>sheet.schema.json</code></a> by <code>bun run verify</code>:
+Machine contract - verified against <a href="../schemas/sheet.schema.json"><code>sheet.schema.json</code></a> by <code>bun run verify</code>:
 
 ```states
 | State | Type | Values | Default | Description |

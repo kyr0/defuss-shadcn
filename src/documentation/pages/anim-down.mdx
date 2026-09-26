@@ -1,0 +1,145 @@
+---
+title: "Slide Down - Animations"
+description: "The slide animation in depth - slideIn/slideOut channels with direction, distance, duration and easing, driven imperatively by df$.anim and bindable to scroll."
+slug: "anim-down"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="anim-down" title="Slide Down" component="motion">
+  The slide animation in depth: the element glides in from an edge (or out toward one) while fading - the imperative twin of the motion component's <code>data-df-entrance="down"</code>.
+</PageHeader>
+
+Slide Down is the directional slide animation: `slideIn` starts the element at the named edge and settles it into place, `slideOut` sends it back out toward that same edge - with `direction: 'north'` (the default) the element starts above and slides down, matching the motion component's `down` entrance. All four orientation variants (`north`, `south`, `east`, `west`) ship per variant, and everything is driven by the `df$.anim.slideIn.*()` / `df$.anim.slideOut.*()` channels - `play`, `pause`, `resume`, `finish`, `reset`, `state`.
+
+```html example label="In / out, directions and lifecycle" schema="none" hint="slideIn starts at the named edge, slideOut exits toward it. Direction buttons pick the edge (N is the default - the slide-DOWN motion); Pause/Resume/Finish/Reset act on whichever channel played last. Duration and easing apply to the next play."
+<style>
+  #anim-down-target {
+    width: 160px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+    font-size: 0.85rem;
+  }
+</style>
+<div style="display:flex; flex-direction:column; gap:0.75rem;">
+  <div id="anim-down-target">slide me</div>
+  <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-down-in">In</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-down-out">Out</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-anim-down-dir="north" aria-pressed="true">N</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-anim-down-dir="south" aria-pressed="false">S</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-anim-down-dir="west" aria-pressed="false">W</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-anim-down-dir="east" aria-pressed="false">E</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-down-pause">Pause</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-down-resume">Resume</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-down-finish">Finish</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-down-reset">Reset</button>
+  </div>
+  <div style="display:flex; align-items:center; gap:0.75rem; font-size:0.85rem;">
+    <label for="anim-down-duration">Duration (ms)</label>
+    <input class="input" id="anim-down-duration" type="number" min="50" step="50" value="1500" style="width:6rem;" />
+    <label for="anim-down-easing">Easing</label>
+    <select class="select" id="anim-down-easing">
+      <option value="cubic-bezier(0.16, 1, 0.3, 1)" selected>default (ease-out-expo)</option>
+      <option value="linear">linear</option>
+      <option value="ease-in-out">ease-in-out</option>
+      <option value="cubic-bezier(0.34, 1.56, 0.64, 1)">overshoot</option>
+    </select>
+  </div>
+</div>
+<script type="module">
+  // df$ (all.js) is available in the sandbox - reference it at event time.
+  const target = document.getElementById('anim-down-target');
+  const durationInput = document.getElementById('anim-down-duration');
+  const easingSelect = document.getElementById('anim-down-easing');
+  let currentDirection = 'north'; // default: slides down (matches motion.css "down")
+  let lastChannel = 'slideIn';    // lifecycle buttons act on the last-played channel
+
+  const config = () => ({
+    direction: currentDirection,
+    duration: Number(durationInput.value) || 1500,
+    easing: easingSelect.value,
+  });
+
+  document.getElementById('anim-down-in').addEventListener('click', () => {
+    lastChannel = 'slideIn';
+    df$.anim.slideIn.play(target, config());
+  });
+  document.getElementById('anim-down-out').addEventListener('click', () => {
+    lastChannel = 'slideOut';
+    df$.anim.slideOut.play(target, config());
+  });
+
+  document.querySelectorAll('[data-anim-down-dir]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      currentDirection = btn.dataset.animDownDir;
+      document.querySelectorAll('[data-anim-down-dir]').forEach((b) =>
+        b.setAttribute('aria-pressed', String(b === btn)));
+    });
+  });
+
+  document.getElementById('anim-down-pause').addEventListener('click', () => df$.anim[lastChannel].pause(target));
+  document.getElementById('anim-down-resume').addEventListener('click', () => df$.anim[lastChannel].resume(target));
+  document.getElementById('anim-down-finish').addEventListener('click', () => df$.anim[lastChannel].finish(target));
+  document.getElementById('anim-down-reset').addEventListener('click', () => {
+    df$.anim.slideIn.reset(target);
+    df$.anim.slideOut.reset(target);
+  });
+</script>
+```
+
+```html example label="Scroll-bound slide-in" schema="none" hint="opts.scroll ties the animation's progress to a scroll position instead of time - scroll the stage and the box slides down in proportion. The platform's ScrollTimeline drives it where available; a rAF-throttled listener scrubs currentTime elsewhere."
+<style>
+  #anim-down-scroll-target {
+    width: 160px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+    font-size: 0.85rem;
+  }
+</style>
+<div id="anim-down-scroller" style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem;">
+  <div style="height: 600px; display: flex; flex-direction: column; justify-content: space-between;">
+    <p class="text-sm text-muted-foreground" style="margin:0;">Scroll down - the box slides in as you go.</p>
+    <div id="anim-down-scroll-target">scroll-driven</div>
+  </div>
+</div>
+<script type="module">
+  // all.js boots after example scripts in the sandbox - bind on load, never
+  // at parse time (df$ is only guaranteed to exist by then).
+  window.addEventListener('load', () => {
+    const scroller = document.getElementById('anim-down-scroller');
+    const target = document.getElementById('anim-down-scroll-target');
+    // bind slideIn progress to the scroller's own vertical scroll offset
+    df$.anim.slideIn.play(target, { scroll: { target: scroller, axis: 'y' } });
+  });
+</script>
+```
+
+The same binding with `{ target: 'viewport' }` (the default when `target` is omitted) ties progress to the page's own scroll position instead of a container - the parallax use for presentations.
+
+## Config axes
+
+- `direction` - `'north' | 'south' | 'east' | 'west'` (default `'north'`): the edge the in-variant starts at and the out-variant exits toward.
+- `distance` - the slide travel as any CSS length (default `'24px'`), e.g. `'48px'` for a longer drift.
+- `duration` - total time in ms (default `1500`).
+- `easing` - any CSS easing (default `cubic-bezier(0.16, 1, 0.3, 1)`).
+
+<SourceFiles component="motion" section="css">
+  <SourceNote for="css">The shared motion stylesheet - the declarative <code>data-df-entrance</code> twin of this page's <code>df$.anim</code> channels: the <code>--df-motion-…</code> tunables, the fifteen <code>df-enter-…</code> keyframes and the reduced-motion flattening.</SourceNote>
+</SourceFiles>
+
+</DocPage>

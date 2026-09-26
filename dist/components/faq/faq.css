@@ -1,6 +1,6 @@
 /* -- FAQ (marketing) -----------------------------------------------
    "Frequently asked questions" as an icon-card grid (each answer is
-   visible — no disclosure widget). Cards hold a muted icon tile and a
+   visible - no disclosure widget). Cards hold a muted icon tile and a
    question/answer pair. Responsive columns follow container width. */
 
 @layer components {

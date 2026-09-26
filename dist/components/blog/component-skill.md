@@ -1,7 +1,7 @@
 ---
 name: Blog
 type: BLK
-why: Post cards are `<a>` + `<img>` + clamped text — line-clamp and aspect-ratio give the editorial layout for free.
+why: Post cards are `<a>` + `<img>` + clamped text - line-clamp and aspect-ratio give the editorial layout for free.
 when: Insights/news teasers on a marketing page; the full article list is a table or card grid instead.
 where: dist/components/blog/blog.css
 supportedStates: default
@@ -10,7 +10,7 @@ supportedStates: default
 # Pattern: Blog
 
 ## Native basis
-The whole card is a single `<a>` wrapping the preview — one tab stop,
+The whole card is a single `<a>` wrapping the preview - one tab stop,
 one click target. Excerpt clamping uses `-webkit-line-clamp` (shipped
 everywhere), media uses `aspect-ratio`; authors compose the
 [Avatar](../avatar/component-skill.md) component.
@@ -18,10 +18,10 @@ everywhere), media uses `aspect-ratio`; authors compose the
 ---
 
 ## Native Web APIs
-- [`line-clamp`](https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-line-clamp) — 3-line excerpt cut with ellipsis
-- [`aspect-ratio`](https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio) — 3:2 preview frames
-- [Avatar](../avatar/component-skill.md) — author identity row
-- [Container queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries) — 1 → 2 → 3 columns
+- [`line-clamp`](https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-line-clamp) - 3-line excerpt cut with ellipsis
+- [`aspect-ratio`](https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio) - 3:2 preview frames
+- [Avatar](../avatar/component-skill.md) - author identity row
+- [Container queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries) - 1 → 2 → 3 columns
 
 ---
 
@@ -81,6 +81,6 @@ The author avatar is decorative next to the visible name → `alt=""` on the aut
 ---
 
 ## Notes
-- Card links need distinct accessible names — the `<h3>` title provides it; don't duplicate the title in `alt` AND `aria-label`.
+- Card links need distinct accessible names - the `<h3>` title provides it; don't duplicate the title in `alt` AND `aria-label`.
 - "See all" sits `margin-inline-start: auto` and only shows ≥ 48rem container width (source's `hidden lg:flex`).
-- Hover only dims the image (`opacity .9`) — never transform-lift whole cards; motion-sensitive users get none of it under reduced-motion.
+- Hover only dims the image (`opacity .9`) - never transform-lift whole cards; motion-sensitive users get none of it under reduced-motion.

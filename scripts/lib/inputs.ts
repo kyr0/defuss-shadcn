@@ -5,21 +5,21 @@ import { join, relative } from 'node:path';
 /**
  * Why: the screenshot freshness contract, shared by create-screenshots.ts
  * (skip unchanged components) and verify.ts (the gate). Content hashes, not
- * mtimes — rebuilding dist/ with identical files must NOT invalidate
+ * mtimes - rebuilding dist/ with identical files must NOT invalidate
  * screenshots, and editing a component must invalidate exactly its own shots.
  *
  * Fingerprint per component = global shell (theme tokens, doc css/js/fonts,
- * the all.css/all.js bundle — every page loads these) + that component's
+ * the all.css/all.js bundle - every page loads these) + that component's
  * shipped files + its doc page.
  * Known ceiling (ponytail): cross-component demo bleed-through (e.g. a .btn
- * inside the dialog demo) is NOT tracked — editing button.css won't re-shoot
+ * inside the dialog demo) is NOT tracked - editing button.css won't re-shoot
  * dialog.png. Escape hatch: `bun run screenshots --force`. Upgrade path if it
  * ever bites: compute a real per-page dependency set from the preview markup.
  */
 
 const SHELL_DIRS = ['theme', 'documentation/css', 'documentation/js', 'documentation/fonts'];
 // every doc page loads the single-file bundle, so a bundle rebuild can shift
-// EVERY screenshot — hash it into the shell, not into any one component
+// EVERY screenshot - hash it into the shell, not into any one component
 const SHELL_FILES = ['components/all.css', 'components/all.js'];
 
 /** Deterministic hash over a fixed set of files, relative path included. */

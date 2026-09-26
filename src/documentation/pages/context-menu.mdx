@@ -1,6 +1,6 @@
 ---
 title: "Context Menu"
-description: "Context Menu component — right-click menus with keyboard navigation."
+description: "Context Menu component - right-click menus with keyboard navigation."
 slug: "context-menu"
 ---
 
@@ -56,32 +56,32 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 ```html example label="Density" hint="Set data-density on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25), typography and fixed dimensions stay identical. comfortable matches the unsized default." height="14"
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w75">Compact</span>
-  <div class="context-menu-trigger" data-context-menu="density-ctx-compact" style="padding:1rem;border:1px dashed var(--border);border-radius:var(--radius-md);flex:1;">Right-click — Compact</div><div class="context-menu" id="density-ctx-compact" popover data-density="compact" role="menu"><button class="context-menu-item" role="menuitem">Cut</button><button class="context-menu-item" role="menuitem">Copy</button><button class="context-menu-item" role="menuitem">Paste</button></div>
+  <div class="context-menu-trigger" data-context-menu="density-ctx-compact" style="padding:1rem;border:1px dashed var(--border);border-radius:var(--radius-md);flex:1;">Right-click - Compact</div><div class="context-menu" id="density-ctx-compact" popover data-density="compact" role="menu"><button class="context-menu-item" role="menuitem">Cut</button><button class="context-menu-item" role="menuitem">Copy</button><button class="context-menu-item" role="menuitem">Paste</button></div>
 </div>
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w75">Comfortable</span>
-  <div class="context-menu-trigger" data-context-menu="density-ctx-comfortable" style="padding:1rem;border:1px dashed var(--border);border-radius:var(--radius-md);flex:1;">Right-click — Comfortable</div><div class="context-menu" id="density-ctx-comfortable" popover data-density="comfortable" role="menu"><button class="context-menu-item" role="menuitem">Cut</button><button class="context-menu-item" role="menuitem">Copy</button><button class="context-menu-item" role="menuitem">Paste</button></div>
+  <div class="context-menu-trigger" data-context-menu="density-ctx-comfortable" style="padding:1rem;border:1px dashed var(--border);border-radius:var(--radius-md);flex:1;">Right-click - Comfortable</div><div class="context-menu" id="density-ctx-comfortable" popover data-density="comfortable" role="menu"><button class="context-menu-item" role="menuitem">Cut</button><button class="context-menu-item" role="menuitem">Copy</button><button class="context-menu-item" role="menuitem">Paste</button></div>
 </div>
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w75">Spacious</span>
-  <div class="context-menu-trigger" data-context-menu="density-ctx-spacious" style="padding:1rem;border:1px dashed var(--border);border-radius:var(--radius-md);flex:1;">Right-click — Spacious</div><div class="context-menu" id="density-ctx-spacious" popover data-density="spacious" role="menu"><button class="context-menu-item" role="menuitem">Cut</button><button class="context-menu-item" role="menuitem">Copy</button><button class="context-menu-item" role="menuitem">Paste</button></div>
+  <div class="context-menu-trigger" data-context-menu="density-ctx-spacious" style="padding:1rem;border:1px dashed var(--border);border-radius:var(--radius-md);flex:1;">Right-click - Spacious</div><div class="context-menu" id="density-ctx-spacious" popover data-density="spacious" role="menu"><button class="context-menu-item" role="menuitem">Cut</button><button class="context-menu-item" role="menuitem">Copy</button><button class="context-menu-item" role="menuitem">Paste</button></div>
 </div>
 ```
 
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
   <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
-    <li><code>default</code> — closed (the authored state; right-click opens it)</li>
-    <li><code>open</code> — menu shown; <code>setState('open', \{ x, y \})</code> positions it (viewport top-left by default, there is no pointer to anchor to)</li>
+    <li><code>default</code> - closed (the authored state; right-click opens it)</li>
+    <li><code>open</code> - menu shown; <code>setState('open', \{ x, y \})</code> positions it (viewport top-left by default, there is no pointer to anchor to)</li>
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/context-menu-\{state\}.png</code>.</p>
 
-Machine contract — verified against <a href="../schemas/context-menu.schema.json"><code>context-menu.schema.json</code></a> by <code>bun run verify</code>:
+Machine contract - verified against <a href="../schemas/context-menu.schema.json"><code>context-menu.schema.json</code></a> by <code>bun run verify</code>:
 
 ```states
 | State | Type | Values | Default | Description |
 | --- | --- | --- | --- | --- |
-| `open` | `boolean` | `true`, `false` | `false` | Shown — driven through the component's own State API. The runtime positions it at `x/y` (default 8/8) first. |
+| `open` | `boolean` | `true`, `false` | `false` | Shown - driven through the component's own State API. The runtime positions it at `x/y` (default 8/8) first. |
 ```
 
 </StatesSection>

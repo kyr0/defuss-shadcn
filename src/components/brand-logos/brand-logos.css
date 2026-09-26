@@ -23,7 +23,7 @@
     row-gap: 1.75rem;
   }
 
-  /* the mark links out to the brand — no underline. Ink color tracks the
+  /* the mark links out to the brand - no underline. Ink color tracks the
      theme (black in light, white in dark) via --foreground; the name text
      stays muted so the marks read first. */
   .mk-logo {
@@ -63,12 +63,83 @@
     .mk-logo-name { font-size: 1.25rem; }
   }
 
+  /* -- Rolling marquee ------------------------------------------
+     Continuous speed-based roll (a slow ticker, not step sliding):
+     the track holds the logo set TWICE - the second copy carries
+     aria-hidden="true" + tabindex="-1" - and translates by exactly
+     -50%, so the loop restarts on identical content (seamless).
+     `gap` between items plus an equal padding at the track's end
+     keeps each copy exactly half the border box wide (transform
+     percentages measure the border box, padding included). */
+  .mk-logos-roll {
+    --mk-logos-roll-duration: 30s;
+    --mk-logos-roll-height: 12rem;
+    overflow: hidden;
+    width: 100%;
+    -webkit-mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+  }
+
+  .mk-logos-roll-track {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem; /* matches .mk-logos-row column-gap */
+    padding-inline-end: 2.5rem;
+    width: max-content;
+    animation: mk-logos-roll var(--mk-logos-roll-duration, 30s) linear infinite;
+  }
+
+  .mk-logos-roll:hover .mk-logos-roll-track,
+  .mk-logos-roll:focus-within .mk-logos-roll-track { animation-play-state: paused; }
+
+  /* vertical roll: column track in a fixed-height viewport, mask on
+     the block edges instead */
+  .mk-logos-roll[data-direction="y"] {
+    height: var(--mk-logos-roll-height, 12rem);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+  }
+
+  .mk-logos-roll[data-direction="y"] .mk-logos-roll-track {
+    flex-direction: column;
+    margin-inline: auto;
+    padding-inline-end: 0;
+    padding-block-end: 2.5rem;
+    animation-name: mk-logos-roll-y;
+  }
+
+  @keyframes mk-logos-roll {
+    to { transform: translateX(-50%); }
+  }
+
+  @keyframes mk-logos-roll-y {
+    to { transform: translateY(-50%); }
+  }
+
   /* -- Accessibility ------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
     .mk-logo { transition: none; }
+
+    /* static fallback: the roll collapses back into the plain wrapped
+       row and the duplicated copy drops out so nothing renders twice */
+    .mk-logos-roll,
+    .mk-logos-roll[data-direction="y"] { height: auto; }
+    .mk-logos-roll-track {
+      animation: none;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: auto;
+      padding-inline-end: 0;
+      padding-block-end: 0;
+    }
+    .mk-logos-roll[data-direction="y"] .mk-logos-roll-track { flex-direction: row; animation: none; }
+    .mk-logos-roll-track > [aria-hidden="true"] { display: none; }
   }
 
   @media (forced-colors: active) {
     .mk-logo { color: CanvasText; }
+    /* masks hide content in forced-colors mode - show the full roll */
+    .mk-logos-roll,
+    .mk-logos-roll[data-direction="y"] { -webkit-mask-image: none; mask-image: none; }
   }
 }

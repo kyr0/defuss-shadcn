@@ -8,28 +8,28 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <DocPage meta={meta}>
 
-<PageHeader slug="density" title="Density" crumb="sizing / density" introStyle="max-width:38rem;">
+<PageHeader slug="density" title="Density" introStyle="max-width:38rem;">
   Compactness is an explicit whitespace policy—not a global zoom factor. Keep typography, geometry and target sizes independent.
 </PageHeader>
 
 <h2 id="presets" class="h2-display">Opt in to interface density</h2>
 
-<DocText>Density changes whitespace, not display resolution. The presets are adjustable design choices: compact <code>0.75</code>, comfortable <code>1</code>, spacious <code>1.25</code>. They inherit into descendants; an inner density attribute starts a new density context. Every code block on this page shows exactly the classes that render the demo above it — only the demo's decorative colors are omitted.</DocText>
+<DocText>Density changes whitespace, not display resolution. The presets are adjustable design choices: compact <code>0.75</code>, comfortable <code>1</code>, spacious <code>1.25</code>. They inherit into descendants; an inner density attribute starts a new density context. Every code block on this page shows exactly the classes that render the demo above it - only the demo's decorative colors are omitted.</DocText>
 
 ```html example schema="none"
 <div class="flex flex-wrap gap-4" data-demo="density">
   <div data-density="compact" class="stack demo-outline p-3" style="flex:1;min-width:10rem;">
-    <p class="demo-label demo-label-inline">>compact — 0.75×</p>
+    <p class="demo-label demo-label-inline">>compact - 0.75×</p>
     <div class="demo-tile p-4" data-variant="muted">p-4</div>
     <div class="demo-tile p-4" data-variant="muted">p-4</div>
   </div>
   <div class="stack demo-outline p-3" style="flex:1;min-width:10rem;">
-    <p class="demo-label demo-label-inline">>comfortable — 1×</p>
+    <p class="demo-label demo-label-inline">>comfortable - 1×</p>
     <div class="demo-tile p-4" data-variant="muted">p-4</div>
     <div class="demo-tile p-4" data-variant="muted">p-4</div>
   </div>
   <div data-density="spacious" class="stack demo-outline p-3" style="flex:1;min-width:10rem;">
-    <p class="demo-label demo-label-inline">>spacious — 1.25×</p>
+    <p class="demo-label demo-label-inline">>spacious - 1.25×</p>
     <div class="demo-tile p-4" data-variant="muted">p-4</div>
     <div class="demo-tile p-4" data-variant="muted">p-4</div>
   </div>
@@ -82,7 +82,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <h2 id="real-world" class="h2-display">A realistic compact surface</h2>
 
-<DocText>The same settings panel under two density contexts. In <code>compact</code> the <code>p-4</code> panel padding and the <code>stack</code>'s default gap scale to 0.75×, in <code>spacious</code> to 1.25× — typography, button heights and border radii stay identical. That is the density contract on real UI: a whitespace policy, not a zoom.</DocText>
+<DocText>The same settings panel under two density contexts. In <code>compact</code> the <code>p-4</code> panel padding and the <code>stack</code>'s default gap scale to 0.75×, in <code>spacious</code> to 1.25× - typography, button heights and border radii stay identical. That is the density contract on real UI: a whitespace policy, not a zoom.</DocText>
 
 ```html example schema="none"
 <div class="flex flex-wrap gap-4">
@@ -146,7 +146,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <h2 id="advanced" class="h2-display">Real world: a dense data table</h2>
 
-<DocText>The same four records — name, role, last modified — rendered twice with identical markup; only the density attribute changes. In <code>compact</code> the panel's <code>p-4</code> padding, the <code>stack</code> gap and each row's <code>gap-2</code> shrink to 0.75×; in <code>spacious</code> they grow to 1.25×. The avatars (<code>size-8</code>), the font sizes and the <code>ms-auto</code> date alignment do not move: density scales the whitespace between and around the rows, never the type or the geometry. That is what makes a compact mode safe to offer on data-heavy screens — rows pack tighter without shrinking text below readability.</DocText>
+<DocText>The same four records - name, role, last modified - rendered twice with identical markup; only the density attribute changes. In <code>compact</code> the panel's <code>p-4</code> padding, the <code>stack</code> gap and each row's <code>gap-2</code> shrink to 0.75×; in <code>spacious</code> they grow to 1.25×. The avatars (<code>size-8</code>), the font sizes and the <code>ms-auto</code> date alignment do not move: density scales the whitespace between and around the rows, never the type or the geometry. That is what makes a compact mode safe to offer on data-heavy screens - rows pack tighter without shrinking text below readability.</DocText>
 
 ```html example schema="none"
 <div class="flex flex-wrap gap-4">
@@ -232,7 +232,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <h2 id="component-density" class="h2-display">Components with native density</h2>
 
-<DocText>Beyond the utility scale above, the components whose information density a user actually dials in implement <code>data-density</code> themselves — set it on the component root and their internal whitespace scales with the same <code>0.75 / 1 / 1.25</code> ratio, <code>comfortable</code> being identical to the unsized default. Each component page shows the three steps side by side:</DocText>
+<DocText>Beyond the utility scale above, the components whose information density a user actually dials in implement <code>data-density</code> themselves - set it on the component root and their internal whitespace scales with the same <code>0.75 / 1 / 1.25</code> ratio, <code>comfortable</code> being identical to the unsized default. Each component page shows the three steps side by side:</DocText>
 
 <div class="overflow-x-auto mb-6">
   <table class="table" data-variant="simple">

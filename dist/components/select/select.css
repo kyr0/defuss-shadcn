@@ -25,7 +25,7 @@
     background-size: 1rem;
 
     /* Placeholder = the empty-value option. It stays selectable (no
-       `disabled`) so it doubles as the clear/reset entry — choosing it
+       `disabled`) so it doubles as the clear/reset entry - choosing it
        again empties the box (issue #32). While it is the selection the
        closed control reads as a placeholder; a real value restores
        --foreground because the base rule's color wins over this one.
@@ -63,7 +63,7 @@
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all
-   components — AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
    `none` keeps transitionend/animationend (and discrete display flips)
    firing so JS state machines that await them keep working. */
 @media (prefers-reduced-motion: reduce) {

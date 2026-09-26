@@ -1,8 +1,8 @@
 ---
 name: Badge
 type: ATM
-why: Pure-CSS <span> chip with emphasis variants — nothing to wire up.
-when: Short status, version, or count labels next to content — not for actions.
+why: Pure-CSS <span> chip with emphasis variants - nothing to wire up.
+when: Short status, version, or count labels next to content - not for actions.
 where: dist/components/badge/badge.css
 supportedStates: default
 ---
@@ -10,12 +10,12 @@ supportedStates: default
 # Pattern: Badge
 
 ## Native basis
-`<span>` element. No interactivity required — pure visual indicator.
+`<span>` element. No interactivity required - pure visual indicator.
 
 ---
 
 ## Native Web APIs
-- [`<span>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span) — inline container for phrasing content
+- [`<span>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span) - inline container for phrasing content
 
 ---
 
@@ -59,5 +59,5 @@ supportedStates: default
 ---
 ## Accessibility
 
-- Use descriptive text content — badges are read inline by screen readers.
+- Use descriptive text content - badges are read inline by screen readers.
 - If the badge is purely decorative, add `aria-hidden="true"`.

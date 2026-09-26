@@ -10,11 +10,11 @@ import {
 } from '../scripts/lib/stats.ts';
 
 /**
- * Why: dist/stats.json is the published answer to "how many / how big" — its
+ * Why: dist/stats.json is the published answer to "how many / how big" - its
  * totals must be arithmetically derived from the component list, never typed
  * by hand. The measurement side (fs + gzip) lives in stats-files.ts; this
  * test pins the pure aggregation the JSON is serialized from, in browser
- * mode — same split as tests/minify.test.ts.
+ * mode - same split as tests/minify.test.ts.
  */
 
 const comp = (over: Partial<ComponentMeasure> & Pick<ComponentMeasure, 'name' | 'type'>): ComponentMeasure => ({
@@ -45,7 +45,7 @@ describe('aggregateStats', () => {
     comp({ name: 'hero', type: 'BLK' }),
   ]);
 
-  it('counts the total and per-type (all five types present, zero-filled)', () => {
+  it('counts the total and per-type (all six types present, zero-filled)', () => {
     expect(doc.total).toBe(3);
     expect(doc.byType).toEqual({ ATM: 1, MOL: 1, ORG: 0, BLK: 1, TPL: 0 });
   });
@@ -99,8 +99,8 @@ describe('statsClaimText / statsClaimProblems', () => {
   it('states every machine-checked number in one sentence', () => {
     const claim = statsClaimText(doc);
     expect(claim).toBe(
-      '2 components — 1 with JavaScript, 1 CSS-only — 0.0 KiB minified + compressed' +
-        ' — 0.0 KiB as the all.css/all.js bundle',
+      '2 components - 1 with JavaScript, 1 CSS-only - 0.0 KiB minified + compressed' +
+        ' - 0.0 KiB as the all.css/all.js bundle',
     );
   });
 
@@ -115,7 +115,7 @@ describe('statsClaimText / statsClaimProblems', () => {
     });
     expect(statsClaimText(withBundle)).toContain('1.0 KiB as the all.css/all.js bundle');
     expect(withBundle.bundle.totalSizeGzMinified).toBe(1024);
-    // the bundle is an alternative consumption path — never folded into component totals
+    // the bundle is an alternative consumption path - never folded into component totals
     expect(withBundle.totalSizeGzMinified).toBe(4);
   });
 
@@ -146,7 +146,7 @@ describe('statsClaimText / statsClaimProblems', () => {
     expect(statsClaimProblems(`**${claim}.**`, 'x', doc)).toEqual([]);
   });
 
-  it('flags stale numbers — a value that no longer matches stats.json is misinformation', () => {
+  it('flags stale numbers - a value that no longer matches stats.json is misinformation', () => {
     const stale = statsClaimText(doc).replace('2 components', '3 components');
     const problems = statsClaimProblems(`text ${stale} more`, 'README.md', doc);
     expect(problems).toHaveLength(1);
@@ -165,7 +165,7 @@ describe('buildStatsText', () => {
     expect(buildStatsText(measures)).toBe(`${JSON.stringify(aggregateStats(measures), null, 2)}\n`);
   });
 
-  it('is deterministic (no timestamps — rebuilds stay byte-identical)', () => {
+  it('is deterministic (no timestamps - rebuilds stay byte-identical)', () => {
     const measures = [comp({ name: 'badge', type: 'ATM' })];
     expect(buildStatsText(measures)).toBe(buildStatsText(measures));
   });

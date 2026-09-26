@@ -1,0 +1,70 @@
+---
+title: "Chart"
+description: "Chart component - a thin token bridge over Apache ECharts: declarative data-chart mounting, a getComputedStyle theme adapter, ResizeObserver resize, reduced-motion suppression, and chartStory option transitions."
+slug: "chart"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, DocLink, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="chart" title="Chart" component="chart">
+  Data visualization on the <DocLink href="state-api.html">State API</DocLink>: <strong>Apache ECharts</strong> does the drawing (vendor script, zero bytes shipped) while the component owns the lifecycle - declarative <code>data-chart</code> mounting, a theme adapter that reads the design tokens off <code>getComputedStyle</code> (themes and dark mode apply with no JS state), container-accurate resize, reduced-motion suppression, and <code>df$.shadcn.chartStory()</code> for data-storytelling transitions.
+</PageHeader>
+
+<SkillPanel component="chart">
+  <SkillField label="Native basis">
+<SkillText>A plain <code>&lt;div class="chart"&gt;</code> mount rendered by ECharts (SVG renderer), with <code>role="img"</code> + <code>aria-label</code> as the accessible surface and ECharts' own <code>aria.enabled</code> output on top.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver" title="container-accurate resize + zero-size deferral"><code>ResizeObserver</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="animation: false in the base option"><code>prefers-reduced-motion</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties" title="the theme adapter reads the tokens off getComputedStyle"><code>getComputedStyle</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/img_role" title="the chart announces as one labelled graphic"><code>role="img"</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Attributes">
+<SkillRow>
+    <code>data-chart</code>
+    <code>data-size</code>
+    <code>data-init</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Sizes (data-size)">
+<SkillGrid>
+    <Variant name="(none)" description="20rem - default reading size" />
+    <Variant name="sm" description="14rem - compact cards, dashboards" />
+    <Variant name="lg" description="28rem - hero visualizations" />
+  </SkillGrid>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Declarative" schema="none" hint="data-chart is the ECharts option; the token-derived THEME supplies every default it leaves out - palette, type scale, axis and grid chrome, tooltip. Toggle dark mode or switch the theme: the chart re-themes live. The vendor script loads once; chart.js mounts every .chart element automatically."
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame">
+  <h3 class="chart-title">Revenue by quarter</h3>
+  <p class="chart-dek">The bar palette, label colors and tooltip chrome all derive from the active theme's tokens.</p>
+  <div class="chart" data-state-demo role="img" aria-label="Bar chart of quarterly revenue, rising from 12 to 24"
+       data-chart='{"xAxis":{"type":"category","data":["Q1","Q2","Q3","Q4"]},"yAxis":{"type":"value"},"series":[{"id":"rev","type":"bar","universalTransition":true,"barWidth":"48%","label":{"show":true,"position":"top","fontWeight":600},"data":[12,19,15,24]}]}'></div>
+  <figcaption class="chart-source">Source: annual report 2026</figcaption>
+</figure>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - the rendered surface; <code>setState('default', \{ option \})</code> replaces the option wholesale (notMerge), a bare call is a no-op</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code>.</p>
+</StatesSection>
+
+<SourceFiles component="chart">
+  <SourceNote for="css">The sizing surface (three <code>data-size</code> height presets) and the editorial <code>.chart-frame</code> chrome - tokens only.</SourceNote>
+  <SourceNote for="js">The full runtime: vendor-load guard, token theme adapter, deep-merge mount with SVG renderer + ResizeObserver, <code>chartStory</code>, and the State API wiring.</SourceNote>
+</SourceFiles>
+
+</DocPage>

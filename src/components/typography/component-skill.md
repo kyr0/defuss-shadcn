@@ -1,7 +1,7 @@
 ---
 name: Typography
 type: ATM
-why: Type styling for raw content elements — headings, lists, blockquotes, code.
+why: Type styling for raw content elements - headings, lists, blockquotes, code.
 when: Rendering markdown or CMS output where you cannot add classes.
 where: dist/components/typography/typography.css
 supportedStates: default
@@ -11,21 +11,21 @@ supportedStates: default
 
 ## Native basis
 Native HTML text elements: `<h1>`–`<h4>`, `<p>`, `<blockquote>`, `<code>`, `<small>`.
-Pure CSS — no JavaScript or ARIA required.
+Pure CSS - no JavaScript or ARIA required.
 
 ---
 
 ## Native Web APIs
-- [`<h1>`–`<h6>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements) — semantic heading hierarchy
-- [`<blockquote>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote) — quoted block content
-- [`<code>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/code) — inline code fragment
-- [`<small>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/small) — side comments and small print
-- [`text-wrap: balance`](https://developer.mozilla.org/en-US/docs/Web/CSS/text-wrap) — balanced line wrapping for headings
-- [`text-wrap: pretty`](https://developer.mozilla.org/en-US/docs/Web/CSS/text-wrap) — orphan prevention for body text
-- [`hanging-punctuation`](https://developer.mozilla.org/en-US/docs/Web/CSS/hanging-punctuation) — optical quote alignment for blockquotes
-- [Logical properties](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_logical_properties_and_values) — `border-inline-start`, `padding-inline-start` for RTL support
-- [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) — enhanced contrast for high-contrast preference
-- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) — Windows High Contrast Mode with system colors
+- [`<h1>`–`<h6>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements) - semantic heading hierarchy
+- [`<blockquote>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote) - quoted block content
+- [`<code>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/code) - inline code fragment
+- [`<small>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/small) - side comments and small print
+- [`text-wrap: balance`](https://developer.mozilla.org/en-US/docs/Web/CSS/text-wrap) - balanced line wrapping for headings
+- [`text-wrap: pretty`](https://developer.mozilla.org/en-US/docs/Web/CSS/text-wrap) - orphan prevention for body text
+- [`hanging-punctuation`](https://developer.mozilla.org/en-US/docs/Web/CSS/hanging-punctuation) - optical quote alignment for blockquotes
+- [Logical properties](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_logical_properties_and_values) - `border-inline-start`, `padding-inline-start` for RTL support
+- [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) - enhanced contrast for high-contrast preference
+- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) - Windows High Contrast Mode with system colors
 
 ---
 
@@ -100,21 +100,21 @@ Pure CSS — no JavaScript or ARIA required.
 
 - Use heading levels in order (`h1` → `h2` → `h3`). Do not skip levels.
 - Headings create the document outline used by screen readers for navigation.
-- `<blockquote>` is announced as a quote by assistive technology — no extra ARIA needed.
-- `<code>` is announced as code — no extra ARIA needed.
-- `prefers-contrast: more` — removes tight letter-spacing on headings, adds outline to inline code, thickens blockquote border, and promotes muted text to foreground color.
-- `forced-colors: active` — blockquote border and inline code adapt to system colors (`CanvasText`, `Canvas`).
+- `<blockquote>` is announced as a quote by assistive technology - no extra ARIA needed.
+- `<code>` is announced as code - no extra ARIA needed.
+- `prefers-contrast: more` - removes tight letter-spacing on headings, adds outline to inline code, thickens blockquote border, and promotes muted text to foreground color.
+- `forced-colors: active` - blockquote border and inline code adapt to system colors (`CanvasText`, `Canvas`).
 
 ---
 
 ## Notes
 
-- These are utility classes for prose content — not a component with variants/sizes.
+- These are utility classes for prose content - not a component with variants/sizes.
 - The `.h1`–`.h4` classes allow applying heading styles to non-heading elements when semantic headings aren't appropriate.
 - Typography classes compose freely with other components (Card content, Dialog body, Alert description).
 - `text-wrap: balance` is used on all headings (h1–h4) for better visual line distribution.
 - `text-wrap: pretty` is used on paragraphs and lead text for orphan prevention.
 - `hanging-punctuation: first last` is used on blockquotes for optical quote alignment.
 - Blockquote uses `border-inline-start` / `padding-inline-start` (logical properties) for automatic RTL support.
-- For lists, use the List component (`list.css`) — typography does not ship its own list styles.
-- For prose tables, use the Table component (`table.css`) — typography does not ship its own table styles.
+- For lists, use the List component (`list.css`) - typography does not ship its own list styles.
+- For prose tables, use the Table component (`table.css`) - typography does not ship its own table styles.

@@ -7,7 +7,7 @@
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 // defussQuery: the callable runtime for scoped lookup + scalar writes
 // (plans/defuss-query-morph-integration.md §3 combobox row: filtering an
-// existing consumer-authored list is flag-based — NO full renderer; options
+// existing consumer-authored list is flag-based - NO full renderer; options
 // keep node identity, only hidden/aria flags change).
 import { defussGlobals, defussQuery, safeShowPopover } from '../../shared/state-api.js';
 
@@ -136,7 +136,7 @@ function init() {
     };
     const isOpen = () => popover.matches(':popover-open');
     // flag-based filtering: hidden props toggle IN PLACE (nodes are never
-    // replaced — identity, focus and caret survive), per §3's no-renderer rule
+    // replaced - identity, focus and caret survive), per §3's no-renderer rule
     const filter = (query) => {
       const q = query.toLowerCase(); let hasVisible = false;
       allItems.forEach((item) => { const match = !q || item.textContent.trim().toLowerCase().includes(q); dfDollar(item).prop('hidden', !match); if (match) hasVisible = true; });

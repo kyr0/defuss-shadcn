@@ -15,14 +15,14 @@ supportedStates: default
 ---
 
 ## Native Web APIs
-- [`<input type="radio">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio) — native radio button with group exclusivity via `name`
-- [`<fieldset>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset) — semantic group container with native `disabled` propagation
-- [`<legend>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/legend) — accessible group label for fieldsets
-- [`:checked`](https://developer.mozilla.org/en-US/docs/Web/CSS/:checked) — matches selected radio state
-- [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) — keyboard-only focus ring
-- [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has) — parent-state styling (card highlight when radio is checked)
-- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) — suppress transitions for motion-sensitive users
-- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) — Windows High Contrast Mode support
+- [`<input type="radio">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio) - native radio button with group exclusivity via `name`
+- [`<fieldset>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset) - semantic group container with native `disabled` propagation
+- [`<legend>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/legend) - accessible group label for fieldsets
+- [`:checked`](https://developer.mozilla.org/en-US/docs/Web/CSS/:checked) - matches selected radio state
+- [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) - keyboard-only focus ring
+- [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has) - parent-state styling (card highlight when radio is checked)
+- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) - suppress transitions for motion-sensitive users
+- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) - Windows High Contrast Mode support
 
 ---
 
@@ -111,7 +111,7 @@ supportedStates: default
 | Attribute | Value | Effect |
 |---|---|---|
 | `data-orientation` | `"horizontal"` | Items flow horizontally (row) |
-| _(default)_ | — | Items stack vertically (column) |
+| _(default)_ | - | Items stack vertically (column) |
 
 ---
 
@@ -123,7 +123,7 @@ Set `data-density` on the `.radio-group` root. A whitespace policy, not a zoom: 
 | Value | Effect |
 | --- | --- |
 | `compact` | option gap 0.25rem (horizontal 0.75rem), card padding 0.75rem 1rem |
-| `comfortable` | gap 0.5rem (horizontal 1rem) — identical to the unsized default |
+| `comfortable` | gap 0.5rem (horizontal 1rem) - identical to the unsized default |
 | `spacious` | gap 0.75rem (horizontal 1.5rem), card padding 1.25rem 1.5rem |
 
 ## ARIA
@@ -153,7 +153,7 @@ Set `data-density` on the `.radio-group` root. A whitespace policy, not a zoom: 
 
 - Styled with `appearance: none` and a custom dot via `::after`.
 - The `name` attribute is required for mutual exclusivity.
-- No JavaScript needed — browsers handle group behavior natively.
+- No JavaScript needed - browsers handle group behavior natively.
 - Use `.radio-item` for simple label. Use `.radio-item-block` for label + description.
 - Use `.radio-card` for card-style selection (radio positioned top-right, card highlights on check via `:has()`).
 - `<fieldset disabled>` disables all radios in the group natively.

@@ -1,7 +1,7 @@
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: get-in-touch is CSS-only — the overlapping avatar stack (negative
+ * Why: get-in-touch is CSS-only - the overlapping avatar stack (negative
  * margin on all but the first, grayscale, background ring) is the entire
  * visual contract besides the bordered card.
  */

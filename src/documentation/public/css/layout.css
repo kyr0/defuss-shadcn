@@ -47,7 +47,7 @@ main .h1, main .h2, main .h3, main .h4 { scroll-margin-top: 0; }
   align-self: center;
 }
 /* vertical separators in the actions nav: the component's `align-self:
-   stretch` would span the whole 2.25rem row — constrain to a hairline */
+   stretch` would span the whole 2.25rem row - constrain to a hairline */
 .site-header .separator[data-orientation="vertical"] {
   align-self: center;
   height: 1.25rem;
@@ -61,7 +61,7 @@ main .h1, main .h2, main .h3, main .h4 { scroll-margin-top: 0; }
 /* -- Site sidebar ------------------------------------------
    The docs sidebar IS the shipped `sidebar` component: markup is the
    component's (.app-sidebar + .sidebar-content + .sidebar-group +
-   .sidebar-submenu + .sidebar-link — styling and the collapse state
+   .sidebar-submenu + .sidebar-link - styling and the collapse state
    (⌘B via sidebar.js) come from components/sidebar.css/.js via
    all.css/all.js). Only chrome geometry is site-side: the fixed-header
    offset, dock-to-zero-width (the component's icon rail is pointless without
@@ -119,7 +119,7 @@ main .h1, main .h2, main .h3, main .h4 { scroll-margin-top: 0; }
 /* -- Wide mode (header toggle, html.wide) -------------------
    Each doc page caps <main> with an inline max-width for readable
    prose; the toggle (see layout.js #wide-toggle) releases the cap so
-   wide layouts — the marketing blocks — render unconstrained. Only
+   wide layouts - the marketing blocks - render unconstrained. Only
    !important can override an inline style, and this is its single
    intentional home. */
 html.wide main {
@@ -131,7 +131,7 @@ main {
   view-transition-name: main-content;
 }
 
-/* Old page fades out, new page fades in — subtle crossfade */
+/* Old page fades out, new page fades in - subtle crossfade */
 ::view-transition-old(main-content) {
   animation: vt-fade-out 150ms ease-out both;
 }
@@ -139,7 +139,7 @@ main {
   animation: vt-fade-in 150ms ease-in 50ms both;
 }
 
-/* Keep header/sidebar stable — instant swap, no animation */
+/* Keep header/sidebar stable - instant swap, no animation */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
@@ -156,7 +156,7 @@ main {
    The docs sidebar's links ARE the sidebar component's .sidebar-link
    (all.css styles them; aria-current="page" renders the active state).
    .nav-link itself is the router's JS hook only (SPA intercept, active
-   class toggle, prefetch, scroll persistence) — no competing look here;
+   class toggle, prefetch, scroll persistence) - no competing look here;
    anything declared unlayered would override the layered component CSS. */
 .nav-link { cursor: pointer; }
 .nav-link.disabled {
@@ -166,19 +166,19 @@ main {
 }
 
 /* Submenu rows (Guides → Sizing/Layout): the summary is a row wrapper, the
-   .sidebar-link inside it is the label + hit area — the component's summary
+   .sidebar-link inside it is the label + hit area - the component's summary
    padding would double the link's, so the row defers to the link. */
 .site-sidebar .sidebar-submenu > summary { padding: 0; }
 .site-sidebar .sidebar-submenu > summary:hover { background: transparent; }
 .site-sidebar .sidebar-submenu > summary > .sidebar-link { flex: 1; }
 /* the group's uppercase section label is a <summary><span>; the component
-   already styles it — keep the sidebar's scroll padding roomy like before */
+   already styles it - keep the sidebar's scroll padding roomy like before */
 .site-sidebar .sidebar-content { padding: 0.75rem 0.5rem 1.25rem; gap: 0.25rem; }
 /* nested pages of a submenu align under the parent label (component uses 1.5rem) */
 .site-sidebar .sidebar-submenu > .sidebar-nav { padding-left: 0.875rem; }
 /* the component's icon-rail rules would hide the label spans at 3.5rem —
    the docs dock collapses to zero width instead; neutralize the rail
-   (desktop only — in drawer mode a stale collapsed state must still show
+   (desktop only - in drawer mode a stale collapsed state must still show
    the nav, since the drawer owns open/close there) */
 @media (min-width: 64rem) {
   .site-sidebar[data-state="collapsed"] .sidebar-content { display: none; }
@@ -254,7 +254,7 @@ details[open] > summary svg:first-child {
 }
 
 /* -- Architecture page (ARCH.md render, see scripts/lib/arch-page.ts) ---
-   Same typographic scale the spec modal uses for markdown — one prose
+   Same typographic scale the spec modal uses for markdown - one prose
    style, two hosts. */
 .arch-prose { font-size: 0.9375rem; line-height: 1.85; }
 .arch-prose h2 { font-family: var(--font-display); font-size: 1.375rem; font-weight: 400; letter-spacing: -0.02em; margin: 2.5rem 0 0.875rem; }
@@ -273,7 +273,7 @@ details[open] > summary svg:first-child {
 .arch-prose th { font-weight: 600; background: var(--muted); }
 
 /* -- Component Skill link -----------------------------------
-   The `[data-spec-href]` span lives inside the skill `<summary>` — clicking it
+   The `[data-spec-href]` span lives inside the skill `<summary>` - clicking it
    (or anywhere in the summary) toggles the <details> natively. No JS, no modal. */
 [data-spec-href] { cursor: pointer; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--muted-foreground); }
 
@@ -320,7 +320,7 @@ pre code { background: none; padding: 0; border: none; font-size: inherit; }
 /* -- Demo design system (guide pages) -------------------------
    One card per example: .demo wraps the rendered .demo-stage and
    optionally its matching code block (.demo-code). Replaces the
-   ad-hoc inline-style wrappers on guide pages — see AGENTS.md
+   ad-hoc inline-style wrappers on guide pages - see AGENTS.md
    "Demo ↔ code parity". Add data-viewport to .demo and site.js
    adds the width toolbar that resizes .demo-viewport. */
 .demo {
@@ -361,7 +361,7 @@ pre code { background: none; padding: 0; border: none; font-size: inherit; }
 
 /* Demo CONTENT helpers (.demo-tile/.demo-label/.demo-outline/.demo-stripes/
    .demo-box) live in css/docs-utilities.css: the CodeExample sandbox mirrors
-   that sheet (STYLE_FRAGMENTS), not this one — site chrome stays site-only. */
+   that sheet (STYLE_FRAGMENTS), not this one - site chrome stays site-only. */
 
 /* Viewport-width toolbar (injected by site.js into .demo[data-viewport]). */
 .vp-toolbar {
@@ -407,7 +407,7 @@ pre.shiki {
   font-size: 0.8125rem;
   line-height: 1.8;
 }
-/* Nested pre inside a card/container — remove its own border/radius/bg */
+/* Nested pre inside a card/container - remove its own border/radius/bg */
 pre.shiki[style*="border-radius:0"],
 div[style*="overflow:hidden"] > pre.shiki,
 div[style*="overflow:hidden"] > div > pre.shiki {
@@ -735,7 +735,7 @@ html.dark pre.shiki span {
 
 /* -- Mobile responsive ------------------------------------- */
 
-/* Sidebar dock toggle — panel-left glyph (lucide), sits in the header right
+/* Sidebar dock toggle - panel-left glyph (lucide), sits in the header right
    after the brand (where the version badge used to ride). Always visible:
    docks/undoes the sidebar on desktop, opens/closes the drawer below 64rem
    (both wired in layout.ts#initSidebarToggle). */
@@ -787,7 +787,7 @@ html.dark pre.shiki span {
   .site-sidebar.open {
     transform: translateX(0);
   }
-  /* drawer mode — the drawer owns open/close; the component's auto-collapse
+  /* drawer mode - the drawer owns open/close; the component's auto-collapse
      or a stale desktop dock state must not shrink/empty the drawer */
   .site-sidebar[data-state="collapsed"] {
     width: 16rem;
@@ -835,7 +835,7 @@ html.dark pre.shiki span {
     padding: 0 0.25rem;
     line-height: 1.4;
   }
-  /* the actions nav gets cramped on phones — drop the separators and the
+  /* the actions nav gets cramped on phones - drop the separators and the
      version badge, keep icon buttons reachable */
   .site-header .separator[data-orientation="vertical"] {
     display: none;

@@ -8,13 +8,13 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <DocPage meta={meta}>
 
-<PageHeader slug="grid" title="Grid" crumb="layout / grid" introStyle="max-width:38rem;">
-  Intrinsic card grids, explicit tracks and aligned subgrids. Responsive to available space without a breakpoint utility generator. Every code block is the live demo — the shown source is the executed source, and each card carries a device toolbar that really resizes the sandbox.
+<PageHeader slug="grid" title="Grid" introStyle="max-width:38rem;">
+  Intrinsic card grids, explicit tracks and aligned subgrids. Responsive to available space without a breakpoint utility generator. Every code block is the live demo - the shown source is the executed source, and each card carries a device toolbar that really resizes the sandbox.
 </PageHeader>
 
 <h2 id="intrinsic" class="h2-display">Intrinsic columns without breakpoints</h2>
 
-<DocText><code>grid</code> only enables Grid. Add <code>grid-cols-auto</code> for auto-fit columns with a preferred minimum; <code>--layout-min</code> defaults to 16rem. Empty tracks collapse, and populated tracks share spare space. This is the card-wall pattern: team directories, feature matrices and gallery grids that reflow as the page widens — no media queries. Resize the demo with the toolbar and watch tracks appear and collapse.</DocText>
+<DocText><code>grid</code> only enables Grid. Add <code>grid-cols-auto</code> for auto-fit columns with a preferred minimum; <code>--layout-min</code> defaults to 16rem. Empty tracks collapse, and populated tracks share spare space. This is the card-wall pattern: team directories, feature matrices and gallery grids that reflow as the page widens - no media queries. Resize the demo with the toolbar and watch tracks appear and collapse.</DocText>
 
 ```html example schema="none"
 <div class="grid grid-cols-auto gap-4" style="--layout-min:12rem;" data-demo="grid">
@@ -78,9 +78,9 @@ grid-template-columns:
 
 ```html example schema="none"
 <div class="grid grid-cols-3 gap-4">
-  <header class="col-span-full demo-tile p-2">Dashboard — col-span-full</header>
+  <header class="col-span-full demo-tile p-2">Dashboard - col-span-full</header>
   <aside class="demo-tile p-2" data-variant="muted">Filters</aside>
-  <section class="col-span-2 demo-tile p-2" data-variant="accent">Results — col-span-2</section>
+  <section class="col-span-2 demo-tile p-2" data-variant="accent">Results - col-span-2</section>
 </div>
 ```
 
@@ -91,7 +91,7 @@ grid-template-columns:
 
 <h2 id="alignment" class="h2-display">Alignment inside tracks</h2>
 
-<DocText>Items stretch to fill their track area by default. <code>place-items-\*</code> sets the default for every cell (<code>items-\*</code> and <code>justify-items-\*</code> address the block and inline axes separately); <code>justify-self-\*</code> and <code>place-self-\*</code> override one item — centering an icon in its cell, or pinning an action to the end of a row.</DocText>
+<DocText>Items stretch to fill their track area by default. <code>place-items-\*</code> sets the default for every cell (<code>items-\*</code> and <code>justify-items-\*</code> address the block and inline axes separately); <code>justify-self-\*</code> and <code>place-self-\*</code> override one item - centering an icon in its cell, or pinning an action to the end of a row.</DocText>
 
 ```html example schema="none"
 <div class="stack gap-4">
@@ -119,13 +119,13 @@ grid-template-columns:
 
 <h2 id="subgrid" class="h2-display">Share track alignment with subgrid</h2>
 
-<DocText>Cards in a row usually carry different amounts of body copy, but their footers should still line up — pricing tiers, feature cards, article teasers. Subgrid lets each card adopt the parent's row tracks, so one row height is negotiated across all cards.</DocText>
+<DocText>Cards in a row usually carry different amounts of body copy, but their footers should still line up - pricing tiers, feature cards, article teasers. Subgrid lets each card adopt the parent's row tracks, so one row height is negotiated across all cards.</DocText>
 
 ```html example schema="none"
 <div class="grid grid-cols-2 gap-4" data-demo="subgrid">
   <div class="grid row-span-3 grid-rows-subgrid" style="border:1px solid var(--border);border-radius:var(--radius-md);">
     <h3 style="margin:0.75rem;font-size:1rem;">Card A</h3>
-    <p class="text-sm text-muted-foreground" style="margin:0 0.75rem;">Short body — its footer still aligns with Card B because the row tracks are shared.</p>
+    <p class="text-sm text-muted-foreground" style="margin:0 0.75rem;">Short body - its footer still aligns with Card B because the row tracks are shared.</p>
     <button class="btn justify-self-start" type="button" data-variant="outline" data-size="sm" style="margin:0.75rem;">Open</button>
   </div>
   <div class="grid row-span-3 grid-rows-subgrid" style="border:1px solid var(--border);border-radius:var(--radius-md);">
@@ -143,7 +143,7 @@ grid-template-columns:
 
 <h2 id="real-world" class="h2-display">A realistic card wall</h2>
 
-<DocText>The same auto-fit track list drives a typical content listing — article teasers, product cards, team directories. Each card is ordinary component markup (card, title, description, badge); the grid owns the tracks and nothing here measures the viewport. Resize with the toolbar: the wall deals out one, two, three or more columns as the frame widens.</DocText>
+<DocText>The same auto-fit track list drives a typical content listing - article teasers, product cards, team directories. Each card is ordinary component markup (card, title, description, badge); the grid owns the tracks and nothing here measures the viewport. Resize with the toolbar: the wall deals out one, two, three or more columns as the frame widens.</DocText>
 
 ```html example schema="none"
 <div class="grid grid-cols-auto gap-4" style="--layout-min:10rem;">
@@ -209,15 +209,15 @@ grid-template-columns:
 
 <h2 id="advanced" class="h2-display">Real world: the holy-grail layout</h2>
 
-<DocText>When the skeleton is stable — header, nav, main, aside, footer — a fixed 12-track grid with explicit spans states the structure directly: <code>grid grid-cols-12 gap-4</code>, <code>col-span-full</code> for the chrome, <code>col-span-3</code> / <code>col-span-6</code> / <code>col-span-3</code> for the body. The middle spans sum to 12, so every item lands on a declared track and no implicit columns are created. Resize with the toolbar and watch the <code>minmax(0, 1fr)</code> tracks compress while the proportions hold — auto-fit would have reflowed the skeleton; spans keep it.</DocText>
+<DocText>When the skeleton is stable - header, nav, main, aside, footer - a fixed 12-track grid with explicit spans states the structure directly: <code>grid grid-cols-12 gap-4</code>, <code>col-span-full</code> for the chrome, <code>col-span-3</code> / <code>col-span-6</code> / <code>col-span-3</code> for the body. The middle spans sum to 12, so every item lands on a declared track and no implicit columns are created. Resize with the toolbar and watch the <code>minmax(0, 1fr)</code> tracks compress while the proportions hold - auto-fit would have reflowed the skeleton; spans keep it.</DocText>
 
 ```html example schema="none"
 <div class="grid grid-cols-12 gap-4">
-  <header class="col-span-full demo-tile h-12" data-variant="secondary">col-span-full — header</header>
-  <nav class="col-span-3 demo-tile h-32" data-variant="muted">col-span-3 — nav</nav>
-  <main class="col-span-6 demo-tile h-32" data-variant="accent">col-span-6 — main</main>
-  <aside class="col-span-3 demo-tile h-32" data-variant="muted">col-span-3 — aside</aside>
-  <footer class="col-span-full demo-tile h-10" data-variant="secondary">col-span-full — footer</footer>
+  <header class="col-span-full demo-tile h-12" data-variant="secondary">col-span-full - header</header>
+  <nav class="col-span-3 demo-tile h-32" data-variant="muted">col-span-3 - nav</nav>
+  <main class="col-span-6 demo-tile h-32" data-variant="accent">col-span-6 - main</main>
+  <aside class="col-span-3 demo-tile h-32" data-variant="muted">col-span-3 - aside</aside>
+  <footer class="col-span-full demo-tile h-10" data-variant="secondary">col-span-full - footer</footer>
 </div>
 ```
 

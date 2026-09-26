@@ -2,7 +2,7 @@
 name: Pricing
 type: BLK
 why: Plan cards are a stretch-aligned grid; the billing toggle is native radios plus :has(), so one checked input flips every plan with zero JS.
-when: Plans/tiers section of a marketing page; a single plan needs no grid — one card suffices.
+when: Plans/tiers section of a marketing page; a single plan needs no grid - one card suffices.
 where: dist/components/pricing/pricing.css
 supportedStates: default
 ---
@@ -12,18 +12,18 @@ supportedStates: default
 ## Native basis
 `display: grid; align-items: stretch` keeps plan cards equal height
 across content differences. The billing toggle is a radio group —
-`<input type="radio">` in `<label>`s — and `:has(input:checked)` swaps
+`<input type="radio">` in `<label>`s - and `:has(input:checked)` swaps
 every plan's yearly/monthly price rows. Keyboard, screen readers, and
 form semantics are browser-provided.
 
 ---
 
 ## Native Web APIs
-- [`<input type="radio">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio) — exclusive choice with free keyboard support
-- [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has) — checked radio flips every price panel from CSS
-- [`align-items: stretch`](https://developer.mozilla.org/en-US/docs/Web/CSS/align-items) — equal-height plan cards
-- [`font-variant-numeric`](https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant-numeric#tabular-nums) — tabular price digits
-- [Badge](../badge/component-skill.md) — "Most Popular" marker
+- [`<input type="radio">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio) - exclusive choice with free keyboard support
+- [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has) - checked radio flips every price panel from CSS
+- [`align-items: stretch`](https://developer.mozilla.org/en-US/docs/Web/CSS/align-items) - equal-height plan cards
+- [`font-variant-numeric`](https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant-numeric#tabular-nums) - tabular price digits
+- [Badge](../badge/component-skill.md) - "Most Popular" marker
 
 ---
 
@@ -103,6 +103,6 @@ form semantics are browser-provided.
 ---
 
 ## Notes
-- The featured plan swaps 1px→2px border with the same total box size (`border: 2px` on both axes) — no layout shift next to siblings.
+- The featured plan swaps 1px→2px border with the same total box size (`border: 2px` on both axes) - no layout shift next to siblings.
 - `data-featured` is a boolean attribute: present = featured. No value needed.
-- Each plan ships two price rows (`.mk-price-yearly` / `.mk-price-monthly`); the checked radio anywhere in `.mk-pricing` flips all of them via `:has()` — both prices stay in the DOM for crawlers.
+- Each plan ships two price rows (`.mk-price-yearly` / `.mk-price-monthly`); the checked radio anywhere in `.mk-pricing` flips all of them via `:has()` - both prices stay in the DOM for crawlers.

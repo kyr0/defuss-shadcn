@@ -5,12 +5,20 @@ import {
   typeBadgeHtml,
 } from '../scripts/lib/taxonomy.ts';
 
+import { COMPONENT_TYPES } from '../scripts/lib/taxonomy.ts';
+
 /**
  * Why: the doc-page type badge is generated (never hand-written) and lives
  * inside the page-title <h1>, right after the component name. These tests pin
  * that contract: exact badge markup, the h1 anchor, idempotent re-injection
  * (type change replaces the old badge), and fail-closed errors.
  */
+
+describe('COMPONENT_TYPES', () => {
+  it('includes TPL (Template) - the whole-composition taxonomy class', () => {
+    expect(COMPONENT_TYPES).toContain('TPL');
+  });
+});
 
 const PAGE = `<div class="page-header">${BADGE_ANCHOR}Badge</h1></div>`;
 

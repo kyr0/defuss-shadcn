@@ -14,7 +14,7 @@
     border: none;
     accent-color: var(--primary);
 
-    /* Track — WebKit (filled via gradient) */
+    /* Track - WebKit (filled via gradient) */
     &::-webkit-slider-runnable-track {
       height: 0.5rem;
       border-radius: 9999px;
@@ -27,7 +27,7 @@
       );
     }
 
-    /* Track — Firefox */
+    /* Track - Firefox */
     &::-moz-range-track {
       height: 0.5rem;
       border-radius: 9999px;
@@ -35,14 +35,14 @@
       border: none;
     }
 
-    /* Filled portion — Firefox */
+    /* Filled portion - Firefox */
     &::-moz-range-progress {
       height: 0.5rem;
       border-radius: 9999px;
       background: var(--primary);
     }
 
-    /* Thumb — WebKit */
+    /* Thumb - WebKit */
     &::-webkit-slider-thumb {
       -webkit-appearance: none;
       width: 1.25rem;
@@ -55,7 +55,7 @@
       transition: box-shadow 150ms, transform 150ms;
     }
 
-    /* Thumb — Firefox */
+    /* Thumb - Firefox */
     &::-moz-range-thumb {
       width: 1.25rem;
       height: 1.25rem;

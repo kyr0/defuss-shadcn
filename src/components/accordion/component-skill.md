@@ -1,7 +1,7 @@
 ---
 name: Accordion
 type: ATM
-why: Native <details>/<summary> disclosure — the browser owns open/close, and <details name="group"> gives exclusive (single-open) behavior with zero JS.
+why: Native <details>/<summary> disclosure - the browser owns open/close, and <details name="group"> gives exclusive (single-open) behavior with zero JS.
 when: Grouped content sections on one page (FAQs, settings, progressive disclosure) that expand independently or mutually exclusively.
 where: dist/components/accordion/accordion.css + dist/components/accordion/accordion.js
 supportedStates: default, all-open, all-closed
@@ -32,11 +32,11 @@ is required. For multi-open, pure HTML with no JS works.
 ---
 
 ## Native Web APIs
-- [`<details>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details) — native disclosure widget with built-in open/close state
-- [`<summary>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/summary) — clickable heading that toggles the parent `<details>`
-- [`::details-content`](https://developer.mozilla.org/en-US/docs/Web/CSS/::details-content) — pseudo-element for styling and animating the collapsible content
-- [`toggle` event](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDetailsElement/toggle_event) — fires when the `open` state changes
-- [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) — defines entry animation starting values for open transition
+- [`<details>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details) - native disclosure widget with built-in open/close state
+- [`<summary>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/summary) - clickable heading that toggles the parent `<details>`
+- [`::details-content`](https://developer.mozilla.org/en-US/docs/Web/CSS/::details-content) - pseudo-element for styling and animating the collapsible content
+- [`toggle` event](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDetailsElement/toggle_event) - fires when the `open` state changes
+- [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) - defines entry animation starting values for open transition
 
 ---
 
@@ -92,7 +92,7 @@ is required. For multi-open, pure HTML with no JS works.
 
 ```html
 <div class="accordion" data-type="single">
-  <!-- same structure — JS closes siblings on open -->
+  <!-- same structure - JS closes siblings on open -->
 </div>
 ```
 
@@ -100,7 +100,7 @@ is required. For multi-open, pure HTML with no JS works.
 
 ```html
 <div class="accordion" data-type="single" data-collapsible>
-  <!-- same structure — can close active item -->
+  <!-- same structure - can close active item -->
 </div>
 ```
 
@@ -113,7 +113,7 @@ Set `data-density` on the `.accordion` root; trigger and panel padding scale.
 | Value | Effect |
 | --- | --- |
 | `compact` | Trigger/panel padding 0.75rem |
-| `comfortable` | Padding 1rem — identical to the unsized default |
+| `comfortable` | Padding 1rem - identical to the unsized default |
 | `spacious` | Padding 1.25rem |
 
 ## ARIA
@@ -122,11 +122,11 @@ The `<details>/<summary>` elements provide built-in accessibility:
 
 | Feature                    | How it works                                   |
 |----------------------------|------------------------------------------------|
-| Expand/collapse            | Native — `summary` is a button internally      |
+| Expand/collapse            | Native - `summary` is a button internally      |
 | `aria-expanded`            | Implicit from `open` attribute                 |
 | Focus management           | `summary` is focusable by default              |
-| Keyboard (Enter/Space)     | Native — toggles the `<details>` element       |
-| Screen reader announcement | Native — announces expanded/collapsed state    |
+| Keyboard (Enter/Space)     | Native - toggles the `<details>` element       |
+| Screen reader announcement | Native - announces expanded/collapsed state    |
 
 No additional ARIA attributes are needed when using `<details>/<summary>`.
 
@@ -140,7 +140,7 @@ No additional ARIA attributes are needed when using `<details>/<summary>`.
 | `Enter`       | Toggle the focused item                            |
 | `Space`       | Toggle the focused item                            |
 
-These are all browser-native — no JS needed.
+These are all browser-native - no JS needed.
 
 ---
 
@@ -174,12 +174,12 @@ These are all browser-native — no JS needed.
 
 ## Notes
 
-- `<details>/<summary>` is the most accessible accordion implementation — it works with zero JS and zero ARIA
+- `<details>/<summary>` is the most accessible accordion implementation - it works with zero JS and zero ARIA
 - For single-open behavior, the `toggle` event on `<details>` fires after the state changes
 - The `open` attribute is the source of truth for whether an item is expanded
-- Avoid nesting accordions — use a flat list with clear headings instead
-- The chevron rotation relies on `details[open] >` selector — this is pure CSS
-- Content height animation uses `::details-content` pseudo-element with `block-size` transition and `@starting-style` for the enter animation — fully CSS-only, no JS measurement needed
+- Avoid nesting accordions - use a flat list with clear headings instead
+- The chevron rotation relies on `details[open] >` selector - this is pure CSS
+- Content height animation uses `::details-content` pseudo-element with `block-size` transition and `@starting-style` for the enter animation - fully CSS-only, no JS measurement needed
 - Set `data-type="single"` for accordion behavior (only one open); omit for disclosure list (any number open)
 - Set `data-collapsible` alongside `data-type="single"` to allow all items to be closed
 - A non-collapsible single accordion never closes its last open item: the attempt is denied in the cancellable `beforetoggle` event (`preventDefault()`), so the click is a silent no-op. Reopening in `toggle` instead would visibly flicker close-then-open

@@ -1,0 +1,177 @@
+---
+title: "Charts · Composition"
+description: "Composition chart patterns on the chart component - small multiples, theme river, treemap, sunburst, sankey, chord and waffle dot matrix, themed from the design tokens."
+slug: "charts-composition"
+---
+
+import { DocPage, PageHeader, DocLink, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="charts-composition" title="Charts · Composition" component="chart">
+  Composition patterns on the <DocLink href="chart.html">chart</DocLink> component: small multiples, part-to-whole hierarchies (treemap, sunburst, waffle), and flow diagrams (theme river, sankey, chord). Every demo mounts through <code>df$.shadcn.chart.mount()</code> or declarative <code>data-chart</code> - palette, typography and tooltip chrome come from the active theme's tokens in light and dark.
+</PageHeader>
+
+```html example label="Small multiples" schema="none" height="35" previewStyle="align-items:flex-start;" hint="Repeat the same axes six times and vary only the data - regional shape differences read at a glance, with no legend and no overloaded multi-series chart. Each panel carries its own title, baseline and end value; Metro, the fastest riser, is the only colored line."
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <figcaption>
+    <h3 class="chart-title">Six regions, one scale</h3>
+    <p class="chart-dek">Small multiples expose pattern differences that a single overloaded line chart would hide.</p>
+  </figcaption>
+  <div class="chart" data-size="lg" role="img" aria-label="Small multiples: six regional trend lines on a shared 10 to 60 scale, Metro rising fastest"></div>
+  <div class="chart-source">Synthetic data · adapted from echarts-feat 12-small-multiples</div>
+</figure>
+<script>
+window.addEventListener('load', () => {
+  const el = document.querySelector('.chart');
+  const names = ['North', 'West', 'Central', 'Coast', 'Metro', 'Rural'];
+  const vals = [[20, 24, 29, 31, 34, 39], [42, 40, 39, 41, 45, 48], [18, 25, 22, 30, 28, 36], [55, 50, 46, 43, 45, 41], [27, 30, 35, 44, 50, 56], [33, 34, 32, 31, 29, 28]];
+  const grid = [], xAxis = [], yAxis = [], series = [], title = [];
+  for (let i = 0; i < 6; i++) {
+    const col = i % 3, row = Math.floor(i / 3), left = 2 + col * 33, top = 9 + row * 50;
+    const hot = names[i] === 'Metro';
+    grid.push({ left: left + '%', top: top + '%', width: '26%', height: '32%' });
+    xAxis.push({ type: 'category', gridIndex: i, data: ['1', '2', '3', '4', '5', '6'], boundaryGap: false, axisLabel: { show: false } });
+    yAxis.push({ type: 'value', gridIndex: i, min: 10, max: 60, interval: 25, axisLabel: { show: col === 0 } });
+    title.push({ text: names[i], left: left + '%', top: (top - 8) + '%', textStyle: { fontSize: 13, fontWeight: 600 } });
+    series.push({
+      type: 'line', xAxisIndex: i, yAxisIndex: i, data: vals[i], smooth: 0.3, showSymbol: false,
+      lineStyle: { width: 2.5, color: hot ? 'var(--chart-2)' : 'var(--foreground)' },
+      areaStyle: { color: hot ? 'color-mix(in oklch, var(--chart-2) 14%, transparent)' : 'color-mix(in oklch, var(--foreground) 5%, transparent)' },
+      endLabel: { show: true, formatter: '{c}', fontWeight: 600, color: hot ? 'var(--chart-2)' : 'var(--muted-foreground)' },
+      animationDelay: i * 90,
+    });
+  }
+  df$.shadcn.chart.mount(el, { title, grid, xAxis, yAxis, series });
+});
+</script>
+```
+
+```html example label="Theme river" schema="none" height="27" previewStyle="align-items:flex-start;" hint="A theme river is the right choice when the story is changing prominence among topics rather than precise point comparison. The streams take the theme palette; hovering one dims the rest."
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <figcaption>
+    <h3 class="chart-title">Streams show how attention shifts</h3>
+    <p class="chart-dek">Monthly share of attention across four acquisition channels over 18 months.</p>
+  </figcaption>
+  <div class="chart" role="img" aria-label="Theme river of attention across search, social, direct and referral channels over 18 months"></div>
+  <div class="chart-source">Synthetic data · adapted from echarts-feat 17-theme-river</div>
+</figure>
+<script>
+window.addEventListener('load', () => {
+  const el = document.querySelector('.chart');
+  const topics = ['Search', 'Social', 'Direct', 'Referral'];
+  const data = [];
+  for (let m = 0; m < 18; m++) {
+    const date = new Date(Date.UTC(2025, m, 1)).toISOString().slice(0, 10);
+    topics.forEach((t, i) => data.push([date, Math.max(3, Math.round(20 + 10 * Math.sin(m / (2 + i * 0.25) + i) + i * 3)), t]));
+  }
+  df$.shadcn.chart.mount(el, {
+    legend: { left: 0, data: topics },
+    tooltip: { trigger: 'axis', axisPointer: { type: 'line' } },
+    singleAxis: { top: 36, bottom: 28, left: 28, right: 28, type: 'time',
+      axisLine: { lineStyle: { color: 'color-mix(in oklch, var(--foreground) 28%, transparent)' } },
+      axisLabel: { color: 'var(--muted-foreground)' }, splitLine: { show: false } },
+    series: [{ type: 'themeRiver', data, label: { show: false }, emphasis: { focus: 'series' },
+      itemStyle: { borderColor: 'var(--card)', borderWidth: 1 } }],
+  });
+});
+</script>
+```
+
+```html example label="Treemap" schema="none" height="27" previewStyle="align-items:flex-start;" hint="Area encodes value: three top-level groups split into their contributions - fully declarative, the token palette colors the groups and card-colored gaps separate the tiles."
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <figcaption>
+    <h3 class="chart-title">Where the business weight sits</h3>
+    <p class="chart-dek">Audience, product and revenue, broken into their contributions.</p>
+  </figcaption>
+  <div class="chart" role="img" aria-label="Treemap of business weight: audience 48, product 29, revenue 23"
+       data-chart='{"series":[{"type":"treemap","roam":false,"nodeClick":false,"top":0,"left":0,"right":0,"bottom":0,"label":{"show":true,"formatter":"{b}\n{c}","fontWeight":600,"lineHeight":18},"upperLabel":{"show":true,"height":26,"formatter":"{b} · {c}","color":"var(--foreground)","fontWeight":700},"levels":[{"itemStyle":{"borderWidth":0,"gapWidth":6},"upperLabel":{"show":false}},{"itemStyle":{"borderColor":"var(--card)","borderWidth":0,"gapWidth":2},"upperLabel":{"show":true}},{"colorSaturation":[0.35,0.6],"itemStyle":{"borderColorSaturation":0.7,"gapWidth":2,"borderWidth":0,"borderRadius":4}}],"data":[{"name":"Audience","value":48,"children":[{"name":"Search","value":20},{"name":"Direct","value":16},{"name":"Social","value":12}]},{"name":"Product","value":29,"children":[{"name":"Core","value":15},{"name":"Mobile","value":9},{"name":"Labs","value":5}]},{"name":"Revenue","value":23,"children":[{"name":"Subs","value":14},{"name":"Ads","value":6},{"name":"Other","value":3}]}]}]}'></div>
+  <div class="chart-source">Synthetic data · adapted from echarts-feat 18-treemap</div>
+</figure>
+```
+
+```html example label="Sunburst" schema="none" height="27" previewStyle="align-items:flex-start;" hint="Radial hierarchy: ring depth is the tree level, the angle of each wedge its share - declarative, with radial labels on the outer rings and hover focus on the ancestor path."
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <figcaption>
+    <h3 class="chart-title">Hierarchy at a glance</h3>
+    <p class="chart-dek">Three top-level areas and their two levels of contributions.</p>
+  </figcaption>
+  <div class="chart" data-size="lg" role="img" aria-label="Sunburst of product, services and labs with their sub-divisions"
+       data-chart='{"series":[{"type":"sunburst","radius":["12%","94%"],"sort":null,"nodeClick":false,"emphasis":{"focus":"ancestor"},"label":{"rotate":"radial","fontWeight":600},"levels":[{},{"r0":"12%","r":"42%","label":{"rotate":0,"fontSize":14,"fontWeight":700}},{"r0":"42%","r":"70%"},{"r0":"70%","r":"94%","label":{"fontSize":12,"fontWeight":500}}],"data":[{"name":"Product","children":[{"name":"Web","value":24,"children":[{"name":"News","value":14},{"name":"Tools","value":10}]},{"name":"App","value":20,"children":[{"name":"iOS","value":11},{"name":"Android","value":9}]}]},{"name":"Services","children":[{"name":"API","value":17},{"name":"Consulting","value":11}]},{"name":"Labs","children":[{"name":"AI","value":12},{"name":"Data","value":8}]}]}]}'></div>
+  <div class="chart-source">Synthetic data · adapted from echarts-feat 19-sunburst</div>
+</figure>
+```
+
+```html example label="Sankey flow" schema="none" height="27" previewStyle="align-items:flex-start;" hint="Weighted flow from acquisition channel through content type to outcome - link width carries the quantity, adjacency hover traces one path. The last column's labels flip to the left (levels[depth 2]) so nothing clips at the edge."
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <figcaption>
+    <h3 class="chart-title">From channel to conversion</h3>
+    <p class="chart-dek">How visitors move from acquisition channels through content to subscribe or leave.</p>
+  </figcaption>
+  <div class="chart" role="img" aria-label="Sankey diagram of visitor flow from channels through content to subscribe or leave"
+       data-chart='{"series":[{"type":"sankey","top":8,"bottom":8,"left":0,"right":0,"nodeWidth":12,"nodeGap":14,"layoutIterations":48,"emphasis":{"focus":"adjacency"},"lineStyle":{"color":"gradient","opacity":0.28,"curveness":0.5},"itemStyle":{"borderWidth":0,"borderRadius":3},"label":{"fontWeight":600},"levels":[{"depth":2,"label":{"position":"left"}}],"data":[{"name":"Direct"},{"name":"Search"},{"name":"Social"},{"name":"Newsletter"},{"name":"Article"},{"name":"Video"},{"name":"Podcast"},{"name":"Subscribe","itemStyle":{"color":"var(--chart-2)"}},{"name":"Leave","itemStyle":{"color":"var(--muted-foreground)"}}],"links":[{"source":"Direct","target":"Article","value":32},{"source":"Direct","target":"Video","value":12},{"source":"Search","target":"Article","value":26},{"source":"Search","target":"Podcast","value":9},{"source":"Social","target":"Video","value":18},{"source":"Social","target":"Article","value":10},{"source":"Newsletter","target":"Article","value":16},{"source":"Article","target":"Subscribe","value":24},{"source":"Article","target":"Leave","value":60},{"source":"Video","target":"Subscribe","value":8},{"source":"Video","target":"Leave","value":22},{"source":"Podcast","target":"Subscribe","value":7},{"source":"Podcast","target":"Leave","value":7}]}]}'></div>
+  <div class="chart-source">Synthetic data · adapted from echarts-feat 20-sankey</div>
+</figure>
+```
+
+```html example label="Chord diagram" schema="none" height="27" previewStyle="align-items:flex-start;" hint="Inter-team dependencies as weighted arcs - the chord pattern reads mutual flow where a sankey would insist on direction. Hover a team to isolate its ribbons."
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <figcaption>
+    <h3 class="chart-title">Who depends on whom</h3>
+    <p class="chart-dek">Collaboration volume between five teams, both directions.</p>
+  </figcaption>
+  <div class="chart" data-size="lg" role="img" aria-label="Chord diagram of collaboration volume between research, product, news, design and growth"
+       data-chart='{"tooltip":{"trigger":"item"},"series":[{"type":"chord","radius":["64%","74%"],"padAngle":2.5,"itemStyle":{"borderRadius":3},"lineStyle":{"color":"source","opacity":0.32},"label":{"show":true,"distance":10,"fontWeight":600},"emphasis":{"focus":"adjacency","lineStyle":{"opacity":0.7}},"data":[{"name":"Research"},{"name":"Product"},{"name":"News"},{"name":"Design"},{"name":"Growth"}],"links":[{"source":"Research","target":"Product","value":20},{"source":"Research","target":"News","value":14},{"source":"Product","target":"Design","value":17},{"source":"News","target":"Design","value":9},{"source":"Design","target":"Growth","value":12},{"source":"Growth","target":"Product","value":8},{"source":"News","target":"Growth","value":5},{"source":"Product","target":"News","value":11}]}]}'></div>
+  <div class="chart-source">Synthetic data · adapted from echarts-feat 21-chord</div>
+</figure>
+```
+
+```html example label="Waffle dot matrix" schema="none" height="27" previewStyle="align-items:flex-start;" hint="One dot per percent: a square 10×10 grid makes shares countable at a glance. Each category is its own scatter series, so the legend (right) comes for free and the colors are the --chart-* tokens."
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <figcaption>
+    <h3 class="chart-title">Share of effort, one dot per percent</h3>
+    <p class="chart-dek">Portfolio split across four investment areas.</p>
+  </figcaption>
+  <div class="chart" role="img" aria-label="Waffle chart of portfolio share: core 43 percent, growth 27, labs 18, other 12"></div>
+  <div class="chart-source">Synthetic data · adapted from echarts-feat 28-waffle-dot-matrix</div>
+</figure>
+<script>
+window.addEventListener('load', () => {
+  const el = document.querySelector('.chart');
+  const shares = [['Core', 43], ['Growth', 27], ['Labs', 18], ['Other', 12]];
+  const colors = ['var(--chart-2)', 'var(--chart-5)', 'var(--chart-1)', 'color-mix(in oklch, var(--foreground) 22%, transparent)'];
+  let at = 0;
+  const series = shares.map(([name, v], s) => {
+    const data = [];
+    for (let i = at; i < at + v; i++) data.push([i % 10, Math.floor(i / 10)]);
+    at += v;
+    return { name: name + ' ' + v + '%', type: 'scatter', data, symbolSize: 18, itemStyle: { color: colors[s] },
+      animationDelay: (i) => (data[i][1] * 10 + data[i][0]) * 8 };
+  });
+  df$.shadcn.chart.mount(el, {
+    legend: { orient: 'vertical', left: 312, top: 'middle', icon: 'circle', itemGap: 14, textStyle: { color: 'var(--foreground)', fontWeight: 500 } },
+    // a SQUARE plot: fixed width = height, so the dots sit on a true grid
+    grid: { left: 16, top: 'middle', width: 264, height: 264 },
+    xAxis: { type: 'value', min: -0.5, max: 9.5, show: false },
+    yAxis: { type: 'value', min: -0.5, max: 9.5, inverse: true, show: false },
+    series,
+  });
+});
+</script>
+```
+
+<p class="text-sm text-muted-foreground">Patterns adapted from the ECharts design-language lab (echarts-feat/), re-skinned on the design tokens via the chart theme adapter. Colors are written as <code>var(--token)</code> (or <code>color-mix()</code> over tokens) - the runtime resolves them to sRGB for ECharts and re-resolves them after every theme or dark-mode switch.</p>
+
+<SourceFiles component="chart">
+  <SourceNote for="css">The chart sizing surface and editorial frame these patterns mount into.</SourceNote>
+  <SourceNote for="js">The runtime every demo on this page converges on: token theme adapter, token-reference resolution, mount/resize lifecycle, chartStory, the deck stage and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

@@ -4,7 +4,7 @@ import { startServer } from './server.ts';
 
 /**
  * Why: smoke test for the single-file bundle (scripts/bundle.ts). The fixture
- * loads ONLY dist/components/all.css + all.js — if the bundle silently drops
+ * loads ONLY dist/components/all.css + all.js - if the bundle silently drops
  * a module or a stylesheet, one of these checks fails while every
  * per-component e2e stays green.
  */
@@ -73,9 +73,9 @@ try {
       dialog: typeof globalThis.df$?.shadcn?.dialogApi?.setState === 'function',
       toast: typeof globalThis.df$?.shadcn?.toast?.show === 'function',
     }));
-    assert.ok(reg.accordion, 'df$.accordionApi missing — accordion module not bundled');
-    assert.ok(reg.dialog, 'df$.dialogApi missing — dialog module not bundled');
-    assert.ok(reg.toast, 'df$.shadcn.toast missing — toast module not bundled');
+    assert.ok(reg.accordion, 'df$.accordionApi missing - accordion module not bundled');
+    assert.ok(reg.dialog, 'df$.dialogApi missing - dialog module not bundled');
+    assert.ok(reg.toast, 'df$.shadcn.toast missing - toast module not bundled');
   });
 } finally {
   await browser.close();

@@ -4,14 +4,14 @@ import { repoFile } from '../repo';
 
 /**
  * Why: THE documentation rendering mechanism for executable examples
- * (plans/cmp-schemas-and-codeexample.md §5/§8). Accepts source ONLY — the fence
- * body — and renders it once, as the editable textarea AND the sandbox input.
+ * (plans/cmp-schemas-and-codeexample.md §5/§8). Accepts source ONLY - the fence
+ * body - and renders it once, as the editable textarea AND the sandbox input.
  * The preview is never a second render tree, so "displayed code" and "executed
  * code" cannot diverge by construction; passing such a prop throws at build
  * time (the guard lives in ../code-example-contract, shared with the tests).
  *
  * The component's schema (when one exists beside its source) is read at build
- * time and embedded as `data-schema` JSON — the docs runtime generates state
+ * time and embedded as `data-schema` JSON - the docs runtime generates state
  * controls from it exclusively (§10), and pages stay self-contained on any host
  * (no runtime fetch that a mirror/CDN layout could break).
  *
@@ -27,7 +27,7 @@ import { repoFile } from '../repo';
  * content instead and reset the height field (placeholder "Full").
  */
 export interface CodeExampleProps {
-  /** the exact example fence body — displayed AND executed (§4 one source) */
+  /** the exact example fence body - displayed AND executed (§4 one source) */
   source: string;
   /** schema to load controls from (defaults to the page's own component) */
   component?: string;
@@ -35,18 +35,18 @@ export interface CodeExampleProps {
   label?: string;
   /** demo hint (rendered like <ExampleHint>) */
   hint?: string;
-  /** min frame height in rem (fence attr height="N") — floors the sandbox while
+  /** min frame height in rem (fence attr height="N") - floors the sandbox while
    * the true content height arrives (mirrors the old previewStyle min-height) */
   height?: string;
   /** viewport toolbar boot mode (fence attr mode="phone|tablet|desktop|full"):
    * media-query components (sidebar) need the sandbox viewport ≥ their
-   * breakpoint — a fence decides what the demo boots as */
+   * breakpoint - a fence decides what the demo boots as */
   mode?: string;
-  /** stage styles for the sandbox body (fence attr previewStyle="…") — mirrors
+  /** stage styles for the sandbox body (fence attr previewStyle="…") - mirrors
    * the old <Example previewStyle>: flex/gap/centering chrome of the demo area,
    * never part of the example source */
   previewStyle?: string;
-  /** children etc. — forbidden (§5); typed unknown so the guard, not TS, reports them */
+  /** children etc. - forbidden (§5); typed unknown so the guard, not TS, reports them */
   children?: unknown;
   code?: unknown;
   preview?: unknown;
@@ -63,7 +63,7 @@ function readSchema(component: string | undefined): string | null {
   try {
     schema = JSON.parse(text);
   } catch (e) {
-    throw new Error(`CodeExample: ${component}.schema.json is not valid JSON — ${(e as Error).message}`);
+    throw new Error(`CodeExample: ${component}.schema.json is not valid JSON - ${(e as Error).message}`);
   }
   const s = schema as { name?: unknown; states?: unknown };
   if (typeof s.name !== 'string' || typeof s.states !== 'object' || s.states === null)
@@ -72,7 +72,7 @@ function readSchema(component: string | undefined): string | null {
 }
 
 /**
- * Why: the State tab is a CONTRACT preview, not chrome — it renders only when
+ * Why: the State tab is a CONTRACT preview, not chrome - it renders only when
  * the schema actually offers something to edit (≥1 state) and the schema hasn't
  * opted out via `"stateTab": false` (context-menu: the panel can't express a
  * right-click gesture, so its card ships the editor only). The schema itself
@@ -95,7 +95,7 @@ export function CodeExample({ source, component, label, hint, height, mode, prev
   const stateTab = showsStateTab(schemaText);
   const name = label ?? `${component ?? 'Example'} example`;
   // State-capture anchor (AGENTS.md "State API" rule 7): the card owns the
-  // state demo now — its sandbox runs the one true source and the host api on
+  // state demo now - its sandbox runs the one true source and the host api on
   // the card drives it, so create-screenshots captures the live sandbox
   // instead of a second hand-written demo tree. Schema'd cards only: the
   // driver's setState contract is exactly the schema's state list.
@@ -115,7 +115,7 @@ export function CodeExample({ source, component, label, hint, height, mode, prev
       {hint ? <p class={H2_HINT}>{hint}</p> : null}
       {/* class="preview" exactly (verify's `preview blocks` gate + screenshot anchor);
           the iframe is inside it, so the captured default-state PNG shows the live sandbox.
-          .ce-screen/.ce-device: the device emulation wrapper — phone/tablet modes put a
+          .ce-screen/.ce-device: the device emulation wrapper - phone/tablet modes put a
           scaling bezel (border + island + home indicator, pure CSS) around the iframe.
           padding gives the canvas breathing room inside the card (medium 0.75rem);
           overflow hidden keeps wide content clipped until the viewport toolbar's
@@ -130,7 +130,7 @@ export function CodeExample({ source, component, label, hint, height, mode, prev
           {/* the resizer component (dogfooded): handles on EVERY side and
               corner of the canvas box (the old SE-only grip is retired).
               Controlled mode: the toolbar runtime owns the size (drives the
-              W/H fields) — the component only measures, clamps, keyboard-
+              W/H fields) - the component only measures, clamps, keyboard-
               drives and dispatches resizer-resize. Clamps mirror the old
               grip (240..1600 w, 240..1400 h). */}
           <div class="resizer ce-resizer" data-handles="all" data-resize-mode="controlled" data-axis="both" data-min="240" data-max="1600" data-min-h="240" data-max-h="1400">
@@ -142,10 +142,16 @@ export function CodeExample({ source, component, label, hint, height, mode, prev
           </div>
         </div>
         <output class="code-example-error" role="alert" hidden></output>
+        {/* fullscreen exit: hidden in normal flow; CSS docks it top-right as
+            soon as the stage is :fullscreen (or carries the .ce-fs fallback) —
+            it must live INSIDE .preview to ride into the top layer */}
+        <button class="code-example-full-exit" title="Exit fullscreen (Esc)" aria-label="Exit fullscreen">
+          <i data-lucide="x"></i>
+        </button>
       </div>
       <div class="code-example-toolbar">
         {/* device toolbar (every CodeExample, not only the layout demos):
-            orientation rotate + quick sizes + custom W×H — runtime
+            orientation rotate + quick sizes + custom W×H - runtime
             (code-example.js) owns the mode state and the device chrome */}
         <span class="code-example-viewport" role="group" aria-label="Preview device">
           <button class="code-example-vp" data-vp="rotate" title="Swap orientation (phone/tablet)" aria-disabled="true">
@@ -176,7 +182,7 @@ export function CodeExample({ source, component, label, hint, height, mode, prev
           <input class="code-example-vp-h" type="number" min="240" step="10" inputmode="numeric" placeholder="Full" aria-label="Custom preview height (px)" disabled />
         </span>
         {/* zoom: empty = auto-fit (shrink the device to the card, never blow
-            the page), 25–100 = manual %. CSS zoom — unlike transform — keeps
+            the page), 25–100 = manual %. CSS zoom - unlike transform - keeps
             the iframe's own viewport at the declared width, so media queries
             inside the sandbox stay honest while it visually shrinks. */}
         <span class="code-example-sep" aria-hidden="true"></span>
@@ -186,13 +192,13 @@ export function CodeExample({ source, component, label, hint, height, mode, prev
         </span>
         <span class="code-example-spacer"></span>
         {/* Both tabs start OFF: the rendered demo is the hero, the lower area
-            (source editor / state contract) is opt-in — the runtime makes the
+            (source editor / state contract) is opt-in - the runtime makes the
             buttons toggles (radio + click-again collapses everything). */}
         <button class="code-example-tab" data-tab="code" aria-pressed="false" title="Show or hide the example source">
           <i data-lucide="code-xml"></i>
           <span>Code</span>
         </button>
-        {/* State tab renders ONLY when the schema offers editable states — an
+        {/* State tab renders ONLY when the schema offers editable states - an
             empty contract (or stateTab:false) means no tab: editor stands alone. */}
         {stateTab ? (
           <button class="code-example-tab" data-tab="state" aria-pressed="false" title="Show or hide the state contract">
@@ -200,16 +206,22 @@ export function CodeExample({ source, component, label, hint, height, mode, prev
             <span>State</span>
           </button>
         ) : null}
-        <button class="code-example-copy" title="Copy the example source">
-          <i data-lucide="copy"></i>
-          <span>Copy</span>
-        </button>
         <button class="code-example-reset" title="Restore the original source and rerun">
           <i data-lucide="rotate-ccw"></i>
           <span>Reset</span>
         </button>
+        <button class="code-example-full" title="Preview fullscreen (Esc to exit)">
+          <i data-lucide="maximize"></i>
+          <span>Fullscreen</span>
+        </button>
       </div>
       <div class="code-example-panel" data-panel="code" hidden>
+        {/* Copy floats top-right over the editor - it only exists in the code
+            panel, so it is visible exactly when the editor is open */}
+        <button class="code-example-copy" title="Copy the example source">
+          <i data-lucide="copy"></i>
+          <span>Copy</span>
+        </button>
         <textarea
           class="code-example-src"
           spellcheck="false"
@@ -233,10 +245,10 @@ export interface StatesRow {
 /**
  * Why: renders the canonical `## States` contract table (```states fence, plan
  * §13) as the shipped `.table` component. The remark plugin passes the exact
- * fenced rows — the rendered page and the verified source are the same bytes,
+ * fenced rows - the rendered page and the verified source are the same bytes,
  * and the docs pipeline (no remark-gfm) still shows a real <table>.
  */
-/** Render a table cell's inline `code` spans — the fence body is markdown, but
+/** Render a table cell's inline `code` spans - the fence body is markdown, but
  * the docs pipeline (no remark-gfm inside JSX text) hands us raw bytes, so the
  * backticks are interpreted here: every odd segment becomes a <code> chip. */
 function inlineCode(v: string) {
@@ -248,7 +260,7 @@ export function StatesTable({ rows }: { rows: string }) {
   try {
     data = JSON.parse(rows) as StatesRow[];
   } catch (e) {
-    throw new Error(`StatesTable: malformed rows payload — ${(e as Error).message}`);
+    throw new Error(`StatesTable: malformed rows payload - ${(e as Error).message}`);
   }
   const cell = (v: string) => (v === '—' || v === '' ? '—' : v);
   // the contract table lives in a scroll container so the fixed metadata columns
@@ -257,7 +269,7 @@ export function StatesTable({ rows }: { rows: string }) {
     <div class="states-table-wrap">
     <table class="table states-table" data-variant="simple">
       <thead>
-        {/* fixed table layout resolves column widths from THIS row — the st-*
+        {/* fixed table layout resolves column widths from THIS row - the st-*
             width classes belong on the header cells, not the body cells */}
         <tr>
           <th scope="col" class="st-state">State</th>
@@ -270,7 +282,7 @@ export function StatesTable({ rows }: { rows: string }) {
       <tbody>
         {data.map((r) => (
           // every cell keeps its fence backticks (the parser passes them
-          // through) — inlineCode turns each span into a <code> chip, so a
+          // through) - inlineCode turns each span into a <code> chip, so a
           // Values cell with several tokens renders one chip per token
           <tr>
             <td class="st-state">{inlineCode(r.name)}</td>

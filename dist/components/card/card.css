@@ -46,7 +46,7 @@
   }
 
   /* Header + footer with no .card-content between: the zeroed paddings would
-     glue them together — restore the gap for that composition only. */
+     glue them together - restore the gap for that composition only. */
   .card-header + .card-footer {
     padding-top: 1rem;
   }

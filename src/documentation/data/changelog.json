@@ -6,8 +6,8 @@
       "commits": [
         "feat(docs): code blocks start collapsed on every page",
         "fix(docs): TOC anchors overscrolled by the web-font-swap delta (regression)",
-        "docs(plans): core bundle — core.js/core.css for the modularized install path",
-        "docs(plans): defuss-morph integration plan — df$ as host-provided dependency",
+        "docs(plans): core bundle - core.js/core.css for the modularized install path",
+        "docs(plans): defuss-morph integration plan - df$ as host-provided dependency",
         "feat(theme,components,scripts): generated theme files, theme-switcher component, static dead-link verifier",
         "feat(docs,components): header sidebar toggle + size/density for 14 components",
         "feat(theme): overflow/truncate/wrap vocabulary + accessibility module",
@@ -15,7 +15,7 @@
         "refactor(docs): dogfood shipped sizing/layout utilities, drop duplicated defs",
         "refactor(docs): replace copy-pasted inline styles with pattern classes",
         "feat(components): native data-density (compact/comfortable/spacious) for 11 components",
-        "fix(combobox): sizes demos used a lone down-chevron (glyph sits low) — restore the symmetric up/down pair",
+        "fix(combobox): sizes demos used a lone down-chevron (glyph sits low) - restore the symmetric up/down pair",
         "docs(README,index): skills pillar mentions sizes (parity pair commit)",
         "feat(components): complete five-step data-size ladders across 14 components",
         "refactor(docs): site sidebar dogfoods the shipped sidebar component",
@@ -35,8 +35,8 @@
         "test(e2e): dock/center checks against the fixed-element containing block, not clientWidth",
         "feat(verify): field feature parity + aria-describedby resolution gates",
         "fix(a11y): wire every doc-page field description to its control via aria-describedby",
-        "docs(button-group): drop the Separator example — it contradicted the Split button",
-        "fix(button): secondary hover faded towards the page background — darken via color-mix instead of opacity",
+        "docs(button-group): drop the Separator example - it contradicted the Split button",
+        "fix(button): secondary hover faded towards the page background - darken via color-mix instead of opacity",
         "fix(purge-cdn): purge the @latest package-root entry before the files",
         "fix(purge-cdn): fail fast when jsDelivr cannot serve the new tag yet"
       ],
@@ -47,7 +47,7 @@
       "date": "September 08, 2026",
       "hash": "ba23256",
       "commits": [
-        "fix(button-group): vertical group had asymmetric corners — Top rounded left, square right (issue #13)",
+        "fix(button-group): vertical group had asymmetric corners - Top rounded left, square right (issue #13)",
         "fix(select): placeholder option must stay selectable so a selection can be cleared (issue #32)",
         "docs(label): state the for↔id equality contract (issue #17)",
         "fix(toggle-group): middle item of a vertical group had a rounded top-right corner (issue #12)",
@@ -60,10 +60,10 @@
       "hash": "95483d1",
       "commits": [
         "fix(combobox): filtered options stop rendering as clickable phantoms; selections get a clear button",
-        "refactor(typography): rename .code class to .inline-code — name now matches the docs",
+        "refactor(typography): rename .code class to .inline-code - name now matches the docs",
         "fix(accordion): clicking the open item of a non-collapsible single accordion is a silent no-op (no flicker)",
-        "fix(accordion): panel expand/collapse animates — ::details-content rules were dead code",
-        "fix(dialog): page behind a modal dialog stays put — closing returns to the exact scroll position",
+        "fix(accordion): panel expand/collapse animates - ::details-content rules were dead code",
+        "fix(dialog): page behind a modal dialog stays put - closing returns to the exact scroll position",
         "docs(README): docs/ mirror also ships 404.html fallback (same commit window as index touch f88a53b)",
         "fix(docs): skill link toggles its &lt;details&gt; natively; docs mirror ships 404.html",
         "fix(docs): TOC links land headings below the sticky page-header bar; § permalinks (issue #2)",
@@ -76,9 +76,9 @@
       "date": "September 07, 2026",
       "hash": "00bd14f",
       "commits": [
-        "fix: generalize dropdown anchoring — nav-menu wires per trigger pair; popover stops claiming foreign triggers",
-        "fix: site-header dropdown anchored at viewport origin — nav must carry .nav-menu",
-        "fix: issue round — checkbox label centering, marketing block fixes, product-showcase play-state, collapsible docs sidebar"
+        "fix: generalize dropdown anchoring - nav-menu wires per trigger pair; popover stops claiming foreign triggers",
+        "fix: site-header dropdown anchored at viewport origin - nav must carry .nav-menu",
+        "fix: issue round - checkbox label centering, marketing block fixes, product-showcase play-state, collapsible docs sidebar"
       ]
     },
     {
@@ -86,12 +86,12 @@
       "date": "September 07, 2026",
       "hash": "489e4c0",
       "commits": [
-        "<strong>13 CSS-only marketing blocks</strong> — <code>site-header</code>, <code>hero</code>, <code>product-showcase</code>, <code>brand-logos</code>, <code>feature-details</code>, <code>testimonials</code>, <code>stats</code>, <code>pricing</code>, <code>blog</code>, <code>faq</code>, <code>get-in-touch</code>, <code>newsletter</code>, <code>site-footer</code>: native-web-platform page sections (container queries, <code>:has()</code> billing toggle, real form semantics, backdrop-blur overlays) composed from the same tokens + primitives; doc pages and e2e fixtures generated from one shared demo source, 13 new css-smoke suites",
-        "every marketing icon is an <strong>inline SVG</strong> — WebKit never paints <code>&lt;use&gt;</code> clones from hidden <code>&lt;symbol&gt;</code> sprites, so the FAQ/pricing icon tiles rendered empty in Safari; inlined paths also keep copy-pasted blocks self-contained",
+        "<strong>13 CSS-only marketing blocks</strong> - <code>site-header</code>, <code>hero</code>, <code>product-showcase</code>, <code>brand-logos</code>, <code>feature-details</code>, <code>testimonials</code>, <code>stats</code>, <code>pricing</code>, <code>blog</code>, <code>faq</code>, <code>get-in-touch</code>, <code>newsletter</code>, <code>site-footer</code>: native-web-platform page sections (container queries, <code>:has()</code> billing toggle, real form semantics, backdrop-blur overlays) composed from the same tokens + primitives; doc pages and e2e fixtures generated from one shared demo source, 13 new css-smoke suites",
+        "every marketing icon is an <strong>inline SVG</strong> - WebKit never paints <code>&lt;use&gt;</code> clones from hidden <code>&lt;symbol&gt;</code> sprites, so the FAQ/pricing icon tiles rendered empty in Safari; inlined paths also keep copy-pasted blocks self-contained",
         "<code>brand-logos</code> shows <strong>real brand marks</strong> (simple-icons, devDependency, read at generate time) as real links; <code>testimonials</code> quote-brand lockup links out too",
-        "<code>product-showcase</code> is a native <code>&lt;video controls&gt;</code> (webm+mp4 fallbacks, poster, browser-drawn play button); <code>hero</code> is copy-only — media belongs to the showcase block",
+        "<code>product-showcase</code> is a native <code>&lt;video controls&gt;</code> (webm+mp4 fallbacks, poster, browser-drawn play button); <code>hero</code> is copy-only - media belongs to the showcase block",
         "docs header gains a <strong>wide-mode toggle</strong> (next to the dark-mode switch): releases the <code>&lt;main&gt;</code> max-width so the marketing blocks render unconstrained; persisted, <code>aria-pressed</code>, keyboard-native",
-        "new <strong>Architecture Overview</strong> page — a build-time render of <a href=\"https://github.com/kyr0/defuss-shadcn/blob/main/ARCH.md\"><code>ARCH.md</code></a> via <code>scripts/lib/arch-page.ts</code>; verify's <code>architecture ↔ ARCH.md</code> gate fails on drift (AGENTS.md \"ARCH.md ↔ architecture page sync\")",
+        "new <strong>Architecture Overview</strong> page - a build-time render of <a href=\"https://github.com/kyr0/defuss-shadcn/blob/main/ARCH.md\"><code>ARCH.md</code></a> via <code>scripts/lib/arch-page.ts</code>; verify's <code>architecture ↔ ARCH.md</code> gate fails on drift (AGENTS.md \"ARCH.md ↔ architecture page sync\")",
         "fix: marketing <code>&lt;meta&gt;</code> descriptions and the site-footer hint were unescaped (<code>&lt;hr&gt;</code> injected raw, parse5 attribute errors); SPA router no longer stacks overlapping View Transitions (\"Transition was skipped\" pageerror)",
         "define the <code>mt-1</code> utility flagged by the utility-classes audit"
       ]
@@ -103,8 +103,8 @@
       "commits": [
         "image doc page: CSS/JS snippets were blank <code>data-src</code> stubs (no loader ships); they are static embedded snippets like every other page now",
         "theme radius consistency: every preset declared <code>radius</code> in light mode only, so switching to dark changed the theme's shape (Doom64/Retro Arcade rounded despite being hard-square themes); all 42 presets now declare an identical radius in both modes, and verify's <code>theme radius consistency</code> gate fails otherwise (AGENTS.md \"Theme radius consistency\")",
-        "new <strong>OpenAI</strong> theme: ChatGPT palette sampled pixel-from-screenshot (issues/chatgpt_*.png) — paper #fcfcfc sidebar / ink #0d0d0d / #efefef pills in light, pure-black sidebar / #2f2f2f canvas / #2a2a2a cards in dark, brand green in the charts, pill-round 1.5rem in both modes",
-        "breadcrumb: icon separators (custom chevron variant) are vertically centered with the labels — the <code>&lt;li&gt;</code> is flex now, inline SVGs sat on the text baseline (e2e geometry check)",
+        "new <strong>OpenAI</strong> theme: ChatGPT palette sampled pixel-from-screenshot (issues/chatgpt_*.png) - paper #fcfcfc sidebar / ink #0d0d0d / #efefef pills in light, pure-black sidebar / #2f2f2f canvas / #2a2a2a cards in dark, brand green in the charts, pill-round 1.5rem in both modes",
+        "breadcrumb: icon separators (custom chevron variant) are vertically centered with the labels - the <code>&lt;li&gt;</code> is flex now, inline SVGs sat on the text baseline (e2e geometry check)",
         "tests: radius-consistency assertions for all presets incl. doom-64/retro-arcade=0px and openai parity (51 unit tests total)"
       ]
     },
@@ -113,11 +113,11 @@
       "date": "September 06, 2026",
       "hash": "8274414",
       "commits": [
-        "doc-site nav now uses the sidebar token pair (<code>--sidebar-accent</code>/<code>--sidebar-accent-foreground</code>/<code>--sidebar-foreground</code>) instead of page-level <code>--primary</code>/<code>--accent</code> — 15 themes shipped an active nav link whose text vanished into the pill in dark mode",
+        "doc-site nav now uses the sidebar token pair (<code>--sidebar-accent</code>/<code>--sidebar-accent-foreground</code>/<code>--sidebar-foreground</code>) instead of page-level <code>--primary</code>/<code>--accent</code> - 15 themes shipped an active nav link whose text vanished into the pill in dark mode",
         "15 theme presets' <code>sidebar-accent</code> pairs re-tuned to WCAG AA (catppuccin, twitter, mocha-mousse, violet-bloom, nature, doom-64, ocean-breeze, retro-arcade, midnight-bloom, northern-lights fg/bg; tangerine + candyland light pills); default light <code>--sidebar-accent</code> 0.97 → 0.94 (active pill no longer washes out against the sidebar)",
-        "verify gate <code>theme sidebar contrast</code>: every preset + the default token file must reach contrast ≥ 4.5 for active and idle nav text, against the background each actually sits on (<code>scripts/lib/contrast.ts</code> — WCAG math incl. oklch)",
+        "verify gate <code>theme sidebar contrast</code>: every preset + the default token file must reach contrast ≥ 4.5 for active and idle nav text, against the background each actually sits on (<code>scripts/lib/contrast.ts</code> - WCAG math incl. oklch)",
         "<code>tests/contrast.test.ts</code> (46 assertions incl. oklch color parsing and the shipped-preset sweep) + a documentation.e2e regression that measures the computed pixels of the real <code>.nav-link.active</code> across all 22 reported theme/mode cases",
-        "nav section headings use <code>--sidebar-foreground</code> — <code>--primary</code> fails against <code>--sidebar</code> on most presets"
+        "nav section headings use <code>--sidebar-foreground</code> - <code>--primary</code> fails against <code>--sidebar</code> on most presets"
       ]
     },
     {
@@ -125,9 +125,9 @@
       "date": "September 06, 2026",
       "hash": "32c178d",
       "commits": [
-        "tooltip: <code>overflow: visible</code> — the UA popover <code>overflow: auto</code> clipped the <code>data-arrow</code> caret to a sliver and rendered a scrollbar inside every tooltip",
+        "tooltip: <code>overflow: visible</code> - the UA popover <code>overflow: auto</code> clipped the <code>data-arrow</code> caret to a sliver and rendered a scrollbar inside every tooltip",
         "sheet: top/bottom content columns cap at 48rem and center (side sheets were fine at 24rem); doc demos now use the real <code>.checkbox</code> component instead of raw UA inputs",
-        "sidebar: collapsed rail centers submenu icons (cog) — the nested-nav indent and submenu-summary padding no longer drift them off the icon column; demo wrapper no longer shrink-wraps so the rail sticks to the preview's left edge; new <code>data-side=\"right\"</code> doc demo + e2e check",
+        "sidebar: collapsed rail centers submenu icons (cog) - the nested-nav indent and submenu-summary padding no longer drift them off the icon column; demo wrapper no longer shrink-wraps so the rail sticks to the preview's left edge; new <code>data-side=\"right\"</code> doc demo + e2e check",
         "card: <code>.card-header + .card-footer</code> restores a 1rem gap when no <code>.card-content</code> sits between them (index pillar cards' \"Try it out\" link was glued to the description)",
         "docs: favicon.svg → images/favicon.webp; theme-switcher.js migrated to a .ts source",
         "e2e: regression checks for caret geometry, top/bottom content centering, the embedded checkbox, collapsed icon alignment, and the right-docked rail"
@@ -138,11 +138,11 @@
       "date": "September 06, 2026",
       "hash": "9365ee9",
       "commits": [
-        "SPA router: body-level dialog/popover overlays are now migrated on page swaps — clicking dialog/sheet triggers after sidebar navigation did nothing before",
-        "context-menu: opens on the right-button release, not during the hold — the menu no longer light-dismisses itself on mouse-up",
+        "SPA router: body-level dialog/popover overlays are now migrated on page swaps - clicking dialog/sheet triggers after sidebar navigation did nothing before",
+        "context-menu: opens on the right-button release, not during the hold - the menu no longer light-dismisses itself on mouse-up",
         "toast: pinned to its container corner (top layer bypasses the region's flex) + explicit 16px icon (un-sized SVG blew the toast up to ~300px)",
         "avatar: status badge no longer clipped by overflow:hidden (fallback rounds itself instead)",
-        "combobox + dropdown: selection check/radio use a mask + currentColor — the data-URI SVG resolved currentColor to black and vanished on dark surfaces; selected row no longer shifts its text",
+        "combobox + dropdown: selection check/radio use a mask + currentColor - the data-URI SVG resolved currentColor to black and vanished on dark surfaces; selected row no longer shifts its text",
         "table demo: avatar/name flex gap moved to the wrapping div (was dead style on the td)",
         "collapsible demos: wrappers no longer shrink-wrap inside the flex preview (chevrons were jammed against uneven text)",
         "e2e: regression checks for every fix above (hold-vs-release, toast corner + icon, badge clipping, mask indicators); dropdown fixture aligned with the documented .dropdown-check/.dropdown-radio markup"
@@ -153,7 +153,7 @@
       "date": "September 06, 2026",
       "hash": "fe26cbd",
       "commits": [
-        "SKILL.md: dist/SKILL.md generated per build from src/SKILL_tpl.md + skill frontmatter — the agent entry point (integration, philosophy, dist/ layout, per-component index)",
+        "SKILL.md: dist/SKILL.md generated per build from src/SKILL_tpl.md + skill frontmatter - the agent entry point (integration, philosophy, dist/ layout, per-component index)",
         "all 55 component skills: required name/why/when/where/supportedStates frontmatter (AGENTS.md \"Component skill template\"); verify gates \"skill frontmatter\" + \"SKILL.md ↔ skills\"",
         "component-skills.html + index + README document dist/SKILL.md as the discovery point for agents",
         "tests/skill.test.ts: frontmatter parser, index block shape, screenshot naming per state"
@@ -164,7 +164,7 @@
       "date": "September 06, 2026",
       "hash": "da3c0d5",
       "commits": [
-        "First release as defuss-shadcn — forked from codylindley/shadcn-html (original idea and implementation by Cody Lindley) at commit f6d308d, September 05, 2026; v0.7.14 continues the original v0.7.13-alpha line and every commit below is post-fork work",
+        "First release as defuss-shadcn - forked from codylindley/shadcn-html (original idea and implementation by Cody Lindley) at commit f6d308d, September 05, 2026; v0.7.14 continues the original v0.7.13-alpha line and every commit below is post-fork work",
         "README: doc-site e2e covers the command-palette search, not the removed sidebar filter",
         "docs search: header box opens the command palette, fed by a generated index",
         "docs search box moves into the header, next to the version badge",
@@ -173,7 +173,7 @@
         "sync README ↔ index.html hero sentence; add commit-window gate",
         "index.html dogfoods the CDN install; README↔index parity rule + gate; docs e2e",
         "docs/ publishes only the documentation site (no more full dist/ copy)",
-        "README: credits — forked from codylindley/shadcn-html (original idea and implementation by Cody Lindley); the Author line conflated the two people (kyr0.com is Aron Homberg)",
+        "README: credits - forked from codylindley/shadcn-html (original idea and implementation by Cody Lindley); the Author line conflated the two people (kyr0.com is Aron Homberg)",
         "no window globals: everything lives under globalThis.df$ (AGENTS.md)",
         "README: point to ARCH.md, drop stale rollout-gap note (ratchets now empty)",
         "ARCH.md: the self-verification proof loop, documented",

@@ -1,0 +1,235 @@
+---
+title: "Theme River — Presentation"
+description: "Aurora Gradient design language presenting three years of loans at a city library as a 12-slide deck — a theme river of four lending formats that isolates audiobooks, then re-reads the same streams as yearly stacks and growth bars, one continuous chart."
+slug: "theme-river"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="theme-river" title="Theme River" component="presentation">
+  Aurora Gradient: oceanic night, mint-to-violet light — what a city library lent over three years, drawn as four streams whose widths swell and thin with the seasons, then re-read as yearly totals and growth.
+</PageHeader>
+
+```html example label="Aurora Gradient" schema="none" height="26" hint="Slides blur in and fade out (df$.anim blurIn / fadeOut, declared on the deck); violet curtains mark the breaks. One deck-level chart (df$.shadcn.chart.deck): the theme river isolates audiobooks, then becomes stacked yearly bars that morph into growth per format. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-river" data-anim-in="blurIn" data-anim-out="fadeOut" style="--presentation-ink:#071A28;--presentation-ink-foreground:#E8FBFF;--presentation-paper:#E6FBF5;--presentation-paper-foreground:#071A28;--presentation-accent:#5AF2C8;font-family:Inter, system-ui, sans-serif;" tabindex="-1" aria-label="What a library lends — three years of loans by format">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="Monthly library loans by format from January 2023 to December 2025 as a theme river: print shrinks from 612 to 541 thousand a year while audiobooks grow from 74 to 182 thousand; then yearly totals and growth per format"></div>
+  <section class="slide" data-slide data-theme="ink" aria-label="Cover">
+    <div aria-hidden="true" style="position:absolute; inset:0; background:radial-gradient(circle at 18% 0, rgba(90,242,200,.20), transparent 38%), radial-gradient(circle at 85% 100%, rgba(185,131,255,.22), transparent 40%);"></div>
+    <svg aria-hidden="true" width="1600" height="420" viewBox="0 0 1600 420" style="position:absolute; left:0; bottom:0;">
+      <path d="M0 250 C 260 170, 460 330, 760 250 S 1260 150, 1600 230 L1600 420 L0 420 Z" fill="rgba(91,140,255,.16)" />
+      <path d="M0 300 C 300 240, 520 360, 820 300 S 1300 230, 1600 290 L1600 420 L0 420 Z" fill="rgba(90,242,200,.16)" />
+      <path d="M0 350 C 280 320, 560 400, 860 350 S 1320 310, 1600 345 L1600 420 L0 420 Z" fill="rgba(246,211,101,.16)" />
+    </svg>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Theme river · Aurora Gradient</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-family:Inter, system-ui, sans-serif; font-weight:700; letter-spacing:-0.03em; font-size:7rem; max-width:1000px; line-height:0.92;"><span style="background:linear-gradient(90deg,#5AF2C8,#5B8CFF,#B983FF); -webkit-background-clip:text; background-clip:text; color:transparent;">What a library lends</span></h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">2.8 million loans in three years — and the mix is flowing away from paper.</p>
+    <p class="presentation-note">The three currents on the cover are the three formats that grow.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="river" style="justify-content:flex-start;" aria-label="All formats">
+    <header class="presentation-header"><span>Loans</span><span>Loans per month, 2023–2025</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Inter, system-ui, sans-serif; font-weight:700; letter-spacing:-0.03em;">Four formats, one river</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Stream width = loans that month; the river’s total width is the whole library.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="audio" style="justify-content:flex-start;" aria-label="Audiobooks">
+    <header class="presentation-header"><span>Loans</span><span>Audiobooks highlighted</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Inter, system-ui, sans-serif; font-weight:700; letter-spacing:-0.03em;">The audiobook stream more than doubled</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The other streams dim — watch the gold one widen every summer.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="yearly" style="justify-content:flex-start;" aria-label="Per year">
+    <header class="presentation-header"><span>Totals</span><span>Loans per year, thousands</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Inter, system-ui, sans-serif; font-weight:700; letter-spacing:-0.03em;">Total loans still rise — by 12%</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The river collapses into three yearly stacks.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Key figures">
+    <p class="presentation-eyebrow" data-df-entrance="fade">Three numbers for the library board</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:Inter, system-ui, sans-serif; font-weight:700; letter-spacing:-0.03em;"><span data-count="998">998</span> k</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">loans in 2025 — the first year near a million</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#F6D365; font-family:Inter, system-ui, sans-serif; font-weight:700; letter-spacing:-0.03em;">+<span data-count="146">146</span>%</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">audiobook loans since 2023</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:Inter, system-ui, sans-serif; font-weight:700; letter-spacing:-0.03em;"><span data-count="18">18</span>%</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">of all loans are now audiobooks (8% in 2023)</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">Print is still the widest stream — but it is the only one that thins.</p>
+    <p class="presentation-note">Growth and share tell the same story from two sides.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Listening" style="overflow:hidden;">
+    <video autoplay muted loop playsinline aria-hidden="true" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.55; mix-blend-mode:screen;">
+      <source src="videos/demo.webm" type="video/webm" />
+      <source src="videos/demo.mp4" type="video/mp4" />
+    </video>
+    <div aria-hidden="true" style="position:absolute; inset:0; background:linear-gradient(90deg, #071A28 38%, rgba(90,242,200,.14));"></div>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">The summer peak</p>
+    <h2 class="presentation-title" data-df-entrance="blur" style="position:relative; font-size:5rem; max-width:1100px; font-family:Inter, system-ui, sans-serif; font-weight:700; letter-spacing:-0.03em;">Listening follows the holidays</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:400ms; position:relative; max-width:900px;">Audiobook loans peak every July and August — commutes end, road trips begin.</p>
+    <p class="presentation-note">Ambient loop between the chart states.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="north" data-anim-in-blocks="6" data-anim-in-color="#B983FF" aria-label="Loans table">
+    <header class="presentation-header"><span>Loans</span><span>Thousands of loans per year</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" data-density="spacious" style="font-size:1.7rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">Loans by format at a city library, 2023–2025 (synthetic).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">Format</th><th class="table-head" style="text-align:right">2023</th><th class="table-head" style="text-align:right">2024</th><th class="table-head" style="text-align:right">2025</th><th class="table-head" style="text-align:right">Change</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row"><td class="table-cell">Print</td><td class="table-cell" style="text-align:right">612</td><td class="table-cell" style="text-align:right">574</td><td class="table-cell" style="text-align:right">541</td><td class="table-cell" style="text-align:right">−12%</td></tr>
+          <tr class="table-row"><td class="table-cell">E-books</td><td class="table-cell" style="text-align:right">188</td><td class="table-cell" style="text-align:right">214</td><td class="table-cell" style="text-align:right">236</td><td class="table-cell" style="text-align:right">+26%</td></tr>
+          <tr class="table-row" style="font-weight:700"><td class="table-cell">Audiobooks</td><td class="table-cell" style="text-align:right">74</td><td class="table-cell" style="text-align:right">121</td><td class="table-cell" style="text-align:right">182</td><td class="table-cell" style="text-align:right">+146%</td></tr>
+          <tr class="table-row"><td class="table-cell">Board games</td><td class="table-cell" style="text-align:right">18</td><td class="table-cell" style="text-align:right">27</td><td class="table-cell" style="text-align:right">39</td><td class="table-cell" style="text-align:right">+117%</td></tr>
+        </tbody>
+        <tfoot>
+          <tr class="table-row"><td class="table-cell">Total</td><td class="table-cell" style="text-align:right;font-weight:700">892</td><td class="table-cell" style="text-align:right;font-weight:700">936</td><td class="table-cell" style="text-align:right;font-weight:700">998</td><td class="table-cell" style="text-align:right;font-weight:700">+12%</td></tr>
+        </tfoot>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Every digital format grows; the total grows with them.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-family:Inter, system-ui, sans-serif; font-weight:700; letter-spacing:-0.03em; font-size:2.9rem; letter-spacing:-0.03em;">“We stopped arguing about print versus digital the day we saw the river. It is one library — the water just moves.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#071A28; color:#5AF2C8;"><span class="avatar-fallback">IM</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Ines Marek<br /><span style="opacity:0.7; font-size:1.4rem;">Head of collections — fictional</span></p>
+    </div>
+    <p class="presentation-note">The metaphor did the persuading.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="growth" style="justify-content:flex-start;" aria-label="Growth">
+    <header class="presentation-header"><span>Change</span><span>Loans 2025 vs 2023</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Inter, system-ui, sans-serif; font-weight:700; letter-spacing:-0.03em;">Everything grows — except print</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The same four formats, re-sorted by growth.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Questions from the board">
+    <header class="presentation-header"><span>Q & A</span><span>Library board</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; font-family:Inter, system-ui, sans-serif; font-weight:700; letter-spacing:-0.03em;">Questions from the board</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="tr-qa" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Should we cut the print budget?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">No — print still carries 54% of all loans. Shift new spending, not the base.</p></div>
+      </details>
+      <details class="accordion-item" name="tr-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Why do board games peak in December?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Holidays: families borrow games for the break; loans rise by more than half between September and December.</p></div>
+      </details>
+      <details class="accordion-item" name="tr-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>What is a “loan” for an e-book?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">One checkout of one title for up to 21 days — the same rule as print.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The print question always comes first.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Takeaways">
+    <header class="presentation-header"><span>Takeaways</span><span>For the collections plan</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">≈</span><span>A theme river shows shifting prominence, not exact values.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">≈</span><span>Audiobooks went from 8% to 18% of loans in three years.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">≈</span><span>Print thins slowly — it still carries half the library.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">≈</span><span>Buy for the summer peak: that is when listeners arrive.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Calm and fluid.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-anim-in="blocksIn" data-anim-in-direction="south" data-anim-in-blocks="6" data-anim-in-color="#B983FF" aria-label="Closing">
+    <div aria-hidden="true" style="position:absolute; inset:0; background:radial-gradient(circle at 18% 0, rgba(90,242,200,.20), transparent 38%), radial-gradient(circle at 85% 100%, rgba(185,131,255,.22), transparent 40%);"></div>
+    <svg aria-hidden="true" width="1600" height="420" viewBox="0 0 1600 420" style="position:absolute; left:0; bottom:0;">
+      <path d="M0 250 C 260 170, 460 330, 760 250 S 1260 150, 1600 230 L1600 420 L0 420 Z" fill="rgba(91,140,255,.16)" />
+      <path d="M0 300 C 300 240, 520 360, 820 300 S 1300 230, 1600 290 L1600 420 L0 420 Z" fill="rgba(90,242,200,.16)" />
+      <path d="M0 350 C 280 320, 560 400, 860 350 S 1320 310, 1600 345 L1600 420 L0 420 Z" fill="rgba(246,211,101,.16)" />
+    </svg>
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-family:Inter, system-ui, sans-serif; font-weight:700; letter-spacing:-0.03em;"><span style="background:linear-gradient(90deg,#5AF2C8,#5B8CFF,#B983FF); -webkit-background-clip:text; background-clip:text; color:transparent;">One library, four currents</span></h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">Synthetic loans at a fictional library — the river is the real way to show a changing mix.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">End on the currents.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) — build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-river');
+    const TEXT = '#E8FBFF', MUTED = '#68A4AD', GRID = 'rgba(232,251,255,.08)';
+    const formats = [['Print', '#5B8CFF'], ['E-books', '#5AF2C8'], ['Audiobooks', '#F6D365'], ['Board games', '#B983FF']];
+    const color = Object.fromEntries(formats);
+    // loans per year (thousands) and each format's seasonal rhythm (peak month, amplitude)
+    const annual = { Print: [612, 574, 541], 'E-books': [188, 214, 236], Audiobooks: [74, 121, 182], 'Board games': [18, 27, 39] };
+    const rhythm = { Print: [6.5, 0.16], 'E-books': [0.5, 0.12], Audiobooks: [6.5, 0.3], 'Board games': [11, 0.55] };
+    // the yearly rate interpolated between mid-year points, so the streams flow instead of stepping
+    const rate = (n, t) => {
+      const y = Math.min(1, Math.max(0, Math.floor((t - 5.5) / 12)));
+      const f = (t - 5.5 - y * 12) / 12;
+      return annual[n][y] + (annual[n][y + 1] - annual[n][y]) * f;
+    };
+    const data = [];
+    for (let t = 0; t < 36; t++) {
+      const date = (2023 + Math.floor(t / 12)) + '/' + String((t % 12) + 1).padStart(2, '0') + '/01';
+      for (const [n] of formats) {
+        const [peak, amp] = rhythm[n];
+        data.push([date, Math.round((rate(n, t) / 12) * (1 + amp * Math.cos(((t % 12) - peak) / 12 * 2 * Math.PI)) * 10) / 10, n]);
+      }
+    }
+    const river = (focus) => ({
+      legend: { top: 300, left: 150, textStyle: { color: TEXT }, data: formats.map((f) => f[0]) },
+      singleAxis: { top: 370, bottom: 130, left: 150, right: 150, type: 'time', axisLabel: { color: MUTED }, axisLine: { lineStyle: { color: 'rgba(232,251,255,.25)' } }, splitLine: { show: false } },
+      series: [{ id: 'loans', type: 'themeRiver', data, label: { show: false }, emphasis: { focus: 'series' },
+        color: formats.map(([n, c]) => (!focus || n === focus ? c : 'rgba(104,164,173,.2)')) }],
+    });
+    const years = ['2023', '2024', '2025'];
+    const change = formats.map(([n]) => [n, Math.round((annual[n][2] / annual[n][0] - 1) * 100)]).sort((a, b) => b[1] - a[1]);
+
+    df$.shadcn.chart.deck(deck, {
+      base: { tooltip: { trigger: 'item' } },
+      states: {
+        river: river(null),
+        audio: river('Audiobooks'),
+        yearly: {
+          legend: { top: 300, left: 150, textStyle: { color: TEXT } },
+          grid: { left: 190, right: 190, top: 380, bottom: 140 },
+          xAxis: { type: 'category', data: years, axisLabel: { color: TEXT, fontWeight: 600 } },
+          yAxis: { type: 'value', axisLabel: { color: MUTED, formatter: '{value} k' }, splitLine: { lineStyle: { color: GRID } } },
+          series: formats.map(([n, c], i) => ({ id: n, name: n, type: 'bar', stack: 'loans', barWidth: '44%', data: annual[n],
+            itemStyle: { color: c, borderRadius: i === formats.length - 1 ? [10, 10, 0, 0] : 0 } })),
+        },
+        growth: {
+          grid: { left: 330, right: 220, top: 340, bottom: 140 },
+          xAxis: { type: 'value', axisLabel: { color: MUTED, formatter: '{value}%' }, splitLine: { lineStyle: { color: GRID } } },
+          yAxis: { type: 'category', inverse: true, data: change.map((c) => c[0]), axisLine: { show: false }, axisTick: { show: false }, axisLabel: { color: TEXT, fontWeight: 600 } },
+          series: [{ id: 'growth', type: 'bar', barWidth: '56%',
+            data: change.map(([n, v]) => ({ name: n, value: v, itemStyle: { color: color[n], borderRadius: v >= 0 ? [0, 10, 10, 0] : [10, 0, 0, 10] },
+              label: { position: v >= 0 ? 'right' : 'left' } })),
+            label: { show: true, color: TEXT, fontWeight: 700, formatter: (p) => (p.value > 0 ? '+' : '') + p.value + '%' } }],
+        },
+      },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 17-theme-river (Aurora Gradient) — synthetic loans at a fictional library.</p>
+<SourceFiles component="presentation" />
+</DocPage>

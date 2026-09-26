@@ -1,0 +1,15 @@
+{
+  "name": "defuss-shadcn",
+  "metadata": {
+    "description": "Build beautiful web apps, charts, websites and presentations in pure HTML/CSS/JS with shadcn components and defuss"
+  },
+  "owner": {
+    "name": "Aron Homberg"
+  },
+  "plugins": [
+    {
+      "name": "defuss-shadcn",
+      "source": "./"
+    }
+  ]
+}

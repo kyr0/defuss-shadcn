@@ -1,7 +1,7 @@
 ---
 name: Table of Contents
 type: BLK
-why: A section-nav block of heading links with active-section tracking classes — pure markup, the observer is the host's.
+why: A section-nav block of heading links with active-section tracking classes - pure markup, the observer is the host's.
 when: Docs/blog/spec pages with in-page sections that deserve a persistent rail.
 where: dist/components/toc/toc.css
 supportedStates: default
@@ -15,11 +15,11 @@ supportedStates: default
 ---
 
 ## Native Web APIs
-- [`<nav>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav) — landmark for major navigation
-- [URL fragment (`:target`)](https://developer.mozilla.org/en-US/docs/Web/CSS/:target) — native deep links
-- [`aria-current`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-current) — marks the link for the section in view
-- [`IntersectionObserver`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver) — the host's way to track the visible section and move `aria-current` (behavior, not shipped)
-- [`position: sticky`](https://developer.mozilla.org/en-US/docs/Web/CSS/position) — the rail follows the scroll without JS
+- [`<nav>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav) - landmark for major navigation
+- [URL fragment (`:target`)](https://developer.mozilla.org/en-US/docs/Web/CSS/:target) - native deep links
+- [`aria-current`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-current) - marks the link for the section in view
+- [`IntersectionObserver`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver) - the host's way to track the visible section and move `aria-current` (behavior, not shipped)
+- [`position: sticky`](https://developer.mozilla.org/en-US/docs/Web/CSS/position) - the rail follows the scroll without JS
 
 ---
 
@@ -41,7 +41,7 @@ supportedStates: default
 
 | Class        | Purpose                                             |
 |--------------|-----------------------------------------------------|
-| `.toc`       | the nav block (host positions it — rail, sticky…)   |
+| `.toc`       | the nav block (host positions it - rail, sticky…)   |
 | `.toc-title` | small caps group label                              |
 | `.toc-link`  | a section link; left border when current            |
 
@@ -62,15 +62,15 @@ Set `data-density` on the `.toc` root. A whitespace policy, not a zoom: only gap
 | Value | Effect |
 | --- | --- |
 | `compact` | links 0.125rem block padding |
-| `comfortable` | links 0.1875rem block padding — identical to the unsized default |
+| `comfortable` | links 0.1875rem block padding - identical to the unsized default |
 | `spacious` | links 0.25rem block padding |
 
 ## Accessibility
 
 - Give the nav a name: `aria-label="On this page"`.
-- The current section is announced via `aria-current="location"` — update it from the host's IntersectionObserver; never use color alone.
+- The current section is announced via `aria-current="location"` - update it from the host's IntersectionObserver; never use color alone.
 - `forced-colors: active` keeps the current marker visible via system colors.
 
 ## Notes
 
-- Build the link list at build time from the page's headings (ids + text) — a hand-maintained ToC drifts immediately.
+- Build the link list at build time from the page's headings (ids + text) - a hand-maintained ToC drifts immediately.

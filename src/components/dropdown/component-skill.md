@@ -1,7 +1,7 @@
 ---
 name: Dropdown Menu
 type: ATM
-why: Button-triggered menu as a Popover positioned by CSS anchor positioning — dismiss and placement are browser-owned.
+why: Button-triggered menu as a Popover positioned by CSS anchor positioning - dismiss and placement are browser-owned.
 when: The go-to menu of actions or options anchored to a trigger button.
 where: dist/components/dropdown/dropdown.css + dist/components/dropdown/dropdown.js
 supportedStates: default, open
@@ -17,12 +17,12 @@ Requires JavaScript for keyboard navigation and ARIA management.
 ---
 
 ## Native Web APIs
-- [Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API) — top-layer rendering and light-dismiss (click outside to close)
-- [CSS Anchor Positioning](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning) — positions dropdown relative to trigger without JavaScript
-- [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) — entry animation for popover
-- [WAI-ARIA Menu pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/) — keyboard navigation and role contract for menu items
-- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) — suppresses open/close animation
-- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) — maps border and highlight to system colors
+- [Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API) - top-layer rendering and light-dismiss (click outside to close)
+- [CSS Anchor Positioning](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning) - positions dropdown relative to trigger without JavaScript
+- [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) - entry animation for popover
+- [WAI-ARIA Menu pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/) - keyboard navigation and role contract for menu items
+- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) - suppresses open/close animation
+- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) - maps border and highlight to system colors
 
 ---
 
@@ -86,7 +86,7 @@ Set `data-size` on the `.dropdown-content` popover; items, labels, shortcuts and
 | `lg` | 0.5rem 0.5rem | 1rem | 0.8125rem |
 | `xl` | 0.625rem 0.5rem | 1.125rem | 0.875rem |
 
-The trigger button's own `data-size` (from `.btn`) is independent — set both to match. `md` equals the unsized default.
+The trigger button's own `data-size` (from `.btn`) is independent - set both to match. `md` equals the unsized default.
 
 ---
 ## ARIA
@@ -101,7 +101,7 @@ The trigger button's own `data-size` (from `.btn`) is independent — set both t
 | `aria-expanded`            | trigger button   | `true` when open, `false` when closed |
 | `aria-controls`            | trigger button   | ID of menu element            |
 | `aria-label`               | menu container   | Description of menu purpose   |
-| `tabindex="-1"`            | each menuitem    | Items not in tab order — use arrow keys |
+| `tabindex="-1"`            | each menuitem    | Items not in tab order - use arrow keys |
 | `data-highlighted`         | focused item     | Set by JS for styling          |
 
 ---
@@ -178,10 +178,10 @@ The api is bound per menu element; the registry global is
 
 ## Notes
 
-- Always use `popover` attribute for the menu — it renders in the top layer and avoids overflow clipping
-- CSS anchor positioning (`position-anchor`, `anchor()`) handles placement — no JS positioning needed
+- Always use `popover` attribute for the menu - it renders in the top layer and avoids overflow clipping
+- CSS anchor positioning (`position-anchor`, `anchor()`) handles placement - no JS positioning needed
 - `position-try: flip-block` automatically flips the menu above the trigger if there's no room below
 - The `popover` API handles light-dismiss (click outside) automatically
 - For submenus, nest another `[popover]` element triggered by a `menuitem` with `aria-haspopup="menu"`
 - Escape closes the menu and returns focus to the trigger
-- Menu items use `tabindex="-1"` — only arrow keys move focus (roving focus pattern)
+- Menu items use `tabindex="-1"` - only arrow keys move focus (roving focus pattern)

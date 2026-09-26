@@ -1,6 +1,6 @@
 ---
 title: "JavaScript Modules"
-description: "How defuss-shadcn uses native ES modules for interactive components — no bundler needed."
+description: "How defuss-shadcn uses native ES modules for interactive components - no bundler needed."
 slug: "es-modules"
 ---
 
@@ -9,7 +9,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <DocPage meta={meta}>
 
 <PageHeader slug="es-modules" title="JavaScript Modules" introStyle="max-width:38rem;">
-  Interactive components ship as native <DocLink href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules" target="_blank">ES modules</DocLink>. Load them with <code>&lt;script type="module"&gt;</code> — no bundler, no build step, no framework.
+  Interactive components ship as native <DocLink href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules" target="_blank">ES modules</DocLink>. Load them with <code>&lt;script type="module"&gt;</code> - no bundler, no build step, no framework.
 </PageHeader>
 
 <H2>What is <code>type="module"</code>?</H2>
@@ -36,34 +36,34 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     </div>
     <div style="padding:1.25rem;font-size:0.8125rem;display:flex;flex-direction:column;gap:0.75rem;">
       <code style="display:block;font-size:0.75rem;background:var(--muted);padding:0.5rem 0.75rem;border-radius:var(--radius-md);">&lt;script type="module" src="..."&gt;</code>
-      <div class="text-muted-foreground">Module scope — nothing leaks</div>
+      <div class="text-muted-foreground">Module scope - nothing leaks</div>
       <div class="text-muted-foreground">Strict mode by default</div>
       <div class="text-muted-foreground">Deferred by default (like <code>defer</code>)</div>
-      <div class="text-muted-foreground">Each file is its own scope — no wrappers</div>
+      <div class="text-muted-foreground">Each file is its own scope - no wrappers</div>
       <div class="text-muted-foreground">Requires HTTP server (CORS policy)</div>
     </div>
   </div>
 </div>
 
-<p class="text-sm text-muted-foreground mb-5"> Module scope, strict mode, and deferred execution — with a classic script you'd need an IIFE, a <code>'use strict'</code> directive, and either <code>defer</code> or a <code>DOMContentLoaded</code> listener to get the same combination. With <code>type="module"</code>, the browser handles them automatically. </p>
+<p class="text-sm text-muted-foreground mb-5"> Module scope, strict mode, and deferred execution - with a classic script you'd need an IIFE, a <code>'use strict'</code> directive, and either <code>defer</code> or a <code>DOMContentLoaded</code> listener to get the same combination. With <code>type="module"</code>, the browser handles them automatically. </p>
 
 <div class="sep" />
 
 <H2>No <code>import</code>, no <code>export</code></H2>
 
-<p class="text-sm text-muted-foreground mb-5"> You'll notice our component modules don't use <code>import</code> or <code>export</code> at all. This is intentional. Each <code>.js</code> file is a <strong>side-effect module</strong> — it wraps its DOM-querying logic in an <code>init()</code> function, calls it once on load, and sets up a <code>MutationObserver</code> to re-run it whenever the DOM changes. There's nothing to export because the module's purpose <em>is</em> its side effect: wiring behavior to HTML elements. </p>
+<p class="text-sm text-muted-foreground mb-5"> You'll notice our component modules don't use <code>import</code> or <code>export</code> at all. This is intentional. Each <code>.js</code> file is a <strong>side-effect module</strong> - it wraps its DOM-querying logic in an <code>init()</code> function, calls it once on load, and sets up a <code>MutationObserver</code> to re-run it whenever the DOM changes. There's nothing to export because the module's purpose <em>is</em> its side effect: wiring behavior to HTML elements. </p>
 
-<CodeCard title="dialog.js — init() + MutationObserver pattern" lang="javascript" mb="1.5rem">{"// No imports — this component has no dependencies\n// No exports — the side effect IS the module\n\nfunction init() {\n  document.querySelectorAll('[data-dialog-trigger]:not([data-init])').forEach((trigger) => {\n    trigger.dataset.init = '';\n    const dialog = document.getElementById(trigger.dataset.dialogTrigger);\n    if (!dialog) return;\n    trigger.addEventListener('click', () => {\n      dialog._trigger = trigger;\n      dialog.showModal();\n    });\n  });\n}\n\ninit();\nnew MutationObserver(init).observe(document, { childList: true, subtree: true });"}</CodeCard>
+<CodeCard title="dialog.js - init() + MutationObserver pattern" lang="javascript" mb="1.5rem">{"// No imports - this component has no dependencies\n// No exports - the side effect IS the module\n\nfunction init() {\n  document.querySelectorAll('[data-dialog-trigger]:not([data-init])').forEach((trigger) => {\n    trigger.dataset.init = '';\n    const dialog = document.getElementById(trigger.dataset.dialogTrigger);\n    if (!dialog) return;\n    trigger.addEventListener('click', () => {\n      dialog._trigger = trigger;\n      dialog.showModal();\n    });\n  });\n}\n\ninit();\nnew MutationObserver(init).observe(document, { childList: true, subtree: true });"}</CodeCard>
 
-<p class="text-sm text-muted-foreground mb-3"> There are no <code>import</code> statements either — components don't depend on each other. A dialog doesn't depend on a tooltip; a dropdown shares no code with a combobox. The ONE shared dependency is the core runtime: <code>core.js</code> installs the callable <code>df$</code> (defuss-query + defuss-morph) and the shared layer at <code>df$.shadcn.shared</code>, and every component script binds to it. Load core first — or <code>all.js</code>, which embeds it — a component without core fails fast with one actionable load-order error. </p>
+<p class="text-sm text-muted-foreground mb-3"> There are no <code>import</code> statements either - components don't depend on each other. A dialog doesn't depend on a tooltip; a dropdown shares no code with a combobox. The ONE shared dependency is the core runtime: <code>core.js</code> installs the callable <code>df$</code> (defuss-query + defuss-morph) and the shared layer at <code>df$.shadcn.shared</code>, and every component script binds to it. Load core first - or <code>all.js</code>, which embeds it - a component without core fails fast with one actionable load-order error. </p>
 
-<p class="text-sm text-muted-foreground mb-5"> This is the key advantage of <em>this pattern</em>, not ES modules in general: <strong>no bundler, no import maps, no dependency resolution between components</strong>. Drop module-script tags onto the page in the right order (core, then components) and they work. Remove a component and nothing else breaks. You're composing at the HTML level, not the JavaScript level — and the query/morph runtime you'd otherwise vendor yourself ships once as <code>core.min.js</code>. </p>
+<p class="text-sm text-muted-foreground mb-5"> This is the key advantage of <em>this pattern</em>, not ES modules in general: <strong>no bundler, no import maps, no dependency resolution between components</strong>. Drop module-script tags onto the page in the right order (core, then components) and they work. Remove a component and nothing else breaks. You're composing at the HTML level, not the JavaScript level - and the query/morph runtime you'd otherwise vendor yourself ships once as <code>core.min.js</code>. </p>
 
 <div class="sep" />
 
 <H2>Static pages vs. SPAs</H2>
 
-<p class="text-sm text-muted-foreground mb-5"> Component JS works the same way on both static and dynamic pages — load it once and it handles the rest. </p>
+<p class="text-sm text-muted-foreground mb-5"> Component JS works the same way on both static and dynamic pages - load it once and it handles the rest. </p>
 
 <div class="grid grid-cols-auto gap-4 mb-10">
   <div class="code-card-col">
@@ -84,7 +84,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <div style="padding:1.25rem;font-size:0.8125rem;display:flex;flex-direction:column;gap:0.75rem;">
       <div class="text-muted-foreground">New HTML inserted after page load needs initialization</div>
       <div class="text-muted-foreground">Each component uses a <code>MutationObserver</code> to watch for new elements</div>
-      <div class="text-muted-foreground">New elements are automatically initialized — no manual re-import needed</div>
+      <div class="text-muted-foreground">New elements are automatically initialized - no manual re-import needed</div>
       <div class="text-muted-foreground">Already-initialized elements are skipped via <code>data-init</code> guard</div>
     </div>
   </div>
@@ -92,7 +92,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-3"> On a static page, the <code>&lt;script&gt;</code> tags run once after the DOM is ready and every component just works. No setup, no configuration. </p>
 
-<p class="text-sm text-muted-foreground mb-5"> In an SPA or any page that dynamically updates its HTML, new elements are initialized automatically. Each component module sets up a <code>MutationObserver</code> that watches the document for DOM changes and re-runs its initialization logic. The <code>data-init</code> attribute on every initialized element prevents double-binding — the <code>:not(\[data-init\])</code> selector ensures only new elements are wired up. Even with many component observers on the page, each callback is cheap because the <code>querySelectorAll</code> guard skips already-initialized elements immediately. There is nothing to call or configure: </p>
+<p class="text-sm text-muted-foreground mb-5"> In an SPA or any page that dynamically updates its HTML, new elements are initialized automatically. Each component module sets up a <code>MutationObserver</code> that watches the document for DOM changes and re-runs its initialization logic. The <code>data-init</code> attribute on every initialized element prevents double-binding - the <code>:not(\[data-init\])</code> selector ensures only new elements are wired up. Even with many component observers on the page, each callback is cheap because the <code>querySelectorAll</code> guard skips already-initialized elements immediately. There is nothing to call or configure: </p>
 
 <CodeCard title="how auto-initialization works inside each component module" lang="javascript" mb="2.5rem">{"// Each component module follows this pattern:\n\nfunction init() {\n  document.querySelectorAll('.my-component:not([data-init])').forEach((el) => {\n    el.dataset.init = '';\n    // ... bind event listeners, set ARIA attributes, etc.\n  });\n}\n\n// Run once on load\ninit();\n\n// Auto-run when the DOM changes (SPA navigation, dynamic content, etc.)\nnew MutationObserver(init).observe(document, { childList: true, subtree: true });"}</CodeCard>
 
@@ -100,12 +100,12 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <H2>Which components need JS?</H2>
 
-<p class="text-sm text-muted-foreground mb-5"> Most components are CSS-only. JavaScript is only used when HTML and CSS can't express the behavior — things like keyboard navigation, focus management, and state coordination. </p>
+<p class="text-sm text-muted-foreground mb-5"> Most components are CSS-only. JavaScript is only used when HTML and CSS can't express the behavior - things like keyboard navigation, focus management, and state coordination. </p>
 
 <div class="grid grid-cols-auto gap-4 mb-10">
   <div class="code-card-col">
     <div style="padding:0.75rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);">
-      <span class="mono-meta">CSS-only — no JS needed</span>
+      <span class="mono-meta">CSS-only - no JS needed</span>
     </div>
     <div style="padding:1.25rem;font-size:0.8125rem;display:flex;flex-direction:column;gap:1rem;">
       <div>
@@ -145,7 +145,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
       </div>
       <div>
         <div class="group-label">Programmatic API</div>
-        <div class="text-muted-foreground">Toast — exposes <code>\df$.shadcn.toast</code></div>
+        <div class="text-muted-foreground">Toast - exposes <code>\df$.shadcn.toast</code></div>
       </div>
     </div>
   </div>
@@ -155,7 +155,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <H2>Serving locally</H2>
 
-<p class="text-sm text-muted-foreground mb-5"> ES modules require HTTP due to browser CORS policy — they won't load from <code>file://</code> URLs. Use any local server: </p>
+<p class="text-sm text-muted-foreground mb-5"> ES modules require HTTP due to browser CORS policy - they won't load from <code>file://</code> URLs. Use any local server: </p>
 
 <CodeCard title="any of these work" lang="bash" mb="2.5rem">{"make dev              # this repo: Vite dev server on :3000\nbun run dev           # same, without make\nbunx vite .           # bare Vite against dist/ in another project\nbunx serve dist/      # any static server works\npython3 -m http.server"}</CodeCard>
 

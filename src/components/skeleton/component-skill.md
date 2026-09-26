@@ -15,7 +15,7 @@ CSS `@keyframes` pulse animation on placeholder `<div>` elements. No JavaScript 
 
 ## Native Web APIs
 
-- [`@keyframes`](https://developer.mozilla.org/en-US/docs/Web/CSS/@keyframes) — CSS pulse animation for shimmer effect
+- [`@keyframes`](https://developer.mozilla.org/en-US/docs/Web/CSS/@keyframes) - CSS pulse animation for shimmer effect
 
 ## Structure
 
@@ -38,6 +38,6 @@ CSS `@keyframes` pulse animation on placeholder `<div>` elements. No JavaScript 
 
 ## Accessibility
 
-- Skeleton elements are decorative — screen readers should skip them
+- Skeleton elements are decorative - screen readers should skip them
 - Use `aria-hidden="true"` on skeleton containers if they sit alongside real content
 - Announce the loading state separately with `role="status"` if needed

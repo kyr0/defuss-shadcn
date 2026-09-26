@@ -3,7 +3,7 @@
      Wraps ONE container element and adds draggable handles on any subset of
      its 8 positions (sides + corners). The wrapper is the positioning context;
      handles overhang the border box by design, so keep overflow visible.
-     Sizing behavior (px vs w-/h- classes) is driven by the runtime — this
+     Sizing behavior (px vs w-/h- classes) is driven by the runtime - this
      sheet owns only the handle geometry, cursors and feedback states. */
   .resizer {
     position: relative;
@@ -14,7 +14,7 @@
   }
 
   /* The resizer owns resizing: a native CSS `resize` on the wrapped element
-     (e.g. a resizable canvas) would double the affordances — the runtime
+     (e.g. a resizable canvas) would double the affordances - the runtime
      neutralizes it inline; this is the authored-CSS fallback. */
   .resizer[data-resize-mode] {
     resize: none;
@@ -31,7 +31,7 @@
     border: 1px solid var(--primary);
     border-radius: var(--radius-sm);
     box-shadow: var(--shadow-2xs);
-    touch-action: none; /* the pointer-drag is ours — no scroll/pinch steal */
+    touch-action: none; /* the pointer-drag is ours - no scroll/pinch steal */
     opacity: 0.85;
     transition: opacity 120ms ease, background-color 120ms ease, transform 120ms ease;
 
@@ -54,7 +54,7 @@
     }
   }
 
-  /* drag in progress — the active handle (and the box) read as engaged */
+  /* drag in progress - the active handle (and the box) read as engaged */
   .resizer[data-resizing] > .resizer-handle {
     opacity: 1;
     background: var(--primary);
@@ -63,7 +63,7 @@
     outline: 1px dashed var(--ring);
     outline-offset: 2px;
   }
-  /* the box must track the pointer 1:1 — a size TRANSITION on the wrapped
+  /* the box must track the pointer 1:1 - a size TRANSITION on the wrapped
      element (e.g. the sidebar's `transition: width 200ms`) would ease toward
      the drag instead of following it, which reads as the handle lagging
      behind the mouse. Only during the drag; authored transitions resume after

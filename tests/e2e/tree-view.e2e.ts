@@ -7,7 +7,7 @@ import { startServer } from './server.ts';
  * (nested branches + leaves, mirroring the doc page) over HTTP in a real
  * browser, then verifies <details>-driven expand/collapse, the aria-expanded
  * sync, keyboard navigation (arrows, Right/Left open/close, Home/End), and
- * the per-branch named State API — the same files consumers copy from dist/,
+ * the per-branch named State API - the same files consumers copy from dist/,
  * unmodified.
  */
 
@@ -71,7 +71,7 @@ try {
   await check('leaf hidden inside the closed branch becomes visible on expand', async () => {
     await leafVisible(page, false); // hidden while its branch is closed
     await page.click('#tv-components > .tree-branch-trigger');
-    // <details> fires `toggle` asynchronously — wait for the (slower) ARIA
+    // <details> fires `toggle` asynchronously - wait for the (slower) ARIA
     // sync rather than the synchronous `open` flip
     await page.waitForFunction(
       () =>
@@ -148,7 +148,7 @@ try {
     assert.equal(await branchOpen(page, 'tv-components'), false, 'starts closed (authored)');
     await setState(page, 'tv-components', 'expanded');
     await page.waitForFunction(() => (document.querySelector('#tv-components') as HTMLDetailsElement).open);
-    // the toggle event lands async — wait for the ARIA sync before asserting
+    // the toggle event lands async - wait for the ARIA sync before asserting
     await page.waitForFunction(
       () =>
         document

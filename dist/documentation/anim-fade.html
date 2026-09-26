@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="color-scheme" content="light dark" /><link rel="icon" href="images/favicon.webp" type="image/webp" /><meta name="description" content="The fade animation channel: a pure opacity cross-fade with paired fadeIn/fadeOut variants, driven imperatively by df$.anim." /><meta property="og:title" content="Fade - Animations - defuss-shadcn" /><meta property="og:description" content="The fade animation channel: a pure opacity cross-fade with paired fadeIn/fadeOut variants, driven imperatively by df$.anim." /><meta property="og:type" content="website" /><meta property="og:url" content="https://kyr0.github.io/defuss-shadcn/documentation/anim-fade.html" /><meta property="og:site_name" content="defuss-shadcn" /><meta name="twitter:card" content="summary" /><meta name="twitter:title" content="Fade - Animations - defuss-shadcn" /><meta name="twitter:description" content="The fade animation channel: a pure opacity cross-fade with paired fadeIn/fadeOut variants, driven imperatively by df$.anim." /><title>Fade - Animations - defuss-shadcn</title><link id="tokens-css" rel="stylesheet" href="../theme/utils/default-semantic-tokens.css" /><script src="js/themes.js"></script><script src="js/theme-switcher.js"></script><script src="js/layout.js"></script><script src="js/search-index.js"></script><link rel="stylesheet" href="../theme/utils/sizing.css" /><link rel="stylesheet" href="../theme/utils/layout.css" /><link rel="stylesheet" href="../theme/utils/accessibility.css" /><link rel="stylesheet" href="css/docs-theme.css" /><link rel="stylesheet" href="css/docs-utilities.css" /><link rel="stylesheet" href="css/layout.css" /><link rel="stylesheet" href="css/code-example.css" /><link rel="stylesheet" href="../components/all.css" /></head><body><header class="site-header"><a href="index.html" class="header-brand"><img src="images/favicon.webp" alt="defuss-shadcn logo" class="header-brand-logo" /><span class="header-brand-name">defuss<em>-shadcn</em></span></a><button class="sidebar-toggle" id="sidebar-toggle" type="button" aria-label="Collapse sidebar" title="Collapse sidebar (⌘B)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg></button><div class="header-search" role="search"><input type="text" class="header-search-input" placeholder="Search docs… (⌘K)" aria-label="Search documentation" autocomplete="off" readonly="" /></div><div style="flex:1;"></div><nav style="display:flex;align-items:center;gap:0.5rem;"><span class="badge header-version" data-variant="outline" style="font-family:var(--font-mono);">v0.9.0</span><span class="separator" data-orientation="vertical" role="none" aria-hidden="true"></span><a href="https://github.com/kyr0/defuss-shadcn" target="_blank" rel="noopener" class="header-action"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg><span class="github-label">GitHub</span><span class="github-stars"></span></a><span class="separator" data-orientation="vertical" role="none" aria-hidden="true"></span><button id="wide-toggle" class="header-action theme-toggle-btn" aria-label="Toggle wide layout" aria-pressed="false"><svg id="icon-wide-expand" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg><svg id="icon-wide-collapse" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/><path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/></svg></button><button id="theme-toggle" class="header-action theme-toggle-btn" aria-label="Toggle dark mode"><svg id="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg><svg id="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button><button id="theme-selector-btn" class="header-action theme-toggle-btn" aria-label="Change color theme" popovertarget="theme-popover"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="0.5" fill="currentColor"/><circle cx="17.5" cy="10.5" r="0.5" fill="currentColor"/><circle cx="8.5" cy="7.5" r="0.5" fill="currentColor"/><circle cx="6.5" cy="12" r="0.5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></button></nav></header><div id="theme-popover" popover="" class="theme-popover"><div class="theme-popover-header"><span class="theme-popover-title">Theme</span><button class="theme-reset-btn" id="theme-reset-btn">Reset</button></div><div class="theme-grid" id="theme-grid"></div></div><dialog id="docs-palette" class="command" aria-label="Search documentation"><div class="command-content"><div class="command-input-wrapper"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input class="command-input" type="text" placeholder="Search documentation…" autocomplete="off" autocorrect="off" spellcheck="false" /></div><div class="command-list" id="docs-palette-list"></div><div class="command-empty" hidden="">No results found.</div></div></dialog><div class="flex" style="margin-top: 3.5rem; min-height: calc(100vh - 3.5rem);"><aside class="app-sidebar site-sidebar" id="docs-sidebar" data-state="expanded"><div class="sidebar-content"><details class="sidebar-group nav-section" open="" data-nav-section="Introduction"><summary><span>Introduction</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="index.html"><span>Getting Started</span></a><a class="nav-link sidebar-link" href="installation.html"><span>Installation</span></a><a class="nav-link sidebar-link" href="how-to-use.html"><span>How to Use</span></a><a class="nav-link sidebar-link" href="component-skills.html"><span>Component Skills</span></a><a class="nav-link sidebar-link" href="architecture.html"><span>Verified Agentic Engineering (VAE)</span></a><a class="nav-link sidebar-link" href="changelog.html"><span>Changelog</span></a></nav></details><details class="sidebar-group nav-section" open="" data-nav-section="Guides"><summary><span>Guides</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="theming.html"><span>Theming</span></a><a class="nav-link sidebar-link" href="dark-mode.html"><span>Dark Mode</span></a><a class="nav-link sidebar-link" href="data-attribute-api.html"><span>Data Attribute API</span></a><a class="nav-link sidebar-link" href="state-api.html"><span>State API</span></a><a class="nav-link sidebar-link" href="dom-querying.html"><span>DOM Querying &amp; Morphing</span></a><a class="nav-link sidebar-link" href="cascade-layers.html"><span>Cascade Layers</span></a><a class="nav-link sidebar-link" href="es-modules.html"><span>JavaScript Modules</span></a><a class="nav-link sidebar-link" href="native-web-apis.html"><span>Native Web APIs</span></a><details class="sidebar-submenu" open=""><summary><a class="nav-link sidebar-link" href="animations.html"><span>Animations</span></a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="motion.html"><span>Motion</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-canvas.html"><span>Animation Canvas</span><span class="type-badge" data-type="TPL" title="TPL">TPL</span></a><a class="nav-link sidebar-link active" href="anim-fade.html" aria-current="page"><span>Fade</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-up.html"><span>Slide Up</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-down.html"><span>Slide Down</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-left.html"><span>Slide Left</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-right.html"><span>Slide Right</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-zoom.html"><span>Zoom</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-zoom-out.html"><span>Zoom Out</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-pop.html"><span>Pop</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-spin.html"><span>Spin</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-flip.html"><span>Flip</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-skew.html"><span>Skew</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-blur.html"><span>Blur</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-wipe.html"><span>Wipe</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-wipe-up.html"><span>Wipe Up</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-iris.html"><span>Iris</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="sidebar-submenu"><summary><a class="nav-link sidebar-link" href="sizing.html"><span>Sizing</span></a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="width-height.html"><span>Width &amp; Height</span></a><a class="nav-link sidebar-link" href="spacing.html"><span>Spacing</span></a><a class="nav-link sidebar-link" href="density.html"><span>Density</span></a></nav></details><details class="sidebar-submenu"><summary><a class="nav-link sidebar-link" href="layout.html"><span>Layout</span></a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="container.html"><span>Container</span></a><a class="nav-link sidebar-link" href="flex.html"><span>Flex</span></a><a class="nav-link sidebar-link" href="grid.html"><span>Grid</span></a></nav></details><a class="nav-link sidebar-link" href="accessibility.html"><span>Accessibility</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Primitives"><summary><span>Primitives</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="typography.html"><span>Typography</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="separator.html"><span>Separator</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="icon.html"><span>Icon</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="heading-anchor.html"><span>Heading Anchor</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Actions"><summary><span>Actions</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="button.html"><span>Button</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="toggle.html"><span>Toggle</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="toggle-group.html"><span>Toggle Group</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="button-group.html"><span>Button Group</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="toolbar.html"><span>Toolbar</span><span class="type-badge" data-type="ORG" title="ORG">ORG</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Forms &amp; Inputs"><summary><span>Forms &amp; Inputs</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="label.html"><span>Label</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="input.html"><span>Input</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="textarea.html"><span>Textarea</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="checkbox.html"><span>Checkbox</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="radio.html"><span>Radio Group</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="switch.html"><span>Switch</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="slider.html"><span>Slider</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="select.html"><span>Select</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="number-input.html"><span>Number Input</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="file-input.html"><span>File Input</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="color-picker.html"><span>Color Picker</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="date-picker.html"><span>Date Picker</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="combobox.html"><span>Combobox</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="form.html"><span>Form</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Data Display"><summary><span>Data Display</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="badge.html"><span>Badge</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="type-badge.html"><span>Type Badge</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="avatar.html"><span>Avatar</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="card.html"><span>Card</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><details class="sidebar-submenu"><summary><a class="nav-link sidebar-link" href="image.html"><span>Image</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="image-gallery.html"><span>Image Gallery</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><a class="nav-link sidebar-link" href="statistic.html"><span>Statistic</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="table.html"><span>Table</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="collapsible.html"><span>Collapsible</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="timeline.html"><span>Timeline</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="tree-view.html"><span>Tree View</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="calendar.html"><span>Calendar</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="carousel.html"><span>Carousel</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="scroll-area.html"><span>Scroll Area</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="sortable.html"><span>Sortable</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Charts"><summary><span>Charts</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="chart.html"><span>Chart</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="charts-comparison.html"><span>Comparison</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="charts-change.html"><span>Change over time</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="charts-distribution.html"><span>Distribution</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="charts-composition.html"><span>Composition</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="charts-election.html"><span>Election</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="charts-narrative.html"><span>Narrative</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Feedback &amp; Status"><summary><span>Feedback &amp; Status</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="spinner.html"><span>Spinner</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="skeleton.html"><span>Skeleton</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="progress.html"><span>Progress</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="alert.html"><span>Alert</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="alert-dialog.html"><span>Alert Dialog</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="toast.html"><span>Toast</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Overlays"><summary><span>Overlays</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="popover.html"><span>Popover</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="tooltip.html"><span>Tooltip</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="context-menu.html"><span>Context Menu</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="dialog.html"><span>Dialog</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="sheet.html"><span>Sheet</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="accordion.html"><span>Accordion</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="command.html"><span>Command</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Navigation"><summary><span>Navigation</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="breadcrumb.html"><span>Breadcrumb</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="toc.html"><span>Table of Contents</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="pagination.html"><span>Pagination</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="steps.html"><span>Steps</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="tabs.html"><span>Tabs</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="dropdown.html"><span>Dropdown Menu</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="navigation-menu.html"><span>Navigation Menu</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="theme-switcher.html"><span>Theme Switcher</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Application"><summary><span>Application</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="sidebar.html"><span>Sidebar</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="resizer.html"><span>Resizer</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Presentations"><summary><span>Presentations</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="presentation.html"><span>Presentation</span><span class="type-badge" data-type="TPL" title="TPL">TPL</span></a><details class="sidebar-submenu"><summary><a class="nav-link sidebar-link" href="presentations.html"><span>Deck Gallery</span></a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="system-in-numbers.html"><span>The System in Numbers</span></a><a class="nav-link sidebar-link" href="editorial-highlight-bars.html"><span>Editorial Highlight Bars</span></a><a class="nav-link sidebar-link" href="lollipop-ranking.html"><span>Lollipop Ranking</span></a><a class="nav-link sidebar-link" href="dumbbell-before-after.html"><span>Dumbbell Before/After</span></a><a class="nav-link sidebar-link" href="slopegraph.html"><span>Slopegraph</span></a><a class="nav-link sidebar-link" href="diverging-bars.html"><span>Diverging Bars</span></a><a class="nav-link sidebar-link" href="waterfall.html"><span>Waterfall</span></a><a class="nav-link sidebar-link" href="normalized-stack.html"><span>Normalized Stack</span></a><a class="nav-link sidebar-link" href="bump-ranking.html"><span>Bump Ranking</span></a><a class="nav-link sidebar-link" href="bar-race.html"><span>Bar Race</span></a><a class="nav-link sidebar-link" href="confidence-band.html"><span>Confidence Band</span></a><a class="nav-link sidebar-link" href="annotated-timeseries.html"><span>Annotated Time Series</span></a><a class="nav-link sidebar-link" href="small-multiples.html"><span>Small Multiples</span></a><a class="nav-link sidebar-link" href="scatter-quadrants.html"><span>Scatter Quadrants</span></a><a class="nav-link sidebar-link" href="jittered-distribution.html"><span>Jittered Distribution</span></a><a class="nav-link sidebar-link" href="heatmap-matrix.html"><span>Heatmap Matrix</span></a><a class="nav-link sidebar-link" href="calendar-heatmap.html"><span>Calendar Heatmap</span></a><a class="nav-link sidebar-link" href="theme-river.html"><span>Theme River</span></a><a class="nav-link sidebar-link" href="treemap.html"><span>Treemap</span></a><a class="nav-link sidebar-link" href="sunburst.html"><span>Sunburst</span></a><a class="nav-link sidebar-link" href="sankey.html"><span>Sankey</span></a><a class="nav-link sidebar-link" href="chord.html"><span>Chord</span></a><a class="nav-link sidebar-link" href="editorial-gauge.html"><span>Editorial Gauge</span></a><a class="nav-link sidebar-link" href="parliament-hemicycle.html"><span>Parliament Hemicycle</span></a><a class="nav-link sidebar-link" href="election-majority-bar.html"><span>Election Majority Bar</span></a><a class="nav-link sidebar-link" href="election-hex-cartogram.html"><span>Election Hex Cartogram</span></a><a class="nav-link sidebar-link" href="election-shift-arrows.html"><span>Election Shift Arrows</span></a><a class="nav-link sidebar-link" href="universal-transition.html"><span>Universal Transition</span></a><a class="nav-link sidebar-link" href="waffle-dot-matrix.html"><span>Waffle Dot Matrix</span></a><a class="nav-link sidebar-link" href="boxplot.html"><span>Boxplot</span></a><a class="nav-link sidebar-link" href="violin-custom.html"><span>Violin - Custom Series</span></a><a class="nav-link sidebar-link" href="custom-wind-vectors.html"><span>Custom Wind Vectors</span></a><a class="nav-link sidebar-link" href="story-state-machine.html"><span>Story State Machine</span></a></nav></details></nav></details><details class="sidebar-group nav-section" data-nav-section="Marketing"><summary><span>Marketing</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="site-header.html"><span>Site Header</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="hero.html"><span>Hero</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="product-showcase.html"><span>Product Showcase</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="brand-logos.html"><span>Brand Logos</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="feature-details.html"><span>Feature Details</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="testimonials.html"><span>Testimonials</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="stats.html"><span>Stats</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="pricing.html"><span>Pricing</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="blog.html"><span>Blog</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="faq.html"><span>FAQ</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="get-in-touch.html"><span>Get In Touch</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="newsletter.html"><span>Newsletter</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="site-footer.html"><span>Site Footer</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a></nav></details></div></aside><main style="flex: 1; min-width: 0; max-width: 44rem; padding: 2rem 3.5rem 8rem;"><div class="page-header"><div class="flex items-baseline justify-between mb-1"><p class="text-sm text-muted-foreground" style="font-family:var(--font-mono);">defuss-shadcn / Guides / Animations / anim-fade</p><div style="display:flex;align-items:baseline;gap:0.375rem;"><span class="text-xs text-muted-foreground" style="font-family:var(--font-mono);white-space:nowrap;">Built with:</span> <a href="#source-css" class="badge built-with-pill" data-variant="outline">CSS</a></div></div><h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">Fade<span class="type-badge" data-type="ATM" title="Atom">ATM</span></h1><p class="text-muted-foreground leading-relaxed mb-6">Fade is the quietest animation in the <code>df$.anim</code> engine: a pure opacity cross-fade from <code>0</code> to the element's authored opacity (never a hardcoded <code>1</code>). It ships as the paired variants <code>fadeIn</code> (appear) and <code>fadeOut</code> (disappear) - it is not directional, so there is no <code>direction</code> axis. Everything on this page is driven imperatively by <code>df$.anim.fadeIn</code> and <code>df$.anim.fadeOut</code>.</p></div><div class="code-example"><p class="text-sm font-medium mb-2" id="toc-in-out-and-lifecycle"><a class="heading-anchor" href="#toc-in-out-and-lifecycle" aria-label="Link to section: In / out and lifecycle">§</a>In / out and lifecycle</p><p class="text-xs text-muted-foreground mb-3">fadeIn and fadeOut share one lifecycle: play() restarts deterministically, pause()/resume() freeze and continue, finish() jumps to the end, reset() unwinds to the authored style. The badge reads df$.anim.&lt;channel&gt;.state(target) after every action.</p><div class="preview" style="padding:0.75rem;overflow:hidden;"><div class="ce-screen" data-mode="full"><div class="resizer ce-resizer" data-handles="all" data-resize-mode="controlled" data-axis="both" data-min="240" data-max="1600" data-min-h="240" data-max-h="1400"><div class="ce-device"><iframe class="code-example-frame" sandbox="allow-scripts" title="In / out and lifecycle" style="width:100%;min-height:8rem;border:0;display:block;"></iframe><span class="ce-device-island" aria-hidden="true"></span><span class="ce-device-home" aria-hidden="true"></span></div></div></div><output class="code-example-error" role="alert" hidden=""></output><button class="code-example-full-exit" title="Exit fullscreen (Esc)" aria-label="Exit fullscreen"><i data-lucide="x"></i></button></div><div class="code-example-toolbar"><span class="code-example-viewport" role="group" aria-label="Preview device"><button class="code-example-vp" data-vp="rotate" title="Swap orientation (phone/tablet)" aria-disabled="true"><i data-lucide="rotate-cw"></i><span>Rotate</span></button><button class="code-example-vp" data-vp="phone" aria-pressed="false" title="Phone 390×844"><i data-lucide="smartphone"></i><span>Phone</span></button><button class="code-example-vp" data-vp="tablet" aria-pressed="false" title="Tablet 834×1112"><i data-lucide="tablet"></i><span>Tablet</span></button><button class="code-example-vp" data-vp="desktop" aria-pressed="false" title="Desktop 1024"><i data-lucide="monitor"></i><span>Desktop</span></button><button class="code-example-vp" data-vp="full" aria-pressed="true" title="Full width (source default)"><i data-lucide="app-window"></i><span>Full</span></button></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-w" type="number" min="240" step="10" inputmode="numeric" placeholder="Width" aria-label="Custom preview width (px)" /><span class="code-example-vp-x" aria-hidden="true">×</span><input class="code-example-vp-h" type="number" min="240" step="10" inputmode="numeric" placeholder="Full" aria-label="Custom preview height (px)" disabled="" /></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-z" type="number" min="25" max="100" step="5" inputmode="numeric" placeholder="Auto" aria-label="Preview zoom (%)" /><span class="code-example-vp-x" aria-hidden="true">%</span></span><span class="code-example-spacer"></span><button class="code-example-tab" data-tab="code" aria-pressed="false" title="Show or hide the example source"><i data-lucide="code-xml"></i><span>Code</span></button><button class="code-example-reset" title="Restore the original source and rerun"><i data-lucide="rotate-ccw"></i><span>Reset</span></button><button class="code-example-full" title="Preview fullscreen (Esc to exit)"><i data-lucide="maximize"></i><span>Fullscreen</span></button></div><div class="code-example-panel" data-panel="code" hidden=""><button class="code-example-copy" title="Copy the example source"><i data-lucide="copy"></i><span>Copy</span></button><textarea class="code-example-src" spellcheck="false" aria-label="Editable source for: In / out and lifecycle" rows="10">&lt;style&gt;
+  #anim-fade-target {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 160px;
+    height: 100px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+    font-weight: 600;
+  }
+&lt;/style&gt;
+&lt;div style="display:flex; flex-direction:column; gap:0.85rem; align-items:flex-start;"&gt;
+  &lt;div id="anim-fade-target"&gt;fade me&lt;/div&gt;
+  &lt;div style="display:flex; flex-wrap:wrap; gap:0.4rem; align-items:center;"&gt;
+    &lt;button class="btn" data-variant="outline" data-size="sm" id="anim-fade-in"&gt;In&lt;/button&gt;
+    &lt;button class="btn" data-variant="outline" data-size="sm" id="anim-fade-out"&gt;Out&lt;/button&gt;
+    &lt;button class="btn" data-variant="outline" data-size="sm" id="anim-fade-pause"&gt;Pause&lt;/button&gt;
+    &lt;button class="btn" data-variant="outline" data-size="sm" id="anim-fade-resume"&gt;Resume&lt;/button&gt;
+    &lt;button class="btn" data-variant="outline" data-size="sm" id="anim-fade-finish"&gt;Finish&lt;/button&gt;
+    &lt;button class="btn" data-variant="outline" data-size="sm" id="anim-fade-reset"&gt;Reset&lt;/button&gt;
+    &lt;span class="badge" data-variant="secondary" id="anim-fade-state"&gt;idle&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center;"&gt;
+    &lt;label class="text-sm" for="anim-fade-duration"&gt;Duration (ms)&lt;/label&gt;
+    &lt;input class="input" type="number" id="anim-fade-duration" value="1500" min="0" step="50" style="width:6rem;" /&gt;
+    &lt;label class="text-sm" for="anim-fade-easing"&gt;Easing&lt;/label&gt;
+    &lt;select class="select" id="anim-fade-easing"&gt;
+      &lt;option value="cubic-bezier(0.16, 1, 0.3, 1)" selected&gt;ease-out (default)&lt;/option&gt;
+      &lt;option value="ease"&gt;ease&lt;/option&gt;
+      &lt;option value="ease-in-out"&gt;ease-in-out&lt;/option&gt;
+      &lt;option value="linear"&gt;linear&lt;/option&gt;
+      &lt;option value="cubic-bezier(.34,1.56,.64,1)"&gt;spring-ish&lt;/option&gt;
+    &lt;/select&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;script type="module"&gt;
+  // all.js (df$) boots after example scripts in the sandbox - reference df$
+  // only inside event handlers, never at parse time.
+  const target = document.getElementById('anim-fade-target');
+  const status = document.getElementById('anim-fade-state');
+  const duration = document.getElementById('anim-fade-duration');
+  const easing = document.getElementById('anim-fade-easing');
+  let channel = 'fadeIn'; // the channel the lifecycle controls act on
+  const opts = () =&gt; ({ duration: Number(duration.value) || 1500, easing: easing.value });
+  const report = () =&gt; { status.textContent = df$.anim[channel].state(target); };
+
+  document.getElementById('anim-fade-in').addEventListener('click', () =&gt; {
+    channel = 'fadeIn';
+    df$.anim.fadeIn.play(target, opts());
+    report();
+  });
+  document.getElementById('anim-fade-out').addEventListener('click', () =&gt; {
+    channel = 'fadeOut';
+    df$.anim.fadeOut.play(target, opts());
+    report();
+  });
+  document.getElementById('anim-fade-pause').addEventListener('click', () =&gt; { df$.anim[channel].pause(target); report(); });
+  document.getElementById('anim-fade-resume').addEventListener('click', () =&gt; { df$.anim[channel].resume(target); report(); });
+  document.getElementById('anim-fade-finish').addEventListener('click', () =&gt; { df$.anim[channel].finish(target); report(); });
+  document.getElementById('anim-fade-reset').addEventListener('click', () =&gt; { df$.anim[channel].reset(target); report(); });
+&lt;/script&gt;
+</textarea></div></div><div class="code-example"><p class="text-sm font-medium mb-2" id="toc-scroll-bound-fade"><a class="heading-anchor" href="#toc-scroll-bound-fade" aria-label="Link to section: Scroll-bound fade">§</a>Scroll-bound fade</p><p class="text-xs text-muted-foreground mb-3">opts.scroll binds progress to a scroll position instead of time: here the scroller's own y-offset scrubs fadeIn (ScrollTimeline where the platform has it, a rAF-throttled listener fallback elsewhere). Scroll the box.</p><div class="preview" style="padding:0.75rem;overflow:hidden;"><div class="ce-screen" data-mode="full"><div class="resizer ce-resizer" data-handles="all" data-resize-mode="controlled" data-axis="both" data-min="240" data-max="1600" data-min-h="240" data-max-h="1400"><div class="ce-device"><iframe class="code-example-frame" sandbox="allow-scripts" title="Scroll-bound fade" style="width:100%;min-height:8rem;border:0;display:block;"></iframe><span class="ce-device-island" aria-hidden="true"></span><span class="ce-device-home" aria-hidden="true"></span></div></div></div><output class="code-example-error" role="alert" hidden=""></output><button class="code-example-full-exit" title="Exit fullscreen (Esc)" aria-label="Exit fullscreen"><i data-lucide="x"></i></button></div><div class="code-example-toolbar"><span class="code-example-viewport" role="group" aria-label="Preview device"><button class="code-example-vp" data-vp="rotate" title="Swap orientation (phone/tablet)" aria-disabled="true"><i data-lucide="rotate-cw"></i><span>Rotate</span></button><button class="code-example-vp" data-vp="phone" aria-pressed="false" title="Phone 390×844"><i data-lucide="smartphone"></i><span>Phone</span></button><button class="code-example-vp" data-vp="tablet" aria-pressed="false" title="Tablet 834×1112"><i data-lucide="tablet"></i><span>Tablet</span></button><button class="code-example-vp" data-vp="desktop" aria-pressed="false" title="Desktop 1024"><i data-lucide="monitor"></i><span>Desktop</span></button><button class="code-example-vp" data-vp="full" aria-pressed="true" title="Full width (source default)"><i data-lucide="app-window"></i><span>Full</span></button></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-w" type="number" min="240" step="10" inputmode="numeric" placeholder="Width" aria-label="Custom preview width (px)" /><span class="code-example-vp-x" aria-hidden="true">×</span><input class="code-example-vp-h" type="number" min="240" step="10" inputmode="numeric" placeholder="Full" aria-label="Custom preview height (px)" disabled="" /></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-z" type="number" min="25" max="100" step="5" inputmode="numeric" placeholder="Auto" aria-label="Preview zoom (%)" /><span class="code-example-vp-x" aria-hidden="true">%</span></span><span class="code-example-spacer"></span><button class="code-example-tab" data-tab="code" aria-pressed="false" title="Show or hide the example source"><i data-lucide="code-xml"></i><span>Code</span></button><button class="code-example-reset" title="Restore the original source and rerun"><i data-lucide="rotate-ccw"></i><span>Reset</span></button><button class="code-example-full" title="Preview fullscreen (Esc to exit)"><i data-lucide="maximize"></i><span>Fullscreen</span></button></div><div class="code-example-panel" data-panel="code" hidden=""><button class="code-example-copy" title="Copy the example source"><i data-lucide="copy"></i><span>Copy</span></button><textarea class="code-example-src" spellcheck="false" aria-label="Editable source for: Scroll-bound fade" rows="10">&lt;style&gt;
+  #anim-fade-scroll-target {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 160px;
+    height: 100px;
+    margin: 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+    font-weight: 600;
+  }
+&lt;/style&gt;
+&lt;div id="anim-fade-scroller" style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg);"&gt;
+  &lt;div style="height: 600px; display:flex; align-items:flex-start; justify-content:center; padding:1rem; color:var(--muted-foreground);"&gt;Scroll down - the scroll position is the fade's timeline.&lt;/div&gt;
+  &lt;div id="anim-fade-scroll-target"&gt;scroll-driven&lt;/div&gt;
+  &lt;div style="height: 200px;"&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;script type="module"&gt;
+  // play() with a scroll binding pauses the animation and lets scroll drive
+  // currentTime - run it on load, after all.js has installed df$.
+  window.addEventListener('load', () =&gt; {
+    df$.anim.fadeIn.play(document.getElementById('anim-fade-scroll-target'), {
+      scroll: { target: document.getElementById('anim-fade-scroller'), axis: 'y' },
+    });
+  });
+&lt;/script&gt;
+</textarea></div></div><p>Pass <code>{ target: 'viewport' }</code> (or omit <code>target</code> - the viewport is the default) to bind the fade to page scroll instead of an element's own offset - the parallax use for presentations.</p><h2 id="toc-config-axes"><a class="heading-anchor" href="#toc-config-axes" aria-label="Link to section: Config axes">§</a>Config axes</h2><ul>
+<li><strong><code>duration</code></strong> - total duration in ms (default <code>1500</code>; flattened to <code>1</code> under <code>prefers-reduced-motion</code>).</li>
+<li><strong><code>easing</code></strong> - any CSS easing (default <code>cubic-bezier(0.16, 1, 0.3, 1)</code>).</li>
+</ul><section style="margin-top:3rem;" id="source-css"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-css"><a class="heading-anchor" href="#toc-css" aria-label="Link to section: CSS">§</a>CSS <a href="../components/motion/motion.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2><p class="text-muted-foreground text-sm mb-4">The shared motion stylesheet - the declarative <code>data-df-entrance</code> twin of this page's <code>df$.anim</code> channels: the <code>--df-motion-…</code> tunables, the fifteen <code>df-enter-…</code> keyframes and the reduced-motion flattening.</p><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-scss">/* -- Motion component -------------------------------------------------
+   The shared entrance-animation vocabulary: CSS @keyframes are the single
+   source of truth (geometry, easing, defaults, reduced-motion), driven either
+   declaratively via [data-df-entrance] or imperatively through the JS
+   controller `ddf$.entrance(el, effect, opts)` (src/shared/motion.ts - same
+   functions under df$.shadcn.entrance). The JS never defines keyframes; it
+   only triggers/retriggers, overrides timing vars and owns the
+   finished/cancel lifecycle via the platform's CSSAnimation objects.
+
+   Why animations (not transitions): they run deterministically when the
+   attribute first applies - including on freshly inserted DOM - and they
+   replay cleanly (cancel → play). Transitions need a rendered "from" state
+   and never fire on initial application (the reason the first vocabulary
+   demo showed a static grid).
+
+   Why animation-composition: add - transform/filter keyframes COMPOSE with
+   any pre-existing transform/filter on the element instead of replacing it,
+   so entrances are safe on arbitrarily styled DOM (no transform inspection
+   or reconstruction). The paired fade runs with `replace`.
+
+   Limits: non-replaced inline boxes (display:inline spans) are not
+   transformable per CSS - this is deliberate and NOT worked around (silent
+   display changes would alter text wrapping). Wrap inline content or let the
+   caller promote it. */
+
+@layer components {
+  /* timing tunables - :root defaults so ANY ancestor (deck mount, container,
+     inline style) can override by ordinary cascade; inline styles win last */
+  :root {
+    --df-motion-duration: 1500ms;
+    --df-motion-delay: 0ms;
+    --df-motion-ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --df-motion-distance: 24px;
+    --df-motion-scale-in: 0.9;
+    --df-motion-scale-out: 1.1;
+    --df-motion-blur: 12px;
+    --df-motion-angle: 12deg;
+    --df-motion-spin: -0.5turn;
+    /* JS writes the element's CURRENT computed opacity here, so fading an
+       opacity:.6 element ends at .6 - never brightens content it doesn't own */
+    --df-motion-base-opacity: 1;
+  }
+
+  /* one animation declaration, parameterized entirely by the vars above */
+  [data-df-entrance] {
+    animation-duration: var(--df-motion-duration);
+    animation-delay: var(--df-motion-delay);
+    animation-timing-function: var(--df-motion-ease);
+    animation-fill-mode: both;
+
+    /* transform-channel entrances pair with the fade (composition: add keeps
+       the element's own transform underneath); clip-path entrances need no
+       fade - the clip alone reveals the content */
+    &amp;[data-df-entrance="up"] { animation-name: df-enter-up, df-enter-fade; animation-composition: add, replace; }
+    &amp;[data-df-entrance="down"] { animation-name: df-enter-down, df-enter-fade; animation-composition: add, replace; }
+    &amp;[data-df-entrance="left"] { animation-name: df-enter-left, df-enter-fade; animation-composition: add, replace; }
+    &amp;[data-df-entrance="right"] { animation-name: df-enter-right, df-enter-fade; animation-composition: add, replace; }
+    &amp;[data-df-entrance="zoom"] { animation-name: df-enter-zoom, df-enter-fade; animation-composition: add, replace; }
+    &amp;[data-df-entrance="zoom-out"] { animation-name: df-enter-zoom-out, df-enter-fade; animation-composition: add, replace; }
+    &amp;[data-df-entrance="pop"] { animation-name: df-enter-pop, df-enter-fade; animation-composition: add, replace; }
+    &amp;[data-df-entrance="spin"] { animation-name: df-enter-spin, df-enter-fade; animation-composition: add, replace; }
+    &amp;[data-df-entrance="flip"] { animation-name: df-enter-flip, df-enter-fade; animation-composition: add, replace; }
+    &amp;[data-df-entrance="skew"] { animation-name: df-enter-skew, df-enter-fade; animation-composition: add, replace; }
+    &amp;[data-df-entrance="blur"] { animation-name: df-enter-blur, df-enter-fade; animation-composition: add, replace; }
+    &amp;[data-df-entrance="wipe"] { animation-name: df-enter-wipe; }
+    &amp;[data-df-entrance="wipe-up"] { animation-name: df-enter-wipe-up; }
+    &amp;[data-df-entrance="iris"] { animation-name: df-enter-iris; }
+    &amp;[data-df-entrance="fade"] { animation-name: df-enter-fade; }
+  }
+
+  /* stagger: children of a [data-df-stagger] container get graded delays
+     (--df-motion-stagger-step per container) while keeping their own
+     direction. ponytail: beyond the 8th child the delay caps at *7 - long
+     lists should chunk into columns. An inline --df-motion-delay on a child
+     still wins (inline beats any stylesheet rule). */
+  [data-df-stagger] {
+    --df-motion-stagger-step: 120ms;
+    &amp; &gt; :nth-child(1) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 0); }
+    &amp; &gt; :nth-child(2) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 1); }
+    &amp; &gt; :nth-child(3) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 2); }
+    &amp; &gt; :nth-child(4) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 3); }
+    &amp; &gt; :nth-child(5) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 4); }
+    &amp; &gt; :nth-child(6) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 5); }
+    &amp; &gt; :nth-child(7) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 6); }
+    &amp; &gt; :nth-child(n + 8) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 7); }
+  }
+
+  /* SVG draw-in - a distinct primitive, not a DOM entrance: pathLength="1"
+     calibrates distance-along-path so ONE dash rule (1 → 0) fits every
+     geometry regardless of actual path length. (The CSS `path-length`
+     property stays experimental - the SVG attribute is the portable form.) */
+  [data-df-draw][pathLength="1"] {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation:
+      df-draw
+      var(--df-motion-duration)
+      var(--df-motion-ease)
+      var(--df-motion-delay)
+      both;
+  }
+
+  /* vocabulary - every direction is exactly one keyframes rule */
+
+  @keyframes df-enter-fade {
+    from { opacity: 0; }
+    to { opacity: var(--df-motion-base-opacity); }
+  }
+
+  /* "up" travels upward into its final position (from below) */
+  @keyframes df-enter-up {
+    from { transform: translateY(var(--df-motion-distance)); }
+    to { transform: translateY(0); }
+  }
+  @keyframes df-enter-down {
+    from { transform: translateY(calc(-1 * var(--df-motion-distance))); }
+    to { transform: translateY(0); }
+  }
+  @keyframes df-enter-left {
+    from { transform: translateX(var(--df-motion-distance)); }
+    to { transform: translateX(0); }
+  }
+  @keyframes df-enter-right {
+    from { transform: translateX(calc(-1 * var(--df-motion-distance))); }
+    to { transform: translateX(0); }
+  }
+  @keyframes df-enter-zoom {
+    from { transform: scale(var(--df-motion-scale-in)); }
+    to { transform: scale(1); }
+  }
+  @keyframes df-enter-zoom-out {
+    from { transform: scale(var(--df-motion-scale-out)); }
+    to { transform: scale(1); }
+  }
+  @keyframes df-enter-pop {
+    0% { transform: scale(0.65); }
+    65% { transform: scale(1.07); }
+    100% { transform: scale(1); }
+  }
+  @keyframes df-enter-spin {
+    from { transform: rotate(var(--df-motion-spin)); }
+    to { transform: rotate(0deg); }
+  }
+  @keyframes df-enter-flip {
+    from { transform: perspective(900px) rotateY(-70deg); }
+    to { transform: perspective(900px) rotateY(0deg); }
+  }
+  @keyframes df-enter-skew {
+    from { transform: skewX(var(--df-motion-angle)); }
+    to { transform: skewX(0deg); }
+  }
+  @keyframes df-enter-blur {
+    from { filter: blur(var(--df-motion-blur)); }
+    to { filter: blur(0); }
+  }
+  @keyframes df-enter-wipe {
+    from { clip-path: inset(0 100% 0 0); }
+    to { clip-path: inset(0); }
+  }
+  @keyframes df-enter-wipe-up {
+    from { clip-path: inset(100% 0 0 0); }
+    to { clip-path: inset(0); }
+  }
+  @keyframes df-enter-iris {
+    from { clip-path: circle(0% at 50% 50%); }
+    to { clip-path: circle(150% at 50% 50%); }
+  }
+
+  @keyframes df-draw {
+    from { stroke-dashoffset: 1; }
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* accessibility: near-instant instead of none - the JS finished/cancel
+     contract behaves identically (a finished 1ms animation still resolves),
+     while nothing visibly moves. REQUIRED for every animation. */
+  @media (prefers-reduced-motion: reduce) {
+    [data-df-entrance],
+    [data-df-draw] {
+      --df-motion-duration: 1ms !important;
+      --df-motion-delay: 0ms !important;
+    }
+  }
+}
+</code></pre></div></section><nav class="page-nav"><a class="page-nav-link page-nav-prev" href="anim-canvas.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><div><span class="page-nav-label">Previous</span><span class="page-nav-title">Animation Canvas</span></div></a><a class="page-nav-link page-nav-next" href="anim-up.html"><div><span class="page-nav-label">Next</span><span class="page-nav-title">Slide Up</span></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></nav></main><aside class="site-toc"><div class="site-toc-content"><p class="toc-title">On This Page</p><a class="toc-link" href="#toc-in-out-and-lifecycle">In / out and lifecycle</a><a class="toc-link" href="#toc-scroll-bound-fade">Scroll-bound fade</a><a class="toc-link" href="#toc-config-axes">Config axes</a><a class="toc-link" href="#toc-css">CSS</a></div></aside></div><script>try {
+  var c = JSON.parse(localStorage.getItem('defuss-shadcn-nav-collapsed') || '{}');
+  if (c && typeof c === 'object' && !Array.isArray(c)) {
+    for (var h in c) {
+      var d = document.querySelector('details[data-nav-section="' + h + '"]');
+      if (!d) continue;
+      if (c[h] === '1') d.open = true;
+      else if (!d.querySelector('a.nav-link.active')) d.open = false;
+    }
+  }
+  if (localStorage.getItem('defuss-shadcn-nav-docked') === '1') {
+    var sb = document.querySelector('.site-sidebar');
+    /* stateName pins it: the sidebar component's auto-collapse treats a
+       set stateName as a deliberate user choice and leaves it alone */
+    if (sb) { sb.dataset.state = 'collapsed'; sb.dataset.stateName = 'collapsed'; }
+  }
+} catch (e) {}</script><footer class="site-footer"><p class="site-footer-tagline">Agentically engineered with local Qwen3.8-Flash-Next/vLLM, quality-gated automatically, and human-reviewed before release.</p><p class="site-footer-tagline" style="margin-top:0;">Reworked, enhanced and maintained by <a href="https://aron-homberg.de" target="_blank" rel="noopener">Aron Homberg</a></p><span class="site-footer-dot"> · </span>MIT Licensed<span class="site-footer-dot"> · </span><a href="https://github.com/kyr0/defuss-shadcn" target="_blank" rel="noopener">Source on GitHub</a></footer><script src="js/site.js" defer=""></script><script src="js/code-example.js" defer=""></script><script type="module" src="js/shiki-highlight.js"></script><script type="module" src="../components/all.js"></script><script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script><script>globalThis.lucide?.createIcons();</script></body></html>

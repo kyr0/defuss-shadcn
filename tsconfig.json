@@ -1,9 +1,9 @@
 {
   // Dead-simple TS7 pipeline: strip types from src/**/*.ts into dist/**/*.js,
   // 1:1 layout. Everything else in src/ (html, css, md, fonts, …) is copied
-  // verbatim by scripts/build.ts — tsc only ever sees TypeScript.
+  // verbatim by scripts/build.ts - tsc only ever sees TypeScript.
   //
-  // noCheck: the component sources are plain JS renamed to .ts — all of them
+  // noCheck: the component sources are plain JS renamed to .ts - all of them
   // declare a global `function init()`, so full type-checking reports
   // duplicate identifiers until the files get real types/modules. Flip to
   // false once they're properly typed.

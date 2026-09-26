@@ -137,7 +137,7 @@ try {
     await page.mouse.down();
     await page.waitForTimeout(40);
     // a move whose button is already up (release happened in another document
-    // — trusted input can't fake buttons:0, so the guard is dispatched here)
+    // - trusted input can't fake buttons:0, so the guard is dispatched here)
     await page.evaluate(
       ([x, y]: number[]) => {
         const el = document.querySelector('#rz-cl .resizer-handle[data-handle="e"]') as HTMLElement;
@@ -154,7 +154,7 @@ try {
     // lags behind the mouse" complaint: the box EASES toward the pointer.
     // [data-resizing] zeroes child transition-duration for the gesture only.
     // The test transition is a layered component rule (same layer, lower
-    // specificity than the guard) — inline style would beat any CSS rule.
+    // specificity than the guard) - inline style would beat any CSS rule.
     await page.addStyleTag({ content: '@layer components { .rz-trans-test { transition: width 200ms ease; } }' });
     const box = page.locator('#rz-px-box');
     await box.evaluate((el) => el.classList.add('rz-trans-test'));
@@ -165,7 +165,7 @@ try {
       await page.mouse.down();
       await page.mouse.move(r.x + r.width / 2 + 40, r.y + r.height / 2, { steps: 3 });
       assert.equal(await box.evaluate((el) => getComputedStyle(el).transitionDuration), '0s', 'duration zeroed mid-drag');
-      await page.mouse.up(); // release EARLY — the guard lifts with data-resizing
+      await page.mouse.up(); // release EARLY - the guard lifts with data-resizing
       assert.equal(await box.evaluate((el) => getComputedStyle(el).transitionDuration), '0.2s', 'authored transition restored after release');
     } finally {
       // cleanup: a leftover 200ms transition would make every LATER width
@@ -199,7 +199,7 @@ try {
     assert.ok(events.length > 0, 'resizer-resize fired');
     assert.equal(events[events.length - 1].width, 240, 'detail carries the requested px');
     assert.equal(await page.getAttribute('#rz-ct', 'data-width'), null, 'no observation mirror in controlled mode');
-    assert.deepEqual(await sizeOf(boxOf(page, 'rz-ct-box')), [200, 100], 'box untouched — the consumer owns the size');
+    assert.deepEqual(await sizeOf(boxOf(page, 'rz-ct-box')), [200, 100], 'box untouched - the consumer owns the size');
   });
 
   await check("State API: setState('default', { width }) applies; getState reports the live box", async () => {

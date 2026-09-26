@@ -7,7 +7,7 @@ import { startServer } from './server.ts';
  * (collapsible rail + trigger + mobile dialog, mirroring the doc page) over
  * HTTP in a real browser, then verifies trigger toggling, the keyboard
  * shortcut (Cmd/Ctrl+B), the mobile dialog, width geometry via CSS, and the
- * per-sidebar named State API — the same files consumers copy from dist/,
+ * per-sidebar named State API - the same files consumers copy from dist/,
  * unmodified.
  */
 
@@ -45,7 +45,7 @@ try {
   await check('trigger click collapses to icon rail', async () => {
     await page.click('[data-sidebar-trigger="demo-sidebar"]');
     assert.equal(await page.$eval('#demo-sidebar', (el) => el.dataset.state), 'collapsed');
-    // width animates (200ms ease) — wait for the rail to settle, don't race it
+    // width animates (200ms ease) - wait for the rail to settle, don't race it
     await page.waitForFunction(
       () => document.querySelector('#demo-sidebar')!.getBoundingClientRect().width < 100,
     );
@@ -104,7 +104,7 @@ try {
 
   await check('mobile dialog opens via data-sidebar-mobile and closes (mobile viewport)', async () => {
     // .sidebar-mobile is display:none by design on desktop (the component's
-    // mobile-first sheet) — exercise it at a phone viewport, as documented
+    // mobile-first sheet) - exercise it at a phone viewport, as documented
     await page.setViewportSize({ width: 390, height: 800 });
     try {
       await page.click('[data-sidebar-mobile="demo-mobile"]');
@@ -139,7 +139,7 @@ try {
       await page.mouse.wheel(0, 400);
       await page.waitForTimeout(100);
       const during = await page.evaluate(() => document.scrollingElement!.scrollTop);
-      // close FIRST (guarded) — a failed assert must not leave the modal open
+      // close FIRST (guarded) - a failed assert must not leave the modal open
       // and cascade into the click-based checks below
       await page.click('.sidebar-mobile-close');
       await page.waitForFunction(() => !document.querySelector('#demo-mobile')!.matches(':open'));
@@ -166,7 +166,7 @@ try {
   await check("state API: setState('default') restores the authored expanded state", async () => {
     await setState(page, 'default');
     assert.equal(await page.$eval('#demo-sidebar', (el) => el.dataset.state), 'expanded');
-    // width animates (200ms ease) — wait for it to settle at full width
+    // width animates (200ms ease) - wait for it to settle at full width
     await page.waitForFunction(() => document.querySelector('#demo-sidebar')!.getBoundingClientRect().width >= 200);
   });
 
@@ -188,7 +188,7 @@ try {
 
   await check('auto-collapse: widening the row past the hysteresis restores it', async () => {
     await page.$eval('#narrow-row', (el) => ((el as HTMLElement).style.width = '60rem'));
-    // width animates (200ms ease) — wait for the settle, don't race the transition
+    // width animates (200ms ease) - wait for the settle, don't race the transition
     await page.waitForFunction(
       () => document.querySelector('#demo-auto')!.getBoundingClientRect().width >= 200,
     );

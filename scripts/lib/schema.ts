@@ -2,7 +2,7 @@
  * Why: the canonical machine-readable component contract (`<name>.schema.json`,
  * plans/cmp-schemas-and-codeexample.md). The schema drives the docs CodeExample
  * state controls and is the single source of truth the Markdown `## States`
- * table is verified against — so both halves of that contract (parse/validate +
+ * table is verified against - so both halves of that contract (parse/validate +
  * table comparison) live in ONE pure module: scripts/build.ts, scripts/verify.ts
  * and tests/component-schema.test.ts all consume the exact same code, so the
  * gate cannot drift from the writer. No defuss-schema dependency (plan §9):
@@ -190,7 +190,7 @@ export function parseComponentSchemaText(text: string, source: string) {
   try {
     raw = JSON.parse(text);
   } catch (e) {
-    return { problems: [`${source}: invalid JSON — ${(e as Error).message}`] };
+    return { problems: [`${source}: invalid JSON - ${(e as Error).message}`] };
   }
   return parseComponentSchema(raw, source);
 }
@@ -199,7 +199,7 @@ export function parseComponentSchemaText(text: string, source: string) {
  * Published schema artifacts under dist/: every copied `<name>.schema.json` plus
  * the generated manifest. verify's `dist 1:1` orphan scan allow-lists exactly
  * these (their src counterpart lives at a DIFFERENT path —
- * src/components/<name>/<name>.schema.json — so the 1:1 rule cannot see them).
+ * src/components/<name>/<name>.schema.json - so the 1:1 rule cannot see them).
  */
 export function isSchemaArtifact(distRel: string): boolean {
   return /^schemas\/[a-z0-9-]+\.schema\.json$/.test(distRel) || distRel === 'schemas/manifest.json';
@@ -221,7 +221,7 @@ export function schemaManifestText(components: string[]): string {
 
 // Re-exported from the docs SSG tree (src/documentation/lib/code-example-
 // contract.ts): the SSR component enforces the SAME guard at build time, and
-// verify + the Vitest browser tests consume it through this path — one pure
+// verify + the Vitest browser tests consume it through this path - one pure
 // definition, no drift between what ships and what is gated (§5/§10/§27).
 export {
   FORBIDDEN_CODE_EXAMPLE_PROPS,
@@ -232,14 +232,14 @@ export {
 } from '../../src/documentation/lib/code-example-contract';
 
 // ---------------------------------------------------------------------------
-// Markdown `## States` — canonical table parser + schema comparison (§13–18)
+// Markdown `## States` - canonical table parser + schema comparison (§13–18)
 // ---------------------------------------------------------------------------
 
 export interface DocsStateRow {
   name: string;
   type: string | null;
   values: string[] | null; // null = cell empty / —
-  def: string | null; // raw cell content, null = — / empty
+  def: string | null; // raw cell content, null = - / empty
   line: number;
 }
 
@@ -252,14 +252,14 @@ export interface StatesTable {
  * Locate the canonical `## States` table in a Markdown/MDX source. Deterministic
  * by construction (plan §13): a section anchored by a heading line exactly
  * `## States` OUTSIDE any fence, OR a `<StatesSection>` element (the existing
- * docs scaffold — which renders exactly that heading — so schema'd pages can
+ * docs scaffold - which renders exactly that heading - so schema'd pages can
  * carry the contract table inside their States section without a second TOC
- * heading). Pages quote skill markdown — which has its own `## States` — inside
+ * heading). Pages quote skill markdown - which has its own `## States` - inside
  * <CodeCard> fences; quoted material (inside fences) is never the contract. The
  * table itself must sit in a fenced block with meta exactly `states`. The fence
  * is required for two reasons: the docs pipeline deliberately ships without
  * remark-gfm (a bare table would render as pipe prose), and the fence makes the
- * contract self-delimiting — the remark plugin renders it into a real <table>
+ * contract self-delimiting - the remark plugin renders it into a real <table>
  * so the authored source and the rendered page show the same bytes.
  */
 export function findStatesTable(src: string): { rows: DocsStateRow[]; problems: string[]; found: boolean } {
@@ -299,7 +299,7 @@ export function findStatesTable(src: string): { rows: DocsStateRow[]; problems: 
     return {
       rows: [],
       problems: [
-        `## States section (line ${start + 1}) has no \`\`\`states fenced table — the canonical contract block (plans/cmp-schemas-and-codeexample.md §13)`,
+        `## States section (line ${start + 1}) has no \`\`\`states fenced table - the canonical contract block (plans/cmp-schemas-and-codeexample.md §13)`,
       ],
       found: true,
     };
@@ -362,11 +362,11 @@ export function schemaStatesProblems(
     const row = rowOf.get(key);
     if (!row) {
       const def = 'default' in spec ? fmtJson(spec.default) : '—';
-      problems.push(P(`MISSING STATE \`${key}\` (${spec.type}, default=${def}) — documented=${'—'}`));
+      problems.push(P(`MISSING STATE \`${key}\` (${spec.type}, default=${def}) - documented=${'—'}`));
       continue;
     }
     if (row.type !== spec.type)
-      problems.push(P(`state \`${key}\`: type mismatch — schema: ${spec.type}, docs: ${row.type ?? '—'}`));
+      problems.push(P(`state \`${key}\`: type mismatch - schema: ${spec.type}, docs: ${row.type ?? '—'}`));
     // enum + boolean carry a closed value set; the Values cell must mirror it exactly
     const docValues = row.values ?? [];
     if (spec.type === 'enum' || spec.type === 'boolean') {
@@ -387,12 +387,12 @@ export function schemaStatesProblems(
     } else {
       const norm = normalizeDocDefault(docDefault);
       if (!defaultMatches(spec.default, norm))
-        problems.push(P(`state \`${key}\`: default mismatch — schema: ${fmtJson(spec.default)}, docs: \`${docDefault}\``));
+        problems.push(P(`state \`${key}\`: default mismatch - schema: ${fmtJson(spec.default)}, docs: \`${docDefault}\``));
     }
   }
   for (const row of rows)
     if (!(row.name in schema.states))
-      problems.push(P(`PHANTOM STATE \`${row.name}\` (docs line ${row.line}) — not in the component schema`));
+      problems.push(P(`PHANTOM STATE \`${row.name}\` (docs line ${row.line}) - not in the component schema`));
   return problems;
 }
 
@@ -441,7 +441,7 @@ export interface ExampleFence {
   label: string | null;
   hint: string | null;
   /** "none" = guide-page utility demo without a component contract (skip the
-   * component-schema gate — the card ships no State tab) */
+   * component-schema gate - the card ships no State tab) */
   schema: string | null;
 }
 

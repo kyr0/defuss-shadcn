@@ -6,7 +6,7 @@ import { startServer } from './server.ts';
  * Why: E2E smoke test for the shipped popover component. Loads the fixture
  * (default + side + align variants, mirroring the doc page) over HTTP in a
  * real browser, then verifies CSS anchor wiring, popovertarget toggling, the
- * side-variant offsets, and the named State API — the same files consumers
+ * side-variant offsets, and the named State API - the same files consumers
  * copy from dist/, unmodified.
  */
 

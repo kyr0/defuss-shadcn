@@ -7,7 +7,7 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-// defussQuery: the callable runtime — the grid renders through df$(grid).morph()
+// defussQuery: the callable runtime - the grid renders through df$(grid).morph()
 // (plans/defuss-query-morph-integration.md §3 Tier-1: keyed DOM diffing replaces
 // innerHTML so day-node identity + focus survive re-renders).
 import { defussGlobals, defussQuery } from '../../shared/state-api.js';
@@ -49,7 +49,7 @@ function triggerStateChange(cal, stateName, config) {
 }
 
 // ISO yyyy-mm-dd of a cell's REAL date (outside cells resolve to their own
-// month) — the morph key basis: identity, not filtered position (§3/guide)
+// month) - the morph key basis: identity, not filtered position (§3/guide)
 const isoDate = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
@@ -68,7 +68,7 @@ export const calendarApi = {
     const state = cal._calState ?? {};
     return {
       name: cal.dataset.stateName || 'default',
-      // live view — reflects nav clicks and day selection, not just setState
+      // live view - reflects nav clicks and day selection, not just setState
       config: {
         ...cal._stateConfig,
         year: state.year,
@@ -102,12 +102,12 @@ const isToday = (year, month, day) => {
 
 /**
  * Build one month's thead+tbody markup. Every day cell carries a stable
- * `id` (`<calId>-<ISO date>`) plus `data-cal-date` — morph matches cells by
+ * `id` (`<calId>-<ISO date>`) plus `data-cal-date` - morph matches cells by
  * id, so a re-render moves/reuses nodes instead of replacing them. The id
  * also carries the cell's full date, letting consumers (tests, custom
  * state APIs) read the selection as an ISO date via the grid.
  */
-// ISO strings compare lexicographically — the range check needs no Date math
+// ISO strings compare lexicographically - the range check needs no Date math
 const isoInRange = (iso: string, min?: string | null, max?: string | null) =>
   (!min || iso >= min) && (!max || iso <= max);
 
@@ -161,9 +161,9 @@ const renderGrid = (year, month, selectedDay, calId, minDate?, maxDate?) => {
 /**
  * Render the calendar's view: heading text + keyed morph of the grid.
  * Focus policy (plans §3): keyboard focus that was on a day cell is
- * restored after the morph (the node usually survives — morph moves it);
+ * restored after the morph (the node usually survives - morph moves it);
  * an activation started elsewhere (nav buttons) keeps focus there. The
- * grid mirrors the selection as data-selected-date (ISO) — a single
+ * grid mirrors the selection as data-selected-date (ISO) - a single
  * stable place to read it.
  */
 const renderCalendar = (el, year, month, selectedDay) => {
@@ -172,7 +172,7 @@ const renderCalendar = (el, year, month, selectedDay) => {
   const grid = el.querySelector('.calendar-grid');
   if (!grid) return;
   const st = el._calState ?? {};
-  // the view + range mirror onto the ROOT as stable attributes — schema
+  // the view + range mirror onto the ROOT as stable attributes - schema
   // observations (currentDate/minDate/maxDate) read them from one place, and
   // they survive grid morphs
   el.dataset.currentDate = selectedDay
@@ -193,7 +193,7 @@ const renderCalendar = (el, year, month, selectedDay) => {
 
   dfDollar(grid).morph(renderGrid(year, month, selectedDay, el.dataset.calId || '', st.minDate, st.maxDate));
 
-  // refocus the cell's button (the td itself isn't focusable) — morph usually
+  // refocus the cell's button (the td itself isn't focusable) - morph usually
   // kept it, but after a month change the old cell is gone; stay put then
   if (focusKey) grid.querySelector(`[data-cal-date="${focusKey}"] button`)?.focus();
 
@@ -206,7 +206,7 @@ const renderCalendar = (el, year, month, selectedDay) => {
 function init() {
 document.querySelectorAll('.calendar:not([data-init])').forEach((cal) => {
   cal.dataset.init = '';
-  // stable id prefix for the grid's day-cell morph keys (§3) — the
+  // stable id prefix for the grid's day-cell morph keys (§3) - the
   // generated fallback uses a dfsc- prefix so it can't collide with any
   // calendar's real #id
   cal.dataset.calId = cal.id || `dfsc-${++calSeq}`;
@@ -216,7 +216,7 @@ document.querySelectorAll('.calendar:not([data-init])').forEach((cal) => {
       year: now.getFullYear(),
       month: now.getMonth(),
       selected: null,
-      // selectable range authored as attributes (ISO substrings — the markup
+      // selectable range authored as attributes (ISO substrings - the markup
       // may carry 'YYYY', 'YYYY-MM' or 'YYYY-MM-DD' bounds, compared as given)
       minDate: cal.dataset.minDate || null,
       maxDate: cal.dataset.maxDate || null,

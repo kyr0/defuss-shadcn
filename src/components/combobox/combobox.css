@@ -7,7 +7,7 @@
     /* -- Sizes: set data-size on the .combobox wrapper; the trigger (a
        .btn) and the popover's rows scale together. Heights/fonts mirror the
        field ladder the .input defines: the unsized trigger renders 2.5rem —
-       the .input default — via the .combobox-trigger rule below, md = 2.25rem
+       the .input default - via the .combobox-trigger rule below, md = 2.25rem
        is the ladder's md, exactly like .input goes 2.5rem → 2.25rem at md. */
     &[data-size="xs"] {
       & .combobox-trigger { height: 1.75rem; padding: 0 0.5rem; font-size: 0.75rem; }
@@ -34,7 +34,7 @@
     width: 100%;
     justify-content: space-between;
     /* the field standard for the unsized default (see .input): the ladder's
-       md step — identical to what a bare .btn renders, so no override is
+       md step - identical to what a bare .btn renders, so no override is
        needed beyond pinning it explicitly against .btn base drift */
     height: 2.25rem;
   }
@@ -61,7 +61,7 @@
   /* Clear button (injected by combobox.js after the trigger). Anchor-positioned
      over the trigger's chevron slot; anchored via the same per-instance anchor
      name the popover uses. `data-placeholder` presence is the single
-     selection marker — the :has() rules below flip chevron and clear in sync,
+     selection marker - the :has() rules below flip chevron and clear in sync,
      so no JS toggles visibility. */
   .combobox-clear {
     position: fixed;
@@ -183,7 +183,7 @@
 
     /* Mask (not background-image): a data: URI SVG resolves currentColor to
        BLACK when used as an image, making the check invisible in dark mode.
-       Masking paints it with background-color: currentColor — the real text
+       Masking paints it with background-color: currentColor - the real text
        color, hover/foreground included. */
     &[aria-selected="true"]::before {
       content: '';
@@ -207,7 +207,7 @@
 
     /* Author `display: flex` overrides the UA's [hidden] { display: none }
        (author origin always wins), so filter()'s item.hidden = true left
-       non-matching options rendered — and clickable — in the list. */
+       non-matching options rendered - and clickable - in the list. */
     &[hidden] {
       display: none;
     }

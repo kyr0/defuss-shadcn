@@ -1,7 +1,7 @@
 ---
 name: Input
 type: ATM
-why: Native text inputs — validation via :user-invalid, autofill and keyboards via inputmode/autocomplete.
+why: Native text inputs - validation via :user-invalid, autofill and keyboards via inputmode/autocomplete.
 when: Short single-line text; multi-line text takes textarea instead.
 where: dist/components/input/input.css
 supportedStates: default
@@ -16,14 +16,14 @@ Also covers `<textarea>` with auto-grow via `field-sizing: content`.
 ---
 
 ## Native Web APIs
-- [`<input>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input) — native form control with built-in validation and autofill
-- [`<textarea>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea) — multi-line text input
-- [`field-sizing: content`](https://developer.mozilla.org/en-US/docs/Web/CSS/field-sizing) — auto-growing textarea without JavaScript
-- [`:user-invalid`](https://developer.mozilla.org/en-US/docs/Web/CSS/:user-invalid) — native validation styling after user interaction
-- [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) — keyboard-only focus ring styling
-- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) — suppresses focus/hover transitions
-- [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) — thicker borders for high-contrast preference
-- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) — Windows High Contrast Mode with system colors
+- [`<input>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input) - native form control with built-in validation and autofill
+- [`<textarea>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea) - multi-line text input
+- [`field-sizing: content`](https://developer.mozilla.org/en-US/docs/Web/CSS/field-sizing) - auto-growing textarea without JavaScript
+- [`:user-invalid`](https://developer.mozilla.org/en-US/docs/Web/CSS/:user-invalid) - native validation styling after user interaction
+- [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) - keyboard-only focus ring styling
+- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) - suppresses focus/hover transitions
+- [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) - thicker borders for high-contrast preference
+- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) - Windows High Contrast Mode with system colors
 
 ---
 
@@ -117,7 +117,7 @@ Also covers `<textarea>` with auto-grow via `field-sizing: content`.
 
 | State | How to apply | Visual |
 |-------|-------------|--------|
-| Default | — | Border `--input`, shadow-xs |
+| Default | - | Border `--input`, shadow-xs |
 | Focus | Native `:focus` | Ring `--ring` with glow |
 | Disabled | `disabled` attribute | 50% opacity |
 | Readonly | `readonly` attribute | Muted background, 70% opacity, no focus ring change |
@@ -141,8 +141,8 @@ Also covers `<textarea>` with auto-grow via `field-sizing: content`.
 ## Notes
 
 - Always pair inputs with `<label>` using matching `for`/`id`
-- Use `type="file"` for file inputs — styled via the `.input` class
-- Textarea auto-grows via `field-sizing: content` — zero JavaScript
+- Use `type="file"` for file inputs - styled via the `.input` class
+- Textarea auto-grows via `field-sizing: content` - zero JavaScript
 - Use `readonly` for non-editable values the user can still select/copy
 - For hidden labels, use `sr-only` class on the label element
 - Use semantic `type` values (`email`, `tel`, `url`, `search`, `password`, `number`) for mobile keyboards and validation

@@ -1,0 +1,253 @@
+---
+title: "Charts: Narrative"
+description: "Data storytelling with the chart component - a chartStory state machine (baseline → comparison → composition), universalTransition morphs across chart forms, an animated bar race, and a custom-series vector field."
+slug: "charts-narrative"
+---
+
+import { DocPage, PageHeader, DocLink, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="charts-narrative" title="Charts: Narrative" component="chart">
+  Storytelling patterns on the <DocLink href="chart.html">Chart</DocLink> component: a <strong>state-machine narrative</strong> that steps one instance through successive claims, <strong>universal transitions</strong> that morph data identity across chart forms, an <strong>animated ranking race</strong>, and the <strong>custom-series boundary</strong> - bespoke glyphs on standard chart infrastructure.
+</PageHeader>
+
+```html example label="Story: claims sequence" schema="none" height="38" hint="df$.shadcn.chartStory drives one chart instance through three narrative states - baseline, comparison, composition. Series id 'main', data names and universalTransition stay stable across states, so ECharts morphs instead of redrawing. Step with the buttons." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <h3 class="chart-title">Adoption by product line, told in three claims</h3>
+  <p class="chart-dek">1 · establish the baseline - 2 · add the comparison - 3 · reframe as composition.</p>
+  <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem;">
+    <button class="btn" data-variant="outline" data-size="sm" id="story-prev">← Prev</button>
+    <button class="btn" data-size="sm" id="story-next">Next story step →</button>
+    <span class="badge" data-variant="secondary" id="story-step">1 / 3</span>
+  </div>
+  <div class="chart" data-size="lg" id="story-chart" role="img" aria-label="Bar chart of adoption by product line, morphing through baseline, comparison and composition states"></div>
+  <figcaption class="chart-source">Synthetic data · adapted from echarts-feat 32-story-state-machine</figcaption>
+</figure>
+<script>
+  // all.js (df$) boots after example scripts in the sandbox - touch it only at/after load
+  window.addEventListener('load', () => {
+    const el = document.getElementById('story-chart');
+    const stepBadge = document.getElementById('story-step');
+    const rows = [['Alpha', 54, 34], ['Beta', 42, 29], ['Gamma', 31, 23], ['Delta', 24, 14]];
+    const axis = {
+      grid: { top: 36, right: 40 },
+      xAxis: { type: 'value', max: 60 },
+      yAxis: { type: 'category', inverse: true, data: rows.map((r) => r[0]), axisLine: { show: false },
+               axisLabel: { color: 'var(--foreground)', fontWeight: 500 } },
+    };
+    const states = [
+      { // 1 · establish the baseline
+        ...axis,
+        series: [{ id: 'main', type: 'bar', universalTransition: true, barWidth: '56%', itemStyle: { color: 'var(--chart-2)' }, data: rows.map((r) => ({ name: r[0], value: r[1] })), label: { show: true, position: 'right', fontWeight: 600 } }],
+      },
+      { // 2 · add the comparison
+        ...axis,
+        legend: { left: 0 },
+        series: [
+          { id: 'main', name: 'Now', type: 'bar', universalTransition: true, itemStyle: { color: 'var(--chart-2)' }, data: rows.map((r) => ({ name: r[0], value: r[1] })) },
+          { id: 'then', name: 'Then', type: 'bar', itemStyle: { color: 'color-mix(in oklch, var(--foreground) 22%, transparent)' }, data: rows.map((r) => ({ name: r[0], value: r[2] })) },
+        ],
+      },
+      { // 3 · reframe as composition
+        color: ['var(--chart-2)', 'var(--chart-4)', 'var(--chart-1)', 'var(--chart-5)'],
+        series: [{ id: 'main', type: 'pie', radius: ['40%', '72%'], universalTransition: true, data: rows.map((r) => ({ name: r[0], value: r[1] })), label: { show: true, formatter: '{b}  {d}%', fontWeight: 600 } }],
+      },
+    ];
+    const story = df$.shadcn.chartStory(el, states, { loop: true });
+    const update = (i) => { stepBadge.textContent = (i + 1) + ' / ' + states.length; };
+    document.getElementById('story-prev').addEventListener('click', () => update(story.prev()));
+    document.getElementById('story-next').addEventListener('click', () => update(story.next()));
+    update(0);
+  });
+</script>
+```
+
+```text
+The story contract - why the morph works:
+
+  state 1  series: [{ id: 'main', type: 'bar', universalTransition: true, data: [{ name: 'Alpha', value: 54 }, …] }]
+  state 2  + series 'then' (comparison bars)        - same id 'main', same data names → bars resize, no redraw
+  state 3  series: [{ id: 'main', type: 'pie', … }] - same id + names → bars morph into slices
+
+Each chartStory step applies its state with notMerge, so every state is a
+complete surface - axes and legends from a previous step never leak through.
+```
+
+```html example label="Morph: bar → donut → scatter" schema="none" height="30" hint="universalTransition preserves object identity across radically different chart forms: the same five data points morph between bar, donut and scatter instead of cutting away. The cycler steps every 2.4s; the buttons jump directly." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <h3 class="chart-title">One dataset, three geometries</h3>
+  <p class="chart-dek">Identity is carried by a stable series id plus named data points - the form is just a lens.</p>
+  <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem;">
+    <button class="btn" data-variant="outline" data-size="sm" data-morph="bar">Bars</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-morph="pie">Donut</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-morph="scatter">Dots</button>
+    <button class="btn" data-size="sm" id="morph-cycle">Pause cycler</button>
+  </div>
+  <div class="chart" id="morph-chart" role="img" aria-label="Five data points morphing between bar, donut and scatter charts"></div>
+  <figcaption class="chart-source">Synthetic data · adapted from echarts-feat 27-universal-transition</figcaption>
+</figure>
+<script>
+  window.addEventListener('load', () => {
+    const el = document.getElementById('morph-chart');
+    const source = [['Alpha', 38], ['Beta', 31], ['Gamma', 22], ['Delta', 17], ['Epsilon', 12]];
+    const common = { id: 'story', universalTransition: { enabled: true, divideShape: 'clone' }, colorBy: 'data', animationDurationUpdate: 1000 };
+    const opts = {
+      bar: {
+        grid: { top: 24 },
+        xAxis: { type: 'category', data: source.map((d) => d[0]), axisLabel: { color: 'var(--foreground)', fontWeight: 500 } },
+        yAxis: { type: 'value' },
+        series: [{ ...common, type: 'bar', barWidth: '52%', data: source.map((d) => ({ name: d[0], value: d[1] })), itemStyle: { borderRadius: [6, 6, 0, 0] } }],
+      },
+      pie: {
+        series: [{ ...common, type: 'pie', radius: ['40%', '74%'], data: source.map((d) => ({ name: d[0], value: d[1] })), label: { fontWeight: 600 } }],
+      },
+      scatter: {
+        grid: { top: 32 },
+        xAxis: { type: 'value', min: 0, max: 6, show: false },
+        yAxis: { type: 'value', min: 0, max: 45 },
+        series: [{ ...common, type: 'scatter', data: source.map((d, i) => ({ name: d[0], value: [i + 1, d[1]] })), symbolSize: (v) => 18 + v[1] * 0.9, label: { show: true, formatter: (p) => p.name, position: 'top', fontWeight: 600 } }],
+      },
+    };
+    const forms = ['bar', 'pie', 'scatter'];
+    let idx = 0;
+    const { setOption } = df$.shadcn.chart.mount(el, opts.bar);
+    const show = (k) => { idx = forms.indexOf(k); setOption(opts[k], true); };
+    let timer = setInterval(() => { idx = (idx + 1) % forms.length; show(forms[idx]); }, 2400);
+    el.parentElement.querySelectorAll('[data-morph]').forEach((btn) => {
+      btn.addEventListener('click', () => show(btn.dataset.morph));
+    });
+    const cycleBtn = document.getElementById('morph-cycle');
+    cycleBtn.addEventListener('click', () => {
+      if (timer) { clearInterval(timer); timer = null; cycleBtn.textContent = 'Run cycler'; }
+      else { timer = setInterval(() => { idx = (idx + 1) % forms.length; show(forms[idx]); }, 2400); cycleBtn.textContent = 'Pause cycler'; }
+    });
+  });
+</script>
+```
+
+```html example label="Bar race" schema="none" height="30" hint="realtimeSort + valueAnimation let ranking changes animate, not just values: each frame re-sorts the bars and tweens the labels. Run race drives periodic setOption updates; reduced-motion users get the same frames with zero-duration tweens." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <h3 class="chart-title">Regional share over five quarters</h3>
+  <p class="chart-dek">The leader keeps the accent color as ranks change hands - identity follows the data, not the slot.</p>
+  <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem;">
+    <button class="btn" data-size="sm" id="race-toggle">Run race</button>
+    <span class="badge" data-variant="secondary" id="race-frame">Q1 / 5</span>
+  </div>
+  <div class="chart" id="race-chart" role="img" aria-label="Animated bar race of regional share over five quarters"></div>
+  <figcaption class="chart-source">Synthetic data · adapted from echarts-feat 09-bar-race</figcaption>
+</figure>
+<script>
+  window.addEventListener('load', () => {
+    const el = document.getElementById('race-chart');
+    const names = ['North', 'West', 'Central', 'Coast', 'Metro', 'Rural'];
+    const frames = [
+      [32, 27, 25, 21, 18, 14],
+      [35, 31, 28, 23, 22, 17],
+      [38, 33, 29, 28, 24, 20],
+      [41, 36, 35, 30, 27, 22],
+      [45, 42, 38, 31, 30, 25],
+    ];
+    let idx = 0;
+    let timer = null;
+    const badge = document.getElementById('race-frame');
+    const draw = () => {
+      badge.textContent = 'Q' + (idx + 1) + ' / ' + frames.length;
+      df$.shadcn.chart.instance(el).setOption({
+        grid: { top: 8, right: 48 },
+        xAxis: { type: 'value', max: 'dataMax' },
+        yAxis: { type: 'category', inverse: true, data: names, animationDurationUpdate: 700, axisLine: { show: false },
+                 axisLabel: { color: 'var(--foreground)', fontWeight: 500 } },
+        series: [{
+          type: 'bar',
+          realtimeSort: true,
+          barWidth: '60%',
+          // identity follows the DATA: North (index 0) keeps the accent wherever it ranks
+          data: frames[idx].map((v, i) => ({ value: v, itemStyle: { color: i === 0 ? 'var(--chart-2)' : 'color-mix(in oklch, var(--foreground) 20%, transparent)' } })),
+          label: { show: true, position: 'right', valueAnimation: true, fontWeight: 600 },
+          animationDurationUpdate: 700,
+        }],
+      });
+    };
+    const stop = () => { clearInterval(timer); timer = null; toggle.textContent = 'Run race'; };
+    const toggle = document.getElementById('race-toggle');
+    toggle.addEventListener('click', () => {
+      if (timer) { stop(); return; }
+      timer = setInterval(() => {
+        idx += 1;
+        if (idx >= frames.length) { idx = frames.length - 1; stop(); return; }
+        draw();
+      }, 1300);
+      toggle.textContent = 'Stop';
+    });
+    df$.shadcn.chart.mount(el, {});
+    draw();
+  });
+</script>
+```
+
+```html example label="Custom series boundary" schema="none" height="36" hint="The reuse boundary in one demo: axes, coordinates, tooltip and visualMap stay standard chart infrastructure - only renderItem draws bespoke geometry (wind-vector glyphs). Everything else comes from the theme adapter." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <h3 class="chart-title">Vector field over a 15 × 9 grid</h3>
+  <p class="chart-dek">Speed is encoded through visualMap; direction is pure renderItem geometry on standard value axes.</p>
+  <div class="chart" data-size="lg" id="wind-chart" role="img" aria-label="Custom-series field of wind-vector glyphs, color-mapped by speed"></div>
+  <figcaption class="chart-source">Synthetic data · adapted from echarts-feat 31-custom-wind-vectors</figcaption>
+</figure>
+<script>
+  window.addEventListener('load', () => {
+    const el = document.getElementById('wind-chart');
+    const data = [];
+    for (let y = 0; y <= 8; y++) {
+      for (let x = 0; x <= 14; x++) {
+        const speed = 4 + 8 * (0.5 + 0.5 * Math.sin(x * 0.55 + y * 0.7));
+        data.push([x, y, +speed.toFixed(1), x * 0.35 - y * 0.28]);
+      }
+    }
+    df$.shadcn.chart.mount(el, {
+      grid: { left: 8, right: 8, top: 8, bottom: 48 },
+      xAxis: { type: 'value', min: -1, max: 15, axisLabel: { show: false }, axisLine: { show: false }, splitLine: { show: true, lineStyle: { color: 'color-mix(in oklch, var(--foreground) 7%, transparent)' } } },
+      yAxis: { type: 'value', min: -1, max: 9, axisLabel: { show: false }, splitLine: { lineStyle: { color: 'color-mix(in oklch, var(--foreground) 7%, transparent)' } } },
+      visualMap: {
+        min: 4, max: 12, dimension: 2, orient: 'horizontal', left: 'center', bottom: 0, itemHeight: 180, itemWidth: 12,
+        inRange: { color: ['var(--chart-1)', 'var(--chart-3)', 'var(--chart-5)'] },
+        text: ['fast', 'slow'],
+      },
+      series: [{
+        type: 'custom',
+        data,
+        encode: { x: 0, y: 1, tooltip: [2] },
+        renderItem: (p, api) => {
+          const pt = api.coord([api.value(0), api.value(1)]);
+          const speed = api.value(2);
+          const a = api.value(3);
+          const len = 15 + speed * 1.7;
+          const dx = Math.cos(a) * len;
+          const dy = -Math.sin(a) * len;
+          const col = api.visual('color');
+          return {
+            type: 'group', x: pt[0], y: pt[1],
+            children: [
+              { type: 'line', shape: { x1: -dx * 0.5, y1: -dy * 0.5, x2: dx * 0.5, y2: dy * 0.5 }, style: { stroke: col, lineWidth: 2.2, lineCap: 'round' }, enterFrom: { scaleX: 0 }, transition: 'all' },
+              { type: 'polygon', shape: { points: [[dx * 0.5, dy * 0.5], [dx * 0.5 - Math.cos(a - 0.55) * 8, dy * 0.5 + Math.sin(a - 0.55) * 8], [dx * 0.5 - Math.cos(a + 0.55) * 8, dy * 0.5 + Math.sin(a + 0.55) * 8]] }, style: { fill: col } },
+            ],
+          };
+        },
+        tooltip: { formatter: (p) => 'speed ' + p.data[2] + ' · direction ' + (p.data[3] * 180 / Math.PI).toFixed(0) + '°' },
+      }],
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground">Patterns adapted from the ECharts design-language lab (echarts-feat/), re-skinned on the design tokens via the chart theme adapter.</p>
+
+<SourceFiles component="chart">
+  <SourceNote for="css">The chart sizing surface and editorial frame these patterns mount into.</SourceNote>
+  <SourceNote for="js">The runtime every demo on this page converges on: token theme adapter, mount/resize lifecycle, chartStory and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

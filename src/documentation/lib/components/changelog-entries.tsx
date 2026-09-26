@@ -4,7 +4,7 @@ import { repoFile } from '../repo';
 
 /**
  * Changelog entries, rendered from data/changelog.json (deploy.sh writes that
- * file — entry first with just a date, then the short hash lands in the
+ * file - entry first with just a date, then the short hash lands in the
  * follow-up commit; the two-commit rule is unchanged, the surgery target is
  * JSON now instead of HTML). Commit messages may carry the gate-allowlisted
  * inline markup (code/strong/em/…), injected raw like the old hand-written

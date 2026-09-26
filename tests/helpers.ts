@@ -1,7 +1,7 @@
 import { page, userEvent } from 'vitest/browser';
 
 /**
- * Why: Vitest browser mode has no `page.goto()` — tests run inside a fixed
+ * Why: Vitest browser mode has no `page.goto()` - tests run inside a fixed
  * iframe. Loading the real documentation pages as a *same-origin* child iframe
  * is the supported way to drive the actual site UI end-to-end. Same-origin also
  * lets us read `iframe.contentDocument` directly for state assertions, while

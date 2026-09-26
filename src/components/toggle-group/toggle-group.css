@@ -79,11 +79,11 @@
        Square only the corners that actually touch a neighbour:
        inline corners horizontally, block corners vertically. The
        orientation attribute is wrapped in :where() so every rule
-       keeps one-class-plus-one-pseudo specificity — the later
+       keeps one-class-plus-one-pseudo specificity - the later
        [data-spacing] radius restore must still win the tie.
        (The previous per-corner "restore" overrides let the
        :not(:last-child) block re-round a middle item's top-right
-       corner — issue #12.) */
+       corner - issue #12.) */
     &:where(:not([data-orientation="vertical"])) > .toggle:not(:first-child) {
       border-start-start-radius: 0;
       border-end-start-radius: 0;

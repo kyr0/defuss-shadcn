@@ -1,0 +1,203 @@
+---
+title: "Boxplot - Presentation"
+description: "Academic Monograph design language presenting a study of reading scores under five teaching methods as a 12-slide deck - boxplots that collapse into means, open into spreads and end on learning gains, one morphing chart."
+slug: "boxplot"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="boxplot" title="Boxplot" component="presentation">
+  Academic Monograph: bone paper, graphite type and one oxblood accent - a fictional district study of how nine-year-olds read under five teaching methods, spread shown before any average is quoted.
+</PageHeader>
+
+```html example label="Academic Monograph" schema="none" height="26" hint="Slides fade in and lift out (df$.anim, declared on the deck); oxblood curtains open the tables and the ending. One deck-level chart (df$.shadcn.chart.deck): five boxplots collapse into their means, re-open as interquartile spreads, then turn into learning gains over the year. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-boxplot" data-anim-in="fadeIn" data-anim-out="slideOut" data-anim-out-direction="north" data-anim-out-distance="40px" style="--presentation-ink:#202428;--presentation-ink-foreground:#F7F7F4;--presentation-paper:#F7F7F4;--presentation-paper-foreground:#202428;--presentation-accent:#5E1B28;font-family:Georgia, 'Times New Roman', serif;" tabindex="-1" aria-label="Reading at nine - a study of five teaching methods">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="Reading scores of 1,400 nine-year-olds under five teaching methods as boxplots: tutoring plus phonics has the highest median of 72, the self-paced app the widest spread; then means, interquartile ranges and learning gains"></div>
+  <section class="slide" data-slide data-theme="paper" aria-label="Cover">
+    <div aria-hidden="true" style="position:absolute; right:112px; top:180px; width:440px; padding:2rem 2.25rem; border:1px solid currentColor; font:italic 1.5rem/1.5 Georgia, serif; opacity:0.75;">
+      <p style="margin:0 0 1rem; font-style:normal; letter-spacing:0.14em; text-transform:uppercase; font-size:1.1rem;">Plate IV</p>
+      Distribution of reading scores, pupils aged nine, by method of instruction. N = 1,400.
+    </div>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Boxplot · Academic Monograph</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-family:Georgia, 'Times New Roman', serif; font-weight:400; letter-spacing:-0.01em; font-size:6.5rem;">Reading at nine</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">Five ways to teach reading, 1,400 pupils, one district - the spread before the average.</p>
+    <p class="presentation-note">Monograph tone: patient, precise.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="box" style="justify-content:flex-start;" aria-label="Distributions">
+    <header class="presentation-header"><span>Chapter 2 · Results</span><span>Reading score, 0–100</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Georgia, 'Times New Roman', serif; font-weight:400; letter-spacing:-0.01em;">Five methods, five distributions</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Box = middle half, line = median, whiskers = range. Spread before average.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="means" style="justify-content:flex-start;" aria-label="Means">
+    <header class="presentation-header"><span>Chapter 2 · Results</span><span>Mean score</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Georgia, 'Times New Roman', serif; font-weight:400; letter-spacing:-0.01em;">Tutoring with phonics leads on average: 71.3</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The boxes collapse into their means - and the spread disappears.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="iqr" style="justify-content:flex-start;" aria-label="Spread">
+    <header class="presentation-header"><span>Chapter 3 · Variation</span><span>Interquartile range, points</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Georgia, 'Times New Roman', serif; font-weight:400; letter-spacing:-0.01em;">The app has the widest spread: 31 points</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The same methods, now measured by how uneven they are.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Key figures">
+    <p class="presentation-eyebrow" data-df-entrance="fade">Principal findings</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#5E1B28; font-family:Georgia, 'Times New Roman', serif; font-weight:400; letter-spacing:-0.01em;"><span data-count="72">72</span></p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">median score, tutoring + phonics</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:Georgia, 'Times New Roman', serif; font-weight:400; letter-spacing:-0.01em;"><span data-count="31">31</span></p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">points between the app’s quartiles - the widest</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:Georgia, 'Times New Roman', serif; font-weight:400; letter-spacing:-0.01em;"><span data-count="1400">1400</span></p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">pupils in the study</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">The app lifts some children to the top - and leaves others further behind than any other method.</p>
+    <p class="presentation-note">Equity is the finding, not the ranking.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="The book">
+    <header class="presentation-header"><span>Chapter 1 · Method</span><span>Assessment</span></header>
+    <div style="display:flex; gap:4.5rem; align-items:center; margin-top:3.5rem;">
+      <figure class="image" data-ratio="4/3" data-df-entrance="fade" style="--df-motion-delay:150ms; flex:0 0 700px; margin:0;">
+        <img src="https://picsum.photos/id/24/960/720" alt="An open book lying on a table, its pages curving upward, in soft light" loading="lazy" width="960" height="720" style="width:100%; height:100%; object-fit:cover;" />
+        <figcaption class="image-caption" style="font-size:1.25rem;">The assessment passage (stock photo).</figcaption>
+      </figure>
+      <div style="flex:1 1 0; min-width:0;">
+        <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; font-family:Georgia, 'Times New Roman', serif; font-weight:400; letter-spacing:-0.01em;">One book, one reading test, every pupil</h2>
+        <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:300ms; font-size:1.7rem;">All 1,400 pupils read the same unseen passage in June; scores combine accuracy, fluency and comprehension.</p>
+      </div>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Method before results - the academic order.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="north" data-anim-in-blocks="4" data-anim-in-color="#5E1B28" aria-label="Summary table">
+    <header class="presentation-header"><span>Table 2</span><span>Five-number summaries</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" data-density="spacious" style="font-size:1.7rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">Reading scores by method: min, quartiles, max, mean and n (fictional study).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">Method</th><th class="table-head" style="text-align:right">Min</th><th class="table-head" style="text-align:right">Q1</th><th class="table-head" style="text-align:right">Median</th><th class="table-head" style="text-align:right">Q3</th><th class="table-head" style="text-align:right">Max</th><th class="table-head" style="text-align:right">Mean</th><th class="table-head" style="text-align:right">n</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row"><td class="table-cell">Tutoring + phonics</td><td class="table-cell" style="text-align:right">49</td><td class="table-cell" style="text-align:right">64</td><td class="table-cell" style="text-align:right">72</td><td class="table-cell" style="text-align:right">79</td><td class="table-cell" style="text-align:right">95</td><td class="table-cell" style="text-align:right">71.3</td><td class="table-cell" style="text-align:right">118</td></tr>
+          <tr class="table-row"><td class="table-cell">Phonics</td><td class="table-cell" style="text-align:right">41</td><td class="table-cell" style="text-align:right">58</td><td class="table-cell" style="text-align:right">66</td><td class="table-cell" style="text-align:right">74</td><td class="table-cell" style="text-align:right">92</td><td class="table-cell" style="text-align:right">65.8</td><td class="table-cell" style="text-align:right">412</td></tr>
+          <tr class="table-row"><td class="table-cell">Mixed</td><td class="table-cell" style="text-align:right">38</td><td class="table-cell" style="text-align:right">54</td><td class="table-cell" style="text-align:right">63</td><td class="table-cell" style="text-align:right">71</td><td class="table-cell" style="text-align:right">90</td><td class="table-cell" style="text-align:right">62.6</td><td class="table-cell" style="text-align:right">398</td></tr>
+          <tr class="table-row"><td class="table-cell">Self-paced app</td><td class="table-cell" style="text-align:right">22</td><td class="table-cell" style="text-align:right">45</td><td class="table-cell" style="text-align:right">61</td><td class="table-cell" style="text-align:right">76</td><td class="table-cell" style="text-align:right">97</td><td class="table-cell" style="text-align:right">60.2</td><td class="table-cell" style="text-align:right">267</td></tr>
+          <tr class="table-row"><td class="table-cell">Whole language</td><td class="table-cell" style="text-align:right">30</td><td class="table-cell" style="text-align:right">47</td><td class="table-cell" style="text-align:right">57</td><td class="table-cell" style="text-align:right">66</td><td class="table-cell" style="text-align:right">88</td><td class="table-cell" style="text-align:right">56.4</td><td class="table-cell" style="text-align:right">205</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">n differs - the tutoring group is the smallest.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-family:Georgia, 'Times New Roman', serif; font-weight:400; letter-spacing:-0.01em; font-size:3rem;">“An average told us the app works. The boxplot told us for whom - and that was a different answer.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#5E1B28; color:#F7F7F4;"><span class="avatar-fallback">EH</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Prof. Elena Hart<br /><span style="opacity:0.7; font-size:1.4rem;">Lead author - fictional study</span></p>
+    </div>
+    <p class="presentation-note">The methodological point in one sentence.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="gain" style="justify-content:flex-start;" aria-label="Gains">
+    <header class="presentation-header"><span>Chapter 4 · Progress</span><span>Mean gain over the school year, points</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Georgia, 'Times New Roman', serif; font-weight:400; letter-spacing:-0.01em;">Tutoring also added the most over the year</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">From levels to progress - September to June.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Reviewer questions">
+    <header class="presentation-header"><span>Discussion</span><span>Peer review</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; font-family:Georgia, 'Times New Roman', serif; font-weight:400; letter-spacing:-0.01em;">Questions from the reviewers</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="bx-qa" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Were pupils assigned at random?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">No - methods were chosen by schools; results adjust for prior attainment but are not causal.</p></div>
+      </details>
+      <details class="accordion-item" name="bx-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Is the tutoring group comparable?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">It is small (n = 118) and more urban; the gain difference stays significant after adjustment.</p></div>
+      </details>
+      <details class="accordion-item" name="bx-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Why is the app so uneven?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Children who used it more than 40 minutes a week scored 19 points higher than light users.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The random-assignment question must be answered first.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Takeaways">
+    <header class="presentation-header"><span>Chapter 5 · Conclusions</span><span>Four findings</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">¶</span><span>Show spread before quoting an average.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">¶</span><span>Tutoring with phonics raised both level and progress.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">¶</span><span>The app’s wide box is an equity warning, not a success story.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">¶</span><span>Whole-language classes trailed on every measure.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Conclusions as in the monograph.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-anim-in="blocksIn" data-anim-in-direction="south" data-anim-in-blocks="4" data-anim-in-color="#5E1B28" aria-label="Closing">
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-family:Georgia, 'Times New Roman', serif; font-weight:400; letter-spacing:-0.01em;">Spread first, average second</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">A fictional study with synthetic scores - the boxplot discipline is the real lesson.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">Close the volume.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) - build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-boxplot');
+    const TEXT = '#202428', MUTED = '#8B8F93', OX = '#5E1B28', GREY = '#9DA2A6';
+    // [method, min, q1, median, q3, max, mean, gain]
+    const m = [['Tutoring + phonics', 49, 64, 72, 79, 95, 71.3, 14.8], ['Phonics', 41, 58, 66, 74, 92, 65.8, 11.2], ['Mixed', 38, 54, 63, 71, 90, 62.6, 9.9], ['Self-paced app', 22, 45, 61, 76, 97, 60.2, 9.4], ['Whole language', 30, 47, 57, 66, 88, 56.4, 7.1]];
+    const G = { left: 330, right: 190, top: 330, bottom: 150 };
+    const cats = (list) => ({ type: 'category', inverse: true, data: list.map((r) => r[0]), axisLine: { show: false }, axisLabel: { color: TEXT } });
+    const score = { type: 'value', min: 0, max: 100, interval: 20, axisLabel: { color: MUTED } };
+    const hot = (r, key) => (r[0] === key ? OX : GREY);
+    const bars = (list, value, key, fmt, axis) => ({
+      grid: G, xAxis: axis, yAxis: cats(list),
+      series: [{ id: 'methods', type: 'bar', barWidth: '46%',
+        data: list.map((r) => ({ name: r[0], value: typeof value === 'function' ? value(r) : r[value], itemStyle: { color: hot(r, key), borderRadius: 0 } })),
+        label: { show: true, position: 'right', formatter: fmt, color: TEXT, fontWeight: 700 } }],
+    });
+
+    df$.shadcn.chart.deck(deck, {
+      base: { tooltip: { trigger: 'item' } },
+      states: {
+        box: {
+          grid: G, xAxis: score, yAxis: cats(m),
+          series: [{ id: 'methods', type: 'boxplot', boxWidth: [30, 56],
+            data: m.map((r) => ({ name: r[0], value: r.slice(1, 6), itemStyle: { color: r[0] === 'Self-paced app' ? 'rgba(94,27,40,.14)' : 'rgba(32,36,40,.06)', borderColor: r[0] === 'Self-paced app' ? OX : TEXT, borderWidth: 3 } })) }],
+        },
+        means: bars(m, 6, 'Tutoring + phonics', '{c}', score),
+        iqr: bars(m.slice().sort((a, b) => (b[4] - b[2]) - (a[4] - a[2])), (r) => r[4] - r[2], 'Self-paced app', '{c} pts', { type: 'value', max: 35, axisLabel: { color: MUTED } }),
+        gain: bars(m, 7, 'Tutoring + phonics', '+{c}', { type: 'value', max: 16, axisLabel: { color: MUTED } }),
+      },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 29-boxplot (Academic Monograph) - a fictional study with synthetic scores.</p>
+<SourceFiles component="presentation" />
+</DocPage>

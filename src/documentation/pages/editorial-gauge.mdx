@@ -1,0 +1,232 @@
+---
+title: "Editorial Gauge - Presentation"
+description: "Aviation Cockpit design language presenting an airport’s on-time departure rate as a 12-slide deck - a gauge whose needle swings from last summer to this one, then morphs into delay causes and a monthly trend, one continuous chart."
+slug: "editorial-gauge"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="editorial-gauge" title="Editorial Gauge" component="presentation">
+  Aviation Cockpit: instrument black, phosphor green and one amber warning colour - an airport’s summer punctuality as a single headline gauge, then the causes and the months behind the number.
+</PageHeader>
+
+```html example label="Aviation Cockpit" schema="none" height="26" hint="Slides wipe in from the side like an instrument page and blur out (df$.anim, declared on the deck); amber curtains mark the breaks. One deck-level chart (df$.shadcn.chart.deck): the gauge needle swings from last summer’s 71.3% to this summer’s 82.4%, then the dial gives way to delay causes and the monthly trend. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-gauge" data-anim-in="wipeIn" data-anim-in-direction="east" data-anim-out="blurOut" style="--presentation-ink:#08110E;--presentation-ink-foreground:#D8FBE7;--presentation-paper:#E8F4EC;--presentation-paper-foreground:#08110E;--presentation-accent:#FFB000;font-family:ui-monospace, SFMono-Regular, Menlo, monospace;" tabindex="-1" aria-label="On time - summer punctuality at a regional airport">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="Gauge of on-time departures: 71.3 percent last summer, 82.4 percent this summer against an 80 percent target; then delay causes and the monthly trend from May to September"></div>
+  <section class="slide" data-slide data-theme="ink" aria-label="Cover">
+    <svg aria-hidden="true" width="600" height="600" viewBox="0 0 600 600" style="position:absolute; right:120px; top:150px;">
+      <circle cx="300" cy="300" r="250" fill="none" stroke="#1E3A2F" stroke-width="30" />
+      <path d="M 123 477 A 250 250 0 1 1 477 477" fill="none" stroke="#FFB000" stroke-width="30" stroke-linecap="round" stroke-dasharray="1180 1600" />
+      <g stroke="#D8FBE7" stroke-width="4" opacity="0.6"><line x1="158.57864376269046" y1="441.4213562373095" x2="172.7207793864214" y2="427.27922061357856" /><line x1="109.7886967409693" y1="361.80339887498957" x2="128.80982706687237" y2="355.6230589874906" /><line x1="102.46233188097247" y1="268.7131069919538" x2="122.21609869287522" y2="271.84179629275843" /><line x1="138.19660112501055" y1="182.44294954150536" x2="154.3769410125095" y2="194.1986545873548" /><line x1="209.20190005209065" y1="121.79869516232642" x2="218.28171004688159" y2="139.61882564609377" /><line x1="300" y1="100" x2="300" y2="120" /><line x1="390.79809994790935" y1="121.79869516232642" x2="381.7182899531184" y2="139.61882564609377" /><line x1="461.8033988749895" y1="182.44294954150536" x2="445.62305898749054" y2="194.19865458735484" /><line x1="497.53766811902756" y1="268.71310699195385" x2="477.7839013071248" y2="271.84179629275843" /><line x1="490.21130325903073" y1="361.80339887498945" x2="471.19017293312766" y2="355.62305898749054" /><line x1="441.4213562373095" y1="441.4213562373095" x2="427.27922061357856" y2="427.27922061357856" /></g>
+      <text x="300" y="320" text-anchor="middle" fill="#FFB000" font-family="ui-monospace, Menlo, monospace" font-size="72" font-weight="700">82.4</text>
+    </svg>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Editorial gauge · Aviation Cockpit</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-weight:700; letter-spacing:0.02em; text-transform:uppercase; font-size:8rem;">On time</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">One number for one summer: the share of departures that left within 15 minutes.</p>
+    <p class="presentation-note">The HUD previews the gauge.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="last" style="justify-content:flex-start;" aria-label="Last summer">
+    <header class="presentation-header"><span>SUMMER 2024</span><span>On-time departures</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:700; letter-spacing:0.02em; text-transform:uppercase;">Last summer: 71.3%</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Below the amber target mark - the reason for the programme.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="now" style="justify-content:flex-start;" aria-label="This summer">
+    <header class="presentation-header"><span>SUMMER 2025</span><span>On-time departures</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:700; letter-spacing:0.02em; text-transform:uppercase;">This summer: 82.4% - above target</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Watch the needle swing: eleven points in one year.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="causes" style="justify-content:flex-start;" aria-label="Delay causes">
+    <header class="presentation-header"><span>DELAY CAUSES</span><span>Share of delay minutes</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:700; letter-spacing:0.02em; text-transform:uppercase;">Late inbound aircraft still cause 38% of delay minutes</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The dial gives way to what is left to fix.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Key figures">
+    <p class="presentation-eyebrow" data-df-entrance="fade">Three numbers from the tower</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#FFB000; font-weight:700; letter-spacing:0.02em; text-transform:uppercase;"><span data-count="82.4">82.4</span>%</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">on-time departures, summer 2025</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-weight:700; letter-spacing:0.02em; text-transform:uppercase;">+<span data-count="11.1">11.1</span> pts</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">versus summer 2024</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-weight:700; letter-spacing:0.02em; text-transform:uppercase;"><span data-count="4.6">4.6</span> min</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">average turnaround saved per flight</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">Most of the gain came from the ground: faster turnarounds, not faster aircraft.</p>
+    <p class="presentation-note">The turnaround number is the operational win.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="On the apron" style="overflow:hidden;">
+    <video autoplay muted loop playsinline aria-hidden="true" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.55; mix-blend-mode:luminosity;">
+      <source src="videos/demo.webm" type="video/webm" />
+      <source src="videos/demo.mp4" type="video/mp4" />
+    </video>
+    <div aria-hidden="true" style="position:absolute; inset:0; background:linear-gradient(90deg, #08110E 38%, rgba(255,176,0,.2));"></div>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">ON THE APRON</p>
+    <h2 class="presentation-title" data-df-entrance="blur" style="position:relative; font-size:5rem; max-width:1100px; font-weight:700; letter-spacing:0.02em; text-transform:uppercase;">Four and a half minutes per turn</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:400ms; position:relative; max-width:900px;">Parallel boarding, fuel-while-boarding and one more baggage team at peak - 610 departures a week, each a little faster.</p>
+    <p class="presentation-note">Ambient loop - the operations story in words.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="east" data-anim-in-blocks="7" data-anim-in-stagger="40" data-anim-in-color="#FFB000" aria-label="Monthly table">
+    <header class="presentation-header"><span>LOG</span><span>On-time %, departures</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" data-density="spacious" style="font-size:1.7rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">On-time departures (within 15 min), summer 2025 vs 2024 (synthetic).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">Month</th><th class="table-head" style="text-align:right">2024</th><th class="table-head" style="text-align:right">2025</th><th class="table-head" style="text-align:right">Δ</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row"><td class="table-cell">May</td><td class="table-cell" style="text-align:right">69.8%</td><td class="table-cell" style="text-align:right">76.1%</td><td class="table-cell" style="text-align:right">+6.3</td></tr>
+          <tr class="table-row"><td class="table-cell">June</td><td class="table-cell" style="text-align:right">70.4%</td><td class="table-cell" style="text-align:right">80.2%</td><td class="table-cell" style="text-align:right">+9.8</td></tr>
+          <tr class="table-row"><td class="table-cell">July</td><td class="table-cell" style="text-align:right">71.9%</td><td class="table-cell" style="text-align:right">83.5%</td><td class="table-cell" style="text-align:right">+11.6</td></tr>
+          <tr class="table-row"><td class="table-cell">August</td><td class="table-cell" style="text-align:right">72.6%</td><td class="table-cell" style="text-align:right">84.9%</td><td class="table-cell" style="text-align:right">+12.3</td></tr>
+          <tr class="table-row"><td class="table-cell">September</td><td class="table-cell" style="text-align:right">71.8%</td><td class="table-cell" style="text-align:right">87.3%</td><td class="table-cell" style="text-align:right">+15.5</td></tr>
+        </tbody>
+        <tfoot>
+          <tr class="table-row"><td class="table-cell">Summer</td><td class="table-cell" style="text-align:right;font-weight:700">71.3%</td><td class="table-cell" style="text-align:right;font-weight:700">82.4%</td><td class="table-cell" style="text-align:right;font-weight:700">+11.1</td></tr>
+        </tfoot>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The gain grew every month - the programme compounded.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-weight:700; letter-spacing:0.02em; text-transform:uppercase; font-size:3.2rem;">“Punctuality is a ground sport. The aircraft only reports what the apron did.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#FFB000; color:#08110E;"><span class="avatar-fallback">TB</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Tomás Barros<br /><span style="opacity:0.7; font-size:1.4rem;">Head of ground operations - 22 summers</span></p>
+    </div>
+    <p class="presentation-note">The line people will quote back.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="months" style="justify-content:flex-start;" aria-label="Monthly trend">
+    <header class="presentation-header"><span>TREND</span><span>On-time % by month</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:700; letter-spacing:0.02em; text-transform:uppercase;">Every month better than the last</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Two lines, one gap - widening all summer.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Questions from the airlines">
+    <header class="presentation-header"><span>Q & A</span><span>Airline operators committee</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; font-weight:700; letter-spacing:0.02em; text-transform:uppercase;">Questions from the airlines</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="eg-qa" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Why 15 minutes?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">It is the industry convention for “on time”; within 5 minutes the rate is 61%.</p></div>
+      </details>
+      <details class="accordion-item" name="eg-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Did cancellations flatter the number?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">No - cancellations fell too, from 1.9% to 1.2% of departures.</p></div>
+      </details>
+      <details class="accordion-item" name="eg-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>What is next?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Inbound delays: a slot-swap scheme with the two largest carriers from winter.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The 15-minute question is always first.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Takeaways">
+    <header class="presentation-header"><span>CHECKLIST</span><span>For winter</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">▸</span><span>Keep the headline number big - and the target visible on the dial.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">▸</span><span>Ground processes moved the needle; protect them in winter staffing.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">▸</span><span>Attack inbound delays next: 38% of the remaining minutes.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">▸</span><span>Report the monthly trend, not just the season.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">A checklist, cockpit style.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-anim-in="blocksIn" data-anim-in-direction="west" data-anim-in-blocks="7" data-anim-in-stagger="40" data-anim-in-color="#FFB000" aria-label="Closing">
+    <svg aria-hidden="true" width="600" height="600" viewBox="0 0 600 600" style="position:absolute; right:120px; top:150px;">
+      <circle cx="300" cy="300" r="250" fill="none" stroke="#1E3A2F" stroke-width="30" />
+      <path d="M 123 477 A 250 250 0 1 1 477 477" fill="none" stroke="#FFB000" stroke-width="30" stroke-linecap="round" stroke-dasharray="1180 1600" />
+      <g stroke="#D8FBE7" stroke-width="4" opacity="0.6"><line x1="158.57864376269046" y1="441.4213562373095" x2="172.7207793864214" y2="427.27922061357856" /><line x1="109.7886967409693" y1="361.80339887498957" x2="128.80982706687237" y2="355.6230589874906" /><line x1="102.46233188097247" y1="268.7131069919538" x2="122.21609869287522" y2="271.84179629275843" /><line x1="138.19660112501055" y1="182.44294954150536" x2="154.3769410125095" y2="194.1986545873548" /><line x1="209.20190005209065" y1="121.79869516232642" x2="218.28171004688159" y2="139.61882564609377" /><line x1="300" y1="100" x2="300" y2="120" /><line x1="390.79809994790935" y1="121.79869516232642" x2="381.7182899531184" y2="139.61882564609377" /><line x1="461.8033988749895" y1="182.44294954150536" x2="445.62305898749054" y2="194.19865458735484" /><line x1="497.53766811902756" y1="268.71310699195385" x2="477.7839013071248" y2="271.84179629275843" /><line x1="490.21130325903073" y1="361.80339887498945" x2="471.19017293312766" y2="355.62305898749054" /><line x1="441.4213562373095" y1="441.4213562373095" x2="427.27922061357856" y2="427.27922061357856" /></g>
+      <text x="300" y="320" text-anchor="middle" fill="#FFB000" font-family="ui-monospace, Menlo, monospace" font-size="72" font-weight="700">82.4</text>
+    </svg>
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-weight:700; letter-spacing:0.02em; text-transform:uppercase;">One number can deserve the whole canvas</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">A fictional airport, synthetic punctuality - the headline gauge is the real pattern.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">Close with the dial in mind.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) - build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-gauge');
+    const TEXT = '#D8FBE7', MUTED = '#5F8C77', AMBER = '#FFB000', TRACK = '#1E3A2F';
+    const dial = (value) => ({
+      series: [
+        { id: 'gauge', type: 'gauge', center: ['50%', '72%'], radius: '52%', startAngle: 210, endAngle: -30, min: 50, max: 100, splitNumber: 5,
+          progress: { show: true, width: 36, roundCap: true, itemStyle: { color: value >= 80 ? AMBER : '#7FD9A8' } },
+          axisLine: { roundCap: true, lineStyle: { width: 36, color: [[1, TRACK]] } },
+          axisTick: { distance: -64, length: 10, lineStyle: { color: MUTED, width: 2 } },
+          splitLine: { distance: -70, length: 22, lineStyle: { color: TEXT, width: 3 } },
+          axisLabel: { distance: -30, color: MUTED, fontSize: 22, formatter: '{value}%' },
+          pointer: { icon: 'path://M2 0 L4 100 L0 100 Z', length: '64%', width: 12, offsetCenter: [0, 0], itemStyle: { color: TEXT } },
+          anchor: { show: true, size: 34, itemStyle: { color: '#08110E', borderColor: TEXT, borderWidth: 6 } },
+          title: { offsetCenter: [0, '66%'], color: MUTED, fontSize: 24 },
+          detail: { valueAnimation: true, formatter: '{value}%', offsetCenter: [0, '40%'], color: value >= 80 ? AMBER : TEXT, fontSize: 84, fontWeight: 700 },
+          data: [{ value, name: 'departures on time' }] },
+        { id: 'target', type: 'gauge', center: ['50%', '72%'], radius: '52%', startAngle: 210, endAngle: -30, min: 50, max: 100,
+          axisLine: { show: false }, axisTick: { show: false }, splitLine: { show: false }, axisLabel: { show: false }, progress: { show: false },
+          anchor: { show: false }, title: { show: false }, detail: { show: false },
+          pointer: { icon: 'rect', length: '14%', width: 8, offsetCenter: [0, '-92%'], itemStyle: { color: AMBER } }, data: [{ value: 80 }] },
+      ],
+      graphic: [{ type: 'text', left: 'center', top: 300, style: { text: 'TARGET 80%', fill: AMBER, font: '700 24px ui-monospace, Menlo, monospace' } }],
+    });
+    const causes = [['Late inbound aircraft', 38], ['Ground handling', 21], ['Air traffic control', 17], ['Weather', 11], ['Security queues', 8], ['Technical', 5]];
+
+    df$.shadcn.chart.deck(deck, {
+      base: { tooltip: { trigger: 'item' } },
+      states: {
+        last: dial(71.3),
+        now: dial(82.4),
+        causes: {
+          grid: { left: 360, right: 190, top: 330, bottom: 150 },
+          xAxis: { type: 'value', max: 40, axisLabel: { color: MUTED, formatter: '{value}%' }, splitLine: { lineStyle: { color: TRACK } } },
+          yAxis: { type: 'category', inverse: true, data: causes.map((c) => c[0]), axisLine: { show: false }, axisLabel: { color: TEXT, fontWeight: 700 } },
+          series: [{ id: 'gauge', type: 'bar', barWidth: '58%',
+            data: causes.map(([n, v], i) => ({ name: n, value: v, itemStyle: { color: i === 0 ? AMBER : '#2E6B52', borderRadius: [0, 4, 4, 0] } })),
+            label: { show: true, position: 'right', formatter: '{c}%', color: TEXT, fontWeight: 700 } }],
+        },
+        months: {
+          legend: { top: 300, right: 150, textStyle: { color: TEXT } },
+          grid: { left: 150, right: 190, top: 370, bottom: 150 },
+          xAxis: { type: 'category', data: ['May', 'Jun', 'Jul', 'Aug', 'Sep'], boundaryGap: false, axisLabel: { color: TEXT, fontWeight: 700 } },
+          yAxis: { type: 'value', min: 60, max: 90, interval: 10, axisLabel: { color: MUTED, formatter: '{value}%' }, splitLine: { lineStyle: { color: TRACK } } },
+          series: [
+            { id: 'target', name: '2024', type: 'line', data: [69.8, 70.4, 71.9, 72.6, 71.8], symbolSize: 14, lineStyle: { color: MUTED, width: 4 }, itemStyle: { color: MUTED }, endLabel: { show: true, formatter: '{c}%', color: MUTED } },
+            { id: 'gauge', name: '2025', type: 'line', data: [76.1, 80.2, 83.5, 84.9, 87.3], symbolSize: 16, lineStyle: { color: AMBER, width: 6 }, itemStyle: { color: AMBER }, endLabel: { show: true, formatter: '{c}%', color: AMBER, fontWeight: 700 },
+              markLine: { symbol: 'none', silent: true, lineStyle: { color: AMBER, type: 'dashed', opacity: 0.6 }, label: { formatter: 'target', color: AMBER, position: 'insideStartTop' }, data: [{ yAxis: 80 }] } },
+          ],
+        },
+      },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 22-editorial-gauge (Aviation Cockpit) - a fictional airport, synthetic punctuality.</p>
+<SourceFiles component="presentation" />
+</DocPage>

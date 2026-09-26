@@ -17,7 +17,7 @@ const toolbarStates = ['default'];
 /**
  * UI side of setState: 'default' restores the roving tabindex to the first
  * enabled item (the authored position); optional { focus: n } config parks
- * the roving stop on the nth item instead — focus is only moved there if the
+ * the roving stop on the nth item instead - focus is only moved there if the
  * toolbar already contains the focus, matching native roving semantics.
  */
 function triggerStateChange(toolbar, items, stateName, config) {
@@ -44,7 +44,7 @@ export const toolbarApi = {
     const idx = items.findIndex((item) => item.getAttribute('tabindex') === '0');
     return {
       name: toolbar.dataset.stateName || 'default',
-      // observable roving position — reflects arrow-key movement too
+      // observable roving position - reflects arrow-key movement too
       config: { ...toolbar._stateConfig, rovingIndex: idx },
     };
   },

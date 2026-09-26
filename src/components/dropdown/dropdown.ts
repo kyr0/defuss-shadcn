@@ -70,7 +70,7 @@ function init() {
     // buggy for popover="auto": light dismiss closes the menu *before* the
     // click handler runs, so togglePopover re-opens it and the menu can
     // never be closed by clicking the trigger again. The popovertarget
-    // command is dismiss-aware — the trigger button must be a <button>
+    // command is dismiss-aware - the trigger button must be a <button>
     // (documented API) for the native command to apply.
     if (!trigger.hasAttribute('popovertarget')) trigger.setAttribute('popovertarget', menu.id);
     menu.addEventListener('toggle', (e) => {

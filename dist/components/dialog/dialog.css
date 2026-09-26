@@ -56,7 +56,7 @@
   }
 
   /* -- Scroll lock ------------------------------------------- */
-  /* While the dialog is modal the page behind must stay put — closing
+  /* While the dialog is modal the page behind must stay put - closing
      returns you to exactly the scroll offset you had. `:modal` matches only
      while opened via showModal(); overflow:hidden freezes the viewport
      without losing the scroll position (no JS position:fixed hack), and
@@ -70,7 +70,7 @@
   /* -- Density ------------------------------------------------
      data-density on the .dialog root scales the content padding
      (0.75 / 1 / 1.25 of the 1.5rem default); comfortable matches the
-     unsized default. Width stays governed by data-size — two axes. */
+     unsized default. Width stays governed by data-size - two axes. */
   .dialog:where([data-density="compact"]) .dialog-content      { padding: 1rem; }
   .dialog:where([data-density="comfortable"]) .dialog-content  { padding: 1.5rem; }
   .dialog:where([data-density="spacious"]) .dialog-content     { padding: 2rem; }
@@ -85,7 +85,7 @@
 }
 
 /* Accessibility: reduced motion removes open/close transitions (REQUIRED
-   for all components — AGENTS.md "Accessibility CSS"). */
+   for all components - AGENTS.md "Accessibility CSS"). */
 @media (prefers-reduced-motion: reduce) {
   @layer components {
     dialog.dialog,

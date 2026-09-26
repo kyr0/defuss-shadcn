@@ -1,0 +1,125 @@
+---
+title: "Fade - Animations"
+description: "The fade animation channel: a pure opacity cross-fade with paired fadeIn/fadeOut variants, driven imperatively by df$.anim."
+slug: "anim-fade"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="anim-fade" title="Fade" component="motion">
+  Fade is the quietest animation in the <code>df$.anim</code> engine: a pure opacity cross-fade from <code>0</code> to the element's authored opacity (never a hardcoded <code>1</code>). It ships as the paired variants <code>fadeIn</code> (appear) and <code>fadeOut</code> (disappear) - it is not directional, so there is no <code>direction</code> axis. Everything on this page is driven imperatively by <code>df$.anim.fadeIn</code> and <code>df$.anim.fadeOut</code>.
+</PageHeader>
+
+```html example label="In / out and lifecycle" schema="none" hint="fadeIn and fadeOut share one lifecycle: play() restarts deterministically, pause()/resume() freeze and continue, finish() jumps to the end, reset() unwinds to the authored style. The badge reads df$.anim.<channel>.state(target) after every action."
+<style>
+  #anim-fade-target {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 160px;
+    height: 100px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+    font-weight: 600;
+  }
+</style>
+<div style="display:flex; flex-direction:column; gap:0.85rem; align-items:flex-start;">
+  <div id="anim-fade-target">fade me</div>
+  <div style="display:flex; flex-wrap:wrap; gap:0.4rem; align-items:center;">
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-fade-in">In</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-fade-out">Out</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-fade-pause">Pause</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-fade-resume">Resume</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-fade-finish">Finish</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="anim-fade-reset">Reset</button>
+    <span class="badge" data-variant="secondary" id="anim-fade-state">idle</span>
+  </div>
+  <div style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center;">
+    <label class="text-sm" for="anim-fade-duration">Duration (ms)</label>
+    <input class="input" type="number" id="anim-fade-duration" value="1500" min="0" step="50" style="width:6rem;" />
+    <label class="text-sm" for="anim-fade-easing">Easing</label>
+    <select class="select" id="anim-fade-easing">
+      <option value="cubic-bezier(0.16, 1, 0.3, 1)" selected>ease-out (default)</option>
+      <option value="ease">ease</option>
+      <option value="ease-in-out">ease-in-out</option>
+      <option value="linear">linear</option>
+      <option value="cubic-bezier(.34,1.56,.64,1)">spring-ish</option>
+    </select>
+  </div>
+</div>
+<script type="module">
+  // all.js (df$) boots after example scripts in the sandbox - reference df$
+  // only inside event handlers, never at parse time.
+  const target = document.getElementById('anim-fade-target');
+  const status = document.getElementById('anim-fade-state');
+  const duration = document.getElementById('anim-fade-duration');
+  const easing = document.getElementById('anim-fade-easing');
+  let channel = 'fadeIn'; // the channel the lifecycle controls act on
+  const opts = () => ({ duration: Number(duration.value) || 1500, easing: easing.value });
+  const report = () => { status.textContent = df$.anim[channel].state(target); };
+
+  document.getElementById('anim-fade-in').addEventListener('click', () => {
+    channel = 'fadeIn';
+    df$.anim.fadeIn.play(target, opts());
+    report();
+  });
+  document.getElementById('anim-fade-out').addEventListener('click', () => {
+    channel = 'fadeOut';
+    df$.anim.fadeOut.play(target, opts());
+    report();
+  });
+  document.getElementById('anim-fade-pause').addEventListener('click', () => { df$.anim[channel].pause(target); report(); });
+  document.getElementById('anim-fade-resume').addEventListener('click', () => { df$.anim[channel].resume(target); report(); });
+  document.getElementById('anim-fade-finish').addEventListener('click', () => { df$.anim[channel].finish(target); report(); });
+  document.getElementById('anim-fade-reset').addEventListener('click', () => { df$.anim[channel].reset(target); report(); });
+</script>
+```
+
+```html example label="Scroll-bound fade" schema="none" hint="opts.scroll binds progress to a scroll position instead of time: here the scroller's own y-offset scrubs fadeIn (ScrollTimeline where the platform has it, a rAF-throttled listener fallback elsewhere). Scroll the box."
+<style>
+  #anim-fade-scroll-target {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 160px;
+    height: 100px;
+    margin: 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+    font-weight: 600;
+  }
+</style>
+<div id="anim-fade-scroller" style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg);">
+  <div style="height: 600px; display:flex; align-items:flex-start; justify-content:center; padding:1rem; color:var(--muted-foreground);">Scroll down - the scroll position is the fade's timeline.</div>
+  <div id="anim-fade-scroll-target">scroll-driven</div>
+  <div style="height: 200px;"></div>
+</div>
+<script type="module">
+  // play() with a scroll binding pauses the animation and lets scroll drive
+  // currentTime - run it on load, after all.js has installed df$.
+  window.addEventListener('load', () => {
+    df$.anim.fadeIn.play(document.getElementById('anim-fade-scroll-target'), {
+      scroll: { target: document.getElementById('anim-fade-scroller'), axis: 'y' },
+    });
+  });
+</script>
+```
+
+Pass `{ target: 'viewport' }` (or omit `target` - the viewport is the default) to bind the fade to page scroll instead of an element's own offset - the parallax use for presentations.
+
+## Config axes
+
+- **`duration`** - total duration in ms (default `1500`; flattened to `1` under `prefers-reduced-motion`).
+- **`easing`** - any CSS easing (default `cubic-bezier(0.16, 1, 0.3, 1)`).
+
+<SourceFiles component="motion" section="css">
+  <SourceNote for="css">The shared motion stylesheet - the declarative <code>data-df-entrance</code> twin of this page's <code>df$.anim</code> channels: the <code>--df-motion-…</code> tunables, the fifteen <code>df-enter-…</code> keyframes and the reduced-motion flattening.</SourceNote>
+</SourceFiles>
+
+</DocPage>

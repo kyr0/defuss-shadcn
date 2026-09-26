@@ -1,7 +1,7 @@
 ---
 name: Breadcrumb
 type: ATM
-why: nav > ol markup with aria-current="page" — the accessibility comes free with the markup, not from JS.
+why: nav > ol markup with aria-current="page" - the accessibility comes free with the markup, not from JS.
 when: Showing hierarchy in multi-level sites/apps so users know where they are and can jump up.
 where: dist/components/breadcrumb/breadcrumb.css
 supportedStates: default
@@ -11,19 +11,19 @@ supportedStates: default
 
 ## Native basis
 
-`<nav>` + `<ol>` for hierarchical path display. Pure CSS — no JavaScript required.
+`<nav>` + `<ol>` for hierarchical path display. Pure CSS - no JavaScript required.
 
 ---
 
 ## Native Web APIs
 
-- [`<nav>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav) — navigation landmark for screen readers
-- [`<ol>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol) — ordered list conveying hierarchy
-- [`aria-current="page"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current) — identifies the current page in the trail
-- [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) — keyboard-only focus ring on links
-- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) — suppresses hover transitions
-- [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) — underlines links and bolds current page
-- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) — maps colors to system palette
+- [`<nav>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav) - navigation landmark for screen readers
+- [`<ol>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol) - ordered list conveying hierarchy
+- [`aria-current="page"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current) - identifies the current page in the trail
+- [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) - keyboard-only focus ring on links
+- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) - suppresses hover transitions
+- [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) - underlines links and bolds current page
+- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) - maps colors to system palette
 
 ---
 
@@ -95,7 +95,7 @@ Set `data-size` on the `.breadcrumb` nav.
 |-------------|--------|
 | `xs` | 0.75rem type, 0.75rem separators |
 | `sm` | 0.8125rem type |
-| `md` | 0.875rem type — identical to the unsized default |
+| `md` | 0.875rem type - identical to the unsized default |
 | `lg` | 1rem type, 1rem separators |
 | `xl` | 1.125rem type, 1.125rem separators |
 
@@ -118,16 +118,16 @@ Set `data-size` on the `.breadcrumb` nav.
 | `Shift + Tab` | Moves focus to the previous breadcrumb link |
 | `Enter` | Activates the focused link |
 
-All links are native `<a>` elements — keyboard navigation works automatically.
+All links are native `<a>` elements - keyboard navigation works automatically.
 
 ---
 
 ## Notes
 
 - Use `<ol>` (ordered list) to convey the hierarchical order to assistive technology.
-- The current page uses `<span>` (not `<a>`) since it's not a link — add `aria-current="page"`.
-- Separators are decorative — always add `aria-hidden="true"`.
+- The current page uses `<span>` (not `<a>`) since it's not a link - add `aria-current="page"`.
+- Separators are decorative - always add `aria-hidden="true"`.
 - Default separator is `/` text. Replace with an SVG chevron for the icon variant.
 - For long trails, collapse middle items using `.breadcrumb-ellipsis`.
 - CSS uses `[dir="rtl"]` to auto-flip chevron SVG separators.
-- No JavaScript required — this is a purely CSS component.
+- No JavaScript required - this is a purely CSS component.

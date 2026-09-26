@@ -1,0 +1,183 @@
+---
+title: "Charts: Comparison"
+description: "Comparison chart patterns on the chart component - highlight bars, lollipop ranking, dumbbell before/after, slopegraph, and diverging bars, all themed by the token adapter."
+slug: "charts-comparison"
+---
+
+import { DocPage, PageHeader, DocLink, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="charts-comparison" title="Charts: Comparison" component="chart" introStyle="max-width:38rem;">
+  Patterns for comparing categories at a point in time: a highlighted bar ranking, a lollipop chart, a dumbbell for before/after gaps, a slopegraph for direction, and diverging bars around a neutral center. Each is one option object on the <DocLink href="chart.html">Chart</DocLink> component - palette, typography and chrome come from the active theme, and colors are written as <code>var(--token)</code> so they follow theme and dark-mode switches live.
+</PageHeader>
+
+```html example label="Highlight bars" schema="none" height="27" previewStyle="align-items:flex-start;" hint="One bar carries the story: the leader is var(--primary), the context bars a muted color-mix of the foreground. Token references resolve at apply time AND after every theme switch - no getComputedStyle in the page."
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <h3 class="chart-title">Time saved per task, by activity</h3>
+  <p class="chart-dek">Research leads at 83% - one highlighted bar against muted context.</p>
+  <div id="cmp-highlight" class="chart" role="img" aria-label="Horizontal bar ranking of time saved per task; Research leads at 83 percent, Video lowest at 36 percent"></div>
+  <figcaption class="chart-source">Synthetic data · adapted from echarts-feat 01-editorial-highlight-bars</figcaption>
+</figure>
+<script>
+  window.addEventListener('load', () => {
+    const names = ['Research', 'Editing', 'Transcription', 'Translation', 'Image', 'Code', 'Video'];
+    const vals = [83, 79, 72, 67, 58, 45, 36];
+    df$.shadcn.chart.mount(document.getElementById('cmp-highlight'), {
+      grid: { top: 8, right: 48 },
+      xAxis: { type: 'value', max: 100, axisLabel: { formatter: '{value}%' } },
+      yAxis: { type: 'category', inverse: true, data: names, axisLine: { show: false },
+               axisLabel: { color: 'var(--foreground)', fontWeight: 500 } },
+      series: [{
+        type: 'bar', barWidth: '58%',
+        data: vals.map((v, i) => ({
+          value: v,
+          itemStyle: { color: i === 0 ? 'var(--primary)' : 'color-mix(in oklch, var(--muted-foreground) 32%, transparent)' },
+          label: { color: i === 0 ? 'var(--foreground)' : 'var(--muted-foreground)', fontWeight: i === 0 ? 700 : 500 },
+        })),
+        label: { show: true, position: 'right', formatter: '{c}%' },
+      }],
+    });
+  });
+</script>
+```
+
+```html example label="Lollipop ranking" schema="none" height="27" previewStyle="align-items:flex-start;" hint="Dots beat bars when the baseline is not the point: a hairline bar series draws the stems, a scatter series the heads - one mount, the head color is var(--chart-2)."
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <h3 class="chart-title">Regional adoption score</h3>
+  <p class="chart-dek">A compact ranking for many categories - stems and dots instead of filled bars.</p>
+  <div id="cmp-lollipop" class="chart" role="img" aria-label="Lollipop ranking of regional adoption score; North leads at 64, South lowest at 31"></div>
+  <figcaption class="chart-source">Synthetic data · adapted from echarts-feat 02-lollipop-ranking</figcaption>
+</figure>
+<script>
+  window.addEventListener('load', () => {
+    const data = [['North', 64], ['West', 57], ['Central', 51], ['Coast', 48], ['Metro', 42], ['Rural', 37], ['South', 31]];
+    df$.shadcn.chart.mount(document.getElementById('cmp-lollipop'), {
+      grid: { top: 8, right: 48 },
+      xAxis: { type: 'value', max: 70 },
+      yAxis: { type: 'category', inverse: true, data: data.map((d) => d[0]), axisLine: { show: false },
+               axisLabel: { color: 'var(--foreground)', fontWeight: 500 } },
+      series: [
+        { name: 'stem', type: 'bar', barWidth: 2, silent: true, data: data.map((d) => d[1]),
+          itemStyle: { color: 'color-mix(in oklch, var(--foreground) 22%, transparent)', borderRadius: 0 } },
+        { name: 'Score', type: 'scatter', symbolSize: 16, data: data.map((d) => d[1]),
+          itemStyle: { color: 'var(--chart-2)', borderColor: 'var(--card)', borderWidth: 2 },
+          label: { show: true, position: 'right', distance: 10, fontWeight: 600 } },
+      ],
+    });
+  });
+</script>
+```
+
+```html example label="Dumbbell: before/after" schema="none" height="27" previewStyle="align-items:flex-start;" hint="The gap matters more than either endpoint: a transparent stack base + a thin delta bar draw the connector, two scatter series mark before (muted ring) and after (var(--primary)), and the label reads the change."
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <h3 class="chart-title">Confidence score, before vs after</h3>
+  <p class="chart-dek">Freelance dropped 64 points - the connector length is the story.</p>
+  <div id="cmp-dumbbell" class="chart" role="img" aria-label="Dumbbell chart of confidence before and after; Freelance shows the largest drop from 82 to 18 percent"></div>
+  <figcaption class="chart-source">Synthetic data · adapted from echarts-feat 03-dumbbell-before-after</figcaption>
+</figure>
+<script>
+  window.addEventListener('load', () => {
+    // [category, before, after]
+    const rows = [['Leadership', 91, 75], ['Management', 77, 62], ['Teams', 82, 55], ['Staff', 63, 40], ['Freelance', 82, 18]];
+    const lo = rows.map((r) => Math.min(r[1], r[2]));
+    const span = rows.map((r) => Math.abs(r[1] - r[2]));
+    df$.shadcn.chart.mount(document.getElementById('cmp-dumbbell'), {
+      legend: { right: 0 },
+      grid: { right: 48 },
+      xAxis: { type: 'value', max: 100, axisLabel: { formatter: '{value}%' } },
+      yAxis: { type: 'category', inverse: true, data: rows.map((r) => r[0]), axisLine: { show: false },
+               axisLabel: { color: 'var(--foreground)', fontWeight: 500 } },
+      series: [
+        { type: 'bar', stack: 'd', silent: true, barWidth: 4, data: lo, itemStyle: { color: 'transparent' }, tooltip: { show: false } },
+        { type: 'bar', stack: 'd', silent: true, barWidth: 4, data: span, tooltip: { show: false },
+          itemStyle: { color: 'color-mix(in oklch, var(--foreground) 18%, transparent)', borderRadius: 2 },
+          label: { show: true, position: 'right', distance: 14, formatter: (p) => '−' + span[p.dataIndex], color: 'var(--destructive)', fontWeight: 700 } },
+        { name: 'Before', type: 'scatter', symbolSize: 14, data: rows.map((r) => r[1]),
+          itemStyle: { color: 'var(--card)', borderColor: 'var(--muted-foreground)', borderWidth: 2.5 } },
+        { name: 'After', type: 'scatter', symbolSize: 14, data: rows.map((r) => r[2]), itemStyle: { color: 'var(--primary)' } },
+      ],
+    });
+  });
+</script>
+```
+
+```html example label="Slopegraph" schema="none" height="35" previewStyle="align-items:flex-start;" hint="Direction before magnitude: one two-point line per entity, direct labels at both ends, no legend. Risers are var(--chart-2), fallers var(--destructive) - the color is the verdict."
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <h3 class="chart-title">Score movement, 2022 → 2026</h3>
+  <p class="chart-dek">Alpha and Delta climb, Beta and Epsilon slide - crossings are readable at a glance.</p>
+  <div id="cmp-slope" class="chart" data-size="lg" role="img" aria-label="Slopegraph of five teams from 2022 to 2026; Alpha rises from 38 to 51, Beta falls from 44 to 39"></div>
+  <figcaption class="chart-source">Synthetic data · adapted from echarts-feat 04-slopegraph</figcaption>
+</figure>
+<script>
+  window.addEventListener('load', () => {
+    // [name, 2022, 2026]
+    const rows = [['Alpha', 38, 51], ['Beta', 44, 39], ['Gamma', 29, 31], ['Delta', 17, 26], ['Epsilon', 25, 18]];
+    df$.shadcn.chart.mount(document.getElementById('cmp-slope'), {
+      grid: { left: 110, right: 110, top: 16, bottom: 8 },
+      xAxis: { type: 'category', data: ['2022', '2026'], boundaryGap: false, axisLine: { show: false },
+               axisLabel: { color: 'var(--foreground)', fontWeight: 700 } },
+      yAxis: { type: 'value', min: 10, max: 56, show: false },
+      series: rows.map((r) => {
+        const color = r[2] >= r[1] ? 'var(--chart-2)' : 'var(--destructive)';
+        return {
+          name: r[0], type: 'line', data: [r[1], r[2]], symbolSize: 10,
+          itemStyle: { color }, lineStyle: { color, width: 3 },
+          label: { show: true, position: 'left', distance: 12, formatter: (p) => (p.dataIndex === 0 ? r[0] + '  ' + r[1] : ''), fontWeight: 600 },
+          endLabel: { show: true, distance: 12, formatter: r[0] + '  ' + r[2], fontWeight: 600 },
+          emphasis: { focus: 'series' },
+        };
+      }),
+    });
+  });
+</script>
+```
+
+```html example label="Diverging bars" schema="none" height="27" previewStyle="align-items:flex-start;" hint="A neutral center makes gains and losses immediate: the sign picks the color - var(--chart-2) above zero, var(--destructive) below - and the label carries the sign too."
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin:0;">
+  <h3 class="chart-title">Year-over-year swing by region</h3>
+  <p class="chart-dek">North gained 12 points while South lost 11 - deviation around a zero baseline.</p>
+  <div id="cmp-diverging" class="chart" role="img" aria-label="Diverging bar chart of year-over-year swing in percentage points; North plus 12, South minus 11"></div>
+  <figcaption class="chart-source">Synthetic data · adapted from echarts-feat 05-diverging-bars</figcaption>
+</figure>
+<script>
+  window.addEventListener('load', () => {
+    const data = [['North', 12], ['Metro', 8], ['Coast', 5], ['Central', 1], ['West', -3], ['Rural', -7], ['South', -11]];
+    const signed = (v) => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v);
+    df$.shadcn.chart.mount(document.getElementById('cmp-diverging'), {
+      grid: { top: 8, left: 16, right: 16 },
+      xAxis: { type: 'value', min: -15, max: 15, axisLabel: { formatter: (v) => signed(v) + ' pp' } },
+      yAxis: { type: 'category', inverse: true, data: data.map((d) => d[0]), axisLine: { onZero: true },
+               axisLabel: { show: false } },
+      series: [{
+        type: 'bar', barWidth: '56%',
+        data: data.map((d) => ({
+          value: d[1],
+          itemStyle: { color: d[1] >= 0 ? 'var(--chart-2)' : 'var(--destructive)' },
+          label: { position: d[1] >= 0 ? 'right' : 'left' },
+        })),
+        label: { show: true, formatter: (p) => signed(p.value) + ' pp', fontWeight: 600 },
+      }, {
+        // category names ride on the opposite side of each bar, next to zero
+        type: 'bar', barWidth: '56%', barGap: '-100%', silent: true, tooltip: { show: false },
+        data: data.map((d) => ({ value: 0, label: { position: d[1] >= 0 ? 'left' : 'right' } })),
+        label: { show: true, formatter: (p) => data[p.dataIndex][0], color: 'var(--foreground)', fontWeight: 500 },
+      }],
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground">Patterns adapted from the ECharts design-language lab (echarts-feat/), re-skinned on the design tokens via the chart theme adapter. Colors are written as <code>var(--token)</code> (or <code>color-mix()</code> over tokens) - the runtime resolves them to sRGB for ECharts and re-resolves them after every theme or dark-mode switch.</p>
+
+<SourceFiles component="chart">
+  <SourceNote for="css">The chart sizing surface and editorial frame these patterns mount into.</SourceNote>
+  <SourceNote for="js">The runtime every demo on this page converges on: token theme adapter, token-reference resolution, mount/resize lifecycle, chartStory, the deck stage and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

@@ -1,7 +1,7 @@
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: faq is CSS-only — 3-up icon-card grid at wide width, 64px icon tile
+ * Why: faq is CSS-only - 3-up icon-card grid at wide width, 64px icon tile
  * with a 24px primary icon inside, and question answers visible (not hidden
  * behind a disclosure).
  */

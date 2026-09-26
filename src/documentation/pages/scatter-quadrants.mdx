@@ -1,0 +1,218 @@
+---
+title: "Scatter Quadrants - Presentation"
+description: "Annual Report Corporate design language presenting a software portfolio (growth × net revenue retention × ARR) as a 12-slide deck - a quadrant map that isolates the stars, collapses into ARR bars and moves to the 2026 plan, one morphing chart."
+slug: "scatter-quadrants"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="scatter-quadrants" title="Scatter Quadrants" component="presentation">
+  Annual Report Corporate: pale blue-grey paper, navy type and one teal for the stars - eight fictional software products placed by growth and retention, then re-read as revenue and as next year’s plan.
+</PageHeader>
+
+```html example label="Annual Report Corporate" schema="none" height="26" hint="Slides rise in and fade out (df$.anim slideIn from the south, declared on the deck); teal curtains open the data and the ending. One deck-level chart (df$.shadcn.chart.deck): the quadrant map isolates the stars, the bubbles collapse into ARR bars, then move to their 2026 targets. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-quadrants" data-anim-in="slideIn" data-anim-in-direction="south" data-anim-in-distance="60px" data-anim-out="fadeOut" style="--presentation-ink:#12304A;--presentation-ink-foreground:#F3F6FA;--presentation-paper:#F3F6FA;--presentation-paper-foreground:#12304A;--presentation-accent:#0A7E8C;font-family:'Avenir Next', 'Segoe UI', Arial, sans-serif;" tabindex="-1" aria-label="Portfolio review 2025 - growth and retention">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="Eight software products by year-over-year growth and net revenue retention, bubble size annual recurring revenue: Nimbus, Ledgerly and Relay are stars; then ARR bars and 2026 targets"></div>
+  <section class="slide" data-slide data-theme="paper" aria-label="Cover">
+    <svg aria-hidden="true" width="620" height="620" viewBox="0 0 620 620" style="position:absolute; right:110px; top:140px;">
+      <rect x="0" y="0" width="300" height="300" fill="#0A7E8C" opacity="0.9" />
+      <rect x="320" y="0" width="300" height="300" fill="#12304A" opacity="0.12" />
+      <rect x="0" y="320" width="300" height="300" fill="#12304A" opacity="0.12" />
+      <rect x="320" y="320" width="300" height="300" fill="#12304A" opacity="0.06" />
+    </svg>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Scatter quadrants · Annual Report</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-family:'Avenir Next', 'Segoe UI', Arial, sans-serif; font-weight:700; letter-spacing:-0.02em; font-size:6.25rem; max-width:760px;">Portfolio review 2025</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">Eight products, two questions: are they growing, and do customers stay and spend more?</p>
+    <p class="presentation-note">The teal square is the corner everyone wants to be in.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="map" style="justify-content:flex-start;" aria-label="Portfolio map">
+    <header class="presentation-header"><span>Portfolio</span><span>Growth × net revenue retention · bubble = ARR</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Avenir Next', 'Segoe UI', Arial, sans-serif; font-weight:700; letter-spacing:-0.02em;">Where each product stands</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Right = growing, up = expanding accounts. Bubble size is revenue.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="stars" style="justify-content:flex-start;" aria-label="The stars">
+    <header class="presentation-header"><span>Portfolio</span><span>Top-right quadrant</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Avenir Next', 'Segoe UI', Arial, sans-serif; font-weight:700; letter-spacing:-0.02em;">Three stars: Nimbus, Ledgerly, Relay</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Everything outside the corner dims.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="arr" style="justify-content:flex-start;" aria-label="ARR">
+    <header class="presentation-header"><span>Revenue</span><span>Annual recurring revenue, € M</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Avenir Next', 'Segoe UI', Arial, sans-serif; font-weight:700; letter-spacing:-0.02em;">The money still sits in the slow quadrant</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The bubbles collapse into bars - Harbor CRM and Atlas pay the bills.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Key figures">
+    <p class="presentation-eyebrow" data-df-entrance="fade">Three numbers for the board</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:'Avenir Next', 'Segoe UI', Arial, sans-serif; font-weight:700; letter-spacing:-0.02em;">€<span data-count="139">139</span> M</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">total ARR across eight products</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:'Avenir Next', 'Segoe UI', Arial, sans-serif; font-weight:700; letter-spacing:-0.02em;"><span data-count="30">30</span>%</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">of it from one product: Harbor CRM</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#0A7E8C; font-family:'Avenir Next', 'Segoe UI', Arial, sans-serif; font-weight:700; letter-spacing:-0.02em;"><span data-count="128">128</span>%</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">net revenue retention at Nimbus</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">The stars are growing fast, but they are a third of the revenue. The plan has to fund one with the other.</p>
+    <p class="presentation-note">The funding tension is the board conversation.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Customers">
+    <header class="presentation-header"><span>Customers</span><span>4,800 accounts</span></header>
+    <div style="display:flex; gap:4.5rem; align-items:center; margin-top:3.5rem;">
+      <figure class="image" data-ratio="4/3" data-df-entrance="up" style="--df-motion-delay:150ms; flex:0 0 700px; margin:0;">
+        <img src="https://picsum.photos/id/48/960/720" alt="An open laptop on a wooden table in a bright café" loading="lazy" width="960" height="720" style="width:100%; height:100%; object-fit:cover;" />
+        <figcaption class="image-caption" style="font-size:1.25rem;">Where our customers work (stock photo).</figcaption>
+      </figure>
+      <div style="flex:1 1 0; min-width:0;">
+        <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; font-family:'Avenir Next', 'Segoe UI', Arial, sans-serif; font-weight:700; letter-spacing:-0.02em;">Retention is a product decision</h2>
+        <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:300ms; font-size:1.7rem;">Nimbus accounts add seats every quarter because onboarding takes ten minutes. Pathway accounts leave because it takes ten days.</p>
+      </div>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Tie retention to onboarding - the key insight.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="north" data-anim-in-blocks="5" data-anim-in-color="#0A7E8C" aria-label="Portfolio table">
+    <header class="presentation-header"><span>The data</span><span>FY 2025</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" style="font-size:1.45rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">Fictional software portfolio, FY 2025 (synthetic).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">Product</th><th class="table-head" style="text-align:right">Growth</th><th class="table-head" style="text-align:right">NRR</th><th class="table-head" style="text-align:right">ARR (€ M)</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row" style="font-weight:700"><td class="table-cell">Nimbus</td><td class="table-cell" style="text-align:right">+62%</td><td class="table-cell" style="text-align:right">128%</td><td class="table-cell" style="text-align:right">14</td></tr>
+          <tr class="table-row"><td class="table-cell">Ledgerly</td><td class="table-cell" style="text-align:right">+48%</td><td class="table-cell" style="text-align:right">118%</td><td class="table-cell" style="text-align:right">22</td></tr>
+          <tr class="table-row"><td class="table-cell">Relay</td><td class="table-cell" style="text-align:right">+33%</td><td class="table-cell" style="text-align:right">112%</td><td class="table-cell" style="text-align:right">9</td></tr>
+          <tr class="table-row"><td class="table-cell">Harbor CRM</td><td class="table-cell" style="text-align:right">+18%</td><td class="table-cell" style="text-align:right">104%</td><td class="table-cell" style="text-align:right">41</td></tr>
+          <tr class="table-row"><td class="table-cell">Atlas</td><td class="table-cell" style="text-align:right">+12%</td><td class="table-cell" style="text-align:right">109%</td><td class="table-cell" style="text-align:right">31</td></tr>
+          <tr class="table-row"><td class="table-cell">Pathway</td><td class="table-cell" style="text-align:right">+71%</td><td class="table-cell" style="text-align:right">96%</td><td class="table-cell" style="text-align:right">6</td></tr>
+          <tr class="table-row"><td class="table-cell">Sprout</td><td class="table-cell" style="text-align:right">+55%</td><td class="table-cell" style="text-align:right">88%</td><td class="table-cell" style="text-align:right">4</td></tr>
+          <tr class="table-row"><td class="table-cell">Quill</td><td class="table-cell" style="text-align:right">+9%</td><td class="table-cell" style="text-align:right">93%</td><td class="table-cell" style="text-align:right">12</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">NRR above 100% means existing customers grow on their own.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-family:'Avenir Next', 'Segoe UI', Arial, sans-serif; font-weight:700; letter-spacing:-0.02em; font-size:3rem;">“Growth without retention is a leaky bucket with a fast tap. Pathway taught us that in one year.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#0A7E8C; color:#F3F6FA;"><span class="avatar-fallback">SO</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Sara Osei<br /><span style="opacity:0.7; font-size:1.4rem;">Chief product officer - 8 products, 1 portfolio</span></p>
+    </div>
+    <p class="presentation-note">The bucket metaphor lands with finance people.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="plan" style="justify-content:flex-start;" aria-label="2026 plan">
+    <header class="presentation-header"><span>Plan 2026</span><span>Target positions</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Avenir Next', 'Segoe UI', Arial, sans-serif; font-weight:700; letter-spacing:-0.02em;">The 2026 plan: move Pathway and Sprout up, not right</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The bubbles travel to their targets - retention first for the leaky ones.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Questions from the board">
+    <header class="presentation-header"><span>Q & A</span><span>Board meeting</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; font-family:'Avenir Next', 'Segoe UI', Arial, sans-serif; font-weight:700; letter-spacing:-0.02em;">Questions from the board</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="sq-qa" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Should we sunset Quill?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Not yet - €12 M ARR at 93% retention still returns cash; we freeze new features instead.</p></div>
+      </details>
+      <details class="accordion-item" name="sq-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Why not push Harbor CRM harder?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Its market grows 6% a year; 18% growth already means taking share.</p></div>
+      </details>
+      <details class="accordion-item" name="sq-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>What does the plan cost?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">€9 M in onboarding and success teams, mostly for Pathway and Sprout.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Quill is the emotional one - keep it factual.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Takeaways">
+    <header class="presentation-header"><span>Takeaways</span><span>Portfolio actions</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">◼</span><span>Fund the stars from the cash cows - deliberately, with a number.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">◼</span><span>Fix retention before buying growth.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">◼</span><span>Freeze, don’t kill, the low-growth, high-cash products.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">◼</span><span>Review positions quarterly; the map moves.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Four actions for the minutes.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-anim-in="blocksIn" data-anim-in-direction="south" data-anim-in-blocks="5" data-anim-in-color="#0A7E8C" aria-label="Closing">
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-family:'Avenir Next', 'Segoe UI', Arial, sans-serif; font-weight:700; letter-spacing:-0.02em;">Position answers two questions at once</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">Eight fictional products, synthetic figures - the quadrant logic is the real tool.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">Close on the method.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) - build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-quadrants');
+    const TEXT = '#12304A', MUTED = '#6E8193', TEAL = '#0A7E8C', DIM = 'rgba(18,48,74,.18)';
+    // [product, growth %, NRR %, ARR € M, 2026 target growth, 2026 target NRR]
+    const p = [
+      ['Nimbus', 62, 128, 14, 55, 126], ['Ledgerly', 48, 118, 22, 42, 118], ['Relay', 33, 112, 9, 38, 114], ['Harbor CRM', 18, 104, 41, 16, 106],
+      ['Atlas', 12, 109, 31, 14, 110], ['Pathway', 71, 96, 6, 58, 106], ['Sprout', 55, 88, 4, 45, 101], ['Quill', 9, 93, 12, 4, 94],
+    ];
+    const star = (r) => r[1] >= 30 && r[2] >= 100;
+    const G = { left: 190, right: 190, top: 330, bottom: 150 };
+    const map = (xi, yi, color) => ({
+      grid: G,
+      xAxis: { type: 'value', min: 0, max: 80, name: 'growth, year over year', nameLocation: 'middle', nameGap: 52, axisLabel: { color: MUTED, formatter: '{value}%' }, splitLine: { show: false } },
+      yAxis: { type: 'value', min: 80, max: 135, name: 'net revenue retention', nameLocation: 'middle', nameGap: 84, axisLabel: { color: MUTED, formatter: '{value}%' } },
+      series: [{ id: 'products', type: 'scatter',
+        data: p.map((r) => ({ name: r[0], value: [r[xi], r[yi], r[3]], symbolSize: 22 + r[3] * 2.4, itemStyle: { color: color(r), borderColor: '#F3F6FA', borderWidth: 3 } })),
+        label: { show: true, formatter: '{b}', position: 'top', distance: 10, color: TEXT, fontWeight: 700 },
+        labelLayout: { hideOverlap: false, moveOverlap: 'shiftY' },
+        markLine: { symbol: 'none', silent: true, label: { show: false }, lineStyle: { color: MUTED, type: 'dashed', width: 2 }, data: [{ xAxis: 30 }, { yAxis: 100 }] },
+        markArea: { silent: true, itemStyle: { color: 'rgba(10,126,140,.08)' }, label: { color: TEAL, fontWeight: 700, position: 'insideTopRight' }, data: [[{ name: 'STARS', xAxis: 30, yAxis: 100 }, { xAxis: 80, yAxis: 135 }]] } }],
+    });
+    const byArr = p.slice().sort((a, b) => b[3] - a[3]);
+
+    df$.shadcn.chart.deck(deck, {
+      base: { tooltip: { trigger: 'item' } },
+      states: {
+        map: map(1, 2, (r) => (star(r) ? TEAL : TEXT)),
+        stars: map(1, 2, (r) => (star(r) ? TEAL : DIM)),
+        arr: {
+          grid: { left: 250, right: 190, top: 320, bottom: 150 },
+          xAxis: { type: 'value', max: 45, axisLabel: { color: MUTED, formatter: '€{value}M' } },
+          yAxis: { type: 'category', inverse: true, data: byArr.map((r) => r[0]), axisLine: { show: false }, axisLabel: { color: TEXT, fontWeight: 700 } },
+          series: [{ id: 'products', type: 'bar', barWidth: '60%',
+            data: byArr.map((r) => ({ name: r[0], value: r[3], itemStyle: { color: star(r) ? TEAL : TEXT } })),
+            label: { show: true, position: 'right', formatter: '€{c} M', color: TEXT, fontWeight: 700 } }],
+        },
+        plan: map(4, 5, (r) => (r[0] === 'Pathway' || r[0] === 'Sprout' ? TEAL : DIM)),
+      },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 13-scatter-quadrants (Annual Report Corporate) - fictional products, synthetic figures.</p>
+<SourceFiles component="presentation" />
+</DocPage>

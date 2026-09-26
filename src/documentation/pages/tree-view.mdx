@@ -1,6 +1,6 @@
 ---
 title: "Tree View"
-description: "Tree View component — hierarchical data display with expand/collapse."
+description: "Tree View component - hierarchical data display with expand/collapse."
 slug: "tree-view"
 ---
 
@@ -156,12 +156,12 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
   <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
-    <li><code>default</code> — the branch's authored open/closed state (restored from the init snapshot)</li>
-    <li><code>expanded</code> — branch open, children visible (per-branch API; <code>aria-expanded</code> stays in sync via the toggle event)</li>
+    <li><code>default</code> - the branch's authored open/closed state (restored from the init snapshot)</li>
+    <li><code>expanded</code> - branch open, children visible (per-branch API; <code>aria-expanded</code> stays in sync via the toggle event)</li>
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/tree-view-\{state\}.png</code>.</p>
 
-Machine contract — verified against <a href="../schemas/tree-view.schema.json"><code>tree-view.schema.json</code></a> by <code>bun run verify</code>:
+Machine contract - verified against <a href="../schemas/tree-view.schema.json"><code>tree-view.schema.json</code></a> by <code>bun run verify</code>:
 
 ```states
 | State | Type | Values | Default | Description |

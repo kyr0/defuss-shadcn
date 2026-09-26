@@ -1,7 +1,7 @@
 // -- Product Showcase ----------------------------------------
 // A poster frame with a circular play button; clicking it swaps to the
 // native <video> (which then carries its own controls). No custom player
-// chrome — the browser draws everything once the video is visible.
+// chrome - the browser draws everything once the video is visible.
 // State API per AGENTS.md: 'default' (poster) | 'playing' (video).
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
@@ -33,7 +33,7 @@ function triggerStateChange(showcase, stateName, _config) {
       // screenshot/agent drives setState without a user gesture
       if (video) {
         video.muted = true;
-        video.play().catch(() => { /* autoplay blocked — poster stays, controls still work */ });
+        video.play().catch(() => { /* autoplay blocked - poster stays, controls still work */ });
       }
       break;
   }

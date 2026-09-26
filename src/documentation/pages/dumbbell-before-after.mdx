@@ -1,0 +1,221 @@
+---
+title: "Dumbbell Before/After - Presentation"
+description: "Financial Broadsheet design language presenting a city’s rent rise 2019–2025 as a 12-slide deck - dumbbells that re-sort by growth, collapse into change bars and split into rent-burden columns on one morphing chart."
+slug: "dumbbell-before-after"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="dumbbell-before-after" title="Dumbbell Before/After" component="presentation">
+  Financial Broadsheet: cream newsprint, bottle-green ink and one burgundy for the verdict - how rents moved across seven districts, told on a single chart that re-sorts, collapses and splits as the argument advances.
+</PageHeader>
+
+```html example label="Financial Broadsheet" schema="none" height="26" hint="Slides wipe down like a turned page (data-anim-in on the deck), burgundy curtains open the data section. One deck-level chart (df$.shadcn.chart.deck): the dumbbells re-sort by growth, collapse into percentage bars, then split into before/after rent-burden columns. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-dumbbell" data-anim-in="wipeIn" data-anim-in-direction="north" data-anim-out="fadeOut" style="--presentation-ink:#1D2A23;--presentation-ink-foreground:#F4EEDC;--presentation-paper:#F4EEDC;--presentation-paper-foreground:#1D2A23;--presentation-accent:#A51C30;font-family:Georgia, 'Times New Roman', serif;" tabindex="-1" aria-label="Rents 2019 to 2025 - a broadsheet deck">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="Monthly rent per square metre in seven districts, 2019 versus 2025, Harbor up 61 percent, then rent as a share of median income"></div>
+  <section class="slide" data-slide data-theme="paper" aria-label="Cover">
+    <div aria-hidden="true" style="position:absolute; inset-inline:7%; inset-block-start:7%; border-block:3px double currentColor; height:1.1rem; opacity:0.5;"></div>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Dumbbell · Financial Broadsheet</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-weight:400; letter-spacing:-0.01em; font-size:6.5rem;">Rents, six years on</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">Seven districts, two dates, one gap that matters more than either endpoint.</p>
+    <p class="presentation-note">The double rule is the masthead; the deck reads like the business section.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="gap" style="justify-content:flex-start;" aria-label="Rent per m²">
+    <header class="presentation-header"><span>The market</span><span>€ per m² per month · 2019 → 2025</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:400; letter-spacing:-0.01em;">Every district got dearer - Old Town leads at €19.80</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Hollow dot 2019, burgundy dot 2025: the line between them is the story.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="growth" style="justify-content:flex-start;" aria-label="Sorted by growth">
+    <header class="presentation-header"><span>The market</span><span>Sorted by % change</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:400; letter-spacing:-0.01em;">Harbor moved fastest: +61% in six years</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The same dumbbells re-sort - the cheapest districts rose the most.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="change" style="justify-content:flex-start;" aria-label="Change">
+    <header class="presentation-header"><span>The change</span><span>% change 2019 → 2025</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:400; letter-spacing:-0.01em;">The catch-up: cheap districts are closing the gap</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Each dumbbell collapses into its change bar.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Key figures">
+    <p class="presentation-eyebrow" data-df-entrance="fade">Three numbers for the housing committee</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#A51C30; font-weight:400; letter-spacing:-0.01em;">+<span data-count="61">61</span>%</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">rent rise in Harbor since 2019</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-weight:400; letter-spacing:-0.01em;">€<span data-count="19.8">19.8</span></p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">per m² in Old Town - the new ceiling</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-weight:400; letter-spacing:-0.01em;"><span data-count="31">31</span>%</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">of median income for a 70 m² flat, city average</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">The rule of thumb says 30%. Five of seven districts are above it.</p>
+    <p class="presentation-note">The 30% line is the one people remember.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Street view">
+    <header class="presentation-header"><span>On the street</span><span>Harbor district</span></header>
+    <div style="display:flex; gap:4.5rem; align-items:center; margin-top:3.5rem;">
+      <div style="flex:1 1 0; min-width:0;">
+        <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; font-weight:400; letter-spacing:-0.01em;">Warehouses became flats; the flats became expensive</h2>
+        <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:300ms; font-size:1.7rem;">Harbor had the cheapest rents in 2019. Twelve conversions later it sits mid-table - and still climbing.</p>
+      </div>
+      <figure class="image" data-ratio="4/3" data-df-entrance="wipe" style="--df-motion-delay:150ms; flex:0 0 700px; margin:0;">
+        <img src="https://picsum.photos/id/57/960/720" alt="A quiet city street lined with brick buildings and parked cars" loading="lazy" width="960" height="720" style="width:100%; height:100%; object-fit:cover;" />
+        <figcaption class="image-caption" style="font-size:1.25rem;">A converted street near the harbor (stock photo).</figcaption>
+      </figure>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Pause on the photo - this is what +61% looks like.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="north" data-anim-in-blocks="6" data-anim-in-color="#A51C30" aria-label="Rent table">
+    <header class="presentation-header"><span>The data</span><span>€ per m² per month</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" style="font-size:1.45rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">Median asking rent per m², seven districts (synthetic).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">District</th><th class="table-head" style="text-align:right">2019</th><th class="table-head" style="text-align:right">2025</th><th class="table-head" style="text-align:right">Change</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row"><td class="table-cell">Old Town</td><td class="table-cell" style="text-align:right">14.20</td><td class="table-cell" style="text-align:right">19.80</td><td class="table-cell" style="text-align:right">+39%</td></tr>
+          <tr class="table-row"><td class="table-cell">Riverside</td><td class="table-cell" style="text-align:right">12.60</td><td class="table-cell" style="text-align:right">18.90</td><td class="table-cell" style="text-align:right">+50%</td></tr>
+          <tr class="table-row"><td class="table-cell">University</td><td class="table-cell" style="text-align:right">11.80</td><td class="table-cell" style="text-align:right">16.40</td><td class="table-cell" style="text-align:right">+39%</td></tr>
+          <tr class="table-row" style="font-weight:700"><td class="table-cell">Harbor</td><td class="table-cell" style="text-align:right">9.40</td><td class="table-cell" style="text-align:right">15.10</td><td class="table-cell" style="text-align:right">+61%</td></tr>
+          <tr class="table-row"><td class="table-cell">Midtown</td><td class="table-cell" style="text-align:right">10.90</td><td class="table-cell" style="text-align:right">14.30</td><td class="table-cell" style="text-align:right">+31%</td></tr>
+          <tr class="table-row"><td class="table-cell">Suburbs</td><td class="table-cell" style="text-align:right">8.90</td><td class="table-cell" style="text-align:right">11.20</td><td class="table-cell" style="text-align:right">+26%</td></tr>
+          <tr class="table-row"><td class="table-cell">Industrial</td><td class="table-cell" style="text-align:right">7.10</td><td class="table-cell" style="text-align:right">10.60</td><td class="table-cell" style="text-align:right">+49%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Figures in the table, argument in the chart.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-weight:400; letter-spacing:-0.01em;">“We used to send students to Harbor. Now we send them to Industrial - and next year, probably further.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#A51C30; color:#F4EEDC;"><span class="avatar-fallback">AV</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Amira Vogt<br /><span style="opacity:0.7; font-size:1.4rem;">Student housing office - 11 years of placements</span></p>
+    </div>
+    <p class="presentation-note">The quote makes the geography personal.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="burden" style="justify-content:flex-start;" aria-label="Rent burden">
+    <header class="presentation-header"><span>The burden</span><span>Rent for 70 m² as % of median income</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:400; letter-spacing:-0.01em;">Five districts now cost more than 30% of income</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The dots become columns: 2019 against 2025, per district.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Questions from the committee">
+    <header class="presentation-header"><span>Q & A</span><span>Housing committee</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; font-weight:400; letter-spacing:-0.01em;">Questions from the committee</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="db-qa" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Are these asking rents or paid rents?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Asking rents for new contracts; sitting tenants pay on average 18% less.</p></div>
+      </details>
+      <details class="accordion-item" name="db-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Did incomes not rise too?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">They did, by 14% - which is why the burden rose by points, not by the full rent increase.</p></div>
+      </details>
+      <details class="accordion-item" name="db-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Which district is next?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Industrial: +49% already, and the first two conversions open next spring.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Keep one answer open at a time.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Takeaways">
+    <header class="presentation-header"><span>Takeaways</span><span>For the housing plan</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">§</span><span>The cheapest districts rise fastest - protect them before, not after.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">§</span><span>Conversions drive the jumps: track permits, not just rents.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">§</span><span>Report burden, not only price - 30% of income is the line people feel.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">§</span><span>Industrial is where Harbor was in 2019.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Four lines - then open the floor.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-anim-in="blocksIn" data-anim-in-direction="south" data-anim-in-blocks="5" data-anim-in-color="#A51C30" aria-label="Closing">
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-weight:400; letter-spacing:-0.01em;">Mind the gap</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">Seven districts, two dates - synthetic figures, a very real pattern.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">Close on the metaphor.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) - build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-dumbbell');
+    const TEXT = '#1D2A23', MUTED = '#7C7F6E', BURG = '#A51C30', GREEN = '#2F5D46', LINE = 'rgba(29,42,35,.28)';
+    const G = { left: 250, right: 190, top: 320, bottom: 150 };
+    // [district, 2019, 2025, burden 2019 %, burden 2025 %]
+    const rows = [['Old Town', 14.2, 19.8, 30, 36], ['Riverside', 12.6, 18.9, 27, 36], ['University', 11.8, 16.4, 33, 40], ['Harbor', 9.4, 15.1, 22, 31], ['Midtown', 10.9, 14.3, 25, 32], ['Suburbs', 8.9, 11.2, 20, 23], ['Industrial', 7.1, 10.6, 17, 22]];
+    const pct = (r) => Math.round((r[2] / r[1] - 1) * 100);
+    const byLevel = rows.slice().sort((a, b) => b[2] - a[2]);
+    const byGrowth = rows.slice().sort((a, b) => pct(b) - pct(a));
+    const cats = (list) => ({ type: 'category', inverse: true, data: list.map((r) => r[0]), axisLine: { show: false }, axisLabel: { color: TEXT, fontWeight: 700 } });
+    const euro = { type: 'value', min: 6, max: 22, interval: 4, axisLabel: { color: MUTED, formatter: (v) => '€' + v } };
+
+    const dumbbell = (list, hot) => ({
+      grid: G, xAxis: euro, yAxis: cats(list),
+      series: [
+        { id: 'base', type: 'bar', stack: 'd', barWidth: 5, silent: true, data: list.map((r) => ({ name: r[0], value: r[1] })), itemStyle: { color: 'transparent' } },
+        { id: 'span', type: 'bar', stack: 'd', barWidth: 5, silent: true, data: list.map((r) => ({ name: r[0], value: +(r[2] - r[1]).toFixed(1), itemStyle: { color: r[0] === hot ? BURG : LINE } })) },
+        { id: 'before', type: 'scatter', symbolSize: 24, data: list.map((r) => ({ name: r[0], value: [r[1], r[0]] })), itemStyle: { color: '#F4EEDC', borderColor: GREEN, borderWidth: 3 } },
+        { id: 'after', type: 'scatter', symbolSize: 24, data: list.map((r) => ({ name: r[0], value: [r[2], r[0]], itemStyle: { color: !hot || r[0] === hot ? BURG : GREEN } })),
+          label: { show: true, position: 'right', distance: 18, formatter: (p) => '+' + pct(list[p.dataIndex]) + '%', color: TEXT, fontWeight: 700 } },
+      ],
+    });
+
+    df$.shadcn.chart.deck(deck, {
+      base: { tooltip: { trigger: 'item' } },
+      states: {
+        gap: dumbbell(byLevel, null),
+        growth: dumbbell(byGrowth, 'Harbor'),
+        change: {
+          grid: G, xAxis: { type: 'value', max: 70, interval: 10, axisLabel: { color: MUTED, formatter: '{value}%' } }, yAxis: cats(byGrowth),
+          series: [{ id: 'span', type: 'bar', barWidth: '56%',
+            data: byGrowth.map((r) => ({ name: r[0], value: pct(r), itemStyle: { color: r[0] === 'Harbor' || r[0] === 'Industrial' ? BURG : GREEN } })),
+            label: { show: true, position: 'right', formatter: '+{c}%', color: TEXT, fontWeight: 700 } }],
+        },
+        burden: {
+          legend: { top: 300, right: 190, textStyle: { color: TEXT } },
+          grid: { left: 150, right: 120, top: 370, bottom: 150 },
+          xAxis: { type: 'category', data: byLevel.map((r) => r[0]), axisLabel: { interval: 0, color: TEXT, fontWeight: 700 } },
+          yAxis: { type: 'value', max: 45, interval: 15, axisLabel: { color: MUTED, formatter: '{value}%' } },
+          series: [
+            { id: 'before', name: '2019', type: 'bar', barGap: '8%', data: byLevel.map((r) => ({ name: r[0], value: r[3] })), itemStyle: { color: LINE } },
+            { id: 'after', name: '2025', type: 'bar', data: byLevel.map((r) => ({ name: r[0], value: r[4] })), itemStyle: { color: BURG },
+              label: { show: true, position: 'top', formatter: '{c}%', color: TEXT, fontWeight: 700 },
+              markLine: { symbol: 'none', silent: true, lineStyle: { color: TEXT, type: 'dashed', width: 2 }, label: { formatter: '30% rule', color: TEXT, position: 'insideEndTop' }, data: [{ yAxis: 30 }] } },
+          ],
+        },
+      },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 03-dumbbell-before-after (Financial Broadsheet) - a fictional city, synthetic rents.</p>
+<SourceFiles component="presentation" />
+</DocPage>

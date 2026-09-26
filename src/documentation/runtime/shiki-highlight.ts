@@ -1,5 +1,5 @@
 // Single-namespace globals (AGENTS.md "No window globals"): docs data
-// lives under df$.shadcn.docs — never on window. This module runs BEFORE
+// lives under df$.shadcn.docs - never on window. This module runs BEFORE
 // all.js installs df$ (document order), so `docs` stages locally and
 // merges into the live namespace on DOMContentLoaded.
 var docs = {};
@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // -- shiki-highlight.js ----------------------------------------
 // Doc-site syntax highlighting via Shiki CDN.
-// Loaded as <script type="module"> — highlights all <pre><code> blocks.
+// Loaded as <script type="module"> - highlights all <pre><code> blocks.
 // Uses dual themes (github-light / github-dark) with CSS-variable output
 // so dark mode toggles instantly via html.dark class.
 
@@ -82,6 +82,18 @@ highlightAll()
 
 // Expose globally for spec modal and SPA re-init
 docs.__shikiHighlightAll = highlightAll
+
+// CodeExample editors paint through the same engine and themes
+// (runtime/code-example.ts overlays this HTML under the textarea)
+docs.__shikiCodeToHtml = function (raw, lang) {
+  return codeToHtml(raw, Object.assign({ lang: lang }, opts))
+}
+
+// code-example.js initializes before this module has merged into the live
+// namespace (it loads earlier), so it waits for this signal to paint
+document.addEventListener('DOMContentLoaded', function () {
+  document.dispatchEvent(new Event('docs:shiki-ready'))
+})
 
 // Re-highlight after SPA navigation. onPageReady joins the live namespace
 // at DOMContentLoaded (this module runs before all.js installs df$), so

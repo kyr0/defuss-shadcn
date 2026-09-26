@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="color-scheme" content="light dark" /><link rel="icon" href="images/favicon.webp" type="image/webp" /><meta name="description" content="Animation Canvas component - a chess-board slide canvas: slides side by side on one board, arrow-key navigation with per-slide df$.anim transitions, and a zoom-out overview with click-to-zoom." /><meta property="og:title" content="Animation Canvas - defuss-shadcn" /><meta property="og:description" content="Animation Canvas component - a chess-board slide canvas: slides side by side on one board, arrow-key navigation with per-slide df$.anim transitions, and a zoom-out overview with click-to-zoom." /><meta property="og:type" content="website" /><meta property="og:url" content="https://kyr0.github.io/defuss-shadcn/documentation/anim-canvas.html" /><meta property="og:site_name" content="defuss-shadcn" /><meta name="twitter:card" content="summary" /><meta name="twitter:title" content="Animation Canvas - defuss-shadcn" /><meta name="twitter:description" content="Animation Canvas component - a chess-board slide canvas: slides side by side on one board, arrow-key navigation with per-slide df$.anim transitions, and a zoom-out overview with click-to-zoom." /><title>Animation Canvas - defuss-shadcn</title><link id="tokens-css" rel="stylesheet" href="../theme/utils/default-semantic-tokens.css" /><script src="js/themes.js"></script><script src="js/theme-switcher.js"></script><script src="js/layout.js"></script><script src="js/search-index.js"></script><link rel="stylesheet" href="../theme/utils/sizing.css" /><link rel="stylesheet" href="../theme/utils/layout.css" /><link rel="stylesheet" href="../theme/utils/accessibility.css" /><link rel="stylesheet" href="css/docs-theme.css" /><link rel="stylesheet" href="css/docs-utilities.css" /><link rel="stylesheet" href="css/layout.css" /><link rel="stylesheet" href="css/code-example.css" /><link rel="stylesheet" href="../components/all.css" /></head><body><header class="site-header"><a href="index.html" class="header-brand"><img src="images/favicon.webp" alt="defuss-shadcn logo" class="header-brand-logo" /><span class="header-brand-name">defuss<em>-shadcn</em></span></a><button class="sidebar-toggle" id="sidebar-toggle" type="button" aria-label="Collapse sidebar" title="Collapse sidebar (⌘B)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg></button><div class="header-search" role="search"><input type="text" class="header-search-input" placeholder="Search docs… (⌘K)" aria-label="Search documentation" autocomplete="off" readonly="" /></div><div style="flex:1;"></div><nav style="display:flex;align-items:center;gap:0.5rem;"><span class="badge header-version" data-variant="outline" style="font-family:var(--font-mono);">v0.9.0</span><span class="separator" data-orientation="vertical" role="none" aria-hidden="true"></span><a href="https://github.com/kyr0/defuss-shadcn" target="_blank" rel="noopener" class="header-action"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg><span class="github-label">GitHub</span><span class="github-stars"></span></a><span class="separator" data-orientation="vertical" role="none" aria-hidden="true"></span><button id="wide-toggle" class="header-action theme-toggle-btn" aria-label="Toggle wide layout" aria-pressed="false"><svg id="icon-wide-expand" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg><svg id="icon-wide-collapse" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/><path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/></svg></button><button id="theme-toggle" class="header-action theme-toggle-btn" aria-label="Toggle dark mode"><svg id="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg><svg id="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button><button id="theme-selector-btn" class="header-action theme-toggle-btn" aria-label="Change color theme" popovertarget="theme-popover"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="0.5" fill="currentColor"/><circle cx="17.5" cy="10.5" r="0.5" fill="currentColor"/><circle cx="8.5" cy="7.5" r="0.5" fill="currentColor"/><circle cx="6.5" cy="12" r="0.5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></button></nav></header><div id="theme-popover" popover="" class="theme-popover"><div class="theme-popover-header"><span class="theme-popover-title">Theme</span><button class="theme-reset-btn" id="theme-reset-btn">Reset</button></div><div class="theme-grid" id="theme-grid"></div></div><dialog id="docs-palette" class="command" aria-label="Search documentation"><div class="command-content"><div class="command-input-wrapper"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input class="command-input" type="text" placeholder="Search documentation…" autocomplete="off" autocorrect="off" spellcheck="false" /></div><div class="command-list" id="docs-palette-list"></div><div class="command-empty" hidden="">No results found.</div></div></dialog><div class="flex" style="margin-top: 3.5rem; min-height: calc(100vh - 3.5rem);"><aside class="app-sidebar site-sidebar" id="docs-sidebar" data-state="expanded"><div class="sidebar-content"><details class="sidebar-group nav-section" open="" data-nav-section="Introduction"><summary><span>Introduction</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="index.html"><span>Getting Started</span></a><a class="nav-link sidebar-link" href="installation.html"><span>Installation</span></a><a class="nav-link sidebar-link" href="how-to-use.html"><span>How to Use</span></a><a class="nav-link sidebar-link" href="component-skills.html"><span>Component Skills</span></a><a class="nav-link sidebar-link" href="architecture.html"><span>Verified Agentic Engineering (VAE)</span></a><a class="nav-link sidebar-link" href="changelog.html"><span>Changelog</span></a></nav></details><details class="sidebar-group nav-section" open="" data-nav-section="Guides"><summary><span>Guides</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="theming.html"><span>Theming</span></a><a class="nav-link sidebar-link" href="dark-mode.html"><span>Dark Mode</span></a><a class="nav-link sidebar-link" href="data-attribute-api.html"><span>Data Attribute API</span></a><a class="nav-link sidebar-link" href="state-api.html"><span>State API</span></a><a class="nav-link sidebar-link" href="dom-querying.html"><span>DOM Querying &amp; Morphing</span></a><a class="nav-link sidebar-link" href="cascade-layers.html"><span>Cascade Layers</span></a><a class="nav-link sidebar-link" href="es-modules.html"><span>JavaScript Modules</span></a><a class="nav-link sidebar-link" href="native-web-apis.html"><span>Native Web APIs</span></a><details class="sidebar-submenu" open=""><summary><a class="nav-link sidebar-link" href="animations.html"><span>Animations</span></a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="motion.html"><span>Motion</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link active" href="anim-canvas.html" aria-current="page"><span>Animation Canvas</span><span class="type-badge" data-type="TPL" title="TPL">TPL</span></a><a class="nav-link sidebar-link" href="anim-fade.html"><span>Fade</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-up.html"><span>Slide Up</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-down.html"><span>Slide Down</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-left.html"><span>Slide Left</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-right.html"><span>Slide Right</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-zoom.html"><span>Zoom</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-zoom-out.html"><span>Zoom Out</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-pop.html"><span>Pop</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-spin.html"><span>Spin</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-flip.html"><span>Flip</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-skew.html"><span>Skew</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-blur.html"><span>Blur</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-wipe.html"><span>Wipe</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-wipe-up.html"><span>Wipe Up</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-iris.html"><span>Iris</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="sidebar-submenu"><summary><a class="nav-link sidebar-link" href="sizing.html"><span>Sizing</span></a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="width-height.html"><span>Width &amp; Height</span></a><a class="nav-link sidebar-link" href="spacing.html"><span>Spacing</span></a><a class="nav-link sidebar-link" href="density.html"><span>Density</span></a></nav></details><details class="sidebar-submenu"><summary><a class="nav-link sidebar-link" href="layout.html"><span>Layout</span></a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="container.html"><span>Container</span></a><a class="nav-link sidebar-link" href="flex.html"><span>Flex</span></a><a class="nav-link sidebar-link" href="grid.html"><span>Grid</span></a></nav></details><a class="nav-link sidebar-link" href="accessibility.html"><span>Accessibility</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Primitives"><summary><span>Primitives</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="typography.html"><span>Typography</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="separator.html"><span>Separator</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="icon.html"><span>Icon</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="heading-anchor.html"><span>Heading Anchor</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Actions"><summary><span>Actions</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="button.html"><span>Button</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="toggle.html"><span>Toggle</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="toggle-group.html"><span>Toggle Group</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="button-group.html"><span>Button Group</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="toolbar.html"><span>Toolbar</span><span class="type-badge" data-type="ORG" title="ORG">ORG</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Forms &amp; Inputs"><summary><span>Forms &amp; Inputs</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="label.html"><span>Label</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="input.html"><span>Input</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="textarea.html"><span>Textarea</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="checkbox.html"><span>Checkbox</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="radio.html"><span>Radio Group</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="switch.html"><span>Switch</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="slider.html"><span>Slider</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="select.html"><span>Select</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="number-input.html"><span>Number Input</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="file-input.html"><span>File Input</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="color-picker.html"><span>Color Picker</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="date-picker.html"><span>Date Picker</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="combobox.html"><span>Combobox</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="form.html"><span>Form</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Data Display"><summary><span>Data Display</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="badge.html"><span>Badge</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="type-badge.html"><span>Type Badge</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="avatar.html"><span>Avatar</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="card.html"><span>Card</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><details class="sidebar-submenu"><summary><a class="nav-link sidebar-link" href="image.html"><span>Image</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="image-gallery.html"><span>Image Gallery</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><a class="nav-link sidebar-link" href="statistic.html"><span>Statistic</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="table.html"><span>Table</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="collapsible.html"><span>Collapsible</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="timeline.html"><span>Timeline</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="tree-view.html"><span>Tree View</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="calendar.html"><span>Calendar</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="carousel.html"><span>Carousel</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="scroll-area.html"><span>Scroll Area</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="sortable.html"><span>Sortable</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Charts"><summary><span>Charts</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="chart.html"><span>Chart</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="charts-comparison.html"><span>Comparison</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="charts-change.html"><span>Change over time</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="charts-distribution.html"><span>Distribution</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="charts-composition.html"><span>Composition</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="charts-election.html"><span>Election</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="charts-narrative.html"><span>Narrative</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Feedback &amp; Status"><summary><span>Feedback &amp; Status</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="spinner.html"><span>Spinner</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="skeleton.html"><span>Skeleton</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="progress.html"><span>Progress</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="alert.html"><span>Alert</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="alert-dialog.html"><span>Alert Dialog</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="toast.html"><span>Toast</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Overlays"><summary><span>Overlays</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="popover.html"><span>Popover</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="tooltip.html"><span>Tooltip</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="context-menu.html"><span>Context Menu</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="dialog.html"><span>Dialog</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="sheet.html"><span>Sheet</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="accordion.html"><span>Accordion</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="command.html"><span>Command</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Navigation"><summary><span>Navigation</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="breadcrumb.html"><span>Breadcrumb</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="toc.html"><span>Table of Contents</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="pagination.html"><span>Pagination</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="steps.html"><span>Steps</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="tabs.html"><span>Tabs</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="dropdown.html"><span>Dropdown Menu</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="navigation-menu.html"><span>Navigation Menu</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="theme-switcher.html"><span>Theme Switcher</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Application"><summary><span>Application</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="sidebar.html"><span>Sidebar</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="resizer.html"><span>Resizer</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Presentations"><summary><span>Presentations</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="presentation.html"><span>Presentation</span><span class="type-badge" data-type="TPL" title="TPL">TPL</span></a><details class="sidebar-submenu"><summary><a class="nav-link sidebar-link" href="presentations.html"><span>Deck Gallery</span></a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="system-in-numbers.html"><span>The System in Numbers</span></a><a class="nav-link sidebar-link" href="editorial-highlight-bars.html"><span>Editorial Highlight Bars</span></a><a class="nav-link sidebar-link" href="lollipop-ranking.html"><span>Lollipop Ranking</span></a><a class="nav-link sidebar-link" href="dumbbell-before-after.html"><span>Dumbbell Before/After</span></a><a class="nav-link sidebar-link" href="slopegraph.html"><span>Slopegraph</span></a><a class="nav-link sidebar-link" href="diverging-bars.html"><span>Diverging Bars</span></a><a class="nav-link sidebar-link" href="waterfall.html"><span>Waterfall</span></a><a class="nav-link sidebar-link" href="normalized-stack.html"><span>Normalized Stack</span></a><a class="nav-link sidebar-link" href="bump-ranking.html"><span>Bump Ranking</span></a><a class="nav-link sidebar-link" href="bar-race.html"><span>Bar Race</span></a><a class="nav-link sidebar-link" href="confidence-band.html"><span>Confidence Band</span></a><a class="nav-link sidebar-link" href="annotated-timeseries.html"><span>Annotated Time Series</span></a><a class="nav-link sidebar-link" href="small-multiples.html"><span>Small Multiples</span></a><a class="nav-link sidebar-link" href="scatter-quadrants.html"><span>Scatter Quadrants</span></a><a class="nav-link sidebar-link" href="jittered-distribution.html"><span>Jittered Distribution</span></a><a class="nav-link sidebar-link" href="heatmap-matrix.html"><span>Heatmap Matrix</span></a><a class="nav-link sidebar-link" href="calendar-heatmap.html"><span>Calendar Heatmap</span></a><a class="nav-link sidebar-link" href="theme-river.html"><span>Theme River</span></a><a class="nav-link sidebar-link" href="treemap.html"><span>Treemap</span></a><a class="nav-link sidebar-link" href="sunburst.html"><span>Sunburst</span></a><a class="nav-link sidebar-link" href="sankey.html"><span>Sankey</span></a><a class="nav-link sidebar-link" href="chord.html"><span>Chord</span></a><a class="nav-link sidebar-link" href="editorial-gauge.html"><span>Editorial Gauge</span></a><a class="nav-link sidebar-link" href="parliament-hemicycle.html"><span>Parliament Hemicycle</span></a><a class="nav-link sidebar-link" href="election-majority-bar.html"><span>Election Majority Bar</span></a><a class="nav-link sidebar-link" href="election-hex-cartogram.html"><span>Election Hex Cartogram</span></a><a class="nav-link sidebar-link" href="election-shift-arrows.html"><span>Election Shift Arrows</span></a><a class="nav-link sidebar-link" href="universal-transition.html"><span>Universal Transition</span></a><a class="nav-link sidebar-link" href="waffle-dot-matrix.html"><span>Waffle Dot Matrix</span></a><a class="nav-link sidebar-link" href="boxplot.html"><span>Boxplot</span></a><a class="nav-link sidebar-link" href="violin-custom.html"><span>Violin - Custom Series</span></a><a class="nav-link sidebar-link" href="custom-wind-vectors.html"><span>Custom Wind Vectors</span></a><a class="nav-link sidebar-link" href="story-state-machine.html"><span>Story State Machine</span></a></nav></details></nav></details><details class="sidebar-group nav-section" data-nav-section="Marketing"><summary><span>Marketing</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="site-header.html"><span>Site Header</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="hero.html"><span>Hero</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="product-showcase.html"><span>Product Showcase</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="brand-logos.html"><span>Brand Logos</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="feature-details.html"><span>Feature Details</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="testimonials.html"><span>Testimonials</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="stats.html"><span>Stats</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="pricing.html"><span>Pricing</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="blog.html"><span>Blog</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="faq.html"><span>FAQ</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="get-in-touch.html"><span>Get In Touch</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="newsletter.html"><span>Newsletter</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="site-footer.html"><span>Site Footer</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a></nav></details></div></aside><main style="flex: 1; min-width: 0; max-width: 44rem; padding: 2rem 3.5rem 8rem;"><div class="page-header"><div class="flex items-baseline justify-between mb-1"><p class="text-sm text-muted-foreground" style="font-family:var(--font-mono);">defuss-shadcn / Guides / Animations / anim-canvas</p><div style="display:flex;align-items:baseline;gap:0.375rem;"><span class="text-xs text-muted-foreground" style="font-family:var(--font-mono);white-space:nowrap;">Built with:</span> <a href="#source-css" class="badge built-with-pill" data-variant="outline">CSS</a> <a href="#source-js" class="badge built-with-pill" data-variant="outline">JS</a></div></div><h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">Animation Canvas<span class="type-badge" data-type="TPL" title="Template">TPL</span></h1><p class="text-muted-foreground leading-relaxed mb-6">A chess-board slide canvas: slides sit side by side on one board, the viewport frames exactly one of them (1:1), arrow keys move directionally, and a zoomed-out <strong>overview</strong> shows the whole board at once - click a tile to zoom back in. Every slide transition is the shared <code>df$.anim</code> engine, declared in markup per slide; the canvas ships no animation of its own.</p></div><details style="margin-bottom:2rem;border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;"><summary style="padding:0.875rem 1.25rem;background:var(--muted);cursor:pointer;font-size:0.8125rem;font-weight:600;font-family:var(--font-mono);color:var(--muted-foreground);list-style:none;display:flex;align-items:center;gap:0.5rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 200ms;"><path d="m9 18 6-6-6-6"/></svg>Component Skill — <span data-spec-href="../components/anim-canvas/component-skill.md" style="text-decoration:underline;text-underline-offset:3px;">components/anim-canvas/component-skill.md</span></summary><div style="padding:1.5rem;font-size:0.875rem;line-height:1.85;"><p class="skill-field-label">Native basis</p><p class="text-muted-foreground" style="margin:0 0 1.25rem;"><code>.anim-canvas</code> viewport + <code>.anim-canvas-slide</code> sections. JS moves the slides into one <code>.anim-canvas-board</code> layer carrying the pan/zoom transform (<code>transform-origin: 0 0</code>); positions derive by BFS from the relation map. Scaling is a <code>ResizeObserver</code> on the root.</p><p class="skill-field-label">Web Platform APIs</p><div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/animate" target="_blank" rel="noopener" title="board pan/zoom + every engine keyframe" class="api-pill"><code>el.animate()</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver" target="_blank" rel="noopener" title="board units → viewport scale; no window.resize math" class="api-pill"><code>ResizeObserver</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/inert" target="_blank" rel="noopener" title="off-stage slides leave tab order and AT" class="api-pill"><code>inert</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/data-*" target="_blank" rel="noopener" title="relation map + animation declarations are data attributes" class="api-pill"><code>data-*</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/transform" target="_blank" rel="noopener" title="board units → viewport mapping" class="api-pill"><code>transform</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" target="_blank" rel="noopener" title="engine durations + board pan collapse (built in, required)" class="api-pill"><code>prefers-reduced-motion</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a></div><p class="skill-field-label">Attributes</p><div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;"><code>data-active</code><code>data-east</code><code>data-west</code><code>data-north</code><code>data-south</code><code>data-anim-in</code><code>data-anim-out</code><code>data-overview</code><code>data-current-slide</code><code>data-pan-duration</code></div><p class="skill-field-label">Notes</p><p class="text-muted-foreground m-0">• Animations are engine names - see the <a href="motion.html" style="color:var(--primary);text-decoration:underline;text-underline-offset:4px;">Motion</a> vocabulary and the per-animation deep dives (fade/slide/zoom/pop/spin/flip/skew/blur/wipe/iris + the blocks roll-over). • The blocks pair is always one curtain: the cover builds on the slide you leave, the board pans underneath, the reveal plays on the slide you arrive at - a declared <code>blocksOut</code> never replays on the old slide. • Arrow keys never swallow a direction that has no neighbor.</p></div></details><div class="code-example" data-component="anim-canvas" data-schema="{&#xA;  &quot;schemaVersion&quot;: 1,&#xA;  &quot;name&quot;: &quot;anim-canvas&quot;,&#xA;  &quot;states&quot;: {&#xA;    &quot;slide&quot;: {&#xA;      &quot;type&quot;: &quot;string&quot;,&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.anim-canvas&quot;&#xA;      },&#xA;      &quot;mutation&quot;: {&#xA;        &quot;kind&quot;: &quot;api&quot;,&#xA;        &quot;name&quot;: &quot;default&quot;,&#xA;        &quot;args&quot;: {&#xA;          &quot;slide&quot;: &quot;@value&quot;&#xA;        }&#xA;      },&#xA;      &quot;observation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-current-slide&quot;&#xA;      },&#xA;      &quot;editor&quot;: {&#xA;        &quot;component&quot;: &quot;text&quot;&#xA;      }&#xA;    },&#xA;    &quot;overview&quot;: {&#xA;      &quot;type&quot;: &quot;boolean&quot;,&#xA;      &quot;default&quot;: false,&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.anim-canvas&quot;&#xA;      },&#xA;      &quot;mutation&quot;: {&#xA;        &quot;kind&quot;: &quot;api&quot;,&#xA;        &quot;name&quot;: &quot;overview&quot;,&#xA;        &quot;args&quot;: {&#xA;          &quot;value&quot;: &quot;@value&quot;&#xA;        }&#xA;      },&#xA;      &quot;observation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-overview&quot;&#xA;      },&#xA;      &quot;editor&quot;: {&#xA;        &quot;component&quot;: &quot;checkbox&quot;&#xA;      }&#xA;    }&#xA;  },&#xA;  &quot;actions&quot;: {&#xA;    &quot;goEast&quot;: {&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.anim-canvas [data-anim-canvas-go=\&quot;east\&quot;]&quot;&#xA;      },&#xA;      &quot;operation&quot;: {&#xA;        &quot;kind&quot;: &quot;event&quot;,&#xA;        &quot;name&quot;: &quot;click&quot;&#xA;      }&#xA;    },&#xA;    &quot;goWest&quot;: {&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.anim-canvas [data-anim-canvas-go=\&quot;west\&quot;]&quot;&#xA;      },&#xA;      &quot;operation&quot;: {&#xA;        &quot;kind&quot;: &quot;event&quot;,&#xA;        &quot;name&quot;: &quot;click&quot;&#xA;      }&#xA;    },&#xA;    &quot;goNorth&quot;: {&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.anim-canvas [data-anim-canvas-go=\&quot;north\&quot;]&quot;&#xA;      },&#xA;      &quot;operation&quot;: {&#xA;        &quot;kind&quot;: &quot;event&quot;,&#xA;        &quot;name&quot;: &quot;click&quot;&#xA;      }&#xA;    },&#xA;    &quot;goSouth&quot;: {&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.anim-canvas [data-anim-canvas-go=\&quot;south\&quot;]&quot;&#xA;      },&#xA;      &quot;operation&quot;: {&#xA;        &quot;kind&quot;: &quot;event&quot;,&#xA;        &quot;name&quot;: &quot;click&quot;&#xA;      }&#xA;    },&#xA;    &quot;toggleOverview&quot;: {&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.anim-canvas [data-anim-canvas-go=\&quot;overview\&quot;]&quot;&#xA;      },&#xA;      &quot;operation&quot;: {&#xA;        &quot;kind&quot;: &quot;event&quot;,&#xA;        &quot;name&quot;: &quot;click&quot;&#xA;      }&#xA;    }&#xA;  }&#xA;}&#xA;" data-state-demo="" data-height="28"><p class="text-sm font-medium mb-2" id="toc-a-2-2-board-with-mixed-transitions"><a class="heading-anchor" href="#toc-a-2-2-board-with-mixed-transitions" aria-label="Link to section: A 2×2 board with mixed transitions">§</a>A 2×2 board with mixed transitions</p><p class="text-xs text-muted-foreground mb-3">Four slides on one board: s1↔s2 east/west, s1↔s3 south/north, s2↔s4 south/north, s3↔s4 east/west. Click the canvas, then drive it with the arrow keys; O or Escape zooms out to the overview, clicking a tile zooms back in. Each slide declares its own df$.anim pair: s2 enters under a blocks curtain painted var(--primary) via data-anim-in-color (always give blend-overs a visible color), s3 opens as an iris, s1 and s4 slide with the travel direction. The State tab drives the same canvas through the schema (slide id + overview).</p><div class="preview" style="padding:0.75rem;overflow:hidden;"><div class="ce-screen" data-mode="full"><div class="resizer ce-resizer" data-handles="all" data-resize-mode="controlled" data-axis="both" data-min="240" data-max="1600" data-min-h="240" data-max-h="1400"><div class="ce-device"><iframe class="code-example-frame" sandbox="allow-scripts" title="A 2×2 board with mixed transitions" style="width:100%;min-height:8rem;border:0;display:block;"></iframe><span class="ce-device-island" aria-hidden="true"></span><span class="ce-device-home" aria-hidden="true"></span></div></div></div><output class="code-example-error" role="alert" hidden=""></output><button class="code-example-full-exit" title="Exit fullscreen (Esc)" aria-label="Exit fullscreen"><i data-lucide="x"></i></button></div><div class="code-example-toolbar"><span class="code-example-viewport" role="group" aria-label="Preview device"><button class="code-example-vp" data-vp="rotate" title="Swap orientation (phone/tablet)" aria-disabled="true"><i data-lucide="rotate-cw"></i><span>Rotate</span></button><button class="code-example-vp" data-vp="phone" aria-pressed="false" title="Phone 390×844"><i data-lucide="smartphone"></i><span>Phone</span></button><button class="code-example-vp" data-vp="tablet" aria-pressed="false" title="Tablet 834×1112"><i data-lucide="tablet"></i><span>Tablet</span></button><button class="code-example-vp" data-vp="desktop" aria-pressed="false" title="Desktop 1024"><i data-lucide="monitor"></i><span>Desktop</span></button><button class="code-example-vp" data-vp="full" aria-pressed="true" title="Full width (source default)"><i data-lucide="app-window"></i><span>Full</span></button></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-w" type="number" min="240" step="10" inputmode="numeric" placeholder="Width" aria-label="Custom preview width (px)" /><span class="code-example-vp-x" aria-hidden="true">×</span><input class="code-example-vp-h" type="number" min="240" step="10" inputmode="numeric" placeholder="Full" aria-label="Custom preview height (px)" disabled="" /></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-z" type="number" min="25" max="100" step="5" inputmode="numeric" placeholder="Auto" aria-label="Preview zoom (%)" /><span class="code-example-vp-x" aria-hidden="true">%</span></span><span class="code-example-spacer"></span><button class="code-example-tab" data-tab="code" aria-pressed="false" title="Show or hide the example source"><i data-lucide="code-xml"></i><span>Code</span></button><button class="code-example-tab" data-tab="state" aria-pressed="false" title="Show or hide the state contract"><i data-lucide="sliders-horizontal"></i><span>State</span></button><button class="code-example-reset" title="Restore the original source and rerun"><i data-lucide="rotate-ccw"></i><span>Reset</span></button><button class="code-example-full" title="Preview fullscreen (Esc to exit)"><i data-lucide="maximize"></i><span>Fullscreen</span></button></div><div class="code-example-panel" data-panel="code" hidden=""><button class="code-example-copy" title="Copy the example source"><i data-lucide="copy"></i><span>Copy</span></button><textarea class="code-example-src" spellcheck="false" aria-label="Editable source for: A 2×2 board with mixed transitions" rows="10">&lt;style&gt;
+  .ac-demo-slide {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 4rem 5rem;
+  }
+  .ac-demo-slide h2 {
+    margin: 0 0 1rem;
+    font-size: 4rem;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+  .ac-demo-slide p {
+    margin: 0;
+    font-size: 1.6rem;
+    opacity: 0.85;
+  }
+  #ac-1 { background: #312e81; color: #e0e7ff; }
+  #ac-2 { background: #78350f; color: #fef3c7; }
+  #ac-3 { background: #064e3b; color: #d1fae5; }
+  #ac-4 { background: #4c0519; color: #ffe4e6; }
+&lt;/style&gt;
+&lt;div class="anim-canvas" id="ac-demo" aria-label="Demo board"&gt;
+  &lt;section class="anim-canvas-slide ac-demo-slide" id="ac-1" data-active aria-label="One"
+           data-east="ac-2" data-south="ac-3"
+           data-anim-in="slideIn" data-anim-out="slideOut"&gt;
+    &lt;h2&gt;One board, four slides&lt;/h2&gt;
+    &lt;p&gt;Slides sit side by side like a chess board - the viewport frames exactly one.&lt;/p&gt;
+  &lt;/section&gt;
+  &lt;section class="anim-canvas-slide ac-demo-slide" id="ac-2" aria-label="Two"
+           data-west="ac-1" data-south="ac-4"
+           data-anim-in="blocksIn" data-anim-in-direction="north" data-anim-in-blocks="6" data-anim-in-stagger="70" data-anim-in-color="var(--primary)"
+           data-anim-out="blocksOut" data-anim-out-direction="north"&gt;
+    &lt;h2&gt;Blocks roll over&lt;/h2&gt;
+    &lt;p&gt;The composite blocksIn/blocksOut pair composes as a curtain: cover, pan underneath, roll off.&lt;/p&gt;
+  &lt;/section&gt;
+  &lt;section class="anim-canvas-slide ac-demo-slide" id="ac-3" aria-label="Three"
+           data-north="ac-1" data-east="ac-4"
+           data-anim-in="irisIn" data-anim-in-origin="50% 50%"
+           data-anim-out="irisOut" data-anim-out-origin="50% 50%"&gt;
+    &lt;h2&gt;Iris from the center&lt;/h2&gt;
+    &lt;p&gt;irisIn opens a clip-path circle around the declared origin.&lt;/p&gt;
+  &lt;/section&gt;
+  &lt;section class="anim-canvas-slide ac-demo-slide" id="ac-4" aria-label="Four"
+           data-north="ac-2" data-west="ac-3"
+           data-anim-in="slideIn" data-anim-out="slideOut"&gt;
+    &lt;h2&gt;Overview on O&lt;/h2&gt;
+    &lt;p&gt;Zoom out, see the whole board, click a tile to zoom back in.&lt;/p&gt;
+  &lt;/section&gt;
+  &lt;div class="anim-canvas-controls"&gt;
+    &lt;button type="button" class="anim-canvas-control" data-anim-canvas-go="west" aria-label="West slide"&gt;←&lt;/button&gt;
+    &lt;button type="button" class="anim-canvas-control" data-anim-canvas-go="north" aria-label="North slide"&gt;↑&lt;/button&gt;
+    &lt;button type="button" class="anim-canvas-control" data-anim-canvas-go="south" aria-label="South slide"&gt;↓&lt;/button&gt;
+    &lt;button type="button" class="anim-canvas-control" data-anim-canvas-go="east" aria-label="East slide"&gt;→&lt;/button&gt;
+    &lt;button type="button" class="anim-canvas-control" data-anim-canvas-go="overview" aria-label="Toggle overview"&gt;⛶&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</textarea></div><div class="code-example-panel" data-panel="state" hidden=""></div></div><div class="code-example"><p class="text-sm font-medium mb-2" id="toc-curtain-color-blend-over"><a class="heading-anchor" href="#toc-curtain-color-blend-over" aria-label="Link to section: Curtain color (blend-over)">§</a>Curtain color (blend-over)</p><p class="text-xs text-muted-foreground mb-3">Every blend-over animation takes an explicit color so the cover is SEEN against the slide - never let it inherit into invisibility. blocksIn covers the card with five staggered panels painted the picked color; blocksOut rolls them back off.</p><div class="preview" style="padding:0.75rem;overflow:hidden;"><div class="ce-screen" data-mode="full"><div class="resizer ce-resizer" data-handles="all" data-resize-mode="controlled" data-axis="both" data-min="240" data-max="1600" data-min-h="240" data-max-h="1400"><div class="ce-device"><iframe class="code-example-frame" sandbox="allow-scripts" title="Curtain color (blend-over)" style="width:100%;min-height:8rem;border:0;display:block;"></iframe><span class="ce-device-island" aria-hidden="true"></span><span class="ce-device-home" aria-hidden="true"></span></div></div></div><output class="code-example-error" role="alert" hidden=""></output><button class="code-example-full-exit" title="Exit fullscreen (Esc)" aria-label="Exit fullscreen"><i data-lucide="x"></i></button></div><div class="code-example-toolbar"><span class="code-example-viewport" role="group" aria-label="Preview device"><button class="code-example-vp" data-vp="rotate" title="Swap orientation (phone/tablet)" aria-disabled="true"><i data-lucide="rotate-cw"></i><span>Rotate</span></button><button class="code-example-vp" data-vp="phone" aria-pressed="false" title="Phone 390×844"><i data-lucide="smartphone"></i><span>Phone</span></button><button class="code-example-vp" data-vp="tablet" aria-pressed="false" title="Tablet 834×1112"><i data-lucide="tablet"></i><span>Tablet</span></button><button class="code-example-vp" data-vp="desktop" aria-pressed="false" title="Desktop 1024"><i data-lucide="monitor"></i><span>Desktop</span></button><button class="code-example-vp" data-vp="full" aria-pressed="true" title="Full width (source default)"><i data-lucide="app-window"></i><span>Full</span></button></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-w" type="number" min="240" step="10" inputmode="numeric" placeholder="Width" aria-label="Custom preview width (px)" /><span class="code-example-vp-x" aria-hidden="true">×</span><input class="code-example-vp-h" type="number" min="240" step="10" inputmode="numeric" placeholder="Full" aria-label="Custom preview height (px)" disabled="" /></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-z" type="number" min="25" max="100" step="5" inputmode="numeric" placeholder="Auto" aria-label="Preview zoom (%)" /><span class="code-example-vp-x" aria-hidden="true">%</span></span><span class="code-example-spacer"></span><button class="code-example-tab" data-tab="code" aria-pressed="false" title="Show or hide the example source"><i data-lucide="code-xml"></i><span>Code</span></button><button class="code-example-reset" title="Restore the original source and rerun"><i data-lucide="rotate-ccw"></i><span>Reset</span></button><button class="code-example-full" title="Preview fullscreen (Esc to exit)"><i data-lucide="maximize"></i><span>Fullscreen</span></button></div><div class="code-example-panel" data-panel="code" hidden=""><button class="code-example-copy" title="Copy the example source"><i data-lucide="copy"></i><span>Copy</span></button><textarea class="code-example-src" spellcheck="false" aria-label="Editable source for: Curtain color (blend-over)" rows="10">&lt;style&gt;
+  #ac-curtain-target {
+    width: 220px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+    font-weight: 600;
+  }
+&lt;/style&gt;
+&lt;div style="display:flex; flex-direction:column; gap:0.75rem; align-items:flex-start;"&gt;
+  &lt;div id="ac-curtain-target"&gt;Cover me&lt;/div&gt;
+  &lt;div style="display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center;"&gt;
+    &lt;select class="select" id="ac-curtain-color" aria-label="Curtain color"&gt;
+      &lt;option value="var(--primary)" selected&gt;primary&lt;/option&gt;
+      &lt;option value="var(--secondary)"&gt;secondary&lt;/option&gt;
+      &lt;option value="var(--destructive)"&gt;destructive&lt;/option&gt;
+      &lt;option value="#111827"&gt;#111827&lt;/option&gt;
+    &lt;/select&gt;
+    &lt;button class="btn" data-variant="outline" data-size="sm" id="ac-curtain-in"&gt;blocksIn (cover)&lt;/button&gt;
+    &lt;button class="btn" data-variant="outline" data-size="sm" id="ac-curtain-out"&gt;blocksOut (reveal)&lt;/button&gt;
+    &lt;button class="btn" data-variant="ghost" data-size="sm" id="ac-curtain-reset"&gt;Reset&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;script type="module"&gt;
+  // all.js (core → df$.anim) boots after example scripts in the sandbox —
+  // reference df$ only at event time
+  const opts = () =&gt; ({
+    direction: 'north',
+    blocks: 5,
+    stagger: 90,
+    color: document.getElementById('ac-curtain-color').value,
+  });
+  document.getElementById('ac-curtain-in').addEventListener('click', () =&gt;
+    df$.anim.blocksIn.play(document.getElementById('ac-curtain-target'), opts()));
+  document.getElementById('ac-curtain-out').addEventListener('click', () =&gt;
+    df$.anim.blocksOut.play(document.getElementById('ac-curtain-target'), opts()));
+  document.getElementById('ac-curtain-reset').addEventListener('click', () =&gt; {
+    df$.anim.blocksIn.reset(document.getElementById('ac-curtain-target'));
+    df$.anim.blocksOut.reset(document.getElementById('ac-curtain-target'));
+  });
+&lt;/script&gt;
+</textarea></div></div><section style="margin-top:3rem;" id="states"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-states"><a class="heading-anchor" href="#toc-states" aria-label="Link to section: States">§</a>States</h2><p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p><ul class="text-sm text-muted-foreground m-0 mb-3 ps-5"><li><code>default</code> - one slide framed 1:1; <code>setState('default', { slide: 's2' })</code> focuses that slide, bare <code>setState('default')</code> re-frames the active one</li><li><code>overview</code> - the whole board zoomed out (<code>data-overview</code>); every slide is a clickable tile that zooms back in</li></ul><p class="text-sm text-muted-foreground">The demo card carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code>.</p><p>Machine contract - verified against <a href="../schemas/anim-canvas.schema.json"><code>anim-canvas.schema.json</code></a> by <code>bun run verify</code>:</p><div class="states-table-wrap"><table class="table states-table" data-variant="simple"><thead><tr><th scope="col" class="st-state">State</th><th scope="col" class="st-type">Type</th><th scope="col" class="st-values">Values</th><th scope="col" class="st-default">Default</th><th scope="col" class="st-desc">Description</th></tr></thead><tbody><tr><td class="st-state"><code>slide</code></td><td class="st-type"><code>string</code></td><td class="st-values"><code>—</code></td><td class="st-default"><code>—</code></td><td class="st-desc">Active slide id - <code>setState('default', { slide: '&lt;id&gt;' })</code>; mirrored as <code>data-current-slide</code> on <code>.anim-canvas</code> and updated by arrow keys, controls and overview clicks.</td></tr><tr><td class="st-state"><code>overview</code></td><td class="st-type"><code>boolean</code></td><td class="st-values"><code>true</code>, <code>false</code></td><td class="st-default"><code>false</code></td><td class="st-desc">Zoomed-out board view (<code>data-overview</code> on the root) - <code>setState('overview')</code> / <code>setState('overview', { value: false })</code>.</td></tr></tbody></table></div></section><section style="margin-top:3rem;" id="source-css"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-css"><a class="heading-anchor" href="#toc-css" aria-label="Link to section: CSS">§</a>CSS <a href="../components/anim-canvas/anim-canvas.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2><p class="text-muted-foreground text-sm mb-4">The canvas surface: viewport + board layer, card-ish slides, the overview tile affordance (cursor, radius, ring hover), optional directional chrome, and the required reduced-motion / forced-colors blocks. All motion is the shared engine - this sheet animates nothing.</p><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-scss">/* -- Animation Canvas component ----------------------------------
+   Chess-board slide canvas: the root is the viewport (overflow hidden),
+   JS-created .anim-canvas-board carries the pan/zoom transform, slides are
+   absolute cells in board units (--anim-canvas-width/height, literal
+   defaults, token-free artboard like presentation). All motion is the shared
+   df$.anim engine + one WAAPI board pan; this sheet owns only the surface:
+   card-ish slides (allowed tokens), the overview tile affordance, and the
+   optional directional chrome. */
+
+@layer components {
+  .anim-canvas {
+    /* artboard contract - override on the mount for other formats */
+    --anim-canvas-width: 1280;
+    --anim-canvas-height: 720;
+
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: var(--anim-canvas-width) / var(--anim-canvas-height);
+    overflow: hidden;
+    background: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+
+    /* the one pan/zoom layer (JS-created; transform-origin pinned so the
+       runtime's translate+scale math stays in raw board units) */
+    &amp; .anim-canvas-board {
+      position: absolute;
+      inset: 0;
+      transform-origin: 0 0;
+      will-change: transform;
+    }
+
+    /* a board cell: card surface, flush against its neighbors (radius only
+       appears in overview, where the tiles separate) */
+    &amp; .anim-canvas-slide {
+      position: absolute;
+      box-sizing: border-box;
+      overflow: hidden;
+      background: var(--card);
+      color: var(--card-foreground);
+    }
+
+    /* overview: every slide reads as a clickable tile */
+    &amp;[data-overview] .anim-canvas-slide {
+      cursor: pointer;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+
+      &amp;:hover {
+        outline: 2px solid var(--ring);
+        outline-offset: 2px;
+      }
+    }
+
+    /* optional authored chrome: directional + overview buttons
+       ([data-anim-canvas-go="east|west|north|south|overview"]) */
+    &amp; .anim-canvas-controls {
+      position: absolute;
+      inset-block-end: 0.75rem;
+      inset-inline-end: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      z-index: 2;
+    }
+
+    &amp; .anim-canvas-control {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      inline-size: 2rem;
+      block-size: 2rem;
+      padding: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--card);
+      color: var(--card-foreground);
+      cursor: pointer;
+      font: inherit;
+      line-height: 1;
+      transition: background-color 150ms ease;
+
+      &amp;:hover {
+        background: var(--accent);
+        color: var(--accent-foreground);
+      }
+      &amp;:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+    }
+  }
+
+  /* accessibility: honor motion + contrast preferences (REQUIRED). The
+     engine collapses its own durations and the runtime collapses the board
+     pan to 1ms; here the chrome's hover transition flattens. */
+  @media (prefers-reduced-motion: reduce) {
+    .anim-canvas .anim-canvas-control {
+      transition: none;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .anim-canvas .anim-canvas-control {
+      border-width: 2px;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .anim-canvas {
+      border-color: CanvasText;
+    }
+    .anim-canvas[data-overview] .anim-canvas-slide {
+      outline: 1px solid CanvasText;
+    }
+    .anim-canvas .anim-canvas-control {
+      border-color: ButtonBorder;
+      color: ButtonText;
+      background: ButtonFace;
+    }
+  }
+}
+</code></pre></div></section><section style="margin-top:3rem;" id="source-js"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-javascript"><a class="heading-anchor" href="#toc-javascript" aria-label="Link to section: JavaScript">§</a>JavaScript <a href="../components/anim-canvas/anim-canvas.js" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2><p class="text-muted-foreground text-sm mb-4">The runtime: relation-map BFS with fail-loud validation, ResizeObserver scaling, WAAPI board pan (1ms under prefers-reduced-motion), keyboard via the shared bindGlobalKeys, overview with click-to-zoom, and the State API - every slide transition plays through <code>df$.anim</code> channels by name.</p><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-javascript">// -- Animation Canvas ----------------------------------------------
+// A chess-board slide canvas: slides sit side by side on one board, the
+// viewport frames exactly one of them (1:1), arrow keys move directionally
+// (data-east/west/north/south id refs), and a zoomed-out overview shows the
+// whole board at once (click a tile to zoom back in). EVERY animation is the
+// shared engine (df$.anim, src/shared/anim.ts): per-slide in/out channels are
+// declared in markup (data-anim-in/data-anim-out + discrete config attrs) and
+// played through the registry - the canvas composes the public engine, it
+// never grows a private one. The board pan is plain WAAPI (el.animate), the
+// platform API, with a 1ms collapse under prefers-reduced-motion (same
+// contract the engine keeps). Keyboard rides the shared bindGlobalKeys.
+//
+// Markup contract: .anim-canvas viewport &gt; .anim-canvas-slide sections with
+// id + relation attrs. JS moves the slides into ONE .anim-canvas-board div
+// that carries the pan/zoom transform (transform-origin: 0 0). Slide positions
+// derive by BFS from the start slide (0,0): east = x+1, west = x−1,
+// south = y+1, north = y−1. Dangling id refs and position conflicts are loud
+// console errors, never silent misplacement. State lives ON THE ROOT element
+// (dataset.stateName + data-current-slide + data-overview) - the bound `api`
+// is the only mutator (AGENTS.md "State API").
+
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
+// NOTE: `anim` (the registry) is imported, not animChannel - the shared
+// namespace core installs (src/core/index.ts) publishes `anim` only, so the
+// emitted binding can only destructure names that exist there. Name
+// validation below goes through anim.names, keeping the same fail-loud
+// contract animChannel has.
+import { defussGlobals, defussQuery, anim, bindGlobalKeys } from '../../shared/state-api.js';
+import type { AnimChannel, AnimDirection, AnimOptions } from '../../shared/anim.js';
+
+const df$ = defussGlobals();
+const dfDollar = defussQuery();
+
+const animCanvasStates = ['default', 'overview'];
+
+/** Board geometry of one slide cell, in board units (px at scale 1). */
+interface SlidePos {
+  x: number;
+  y: number;
+}
+
+/** The one pan/zoom the board currently rests at (or animates toward). */
+interface BoardView {
+  s: number;
+  tx: number;
+  ty: number;
+}
+
+/** Per-instance context - state lives on the element, never module scope. */
+interface CanvasCtx {
+  board: HTMLElement;
+  slides: HTMLElement[];
+  byId: Map&lt;string, HTMLElement&gt;;
+  pos: Map&lt;HTMLElement, SlidePos&gt;;
+  w: number;
+  h: number;
+  active: HTMLElement;
+  busy: boolean;
+  view: BoardView | null;
+  pan: Animation | null;
+}
+
+type CanvasRoot = HTMLElement &amp; { _animCanvas?: CanvasCtx };
+
+const DIRS: Record&lt;AnimDirection, [number, number]&gt; = {
+  east: [1, 0],
+  west: [-1, 0],
+  south: [0, 1],
+  north: [0, -1],
+};
+
+/**
+ * Registry lookup with the engine's fail-loud contract: a typo in
+ * data-anim-in/data-anim-out throws a naming error, never a silent no-op
+ * (mirrors animChannel - which the emitted shared binding cannot carry, see
+ * the preamble note).
+ */
+function channelFor(name: string): AnimChannel {
+  if (!(anim.names as readonly string[]).includes(name)) {
+    throw new Error(`anim-canvas: unknown animation "${name}" (supported: ${anim.names.join(', ')})`);
+  }
+  return anim[name as keyof typeof anim] as AnimChannel;
+}
+
+/** The animation a slide declares for one phase, with per-slide config. */
+function animNameFor(slide: HTMLElement, phase: 'in' | 'out'): string {
+  return (phase === 'in' ? slide.dataset.animIn : slide.dataset.animOut) || (phase === 'in' ? 'slideIn' : 'slideOut');
+}
+
+/**
+ * Discrete per-slide config attrs (data-anim-in-direction|duration|easing|
+ * origin|distance|blocks|stagger|color, same for -out-). Absent values fall
+ * back to the engine defaults; direction falls back to the travel direction.
+ */
+function animOptsFor(slide: HTMLElement, phase: 'in' | 'out', travel: AnimDirection): AnimOptions {
+  const d = slide.dataset as Record&lt;string, string | undefined&gt;;
+  const p = phase === 'in' ? 'animIn' : 'animOut';
+  const opts: AnimOptions = { direction: (d[`${p}Direction`] as AnimDirection | undefined) ?? travel };
+  const duration = parseFloat(d[`${p}Duration`] ?? '');
+  if (Number.isFinite(duration)) opts.duration = duration;
+  if (d[`${p}Easing`]) opts.easing = d[`${p}Easing`];
+  if (d[`${p}Origin`]) opts.origin = d[`${p}Origin`];
+  if (d[`${p}Distance`]) opts.distance = d[`${p}Distance`];
+  const blocks = parseInt(d[`${p}Blocks`] ?? '', 10);
+  if (Number.isFinite(blocks)) opts.blocks = blocks;
+  const stagger = parseFloat(d[`${p}Stagger`] ?? '');
+  if (Number.isFinite(stagger)) opts.stagger = stagger;
+  if (d[`${p}Color`]) opts.color = d[`${p}Color`];
+  return opts;
+}
+
+const transformFor = (v: BoardView): string =&gt; `translate(${v.tx}px, ${v.ty}px) scale(${v.s})`;
+
+const reducedMotion = (): boolean =&gt;
+  typeof globalThis.matchMedia === 'function' &amp;&amp;
+  globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/** Root-level pan duration (data-pan-duration, ms); 1500 default, 1 when reduced. */
+function panDuration(root: CanvasRoot): number {
+  if (reducedMotion()) return 1;
+  const v = parseFloat(root.dataset.panDuration ?? '');
+  return Number.isFinite(v) ? v : 1500;
+}
+
+/** The 1:1 view: the given slide framed exactly by the viewport, centered. */
+function focusView(root: CanvasRoot, ctx: CanvasCtx, slide: HTMLElement): BoardView | null {
+  const box = root.getBoundingClientRect();
+  if (box.width &lt;= 0 || box.height &lt;= 0) return null; // hidden mount - ResizeObserver re-fires
+  const p = ctx.pos.get(slide) ?? { x: 0, y: 0 };
+  const s = Math.min(box.width / ctx.w, box.height / ctx.h);
+  return {
+    s,
+    tx: (box.width - ctx.w * s) / 2 - p.x * ctx.w * s,
+    ty: (box.height - ctx.h * s) / 2 - p.y * ctx.h * s,
+  };
+}
+
+/** The overview view: every slide in frame at once, ~8% margin around the bbox. */
+function overviewView(root: CanvasRoot, ctx: CanvasCtx): BoardView | null {
+  const box = root.getBoundingClientRect();
+  if (box.width &lt;= 0 || box.height &lt;= 0) return null;
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  for (const p of ctx.pos.values()) {
+    minX = Math.min(minX, p.x);
+    minY = Math.min(minY, p.y);
+    maxX = Math.max(maxX, p.x);
+    maxY = Math.max(maxY, p.y);
+  }
+  const bw = (maxX - minX + 1) * ctx.w;
+  const bh = (maxY - minY + 1) * ctx.h;
+  const s = Math.min(box.width / bw, box.height / bh) * 0.92;
+  return {
+    s,
+    tx: (box.width - bw * s) / 2 - minX * ctx.w * s,
+    ty: (box.height - bh * s) / 2 - minY * ctx.h * s,
+  };
+}
+
+/**
+ * Pan/zoom the board to a view. Platform WAAPI with fill:'both' while in
+ * flight; the settled transform lands as the board's own style so the resting
+ * state never depends on a live animation. A new pan cancels the old one.
+ */
+function panTo(root: CanvasRoot, ctx: CanvasCtx, view: BoardView | null, animate = true): Promise&lt;void&gt; {
+  if (!view) return Promise.resolve();
+  ctx.pan?.cancel();
+  ctx.pan = null;
+  const to = transformFor(view);
+  const from = ctx.view ? transformFor(ctx.view) : null;
+  ctx.view = view;
+  if (!animate || !from || from === to || panDuration(root) &lt;= 1) {
+    ctx.board.style.transform = to;
+    return Promise.resolve();
+  }
+  const flight = ctx.board.animate([{ transform: from }, { transform: to }], {
+    duration: panDuration(root),
+    easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+    fill: 'both',
+  });
+  ctx.pan = flight;
+  return flight.finished
+    .catch(() =&gt; undefined) // cancel rejects - a superseded pan is not an error
+    .then(() =&gt; {
+      if (ctx.pan === flight) {
+        ctx.board.style.transform = to;
+        flight.cancel();
+        ctx.pan = null;
+      }
+    });
+}
+
+/** a11y + chrome mirrors of the active slide: inert/aria-hidden, control availability. */
+function applySlideState(root: CanvasRoot, ctx: CanvasCtx): void {
+  const overview = root.hasAttribute('data-overview');
+  for (const s of ctx.slides) {
+    const on = overview || s === ctx.active;
+    s.inert = !on;
+    if (on) s.removeAttribute('aria-hidden');
+    else s.setAttribute('aria-hidden', 'true');
+  }
+  // authored directional controls follow the active slide's relation map
+  root.querySelectorAll('[data-anim-canvas-go]').forEach((el) =&gt; {
+    const dir = el.getAttribute('data-anim-canvas-go');
+    if (dir === 'overview' || !(el instanceof HTMLButtonElement)) return;
+    el.disabled = !ctx.active.dataset[dir as AnimDirection];
+  });
+}
+
+/** The one place slide activation (and its mirrors) changes. */
+function activate(root: CanvasRoot, ctx: CanvasCtx, slide: HTMLElement): void {
+  ctx.active = slide;
+  for (const s of ctx.slides) s.toggleAttribute('data-active', s === slide);
+  root.dataset.currentSlide = slide.id; // the bridge/schema observation point
+  applySlideState(root, ctx);
+}
+
+/**
+ * The transition. No-op while busy or already there; an overview open
+ * collapses into the target (the zoom IS the transition). The blocks pair is
+ * always a CURTAIN, never a per-slide effect: whether the target declares
+ * data-anim-in="blocksIn" or the current slide declares
+ * data-anim-out="blocksOut", the cover builds on the slide we LEAVE, the
+ * board pans and the active flag flips underneath, and the reveal plays on
+ * the slide we ARRIVE at (blocksOut for a blocks target, else its own
+ * in-anim). A declared blocksOut therefore never replays a pointless
+ * cover+reveal on the old slide the user just moved away from.
+ * Everything else plays current's out-anim and target's in-anim concurrently
+ * with the pan - all through the shared registry channels.
+ *
+ * busy covers exactly the sequencing window (cover → pan → flip); the slide
+ * in/out anims themselves TRAIL - they are per-channel and restart
+ * deterministically, so a fast arrow-key repeat is never swallowed by a
+ * cosmetic tail.
+ */
+async function goTo(root: CanvasRoot, ctx: CanvasCtx, id: string): Promise&lt;void&gt; {
+  const target = ctx.byId.get(id);
+  if (!target) {
+    console.error(`anim-canvas: goTo("${id}") - no .anim-canvas-slide with that id in this canvas`);
+    return;
+  }
+  if (ctx.busy) return;
+  if (target === ctx.active &amp;&amp; !root.hasAttribute('data-overview')) return;
+  ctx.busy = true;
+  try {
+    if (root.hasAttribute('data-overview')) {
+      // zoom back into the clicked/chosen slide - the pan carries the story
+      root.removeAttribute('data-overview');
+      activate(root, ctx, target);
+      await panTo(root, ctx, focusView(root, ctx, target));
+      return;
+    }
+    const from = ctx.pos.get(ctx.active) ?? { x: 0, y: 0 };
+    const to = ctx.pos.get(target) ?? from;
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+    const travel: AnimDirection = dx &gt; 0 ? 'east' : dx &lt; 0 ? 'west' : dy &gt; 0 ? 'south' : dy &lt; 0 ? 'north' : 'east';
+    const current = ctx.active;
+    const inName = animNameFor(target, 'in');
+    const outName = target !== current ? animNameFor(current, 'out') : null;
+
+    if (target !== current &amp;&amp; (inName === 'blocksIn' || outName === 'blocksOut')) {
+      // curtain config comes from the blocks-declaring slide
+      const cfg = animOptsFor(inName === 'blocksIn' ? target : current, inName === 'blocksIn' ? 'in' : 'out', travel);
+      const cover = channelFor('blocksIn').play(current, cfg);
+      const pan = panTo(root, ctx, focusView(root, ctx, target));
+      await cover.finished; // sequencing: the flip happens under the cover
+      await pan;
+      activate(root, ctx, target);
+      cover.reset(); // a settled blocksIn keeps its overlay - the now-hidden slide must not
+      // the reveal belongs to the slide we ARRIVE at (cosmetic, trails)
+      const reveal = inName === 'blocksIn' ? 'blocksOut' : inName;
+      channelFor(reveal).play(target, animOptsFor(target, 'in', travel));
+      return;
+    }
+
+    activate(root, ctx, target);
+    const pan = panTo(root, ctx, focusView(root, ctx, target));
+    // in/out anims trail the pan: per-channel, deterministic restart
+    channelFor(inName).play(target, animOptsFor(target, 'in', travel));
+    if (target !== current) {
+      channelFor(outName!).play(current, animOptsFor(current, 'out', travel));
+    }
+    await pan;
+  } finally {
+    ctx.busy = false;
+  }
+}
+
+/** Overview mode: every slide in frame, clickable (CSS owns the cursor). */
+function enterOverview(root: CanvasRoot, ctx: CanvasCtx): void {
+  // an in-flight pan never blocks the toggle - panTo cancels it cleanly
+  if (root.hasAttribute('data-overview')) return;
+  ctx.busy = true;
+  root.setAttribute('data-overview', ''); // the schema observation point
+  applySlideState(root, ctx); // every slide is visible now - nothing stays inert
+  void panTo(root, ctx, overviewView(root, ctx)).then(() =&gt; {
+    ctx.busy = false;
+  });
+}
+
+/** Leave overview; `focus` (a clicked tile) becomes the active slide. */
+function exitOverview(root: CanvasRoot, ctx: CanvasCtx, focus?: HTMLElement): void {
+  // an in-flight enter pan never swallows the exit (the bridge toggles fast)
+  if (!root.hasAttribute('data-overview')) return;
+  ctx.busy = true;
+  root.removeAttribute('data-overview');
+  if (focus &amp;&amp; ctx.byId.get(focus.id) === focus) activate(root, ctx, focus);
+  else applySlideState(root, ctx);
+  void panTo(root, ctx, focusView(root, ctx, ctx.active)).then(() =&gt; {
+    ctx.busy = false;
+  });
+}
+
+function toggleOverview(root: CanvasRoot, ctx: CanvasCtx): void {
+  if (root.hasAttribute('data-overview')) exitOverview(root, ctx);
+  else enterOverview(root, ctx);
+}
+
+/**
+ * UI side of setState: 'overview' zooms out (config.value === false zooms
+ * back - the bridge's checkbox off); 'default' with { slide } focuses that
+ * slide, bare 'default' leaves overview / re-frames the active slide.
+ * Unknown names throw.
+ */
+function triggerStateChange(root: CanvasRoot, stateName: string, config: Record&lt;string, unknown&gt; = {}): void {
+  if (!animCanvasStates.includes(stateName)) {
+    throw new Error(`anim-canvas: unknown state "${stateName}" (supported: ${animCanvasStates.join(', ')})`);
+  }
+  const ctx = root._animCanvas;
+  if (!ctx) return;
+  if (stateName === 'overview') {
+    if (config.value === false) exitOverview(root, ctx);
+    else enterOverview(root, ctx);
+    return;
+  }
+  if (typeof config.slide === 'string') void goTo(root, ctx, config.slide);
+  else if (root.hasAttribute('data-overview')) exitOverview(root, ctx);
+  else void panTo(root, ctx, focusView(root, ctx, ctx.active));
+}
+
+/** Registry-level API; pass the root explicitly. Unknown names throw. */
+export const animCanvasApi = {
+  setState(root: HTMLElement, stateName: string, config: Record&lt;string, unknown&gt; = {}) {
+    triggerStateChange(root as CanvasRoot, stateName, config);
+    // state lives on the ELEMENT, not module scope (AGENTS.md "State API")
+    root.dataset.stateName = stateName;
+    root._stateConfig = config;
+  },
+  getState(root: HTMLElement) {
+    const ctx = (root as CanvasRoot)._animCanvas;
+    // reflect reality: keyboard/clicks move the canvas without setState()
+    return {
+      name: root.dataset.stateName || 'default',
+      config: {
+        ...root._stateConfig,
+        slide: ctx?.active.id,
+        overview: root.hasAttribute('data-overview'),
+      },
+    };
+  },
+};
+
+df$.animCanvasApi = animCanvasApi;
+df$.animCanvasStates = animCanvasStates;
+
+/**
+ * Keyboard routing: the focused canvas answers first; otherwise the first
+ * canvas intersecting the viewport (presentation's routing idea, simplified —
+ * editable targets are already filtered by the shared listener). Unhandled
+ * directions (no neighbor that way) are NOT swallowed, so arrow-key scrolling
+ * keeps working at the board's edge.
+ */
+function pickCanvas(target: EventTarget | null): CanvasRoot | null {
+  const focused = target instanceof HTMLElement ? (target.closest('.anim-canvas') as CanvasRoot | null) : null;
+  if (focused) return focused;
+  const all = Array.from(document.querySelectorAll&lt;CanvasRoot&gt;('.anim-canvas'));
+  return (
+    all.find((r) =&gt; {
+      const b = r.getBoundingClientRect();
+      return b.bottom &gt; 0 &amp;&amp; b.top &lt; globalThis.innerHeight &amp;&amp; b.right &gt; 0 &amp;&amp; b.left &lt; globalThis.innerWidth;
+    }) ??
+    all[0] ??
+    null
+  );
+}
+
+let keysBound = false;
+function bindKeys(): void {
+  if (keysBound) return;
+  keysBound = true;
+  bindGlobalKeys((e) =&gt; {
+    const key = e.key;
+    const dir: AnimDirection | null =
+      key === 'ArrowRight' ? 'east' : key === 'ArrowLeft' ? 'west' : key === 'ArrowDown' ? 'south' : key === 'ArrowUp' ? 'north' : null;
+    const toggle = key === 'o' || key === 'O' || key === 'Escape';
+    if (!dir &amp;&amp; !toggle) return;
+    const root = pickCanvas(e.target);
+    const ctx = root?._animCanvas;
+    if (!root || !ctx) return;
+    if (dir &amp;&amp; !ctx.active.dataset[dir]) return; // no neighbor - never swallow the key
+    e.preventDefault();
+    if (dir) void goTo(root, ctx, ctx.active.dataset[dir] as string);
+    else toggleOverview(root, ctx);
+    return true;
+  });
+}
+
+function init(): void {
+  document.querySelectorAll&lt;CanvasRoot&gt;('.anim-canvas:not([data-init])').forEach((root) =&gt; {
+    root.dataset.init = '';
+
+    // bind-scope the api per instance: `$('#board').api.setState('overview')`
+    root.api = {
+      setState: (stateName: string, config?: Record&lt;string, unknown&gt;) =&gt;
+        animCanvasApi.setState(root, stateName, config),
+      getState: () =&gt; animCanvasApi.getState(root),
+    };
+
+    // the board: ONE transformed layer holding every slide. Reused when the
+    // markup already carries one (the docs CodeExample round-trips serialized
+    // live DOM back into the editor - init must stay idempotent for it).
+    let board = root.querySelector&lt;HTMLElement&gt;(':scope &gt; .anim-canvas-board');
+    if (!board) {
+      board = document.createElement('div');
+      board.className = 'anim-canvas-board';
+      for (const slide of Array.from(root.querySelectorAll&lt;HTMLElement&gt;(':scope &gt; .anim-canvas-slide'))) {
+        dfDollar(board).append(slide);
+      }
+      root.prepend(board);
+    }
+    const slides = dfDollar(board).find('.anim-canvas-slide') as HTMLElement[];
+    if (slides.length === 0) return;
+
+    // artboard contract: board units come from --anim-canvas-width/height
+    const cs = getComputedStyle(root);
+    const w = parseFloat(cs.getPropertyValue('--anim-canvas-width')) || 1280;
+    const h = parseFloat(cs.getPropertyValue('--anim-canvas-height')) || 720;
+
+    // relation map → board positions by BFS from the start slide (0,0):
+    // the authored data-active slide, else the first one. Dangling id refs
+    // and conflicting positions fail LOUD (console.error), never silently.
+    const byId = new Map&lt;string, HTMLElement&gt;();
+    for (const s of slides) {
+      if (!s.id) {
+        console.error('anim-canvas: every .anim-canvas-slide needs an id - the data-east/west/north/south relation map references slides by id');
+        continue;
+      }
+      byId.set(s.id, s);
+    }
+    const start = slides.find((s) =&gt; s.hasAttribute('data-active')) ?? slides[0];
+    const pos = new Map&lt;HTMLElement, SlidePos&gt;([[start, { x: 0, y: 0 }]]);
+    const queue: HTMLElement[] = [start];
+    for (let qi = 0; qi &lt; queue.length; qi++) {
+      const cur = queue[qi];
+      const p = pos.get(cur) as SlidePos;
+      for (const dir of Object.keys(DIRS) as AnimDirection[]) {
+        const ref = cur.dataset[dir];
+        if (!ref) continue;
+        const neighbor = byId.get(ref);
+        if (!neighbor) {
+          console.error(
+            `anim-canvas: #${cur.id || '(unnamed)'} declares data-${dir}="${ref}" but no .anim-canvas-slide with id="${ref}" exists in this canvas - dangling id ref`,
+          );
+          continue;
+        }
+        const np: SlidePos = { x: p.x + DIRS[dir][0], y: p.y + DIRS[dir][1] };
+        const existing = pos.get(neighbor);
+        if (existing) {
+          if (existing.x !== np.x || existing.y !== np.y) {
+            console.error(
+              `anim-canvas: conflicting position for #${ref} - reached as (${np.x},${np.y}) from #${cur.id}, already placed at (${existing.x},${existing.y}); the relation map must be consistent`,
+            );
+          }
+          continue;
+        }
+        pos.set(neighbor, np);
+        queue.push(neighbor);
+      }
+    }
+    // slides unreachable from the start slide: loud error + a deterministic
+    // fallback row past the board's east edge (never silently stacked at 0,0)
+    const unreachable = slides.filter((s) =&gt; !pos.has(s));
+    if (unreachable.length) {
+      console.error(
+        `anim-canvas: ${unreachable.map((s) =&gt; `#${s.id || '(unnamed)'}`).join(', ')} unreachable from #${start.id || '(the first slide)'} - wire them into the data-east/west/north/south relation map`,
+      );
+      let fx = Math.max(...Array.from(pos.values()).map((p) =&gt; p.x)) + 1;
+      for (const s of unreachable) pos.set(s, { x: fx++, y: 0 });
+    }
+    // one cell per coordinate pair (a cycle wiring two slides onto the same
+    // cell corrupts the board - say so)
+    const taken = new Map&lt;string, HTMLElement&gt;();
+    for (const [s, p] of pos) {
+      const k = `${p.x},${p.y}`;
+      const other = taken.get(k);
+      if (other) {
+        console.error(
+          `anim-canvas: #${s.id || '(unnamed)'} and #${other.id || '(unnamed)'} both land on board cell (${k}) - the relation map must give every slide its own cell`,
+        );
+      } else taken.set(k, s);
+    }
+
+    // board layout: absolute cells in board units (px at scale 1)
+    for (const [s, p] of pos) {
+      s.style.left = `${p.x * w}px`;
+      s.style.top = `${p.y * h}px`;
+      s.style.width = `${w}px`;
+      s.style.height = `${h}px`;
+    }
+
+    // declared animation names are validated up front - a markup typo must
+    // fail loud at init, not mid-transition (the registry throws the same
+    // way; this just moves the error to authoring time)
+    for (const s of slides) {
+      for (const phase of ['In', 'Out'] as const) {
+        const name = (s.dataset as Record&lt;string, string | undefined&gt;)[`anim${phase}`];
+        if (name) channelFor(name);
+      }
+    }
+
+    const ctx: CanvasCtx = { board, slides, byId, pos, w, h, active: start, busy: false, view: null, pan: null };
+    root._animCanvas = ctx;
+
+    // authored directional/overview chrome (optional): click delegation on the
+    // root; in overview a click on a slide tile zooms back into it
+    root.addEventListener('click', (e) =&gt; {
+      const c = root._animCanvas;
+      if (!c) return;
+      const t = e.target as HTMLElement | null;
+      const control = t?.closest?.('[data-anim-canvas-go]');
+      if (control &amp;&amp; root.contains(control)) {
+        const dir = control.getAttribute('data-anim-canvas-go');
+        if (dir === 'overview') toggleOverview(root, c);
+        else {
+          const id = c.active.dataset[dir as AnimDirection];
+          if (id) void goTo(root, c, id);
+        }
+        return;
+      }
+      if (!root.hasAttribute('data-overview')) return;
+      const tile = t?.closest?.('.anim-canvas-slide') as HTMLElement | null;
+      if (tile &amp;&amp; c.slides.includes(tile)) exitOverview(root, c, tile);
+    });
+
+    // uniform scale: board units → rendered viewport (ResizeObserver does the
+    // math, never a window resize listener - same technique as presentation)
+    const frame = (): void =&gt; {
+      const c = root._animCanvas;
+      if (!c) return;
+      void panTo(root, c, root.hasAttribute('data-overview') ? overviewView(root, c) : focusView(root, c, c.active), false);
+    };
+    new ResizeObserver(frame).observe(root);
+
+    activate(root, ctx, start);
+    frame();
+  });
+}
+
+bindKeys();
+init();
+new MutationObserver(init).observe(document, { childList: true, subtree: true });
+</code></pre></div></section><nav class="page-nav"><a class="page-nav-link page-nav-prev" href="motion.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><div><span class="page-nav-label">Previous</span><span class="page-nav-title">Motion</span></div></a><a class="page-nav-link page-nav-next" href="anim-fade.html"><div><span class="page-nav-label">Next</span><span class="page-nav-title">Fade</span></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></nav></main><aside class="site-toc"><div class="site-toc-content"><p class="toc-title">On This Page</p><a class="toc-link" href="#toc-a-2-2-board-with-mixed-transitions">A 2×2 board with mixed transitions</a><a class="toc-link" href="#toc-curtain-color-blend-over">Curtain color (blend-over)</a><a class="toc-link" href="#toc-states">States</a><a class="toc-link" href="#toc-css">CSS</a><a class="toc-link" href="#toc-javascript">JavaScript</a></div></aside></div><script>try {
+  var c = JSON.parse(localStorage.getItem('defuss-shadcn-nav-collapsed') || '{}');
+  if (c && typeof c === 'object' && !Array.isArray(c)) {
+    for (var h in c) {
+      var d = document.querySelector('details[data-nav-section="' + h + '"]');
+      if (!d) continue;
+      if (c[h] === '1') d.open = true;
+      else if (!d.querySelector('a.nav-link.active')) d.open = false;
+    }
+  }
+  if (localStorage.getItem('defuss-shadcn-nav-docked') === '1') {
+    var sb = document.querySelector('.site-sidebar');
+    /* stateName pins it: the sidebar component's auto-collapse treats a
+       set stateName as a deliberate user choice and leaves it alone */
+    if (sb) { sb.dataset.state = 'collapsed'; sb.dataset.stateName = 'collapsed'; }
+  }
+} catch (e) {}</script><footer class="site-footer"><p class="site-footer-tagline">Agentically engineered with local Qwen3.8-Flash-Next/vLLM, quality-gated automatically, and human-reviewed before release.</p><p class="site-footer-tagline" style="margin-top:0;">Reworked, enhanced and maintained by <a href="https://aron-homberg.de" target="_blank" rel="noopener">Aron Homberg</a></p><span class="site-footer-dot"> · </span>MIT Licensed<span class="site-footer-dot"> · </span><a href="https://github.com/kyr0/defuss-shadcn" target="_blank" rel="noopener">Source on GitHub</a></footer><script src="js/site.js" defer=""></script><script src="js/code-example.js" defer=""></script><script type="module" src="js/shiki-highlight.js"></script><script type="module" src="../components/all.js"></script><script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script><script>globalThis.lucide?.createIcons();</script></body></html>

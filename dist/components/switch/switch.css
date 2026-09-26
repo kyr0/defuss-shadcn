@@ -3,7 +3,7 @@
 @layer components {
   .switch {
     appearance: none;
-    margin: 0; /* kill the UA's ~4px input margin — breaks flex/grid rhythm */
+    margin: 0; /* kill the UA's ~4px input margin - breaks flex/grid rhythm */
     width: 2.25rem;
     height: 1.25rem;
     border-radius: 9999px;
@@ -85,7 +85,7 @@
     }
 
     &[data-size="md"] {
-      /* same as the default — explicit member of the scale */
+      /* same as the default - explicit member of the scale */
     }
 
     &[data-size="lg"] {
@@ -131,7 +131,7 @@
 
   /* With-description layout: label + description stack beside the switch.
      The switch spans both rows, so grid auto-placement (definite-row items
-     first) pins it to column 1 — the track template must therefore lead with
+     first) pins it to column 1 - the track template must therefore lead with
      the auto (switch) track. `1fr auto` here once placed the text in the far
      right track (reported: "description renders on the far right"). */
   .switch-item-block {

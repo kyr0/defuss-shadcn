@@ -84,7 +84,7 @@ const TW = new RegExp(
 /**
  * Why: every doc page loads the shipped optional modules
  * (theme/utils/sizing.css + theme/utils/layout.css), so their `:where(.…)` utilities are
- * defined *in the page* — doc demos may use them without being flagged as
+ * defined *in the page* - doc demos may use them without being flagged as
  * undefined no-ops. Components never get this allowance: they ship standalone
  * and a consumer page might not load the modules (the component scan keeps
  * its own, stricter set).
@@ -103,7 +103,7 @@ function moduleDefinedClasses(root: string): Set<string> {
 }
 
 /**
- * Returns `{ docIssues, compIssues }` — undefined utility-shaped classes in
+ * Returns `{ docIssues, compIssues }` - undefined utility-shaped classes in
  * doc pages (informational) and component files (must be empty; components
  * may not depend on doc-site utilities).
  */
@@ -142,7 +142,7 @@ export function auditUtilities(root: string): { docIssues: string[]; compIssues:
   }
 
   // The shipped optional modules (theme/utils/sizing.css + theme/utils/layout.css) define
-  // the utility vocabulary every demo and skill sample composes with — the
+  // the utility vocabulary every demo and skill sample composes with - the
   // docs pages link them on every page, and component skills/fixtures are
   // documentation too (the scan never covers components' shipped .css/.js,
   // which stay module-independent).

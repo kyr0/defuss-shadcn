@@ -1,7 +1,7 @@
 ---
 name: Newsletter
 type: BLK
-why: A real <form> with <input type="email"> — native validation, keyboard, and autofill come free.
+why: A real <form> with <input type="email"> - native validation, keyboard, and autofill come free.
 when: Sign-up band on a marketing page; for multi-field sign-up use the Form component.
 where: dist/components/newsletter/newsletter.css
 supportedStates: default
@@ -12,15 +12,15 @@ supportedStates: default
 ## Native basis
 `<form>` + `<input type="email" required>` + submit [Button](../button/component-skill.md).
 The browser enforces the email format; `enterkeyhint="send"` and
-`autocomplete="email"` tune mobile keyboards — zero validation JS.
+`autocomplete="email"` tune mobile keyboards - zero validation JS.
 
 ---
 
 ## Native Web APIs
-- [`<input type="email">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email) — constraint validation built in
-- [`autocomplete`](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete) — password-manager autofill
-- [`enterkeyhint`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/enterkeyhint) — mobile keyboard label
-- [Container queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries) — stacked → inline form
+- [`<input type="email">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email) - constraint validation built in
+- [`autocomplete`](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete) - password-manager autofill
+- [`enterkeyhint`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/enterkeyhint) - mobile keyboard label
+- [Container queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries) - stacked → inline form
 
 ---
 
@@ -51,13 +51,13 @@ The browser enforces the email format; `enterkeyhint="send"` and
 
 | Attribute       | Element   | Purpose                                       |
 |-----------------|-----------|-----------------------------------------------|
-| `<label>`       | sr-only   | Names the input visibly to SRs — placeholder is not a label |
+| `<label>`       | sr-only   | Names the input visibly to SRs - placeholder is not a label |
 | `role="note"`   | privacy   | Mark the reassurance as an aside              |
 | `enterkeyhint`  | input     | "Send" key on mobile                          |
 
 ---
 
 ## Notes
-- The visible `placeholder` never replaces the `<label>` — keep the `sr-only` label even when the design hides it.
+- The visible `placeholder` never replaces the `<label>` - keep the `sr-only` label even when the design hides it.
 - Submit to your provider with `action`/`method`, or intercept with a `submit` listener; invalid states are already styled via `:user-invalid` in the Input component.
-- The inline row (input+button) is `flex-direction: row` only ≥ 33rem container width — it stacks gracefully in narrow footers.
+- The inline row (input+button) is `flex-direction: row` only ≥ 33rem container width - it stacks gracefully in narrow footers.

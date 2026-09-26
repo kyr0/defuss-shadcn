@@ -1766,6 +1766,32 @@ function debounce(fn, wait2) {
   };
   return wrapped;
 }
+// src/shared/keys.ts
+var handlers = new Set;
+var listening = false;
+var isEditable = (target) => target instanceof HTMLElement && (target.isContentEditable || target.closest('input, textarea, select, [contenteditable="true"]') !== null);
+function onKeydown(event) {
+  if (isEditable(event.target))
+    return;
+  for (const handler of handlers) {
+    if (handler(event) === true)
+      break;
+  }
+}
+function bindGlobalKeys(handler) {
+  handlers.add(handler);
+  if (!listening && typeof document !== "undefined") {
+    listening = true;
+    document.addEventListener("keydown", onKeydown);
+  }
+  return () => {
+    handlers.delete(handler);
+    if (handlers.size === 0 && listening) {
+      listening = false;
+      document.removeEventListener("keydown", onKeydown);
+    }
+  };
+}
 // src/shared/query.ts
 var MORPH_METHODS = [
   "morph",
@@ -1790,6 +1816,657 @@ function defussQuery() {
     }
   }
   throw new Error(RUNTIME_INCOMPLETE);
+}
+// src/shared/motion.ts
+var ENTRANCES = [
+  "up",
+  "down",
+  "left",
+  "right",
+  "zoom",
+  "zoom-out",
+  "pop",
+  "spin",
+  "flip",
+  "skew",
+  "blur",
+  "wipe",
+  "wipe-up",
+  "iris",
+  "fade"
+];
+var active = new WeakMap;
+var owned = (el, prefix) => el.getAnimations({ subtree: false }).filter((a) => typeof a.animationName === "string" && a.animationName.startsWith(prefix));
+function trigger(el, attr, effect, prefix, options = {}) {
+  const style = el.style;
+  if (effect !== undefined)
+    el.setAttribute(attr, effect);
+  const animations = owned(el, prefix);
+  for (const animation of animations)
+    animation.cancel();
+  style.setProperty("--df-motion-base-opacity", getComputedStyle(el).opacity);
+  if (options.duration !== undefined)
+    style.setProperty("--df-motion-duration", `${options.duration}ms`);
+  if (options.delay !== undefined)
+    style.setProperty("--df-motion-delay", `${options.delay}ms`);
+  if (options.easing !== undefined)
+    style.setProperty("--df-motion-ease", options.easing);
+  if (options.distance !== undefined)
+    style.setProperty("--df-motion-distance", options.distance);
+  for (const animation of animations)
+    animation.play();
+  active.set(el, animations);
+  const finished = Promise.all(animations.map((a) => a.finished.catch(() => {
+    return;
+  }))).then(() => {
+    if (active.get(el) !== animations)
+      return;
+    active.delete(el);
+  });
+  return {
+    finished,
+    cancel() {
+      if (active.get(el) !== animations)
+        return;
+      animations.forEach((a) => a.cancel());
+      active.delete(el);
+      el.removeAttribute(attr);
+    }
+  };
+}
+function entrance(element, effect, options = {}) {
+  const current = element.getAttribute("data-df-entrance") ?? undefined;
+  const target = effect ?? current;
+  if (target !== undefined && !ENTRANCES.includes(target)) {
+    throw new Error(`motion: unknown entrance "${target}" (supported: ${ENTRANCES.join(", ")})`);
+  }
+  return trigger(element, "data-df-entrance", target, "df-enter-", options);
+}
+function draw(element, options = {}) {
+  return trigger(element, "data-df-draw", undefined, "df-draw", options);
+}
+function revealAttr(direction, delay) {
+  const dir = ENTRANCES.includes(String(direction)) ? String(direction) : "up";
+  const ms = delay === undefined ? -1 : Math.max(0, Number(delay) || 0);
+  const attrs = { "data-df-entrance": dir };
+  if (ms > 0)
+    attrs.style = `--df-motion-delay:${ms}ms`;
+  return attrs;
+}
+
+// src/shared/presentation.ts
+function coerceIndex(raw, fallback) {
+  const n = typeof raw === "number" ? raw : parseInt(String(raw), 10);
+  return Number.isFinite(n) ? Math.trunc(n) : fallback;
+}
+function clampIndex(raw, count) {
+  if (count <= 0)
+    return 0;
+  return Math.min(count - 1, Math.max(0, coerceIndex(raw, 0)));
+}
+var COUNT_KEY = "_presentationCount";
+function animateCount(el, opts = {}) {
+  const num = (raw, fallback) => {
+    const n = typeof raw === "number" ? raw : Number(raw);
+    return Number.isFinite(n) ? n : fallback;
+  };
+  const to = opts.to ?? num(el.dataset.count, 0);
+  const from = opts.from ?? num(el.dataset.countFrom, 0);
+  const duration = Math.max(0, opts.duration ?? num(el.dataset.countDuration, 1200));
+  const delay = Math.max(0, opts.delay ?? num(el.dataset.countDelay, 0));
+  const decimals = opts.decimals ?? num(el.dataset.countDecimals, String(to).split(".")[1]?.length ?? 0);
+  const fmt = opts.format ?? ((n) => new Intl.NumberFormat(undefined, {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals
+  }).format(n));
+  const stop = el[COUNT_KEY];
+  if (typeof stop === "function")
+    stop();
+  let raf = 0;
+  let timer = 0;
+  const settle = () => {
+    el.textContent = fmt(to);
+  };
+  const reduced = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const start = () => {
+    if (reduced || duration === 0 || from === to) {
+      settle();
+      return;
+    }
+    const t0 = performance.now();
+    const tick = (now) => {
+      const p = Math.min(1, (now - t0) / duration);
+      const eased = 1 - (1 - p) ** 3;
+      el.textContent = p >= 1 ? fmt(to) : fmt(from + (to - from) * eased);
+      if (p < 1)
+        raf = requestAnimationFrame(tick);
+    };
+    el.textContent = fmt(from);
+    raf = requestAnimationFrame(tick);
+  };
+  const cancel = () => {
+    cancelAnimationFrame(raf);
+    clearTimeout(timer);
+    if (el[COUNT_KEY] === cancel)
+      delete el[COUNT_KEY];
+  };
+  el[COUNT_KEY] = cancel;
+  if (delay > 0)
+    timer = setTimeout(start, delay);
+  else
+    start();
+  return cancel;
+}
+var PRESENTATION_NOT_INITIALIZED = "ddf$: presentation element is not initialized - load dist/components/presentation/presentation.js (or all.js) first";
+function presentationScope(el) {
+  const mount = el?.closest(".presentation") ?? (typeof document !== "undefined" ? document.querySelector(".presentation") : null);
+  if (!mount)
+    throw new Error("ddf$: no .presentation element found");
+  const slides = () => Array.from(mount.querySelectorAll(":scope > [data-slide]"));
+  const apply = (index) => {
+    const api = mount.api;
+    if (!api)
+      throw new Error(PRESENTATION_NOT_INITIALIZED);
+    api.setState("default", { index });
+    return coerceIndex(mount.dataset.currentSlide, index);
+  };
+  return {
+    el: mount,
+    slides,
+    count: () => slides().length,
+    index: () => coerceIndex(mount.dataset.currentSlide, 0),
+    goTo: (index) => apply(clampIndex(index, slides().length)),
+    next: () => apply(Math.min(slides().length - 1, coerceIndex(mount.dataset.currentSlide, 0) + 1)),
+    prev: () => apply(Math.max(0, coerceIndex(mount.dataset.currentSlide, 0) - 1)),
+    first: () => apply(0),
+    last: () => apply(slides().length - 1),
+    fullscreen: () => mount.hasAttribute("data-fullscreen"),
+    toggleFullscreen: (on) => {
+      const api = mount.api;
+      if (!api)
+        throw new Error(PRESENTATION_NOT_INITIALIZED);
+      const want = on ?? !mount.hasAttribute("data-fullscreen");
+      api.setState("fullscreen", { value: want });
+      return want;
+    }
+  };
+}
+function installDdf(namespace) {
+  const existing = Reflect.get(globalThis, "ddf$");
+  if (existing !== undefined) {
+    throw new Error("defuss-shadcn: globalThis.ddf$ is already defined - core installs the shared library exactly once");
+  }
+  Reflect.set(globalThis, "ddf$", namespace);
+  return namespace;
+}
+// src/shared/anim.ts
+var ANIM_NAMES = [
+  "fadeIn",
+  "fadeOut",
+  "slideIn",
+  "slideOut",
+  "zoomIn",
+  "zoomOut",
+  "popIn",
+  "popOut",
+  "spinIn",
+  "spinOut",
+  "flipIn",
+  "flipOut",
+  "skewIn",
+  "skewOut",
+  "blurIn",
+  "blurOut",
+  "wipeIn",
+  "wipeOut",
+  "irisIn",
+  "irisOut",
+  "blocksIn",
+  "blocksOut"
+];
+var DEFAULT_DURATION = 1500;
+var DEFAULT_EASING = "cubic-bezier(0.16, 1, 0.3, 1)";
+var DEFAULT_DISTANCE = "24px";
+var DEFAULT_BLUR = "12px";
+var DEFAULT_ANGLE = "12deg";
+var DEFAULT_SPIN = "0.5turn";
+var DEFAULT_ZOOM_SCALE = 0.8;
+var DEFAULT_ORIGIN = "50% 50%";
+var DEFAULT_BLOCKS = 5;
+var DEFAULT_STAGGER = 90;
+var DIRECTIONS = ["north", "south", "east", "west"];
+function coerceDirection(value, fallback) {
+  return DIRECTIONS.includes(value) ? value : fallback;
+}
+function offsetFor(direction, distance) {
+  switch (direction) {
+    case "north":
+      return `translate(0px, calc(-1 * ${distance}))`;
+    case "south":
+      return `translate(0px, ${distance})`;
+    case "west":
+      return `translate(calc(-1 * ${distance}), 0px)`;
+    case "east":
+      return `translate(${distance}, 0px)`;
+  }
+}
+function insetFor(direction) {
+  switch (direction) {
+    case "north":
+      return "inset(0px 0px 100% 0px)";
+    case "south":
+      return "inset(100% 0px 0px 0px)";
+    case "west":
+      return "inset(0px 100% 0px 0px)";
+    case "east":
+      return "inset(0px 0px 0px 100%)";
+  }
+}
+function animKeyframes(name, opts = {}, ctx = { baseOpacity: 1 }) {
+  const direction = coerceDirection(opts.direction, "north");
+  const distance = opts.distance ?? DEFAULT_DISTANCE;
+  const origin = opts.origin ?? DEFAULT_ORIGIN;
+  const base = ctx.baseOpacity;
+  switch (name) {
+    case "fadeIn":
+      return [{ opacity: 0 }, { opacity: base }];
+    case "fadeOut":
+      return [{ opacity: base }, { opacity: 0 }];
+    case "slideIn":
+      return [
+        { transform: offsetFor(direction, distance), opacity: 0 },
+        { transform: "translate(0px, 0px)", opacity: base }
+      ];
+    case "slideOut":
+      return [
+        { transform: "translate(0px, 0px)", opacity: base },
+        { transform: offsetFor(direction, distance), opacity: 0 }
+      ];
+    case "zoomIn":
+      return [
+        { transform: `scale(${opts.scale ?? DEFAULT_ZOOM_SCALE})`, opacity: 0, transformOrigin: origin },
+        { transform: "scale(1)", opacity: base, transformOrigin: origin }
+      ];
+    case "zoomOut":
+      return [
+        { transform: "scale(1)", opacity: base, transformOrigin: origin },
+        { transform: `scale(${opts.scale ?? DEFAULT_ZOOM_SCALE})`, opacity: 0, transformOrigin: origin }
+      ];
+    case "popIn":
+      return [
+        { transform: "scale(0.65)", opacity: 0, offset: 0 },
+        { transform: "scale(1.07)", opacity: base, offset: 0.65 },
+        { transform: "scale(1)", opacity: base, offset: 1 }
+      ];
+    case "popOut":
+      return [
+        { transform: "scale(1)", opacity: base, offset: 0 },
+        { transform: "scale(1.07)", opacity: base, offset: 0.35 },
+        { transform: "scale(0.65)", opacity: 0, offset: 1 }
+      ];
+    case "spinIn":
+      return [
+        { transform: `rotate(-${DEFAULT_SPIN})`, opacity: 0 },
+        { transform: "rotate(0deg)", opacity: base }
+      ];
+    case "spinOut":
+      return [
+        { transform: "rotate(0deg)", opacity: base },
+        { transform: `rotate(${DEFAULT_SPIN})`, opacity: 0 }
+      ];
+    case "flipIn": {
+      const axis = direction === "north" || direction === "south" ? "rotateX" : "rotateY";
+      const sign = direction === "north" || direction === "west" ? 1 : -1;
+      return [
+        { transform: `perspective(900px) ${axis}(${sign * 70}deg)`, opacity: 0 },
+        { transform: `perspective(900px) ${axis}(0deg)`, opacity: base }
+      ];
+    }
+    case "flipOut": {
+      const axis = direction === "north" || direction === "south" ? "rotateX" : "rotateY";
+      const sign = direction === "north" || direction === "west" ? -1 : 1;
+      return [
+        { transform: `perspective(900px) ${axis}(0deg)`, opacity: base },
+        { transform: `perspective(900px) ${axis}(${sign * 70}deg)`, opacity: 0 }
+      ];
+    }
+    case "skewIn": {
+      const horizontal = direction === "east" || direction === "west";
+      const axis = horizontal ? "skewX" : "skewY";
+      const sign = direction === "west" || direction === "south" ? 1 : -1;
+      return [
+        { transform: `${axis}(calc(${sign} * ${DEFAULT_ANGLE}))`, opacity: 0 },
+        { transform: `${axis}(0deg)`, opacity: base }
+      ];
+    }
+    case "skewOut": {
+      const horizontal = direction === "east" || direction === "west";
+      const axis = horizontal ? "skewX" : "skewY";
+      const sign = direction === "west" || direction === "south" ? -1 : 1;
+      return [
+        { transform: `${axis}(0deg)`, opacity: base },
+        { transform: `${axis}(calc(${sign} * ${DEFAULT_ANGLE}))`, opacity: 0 }
+      ];
+    }
+    case "blurIn":
+      return [
+        { filter: `blur(${DEFAULT_BLUR})`, opacity: 0 },
+        { filter: "blur(0px)", opacity: base }
+      ];
+    case "blurOut":
+      return [
+        { filter: "blur(0px)", opacity: base },
+        { filter: `blur(${DEFAULT_BLUR})`, opacity: 0 }
+      ];
+    case "wipeIn":
+      return [{ clipPath: insetFor(direction) }, { clipPath: "inset(0px 0px 0px 0px)" }];
+    case "wipeOut":
+      return [{ clipPath: "inset(0px 0px 0px 0px)" }, { clipPath: insetFor(direction) }];
+    case "irisIn":
+      return [
+        { clipPath: `circle(0% at ${origin})` },
+        { clipPath: `circle(150% at ${origin})` }
+      ];
+    case "irisOut":
+      return [
+        { clipPath: `circle(150% at ${origin})` },
+        { clipPath: `circle(0% at ${origin})` }
+      ];
+    default:
+      throw new Error(`anim: "${name}" is composite - it has no element keyframes`);
+  }
+}
+var instances = new WeakMap;
+var instanceFor = (el, name) => instances.get(el)?.get(name);
+var reducedMotion = () => typeof globalThis.matchMedia === "function" && globalThis.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function dropInstance(el, name) {
+  const map = instances.get(el);
+  if (!map)
+    return;
+  map.delete(name);
+  if (map.size === 0)
+    instances.delete(el);
+}
+function storeInstance(el, name, instance) {
+  let map = instances.get(el);
+  if (!map) {
+    map = new Map;
+    instances.set(el, map);
+  }
+  map.set(name, instance);
+}
+function deriveState(animations) {
+  if (animations.length === 0)
+    return "idle";
+  const states = animations.map((a) => a.playState);
+  if (states.every((s) => s === "finished"))
+    return "finished";
+  if (states.every((s) => s === "paused"))
+    return "paused";
+  if (states.some((s) => s === "running" || s === "pending"))
+    return "running";
+  return "idle";
+}
+function bindScroll(animations, scroll, totalMs) {
+  const axis = scroll.axis ?? "y";
+  const target = scroll.target ?? "viewport";
+  const [rangeFrom, rangeTo] = scroll.range ?? [0, 1];
+  const supportsTimeline = !scroll.forceFallback && typeof globalThis.ScrollTimeline === "function";
+  if (supportsTimeline) {
+    const source = target === "viewport" ? document.scrollingElement ?? document.documentElement : target;
+    const TimelineCtor = globalThis.ScrollTimeline;
+    const timeline = new TimelineCtor({ source, axis: axis === "x" ? "inline" : "block" });
+    for (const animation of animations) {
+      animation.pause();
+      animation.timeline = timeline;
+      animation.play();
+    }
+    return () => {
+      for (const animation of animations)
+        animation.timeline = document.timeline;
+    };
+  }
+  for (const animation of animations)
+    animation.pause();
+  const progress = () => {
+    let p;
+    if (target === "viewport") {
+      const doc = document.documentElement;
+      p = axis === "y" ? doc.scrollTop / Math.max(1, doc.scrollHeight - doc.clientHeight) : doc.scrollLeft / Math.max(1, doc.scrollWidth - doc.clientWidth);
+    } else {
+      p = axis === "y" ? target.scrollTop / Math.max(1, target.scrollHeight - target.clientHeight) : target.scrollLeft / Math.max(1, target.scrollWidth - target.clientWidth);
+    }
+    return rangeFrom + Math.min(1, Math.max(0, p)) * (rangeTo - rangeFrom);
+  };
+  const apply = () => {
+    const time = progress() * totalMs;
+    for (const animation of animations)
+      animation.currentTime = time;
+  };
+  let queued = false;
+  const onScroll = () => {
+    if (queued)
+      return;
+    queued = true;
+    requestAnimationFrame(() => {
+      queued = false;
+      apply();
+    });
+  };
+  const listenTarget = target === "viewport" ? globalThis : target;
+  listenTarget.addEventListener("scroll", onScroll, { passive: true });
+  apply();
+  return () => listenTarget.removeEventListener("scroll", onScroll);
+}
+function timingFor(opts, durationOverride) {
+  return {
+    duration: durationOverride ?? (reducedMotion() ? 1 : opts.duration ?? DEFAULT_DURATION),
+    delay: reducedMotion() ? 0 : opts.delay ?? 0,
+    easing: opts.easing ?? DEFAULT_EASING,
+    fill: "both"
+  };
+}
+function playBlocks(el, name, opts) {
+  const host = el;
+  const direction = coerceDirection(opts.direction, "north");
+  const count = Math.max(1, Math.round(opts.blocks ?? DEFAULT_BLOCKS));
+  const stagger = Math.max(0, opts.stagger ?? DEFAULT_STAGGER);
+  const timing = timingFor(opts);
+  const duration = timing.duration;
+  const horizontal = direction === "east" || direction === "west";
+  const authoredPosition = host.style.position;
+  if (getComputedStyle(host).position === "static")
+    host.style.position = "relative";
+  const overlay = document.createElement("div");
+  overlay.setAttribute("data-df-anim-blocks", "");
+  overlay.setAttribute("aria-hidden", "true");
+  Object.assign(overlay.style, {
+    position: "absolute",
+    inset: "0",
+    display: "flex",
+    flexDirection: horizontal ? "row" : "column",
+    pointerEvents: "none",
+    zIndex: "1",
+    overflow: "hidden"
+  });
+  const animations = [];
+  for (let i = 0;i < count; i++) {
+    const block = document.createElement("div");
+    Object.assign(block.style, {
+      flex: "1 1 0%",
+      background: opts.color ?? "currentColor",
+      outline: `1px solid ${opts.color ?? "currentColor"}`,
+      transformOrigin: horizontal ? direction === "west" ? "left" : "right" : direction === "north" ? "top" : "bottom"
+    });
+    overlay.append(block);
+    const axis = horizontal ? "scaleX" : "scaleY";
+    const index = name === "blocksIn" ? i : count - 1 - i;
+    const keyframes = name === "blocksIn" ? [{ transform: `${axis}(0)` }, { transform: `${axis}(1)` }] : [{ transform: `${axis}(1)` }, { transform: `${axis}(0)` }];
+    animations.push(block.animate(keyframes, { ...timing, delay: timing.delay + index * stagger }));
+  }
+  host.append(overlay);
+  const cleanup = () => {
+    overlay.remove();
+    host.style.position = authoredPosition;
+  };
+  if (name === "blocksOut") {
+    Promise.all(animations.map((a) => a.finished.catch(() => {
+      return;
+    }))).then(() => {
+      if (instanceFor(el, name)?.cleanup)
+        cleanup();
+    });
+  }
+  return {
+    animations,
+    cleanup,
+    totalMs: timing.delay + (count - 1) * stagger + duration
+  };
+}
+function playAnim(name, el, opts = {}) {
+  if (!ANIM_NAMES.includes(name)) {
+    throw new Error(`anim: unknown animation "${name}" (supported: ${ANIM_NAMES.join(", ")})`);
+  }
+  resetAnim(name, el);
+  const composite = name === "blocksIn" || name === "blocksOut";
+  const timing = timingFor(opts);
+  let animations;
+  let cleanup = null;
+  let totalMs;
+  if (composite) {
+    const built = playBlocks(el, name, opts);
+    animations = built.animations;
+    cleanup = built.cleanup;
+    totalMs = built.totalMs;
+  } else {
+    const ctx = { baseOpacity: Number(getComputedStyle(el).opacity) || 1 };
+    animations = [el.animate(animKeyframes(name, opts, ctx), timing)];
+    totalMs = timing.delay + timing.duration;
+  }
+  let unbind = null;
+  if (opts.scroll)
+    unbind = bindScroll(animations, opts.scroll, totalMs);
+  const instance = {
+    animations,
+    unbind,
+    cleanup,
+    finished: Promise.all(animations.map((a) => a.finished.catch(() => {
+      return;
+    }))).then(() => {
+      return;
+    })
+  };
+  storeInstance(el, name, instance);
+  return {
+    finished: instance.finished,
+    pause: () => animations.forEach((a) => a.pause()),
+    resume: () => animations.forEach((a) => a.play()),
+    finish: () => animations.forEach((a) => a.finish()),
+    reset: () => resetAnim(name, el),
+    state: () => deriveState(animations)
+  };
+}
+function resetAnim(name, el) {
+  const instance = instanceFor(el, name);
+  if (!instance)
+    return;
+  for (const animation of instance.animations)
+    animation.cancel();
+  instance.unbind?.();
+  instance.cleanup?.();
+  dropInstance(el, name);
+}
+function channelFor(name) {
+  return {
+    play: (el, opts) => playAnim(name, el, opts),
+    pause: (el) => instanceFor(el, name)?.animations.forEach((a) => a.pause()),
+    resume: (el) => instanceFor(el, name)?.animations.forEach((a) => a.play()),
+    finish: (el) => instanceFor(el, name)?.animations.forEach((a) => a.finish()),
+    reset: (el) => resetAnim(name, el),
+    state: (el) => {
+      const instance = instanceFor(el, name);
+      return instance ? deriveState(instance.animations) : "idle";
+    }
+  };
+}
+var anim = Object.freeze(Object.assign(Object.fromEntries(ANIM_NAMES.map((name) => [name, channelFor(name)])), { names: ANIM_NAMES }));
+// src/shared/theme-links.ts
+var LINK_ATTR = "data-df-theme-link";
+var inflight = new Map;
+function themeJsonHref(id) {
+  const tokens2 = document.getElementById("tokens-css") ?? document.querySelector('link[href*="default-semantic-tokens.css"]');
+  if (tokens2)
+    return new URL(`../${id}.json`, tokens2.href).href;
+  return `${id}.json`;
+}
+function parseThemeLinks(text) {
+  let raw;
+  try {
+    raw = JSON.parse(text);
+  } catch (e) {
+    throw new Error(`theme links: invalid JSON - ${e instanceof Error ? e.message : e}`);
+  }
+  const file = raw;
+  if (!file || file.schema !== "v1")
+    throw new Error('theme links: $.schema must be "v1"');
+  if (!Array.isArray(file.links))
+    throw new Error("theme links: $.links must be an array");
+  for (const [i, node] of file.links.entries()) {
+    if (!node || node.type !== "link")
+      throw new Error(`theme links: $.links[${i}].type must be "link" (got ${JSON.stringify(node && node.type)})`);
+    if (!node.attributes || typeof node.attributes !== "object")
+      throw new Error(`theme links: $.links[${i}].attributes must be an object`);
+  }
+  return { schema: "v1", links: file.links };
+}
+function clearThemeLinks() {
+  document.querySelectorAll(`link[${LINK_ATTR}]`).forEach((el) => el.remove());
+}
+function applyThemeLinks(themeId, links) {
+  if (!document.getElementById("df-theme-links")) {
+    const marker = document.createElement("template");
+    marker.id = "df-theme-links";
+    document.head.append(marker);
+  }
+  clearThemeLinks();
+  for (const node of links) {
+    const rel = node.attributes.rel ?? "";
+    const href = node.attributes.href ?? "";
+    const existing = document.querySelector(`link[rel="${CSS.escape(rel)}"][href="${CSS.escape(href)}"]`);
+    if (existing)
+      continue;
+    const link = document.createElement("link");
+    for (const [name, value] of Object.entries(node.attributes))
+      link.setAttribute(name, String(value));
+    link.setAttribute(LINK_ATTR, themeId);
+    document.head.append(link);
+  }
+}
+function loadTheme(id) {
+  if (!id || id === "default") {
+    clearThemeLinks();
+    return Promise.resolve();
+  }
+  let pending = inflight.get(id);
+  if (!pending) {
+    pending = (async () => {
+      try {
+        const res = await fetch(themeJsonHref(id));
+        return res.ok ? parseThemeLinks(await res.text()) : null;
+      } catch (e) {
+        if (e instanceof SyntaxError || e instanceof Error && e.message.startsWith("theme links"))
+          throw e;
+        return null;
+      }
+    })();
+    inflight.set(id, pending);
+  }
+  return pending.then((file) => {
+    if (file)
+      applyThemeLinks(id, file.links);
+    else
+      clearThemeLinks();
+  });
 }
 
 // src/shared/state-api.ts
@@ -1825,12 +2502,47 @@ var SHARED_ABI = "0.9.0";
 // src/core/index.ts
 var existing = Reflect.get(globalThis, "df$");
 if (existing !== undefined) {
-  throw new Error("defuss-shadcn core: globalThis.df$ is already defined — load core OR all, never both and never twice");
+  throw new Error("defuss-shadcn core: globalThis.df$ is already defined - load core OR all, never both and never twice");
 }
 var df = createDf$(exports_dist);
 Reflect.set(globalThis, "df$", df);
 var shadcn = df.shadcn ??= {};
-shadcn.shared = { abi: SHARED_ABI, defussGlobals, safeShowPopover, defussQuery, debounce };
+shadcn.shared = {
+  abi: SHARED_ABI,
+  defussGlobals,
+  safeShowPopover,
+  defussQuery,
+  debounce,
+  animateCount,
+  clampIndex,
+  coerceIndex,
+  presentationScope,
+  revealAttr,
+  entrance,
+  draw,
+  anim,
+  bindGlobalKeys,
+  loadTheme
+};
+Reflect.set(df, "anim", anim);
+shadcn.anim = anim;
+installDdf({
+  abi: SHARED_ABI,
+  defussGlobals,
+  safeShowPopover,
+  defussQuery,
+  debounce,
+  presentation: presentationScope,
+  animateCount,
+  revealAttr,
+  entrance,
+  draw,
+  anim,
+  bindGlobalKeys,
+  loadTheme,
+  clampIndex,
+  coerceIndex
+});
 
 // src/components/accordion/accordion.ts
 var df$ = defussGlobals();
@@ -1951,13 +2663,13 @@ var alertDialogApi = {
 df$2.alertDialogApi = alertDialogApi;
 df$2.alertDialogStates = alertDialogStates;
 function init2() {
-  document.querySelectorAll("[data-alert-dialog-trigger]:not([data-init])").forEach((trigger) => {
-    trigger.dataset.init = "";
-    const dialog = document.getElementById(trigger.dataset.alertDialogTrigger);
+  document.querySelectorAll("[data-alert-dialog-trigger]:not([data-init])").forEach((trigger2) => {
+    trigger2.dataset.init = "";
+    const dialog = document.getElementById(trigger2.dataset.alertDialogTrigger);
     if (!dialog)
       return;
-    trigger.addEventListener("click", () => {
-      dialog._trigger = trigger;
+    trigger2.addEventListener("click", () => {
+      dialog._trigger = trigger2;
       dialog.showModal();
     });
   });
@@ -1987,10 +2699,427 @@ function init2() {
 init2();
 new MutationObserver(init2).observe(document, { childList: true, subtree: true });
 
-// src/components/avatar/avatar.ts
+// src/components/anim-canvas/anim-canvas.ts
 var df$3 = defussGlobals();
+var dfDollar = defussQuery();
+var animCanvasStates = ["default", "overview"];
+var DIRS = {
+  east: [1, 0],
+  west: [-1, 0],
+  south: [0, 1],
+  north: [0, -1]
+};
+function channelFor2(name) {
+  if (!anim.names.includes(name)) {
+    throw new Error(`anim-canvas: unknown animation "${name}" (supported: ${anim.names.join(", ")})`);
+  }
+  return anim[name];
+}
+function animNameFor(slide, phase) {
+  return (phase === "in" ? slide.dataset.animIn : slide.dataset.animOut) || (phase === "in" ? "slideIn" : "slideOut");
+}
+function animOptsFor(slide, phase, travel) {
+  const d = slide.dataset;
+  const p = phase === "in" ? "animIn" : "animOut";
+  const opts = { direction: d[`${p}Direction`] ?? travel };
+  const duration = parseFloat(d[`${p}Duration`] ?? "");
+  if (Number.isFinite(duration))
+    opts.duration = duration;
+  if (d[`${p}Easing`])
+    opts.easing = d[`${p}Easing`];
+  if (d[`${p}Origin`])
+    opts.origin = d[`${p}Origin`];
+  if (d[`${p}Distance`])
+    opts.distance = d[`${p}Distance`];
+  const blocks = parseInt(d[`${p}Blocks`] ?? "", 10);
+  if (Number.isFinite(blocks))
+    opts.blocks = blocks;
+  const stagger = parseFloat(d[`${p}Stagger`] ?? "");
+  if (Number.isFinite(stagger))
+    opts.stagger = stagger;
+  if (d[`${p}Color`])
+    opts.color = d[`${p}Color`];
+  return opts;
+}
+var transformFor = (v) => `translate(${v.tx}px, ${v.ty}px) scale(${v.s})`;
+var reducedMotion2 = () => typeof globalThis.matchMedia === "function" && globalThis.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function panDuration(root) {
+  if (reducedMotion2())
+    return 1;
+  const v = parseFloat(root.dataset.panDuration ?? "");
+  return Number.isFinite(v) ? v : 1500;
+}
+function focusView(root, ctx, slide) {
+  const box = root.getBoundingClientRect();
+  if (box.width <= 0 || box.height <= 0)
+    return null;
+  const p = ctx.pos.get(slide) ?? { x: 0, y: 0 };
+  const s = Math.min(box.width / ctx.w, box.height / ctx.h);
+  return {
+    s,
+    tx: (box.width - ctx.w * s) / 2 - p.x * ctx.w * s,
+    ty: (box.height - ctx.h * s) / 2 - p.y * ctx.h * s
+  };
+}
+function overviewView(root, ctx) {
+  const box = root.getBoundingClientRect();
+  if (box.width <= 0 || box.height <= 0)
+    return null;
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  for (const p of ctx.pos.values()) {
+    minX = Math.min(minX, p.x);
+    minY = Math.min(minY, p.y);
+    maxX = Math.max(maxX, p.x);
+    maxY = Math.max(maxY, p.y);
+  }
+  const bw = (maxX - minX + 1) * ctx.w;
+  const bh = (maxY - minY + 1) * ctx.h;
+  const s = Math.min(box.width / bw, box.height / bh) * 0.92;
+  return {
+    s,
+    tx: (box.width - bw * s) / 2 - minX * ctx.w * s,
+    ty: (box.height - bh * s) / 2 - minY * ctx.h * s
+  };
+}
+function panTo(root, ctx, view, animate = true) {
+  if (!view)
+    return Promise.resolve();
+  ctx.pan?.cancel();
+  ctx.pan = null;
+  const to = transformFor(view);
+  const from = ctx.view ? transformFor(ctx.view) : null;
+  ctx.view = view;
+  if (!animate || !from || from === to || panDuration(root) <= 1) {
+    ctx.board.style.transform = to;
+    return Promise.resolve();
+  }
+  const flight = ctx.board.animate([{ transform: from }, { transform: to }], {
+    duration: panDuration(root),
+    easing: "cubic-bezier(0.16, 1, 0.3, 1)",
+    fill: "both"
+  });
+  ctx.pan = flight;
+  return flight.finished.catch(() => {
+    return;
+  }).then(() => {
+    if (ctx.pan === flight) {
+      ctx.board.style.transform = to;
+      flight.cancel();
+      ctx.pan = null;
+    }
+  });
+}
+function applySlideState(root, ctx) {
+  const overview = root.hasAttribute("data-overview");
+  for (const s of ctx.slides) {
+    const on = overview || s === ctx.active;
+    s.inert = !on;
+    if (on)
+      s.removeAttribute("aria-hidden");
+    else
+      s.setAttribute("aria-hidden", "true");
+  }
+  root.querySelectorAll("[data-anim-canvas-go]").forEach((el) => {
+    const dir = el.getAttribute("data-anim-canvas-go");
+    if (dir === "overview" || !(el instanceof HTMLButtonElement))
+      return;
+    el.disabled = !ctx.active.dataset[dir];
+  });
+}
+function activate(root, ctx, slide) {
+  ctx.active = slide;
+  for (const s of ctx.slides)
+    s.toggleAttribute("data-active", s === slide);
+  root.dataset.currentSlide = slide.id;
+  applySlideState(root, ctx);
+}
+async function goTo(root, ctx, id) {
+  const target = ctx.byId.get(id);
+  if (!target) {
+    console.error(`anim-canvas: goTo("${id}") - no .anim-canvas-slide with that id in this canvas`);
+    return;
+  }
+  if (ctx.busy)
+    return;
+  if (target === ctx.active && !root.hasAttribute("data-overview"))
+    return;
+  ctx.busy = true;
+  try {
+    if (root.hasAttribute("data-overview")) {
+      root.removeAttribute("data-overview");
+      activate(root, ctx, target);
+      await panTo(root, ctx, focusView(root, ctx, target));
+      return;
+    }
+    const from = ctx.pos.get(ctx.active) ?? { x: 0, y: 0 };
+    const to = ctx.pos.get(target) ?? from;
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+    const travel = dx > 0 ? "east" : dx < 0 ? "west" : dy > 0 ? "south" : dy < 0 ? "north" : "east";
+    const current = ctx.active;
+    const inName = animNameFor(target, "in");
+    const outName = target !== current ? animNameFor(current, "out") : null;
+    if (target !== current && (inName === "blocksIn" || outName === "blocksOut")) {
+      const cfg = animOptsFor(inName === "blocksIn" ? target : current, inName === "blocksIn" ? "in" : "out", travel);
+      const cover = channelFor2("blocksIn").play(current, cfg);
+      const pan2 = panTo(root, ctx, focusView(root, ctx, target));
+      await cover.finished;
+      await pan2;
+      activate(root, ctx, target);
+      cover.reset();
+      const reveal = inName === "blocksIn" ? "blocksOut" : inName;
+      channelFor2(reveal).play(target, animOptsFor(target, "in", travel));
+      return;
+    }
+    activate(root, ctx, target);
+    const pan = panTo(root, ctx, focusView(root, ctx, target));
+    channelFor2(inName).play(target, animOptsFor(target, "in", travel));
+    if (target !== current) {
+      channelFor2(outName).play(current, animOptsFor(current, "out", travel));
+    }
+    await pan;
+  } finally {
+    ctx.busy = false;
+  }
+}
+function enterOverview(root, ctx) {
+  if (root.hasAttribute("data-overview"))
+    return;
+  ctx.busy = true;
+  root.setAttribute("data-overview", "");
+  applySlideState(root, ctx);
+  panTo(root, ctx, overviewView(root, ctx)).then(() => {
+    ctx.busy = false;
+  });
+}
+function exitOverview(root, ctx, focus) {
+  if (!root.hasAttribute("data-overview"))
+    return;
+  ctx.busy = true;
+  root.removeAttribute("data-overview");
+  if (focus && ctx.byId.get(focus.id) === focus)
+    activate(root, ctx, focus);
+  else
+    applySlideState(root, ctx);
+  panTo(root, ctx, focusView(root, ctx, ctx.active)).then(() => {
+    ctx.busy = false;
+  });
+}
+function toggleOverview(root, ctx) {
+  if (root.hasAttribute("data-overview"))
+    exitOverview(root, ctx);
+  else
+    enterOverview(root, ctx);
+}
+function triggerStateChange3(root, stateName, config = {}) {
+  if (!animCanvasStates.includes(stateName)) {
+    throw new Error(`anim-canvas: unknown state "${stateName}" (supported: ${animCanvasStates.join(", ")})`);
+  }
+  const ctx = root._animCanvas;
+  if (!ctx)
+    return;
+  if (stateName === "overview") {
+    if (config.value === false)
+      exitOverview(root, ctx);
+    else
+      enterOverview(root, ctx);
+    return;
+  }
+  if (typeof config.slide === "string")
+    goTo(root, ctx, config.slide);
+  else if (root.hasAttribute("data-overview"))
+    exitOverview(root, ctx);
+  else
+    panTo(root, ctx, focusView(root, ctx, ctx.active));
+}
+var animCanvasApi = {
+  setState(root, stateName, config = {}) {
+    triggerStateChange3(root, stateName, config);
+    root.dataset.stateName = stateName;
+    root._stateConfig = config;
+  },
+  getState(root) {
+    const ctx = root._animCanvas;
+    return {
+      name: root.dataset.stateName || "default",
+      config: {
+        ...root._stateConfig,
+        slide: ctx?.active.id,
+        overview: root.hasAttribute("data-overview")
+      }
+    };
+  }
+};
+df$3.animCanvasApi = animCanvasApi;
+df$3.animCanvasStates = animCanvasStates;
+function pickCanvas(target) {
+  const focused = target instanceof HTMLElement ? target.closest(".anim-canvas") : null;
+  if (focused)
+    return focused;
+  const all = Array.from(document.querySelectorAll(".anim-canvas"));
+  return all.find((r) => {
+    const b = r.getBoundingClientRect();
+    return b.bottom > 0 && b.top < globalThis.innerHeight && b.right > 0 && b.left < globalThis.innerWidth;
+  }) ?? all[0] ?? null;
+}
+var keysBound = false;
+function bindKeys() {
+  if (keysBound)
+    return;
+  keysBound = true;
+  bindGlobalKeys((e) => {
+    const key = e.key;
+    const dir = key === "ArrowRight" ? "east" : key === "ArrowLeft" ? "west" : key === "ArrowDown" ? "south" : key === "ArrowUp" ? "north" : null;
+    const toggle = key === "o" || key === "O" || key === "Escape";
+    if (!dir && !toggle)
+      return;
+    const root = pickCanvas(e.target);
+    const ctx = root?._animCanvas;
+    if (!root || !ctx)
+      return;
+    if (dir && !ctx.active.dataset[dir])
+      return;
+    e.preventDefault();
+    if (dir)
+      goTo(root, ctx, ctx.active.dataset[dir]);
+    else
+      toggleOverview(root, ctx);
+    return true;
+  });
+}
+function init3() {
+  document.querySelectorAll(".anim-canvas:not([data-init])").forEach((root) => {
+    root.dataset.init = "";
+    root.api = {
+      setState: (stateName, config) => animCanvasApi.setState(root, stateName, config),
+      getState: () => animCanvasApi.getState(root)
+    };
+    let board = root.querySelector(":scope > .anim-canvas-board");
+    if (!board) {
+      board = document.createElement("div");
+      board.className = "anim-canvas-board";
+      for (const slide of Array.from(root.querySelectorAll(":scope > .anim-canvas-slide"))) {
+        dfDollar(board).append(slide);
+      }
+      root.prepend(board);
+    }
+    const slides = dfDollar(board).find(".anim-canvas-slide");
+    if (slides.length === 0)
+      return;
+    const cs = getComputedStyle(root);
+    const w = parseFloat(cs.getPropertyValue("--anim-canvas-width")) || 1280;
+    const h = parseFloat(cs.getPropertyValue("--anim-canvas-height")) || 720;
+    const byId = new Map;
+    for (const s of slides) {
+      if (!s.id) {
+        console.error("anim-canvas: every .anim-canvas-slide needs an id - the data-east/west/north/south relation map references slides by id");
+        continue;
+      }
+      byId.set(s.id, s);
+    }
+    const start = slides.find((s) => s.hasAttribute("data-active")) ?? slides[0];
+    const pos = new Map([[start, { x: 0, y: 0 }]]);
+    const queue = [start];
+    for (let qi = 0;qi < queue.length; qi++) {
+      const cur = queue[qi];
+      const p = pos.get(cur);
+      for (const dir of Object.keys(DIRS)) {
+        const ref = cur.dataset[dir];
+        if (!ref)
+          continue;
+        const neighbor = byId.get(ref);
+        if (!neighbor) {
+          console.error(`anim-canvas: #${cur.id || "(unnamed)"} declares data-${dir}="${ref}" but no .anim-canvas-slide with id="${ref}" exists in this canvas - dangling id ref`);
+          continue;
+        }
+        const np = { x: p.x + DIRS[dir][0], y: p.y + DIRS[dir][1] };
+        const existing2 = pos.get(neighbor);
+        if (existing2) {
+          if (existing2.x !== np.x || existing2.y !== np.y) {
+            console.error(`anim-canvas: conflicting position for #${ref} - reached as (${np.x},${np.y}) from #${cur.id}, already placed at (${existing2.x},${existing2.y}); the relation map must be consistent`);
+          }
+          continue;
+        }
+        pos.set(neighbor, np);
+        queue.push(neighbor);
+      }
+    }
+    const unreachable = slides.filter((s) => !pos.has(s));
+    if (unreachable.length) {
+      console.error(`anim-canvas: ${unreachable.map((s) => `#${s.id || "(unnamed)"}`).join(", ")} unreachable from #${start.id || "(the first slide)"} - wire them into the data-east/west/north/south relation map`);
+      let fx = Math.max(...Array.from(pos.values()).map((p) => p.x)) + 1;
+      for (const s of unreachable)
+        pos.set(s, { x: fx++, y: 0 });
+    }
+    const taken = new Map;
+    for (const [s, p] of pos) {
+      const k = `${p.x},${p.y}`;
+      const other = taken.get(k);
+      if (other) {
+        console.error(`anim-canvas: #${s.id || "(unnamed)"} and #${other.id || "(unnamed)"} both land on board cell (${k}) - the relation map must give every slide its own cell`);
+      } else
+        taken.set(k, s);
+    }
+    for (const [s, p] of pos) {
+      s.style.left = `${p.x * w}px`;
+      s.style.top = `${p.y * h}px`;
+      s.style.width = `${w}px`;
+      s.style.height = `${h}px`;
+    }
+    for (const s of slides) {
+      for (const phase of ["In", "Out"]) {
+        const name = s.dataset[`anim${phase}`];
+        if (name)
+          channelFor2(name);
+      }
+    }
+    const ctx = { board, slides, byId, pos, w, h, active: start, busy: false, view: null, pan: null };
+    root._animCanvas = ctx;
+    root.addEventListener("click", (e) => {
+      const c = root._animCanvas;
+      if (!c)
+        return;
+      const t = e.target;
+      const control = t?.closest?.("[data-anim-canvas-go]");
+      if (control && root.contains(control)) {
+        const dir = control.getAttribute("data-anim-canvas-go");
+        if (dir === "overview")
+          toggleOverview(root, c);
+        else {
+          const id = c.active.dataset[dir];
+          if (id)
+            goTo(root, c, id);
+        }
+        return;
+      }
+      if (!root.hasAttribute("data-overview"))
+        return;
+      const tile = t?.closest?.(".anim-canvas-slide");
+      if (tile && c.slides.includes(tile))
+        exitOverview(root, c, tile);
+    });
+    const frame = () => {
+      const c = root._animCanvas;
+      if (!c)
+        return;
+      panTo(root, c, root.hasAttribute("data-overview") ? overviewView(root, c) : focusView(root, c, c.active), false);
+    };
+    new ResizeObserver(frame).observe(root);
+    activate(root, ctx, start);
+    frame();
+  });
+}
+bindKeys();
+init3();
+new MutationObserver(init3).observe(document, { childList: true, subtree: true });
+
+// src/components/avatar/avatar.ts
+var df$4 = defussGlobals();
 var avatarStates = ["default", "error"];
-function triggerStateChange3(wrapper, stateName, _config) {
+function triggerStateChange4(wrapper, stateName, _config) {
   const img = wrapper.querySelector(".avatar-image");
   if (!img)
     return;
@@ -2010,7 +3139,7 @@ var avatarApi = {
     if (!avatarStates.includes(stateName)) {
       throw new Error(`avatar: unknown state "${stateName}" (supported: ${avatarStates.join(", ")})`);
     }
-    triggerStateChange3(wrapper, stateName, config);
+    triggerStateChange4(wrapper, stateName, config);
     wrapper.dataset.stateName = stateName;
     wrapper._stateConfig = config;
   },
@@ -2023,9 +3152,9 @@ var avatarApi = {
     };
   }
 };
-df$3.avatarApi = avatarApi;
-df$3.avatarStates = avatarStates;
-function init3() {
+df$4.avatarApi = avatarApi;
+df$4.avatarStates = avatarStates;
+function init4() {
   document.querySelectorAll(".avatar:not([data-init])").forEach((wrapper) => {
     wrapper.dataset.init = "";
     wrapper.api = {
@@ -2046,15 +3175,15 @@ function init3() {
     }
   });
 }
-init3();
-new MutationObserver(init3).observe(document, { childList: true, subtree: true });
+init4();
+new MutationObserver(init4).observe(document, { childList: true, subtree: true });
 
 // src/components/calendar/calendar.ts
-var df$4 = defussGlobals();
-var dfDollar = defussQuery();
+var df$5 = defussGlobals();
+var dfDollar2 = defussQuery();
 var calSeq = 0;
 var calendarStates = ["default"];
-function triggerStateChange4(cal, stateName, config) {
+function triggerStateChange5(cal, stateName, config) {
   const state = cal._calState;
   if (!state || stateName !== "default")
     return;
@@ -2081,7 +3210,7 @@ var calendarApi = {
     if (!calendarStates.includes(stateName)) {
       throw new Error(`calendar: unknown state "${stateName}" (supported: ${calendarStates.join(", ")})`);
     }
-    triggerStateChange4(cal, stateName, config);
+    triggerStateChange5(cal, stateName, config);
     cal.dataset.stateName = stateName;
     cal._stateConfig = config;
   },
@@ -2100,8 +3229,8 @@ var calendarApi = {
     };
   }
 };
-df$4.calendarApi = calendarApi;
-df$4.calendarStates = calendarStates;
+df$5.calendarApi = calendarApi;
+df$5.calendarStates = calendarStates;
 var DAYS = Array.from({ length: 7 }, (_, i) => new Intl.DateTimeFormat(undefined, { weekday: "short" }).format(new Date(2024, 0, i)));
 var MONTHS = Array.from({ length: 12 }, (_, i) => new Intl.DateTimeFormat(undefined, { month: "long" }).format(new Date(2024, i, 1)));
 var daysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
@@ -2172,9 +3301,9 @@ var renderCalendar = (el, year, month, selectedDay) => {
     el.dataset.maxDate = st.maxDate;
   else
     el.removeAttribute("data-max-date");
-  const active = el.ownerDocument.activeElement;
-  const focusKey = active && el.contains(active) ? active.closest(".calendar-day")?.getAttribute("data-cal-date") : null;
-  dfDollar(grid).morph(renderGrid(year, month, selectedDay, el.dataset.calId || "", st.minDate, st.maxDate));
+  const active2 = el.ownerDocument.activeElement;
+  const focusKey = active2 && el.contains(active2) ? active2.closest(".calendar-day")?.getAttribute("data-cal-date") : null;
+  dfDollar2(grid).morph(renderGrid(year, month, selectedDay, el.dataset.calId || "", st.minDate, st.maxDate));
   if (focusKey)
     grid.querySelector(`[data-cal-date="${focusKey}"] button`)?.focus();
   const selDate = el.querySelector(".calendar-day[data-selected]")?.getAttribute("data-cal-date");
@@ -2183,7 +3312,7 @@ var renderCalendar = (el, year, month, selectedDay) => {
   else
     grid.removeAttribute("data-selected-date");
 };
-function init4() {
+function init5() {
   document.querySelectorAll(".calendar:not([data-init])").forEach((cal) => {
     cal.dataset.init = "";
     cal.dataset.calId = cal.id || `dfsc-${++calSeq}`;
@@ -2286,15 +3415,15 @@ function init4() {
     });
   });
 }
-init4();
-new MutationObserver(init4).observe(document, { childList: true, subtree: true });
+init5();
+new MutationObserver(init5).observe(document, { childList: true, subtree: true });
 
 // src/components/carousel/carousel.ts
-var df$5 = defussGlobals();
-var dfDollar2 = defussQuery();
+var df$6 = defussGlobals();
+var dfDollar3 = defussQuery();
 var carSeq = 0;
 var carouselStates = ["default"];
-function triggerStateChange5(carousel, config) {
+function triggerStateChange6(carousel, config) {
   const index = Number(config?.index ?? 0);
   if (typeof carousel._goTo === "function")
     carousel._goTo(index);
@@ -2304,7 +3433,7 @@ var carouselApi = {
     if (!carouselStates.includes(stateName)) {
       throw new Error(`carousel: unknown state "${stateName}" (supported: ${carouselStates.join(", ")})`);
     }
-    triggerStateChange5(carousel, config);
+    triggerStateChange6(carousel, config);
     carousel.dataset.stateName = stateName;
     carousel._stateConfig = config;
   },
@@ -2315,9 +3444,9 @@ var carouselApi = {
     };
   }
 };
-df$5.carouselApi = carouselApi;
-df$5.carouselStates = carouselStates;
-function init5() {
+df$6.carouselApi = carouselApi;
+df$6.carouselStates = carouselStates;
+function init6() {
   document.querySelectorAll(".carousel:not([data-init])").forEach((carousel) => {
     carousel.dataset.init = "";
     carousel.api = {
@@ -2335,8 +3464,8 @@ function init5() {
     const isVertical = carousel.dataset.orientation === "vertical";
     const isLoop = carousel.hasAttribute("data-loop");
     const autoplayDelay = carousel.dataset.autoplay ? parseInt(carousel.dataset.autoplay, 10) : 0;
-    const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const behavior = reducedMotion ? "auto" : "smooth";
+    const reducedMotion3 = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const behavior = reducedMotion3 ? "auto" : "smooth";
     let currentIndex = 0;
     let autoplayTimer = null;
     if (!carousel.hasAttribute("role"))
@@ -2376,18 +3505,18 @@ function init5() {
       carousel.dataset.currentIndex = String(index);
       if (!isLoop) {
         if (prevBtn)
-          dfDollar2(prevBtn).prop("disabled", currentIndex <= 0);
+          dfDollar3(prevBtn).prop("disabled", currentIndex <= 0);
         if (nextBtn)
-          dfDollar2(nextBtn).prop("disabled", currentIndex >= allSlides.length - 1);
+          dfDollar3(nextBtn).prop("disabled", currentIndex >= allSlides.length - 1);
       }
       if (dotsContainer)
-        dfDollar2(dotsContainer).find(".carousel-dot").each(function(i) {
-          dfDollar2(this).attr("aria-current", i === currentIndex ? "true" : "false");
+        dfDollar3(dotsContainer).find(".carousel-dot").each(function(i) {
+          dfDollar3(this).attr("aria-current", i === currentIndex ? "true" : "false");
         });
       if (counter)
-        dfDollar2(counter).text(`Slide ${currentIndex + 1} of ${allSlides.length}`);
+        dfDollar3(counter).text(`Slide ${currentIndex + 1} of ${allSlides.length}`);
       allSlides.forEach((slide, i) => {
-        dfDollar2(slide).attr("aria-label", `${i + 1} of ${allSlides.length}`);
+        dfDollar3(slide).attr("aria-label", `${i + 1} of ${allSlides.length}`);
       });
     };
     const observer = new IntersectionObserver((entries) => {
@@ -2421,7 +3550,7 @@ function init5() {
         return;
       dotCount = n;
       const html = Array.from({ length: n }, (_, i) => `<button id="${carId}-dot-${i}" class="carousel-dot" aria-label="Go to slide ${i + 1}" aria-current="${i === currentIndex ? "true" : "false"}"></button>`).join("");
-      dfDollar2(dotsContainer).morph(html);
+      dfDollar3(dotsContainer).morph(html);
     };
     if (dotsContainer) {
       renderDots();
@@ -2496,14 +3625,467 @@ function init5() {
     updateState(0);
   });
 }
-init5();
-new MutationObserver(init5).observe(document, { childList: true, subtree: true });
+init6();
+new MutationObserver(init6).observe(document, { childList: true, subtree: true });
+
+// src/components/chart/chart.ts
+var df$7 = defussGlobals();
+var chartStates = ["default"];
+var ECHARTS_NOT_LOADED = 'chart: echarts is not loaded - add <script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script> before chart.js';
+function echartsRuntime() {
+  const echarts = globalThis.echarts;
+  if (!echarts)
+    throw new Error(ECHARTS_NOT_LOADED);
+  return echarts;
+}
+var isPlain = (v) => typeof v === "object" && v !== null && !Array.isArray(v);
+function deepMerge(base, over) {
+  const out = { ...base };
+  for (const [key, value] of Object.entries(over)) {
+    out[key] = isPlain(value) && isPlain(out[key]) ? deepMerge(out[key], value) : value;
+  }
+  return out;
+}
+var reducedMotion3 = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+var probe = null;
+function rgba(css) {
+  if (!css || css === "none")
+    return null;
+  probe ??= document.createElement("canvas").getContext("2d", { willReadFrequently: true });
+  if (!probe)
+    return null;
+  probe.clearRect(0, 0, 1, 1);
+  probe.fillStyle = "rgba(1, 2, 3, 0.5)";
+  probe.fillStyle = css;
+  if (probe.fillStyle === "rgba(1, 2, 3, 0.5)")
+    return null;
+  probe.fillRect(0, 0, 1, 1);
+  const [r, g, b, a] = probe.getImageData(0, 0, 1, 1).data;
+  return [r, g, b, a / 255];
+}
+function toRgb(css, alpha = 1) {
+  const c = rgba(css);
+  if (!c)
+    return "";
+  const a = +(c[3] * alpha).toFixed(3);
+  return a >= 1 ? `rgb(${c[0]}, ${c[1]}, ${c[2]})` : `rgba(${c[0]}, ${c[1]}, ${c[2]}, ${a})`;
+}
+function chartColor(el, value, alpha = 1) {
+  const css = value.startsWith("--") ? getComputedStyle(el).getPropertyValue(value).trim() : value;
+  return toRgb(css, alpha);
+}
+function surfaceOf(el) {
+  for (let node = el;node; node = node.parentElement) {
+    const c = rgba(getComputedStyle(node).backgroundColor);
+    if (c && c[3] > 0.5)
+      return `rgb(${c[0]}, ${c[1]}, ${c[2]})`;
+  }
+  return toRgb(getComputedStyle(document.documentElement).getPropertyValue("--background").trim()) || "#ffffff";
+}
+function chartTheme(el) {
+  const cs = getComputedStyle(el);
+  const tok = (name) => cs.getPropertyValue(name).trim();
+  const fs = parseFloat(tok("--chart-font-size")) || 13;
+  const k = fs / 13;
+  const px = (n) => Math.round(n * k * 10) / 10;
+  const fg = toRgb(cs.color) || toRgb(tok("--foreground")) || "#111111";
+  const muted = toRgb(cs.color, 0.62) || fg;
+  const axis = toRgb(cs.color, 0.28) || fg;
+  const grid = toRgb(cs.color, 0.1) || fg;
+  const surface = surfaceOf(el);
+  const palette = [1, 2, 3, 4, 5].map((n) => toRgb(tok(`--chart-${n}`))).filter(Boolean);
+  const font = cs.fontFamily || tok("--font-sans") || "system-ui, sans-serif";
+  const label = { color: muted, fontSize: fs, fontFamily: font };
+  const reduce = reducedMotion3();
+  const axisBase = {
+    nameTextStyle: { ...label },
+    nameGap: px(14),
+    axisLabel: { ...label, margin: px(10) },
+    axisTick: { show: false },
+    splitArea: { show: false }
+  };
+  return {
+    ...palette.length > 0 ? { color: palette } : {},
+    backgroundColor: "transparent",
+    aria: { enabled: true },
+    animation: !reduce,
+    animationDuration: reduce ? 0 : 750,
+    animationEasing: "cubicOut",
+    animationDurationUpdate: reduce ? 0 : 900,
+    animationEasingUpdate: "cubicInOut",
+    textStyle: { fontFamily: font, color: fg, fontSize: fs },
+    title: {
+      textStyle: { color: fg, fontSize: px(16), fontWeight: 600, fontFamily: font },
+      subtextStyle: { ...label }
+    },
+    grid: { left: px(8), right: px(20), top: px(40), bottom: px(14) },
+    legend: {
+      top: 0,
+      icon: "roundRect",
+      itemWidth: px(12),
+      itemHeight: px(12),
+      itemGap: px(18),
+      textStyle: { color: muted, fontSize: fs, fontFamily: font },
+      inactiveColor: grid,
+      pageTextStyle: { color: muted }
+    },
+    tooltip: {
+      ...toRgb(tok("--popover")) ? { backgroundColor: toRgb(tok("--popover")) } : {},
+      borderColor: toRgb(tok("--border")) || axis,
+      borderWidth: 1,
+      padding: [px(8), px(12)],
+      textStyle: { color: toRgb(tok("--popover-foreground")) || fg, fontSize: fs, fontFamily: font },
+      extraCssText: "border-radius: var(--radius-md, 8px); box-shadow: var(--shadow-md, 0 6px 16px rgba(0,0,0,.12));",
+      axisPointer: {
+        lineStyle: { color: axis, width: 1 },
+        crossStyle: { color: axis },
+        shadowStyle: { color: toRgb(cs.color, 0.05) },
+        label: { backgroundColor: fg, color: surface, fontSize: fs }
+      }
+    },
+    categoryAxis: {
+      ...axisBase,
+      axisLine: { show: true, lineStyle: { color: axis, width: 1 } },
+      splitLine: { show: false }
+    },
+    valueAxis: {
+      ...axisBase,
+      axisLine: { show: false },
+      splitLine: { show: true, lineStyle: { color: grid, width: 1 } }
+    },
+    logAxis: {
+      ...axisBase,
+      axisLine: { show: false },
+      splitLine: { show: true, lineStyle: { color: grid, width: 1 } }
+    },
+    timeAxis: {
+      ...axisBase,
+      axisLine: { show: true, lineStyle: { color: axis, width: 1 } },
+      splitLine: { show: false }
+    },
+    bar: {
+      barMaxWidth: px(56),
+      itemStyle: { borderRadius: px(4) },
+      label: { color: fg, fontSize: fs, fontFamily: font }
+    },
+    line: {
+      symbol: "circle",
+      symbolSize: px(7),
+      lineStyle: { width: px(2.5), cap: "round", join: "round" },
+      label: { color: fg, fontSize: fs, fontFamily: font, textBorderWidth: 0 },
+      endLabel: { color: fg, fontSize: fs, fontFamily: font, textBorderWidth: 0 }
+    },
+    scatter: { symbolSize: px(12), label: { color: fg, fontSize: fs, fontFamily: font } },
+    pie: {
+      itemStyle: { borderColor: surface, borderWidth: px(2), borderRadius: px(4) },
+      label: { color: fg, fontSize: fs, fontFamily: font },
+      labelLine: { lineStyle: { color: axis } }
+    },
+    sunburst: { itemStyle: { borderColor: surface, borderWidth: px(1.5) }, label: { fontSize: fs } },
+    treemap: {
+      itemStyle: { borderColor: surface, borderWidth: px(2), gapWidth: px(2) },
+      label: { fontSize: fs },
+      breadcrumb: { show: false }
+    },
+    sankey: { label: { color: fg, fontSize: fs }, lineStyle: { opacity: 0.35 } },
+    radar: { axisName: { color: muted, fontSize: fs } },
+    visualMap: { textStyle: { color: muted, fontSize: fs, fontFamily: font } }
+  };
+}
+var instances2 = new WeakMap;
+var observers = new WeakMap;
+var live = new Set;
+function withMotion(option) {
+  return reducedMotion3() ? { ...option, animation: false } : option;
+}
+var CSS_COLOR = /var\(--|^\s*(?:oklch|oklab|lch|lab|hwb|color-mix|color)\(/;
+function resolveColors(el, value, cs) {
+  if (typeof value === "string") {
+    if (!CSS_COLOR.test(value))
+      return value;
+    const style = cs ?? getComputedStyle(el);
+    const css = value.replace(/var\((--[\w-]+)\s*(?:,\s*([^()]*))?\)/g, (_m, name, fallback) => style.getPropertyValue(name).trim() || (fallback ?? "").trim());
+    return toRgb(css) || value;
+  }
+  if (Array.isArray(value)) {
+    const style = cs ?? getComputedStyle(el);
+    return value.map((v) => resolveColors(el, v, style));
+  }
+  if (isPlain(value)) {
+    const style = cs ?? getComputedStyle(el);
+    const out = {};
+    for (const [k, v] of Object.entries(value))
+      out[k] = resolveColors(el, v, style);
+    return out;
+  }
+  return value;
+}
+var journals = new WeakMap;
+var JOURNAL_CAP = 64;
+var isNotMerge = (arg) => arg === true || isPlain(arg) && arg.notMerge === true;
+function wrapSetOption(el, inst) {
+  const raw = inst.setOption.bind(inst);
+  const journal = { ops: [], overflow: false };
+  journals.set(el, journal);
+  inst._rawSetOption = raw;
+  inst.setOption = (option, arg, lazy) => {
+    if (isNotMerge(arg)) {
+      journal.ops = [];
+      journal.overflow = false;
+    }
+    if (journal.ops.length < JOURNAL_CAP)
+      journal.ops.push([option, arg, lazy]);
+    else
+      journal.overflow = true;
+    raw(withMotion(resolveColors(el, option)), arg, lazy);
+  };
+}
+function mount(el, option = {}) {
+  const echarts = echartsRuntime();
+  observers.get(el)?.disconnect();
+  instances2.get(el)?.dispose();
+  const instance = echarts.init(el, chartTheme(el), { renderer: "svg" });
+  wrapSetOption(el, instance);
+  instances2.set(el, instance);
+  live.add(el);
+  watchTheme();
+  instance.setOption(option, true);
+  const ro = new ResizeObserver(() => instance.resize());
+  ro.observe(el);
+  observers.set(el, ro);
+  replayOnSlide(el);
+  return {
+    instance,
+    setOption: (opt, notMerge = false) => instance.setOption(opt, notMerge),
+    dispose: () => {
+      ro.disconnect();
+      observers.delete(el);
+      instances2.delete(el);
+      live.delete(el);
+      instance.dispose();
+    }
+  };
+}
+function instance(el) {
+  return instances2.get(el);
+}
+function replay(el, inst) {
+  const journal = journals.get(el);
+  const raw = inst._rawSetOption;
+  if (!journal || !raw || journal.overflow || journal.ops.length === 0)
+    return;
+  const ops = journal.ops.slice();
+  inst.clear?.();
+  journal.ops = ops;
+  journal.overflow = false;
+  for (const [option, arg, lazy] of ops)
+    raw(withMotion(resolveColors(el, option)), arg, lazy);
+}
+var slideCharts = new WeakMap;
+function replayOnSlide(el) {
+  if (el.classList.contains("presentation-stage"))
+    return;
+  const slide = el.closest("[data-slide]");
+  if (!slide)
+    return;
+  let charts = slideCharts.get(slide);
+  if (!charts) {
+    charts = new Set;
+    slideCharts.set(slide, charts);
+    const set = charts;
+    let wasActive = slide.hasAttribute("data-active");
+    new MutationObserver(() => {
+      const active2 = slide.hasAttribute("data-active");
+      if (active2 && !wasActive) {
+        for (const chartEl of set) {
+          const i = instances2.get(chartEl);
+          if (i && chartEl.isConnected)
+            replay(chartEl, i);
+        }
+      }
+      wasActive = active2;
+    }).observe(slide, { attributes: true, attributeFilter: ["data-active"] });
+  }
+  charts.add(el);
+}
+function retheme(el, inst) {
+  inst.setTheme?.(chartTheme(el));
+  const journal = journals.get(el);
+  const raw = inst._rawSetOption;
+  if (!journal || !raw || journal.overflow)
+    return;
+  for (const [option, arg, lazy] of journal.ops)
+    raw(withMotion(resolveColors(el, option)), arg, lazy);
+}
+var themeWatched = false;
+function watchTheme() {
+  if (themeWatched)
+    return;
+  themeWatched = true;
+  let timer = 0;
+  const schedule = () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      for (const el of live) {
+        const inst = instances2.get(el);
+        if (!el.isConnected || !inst || inst.isDisposed?.()) {
+          live.delete(el);
+          continue;
+        }
+        retheme(el, inst);
+      }
+    }, 60);
+  };
+  const mo = new MutationObserver(schedule);
+  mo.observe(document.documentElement, { attributes: true, attributeFilter: ["class", "style", "data-theme"] });
+  if (document.head)
+    mo.observe(document.head, { childList: true, subtree: true, characterData: true });
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", schedule);
+}
+function morphable(option) {
+  const series = option.series;
+  if (series === undefined)
+    return option;
+  const list = Array.isArray(series) ? series : [series];
+  return {
+    ...option,
+    series: list.map((s) => s.universalTransition === undefined && s.type !== "custom" ? { ...s, universalTransition: { enabled: true } } : s)
+  };
+}
+function chartStory(el, states, { loop = false } = {}) {
+  if (!Array.isArray(states) || states.length === 0) {
+    throw new Error("chart: chartStory needs at least one option state");
+  }
+  if (!instances2.has(el))
+    mount(el, morphable(states[0]));
+  let i = 0;
+  const go = (n) => {
+    i = loop ? (n % states.length + states.length) % states.length : Math.min(Math.max(n, 0), states.length - 1);
+    instances2.get(el)?.setOption(morphable(states[i]), true);
+    return i;
+  };
+  return { next: () => go(i + 1), prev: () => go(i - 1), go, index: () => i };
+}
+var DECK_TEMPO = { animationDuration: 1500, animationEasing: "cubicOut", animationDurationUpdate: 1500, animationEasingUpdate: "cubicInOut" };
+function chartDeck(deck, { base = {}, states }) {
+  const stage = deck.querySelector(":scope > .presentation-stage");
+  if (!stage)
+    throw new Error('chart: chart.deck() needs a <div class="chart presentation-stage"> child of the .presentation');
+  if (!isPlain(states) || Object.keys(states).length === 0)
+    throw new Error("chart: chart.deck() needs at least one named state");
+  const slides = Array.from(deck.querySelectorAll(":scope > [data-slide]"));
+  let current = null;
+  let last = null;
+  const show = (name) => {
+    if (name === null || !(name in states)) {
+      stage.removeAttribute("data-visible");
+      current = null;
+      return;
+    }
+    const slide = slides.find((s) => s.dataset.chartState === name);
+    if (!instances2.has(stage) && slide)
+      stage.style.color = getComputedStyle(slide).color;
+    stage.setAttribute("data-visible", "");
+    if (name === current)
+      return;
+    const returning = current === null && name === last;
+    current = name;
+    last = name;
+    const option = morphable(deepMerge(deepMerge(DECK_TEMPO, base), states[name]));
+    const inst = instances2.get(stage);
+    if (!inst)
+      mount(stage, option);
+    else if (returning) {
+      inst.clear?.();
+      inst.setOption(option, true);
+    } else
+      inst.setOption(option, true);
+  };
+  const sync = () => {
+    const active2 = slides.find((s) => s.hasAttribute("data-active"));
+    show(active2?.dataset.chartState ?? null);
+  };
+  const mo = new MutationObserver(sync);
+  slides.forEach((s) => mo.observe(s, { attributes: true, attributeFilter: ["data-active"] }));
+  sync();
+  return {
+    show,
+    state: () => current,
+    dispose: () => {
+      mo.disconnect();
+      observers.get(stage)?.disconnect();
+      instances2.get(stage)?.dispose();
+      instances2.delete(stage);
+      live.delete(stage);
+      stage.removeAttribute("data-visible");
+    }
+  };
+}
+function triggerStateChange7(el, stateName, config = {}) {
+  if (!chartStates.includes(stateName)) {
+    throw new Error(`chart: unknown state "${stateName}" (supported: ${chartStates.join(", ")})`);
+  }
+  if (isPlain(config.option)) {
+    const current = instances2.get(el);
+    if (current)
+      current.setOption(config.option, true);
+    else
+      mount(el, config.option);
+  }
+}
+var chartApi = {
+  setState(el, stateName, config = {}) {
+    triggerStateChange7(el, stateName, config);
+    el.dataset.stateName = stateName;
+    el._stateConfig = config;
+  },
+  getState(el) {
+    return {
+      name: el.dataset.stateName || "default",
+      config: { ...el._stateConfig }
+    };
+  }
+};
+df$7.chartApi = chartApi;
+df$7.chartStates = chartStates;
+df$7.chart = { mount, instance, theme: chartTheme, color: chartColor, deck: chartDeck };
+df$7.chartStory = chartStory;
+function init7() {
+  document.querySelectorAll(".chart:not([data-init])").forEach((el) => {
+    el.dataset.init = "";
+    el.api = {
+      setState: (stateName, config) => chartApi.setState(el, stateName, config),
+      getState: () => chartApi.getState(el)
+    };
+    const boot = () => {
+      if (instances2.has(el))
+        return;
+      const raw = el.getAttribute("data-chart");
+      if (!raw)
+        return;
+      const box = el.getBoundingClientRect();
+      if (box.width === 0 || box.height === 0)
+        return;
+      let option;
+      try {
+        option = JSON.parse(raw);
+      } catch (err) {
+        throw new Error(`chart: invalid JSON in data-chart - ${err instanceof Error ? err.message : err}`);
+      }
+      mount(el, option);
+    };
+    new ResizeObserver(boot).observe(el);
+    boot();
+  });
+}
+init7();
+new MutationObserver(init7).observe(document, { childList: true, subtree: true });
 
 // src/components/color-picker/color-picker.ts
-var df$6 = defussGlobals();
+var df$8 = defussGlobals();
 var colorPickerStates = ["default"];
 var getInput = (picker) => picker.querySelector('input[type="color"]');
-function triggerStateChange6(picker, config) {
+function triggerStateChange8(picker, config) {
   const input = getInput(picker);
   if (!input || config?.value === undefined)
     return;
@@ -2515,7 +4097,7 @@ var colorPickerApi = {
     if (!colorPickerStates.includes(stateName)) {
       throw new Error(`color-picker: unknown state "${stateName}" (supported: ${colorPickerStates.join(", ")})`);
     }
-    triggerStateChange6(picker, config);
+    triggerStateChange8(picker, config);
     picker.dataset.stateName = stateName;
     picker._stateConfig = config;
   },
@@ -2527,9 +4109,9 @@ var colorPickerApi = {
     };
   }
 };
-df$6.colorPickerApi = colorPickerApi;
-df$6.colorPickerStates = colorPickerStates;
-function init6() {
+df$8.colorPickerApi = colorPickerApi;
+df$8.colorPickerStates = colorPickerStates;
+function init8() {
   document.querySelectorAll(".color-picker:not([data-init])").forEach((picker) => {
     picker.dataset.init = "";
     picker.api = {
@@ -2546,14 +4128,14 @@ function init6() {
     });
   });
 }
-init6();
-new MutationObserver(init6).observe(document, { childList: true, subtree: true });
+init8();
+new MutationObserver(init8).observe(document, { childList: true, subtree: true });
 
 // src/components/combobox/combobox.ts
-var df$7 = defussGlobals();
-var dfDollar3 = defussQuery();
+var df$9 = defussGlobals();
+var dfDollar4 = defussQuery();
 var comboboxStates = ["default", "open"];
-function triggerStateChange7(popover, stateName, _config) {
+function triggerStateChange9(popover, stateName, _config) {
   switch (stateName) {
     case "default":
       popover._close?.();
@@ -2568,7 +4150,7 @@ var comboboxApi = {
     if (!comboboxStates.includes(stateName)) {
       throw new Error(`combobox: unknown state "${stateName}" (supported: ${comboboxStates.join(", ")})`);
     }
-    triggerStateChange7(popover, stateName, config);
+    triggerStateChange9(popover, stateName, config);
     popover.dataset.stateName = stateName;
     popover._stateConfig = config;
   },
@@ -2580,23 +4162,23 @@ var comboboxApi = {
     };
   }
 };
-df$7.comboboxApi = comboboxApi;
-df$7.comboboxStates = comboboxStates;
-function init7() {
+df$9.comboboxApi = comboboxApi;
+df$9.comboboxStates = comboboxStates;
+function init9() {
   document.querySelectorAll(".combobox:not([data-init])").forEach((wrapper) => {
     wrapper.dataset.init = "";
-    const $wrapper = dfDollar3(wrapper);
+    const $wrapper = dfDollar4(wrapper);
     const $trigger = $wrapper.find(".combobox-trigger");
     const $value = $wrapper.find(".combobox-value");
     const $popover = $wrapper.find(".combobox-content");
     const $search = $wrapper.find(".combobox-search-input");
     const $listbox = $wrapper.find('[role="listbox"]');
     const $empty = $wrapper.find(".combobox-empty");
-    const trigger = $trigger[0];
+    const trigger2 = $trigger[0];
     const popover = $popover[0];
     const searchInput = $search[0];
     const listbox = $listbox[0];
-    if (!trigger || !popover || !searchInput || !listbox)
+    if (!trigger2 || !popover || !searchInput || !listbox)
       return;
     const allItems = $listbox.find('[role="option"]');
     let highlighted = -1;
@@ -2608,13 +4190,13 @@ function init7() {
     clearBtn.type = "button";
     clearBtn.className = "combobox-clear";
     clearBtn.setAttribute("aria-label", "Clear selection");
-    dfDollar3(clearBtn).html('<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>');
-    dfDollar3(clearBtn).css("positionAnchor", anchorId);
+    dfDollar4(clearBtn).html('<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>');
+    dfDollar4(clearBtn).css("positionAnchor", anchorId);
     $trigger.after(clearBtn);
     clearBtn.addEventListener("click", () => {
       allItems.attr("aria-selected", "false");
       $value.text(placeholder).attr("data-placeholder", placeholder);
-      trigger.focus();
+      trigger2.focus();
     });
     const getVisibleItems = () => allItems.filter((item) => !item.hidden && item.getAttribute("aria-disabled") !== "true");
     const open = () => {
@@ -2629,7 +4211,7 @@ function init7() {
       $trigger.attr("aria-expanded", "false");
       $search.attr("aria-activedescendant", "");
       clearHighlight();
-      trigger.focus();
+      trigger2.focus();
     };
     popover._open = open;
     popover._close = close;
@@ -2643,7 +4225,7 @@ function init7() {
       let hasVisible = false;
       allItems.forEach((item) => {
         const match = !q || item.textContent.trim().toLowerCase().includes(q);
-        dfDollar3(item).prop("hidden", !match);
+        dfDollar4(item).prop("hidden", !match);
         if (match)
           hasVisible = true;
       });
@@ -2656,13 +4238,13 @@ function init7() {
             groupHasVisible = true;
           next = next.nextElementSibling;
         }
-        dfDollar3(label).prop("hidden", !groupHasVisible);
+        dfDollar4(label).prop("hidden", !groupHasVisible);
       });
       $listbox.find(".combobox-separator").each(function() {
         const sep = this;
         const prev = sep.previousElementSibling;
         const next = sep.nextElementSibling;
-        dfDollar3(sep).prop("hidden", Boolean(prev && prev.hidden || next && next.hidden));
+        dfDollar4(sep).prop("hidden", Boolean(prev && prev.hidden || next && next.hidden));
       });
       if ($empty.length)
         $empty.prop("hidden", hasVisible);
@@ -2677,7 +4259,7 @@ function init7() {
       if (index < 0 || index >= items.length)
         return;
       highlighted = index;
-      dfDollar3(items[index]).data("highlighted", "");
+      dfDollar4(items[index]).data("highlighted", "");
       items[index].scrollIntoView({ block: "nearest" });
       $search.attr("aria-activedescendant", items[index].id);
     };
@@ -2685,11 +4267,11 @@ function init7() {
       if (item.getAttribute("aria-disabled") === "true")
         return;
       allItems.attr("aria-selected", "false");
-      dfDollar3(item).attr("aria-selected", "true");
+      dfDollar4(item).attr("aria-selected", "true");
       $value.text(item.textContent.trim()).attr("data-placeholder", null);
       close();
     };
-    trigger.addEventListener("click", () => {
+    trigger2.addEventListener("click", () => {
       if (isOpen()) {
         close();
       } else {
@@ -2753,14 +4335,14 @@ function init7() {
     });
   });
 }
-init7();
-new MutationObserver(init7).observe(document, { childList: true, subtree: true });
+init9();
+new MutationObserver(init9).observe(document, { childList: true, subtree: true });
 
 // src/components/command/command.ts
-var df$8 = defussGlobals();
-var dfDollar4 = defussQuery();
+var df$10 = defussGlobals();
+var dfDollar5 = defussQuery();
 var commandStates = ["default", "open"];
-function triggerStateChange8(dialog, stateName, _config) {
+function triggerStateChange10(dialog, stateName, _config) {
   switch (stateName) {
     case "default":
       if (dialog.open)
@@ -2782,7 +4364,7 @@ var commandApi = {
     if (!commandStates.includes(stateName)) {
       throw new Error(`command: unknown state "${stateName}" (supported: ${commandStates.join(", ")})`);
     }
-    triggerStateChange8(dialog, stateName, config);
+    triggerStateChange10(dialog, stateName, config);
     dialog.dataset.stateName = stateName;
     dialog._stateConfig = config;
   },
@@ -2790,8 +4372,8 @@ var commandApi = {
     return { name: dialog.dataset.stateName || "default", config: dialog._stateConfig ?? {} };
   }
 };
-df$8.commandApi = commandApi;
-df$8.commandStates = commandStates;
+df$10.commandApi = commandApi;
+df$10.commandStates = commandStates;
 var commandKeydownAdded = false;
 if (!commandKeydownAdded) {
   commandKeydownAdded = true;
@@ -2813,19 +4395,19 @@ if (!commandKeydownAdded) {
   });
 }
 function getVisibleItems(list) {
-  return Array.from(dfDollar4(list).find('.command-item:not([hidden]):not([aria-disabled="true"])'));
+  return Array.from(dfDollar5(list).find('.command-item:not([hidden]):not([aria-disabled="true"])'));
 }
 function highlightItem(list, index) {
   const visible = getVisibleItems(list);
-  dfDollar4(list).find(".command-item[data-highlighted]").data("highlighted", null);
+  dfDollar5(list).find(".command-item[data-highlighted]").data("highlighted", null);
   if (visible.length === 0)
     return -1;
   const clamped = (index % visible.length + visible.length) % visible.length;
-  dfDollar4(visible[clamped]).data("highlighted", "");
+  dfDollar5(visible[clamped]).data("highlighted", "");
   visible[clamped].scrollIntoView({ block: "nearest" });
   return clamped;
 }
-function init8() {
+function init10() {
   document.querySelectorAll("dialog.command:not([data-init])").forEach((dialog) => {
     dialog.dataset.init = "";
     dialog.api = {
@@ -2841,19 +4423,19 @@ function init8() {
     const filter = (q) => {
       const query = q.toLowerCase();
       let hasVisible = false;
-      const $items = dfDollar4(list).find(".command-item");
+      const $items = dfDollar5(list).find(".command-item");
       $items.each(function() {
         const match = !query || this.textContent.toLowerCase().includes(query);
-        dfDollar4(this).prop("hidden", !match);
+        dfDollar5(this).prop("hidden", !match);
         if (match)
           hasVisible = true;
       });
-      dfDollar4(list).find(".command-group").each(function() {
-        dfDollar4(this).prop("hidden", dfDollar4(this).find(".command-item:not([hidden])").length === 0);
+      dfDollar5(list).find(".command-group").each(function() {
+        dfDollar5(this).prop("hidden", dfDollar5(this).find(".command-item:not([hidden])").length === 0);
       });
-      dfDollar4(list).find(".command-separator").prop("hidden", !!query);
+      dfDollar5(list).find(".command-separator").prop("hidden", !!query);
       if (empty)
-        dfDollar4(empty).prop("hidden", hasVisible);
+        dfDollar5(empty).prop("hidden", hasVisible);
       highlightIndex = highlightItem(list, 0);
     };
     input.addEventListener("input", () => {
@@ -2890,32 +4472,32 @@ function init8() {
       if (dialog.open)
         return;
       dialog.dataset.stateName = "default";
-      dfDollar4(input).val("");
+      dfDollar5(input).val("");
       filter("");
-      dfDollar4(list).find(".command-item[data-highlighted]").data("highlighted", null);
+      dfDollar5(list).find(".command-item[data-highlighted]").data("highlighted", null);
       highlightIndex = -1;
     });
   });
-  document.querySelectorAll("[data-command-trigger]:not([data-init])").forEach((trigger) => {
-    trigger.dataset.init = "";
-    const dialog = document.getElementById(trigger.dataset.commandTrigger);
+  document.querySelectorAll("[data-command-trigger]:not([data-init])").forEach((trigger2) => {
+    trigger2.dataset.init = "";
+    const dialog = document.getElementById(trigger2.dataset.commandTrigger);
     if (!dialog)
       return;
-    trigger.addEventListener("click", () => {
+    trigger2.addEventListener("click", () => {
       dialog.showModal();
-      const input = dfDollar4(dialog).find(".command-input")[0];
+      const input = dfDollar5(dialog).find(".command-input")[0];
       if (input)
         input.focus();
     });
   });
 }
-init8();
-new MutationObserver(init8).observe(document, { childList: true, subtree: true });
+init10();
+new MutationObserver(init10).observe(document, { childList: true, subtree: true });
 
 // src/components/context-menu/context-menu.ts
-var df$9 = defussGlobals();
+var df$11 = defussGlobals();
 var contextMenuStates = ["default", "open"];
-function triggerStateChange9(menu, stateName, config) {
+function triggerStateChange11(menu, stateName, config) {
   switch (stateName) {
     case "default":
       menu.hidePopover();
@@ -2936,7 +4518,7 @@ var contextMenuApi = {
     if (!contextMenuStates.includes(stateName)) {
       throw new Error(`context-menu: unknown state "${stateName}" (supported: ${contextMenuStates.join(", ")})`);
     }
-    triggerStateChange9(menu, stateName, config);
+    triggerStateChange11(menu, stateName, config);
     menu.dataset.stateName = stateName;
     menu._stateConfig = config;
   },
@@ -2947,8 +4529,8 @@ var contextMenuApi = {
     };
   }
 };
-df$9.contextMenuApi = contextMenuApi;
-df$9.contextMenuStates = contextMenuStates;
+df$11.contextMenuApi = contextMenuApi;
+df$11.contextMenuStates = contextMenuStates;
 var pendingOpen = null;
 var lastRightUp = 0;
 if (!document.__ctxMenuReleaseInit) {
@@ -2974,17 +4556,17 @@ function openMenuAt(menu, x, y) {
   safeShowPopover(menu);
   menu.dataset.stateName = "open";
 }
-function init9() {
-  document.querySelectorAll("[data-context-menu]:not([data-init])").forEach((trigger) => {
-    trigger.dataset.init = "";
-    const menu = document.getElementById(trigger.dataset.contextMenu);
+function init11() {
+  document.querySelectorAll("[data-context-menu]:not([data-init])").forEach((trigger2) => {
+    trigger2.dataset.init = "";
+    const menu = document.getElementById(trigger2.dataset.contextMenu);
     if (!menu)
       return;
     menu.api = {
       setState: (stateName, config) => contextMenuApi.setState(menu, stateName, config),
       getState: () => contextMenuApi.getState(menu)
     };
-    trigger.addEventListener("contextmenu", (e) => {
+    trigger2.addEventListener("contextmenu", (e) => {
       e.preventDefault();
       if (e.pointerId === undefined || e.pointerId < 0) {
         requestAnimationFrame(() => openMenuAt(menu, e.clientX, e.clientY));
@@ -3008,13 +4590,13 @@ function init9() {
     });
   });
 }
-init9();
-new MutationObserver(init9).observe(document, { childList: true, subtree: true });
+init11();
+new MutationObserver(init11).observe(document, { childList: true, subtree: true });
 
 // src/components/dialog/dialog.ts
-var df$10 = defussGlobals();
+var df$12 = defussGlobals();
 var dialogStates = ["default", "open"];
-function triggerStateChange10(dialog, stateName, _config) {
+function triggerStateChange12(dialog, stateName, _config) {
   switch (stateName) {
     case "default":
       if (dialog.open)
@@ -3031,7 +4613,7 @@ var dialogApi = {
     if (!dialogStates.includes(stateName)) {
       throw new Error(`dialog: unknown state "${stateName}" (supported: ${dialogStates.join(", ")})`);
     }
-    triggerStateChange10(dialog, stateName, config);
+    triggerStateChange12(dialog, stateName, config);
     dialog.dataset.stateName = stateName;
     dialog._stateConfig = config;
   },
@@ -3039,16 +4621,16 @@ var dialogApi = {
     return { name: dialog.dataset.stateName || "default", config: dialog._stateConfig ?? {} };
   }
 };
-df$10.dialogApi = dialogApi;
-df$10.dialogStates = dialogStates;
-function init10() {
-  document.querySelectorAll("[data-dialog-trigger]:not([data-init])").forEach((trigger) => {
-    trigger.dataset.init = "";
-    const dialog = document.getElementById(trigger.dataset.dialogTrigger);
+df$12.dialogApi = dialogApi;
+df$12.dialogStates = dialogStates;
+function init12() {
+  document.querySelectorAll("[data-dialog-trigger]:not([data-init])").forEach((trigger2) => {
+    trigger2.dataset.init = "";
+    const dialog = document.getElementById(trigger2.dataset.dialogTrigger);
     if (!dialog)
       return;
-    trigger.addEventListener("click", () => {
-      dialog._trigger = trigger;
+    trigger2.addEventListener("click", () => {
+      dialog._trigger = trigger2;
       dialog.showModal();
     });
   });
@@ -3076,13 +4658,13 @@ function init10() {
     });
   });
 }
-init10();
-new MutationObserver(init10).observe(document, { childList: true, subtree: true });
+init12();
+new MutationObserver(init12).observe(document, { childList: true, subtree: true });
 
 // src/components/dropdown/dropdown.ts
-var df$11 = defussGlobals();
+var df$13 = defussGlobals();
 var dropdownStates = ["default", "open"];
-function triggerStateChange11(menu, stateName, _config) {
+function triggerStateChange13(menu, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -3099,7 +4681,7 @@ var dropdownApi = {
     if (!dropdownStates.includes(stateName)) {
       throw new Error(`dropdown: unknown state "${stateName}" (supported: ${dropdownStates.join(", ")})`);
     }
-    triggerStateChange11(menu, stateName, config);
+    triggerStateChange13(menu, stateName, config);
     menu.dataset.stateName = stateName;
     menu._stateConfig = config;
   },
@@ -3107,16 +4689,16 @@ var dropdownApi = {
     return { name: menu.dataset.stateName || "default", config: menu._stateConfig ?? {} };
   }
 };
-df$11.dropdownApi = dropdownApi;
-df$11.dropdownStates = dropdownStates;
-function init11() {
-  document.querySelectorAll("[data-dropdown-trigger]:not([data-init])").forEach((trigger) => {
-    trigger.dataset.init = "";
-    const menu = document.getElementById(trigger.dataset.dropdownTrigger);
+df$13.dropdownApi = dropdownApi;
+df$13.dropdownStates = dropdownStates;
+function init13() {
+  document.querySelectorAll("[data-dropdown-trigger]:not([data-init])").forEach((trigger2) => {
+    trigger2.dataset.init = "";
+    const menu = document.getElementById(trigger2.dataset.dropdownTrigger);
     if (!menu)
       return;
     const anchorId = `--dropdown-${menu.id}`;
-    trigger.style.anchorName = anchorId;
+    trigger2.style.anchorName = anchorId;
     menu.style.positionAnchor = anchorId;
     const getItems = () => {
       return Array.from(menu.querySelectorAll('[role="menuitem"]:not(:disabled), [role="menuitemcheckbox"]:not(:disabled), [role="menuitemradio"]:not(:disabled)'));
@@ -3130,11 +4712,11 @@ function init11() {
         item.focus();
       }
     };
-    if (!trigger.hasAttribute("popovertarget"))
-      trigger.setAttribute("popovertarget", menu.id);
+    if (!trigger2.hasAttribute("popovertarget"))
+      trigger2.setAttribute("popovertarget", menu.id);
     menu.addEventListener("toggle", (e) => {
       const open = e.newState === "open";
-      trigger.setAttribute("aria-expanded", open);
+      trigger2.setAttribute("aria-expanded", open);
       if (open) {
         const first = getItems()[0];
         if (first)
@@ -3143,7 +4725,7 @@ function init11() {
         getItems().forEach((i) => {
           i.removeAttribute("data-highlighted");
         });
-        trigger.focus();
+        trigger2.focus();
       }
     });
     menu.addEventListener("mousemove", (e) => {
@@ -3217,23 +4799,23 @@ function init11() {
     };
   });
 }
-init11();
-new MutationObserver(init11).observe(document, { childList: true, subtree: true });
+init13();
+new MutationObserver(init13).observe(document, { childList: true, subtree: true });
 
 // src/components/image/image.ts
-var df$12 = defussGlobals();
-var dfDollar5 = defussQuery();
+var df$14 = defussGlobals();
+var dfDollar6 = defussQuery();
 var imageStates = ["default", "error"];
-function triggerStateChange12(figure, stateName, _config) {
-  const img = dfDollar5(figure).find("img")[0];
+function triggerStateChange14(figure, stateName, _config) {
+  const img = dfDollar6(figure).find("img")[0];
   if (!img)
     return;
   switch (stateName) {
     case "default":
-      dfDollar5(img).data("error", null);
+      dfDollar6(img).data("error", null);
       break;
     case "error":
-      dfDollar5(img).data("error", "");
+      dfDollar6(img).data("error", "");
       break;
   }
 }
@@ -3242,47 +4824,68 @@ var imageApi = {
     if (!imageStates.includes(stateName)) {
       throw new Error(`image: unknown state "${stateName}" (supported: ${imageStates.join(", ")})`);
     }
-    triggerStateChange12(figure, stateName, config);
+    triggerStateChange14(figure, stateName, config);
     figure.dataset.stateName = stateName;
     figure._stateConfig = config;
   },
   getState(figure) {
-    const img = dfDollar5(figure).find("img")[0];
+    const img = dfDollar6(figure).find("img")[0];
     return {
-      name: img && dfDollar5(img).data("error") !== undefined ? "error" : "default",
+      name: img && dfDollar6(img).data("error") !== undefined ? "error" : "default",
       config: figure._stateConfig ?? {}
     };
   }
 };
-df$12.imageApi = imageApi;
-df$12.imageStates = imageStates;
-function init12() {
+df$14.imageApi = imageApi;
+df$14.imageStates = imageStates;
+function init14() {
   document.querySelectorAll(".image:not([data-init])").forEach((figure) => {
     figure.dataset.init = "";
     figure.api = {
       setState: (stateName, config) => imageApi.setState(figure, stateName, config),
       getState: () => imageApi.getState(figure)
     };
-    const img = dfDollar5(figure).find("img")[0];
+    const img = dfDollar6(figure).find("img")[0];
     if (!img)
       return;
     if (img.complete && img.naturalWidth === 0) {
-      dfDollar5(img).data("error", "");
+      dfDollar6(img).data("error", "");
     }
     img.addEventListener("error", () => {
-      dfDollar5(img).data("error", "");
+      dfDollar6(img).data("error", "");
       figure.dataset.stateName = "error";
     });
     img.addEventListener("load", () => {
-      dfDollar5(img).data("error", null);
+      dfDollar6(img).data("error", null);
       figure.dataset.stateName = "default";
     });
+    const srcLow = img.dataset.srcLow;
+    const srcHigh = img.dataset.srcHigh;
+    if (srcLow || srcHigh) {
+      const retina = !!srcHigh && globalThis.matchMedia("(min-resolution: 2dppx)").matches;
+      const finalSrc = retina ? srcHigh : img.getAttribute("src");
+      if (retina)
+        img.dataset.srcHighLoaded = "";
+      if (srcLow && finalSrc) {
+        dfDollar6(img).data("loading", "");
+        img.src = srcLow;
+        const preload = new Image;
+        preload.onload = preload.onerror = () => {
+          img.src = finalSrc;
+          dfDollar6(img).data("loading", null);
+        };
+        preload.src = finalSrc;
+      } else if (retina) {
+        img.src = srcHigh;
+      }
+    }
   });
 }
-init12();
-new MutationObserver(init12).observe(document, { childList: true, subtree: true });
+init14();
+new MutationObserver(init14).observe(document, { childList: true, subtree: true });
 var lightbox = null;
 var lightboxImg = null;
+var lightboxFigure = null;
 var zoom = 1;
 var rotation = 0;
 function getLightbox() {
@@ -3291,7 +4894,7 @@ function getLightbox() {
   lightbox = document.createElement("dialog");
   lightbox.className = "image-lightbox";
   lightbox.setAttribute("aria-label", "Image preview");
-  dfDollar5(lightbox).html(`
+  dfDollar6(lightbox).html(`
     <div class="image-lightbox-content">
       <img src="" alt="" />
     </div>
@@ -3315,15 +4918,16 @@ function getLightbox() {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>`);
-  lightboxImg = dfDollar5(lightbox).find(".image-lightbox-content > img")[0];
-  dfDollar5(lightbox).find(".image-lightbox-toolbar")[0].addEventListener("click", (e) => {
+  lightboxImg = dfDollar6(lightbox).find(".image-lightbox-content > img")[0];
+  dfDollar6(lightbox).find(".image-lightbox-toolbar")[0].addEventListener("click", (e) => {
     const btn = e.target.closest("[data-action]");
     if (!btn)
       return;
     const action = btn.dataset.action;
-    if (action === "zoom-in")
+    if (action === "zoom-in") {
       zoom = Math.min(zoom + 0.25, 5);
-    else if (action === "zoom-out")
+      upgradeLightboxToHigh();
+    } else if (action === "zoom-out")
       zoom = Math.max(zoom - 0.25, 0.25);
     else if (action === "rotate-left")
       rotation -= 90;
@@ -3342,20 +4946,49 @@ function getLightbox() {
     if (e.target === lightbox)
       lightbox.close();
   });
-  dfDollar5(document.body).append(lightbox);
+  dfDollar6(document.body).append(lightbox);
   return lightbox;
+}
+function upgradeLightboxToHigh() {
+  if (!lightboxFigure)
+    return;
+  const img = dfDollar6(lightboxFigure).find("img")[0];
+  if (img && img.dataset.srcFull)
+    return;
+  const srcHigh = img && img.dataset.srcHigh;
+  if (!srcHigh || img.dataset.srcHighLoaded !== undefined)
+    return;
+  img.dataset.srcHighLoaded = "";
+  img.src = srcHigh;
+  if (lightboxImg)
+    lightboxImg.src = srcHigh;
 }
 function applyTransform() {
   if (lightboxImg) {
-    dfDollar5(lightboxImg).css("transform", `scale(${zoom}) rotate(${rotation}deg)`);
+    dfDollar6(lightboxImg).css("transform", `scale(${zoom}) rotate(${rotation}deg)`);
   }
 }
-function openLightbox(src, alt) {
+function openLightbox(figure) {
   const lb = getLightbox();
   zoom = 1;
   rotation = 0;
-  const $img = dfDollar5(lightboxImg);
-  $img.attr("src", src).attr("alt", alt || "").css("transform", null);
+  const img = dfDollar6(figure).find("img")[0];
+  lightboxFigure = figure;
+  const $img = dfDollar6(lightboxImg);
+  $img.attr("src", img.src).attr("alt", img.alt || "").css("transform", null).css("width", null);
+  const srcFull = img.dataset.srcFull;
+  if (srcFull) {
+    const ratio = img.naturalWidth && img.naturalHeight ? img.naturalWidth / img.naturalHeight : 0;
+    if (ratio)
+      $img.css("width", `min(90vw, calc(85vh * ${ratio.toFixed(4)}))`);
+    const full = new Image;
+    full.onload = () => {
+      if (lightboxFigure !== figure || !lb.open)
+        return;
+      $img.attr("src", srcFull).css("width", null);
+    };
+    full.src = srcFull;
+  }
   lb.showModal();
 }
 if (!document.__imagePreviewInit) {
@@ -3364,17 +4997,17 @@ if (!document.__imagePreviewInit) {
     const figure = e.target.closest(".image[data-preview]");
     if (!figure)
       return;
-    const img = dfDollar5(figure).find("img")[0];
-    if (!img || dfDollar5(img).data("error") !== undefined)
+    const img = dfDollar6(figure).find("img")[0];
+    if (!img || dfDollar6(img).data("error") !== undefined)
       return;
-    openLightbox(img.src, img.alt);
+    openLightbox(figure);
   });
 }
 
 // src/components/navigation-menu/navigation-menu.ts
-var df$13 = defussGlobals();
+var df$15 = defussGlobals();
 var navigationMenuStates = ["default", "open"];
-function triggerStateChange13(content, stateName, _config) {
+function triggerStateChange15(content, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -3391,7 +5024,7 @@ var navigationMenuApi = {
     if (!navigationMenuStates.includes(stateName)) {
       throw new Error(`navigation-menu: unknown state "${stateName}" (supported: ${navigationMenuStates.join(", ")})`);
     }
-    triggerStateChange13(content, stateName, config);
+    triggerStateChange15(content, stateName, config);
     content.dataset.stateName = stateName;
     content._stateConfig = config;
   },
@@ -3399,16 +5032,16 @@ var navigationMenuApi = {
     return { name: content.dataset.stateName || "default", config: content._stateConfig ?? {} };
   }
 };
-df$13.navigationMenuApi = navigationMenuApi;
-df$13.navigationMenuStates = navigationMenuStates;
-function init13() {
-  document.querySelectorAll(".nav-menu-trigger[popovertarget]:not([data-init])").forEach((trigger) => {
-    trigger.dataset.init = "";
-    const content = document.getElementById(trigger.getAttribute("popovertarget"));
+df$15.navigationMenuApi = navigationMenuApi;
+df$15.navigationMenuStates = navigationMenuStates;
+function init15() {
+  document.querySelectorAll(".nav-menu-trigger[popovertarget]:not([data-init])").forEach((trigger2) => {
+    trigger2.dataset.init = "";
+    const content = document.getElementById(trigger2.getAttribute("popovertarget"));
     if (!content)
       return;
     const anchorId = `--nav-menu-${content.id}`;
-    trigger.style.anchorName = anchorId;
+    trigger2.style.anchorName = anchorId;
     content.style.positionAnchor = anchorId;
   });
   document.querySelectorAll(".nav-menu-content[popover]:not([data-init])").forEach((content) => {
@@ -3419,14 +5052,14 @@ function init13() {
     };
   });
 }
-init13();
-new MutationObserver(init13).observe(document, { childList: true, subtree: true });
+init15();
+new MutationObserver(init15).observe(document, { childList: true, subtree: true });
 
 // src/components/number-input/number-input.ts
-var df$14 = defussGlobals();
+var df$16 = defussGlobals();
 var numberInputStates = ["default"];
 var getInput2 = (wrapper) => wrapper.querySelector('input[type="number"]');
-function triggerStateChange14(wrapper, config) {
+function triggerStateChange16(wrapper, config) {
   const input = getInput2(wrapper);
   if (!input || config?.value === undefined)
     return;
@@ -3439,7 +5072,7 @@ var numberInputApi = {
     if (!numberInputStates.includes(stateName)) {
       throw new Error(`number-input: unknown state "${stateName}" (supported: ${numberInputStates.join(", ")})`);
     }
-    triggerStateChange14(wrapper, config);
+    triggerStateChange16(wrapper, config);
     wrapper.dataset.stateName = stateName;
     wrapper._stateConfig = config;
   },
@@ -3451,9 +5084,9 @@ var numberInputApi = {
     };
   }
 };
-df$14.numberInputApi = numberInputApi;
-df$14.numberInputStates = numberInputStates;
-function init14() {
+df$16.numberInputApi = numberInputApi;
+df$16.numberInputStates = numberInputStates;
+function init16() {
   document.querySelectorAll(".number-input:not([data-init])").forEach((wrapper) => {
     wrapper.dataset.init = "";
     wrapper.api = {
@@ -3485,12 +5118,12 @@ function init14() {
       });
   });
 }
-init14();
-new MutationObserver(init14).observe(document, { childList: true, subtree: true });
+init16();
+new MutationObserver(init16).observe(document, { childList: true, subtree: true });
 
 // src/components/pagination/pagination.ts
-var df$15 = defussGlobals();
-var dfDollar6 = defussQuery();
+var df$17 = defussGlobals();
+var dfDollar7 = defussQuery();
 var paginationStates = ["default"];
 var numAttr = (el, key, fallback) => {
   const v = parseInt(el.dataset[key] ?? "", 10);
@@ -3506,15 +5139,15 @@ function renderWindow(nav) {
     return;
   const min = Math.max(1, numAttr(nav, "minPage", 1));
   const max = Math.max(min, numAttr(nav, "maxPage", 1));
-  const active = Math.min(max, Math.max(min, numAttr(nav, "activePage", min)));
-  dfDollar6(prev).attr("aria-disabled", active <= min ? "true" : null);
-  dfDollar6(next).attr("aria-disabled", active >= max ? "true" : null);
+  const active2 = Math.min(max, Math.max(min, numAttr(nav, "activePage", min)));
+  dfDollar7(prev).attr("aria-disabled", active2 <= min ? "true" : null);
+  dfDollar7(next).attr("aria-disabled", active2 >= max ? "true" : null);
   if (!nav.hasAttribute("data-active-page"))
     return;
   const count = Math.max(1, numAttr(nav, "pageDisplayCount", 5));
-  if (nav.dataset.activePage !== String(active))
-    nav.dataset.activePage = String(active);
-  const start = Math.max(min, Math.min(active - Math.floor((count - 1) / 2), max - count + 1));
+  if (nav.dataset.activePage !== String(active2))
+    nav.dataset.activePage = String(active2);
+  const start = Math.max(min, Math.min(active2 - Math.floor((count - 1) / 2), max - count + 1));
   const end = Math.min(max, start + count - 1);
   const survivors = new Map;
   let n = prevLi.nextSibling;
@@ -3529,10 +5162,10 @@ function renderWindow(nav) {
     } else
       node.remove();
   }
-  for (const node of windowNodes(start, end, min, max, active, survivors))
-    dfDollar6(nextLi).before(node);
+  for (const node of windowNodes(start, end, min, max, active2, survivors))
+    dfDollar7(nextLi).before(node);
 }
-function windowNodes(start, end, min, max, active, survivors) {
+function windowNodes(start, end, min, max, active2, survivors) {
   const out = [];
   const ellipsis = () => {
     const li = document.createElement("li");
@@ -3546,10 +5179,10 @@ function windowNodes(start, end, min, max, active, survivors) {
   const pageLink = (p) => {
     const li = document.createElement("li");
     const a = document.createElement("a");
-    a.className = "pagination-link" + (p === active ? " pagination-active" : "");
+    a.className = "pagination-link" + (p === active2 ? " pagination-active" : "");
     a.href = "#";
     a.dataset.page = String(p);
-    if (p === active)
+    if (p === active2)
       a.setAttribute("aria-current", "page");
     a.textContent = String(p);
     li.append(a);
@@ -3558,7 +5191,7 @@ function windowNodes(start, end, min, max, active, survivors) {
   if (start > min)
     out.push(ellipsis());
   for (let p = start;p <= end; p++) {
-    if (p === active || !survivors.has(p))
+    if (p === active2 || !survivors.has(p))
       out.push(pageLink(p));
     else {
       const node = survivors.get(p);
@@ -3581,7 +5214,7 @@ function setPage(nav, page) {
   nav.dataset.activePage = String(next);
   nav.dispatchEvent(new CustomEvent("pagination-change", { bubbles: true, detail: { page: next } }));
 }
-function triggerStateChange15(nav, stateName, config = {}) {
+function triggerStateChange17(nav, stateName, config = {}) {
   if (stateName !== "default")
     return;
   const a = config.activePage ?? config.page;
@@ -3600,7 +5233,7 @@ var paginationApi = {
     if (!paginationStates.includes(stateName)) {
       throw new Error(`pagination: unknown state "${stateName}" (supported: ${paginationStates.join(", ")})`);
     }
-    triggerStateChange15(nav, stateName, config);
+    triggerStateChange17(nav, stateName, config);
     nav.dataset.stateName = stateName;
     nav._stateConfig = config;
   },
@@ -3617,9 +5250,9 @@ var paginationApi = {
     };
   }
 };
-df$15.paginationApi = paginationApi;
-df$15.paginationStates = paginationStates;
-function init15() {
+df$17.paginationApi = paginationApi;
+df$17.paginationStates = paginationStates;
+function init17() {
   document.querySelectorAll(".pagination:not([data-init])").forEach((nav) => {
     nav.dataset.init = "";
     nav.api = {
@@ -3652,13 +5285,13 @@ function init15() {
     nav.addEventListener("pagination-prev", () => setPage(nav, numAttr(nav, "activePage", 1) - 1));
   });
 }
-init15();
-new MutationObserver(init15).observe(document, { childList: true, subtree: true });
+init17();
+new MutationObserver(init17).observe(document, { childList: true, subtree: true });
 
 // src/components/popover/popover.ts
-var df$16 = defussGlobals();
+var df$18 = defussGlobals();
 var popoverStates = ["default", "open"];
-function triggerStateChange16(popover, stateName, _config) {
+function triggerStateChange18(popover, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -3675,7 +5308,7 @@ var popoverApi = {
     if (!popoverStates.includes(stateName)) {
       throw new Error(`popover: unknown state "${stateName}" (supported: ${popoverStates.join(", ")})`);
     }
-    triggerStateChange16(popover, stateName, config);
+    triggerStateChange18(popover, stateName, config);
     popover.dataset.stateName = stateName;
     popover._stateConfig = config;
   },
@@ -3683,17 +5316,17 @@ var popoverApi = {
     return { name: popover.dataset.stateName || "default", config: popover._stateConfig ?? {} };
   }
 };
-df$16.popoverApi = popoverApi;
-df$16.popoverStates = popoverStates;
-function init16() {
-  document.querySelectorAll("[popovertarget]:not([data-init])").forEach((trigger) => {
-    const id = trigger.getAttribute("popovertarget");
+df$18.popoverApi = popoverApi;
+df$18.popoverStates = popoverStates;
+function init18() {
+  document.querySelectorAll("[popovertarget]:not([data-init])").forEach((trigger2) => {
+    const id = trigger2.getAttribute("popovertarget");
     const popover = document.getElementById(id);
     if (!popover || !popover.classList.contains("popover"))
       return;
-    trigger.dataset.init = "";
+    trigger2.dataset.init = "";
     const anchorId = `--popover-${id}`;
-    trigger.style.anchorName = anchorId;
+    trigger2.style.anchorName = anchorId;
     popover.style.positionAnchor = anchorId;
   });
   document.querySelectorAll(".popover[popover]:not([data-init])").forEach((popover) => {
@@ -3704,13 +5337,419 @@ function init16() {
     };
   });
 }
-init16();
-new MutationObserver(init16).observe(document, { childList: true, subtree: true });
+init18();
+new MutationObserver(init18).observe(document, { childList: true, subtree: true });
+
+// src/components/presentation/presentation.ts
+var df$19 = defussGlobals();
+var presentationStates = ["default", "notes", "fullscreen"];
+var DEFAULT_IN = "fadeIn";
+var DEFAULT_OUT = "fadeOut";
+function channelFor3(name) {
+  if (!anim.names.includes(name)) {
+    throw new Error(`presentation: unknown animation "${name}" (supported: ${anim.names.join(", ")})`);
+  }
+  return anim[name];
+}
+function animSpec(root, slide, phase, forward) {
+  const p = phase === "in" ? "animIn" : "animOut";
+  const pick = (suffix = "") => slide.dataset[p + suffix] ?? root.dataset[p + suffix];
+  const travel = phase === "in" ? forward ? "east" : "west" : forward ? "west" : "east";
+  const opts = { direction: pick("Direction") ?? travel };
+  const num = (suffix) => {
+    const n = parseFloat(pick(suffix) ?? "");
+    return Number.isFinite(n) ? n : undefined;
+  };
+  if (num("Duration") !== undefined)
+    opts.duration = num("Duration");
+  if (num("Scale") !== undefined)
+    opts.scale = num("Scale");
+  if (num("Blocks") !== undefined)
+    opts.blocks = Math.round(num("Blocks"));
+  if (num("Stagger") !== undefined)
+    opts.stagger = num("Stagger");
+  if (pick("Easing"))
+    opts.easing = pick("Easing");
+  if (pick("Origin"))
+    opts.origin = pick("Origin");
+  if (pick("Distance"))
+    opts.distance = pick("Distance");
+  if (pick("Color"))
+    opts.color = pick("Color");
+  return { name: pick() || (phase === "in" ? DEFAULT_IN : DEFAULT_OUT), opts };
+}
+var probe2 = null;
+function rgbOf(css) {
+  if (!css || typeof document === "undefined")
+    return null;
+  probe2 ??= document.createElement("canvas").getContext("2d", { willReadFrequently: true });
+  if (!probe2)
+    return null;
+  probe2.clearRect(0, 0, 1, 1);
+  probe2.fillStyle = "rgba(1, 2, 3, 0.5)";
+  probe2.fillStyle = css;
+  if (probe2.fillStyle === "rgba(1, 2, 3, 0.5)")
+    return null;
+  probe2.fillRect(0, 0, 1, 1);
+  const [r, g, b, a] = probe2.getImageData(0, 0, 1, 1).data;
+  return [r, g, b, a / 255];
+}
+function contrast(a, b) {
+  const lum = (c) => {
+    const [r, g, bl] = c.slice(0, 3).map((v) => {
+      const s = v / 255;
+      return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * r + 0.7152 * g + 0.0722 * bl;
+  };
+  const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+}
+function curtainColor(root, from, to, declared) {
+  const surfaces = [from, to].map((s) => rgbOf(getComputedStyle(s).backgroundColor)).filter((c) => !!c && c[3] > 0.5);
+  const cs = getComputedStyle(root);
+  const candidates = [
+    declared,
+    cs.getPropertyValue("--presentation-accent").trim(),
+    getComputedStyle(from).color,
+    cs.getPropertyValue("--presentation-ink").trim(),
+    cs.getPropertyValue("--presentation-paper").trim()
+  ];
+  for (const c of candidates) {
+    if (!c)
+      continue;
+    const rgb = rgbOf(c);
+    if (rgb && surfaces.every((bg) => contrast(rgb, bg) >= 1.6))
+      return c;
+  }
+  return getComputedStyle(from).color;
+}
+var slidesOf = (root) => Array.from(root.querySelectorAll(":scope > [data-slide]"));
+var indexOf = (root) => coerceIndex(root.dataset.currentSlide, 0);
+var nativeDeck = null;
+function enterFullscreen(root) {
+  const host = root;
+  if (typeof host.requestFullscreen === "function") {
+    host.requestFullscreen().then(() => {
+      nativeDeck = root;
+    }, () => {
+      root.dataset.fullscreen = "";
+    });
+    return;
+  }
+  host.webkitRequestFullscreen?.();
+  nativeDeck = root;
+  root.dataset.fullscreen = "";
+}
+function exitFullscreen(root) {
+  delete root.dataset.fullscreen;
+  const doc = document;
+  if ((doc.fullscreenElement ?? doc.webkitFullscreenElement) === root) {
+    try {
+      (doc.exitFullscreen?.bind(doc) ?? doc.webkitExitFullscreen?.bind(doc))?.();
+    } catch {}
+  }
+  if (nativeDeck === root)
+    nativeDeck = null;
+}
+function triggerStateChange19(root, stateName, config = {}) {
+  if (!presentationStates.includes(stateName)) {
+    throw new Error(`presentation: unknown state "${stateName}" (supported: ${presentationStates.join(", ")})`);
+  }
+  if (stateName === "default") {
+    if (config.index !== undefined)
+      root._presentationActivate?.(clampIndex(config.index, slidesOf(root).length));
+    if (config.index === undefined && config.notes === undefined && config.fullscreen === undefined) {
+      delete root.dataset.notes;
+      exitFullscreen(root);
+    }
+    return;
+  }
+  if (stateName === "notes") {
+    root.toggleAttribute("data-notes", config.value !== false);
+    return;
+  }
+  if (config.value === false)
+    exitFullscreen(root);
+  else
+    enterFullscreen(root);
+}
+var presentationApi = {
+  setState(root, stateName, config = {}) {
+    triggerStateChange19(root, stateName, config);
+    root.dataset.stateName = stateName;
+    root._stateConfig = config;
+  },
+  getState(root) {
+    return {
+      name: root.dataset.stateName || "default",
+      config: {
+        ...root._stateConfig,
+        slide: indexOf(root),
+        notes: root.hasAttribute("data-notes"),
+        fullscreen: root.hasAttribute("data-fullscreen")
+      }
+    };
+  }
+};
+df$19.presentationApi = presentationApi;
+df$19.presentationStates = presentationStates;
+var keysBound2 = false;
+function bindKeyboard() {
+  if (keysBound2)
+    return;
+  keysBound2 = true;
+  document.addEventListener("keydown", (e) => {
+    const target = e.target;
+    if (target?.closest("input, textarea, select, [contenteditable]"))
+      return;
+    const root = target?.closest(".presentation") ?? document.querySelector(".presentation");
+    if (!root)
+      return;
+    if (e.key === " " && target?.closest('button, a, [role="button"]'))
+      return;
+    const total = slidesOf(root).length;
+    const go = (index, forward) => root._presentationActivate?.(index, forward);
+    const step = (delta) => {
+      const next = indexOf(root) + delta;
+      if (root.hasAttribute("data-loop") && total > 1)
+        go((next + total) % total, delta > 0);
+      else
+        go(next, delta > 0);
+    };
+    let handled = true;
+    switch (e.key) {
+      case "ArrowRight":
+      case "PageDown":
+      case " ":
+        step(1);
+        break;
+      case "ArrowLeft":
+      case "PageUp":
+        step(-1);
+        break;
+      case "Home":
+        go(0);
+        break;
+      case "End":
+        go(total - 1);
+        break;
+      case "n":
+      case "N":
+        root.toggleAttribute("data-notes");
+        break;
+      case "f":
+      case "F":
+        triggerStateChange19(root, "fullscreen", { value: !root.hasAttribute("data-fullscreen") });
+        break;
+      default:
+        handled = false;
+    }
+    if (handled)
+      e.preventDefault();
+  });
+}
+var hashBound = false;
+function bindHash() {
+  if (hashBound)
+    return;
+  hashBound = true;
+  addEventListener("hashchange", () => {
+    const id = decodeURIComponent(location.hash.slice(1));
+    if (!id)
+      return;
+    const slide = document.getElementById(id);
+    const root = slide?.closest(".presentation");
+    if (root && slide)
+      root._presentationActivate?.(slidesOf(root).indexOf(slide));
+  });
+}
+var fullscreenBound = false;
+function bindFullscreen() {
+  if (fullscreenBound)
+    return;
+  fullscreenBound = true;
+  document.addEventListener("fullscreenchange", () => {
+    const el = document.fullscreenElement;
+    if (el?.classList.contains("presentation"))
+      el.dataset.fullscreen = "";
+    if (!el && nativeDeck) {
+      delete nativeDeck.dataset.fullscreen;
+      nativeDeck = null;
+    }
+  });
+}
+function init19() {
+  document.querySelectorAll(".presentation:not([data-init])").forEach((root) => {
+    root.dataset.init = "";
+    root.api = {
+      setState: (stateName, config) => presentationApi.setState(root, stateName, config),
+      getState: () => presentationApi.getState(root)
+    };
+    const enter = (target) => {
+      const slides = slidesOf(root);
+      slides.forEach((slide) => {
+        const on = slide === target;
+        slide.toggleAttribute("data-active", on);
+        slide.inert = !on;
+        slide.setAttribute("aria-hidden", String(!on));
+        slide.querySelectorAll("video[autoplay]").forEach((video) => {
+          if (on) {
+            video.currentTime = 0;
+            video.play()?.catch(() => {});
+          } else
+            video.pause();
+        });
+      });
+      target.querySelectorAll("[data-count]").forEach((el) => animateCount(el));
+      target.querySelectorAll("[data-df-entrance]").forEach((el) => {
+        entrance(el);
+      });
+      target.querySelectorAll("[data-df-draw]").forEach((el) => {
+        draw(el);
+      });
+    };
+    const transition = (from, to, forward) => {
+      root._presentationSettle?.();
+      root._presentationSettle = undefined;
+      const inSpec = animSpec(root, to, "in", forward);
+      if (!from || from === to) {
+        enter(to);
+        channelFor3(inSpec.name === "blocksIn" ? "fadeIn" : inSpec.name).play(to, inSpec.opts);
+        return;
+      }
+      if (inSpec.name === "blocksIn") {
+        const cfg = {
+          ...inSpec.opts,
+          duration: (inSpec.opts.duration ?? 1500) / 2,
+          color: curtainColor(root, from, to, inSpec.opts.color)
+        };
+        root.setAttribute("data-curtain", "");
+        const cover = channelFor3("blocksIn").play(from, cfg);
+        let flipped = false;
+        const flip = () => {
+          if (flipped)
+            return;
+          flipped = true;
+          cover.reset();
+          enter(to);
+          root.removeAttribute("data-curtain");
+          const reveal = channelFor3("blocksOut").play(to, cfg);
+          root._presentationSettle = () => reveal.finish();
+        };
+        root._presentationSettle = () => {
+          cover.finish();
+          flip();
+        };
+        cover.finished.then(flip);
+        return;
+      }
+      const outSpec = animSpec(root, from, "out", forward);
+      from.setAttribute("data-leaving", "");
+      enter(to);
+      const arriving = channelFor3(inSpec.name).play(to, inSpec.opts);
+      const leaving = channelFor3(outSpec.name === "blocksOut" ? DEFAULT_OUT : outSpec.name).play(from, outSpec.opts);
+      let done = false;
+      const cleanup = () => {
+        if (done)
+          return;
+        done = true;
+        from.removeAttribute("data-leaving");
+        leaving.reset();
+      };
+      leaving.finished.then(cleanup);
+      root._presentationSettle = () => {
+        arriving.finish();
+        cleanup();
+      };
+    };
+    let booted = false;
+    const activate2 = (index, forward) => {
+      const slides = slidesOf(root);
+      if (slides.length === 0)
+        return;
+      const clamped = clampIndex(index, slides.length);
+      const previous = booted ? slides.find((s) => s.hasAttribute("data-active")) : undefined;
+      const fromIndex = previous ? slides.indexOf(previous) : -1;
+      if (booted && previous === slides[clamped])
+        return;
+      booted = true;
+      transition(previous, slides[clamped], forward ?? clamped >= fromIndex);
+      root.dataset.currentSlide = String(clamped);
+      const counter = root.querySelector(".presentation-counter");
+      if (counter)
+        counter.textContent = `${clamped + 1} / ${slides.length}`;
+      const progress = root.querySelector("progress.presentation-progress");
+      if (progress) {
+        progress.setAttribute("max", String(slides.length));
+        progress.setAttribute("value", String(clamped + 1));
+      }
+      const loop = root.hasAttribute("data-loop");
+      const prev = root.querySelector('[data-presentation-action="prev"]');
+      const next = root.querySelector('[data-presentation-action="next"]');
+      if (prev)
+        prev.disabled = clamped === 0 && !loop;
+      if (next)
+        next.disabled = clamped === slides.length - 1 && !loop;
+      const pad = (n) => String(n).padStart(2, "0");
+      const number = slides[clamped].querySelector(".presentation-slide-number");
+      if (number)
+        number.textContent = `${pad(clamped + 1)}⁄${pad(slides.length)}`;
+    };
+    root._presentationActivate = activate2;
+    const applyScale = () => {
+      const cs = getComputedStyle(root);
+      const w = parseFloat(cs.getPropertyValue("--presentation-width")) || 1600;
+      const h = parseFloat(cs.getPropertyValue("--presentation-height")) || 900;
+      const box = root.getBoundingClientRect();
+      const scale = Math.min(box.width / w, box.height / h);
+      if (Number.isFinite(scale) && scale > 0)
+        root.style.setProperty("--presentation-scale", String(scale));
+    };
+    new ResizeObserver(applyScale).observe(root);
+    root.addEventListener("click", (e) => {
+      const btn = e.target?.closest?.("[data-presentation-action]");
+      if (!btn || !root.contains(btn))
+        return;
+      const total = slidesOf(root).length;
+      const at = indexOf(root);
+      switch (btn.getAttribute("data-presentation-action")) {
+        case "next":
+          activate2(root.hasAttribute("data-loop") ? (at + 1) % total : at + 1, true);
+          break;
+        case "prev":
+          activate2(root.hasAttribute("data-loop") && at === 0 ? total - 1 : at - 1, false);
+          break;
+        case "first":
+          activate2(0);
+          break;
+        case "last":
+          activate2(total - 1);
+          break;
+        case "notes":
+          root.toggleAttribute("data-notes");
+          break;
+        case "fullscreen":
+          triggerStateChange19(root, "fullscreen", { value: !root.hasAttribute("data-fullscreen") });
+          break;
+      }
+    });
+    bindKeyboard();
+    bindHash();
+    bindFullscreen();
+    const hashId = decodeURIComponent(location.hash.slice(1));
+    const hashIndex = hashId ? slidesOf(root).findIndex((s) => s.id === hashId) : -1;
+    activate2(hashIndex >= 0 ? hashIndex : coerceIndex(root.dataset.currentSlide, 0));
+    applyScale();
+  });
+}
+init19();
+new MutationObserver(init19).observe(document, { childList: true, subtree: true });
 
 // src/components/product-showcase/product-showcase.ts
-var df$17 = defussGlobals();
+var df$20 = defussGlobals();
 var productShowcaseStates = ["default", "playing"];
-function triggerStateChange17(showcase, stateName, _config) {
+function triggerStateChange20(showcase, stateName, _config) {
   const video = showcase.querySelector("video");
   switch (stateName) {
     case "default":
@@ -3734,7 +5773,7 @@ var productShowcaseApi = {
     if (!productShowcaseStates.includes(stateName)) {
       throw new Error(`product-showcase: unknown state "${stateName}" (supported: ${productShowcaseStates.join(", ")})`);
     }
-    triggerStateChange17(showcase, stateName, config);
+    triggerStateChange20(showcase, stateName, config);
     showcase.dataset.stateName = stateName;
     showcase._stateConfig = config;
   },
@@ -3746,9 +5785,9 @@ var productShowcaseApi = {
     };
   }
 };
-df$17.productShowcaseApi = productShowcaseApi;
-df$17.productShowcaseStates = productShowcaseStates;
-function init17() {
+df$20.productShowcaseApi = productShowcaseApi;
+df$20.productShowcaseStates = productShowcaseStates;
+function init20() {
   document.querySelectorAll(".mk-showcase:not([data-init])").forEach((showcase) => {
     showcase.dataset.init = "";
     showcase.dataset.state = "default";
@@ -3765,11 +5804,11 @@ function init17() {
     });
   });
 }
-init17();
-new MutationObserver(init17).observe(document, { childList: true, subtree: true });
+init20();
+new MutationObserver(init20).observe(document, { childList: true, subtree: true });
 
 // src/components/resizer/resizer.ts
-var df$18 = defussGlobals();
+var df$21 = defussGlobals();
 var resizerStates = ["default"];
 var HANDLES = ["n", "e", "s", "w", "ne", "nw", "se", "sw"];
 var CLASS_NUMBERS = Array.from({ length: 81 }, (_, i) => i + 16);
@@ -3830,9 +5869,9 @@ function nearestToken(wrapper, ladder, wantedPx, axis) {
   return best;
 }
 function setClassSize(el, token, ladder) {
-  const owned = new Set(ladder);
+  const owned2 = new Set(ladder);
   for (const cls of Array.from(el.classList))
-    if (owned.has(cls) && cls !== token)
+    if (owned2.has(cls) && cls !== token)
       el.classList.remove(cls);
   if (!el.classList.contains(token))
     el.classList.add(token);
@@ -3893,7 +5932,7 @@ function applySize(wrapper, axis, px) {
     }
   }));
 }
-function triggerStateChange18(wrapper, stateName, config = {}) {
+function triggerStateChange21(wrapper, stateName, config = {}) {
   if (stateName !== "default")
     return;
   if (config.width !== undefined || wrapper._defaultSize)
@@ -3906,7 +5945,7 @@ var resizerApi = {
     if (!resizerStates.includes(stateName)) {
       throw new Error(`resizer: unknown state "${stateName}" (supported: ${resizerStates.join(", ")})`);
     }
-    triggerStateChange18(wrapper, stateName, config);
+    triggerStateChange21(wrapper, stateName, config);
     wrapper.dataset.stateName = stateName;
     wrapper._stateConfig = config;
   },
@@ -3922,8 +5961,8 @@ var resizerApi = {
     };
   }
 };
-df$18.resizerApi = resizerApi;
-df$18.resizerStates = resizerStates;
+df$21.resizerApi = resizerApi;
+df$21.resizerStates = resizerStates;
 var HANDLE_LABEL = {
   n: "top edge",
   s: "bottom edge",
@@ -4017,7 +6056,7 @@ function startDrag(wrapper, handle, ev) {
   handle.addEventListener("pointercancel", onUp);
   handle.addEventListener("lostpointercapture", onUp);
 }
-function init18() {
+function init21() {
   document.querySelectorAll(".resizer:not([data-init])").forEach((wrapper) => {
     wrapper.dataset.init = "";
     if (!targetOf(wrapper))
@@ -4045,13 +6084,13 @@ function init18() {
     wrapper.addEventListener("resizer-reset", () => resizerApi.setState(wrapper, "default"));
   });
 }
-init18();
-new MutationObserver(init18).observe(document, { childList: true, subtree: true });
+init21();
+new MutationObserver(init21).observe(document, { childList: true, subtree: true });
 
 // src/components/sheet/sheet.ts
-var df$19 = defussGlobals();
+var df$22 = defussGlobals();
 var sheetStates = ["default", "open"];
-function triggerStateChange19(sheet, stateName, _config) {
+function triggerStateChange22(sheet, stateName, _config) {
   switch (stateName) {
     case "default":
       if (sheet.open)
@@ -4068,7 +6107,7 @@ var sheetApi = {
     if (!sheetStates.includes(stateName)) {
       throw new Error(`sheet: unknown state "${stateName}" (supported: ${sheetStates.join(", ")})`);
     }
-    triggerStateChange19(sheet, stateName, config);
+    triggerStateChange22(sheet, stateName, config);
     sheet.dataset.stateName = stateName;
     sheet._stateConfig = config;
   },
@@ -4076,16 +6115,16 @@ var sheetApi = {
     return { name: sheet.dataset.stateName || "default", config: sheet._stateConfig ?? {} };
   }
 };
-df$19.sheetApi = sheetApi;
-df$19.sheetStates = sheetStates;
-function init19() {
-  document.querySelectorAll("[data-sheet-trigger]:not([data-init])").forEach((trigger) => {
-    trigger.dataset.init = "";
-    const sheet = document.getElementById(trigger.dataset.sheetTrigger);
+df$22.sheetApi = sheetApi;
+df$22.sheetStates = sheetStates;
+function init22() {
+  document.querySelectorAll("[data-sheet-trigger]:not([data-init])").forEach((trigger2) => {
+    trigger2.dataset.init = "";
+    const sheet = document.getElementById(trigger2.dataset.sheetTrigger);
     if (!sheet)
       return;
-    trigger.addEventListener("click", () => {
-      sheet._trigger = trigger;
+    trigger2.addEventListener("click", () => {
+      sheet._trigger = trigger2;
       sheet.showModal();
     });
   });
@@ -4113,13 +6152,13 @@ function init19() {
     });
   });
 }
-init19();
-new MutationObserver(init19).observe(document, { childList: true, subtree: true });
+init22();
+new MutationObserver(init22).observe(document, { childList: true, subtree: true });
 
 // src/components/sidebar/sidebar.ts
-var df$20 = defussGlobals();
+var df$23 = defussGlobals();
 var sidebarStates = ["default", "collapsed"];
-function triggerStateChange20(sidebar, stateName, _config) {
+function triggerStateChange23(sidebar, stateName, _config) {
   switch (stateName) {
     case "default":
       sidebar.dataset.state = sidebar._defaultState ?? "expanded";
@@ -4134,7 +6173,7 @@ var sidebarApi = {
     if (!sidebarStates.includes(stateName)) {
       throw new Error(`sidebar: unknown state "${stateName}" (supported: ${sidebarStates.join(", ")})`);
     }
-    triggerStateChange20(sidebar, stateName, config);
+    triggerStateChange23(sidebar, stateName, config);
     sidebar.dataset.stateName = stateName;
     sidebar._stateConfig = config;
   },
@@ -4145,9 +6184,9 @@ var sidebarApi = {
     };
   }
 };
-df$20.sidebarApi = sidebarApi;
-df$20.sidebarStates = sidebarStates;
-function init20() {
+df$23.sidebarApi = sidebarApi;
+df$23.sidebarStates = sidebarStates;
+function init23() {
   document.querySelectorAll(".app-sidebar:not([data-init])").forEach((sidebar) => {
     sidebar.dataset.init = "";
     sidebar._defaultState = sidebar.dataset.state || "expanded";
@@ -4156,8 +6195,8 @@ function init20() {
       getState: () => sidebarApi.getState(sidebar)
     };
     const triggerId = sidebar.id ? `[data-sidebar-trigger="${sidebar.id}"]` : ".sidebar-trigger";
-    document.querySelectorAll(triggerId).forEach((trigger) => {
-      trigger.addEventListener("click", () => {
+    document.querySelectorAll(triggerId).forEach((trigger2) => {
+      trigger2.addEventListener("click", () => {
         const state = sidebar.dataset.state === "collapsed" ? "expanded" : "collapsed";
         sidebar.dataset.state = state;
         sidebar.dataset.stateName = state === "collapsed" ? "collapsed" : "default";
@@ -4166,12 +6205,12 @@ function init20() {
     document.__sidebarAutoRo?.observe(sidebar.parentElement ?? sidebar);
     autoCollapseSidebar(sidebar);
   });
-  document.querySelectorAll("[data-sidebar-mobile]:not([data-init])").forEach((trigger) => {
-    trigger.dataset.init = "";
-    const dialog = document.getElementById(trigger.dataset.sidebarMobile);
+  document.querySelectorAll("[data-sidebar-mobile]:not([data-init])").forEach((trigger2) => {
+    trigger2.dataset.init = "";
+    const dialog = document.getElementById(trigger2.dataset.sidebarMobile);
     if (!dialog)
       return;
-    trigger.addEventListener("click", () => {
+    trigger2.addEventListener("click", () => {
       dialog.showModal();
     });
     dialog.querySelectorAll(".sidebar-mobile-close").forEach((btn) => {
@@ -4203,8 +6242,8 @@ if (typeof ResizeObserver !== "undefined" && !document.__sidebarAutoRo) {
     }
   });
 }
-init20();
-new MutationObserver(init20).observe(document, { childList: true, subtree: true });
+init23();
+new MutationObserver(init23).observe(document, { childList: true, subtree: true });
 if (!document.__sidebarKbInit) {
   document.__sidebarKbInit = true;
   document.addEventListener("keydown", (e) => {
@@ -4220,7 +6259,7 @@ if (!document.__sidebarKbInit) {
 }
 
 // src/components/slider/slider.ts
-var df$21 = defussGlobals();
+var df$24 = defussGlobals();
 var sliderStates = ["default", "disabled"];
 function updateSliderValue(el) {
   const min = parseFloat(el.min || 0);
@@ -4229,7 +6268,7 @@ function updateSliderValue(el) {
   const percent = max === min ? 0 : (value - min) / (max - min) * 100;
   el.style.setProperty("--slider-value", `${percent}%`);
 }
-function triggerStateChange21(el, stateName, config) {
+function triggerStateChange24(el, stateName, config) {
   switch (stateName) {
     case "default":
       el.disabled = el._defaultDisabled ?? false;
@@ -4247,7 +6286,7 @@ var sliderApi = {
     if (!sliderStates.includes(stateName)) {
       throw new Error(`slider: unknown state "${stateName}" (supported: ${sliderStates.join(", ")})`);
     }
-    triggerStateChange21(el, stateName, config);
+    triggerStateChange24(el, stateName, config);
     el.dataset.stateName = stateName;
     el._stateConfig = config;
   },
@@ -4258,9 +6297,9 @@ var sliderApi = {
     };
   }
 };
-df$21.sliderApi = sliderApi;
-df$21.sliderStates = sliderStates;
-function init21() {
+df$24.sliderApi = sliderApi;
+df$24.sliderStates = sliderStates;
+function init24() {
   document.querySelectorAll(".slider:not([data-init])").forEach((el) => {
     el.dataset.init = "";
     el._defaultDisabled = el.disabled;
@@ -4272,20 +6311,20 @@ function init21() {
     el.addEventListener("input", () => updateSliderValue(el));
   });
 }
-init21();
-new MutationObserver(init21).observe(document, { childList: true, subtree: true });
+init24();
+new MutationObserver(init24).observe(document, { childList: true, subtree: true });
 
 // src/components/sortable/sortable.ts
-var df$22 = defussGlobals();
-var dfDollar7 = defussQuery();
+var df$25 = defussGlobals();
+var dfDollar8 = defussQuery();
 var sortableStates = ["default"];
-var sortableLabels = (list) => dfDollar7(list).find(".sortable-item").map((item) => dfDollar7(item).find("span:not(.sortable-handle)").text().trim());
-function triggerStateChange22(list, stateName, config) {
+var sortableLabels = (list) => dfDollar8(list).find(".sortable-item").map((item) => dfDollar8(item).find("span:not(.sortable-handle)").text().trim());
+function triggerStateChange25(list, stateName, config) {
   if (stateName !== "default")
     return;
-  dfDollar7(list).append(list._defaultOrder ?? []);
+  dfDollar8(list).append(list._defaultOrder ?? []);
   if (config?.index !== undefined) {
-    const item = dfDollar7(list).find(".sortable-item")[Number(config.index)];
+    const item = dfDollar8(list).find(".sortable-item")[Number(config.index)];
     list._setActive?.(item);
   }
 }
@@ -4294,26 +6333,26 @@ var sortableApi = {
     if (!sortableStates.includes(stateName)) {
       throw new Error(`sortable: unknown state "${stateName}" (supported: ${sortableStates.join(", ")})`);
     }
-    triggerStateChange22(list, stateName, config);
+    triggerStateChange25(list, stateName, config);
     list.dataset.stateName = stateName;
     list._stateConfig = config;
   },
   getState(list) {
-    const items = Array.from(dfDollar7(list).find(".sortable-item"));
-    const active = dfDollar7(list).find(".sortable-item[data-active]")[0];
+    const items = Array.from(dfDollar8(list).find(".sortable-item"));
+    const active2 = dfDollar8(list).find(".sortable-item[data-active]")[0];
     return {
       name: list.dataset.stateName || "default",
       config: {
         ...list._stateConfig,
         order: sortableLabels(list),
-        activeIndex: active ? items.indexOf(active) : -1
+        activeIndex: active2 ? items.indexOf(active2) : -1
       }
     };
   }
 };
-df$22.sortableApi = sortableApi;
-df$22.sortableStates = sortableStates;
-function init22() {
+df$25.sortableApi = sortableApi;
+df$25.sortableStates = sortableStates;
+function init25() {
   document.querySelectorAll(".sortable:not([data-init])").forEach((list) => {
     list.dataset.init = "";
     list.api = {
@@ -4329,29 +6368,29 @@ function init22() {
       liveRegion.className = "sortable-live";
       liveRegion.setAttribute("aria-live", "assertive");
       liveRegion.setAttribute("role", "status");
-      dfDollar7(list).after(liveRegion);
+      dfDollar8(list).after(liveRegion);
     }
     function announce(msg) {
-      dfDollar7(liveRegion).text("");
+      dfDollar8(liveRegion).text("");
       requestAnimationFrame(() => {
-        dfDollar7(liveRegion).text(msg);
+        dfDollar8(liveRegion).text(msg);
       });
     }
     function getItems() {
-      return Array.from(dfDollar7(list).find('.sortable-item:not([aria-disabled="true"])'));
+      return Array.from(dfDollar8(list).find('.sortable-item:not([aria-disabled="true"])'));
     }
     function getAllItems() {
-      return Array.from(dfDollar7(list).find(".sortable-item"));
+      return Array.from(dfDollar8(list).find(".sortable-item"));
     }
     function getActiveItem() {
-      return dfDollar7(list).find(".sortable-item[data-active]")[0];
+      return dfDollar8(list).find(".sortable-item[data-active]")[0];
     }
     function setActive(item) {
       getAllItems().forEach((el) => {
-        dfDollar7(el).data("active", null).attr("tabindex", "-1");
+        dfDollar8(el).data("active", null).attr("tabindex", "-1");
       });
       if (item) {
-        dfDollar7(item).data("active", "").attr("tabindex", "0");
+        dfDollar8(item).data("active", "").attr("tabindex", "0");
         list.dataset.activeIndex = String(getItems().indexOf(item));
         item.focus();
       } else {
@@ -4372,22 +6411,22 @@ function init22() {
     }
     const allItems = getAllItems();
     allItems.forEach((item, i) => {
-      dfDollar7(item).attr("tabindex", i === 0 ? "0" : "-1");
+      dfDollar8(item).attr("tabindex", i === 0 ? "0" : "-1");
     });
     let dragged = null;
-    dfDollar7(list).find(".sortable-item").each(function() {
+    dfDollar8(list).find(".sortable-item").each(function() {
       const item = this;
       if (item.getAttribute("aria-disabled") === "true")
         return;
       item.addEventListener("dragstart", (e) => {
         dragged = item;
-        dfDollar7(item).data("dragging", "");
+        dfDollar8(item).data("dragging", "");
         e.dataTransfer.effectAllowed = "move";
         e.dataTransfer.setData("text/plain", "");
       });
       item.addEventListener("dragend", () => {
-        dfDollar7(item).data("dragging", null);
-        dfDollar7(list).find("[data-over]").data("over", null);
+        dfDollar8(item).data("dragging", null);
+        dfDollar8(list).find("[data-over]").data("over", null);
         dragged = null;
       });
       item.addEventListener("dragover", (e) => {
@@ -4398,25 +6437,25 @@ function init22() {
         const rect = item.getBoundingClientRect();
         const midpoint = isHorizontal ? rect.left + rect.width / 2 : rect.top + rect.height / 2;
         const pos = isHorizontal ? e.clientX : e.clientY;
-        dfDollar7(list).find("[data-over]").each(function() {
+        dfDollar8(list).find("[data-over]").each(function() {
           if (this !== item)
-            dfDollar7(this).data("over", null);
+            dfDollar8(this).data("over", null);
         });
-        dfDollar7(item).data("over", pos < midpoint ? "before" : "after");
+        dfDollar8(item).data("over", pos < midpoint ? "before" : "after");
       });
       item.addEventListener("dragleave", () => {
-        dfDollar7(item).data("over", null);
+        dfDollar8(item).data("over", null);
       });
       item.addEventListener("drop", (e) => {
         e.preventDefault();
-        const position = dfDollar7(item).data("over");
-        dfDollar7(item).data("over", null);
+        const position = dfDollar8(item).data("over");
+        dfDollar8(item).data("over", null);
         if (!dragged || dragged === item)
           return;
         if (position === "before") {
-          dfDollar7(item).before(dragged);
+          dfDollar8(item).before(dragged);
         } else {
-          dfDollar7(item).after(dragged);
+          dfDollar8(item).after(dragged);
         }
         const items = getItems();
         const newIndex = items.indexOf(dragged);
@@ -4429,11 +6468,11 @@ function init22() {
       });
     });
     list.addEventListener("keydown", (e) => {
-      const active = getActiveItem() || dfDollar7(list).find('.sortable-item[tabindex="0"]')[0];
-      if (!active)
+      const active2 = getActiveItem() || dfDollar8(list).find('.sortable-item[tabindex="0"]')[0];
+      if (!active2)
         return;
       const items = getItems();
-      const idx = items.indexOf(active);
+      const idx = items.indexOf(active2);
       if (e.key === NEXT_KEY && !e.altKey) {
         e.preventDefault();
         const next = items[idx + 1];
@@ -4456,28 +6495,28 @@ function init22() {
         e.preventDefault();
         if (idx < items.length - 1) {
           const sibling = items[idx + 1];
-          dfDollar7(sibling).after(active);
+          dfDollar8(sibling).after(active2);
           const newItems = getItems();
-          const newIdx = newItems.indexOf(active);
-          announce(`${getItemLabel(active)}, moved to position ${newIdx + 1} of ${newItems.length}`);
-          setActive(active);
+          const newIdx = newItems.indexOf(active2);
+          announce(`${getItemLabel(active2)}, moved to position ${newIdx + 1} of ${newItems.length}`);
+          setActive(active2);
           list.dispatchEvent(new CustomEvent("sortable-change", {
             bubbles: true,
-            detail: { item: active, index: newIdx }
+            detail: { item: active2, index: newIdx }
           }));
         }
       } else if (e.key === PREV_KEY && e.altKey) {
         e.preventDefault();
         if (idx > 0) {
           const sibling = items[idx - 1];
-          dfDollar7(sibling).before(active);
+          dfDollar8(sibling).before(active2);
           const newItems = getItems();
-          const newIdx = newItems.indexOf(active);
-          announce(`${getItemLabel(active)}, moved to position ${newIdx + 1} of ${newItems.length}`);
-          setActive(active);
+          const newIdx = newItems.indexOf(active2);
+          announce(`${getItemLabel(active2)}, moved to position ${newIdx + 1} of ${newItems.length}`);
+          setActive(active2);
           list.dispatchEvent(new CustomEvent("sortable-change", {
             bubbles: true,
-            detail: { item: active, index: newIdx }
+            detail: { item: active2, index: newIdx }
           }));
         }
       }
@@ -4489,11 +6528,11 @@ function init22() {
     });
   });
 }
-init22();
-new MutationObserver(init22).observe(document, { childList: true, subtree: true });
+init25();
+new MutationObserver(init25).observe(document, { childList: true, subtree: true });
 
 // src/components/steps/steps.ts
-var df$23 = defussGlobals();
+var df$26 = defussGlobals();
 var stepsStates = ["default"];
 var numAttr3 = (el, key, fallback) => {
   const v = parseInt(el.dataset[key] ?? "", 10);
@@ -4504,14 +6543,14 @@ function renderSteps(ol) {
   if (items.length === 0)
     return;
   const total = items.length;
-  const active = Math.min(total, Math.max(1, numAttr3(ol, "activeStep", 1)));
+  const active2 = Math.min(total, Math.max(1, numAttr3(ol, "activeStep", 1)));
   const raw = ol.dataset.errorStep ?? "";
-  const error = raw === "true" ? active : parseInt(raw, 10) || 0;
-  if (ol.dataset.activeStep !== String(active))
-    ol.dataset.activeStep = String(active);
+  const error = raw === "true" ? active2 : parseInt(raw, 10) || 0;
+  if (ol.dataset.activeStep !== String(active2))
+    ol.dataset.activeStep = String(active2);
   items.forEach((item, i) => {
     const n = i + 1;
-    const status = n === error ? "error" : n < active ? "complete" : n === active ? "current" : null;
+    const status = n === error ? "error" : n < active2 ? "complete" : n === active2 ? "current" : null;
     if (status)
       item.dataset.status = status;
     else
@@ -4522,7 +6561,7 @@ function renderSteps(ol) {
       item.removeAttribute("aria-current");
   });
 }
-function triggerStateChange23(ol, stateName, config = {}) {
+function triggerStateChange26(ol, stateName, config = {}) {
   if (stateName !== "default")
     return;
   const a = config.activeStep ?? config.step ?? config.page;
@@ -4543,7 +6582,7 @@ var stepsApi = {
     if (!stepsStates.includes(stateName)) {
       throw new Error(`steps: unknown state "${stateName}" (supported: ${stepsStates.join(", ")})`);
     }
-    triggerStateChange23(ol, stateName, config);
+    triggerStateChange26(ol, stateName, config);
     ol.dataset.stateName = stateName;
     ol._stateConfig = config;
   },
@@ -4560,9 +6599,9 @@ var stepsApi = {
     };
   }
 };
-df$23.stepsApi = stepsApi;
-df$23.stepsStates = stepsStates;
-function init23() {
+df$26.stepsApi = stepsApi;
+df$26.stepsStates = stepsStates;
+function init26() {
   document.querySelectorAll(".steps:not([data-init])").forEach((ol) => {
     ol.dataset.init = "";
     ol.api = {
@@ -4597,11 +6636,11 @@ function init23() {
     });
   });
 }
-init23();
-new MutationObserver(init23).observe(document, { childList: true, subtree: true });
+init26();
+new MutationObserver(init26).observe(document, { childList: true, subtree: true });
 
 // src/components/tabs/tabs.ts
-var df$24 = defussGlobals();
+var df$27 = defussGlobals();
 var tabsStates = ["default", "active"];
 var activateTab = (tab, triggers) => {
   triggers.forEach((t) => {
@@ -4619,7 +6658,7 @@ var activateTab = (tab, triggers) => {
   if (panel)
     panel.hidden = false;
 };
-function triggerStateChange24(tab, triggers, stateName, _config) {
+function triggerStateChange27(tab, triggers, stateName, _config) {
   switch (stateName) {
     case "default":
       if (tab._defaultSelected)
@@ -4639,7 +6678,7 @@ var tabsApi = {
       throw new Error(`tabs: unknown state "${stateName}" (supported: ${tabsStates.join(", ")})`);
     }
     const triggers = Array.from(tab.closest('[role="tablist"]').querySelectorAll('[role="tab"]'));
-    triggerStateChange24(tab, triggers, stateName, config);
+    triggerStateChange27(tab, triggers, stateName, config);
     tab._stateConfig = config;
   },
   getState(tab) {
@@ -4649,9 +6688,9 @@ var tabsApi = {
     };
   }
 };
-df$24.tabsApi = tabsApi;
-df$24.tabsStates = tabsStates;
-function init24() {
+df$27.tabsApi = tabsApi;
+df$27.tabsStates = tabsStates;
+function init27() {
   document.querySelectorAll('[role="tablist"]:not([data-init])').forEach((tablist) => {
     tablist.dataset.init = "";
     if (!tablist.querySelector(".tab-trigger"))
@@ -4665,12 +6704,12 @@ function init24() {
       };
     });
     const orientation = tablist.getAttribute("aria-orientation") || "horizontal";
-    triggers.forEach((trigger) => {
-      trigger.addEventListener("click", () => {
-        activateTab(trigger, triggers);
+    triggers.forEach((trigger2) => {
+      trigger2.addEventListener("click", () => {
+        activateTab(trigger2, triggers);
       });
-      trigger.addEventListener("keydown", (e) => {
-        const current = triggers.indexOf(trigger);
+      trigger2.addEventListener("keydown", (e) => {
+        const current = triggers.indexOf(trigger2);
         let next;
         const forward = orientation === "horizontal" ? "ArrowRight" : "ArrowDown";
         const backward = orientation === "horizontal" ? "ArrowLeft" : "ArrowUp";
@@ -4712,12 +6751,12 @@ function init24() {
     });
   });
 }
-init24();
-new MutationObserver(init24).observe(document, { childList: true, subtree: true });
+init27();
+new MutationObserver(init27).observe(document, { childList: true, subtree: true });
 
 // src/components/theme-switcher/theme-switcher.ts
-var df$25 = defussGlobals();
-var dfDollar8 = defussQuery();
+var df$28 = defussGlobals();
+var dfDollar9 = defussQuery();
 var themeSwitcherStates = ["default", "open"];
 var STORAGE_KEY = "defuss-shadcn-color-theme";
 var LINK_ID = "theme-css";
@@ -4745,6 +6784,9 @@ function applyThemeId(root, id) {
   if (!id || id === "default") {
     link?.remove();
     store(STORAGE_KEY, null);
+    loadTheme("default").catch(() => {
+      return;
+    });
     syncTrigger(root, "default");
     document.dispatchEvent(new CustomEvent(THEME_EVENT, { detail: { id: "default" } }));
     return;
@@ -4762,30 +6804,33 @@ function applyThemeId(root, id) {
   link.href = themeHref(root, id);
   const tokens2 = document.getElementById("tokens-css") || document.querySelector('link[href*="default-semantic-tokens.css"]');
   if (tokens2)
-    dfDollar8(tokens2).after(link);
+    dfDollar9(tokens2).after(link);
   else
-    dfDollar8(document.head).append(link);
+    dfDollar9(document.head).append(link);
+  loadTheme(id).catch(() => {
+    return;
+  });
   syncTrigger(root, id);
   document.dispatchEvent(new CustomEvent(THEME_EVENT, { detail: { id } }));
 }
 function syncTrigger(root, id) {
-  const $root = dfDollar8(root);
-  const trigger = $root.find(".theme-switcher-trigger")[0];
+  const $root = dfDollar9(root);
+  const trigger2 = $root.find(".theme-switcher-trigger")[0];
   const items = Array.from($root.find(".theme-switcher-item"));
-  const active = items.find((i) => i.dataset.themeId === id);
-  items.forEach((i) => dfDollar8(i).attr("aria-checked", i === active ? "true" : "false"));
-  if (!trigger)
+  const active2 = items.find((i) => i.dataset.themeId === id);
+  items.forEach((i) => dfDollar9(i).attr("aria-checked", i === active2 ? "true" : "false"));
+  if (!trigger2)
     return;
-  const dot = dfDollar8(trigger).find(".theme-switcher-dot")[0];
-  const label = dfDollar8(trigger).find(".theme-switcher-label")[0];
-  const first = active?.dataset.themeColors?.split(",")[0]?.trim();
+  const dot = dfDollar9(trigger2).find(".theme-switcher-dot")[0];
+  const label = dfDollar9(trigger2).find(".theme-switcher-label")[0];
+  const first = active2?.dataset.themeColors?.split(",")[0]?.trim();
   if (dot)
-    dfDollar8(dot).css("background", first || "");
-  if (label && (active || id === "default"))
-    dfDollar8(label).text(active?.dataset.themeLabel || "Default");
+    dfDollar9(dot).css("background", first || "");
+  if (label && (active2 || id === "default"))
+    dfDollar9(label).text(active2?.dataset.themeLabel || "Default");
   root.dataset.themeId = id;
 }
-function triggerStateChange25(menu, stateName, _config) {
+function triggerStateChange28(menu, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -4802,7 +6847,7 @@ var themeSwitcherApi = {
     if (!themeSwitcherStates.includes(stateName)) {
       throw new Error(`theme-switcher: unknown state "${stateName}" (supported: ${themeSwitcherStates.join(", ")})`);
     }
-    triggerStateChange25(menu, stateName, config);
+    triggerStateChange28(menu, stateName, config);
     menu.dataset.stateName = stateName;
     menu._stateConfig = config;
   },
@@ -4816,28 +6861,28 @@ var themeSwitcherApi = {
     applyThemeId(root, id);
   }
 };
-df$25.themeSwitcherApi = themeSwitcherApi;
-df$25.themeSwitcherStates = themeSwitcherStates;
-function init25() {
+df$28.themeSwitcherApi = themeSwitcherApi;
+df$28.themeSwitcherStates = themeSwitcherStates;
+function init28() {
   document.querySelectorAll(".theme-switcher-menu:not([data-init])").forEach((menu) => {
     menu.dataset.init = "";
     const root = menu.closest(".theme-switcher");
-    const trigger = root?.querySelector(".theme-switcher-trigger") ?? (menu.id && document.querySelector(`[popovertarget="${menu.id}"]`));
+    const trigger2 = root?.querySelector(".theme-switcher-trigger") ?? (menu.id && document.querySelector(`[popovertarget="${menu.id}"]`));
     const getItems = () => Array.from(menu.querySelectorAll(".theme-switcher-item"));
-    if (trigger) {
+    if (trigger2) {
       const anchorId = `--theme-switcher-${menu.id || "menu"}`;
-      dfDollar8(trigger).css("anchorName", anchorId);
-      dfDollar8(menu).css("positionAnchor", anchorId);
+      dfDollar9(trigger2).css("anchorName", anchorId);
+      dfDollar9(menu).css("positionAnchor", anchorId);
     }
     menu.addEventListener("toggle", () => {
-      if (trigger)
-        dfDollar8(trigger).attr("aria-expanded", menu.matches(":popover-open") ? "true" : "false");
+      if (trigger2)
+        dfDollar9(trigger2).attr("aria-expanded", menu.matches(":popover-open") ? "true" : "false");
       if (menu.matches(":popover-open")) {
         const first = getItems()[0];
         first?.focus();
         if (first)
           requestAnimationFrame(() => {
-            if (menu.matches(":popover-open") && document.activeElement === trigger)
+            if (menu.matches(":popover-open") && document.activeElement === trigger2)
               first.focus();
           });
       }
@@ -4846,7 +6891,7 @@ function init25() {
       const holder = item.querySelector(".theme-switcher-dots");
       if (holder && !holder.childElementCount) {
         const spans = (item.dataset.themeColors || "").split(",").slice(0, 5).map((c) => c.trim()).filter(Boolean).map((c) => `<span style="background:${c}"></span>`).join("");
-        dfDollar8(holder).html(spans);
+        dfDollar9(holder).html(spans);
       }
     });
     menu.addEventListener("click", (e) => {
@@ -4855,7 +6900,7 @@ function init25() {
         return;
       applyThemeId(root, item.dataset.themeId || "default");
       menu.hidePopover();
-      trigger?.focus();
+      trigger2?.focus();
     });
     menu.addEventListener("keydown", (e) => {
       const items = getItems();
@@ -4889,14 +6934,14 @@ document.addEventListener(THEME_EVENT, (e) => {
   const id = e.detail?.id || "default";
   document.querySelectorAll(".theme-switcher").forEach((root) => syncTrigger(root, id));
 });
-init25();
-new MutationObserver(init25).observe(document, { childList: true, subtree: true });
+init28();
+new MutationObserver(init28).observe(document, { childList: true, subtree: true });
 
 // src/components/toast/toast.ts
-var df$26 = defussGlobals();
-var dfDollar9 = defussQuery();
+var df$29 = defussGlobals();
+var dfDollar10 = defussQuery();
 var toastStates = ["default"];
-function triggerStateChange26(container, stateName, _config) {
+function triggerStateChange29(container, stateName, _config) {
   if (stateName !== "default")
     return;
   container.querySelectorAll(".toast").forEach((el) => toastDismiss(el));
@@ -4906,7 +6951,7 @@ var toastApi = {
     if (!toastStates.includes(stateName)) {
       throw new Error(`toast: unknown state "${stateName}" (supported: ${toastStates.join(", ")})`);
     }
-    triggerStateChange26(container, stateName, config);
+    triggerStateChange29(container, stateName, config);
     container.dataset.stateName = stateName;
     container._stateConfig = config;
   },
@@ -4917,8 +6962,8 @@ var toastApi = {
     };
   }
 };
-df$26.toastApi = toastApi;
-df$26.toastStates = toastStates;
+df$29.toastApi = toastApi;
+df$29.toastStates = toastStates;
 var DURATION = 4000;
 var MAX_VISIBLE = 3;
 var toastCallbacks = new WeakMap;
@@ -4929,7 +6974,7 @@ if (!toastContainer) {
   toastContainer.className = "toast-container";
   toastContainer.setAttribute("aria-label", "Notifications");
   toastContainer.setAttribute("data-position", "bottom-right");
-  dfDollar9(document.body).append(toastContainer);
+  dfDollar10(document.body).append(toastContainer);
 }
 var stackToasts = (container) => {
   let offset = 0;
@@ -4946,7 +6991,7 @@ var toastDismiss = (el, callback) => {
     try {
       el.hidePopover();
     } catch {}
-    dfDollar9(el).remove();
+    dfDollar10(el).remove();
     stackToasts(container);
     if (callback)
       callback();
@@ -4977,30 +7022,30 @@ var toastCreate = (options) => {
   const contentEl = document.createElement("div");
   contentEl.className = "toast-content";
   if (variant && icons[variant]) {
-    dfDollar9(contentEl).append(dfDollar9(icons[variant]));
+    dfDollar10(contentEl).append(dfDollar10(icons[variant]));
   }
   const textDiv = document.createElement("div");
   textDiv.className = "toast-text";
   if (title) {
     const p = document.createElement("p");
     p.className = "toast-title";
-    dfDollar9(p).text(title);
-    dfDollar9(textDiv).append(p);
+    dfDollar10(p).text(title);
+    dfDollar10(textDiv).append(p);
   }
   if (description) {
     const p = document.createElement("p");
     p.className = "toast-description";
-    dfDollar9(p).text(description);
-    dfDollar9(textDiv).append(p);
+    dfDollar10(p).text(description);
+    dfDollar10(textDiv).append(p);
   }
-  dfDollar9(contentEl).append(textDiv);
+  dfDollar10(contentEl).append(textDiv);
   const closeBtn = document.createElement("button");
   closeBtn.className = "toast-close";
   closeBtn.setAttribute("aria-label", "Dismiss");
   closeBtn.dataset.toastClose = "";
-  dfDollar9(closeBtn).html('<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>');
-  dfDollar9(contentEl).append(closeBtn);
-  dfDollar9(el).append(contentEl);
+  dfDollar10(closeBtn).html('<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>');
+  dfDollar10(contentEl).append(closeBtn);
+  dfDollar10(el).append(contentEl);
   if (action) {
     const actionsDiv = document.createElement("div");
     actionsDiv.className = "toast-actions";
@@ -5009,11 +7054,11 @@ var toastCreate = (options) => {
     actionBtn.setAttribute("data-variant", "outline");
     actionBtn.setAttribute("data-size", "sm");
     actionBtn.dataset.toastAction = "";
-    dfDollar9(actionBtn).text(action.label);
-    dfDollar9(actionsDiv).append(actionBtn);
-    dfDollar9(el).append(actionsDiv);
+    dfDollar10(actionBtn).text(action.label);
+    dfDollar10(actionsDiv).append(actionBtn);
+    dfDollar10(el).append(actionsDiv);
   }
-  dfDollar9(toastContainer).append(el);
+  dfDollar10(toastContainer).append(el);
   el.showPopover();
   stackToasts(toastContainer);
   toastCallbacks.set(el, { onDismiss, action });
@@ -5026,7 +7071,7 @@ var toastCreate = (options) => {
     toastDismiss(toasts[0]);
   return el;
 };
-function init26() {
+function init29() {
   document.querySelectorAll("#toast-container:not([data-init])").forEach((container) => {
     container.dataset.init = "";
     container.api = {
@@ -5050,9 +7095,9 @@ function init26() {
     });
   });
 }
-init26();
-new MutationObserver(init26).observe(document.body, { childList: true, subtree: true });
-df$26.toast = {
+init29();
+new MutationObserver(init29).observe(document.body, { childList: true, subtree: true });
+df$29.toast = {
   show: toastCreate,
   success: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "success" })),
   warning: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "warning" })),
@@ -5066,9 +7111,9 @@ df$26.toast = {
 };
 
 // src/components/toggle/toggle.ts
-var df$27 = defussGlobals();
+var df$30 = defussGlobals();
 var toggleStates = ["default", "pressed"];
-function triggerStateChange27(toggle, stateName, _config) {
+function triggerStateChange30(toggle, stateName, _config) {
   switch (stateName) {
     case "default":
       toggle.setAttribute("aria-pressed", toggle._defaultPressed ?? "false");
@@ -5083,7 +7128,7 @@ var toggleApi = {
     if (!toggleStates.includes(stateName)) {
       throw new Error(`toggle: unknown state "${stateName}" (supported: ${toggleStates.join(", ")})`);
     }
-    triggerStateChange27(toggle, stateName, config);
+    triggerStateChange30(toggle, stateName, config);
     toggle.dataset.stateName = stateName;
     toggle._stateConfig = config;
   },
@@ -5095,9 +7140,9 @@ var toggleApi = {
     };
   }
 };
-df$27.toggleApi = toggleApi;
-df$27.toggleStates = toggleStates;
-function init27() {
+df$30.toggleApi = toggleApi;
+df$30.toggleStates = toggleStates;
+function init30() {
   document.querySelectorAll(".toggle:not([data-init]):not(.toggle-group .toggle)").forEach((toggle) => {
     toggle.dataset.init = "";
     toggle._defaultPressed = toggle.getAttribute("aria-pressed") || "false";
@@ -5112,13 +7157,13 @@ function init27() {
     });
   });
 }
-init27();
-new MutationObserver(init27).observe(document, { childList: true, subtree: true });
+init30();
+new MutationObserver(init30).observe(document, { childList: true, subtree: true });
 
 // src/components/toggle-group/toggle-group.ts
-var df$28 = defussGlobals();
+var df$31 = defussGlobals();
 var toggleGroupStates = ["default", "disabled"];
-function triggerStateChange28(group, stateName, _config) {
+function triggerStateChange31(group, stateName, _config) {
   switch (stateName) {
     case "default":
       group.removeAttribute("data-disabled");
@@ -5133,7 +7178,7 @@ var toggleGroupApi = {
     if (!toggleGroupStates.includes(stateName)) {
       throw new Error(`toggle-group: unknown state "${stateName}" (supported: ${toggleGroupStates.join(", ")})`);
     }
-    triggerStateChange28(group, stateName, config);
+    triggerStateChange31(group, stateName, config);
     group.dataset.stateName = stateName;
     group._stateConfig = config;
   },
@@ -5144,9 +7189,9 @@ var toggleGroupApi = {
     };
   }
 };
-df$28.toggleGroupApi = toggleGroupApi;
-df$28.toggleGroupStates = toggleGroupStates;
-function init28() {
+df$31.toggleGroupApi = toggleGroupApi;
+df$31.toggleGroupStates = toggleGroupStates;
+function init31() {
   document.querySelectorAll(".toggle-group:not([data-init])").forEach((group) => {
     group.dataset.init = "";
     group.api = {
@@ -5160,9 +7205,9 @@ function init28() {
       if (toggles.length === 0)
         return;
       const pressed = toggles.find((t) => t.getAttribute("aria-pressed") === "true");
-      const active = pressed || toggles[0];
+      const active2 = pressed || toggles[0];
       toggles.forEach((t) => {
-        t.setAttribute("tabindex", t === active ? "0" : "-1");
+        t.setAttribute("tabindex", t === active2 ? "0" : "-1");
       });
     };
     initTabindex();
@@ -5214,13 +7259,13 @@ function init28() {
     });
   });
 }
-init28();
-new MutationObserver(init28).observe(document, { childList: true, subtree: true });
+init31();
+new MutationObserver(init31).observe(document, { childList: true, subtree: true });
 
 // src/components/toolbar/toolbar.ts
-var df$29 = defussGlobals();
+var df$32 = defussGlobals();
 var toolbarStates = ["default"];
-function triggerStateChange29(toolbar, items, stateName, config) {
+function triggerStateChange32(toolbar, items, stateName, config) {
   if (stateName !== "default" || items.length === 0)
     return;
   const target = items[Math.min(Number(config?.focus ?? 0), items.length - 1)] || items[0];
@@ -5234,7 +7279,7 @@ var toolbarApi = {
       throw new Error(`toolbar: unknown state "${stateName}" (supported: ${toolbarStates.join(", ")})`);
     }
     const items = toolbarItems(toolbar);
-    triggerStateChange29(toolbar, items, stateName, config);
+    triggerStateChange32(toolbar, items, stateName, config);
     toolbar.dataset.stateName = stateName;
     toolbar._stateConfig = config;
   },
@@ -5247,10 +7292,10 @@ var toolbarApi = {
     };
   }
 };
-df$29.toolbarApi = toolbarApi;
-df$29.toolbarStates = toolbarStates;
+df$32.toolbarApi = toolbarApi;
+df$32.toolbarStates = toolbarStates;
 var toolbarItems = (toolbar) => Array.from(toolbar.querySelectorAll('button:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])'));
-function init29() {
+function init32() {
   document.querySelectorAll('.toolbar[role="toolbar"]:not([data-init])').forEach((toolbar) => {
     toolbar.dataset.init = "";
     toolbar.api = {
@@ -5292,13 +7337,13 @@ function init29() {
     });
   });
 }
-init29();
-new MutationObserver(init29).observe(document, { childList: true, subtree: true });
+init32();
+new MutationObserver(init32).observe(document, { childList: true, subtree: true });
 
 // src/components/tooltip/tooltip.ts
-var df$30 = defussGlobals();
+var df$33 = defussGlobals();
 var tooltipStates = ["default", "visible"];
-function triggerStateChange30(tip, stateName, _config) {
+function triggerStateChange33(tip, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -5316,7 +7361,7 @@ var tooltipApi = {
     if (!tooltipStates.includes(stateName)) {
       throw new Error(`tooltip: unknown state "${stateName}" (supported: ${tooltipStates.join(", ")})`);
     }
-    triggerStateChange30(tip, stateName, config);
+    triggerStateChange33(tip, stateName, config);
     tip.dataset.stateName = stateName;
     tip._stateConfig = config;
   },
@@ -5324,8 +7369,8 @@ var tooltipApi = {
     return { name: tip.dataset.stateName || "default", config: tip._stateConfig ?? {} };
   }
 };
-df$30.tooltipApi = tooltipApi;
-df$30.tooltipStates = tooltipStates;
+df$33.tooltipApi = tooltipApi;
+df$33.tooltipStates = tooltipStates;
 var DELAY_DEFAULT = 700;
 var CLOSE_DELAY_DEFAULT = 0;
 var GROUP_TIMEOUT = 400;
@@ -5341,18 +7386,18 @@ function scheduleGroupReset() {
     groupOpen = false;
   }, GROUP_TIMEOUT);
 }
-function init30() {
-  document.querySelectorAll("[data-tooltip-trigger]:not([data-init])").forEach((trigger) => {
-    trigger.dataset.init = "";
-    const tip = document.getElementById(trigger.dataset.tooltipTrigger);
+function init33() {
+  document.querySelectorAll("[data-tooltip-trigger]:not([data-init])").forEach((trigger2) => {
+    trigger2.dataset.init = "";
+    const tip = document.getElementById(trigger2.dataset.tooltipTrigger);
     if (!tip)
       return;
     const anchorId = `--tooltip-${tip.id}`;
-    trigger.style.anchorName = anchorId;
+    trigger2.style.anchorName = anchorId;
     tip.style.positionAnchor = anchorId;
-    trigger.setAttribute("aria-describedby", tip.id);
-    const delay = Number(trigger.dataset.delay ?? DELAY_DEFAULT);
-    const closeDelay = Number(trigger.dataset.closeDelay ?? CLOSE_DELAY_DEFAULT);
+    trigger2.setAttribute("aria-describedby", tip.id);
+    const delay = Number(trigger2.dataset.delay ?? DELAY_DEFAULT);
+    const closeDelay = Number(trigger2.dataset.closeDelay ?? CLOSE_DELAY_DEFAULT);
     let openTimer = null;
     let closeTimer = null;
     function show() {
@@ -5376,10 +7421,10 @@ function init30() {
         scheduleGroupReset();
       }, closeDelay);
     }
-    trigger.addEventListener("mouseenter", show);
-    trigger.addEventListener("mouseleave", hide);
-    trigger.addEventListener("focus", show);
-    trigger.addEventListener("blur", hide);
+    trigger2.addEventListener("mouseenter", show);
+    trigger2.addEventListener("mouseleave", hide);
+    trigger2.addEventListener("focus", show);
+    trigger2.addEventListener("blur", hide);
   });
   document.querySelectorAll(".tooltip[popover]:not([data-init])").forEach((tip) => {
     tip.dataset.init = "";
@@ -5389,8 +7434,8 @@ function init30() {
     };
   });
 }
-init30();
-new MutationObserver(init30).observe(document, { childList: true, subtree: true });
+init33();
+new MutationObserver(init33).observe(document, { childList: true, subtree: true });
 if (!document.__tooltipScrollInit) {
   document.__tooltipScrollInit = true;
   document.addEventListener("scroll", () => {
@@ -5403,9 +7448,9 @@ if (!document.__tooltipScrollInit) {
 }
 
 // src/components/tree-view/tree-view.ts
-var df$31 = defussGlobals();
+var df$34 = defussGlobals();
 var treeViewStates = ["default", "expanded"];
-function triggerStateChange31(details, stateName, _config) {
+function triggerStateChange34(details, stateName, _config) {
   switch (stateName) {
     case "default":
       details.open = details._defaultOpen ?? false;
@@ -5420,7 +7465,7 @@ var treeViewApi = {
     if (!treeViewStates.includes(stateName)) {
       throw new Error(`tree-view: unknown state "${stateName}" (supported: ${treeViewStates.join(", ")})`);
     }
-    triggerStateChange31(details, stateName, config);
+    triggerStateChange34(details, stateName, config);
     details.dataset.stateName = stateName;
     details._stateConfig = config;
   },
@@ -5431,9 +7476,9 @@ var treeViewApi = {
     };
   }
 };
-df$31.treeViewApi = treeViewApi;
-df$31.treeViewStates = treeViewStates;
-function init31() {
+df$34.treeViewApi = treeViewApi;
+df$34.treeViewStates = treeViewStates;
+function init34() {
   document.querySelectorAll('.tree[role="tree"]:not([data-init])').forEach((tree) => {
     tree.dataset.init = "";
     tree.querySelectorAll(".tree-branch").forEach((details) => {
@@ -5498,9 +7543,9 @@ function init31() {
     });
   });
 }
-init31();
-new MutationObserver(init31).observe(document, { childList: true, subtree: true });
+init34();
+new MutationObserver(init34).observe(document, { childList: true, subtree: true });
 
-//# debugId=D4D663EF3B1758DE64756E2164756E21
+//# debugId=819F09887253AB2C64756E2164756E21
 /* defuss-shadcn v0.9.0 runtime provenance: bundles defuss-morph@0.1.1 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.1.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=all.js.map

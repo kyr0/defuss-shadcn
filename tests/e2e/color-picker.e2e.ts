@@ -6,7 +6,7 @@ import { startServer } from './server.ts';
  * Why: E2E smoke test for the shipped color-picker component. Loads the
  * fixture (two pickers, mirroring the doc page) over HTTP in a real browser,
  * then verifies the hex display stays in sync with the native input,
- * styling, and the named State API ({ value } preset + live value) — the
+ * styling, and the named State API ({ value } preset + live value) - the
  * same files consumers copy from dist/, unmodified.
  */
 

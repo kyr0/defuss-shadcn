@@ -1,0 +1,123 @@
+/* -- Animation Canvas component ----------------------------------
+   Chess-board slide canvas: the root is the viewport (overflow hidden),
+   JS-created .anim-canvas-board carries the pan/zoom transform, slides are
+   absolute cells in board units (--anim-canvas-width/height, literal
+   defaults, token-free artboard like presentation). All motion is the shared
+   df$.anim engine + one WAAPI board pan; this sheet owns only the surface:
+   card-ish slides (allowed tokens), the overview tile affordance, and the
+   optional directional chrome. */
+
+@layer components {
+  .anim-canvas {
+    /* artboard contract - override on the mount for other formats */
+    --anim-canvas-width: 1280;
+    --anim-canvas-height: 720;
+
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: var(--anim-canvas-width) / var(--anim-canvas-height);
+    overflow: hidden;
+    background: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+
+    /* the one pan/zoom layer (JS-created; transform-origin pinned so the
+       runtime's translate+scale math stays in raw board units) */
+    & .anim-canvas-board {
+      position: absolute;
+      inset: 0;
+      transform-origin: 0 0;
+      will-change: transform;
+    }
+
+    /* a board cell: card surface, flush against its neighbors (radius only
+       appears in overview, where the tiles separate) */
+    & .anim-canvas-slide {
+      position: absolute;
+      box-sizing: border-box;
+      overflow: hidden;
+      background: var(--card);
+      color: var(--card-foreground);
+    }
+
+    /* overview: every slide reads as a clickable tile */
+    &[data-overview] .anim-canvas-slide {
+      cursor: pointer;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+
+      &:hover {
+        outline: 2px solid var(--ring);
+        outline-offset: 2px;
+      }
+    }
+
+    /* optional authored chrome: directional + overview buttons
+       ([data-anim-canvas-go="east|west|north|south|overview"]) */
+    & .anim-canvas-controls {
+      position: absolute;
+      inset-block-end: 0.75rem;
+      inset-inline-end: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      z-index: 2;
+    }
+
+    & .anim-canvas-control {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      inline-size: 2rem;
+      block-size: 2rem;
+      padding: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--card);
+      color: var(--card-foreground);
+      cursor: pointer;
+      font: inherit;
+      line-height: 1;
+      transition: background-color 150ms ease;
+
+      &:hover {
+        background: var(--accent);
+        color: var(--accent-foreground);
+      }
+      &:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+    }
+  }
+
+  /* accessibility: honor motion + contrast preferences (REQUIRED). The
+     engine collapses its own durations and the runtime collapses the board
+     pan to 1ms; here the chrome's hover transition flattens. */
+  @media (prefers-reduced-motion: reduce) {
+    .anim-canvas .anim-canvas-control {
+      transition: none;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .anim-canvas .anim-canvas-control {
+      border-width: 2px;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .anim-canvas {
+      border-color: CanvasText;
+    }
+    .anim-canvas[data-overview] .anim-canvas-slide {
+      outline: 1px solid CanvasText;
+    }
+    .anim-canvas .anim-canvas-control {
+      border-color: ButtonBorder;
+      color: ButtonText;
+      background: ButtonFace;
+    }
+  }
+}

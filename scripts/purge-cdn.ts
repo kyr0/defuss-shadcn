@@ -8,15 +8,15 @@ import { CDN_BASE } from './lib/mirror.ts';
  * lib/mirror.ts). jsDelivr resolves @latest to a git tag once and caches both
  * the resolution and the files (s-maxage=43200 at the edge, max-age=604800 in
  * browsers), so right after a release the deployed site can keep serving the
- * PREVIOUS release's assets — a fixed bug stays live for up to 12h.
+ * PREVIOUS release's assets - a fixed bug stays live for up to 12h.
  *
  * This script purges EVERY mutable URL jsDelivr actually exposes:
- * 1. the `@latest` PACKAGE ROOT — the @latest → tag resolution is an entry of
+ * 1. the `@latest` PACKAGE ROOT - the @latest → tag resolution is an entry of
  *    its own. Purging only files re-resolves through the stale entry and
  *    re-caches old bytes at edges that still hold the resolution (observed
  *    post-v0.8.3: one CSS stayed stale ~10 min although its file purge
  *    reported "finished");
- * 2. every individual dist asset path — the complete release payload
+ * 2. every individual dist asset path - the complete release payload
  *    (components/, theme/, documentation/ assets incl. fonts & videos,
  *    SKILL.md, robots.txt/sitemap.xml).
  * Run it after `bun run deploy` once the tag is pushed and GitHub Pages has
@@ -35,14 +35,14 @@ const files = walk(DIST, [''])
   .filter((rel) => !rel.endsWith('.DS_Store'));
 
 if (files.length === 0) {
-  console.error('purge-cdn: no dist assets found — run `bun run build` first');
+  console.error('purge-cdn: no dist assets found - run `bun run build` first');
   process.exit(1);
 }
 
 // Preflight (learned the hard way): a purge only re-fetches from whatever tag
 // @latest currently resolves to. If the release tag isn't pushed yet, every
 // path purges "successfully" while upstream still serves the previous
-// release — a silent no-op that looks like "the CSS was not purged". Ask
+// release - a silent no-op that looks like "the CSS was not purged". Ask
 // jsDelivr directly whether it can serve the version we're releasing; its
 // @latest entry-resolution cache lags a tag push by minutes, but a direct
 // @<version> fetch succeeds as soon as the tag is on GitHub.
@@ -51,7 +51,7 @@ const probe = await fetch(`${CDN_BASE.replace('@latest', '@' + version)}/SKILL.m
 if (!probe.ok) {
   console.error(
     `purge-cdn: jsDelivr cannot serve v${version} yet (@${version}/dist/SKILL.md -> ${probe.status}).\n` +
-      `  Purging now would be a silent no-op — @latest still resolves to the previous tag.\n` +
+      `  Purging now would be a silent no-op - @latest still resolves to the previous tag.\n` +
       `  Publish first: git push origin main && git push origin v${version}, then re-run.`,
   );
   process.exit(1);

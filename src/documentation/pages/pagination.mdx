@@ -1,6 +1,6 @@
 ---
 title: "Pagination"
-description: "Pagination component — page navigation controls with prev/next and page numbers."
+description: "Pagination component - page navigation controls with prev/next and page numbers."
 slug: "pagination"
 ---
 
@@ -54,7 +54,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </nav>
 ```
 
-```html example label="Icons only" hint="Compact pagination with just chevron arrows — useful alongside a 'rows per page' selector."
+```html example label="Icons only" hint="Compact pagination with just chevron arrows - useful alongside a 'rows per page' selector."
 <nav class="pagination" aria-label="Pagination">
   <ul class="pagination-list">
     <li>
@@ -78,7 +78,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </nav>
 ```
 
-```html example label="Simple" hint="Page numbers only — no previous/next text labels."
+```html example label="Simple" hint="Page numbers only - no previous/next text labels."
 <nav class="pagination" aria-label="Pagination">
   <ul class="pagination-list">
     <li><a class="pagination-link" href="#">1</a></li>
@@ -103,7 +103,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
    aria-disabled="true">…</a>
 ```
 
-```html example label="Sizes" hint="Set data-size on the .pagination nav; every cell scales — the default equals md."
+```html example label="Sizes" hint="Set data-size on the .pagination nav; every cell scales - the default equals md."
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Extra small</span>
   <nav class="pagination" data-size="xs" aria-label="Pagination xs"><ol class="pagination-list"><li><a class="pagination-link" href="#">1</a></li><li><a class="pagination-link pagination-active" aria-current="page" href="#">2</a></li><li><a class="pagination-link" href="#">3</a></li></ol></nav>
@@ -143,12 +143,12 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">The runtime declares the single <code>default</code> state; the editable contract below lives on the nav/list as <code>data-*</code> attributes, driven per instance through the bound <code>api</code> or the State tab:</p>
-  <p class="text-sm text-muted-foreground">Machine contract — verified against <a href="../schemas/pagination.schema.json"><code>pagination.schema.json</code></a> by <code>bun run verify</code>:</p>
+  <p class="text-sm text-muted-foreground">Machine contract - verified against <a href="../schemas/pagination.schema.json"><code>pagination.schema.json</code></a> by <code>bun run verify</code>:</p>
 
 ```states
 | State | Type | Values | Default | Description |
 | --- | --- | --- | --- | --- |
-| `activePage` | `number` | `—` | `3` | Current page — rendered `aria-current="page"`; changed by links, `next()`/`prev()` actions or the panel. |
+| `activePage` | `number` | `—` | `3` | Current page - rendered `aria-current="page"`; changed by links, `next()`/`prev()` actions or the panel. |
 | `minPage` | `number` | `—` | `1` | First selectable page (panel edits re-render the links). |
 | `maxPage` | `number` | `—` | `20` | Last selectable page (panel edits re-render the links). |
 | `pageDisplayCount` | `number` | `—` | `3` | How many page links the window shows around the active page (rest collapse to ellipsis). |

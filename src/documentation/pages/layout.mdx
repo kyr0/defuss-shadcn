@@ -9,7 +9,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <DocPage meta={meta}>
 
 <PageHeader slug="layout" title="Layout" introStyle="max-width:38rem;">
-  Native Grid, Flexbox and container queries with a small, optional class API. Compose layouts without a compiler or runtime. Every code block is the live demo — the shown source is the executed source, and each card carries a device toolbar (Phone, Tablet, Desktop, Full) that really resizes the sandbox.
+  Native Grid, Flexbox and container queries with a small, optional class API. Compose layouts without a compiler or runtime. Every code block is the live demo - the shown source is the executed source, and each card carries a device toolbar (Phone, Tablet, Desktop, Full) that really resizes the sandbox.
 </PageHeader>
 
 <h2 id="small-surface" class="h2-display">A small surface over native layout</h2>
@@ -61,7 +61,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </table>
 </div>
 
-```html example hint="A stack of a flex row and an intrinsic grid — switch the card to Phone or Tablet to watch both halves re-flow." schema="none"
+```html example hint="A stack of a flex row and an intrinsic grid - switch the card to Phone or Tablet to watch both halves re-flow." schema="none"
 <div class="stack gap-6" data-demo="layout-composition">
   <div class="flex flex-wrap items-center justify-between gap-3">
     <h3>Projects</h3>
@@ -80,7 +80,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <h2 id="intrinsic" class="h2-display">Let available space do the work</h2>
 
-<DocText>Use wrapping Flexbox for one-dimensional content and an intrinsic Grid for equal-width cards — the two halves of the composition demo above, which reacts when you resize it with the width toolbar. A grid can adapt inside a sidebar, dialog or full page without viewport breakpoints. Use container queries only when the structure must change.</DocText>
+<DocText>Use wrapping Flexbox for one-dimensional content and an intrinsic Grid for equal-width cards - the two halves of the composition demo above, which reacts when you resize it with the width toolbar. A grid can adapt inside a sidebar, dialog or full page without viewport breakpoints. Use container queries only when the structure must change.</DocText>
 
 ```html
 <!-- One-dimensional content: wrap with the available width. -->
@@ -95,7 +95,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <h2 id="overflow" class="h2-display">Handle overflow deliberately</h2>
 
-<DocText>Every constrained container eventually overflows; the question is only which policy you choose. The overflow family covers the box axes, <code>truncate</code> bundles the classic single-line ellipsis recipe, and the break/wrap family decides what happens to <em>words</em> that don't fit — <code>wrap-anywhere</code> is the flex <code>min-w-0</code> companion that lets a long identifier wrap inside a shrinkable track.</DocText>
+<DocText>Every constrained container eventually overflows; the question is only which policy you choose. The overflow family covers the box axes, <code>truncate</code> bundles the classic single-line ellipsis recipe, and the break/wrap family decides what happens to <em>words</em> that don't fit - <code>wrap-anywhere</code> is the flex <code>min-w-0</code> companion that lets a long identifier wrap inside a shrinkable track.</DocText>
 
 <div class="overflow-x-auto mb-6">
   <table class="table" data-variant="simple">
@@ -124,7 +124,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
       </tr>
       <tr>
         <td><code>text-ellipsis</code> / <code>text-clip</code></td>
-        <td>How an overflowing inline box ends — needs an overflow context.</td>
+        <td>How an overflowing inline box ends - needs an overflow context.</td>
       </tr>
       <tr>
         <td><code>break-words</code> / <code>break-all</code> / <code>break-normal</code></td>
@@ -132,17 +132,17 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
       </tr>
       <tr>
         <td><code>wrap-anywhere</code></td>
-        <td><code>overflow-wrap:anywhere</code> — also shrinks min-content, the partner of <code>min-w-0</code>.</td>
+        <td><code>overflow-wrap:anywhere</code> - also shrinks min-content, the partner of <code>min-w-0</code>.</td>
       </tr>
     </tbody>
   </table>
 </div>
 
-```html example hint="Three overflow policies at work — shrink the canvas (Phone) and watch each box react on its own axis." schema="none"
+```html example hint="Three overflow policies at work - shrink the canvas (Phone) and watch each box react on its own axis." schema="none"
 <div class="stack gap-4" data-demo="layout-overflow">
-  <div class="overflow-x-auto h-8 demo-tile" data-variant="muted" style="justify-content:flex-start;"><span class="w-64 shrink-0" style="padding-inline:0.5rem;">overflow-x-auto — the tile scrolls instead of widening the page when the stage gets narrower →</span></div>
-  <div class="truncate h-8 demo-tile" data-variant="outline" style="display:block;line-height:2rem;padding-inline:0.5rem;">truncate — a single line that must not widen its container collapses to an ellipsis exactly like a UI list row</div>
-  <div class="h-auto p-2 demo-tile wrap-anywhere" data-variant="secondary" style="justify-content:flex-start;">wrap-anywhere — PneumonoultramicroscopicsilicovolcanoconiosisLongIdentifiers break here instead of pushing the track open</div>
+  <div class="overflow-x-auto h-8 demo-tile" data-variant="muted" style="justify-content:flex-start;"><span class="w-64 shrink-0" style="padding-inline:0.5rem;">overflow-x-auto - the tile scrolls instead of widening the page when the stage gets narrower →</span></div>
+  <div class="truncate h-8 demo-tile" data-variant="outline" style="display:block;line-height:2rem;padding-inline:0.5rem;">truncate - a single line that must not widen its container collapses to an ellipsis exactly like a UI list row</div>
+  <div class="h-auto p-2 demo-tile wrap-anywhere" data-variant="secondary" style="justify-content:flex-start;">wrap-anywhere - PneumonoultramicroscopicsilicovolcanoconiosisLongIdentifiers break here instead of pushing the track open</div>
 </div>
 ```
 
@@ -157,7 +157,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <a href="container.html" class="card" style="display:block;text-decoration:none;color:inherit;">
     <div class="card-header">
       <h3 class="card-title card-title-sm">Container</h3>
-      <p class="card-description card-desc-sm">Centered, bounded content with logical gutters — and named containment when you need it.</p>
+      <p class="card-description card-desc-sm">Centered, bounded content with logical gutters - and named containment when you need it.</p>
     </div>
     <div style="height:1.25rem;" />
   </a>
@@ -171,14 +171,14 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <a href="grid.html" class="card" style="display:block;text-decoration:none;color:inherit;">
     <div class="card-header">
       <h3 class="card-title card-title-sm">Grid</h3>
-      <p class="card-description card-desc-sm">Intrinsic card grids, explicit tracks and aligned subgrids — responsive without breakpoints.</p>
+      <p class="card-description card-desc-sm">Intrinsic card grids, explicit tracks and aligned subgrids - responsive without breakpoints.</p>
     </div>
     <div style="height:1.25rem;" />
   </a>
   <a href="#overflow" class="card" style="display:block;text-decoration:none;color:inherit;">
     <div class="card-header">
       <h3 class="card-title card-title-sm">Overflow</h3>
-      <p class="card-description card-desc-sm">Box clipping/scrolling and text-flow policies for constrained containers — the overflow, truncate and wrap families.</p>
+      <p class="card-description card-desc-sm">Box clipping/scrolling and text-flow policies for constrained containers - the overflow, truncate and wrap families.</p>
     </div>
     <div style="height:1.25rem;" />
   </a>

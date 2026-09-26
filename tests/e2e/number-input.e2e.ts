@@ -7,7 +7,7 @@ import { startServer } from './server.ts';
  * fixture (integer + decimal steppers with min/max, mirroring the doc page)
  * over HTTP in a real browser, then verifies increment/decrement, boundary
  * clamping, dispatched events, styling, and the named State API ({ value }
- * preset + live value reporting) — the same files consumers copy from dist/,
+ * preset + live value reporting) - the same files consumers copy from dist/,
  * unmodified.
  */
 

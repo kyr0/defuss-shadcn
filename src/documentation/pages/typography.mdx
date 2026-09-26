@@ -1,6 +1,6 @@
 ---
 title: "Typography"
-description: "Typography utilities — headings, paragraphs, lists, and inline styles with shadcn design tokens."
+description: "Typography utilities - headings, paragraphs, lists, and inline styles with shadcn design tokens."
 slug: "typography"
 ---
 
@@ -51,26 +51,26 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   <SkillField label="Accessibility">
 <SkillText dense>• Use heading levels in order (<code>h1</code> → <code>h2</code> → <code>h3</code>). Do not skip levels.</SkillText>
   <SkillText dense>• Headings create the document outline used by screen readers for navigation.</SkillText>
-  <SkillText dense>• <code>&lt;blockquote&gt;</code> is announced as a quote by assistive technology — no extra ARIA needed.</SkillText>
-  <SkillText dense>• <code>&lt;code&gt;</code> is announced as code — no extra ARIA needed.</SkillText>
-  <SkillText dense>• <code>prefers-contrast: more</code> — removes tight letter-spacing, adds outline to inline code, thickens blockquote border, promotes muted text to foreground color.</SkillText>
-  <p class="text-muted-foreground m-0">• <code>forced-colors: active</code> — blockquote border and inline code adapt to system colors.</p>
+  <SkillText dense>• <code>&lt;blockquote&gt;</code> is announced as a quote by assistive technology - no extra ARIA needed.</SkillText>
+  <SkillText dense>• <code>&lt;code&gt;</code> is announced as code - no extra ARIA needed.</SkillText>
+  <SkillText dense>• <code>prefers-contrast: more</code> - removes tight letter-spacing, adds outline to inline code, thickens blockquote border, promotes muted text to foreground color.</SkillText>
+  <p class="text-muted-foreground m-0">• <code>forced-colors: active</code> - blockquote border and inline code adapt to system colors.</p>
   </SkillField>
 
   <SkillField label="Notes">
-<SkillText dense>• These are utility classes for prose content — not a component with variants/sizes.</SkillText>
+<SkillText dense>• These are utility classes for prose content - not a component with variants/sizes.</SkillText>
   <SkillText dense>• The <code>.h1</code>–<code>.h4</code> classes allow applying heading styles to non-heading elements when semantic headings aren't appropriate.</SkillText>
   <SkillText dense>• Typography classes compose freely with other components (Card content, Dialog body, Alert description).</SkillText>
   <SkillText dense>• <code>text-wrap: balance</code> is used on all headings (h1–h4) for better visual line distribution.</SkillText>
   <SkillText dense>• <code>text-wrap: pretty</code> is used on paragraphs and lead text for orphan prevention.</SkillText>
   <SkillText dense>• <code>hanging-punctuation</code> is used on blockquotes for optical quote alignment.</SkillText>
   <SkillText dense>• Blockquote uses logical properties (<code>border-inline-start</code>, <code>padding-inline-start</code>) for automatic RTL support.</SkillText>
-  <SkillText dense>• For lists, use the List component (<code>list.css</code>) — typography does not ship its own list styles.</SkillText>
-  <p class="text-muted-foreground m-0">• For prose tables, use the Table component (<code>table.css</code>) — typography does not ship its own table styles.</p>
+  <SkillText dense>• For lists, use the List component (<code>list.css</code>) - typography does not ship its own list styles.</SkillText>
+  <p class="text-muted-foreground m-0">• For prose tables, use the Table component (<code>table.css</code>) - typography does not ship its own table styles.</p>
   </SkillField>
 </SkillPanel>
 
-```html example label="Headings" hint="Four heading levels — h1 is extrabold, h2 includes a bottom border, h3 and h4 are semibold." previewStyle="justify-content:flex-start;text-align:left;"
+```html example label="Headings" hint="Four heading levels - h1 is extrabold, h2 includes a bottom border, h3 and h4 are semibold." previewStyle="justify-content:flex-start;text-align:left;"
 <h1 class="h1">Taxing Laughter</h1>
 <h2 class="h2">The People of the Kingdom</h2>
 <h3 class="h3">The Joke Tax</h3>
@@ -101,11 +101,11 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <code class="inline-code">default-semantic-tokens.css</code>
 ```
 
-```html example label="Font stacks" hint="Three token-driven stacks — components reference the tokens, never a hardcoded family."
+```html example label="Font stacks" hint="Three token-driven stacks - components reference the tokens, never a hardcoded family."
 <p style="font-family:var(--font-serif)">Display headings</p>
 ```
 
-```html example label="Prose Composition" hint="All typography classes combined in a full prose layout — matching the shadcn/ui demo." previewStyle="justify-content:flex-start;text-align:left;"
+```html example label="Prose Composition" hint="All typography classes combined in a full prose layout - matching the shadcn/ui demo." previewStyle="justify-content:flex-start;text-align:left;"
 <h1 class="h1" style="text-align:center;">Taxing Laughter</h1>
 <p class="p">Once upon a time...</p>
 <h2 class="h2">The King's Plan</h2>
@@ -120,7 +120,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </ul>
 ```
 
-```html example label="RTL support" hint="Blockquotes use logical properties (border-inline-start, padding-inline-start) — they flip automatically in RTL contexts." previewStyle="justify-content:flex-start;text-align:left;"
+```html example label="RTL support" hint="Blockquotes use logical properties (border-inline-start, padding-inline-start) - they flip automatically in RTL contexts." previewStyle="justify-content:flex-start;text-align:left;"
 <div dir="rtl">
   <h3 class="h3">ضريبة النكتة</h3>
   <p class="p">فكر الملك طويلاً وبجد...</p>

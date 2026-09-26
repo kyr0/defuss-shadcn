@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
 
 /**
- * Why: input is CSS-only — verify the control box geometry (unsized default =
+ * Why: input is CSS-only - verify the control box geometry (unsized default =
  * the ladder's md step, 36px) plus the
  * four native pseudo-states the sheet styles: disabled (0.5), readonly
  * (muted bg), aria-invalid (destructive border), focus (ring border).

@@ -1,0 +1,220 @@
+---
+title: "Bump Ranking - Presentation"
+description: "Neo Tokyo Neon design language presenting seven years of music-genre rankings on a streaming platform as a 12-slide deck - a bump chart that isolates the climbers, then morphs into 2025 streams and growth bars."
+slug: "bump-ranking"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="bump-ranking" title="Bump Ranking" component="presentation">
+  Neo Tokyo Neon: midnight violet, magenta and cyan glow - how six genres traded places on a streaming platform from 2019 to 2025, with K-pop climbing from sixth to first on one continuous chart.
+</PageHeader>
+
+```html example label="Neo Tokyo Neon" schema="none" height="26" hint="Slides blur in and zoom out (df$.anim, declared on the deck); magenta curtains mark the data section. One deck-level chart (df$.shadcn.chart.deck): the bump chart isolates the two climbers, then morphs into 2025 streams and growth since 2019. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-bump" data-anim-in="blurIn" data-anim-out="zoomOut" style="--presentation-ink:#090716;--presentation-ink-foreground:#F6F0FF;--presentation-paper:#14102B;--presentation-paper-foreground:#F6F0FF;--presentation-accent:#FF2DD1;font-family:Arial, Helvetica, sans-serif;" tabindex="-1" aria-label="Genre charts 2019 to 2025 - a neon deck">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="Rank of six music genres by streams from 2019 to 2025: K-pop climbs from sixth to first, Latin from fifth to second, Rock falls to last; then 2025 streams and growth"></div>
+  <section class="slide" data-slide data-theme="ink" aria-label="Cover">
+    <div aria-hidden="true" style="position:absolute; right:-160px; top:-120px; width:760px; height:760px; border-radius:50%; background:radial-gradient(circle, rgba(255,45,209,.55), rgba(0,229,255,.18) 45%, transparent 70%); filter:blur(8px);"></div>
+    <div aria-hidden="true" style="position:absolute; inset-inline:0; bottom:120px; height:3px; background:linear-gradient(90deg, transparent, #00E5FF, #FF2DD1, transparent);"></div>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Bump ranking · Neo Tokyo Neon</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-weight:800; letter-spacing:-0.03em; font-size:7rem;">Sixth to first</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">Seven years of genre charts on one streaming platform - and the climb nobody forecast.</p>
+    <p class="presentation-note">Glow first, numbers later.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="bump" style="justify-content:flex-start;" aria-label="Ranks">
+    <header class="presentation-header"><span>The chart</span><span>Rank by streams · 2019 → 2025</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:800; letter-spacing:-0.03em;">Six genres, seven years, four different number ones</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Ranks crossing is the story - follow any line.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="climb" style="justify-content:flex-start;" aria-label="Climbers">
+    <header class="presentation-header"><span>The chart</span><span>Climbers only</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:800; letter-spacing:-0.03em;">K-pop and Latin climbed together</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The other lines dim; two climbs remain lit.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="streams" style="justify-content:flex-start;" aria-label="2025 streams">
+    <header class="presentation-header"><span>Volume</span><span>Streams in 2025, billions</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:800; letter-spacing:-0.03em;">At the top, it is close: 9.8 B vs 9.1 B</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Ranks hide margins - the bars show how tight the top four are.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Key figures">
+    <p class="presentation-eyebrow" data-df-entrance="fade">Three numbers from the charts</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#FF2DD1; font-weight:800; letter-spacing:-0.03em;">#<span data-count="6">6</span> → #1</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">K-pop, 2019 to 2025</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-weight:800; letter-spacing:-0.03em;"><span data-count="9.8">9.8</span> B</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">K-pop streams in 2025</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#00E5FF; font-weight:800; letter-spacing:-0.03em;">+<span data-count="410">410</span>%</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">K-pop growth since 2019</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">Rock did not collapse - it grew slower than everyone else, and that is enough to fall.</p>
+    <p class="presentation-note">The rock line is the surprising one to explain.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Listening">
+    <header class="presentation-header"><span>Listening</span><span>How people play</span></header>
+    <div style="display:flex; gap:4.5rem; align-items:center; margin-top:3.5rem;">
+      <figure class="image" data-ratio="4/3" data-df-entrance="blur" style="--df-motion-delay:150ms; flex:0 0 700px; margin:0;">
+        <img src="https://picsum.photos/id/39/960/720" alt="A vinyl record on a turntable, the tonearm resting on the groove, in soft focus" loading="lazy" width="960" height="720" style="width:100%; height:100%; object-fit:cover;" />
+        <figcaption class="image-caption" style="font-size:1.25rem;">The analogue way (stock photo).</figcaption>
+      </figure>
+      <div style="flex:1 1 0; min-width:0;">
+        <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; font-weight:800; letter-spacing:-0.03em;">Playlists, not albums</h2>
+        <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:300ms; font-size:1.7rem;">68% of 2025 streams started from a playlist. Genres that travel well in playlists climbed fastest.</p>
+      </div>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The irony of a turntable photo is intended.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="north" data-anim-in-blocks="7" data-anim-in-stagger="50" data-anim-in-color="#FF2DD1" aria-label="Rank table">
+    <header class="presentation-header"><span>The ranks</span><span>1 = most streamed</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" style="font-size:1.7rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">Genre rank by annual streams on one platform (synthetic).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">Genre</th><th class="table-head" style="text-align:right">2019</th><th class="table-head" style="text-align:right">2021</th><th class="table-head" style="text-align:right">2023</th><th class="table-head" style="text-align:right">2025</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row" style="font-weight:700"><td class="table-cell">K-pop</td><td class="table-cell" style="text-align:right">6</td><td class="table-cell" style="text-align:right">4</td><td class="table-cell" style="text-align:right">3</td><td class="table-cell" style="text-align:right">1</td></tr>
+          <tr class="table-row"><td class="table-cell">Latin</td><td class="table-cell" style="text-align:right">5</td><td class="table-cell" style="text-align:right">3</td><td class="table-cell" style="text-align:right">1</td><td class="table-cell" style="text-align:right">2</td></tr>
+          <tr class="table-row"><td class="table-cell">Hip-hop</td><td class="table-cell" style="text-align:right">2</td><td class="table-cell" style="text-align:right">1</td><td class="table-cell" style="text-align:right">2</td><td class="table-cell" style="text-align:right">3</td></tr>
+          <tr class="table-row"><td class="table-cell">Pop</td><td class="table-cell" style="text-align:right">1</td><td class="table-cell" style="text-align:right">2</td><td class="table-cell" style="text-align:right">4</td><td class="table-cell" style="text-align:right">4</td></tr>
+          <tr class="table-row"><td class="table-cell">EDM</td><td class="table-cell" style="text-align:right">4</td><td class="table-cell" style="text-align:right">6</td><td class="table-cell" style="text-align:right">6</td><td class="table-cell" style="text-align:right">5</td></tr>
+          <tr class="table-row"><td class="table-cell">Rock</td><td class="table-cell" style="text-align:right">3</td><td class="table-cell" style="text-align:right">5</td><td class="table-cell" style="text-align:right">5</td><td class="table-cell" style="text-align:right">6</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Odd years only - the chart has all seven.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-weight:800; letter-spacing:-0.03em; font-size:3rem;">“We added K-pop to the Monday playlists as an experiment. By Friday it was the playlist.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#FF2DD1; color:#090716;"><span class="avatar-fallback">YM</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Yuna Morita<br /><span style="opacity:0.7; font-size:1.4rem;">Playlist editor - 212 playlists curated</span></p>
+    </div>
+    <p class="presentation-note">A human voice behind the algorithmic climb.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="growth" style="justify-content:flex-start;" aria-label="Growth">
+    <header class="presentation-header"><span>Growth</span><span>Streams 2025 vs 2019</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-weight:800; letter-spacing:-0.03em;">Everyone grew - except rock</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The same bars re-sort by growth since 2019.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Questions from the label">
+    <header class="presentation-header"><span>Q & A</span><span>Label meeting</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; font-weight:800; letter-spacing:-0.03em;">Questions from the label</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="bu-qa" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Is this one market or global?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">One market, one platform - the pattern matches public charts, the numbers are synthetic.</p></div>
+      </details>
+      <details class="accordion-item" name="bu-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Did rock lose listeners?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Streams fell 22%, listeners only 6%: fans play fewer, longer albums.</p></div>
+      </details>
+      <details class="accordion-item" name="bu-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Will K-pop hold number one?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Latin is 7% behind and growing faster in the last two quarters.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The Latin answer sets up the next meeting.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Takeaways">
+    <header class="presentation-header"><span>Takeaways</span><span>For the roster</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">✦</span><span>Ranks exaggerate: the top four are within 20% of each other.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">✦</span><span>Playlist fit predicted the climbers better than radio did.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">✦</span><span>Rock needs albums-first formats, not more singles.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">✦</span><span>Watch Latin - the next swap at the top is close.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Four lines, then the neon closing.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-anim-in="blocksIn" data-anim-in-direction="south" data-anim-in-blocks="7" data-anim-in-stagger="50" data-anim-in-color="#00E5FF" aria-label="Closing">
+    <div aria-hidden="true" style="position:absolute; right:-160px; top:-120px; width:760px; height:760px; border-radius:50%; background:radial-gradient(circle, rgba(255,45,209,.55), rgba(0,229,255,.18) 45%, transparent 70%); filter:blur(8px);"></div>
+    <div aria-hidden="true" style="position:absolute; inset-inline:0; bottom:120px; height:3px; background:linear-gradient(90deg, transparent, #00E5FF, #FF2DD1, transparent);"></div>
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-weight:800; letter-spacing:-0.03em;">Ranks cross. Watch the lines.</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">Six genres, seven years - synthetic streams, very real crossings.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">Leave the glow on the screen.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) - build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-bump');
+    const TEXT = '#F6F0FF', MUTED = '#8C7FB8', DIM = 'rgba(246,240,255,.14)';
+    const years = ['2019', '2020', '2021', '2022', '2023', '2024', '2025'];
+    // [genre, color, ranks 2019→2025, streams 2025 (B), growth since 2019 %]
+    const genres = [
+      ['K-pop', '#FF2DD1', [6, 6, 4, 4, 3, 2, 1], 9.8, 410],
+      ['Latin', '#00E5FF', [5, 4, 3, 2, 1, 1, 2], 9.1, 220],
+      ['Hip-hop', '#B388FF', [2, 1, 1, 1, 2, 3, 3], 8.7, 28],
+      ['Pop', '#FFE45C', [1, 2, 2, 3, 4, 4, 4], 8.2, 4],
+      ['EDM', '#5CFFB0', [4, 5, 6, 6, 6, 5, 5], 4.1, 35],
+      ['Rock', '#FF7A59', [3, 3, 5, 5, 5, 6, 6], 3.6, -22],
+    ];
+    const bump = (focus) => ({
+      grid: { left: 150, right: 230, top: 330, bottom: 150 },
+      xAxis: { type: 'category', data: years, boundaryGap: false, axisLine: { show: false }, axisLabel: { color: TEXT, fontWeight: 700 } },
+      yAxis: { type: 'value', inverse: true, min: 1, max: 6, interval: 1, splitLine: { show: false }, axisLabel: { color: MUTED, formatter: '#{value}' } },
+      series: genres.map(([n, c, r]) => {
+        const lit = !focus || focus.includes(n);
+        return { id: n, name: n, type: 'line', smooth: 0.35, data: r, symbolSize: 18,
+          lineStyle: { color: lit ? c : DIM, width: lit ? 7 : 4, shadowColor: lit ? c : 'transparent', shadowBlur: lit ? 18 : 0 },
+          itemStyle: { color: lit ? c : DIM },
+          endLabel: { show: true, distance: 18, formatter: n, color: lit ? TEXT : MUTED, fontWeight: 800 } };
+      }),
+    });
+    const bars = (list, value, fmt, axis) => ({
+      grid: { left: 230, right: 190, top: 320, bottom: 150 },
+      xAxis: axis,
+      yAxis: { type: 'category', inverse: true, data: list.map((g) => g[0]), axisLine: { show: false }, axisLabel: { color: TEXT, fontWeight: 800 } },
+      series: [{ id: 'K-pop', type: 'bar', barWidth: '58%',
+        data: list.map((g) => ({ name: g[0], value: g[value], itemStyle: { color: g[1], shadowColor: g[1], shadowBlur: 16 }, label: { position: g[value] < 0 ? 'left' : 'right' } })),
+        label: { show: true, formatter: fmt, color: TEXT, fontWeight: 800 } }],
+    });
+    const byStreams = genres.slice().sort((a, b) => b[3] - a[3]);
+    const byGrowth = genres.slice().sort((a, b) => b[4] - a[4]);
+
+    df$.shadcn.chart.deck(deck, {
+      base: { tooltip: { trigger: 'item' } },
+      states: {
+        bump: bump(null),
+        climb: bump(['K-pop', 'Latin']),
+        streams: bars(byStreams, 3, '{c} B', { type: 'value', max: 11, axisLabel: { color: MUTED, formatter: '{value} B' }, splitLine: { lineStyle: { color: DIM } } }),
+        growth: bars(byGrowth, 4, (p) => (p.value > 0 ? '+' : '') + p.value + '%', { type: 'value', min: -100, max: 450, axisLabel: { color: MUTED, formatter: '{value}%' }, splitLine: { lineStyle: { color: DIM } } }),
+      },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 08-bump-ranking (Neo Tokyo Neon) - one fictional platform, synthetic streams.</p>
+<SourceFiles component="presentation" />
+</DocPage>

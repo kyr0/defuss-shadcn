@@ -3,20 +3,20 @@
 // Host runtime for the docs CodeExample widget (docs-site-only, not shipped).
 // Renders each `.code-example` card (emitted statically by the docs build from
 // the canonical `example` fence) as a live sandboxed preview: the exact source
-// in the textarea becomes the iframe srcdoc verbatim (plan §4 — one source;
+// in the textarea becomes the iframe srcdoc verbatim (plan §4 - one source;
 // editor and execution share the same bytes), and the state panel is generated
 // EXCLUSIVELY from the schema JSON the SSR component embedded in `data-schema`
-// (§10 — never component-name branching).
+// (§10 - never component-name branching).
 //
 // Protocol (plan §9): host → sandbox {type:'ce-host', ch, kind:'set-state'|
 // 'action'|'read-state'|'set-dark'}; sandbox → host {type:'ce', ch, kind:
 // 'ready'|'state'|'error'|'height'}. `ch` is a per-example channel id, so
 // examples on one page cannot cross-talk. The iframe is sandbox="allow-scripts"
-// ONLY (§9): no allow-same-origin — edited examples cannot touch the page.
+// ONLY (§9): no allow-same-origin - edited examples cannot touch the page.
 //
 // One document-level `message` listener routes by channel through a registry
 // (per-example listeners would leak across SPA navigations). Every observed
-// sandbox state is mirrored onto the host element as `data-state-values` — the
+// sandbox state is mirrored onto the host element as `data-state-values` - the
 // §11 contract ("the DOM is authoritative") made assertable from the outside
 // (tests + e2e read it without reaching into the opaque-origin iframe).
 //
@@ -41,7 +41,7 @@
         'default-semantic-tokens.css',
         'sizing.css',
         'layout.css',
-        // .sr-only lives here — without it, visually-hidden demo text would
+        // .sr-only lives here - without it, visually-hidden demo text would
         // render visibly inside the sandbox (icon examples looked broken)
         'accessibility.css',
         'docs-theme.css',
@@ -50,7 +50,7 @@
     ];
     /** @font-face rules are stripped from every inlined sheet: an opaque-origin
      * (about:srcdoc) sandbox fetches fonts in CORS mode and static hosts send no
-     * ACAO header — each blocked font is a console error storm (and stalls the
+     * ACAO header - each blocked font is a console error storm (and stalls the
      * first paint of every iframe). font-display: swap already means the demo
      * text renders with the fallback stack; only the glyphs change. */
     var FONT_FACE = /@font-face\s*\{[^}]*\}\s*/g;
@@ -76,14 +76,14 @@
         if (t.indexOf('export default') !== 0)
             return t;
         // Vite dev wraps raw imports as `export default "…json-escaped…"` possibly
-        // followed by `;` / a sourcemap comment — parse ONLY the string literal
+        // followed by `;` / a sourcemap comment - parse ONLY the string literal
         var m = /^export default ("(?:[^"\\]|\\.)*")/.exec(t);
         if (m) {
             try {
                 return JSON.parse(m[1]);
             }
             catch {
-                /* not the wrapper — return as-is */
+                /* not the wrapper - return as-is */
             }
         }
         return t;
@@ -148,7 +148,7 @@
         return out;
     }
     // one fetch per stylesheet, cached, @font-face stripped (see FONT_FACE):
-    // the sandbox is a srcdoc — every mirror as <link> meant N render-blocking
+    // the sandbox is a srcdoc - every mirror as <link> meant N render-blocking
     // requests per iframe; inlined once per page they are free after first read.
     var cssCache = {};
     function fetchStripped(url) {
@@ -173,8 +173,8 @@
         }
         return cssCache[url];
     }
-    // all mirrored sheets concatenated in host order (tokens first — cascade
-    // order must match the host page) — resolved once, reused by every sandbox
+    // all mirrored sheets concatenated in host order (tokens first - cascade
+    // order must match the host page) - resolved once, reused by every sandbox
     var stylesPromise = null;
     function inlinedStyles() {
         if (!stylesPromise) {
@@ -203,7 +203,7 @@
      * module <script src> from the sandbox's opaque origin would need CORS that
      * static hosts (Bun.serve screenshot server!) don't send; inlining removes
      * the dependency. URL derived like the mirror rewrites it (local + CDN);
-     * the .min twin is preferred (half the bytes — it is embedded in EVERY
+     * the .min twin is preferred (half the bytes - it is embedded in EVERY
      * sandbox), falling back to the readable bundle if a deploy lacks it. */
     var runtimeTextPromise = null;
     function runtimeText() {
@@ -234,7 +234,7 @@
         });
     }
     // -- editor mapping: mirrors editorFor() in the shared contract (plan §3:
-    // schema hint when recognized, generic fallback by type — no branching) ----
+    // schema hint when recognized, generic fallback by type - no branching) ----
     function editorFor(spec) {
         var byType = 
         // enum defaults to radio boxes: the value set is small and closed, and
@@ -269,7 +269,7 @@
     // -- cross-document drag safety (the sandbox cannot see host releases) --
     // Pointer capture is DOCUMENT-scoped: a drag started inside a sandbox
     // (e.g. a resizer example) that is released over the host page produces
-    // no pointerup inside the iframe — the drag stays live and resizes on
+    // no pointerup inside the iframe - the drag stays live and resizes on
     // every re-entry until another click. The host DOES see those releases,
     // so it forwards them on every channel (kind `pointer-release`); the
     // bridge answers with a document-level synthetic pointercancel, which
@@ -293,7 +293,7 @@
             c.onMessage(d);
     });
     // dark-mode toggle → every sandbox (layout.js flips <html class="dark">; the
-    // sandboxes follow via postMessage — a rebuild would discard example state)
+    // sandboxes follow via postMessage - a rebuild would discard example state)
     new MutationObserver(function () {
         var dark = document.documentElement.classList.contains('dark');
         for (var ch in registry)
@@ -309,7 +309,7 @@
         });
     });
     function init() {
-        // NOTE: registry is intentionally NEVER cleared — init() re-runs after
+        // NOTE: registry is intentionally NEVER cleared - init() re-runs after
         // every SPA navigation (onPageReady), and wiping it would orphan the
         // sandboxes of cards already booted on this page (their bridge messages
         // would silently drop). Stale channels of detached iframes are inert:
@@ -354,15 +354,98 @@
         var src = root.querySelector('.code-example-src');
         var statePanel = root.querySelector('[data-panel="state"]');
         var codePanel = root.querySelector('[data-panel="code"]');
-        // fence height="N" is rem — a px floor would be inert; overlay demos
+        // fence height="N" is rem - a px floor would be inert; overlay demos
         // (dialog/sheet/combobox/command…) need the floor to hold their open
         // panel: fixed-position overlays don't grow the body flow, so the
         // bridge's content height stays at the closed-state size
         var minHeight = Math.max(MIN_FRAME_HEIGHT, (Number(root.dataset.height) || 0) * REM_PX);
         // stage chrome from the fence (previewStyle="…"): body-level layout for the
-        // demo area (flex centering, padding…) — chrome, never part of the source
+        // demo area (flex centering, padding…) - chrome, never part of the source
         var previewStyle = root.dataset.previewStyle || '';
         var original = src.value;
+        // Syntax colouring: the docs' Shiki engine paints an aria-hidden layer
+        // UNDER the textarea, whose own glyphs turn transparent (caret stays) only
+        // once a paint is in place - so without the CDN it is a plain editor. The
+        // textarea stays the one editable source: undo, selection, the state
+        // bridge and the tests all keep working on it.
+        var hl = document.createElement('div');
+        hl.className = 'code-example-hl';
+        hl.setAttribute('aria-hidden', 'true');
+        src.parentNode.insertBefore(hl, src);
+        var painted = null; // the source the layer currently shows
+        var hlBusy = false;
+        var hlDirty = false;
+        var hlStale = null;
+        function syncHlScroll() {
+            hl.scrollTop = src.scrollTop;
+            hl.scrollLeft = src.scrollLeft;
+        }
+        function paint(html, code) {
+            hl.innerHTML = html;
+            hl.appendChild(document.createTextNode('\n')); // keep a trailing empty line's height
+            painted = code;
+            syncHlScroll();
+        }
+        function highlight() {
+            var docs = globalThis.df$ && globalThis.df$.shadcn && globalThis.df$.shadcn.docs;
+            var toHtml = docs && docs.__shikiCodeToHtml;
+            if (!toHtml)
+                return; // not loaded (yet, or CDN down): the plain editor stays
+            // cards boot collapsed: paint lazily, when the Code panel is open (the
+            // panel observer below repaints on open) - never a page-load burst
+            if (!codePanel || codePanel.hidden)
+                return;
+            if (hlBusy) {
+                hlDirty = true; // one request in flight; the next one takes the latest text
+                return;
+            }
+            hlBusy = true;
+            var code = src.value;
+            toHtml(code, 'html')
+                .then(function (html) {
+                if (code !== src.value)
+                    return;
+                var tmp = document.createElement('div');
+                tmp.innerHTML = html;
+                var lines = tmp.querySelector('pre > code');
+                if (!lines)
+                    return;
+                paint(lines.innerHTML, code);
+                root.classList.add('ce-hl');
+            }, function () { })
+                .then(function () {
+                hlBusy = false;
+                if (hlDirty) {
+                    hlDirty = false;
+                    highlight();
+                }
+            });
+        }
+        function refreshHighlight() {
+            highlight();
+            if (!root.classList.contains('ce-hl'))
+                return;
+            // a slow paint (large deck sources) must never leave typed text invisible
+            clearTimeout(hlStale);
+            hlStale = setTimeout(function () {
+                if (painted !== src.value) {
+                    hl.textContent = src.value + '\n';
+                    painted = src.value;
+                    syncHlScroll();
+                }
+            }, 90);
+        }
+        src.addEventListener('scroll', syncHlScroll);
+        document.addEventListener('docs:shiki-ready', highlight);
+        // the Code tab, Expand-all and fullscreen all toggle the panel's hidden
+        // attribute - opening it paints (or repaints a source changed while hidden)
+        if (codePanel) {
+            new MutationObserver(function () {
+                if (!codePanel.hidden && painted !== src.value)
+                    refreshHighlight();
+            }).observe(codePanel, { attributes: true, attributeFilter: ['hidden'] });
+        }
+        highlight();
         var schema = null;
         try {
             if (root.dataset.schema)
@@ -378,9 +461,9 @@
         var observed = {}; // last sandbox-observed values (§11: DOM wins)
         // No state overlay on purpose: the SOURCE is the single truth. Panel edits
         // serialize into the editor (§4 inverted), so a rebuild re-materializes
-        // them from the code itself — replaying stored panel values would stomp
+        // them from the code itself - replaying stored panel values would stomp
         // code edits (the exact desync users report).
-        // -- srcdoc assembly (environment infra only — plan §6) -----------------
+        // -- srcdoc assembly (environment infra only - plan §6) -----------------
         var CE_SCRIPT_OPEN = '<scr' + 'ipt data-ce-chrome>';
         var CE_SCRIPT_CLOSE = '</scr' + 'ipt>';
         function buildSrcdoc(source) {
@@ -390,11 +473,11 @@
                 // just that block via postMessage (no iframe rebuild, examples survive)
                 var styles = parts[3] + '<style id="ce-theme">' + (parts[4] || '') + '</style>';
                 // previewStyle (the old <Example previewStyle>) rides INSIDE the chrome
-                // body rule (marker below) — same rule, later declarations win, so
+                // body rule (marker below) - same rule, later declarations win, so
                 // display:flex overrides the chrome's flow-root. The old .preview div
                 // was the demo stage; the sandbox body IS the stage.
                 // all.js ships import-free (plan §2.3); it runs as a CLASSIC inline
-                // script at END OF BODY in the opaque-origin sandbox — a module src=
+                // script at END OF BODY in the opaque-origin sandbox - a module src=
                 // would need CORS headers static hosts don't send, and in <head> the
                 // component MutationObservers would run before <body> exists. Wrapped
                 // in a function scope: on the host all.js loads as a module so its
@@ -435,7 +518,7 @@
             errBox.hidden = false;
             errBox.textContent = message + (stack ? '\n' + stack : '');
         }
-        // -- state controls (generated from schema ONLY — plan §10) -------------
+        // -- state controls (generated from schema ONLY - plan §10) -------------
         function buildControls() {
             // no State tab for this card (no schema / no states / stateTab:false) —
             // the SSR shell simply omits the panel
@@ -447,7 +530,7 @@
                 p.className = 'code-example-note';
                 p.textContent = schema
                     ? 'This component schema declares no states.'
-                    : 'No schema — this example renders without generated state controls.';
+                    : 'No schema - this example renders without generated state controls.';
                 statePanel.appendChild(p);
                 return;
             }
@@ -521,14 +604,14 @@
                                 : control.value,
                     });
                 }
-                // the radio-group container has no `.value` (a DIV) — its inner inputs
+                // the radio-group container has no `.value` (a DIV) - its inner inputs
                 // send on their own `change`; wiring the container too would double-send
                 // `undefined` right after the good value (the inner change bubbles), and
-                // the bridge's undefined leg REMOVES the attribute — the mutation the
+                // the bridge's undefined leg REMOVES the attribute - the mutation the
                 // user just made would vanish. So: skip the generic listener for radios.
                 if (ed.kind !== 'radio')
                     control.addEventListener('change', sendControl);
-                // text/number fields: `change` fires only on blur/Enter — typing must
+                // text/number fields: `change` fires only on blur/Enter - typing must
                 // sync live, debounced so we don't spam the sandbox per keystroke
                 if (ed.kind === 'text' || ed.kind === 'number') {
                     var keyTimer = null;
@@ -539,7 +622,7 @@
                     });
                 }
                 // editor hints ride as data-* (currency/locale formatting is display-level;
-                // the state VALUE stays a plain number — §3)
+                // the state VALUE stays a plain number - §3)
                 if (ed.props.format)
                     control.setAttribute('data-format', String(ed.props.format));
                 if (ed.props.currency)
@@ -608,7 +691,7 @@
                             var spec = schema && schema.states[name];
                             if (spec) {
                                 // config arrives as either the raw editor value (boolean/number/
-                                // string) or a { value } wrapper — both spellings resolve to the
+                                // string) or a { value } wrapper - both spellings resolve to the
                                 // scalar the sandbox mutation applies; only a missing config
                                 // falls back to the schema default
                                 var value = config && typeof config === 'object' && 'value' in config
@@ -654,6 +737,7 @@
                     // never over an un-run edit, never mid-typing (the editor is truth).
                     if (d.source && !rerunTimer && document.activeElement !== src && src.value === lastRun) {
                         src.value = d.source; // programmatic write fires no input → no re-run loop
+                        refreshHighlight();
                         lastRun = d.source; // the editor now mirrors the running DOM exactly
                     }
                 }
@@ -661,7 +745,7 @@
                     showError(d.message || 'Sandbox error', d.stack);
                 }
                 else if (d.kind === 'height') {
-                    // device modes (phone/tablet) PIN the frame to the device box — the
+                    // device modes (phone/tablet) PIN the frame to the device box - the
                     // measured flow height doesn't apply (content scrolls inside);
                     // measured modes (full/desktop/custom) size from the sandbox
                     if (root.dataset.vpMode !== 'phone' && root.dataset.vpMode !== 'tablet')
@@ -670,13 +754,14 @@
             },
         };
         registry[ch] = api;
-        // (root.api is installed inside onMessage on the bridge's 'ready' — see above)
+        // (root.api is installed inside onMessage on the bridge's 'ready' - see above)
         // -- viewport toolbar ----------------------------------------------------
         // Device emulation for every example: full (source default, measured
         // height) · desktop (width-constrained, measured height) · phone 390×844
         // · tablet 834×1112 (device presets; the CSS bezel marks them as devices).
         // Rotate swaps W/H (landscape "holding"). The number fields edit the size
         // directly; the height field only exists for device modes.
+        var refitViewport = function () { }; // bound by the viewport toolbar below
         var vpScreen = root.querySelector('.ce-screen');
         var vpDevice = root.querySelector('.ce-device');
         if (vpScreen && vpDevice) {
@@ -689,7 +774,7 @@
             var vpResize = null; // resizer wrapper (handles on every side; bound below)
             var clamp = function (v, lo, hi) { return Math.min(hi, Math.max(lo, v)); };
             // trailing debounce: the SHARED implementation (src/shared/debounce.ts,
-            // installed at df$.shadcn.shared by core/all — doc pages always ship it;
+            // installed at df$.shadcn.shared by core/all - doc pages always ship it;
             // the local fallback keeps the toolbar working without the runtime).
             // Bursty events (drag pointermove, window resize) settle before work runs.
             var sharedNs = (globalThis.df$ && globalThis.df$.shadcn && globalThis.df$.shadcn.shared) || null;
@@ -724,7 +809,7 @@
             var bootMode = ['phone', 'tablet', 'desktop', 'full'].indexOf(root.dataset.vpMode) >= 0 ? root.dataset.vpMode : 'full';
             var vpMode = bootMode;
             // Auto-fit (shrink-to-stage zoom) is a convenience for untouched cards.
-            // Once the USER sized the canvas — drag or W/H field — its width is
+            // Once the USER sized the canvas - drag or W/H field - its width is
             // deliberate: refitting it smaller under the user is exactly what reads
             // as "the handle lags / the box shrinks back on its own" (measured: a
             // +100 px drag rubber-banded to a smaller box on the 120 ms settle).
@@ -739,7 +824,7 @@
                 var rawH = Number(vpH.value);
                 var h = rawH > 0 ? clamp(rawH, 240, 1400) : 0;
                 // the resizer wrapper is the canvas box (the toolbar writes its size;
-                // .ce-device fills it) — clear first, device modes pin, measured pin
+                // .ce-device fills it) - clear first, device modes pin, measured pin
                 // width only (the height message lands via measure)
                 if (vpResize)
                     vpResize.style.cssText = '';
@@ -756,7 +841,7 @@
                     if (vpResize && w)
                         vpResize.style.width = w + 'px';
                     // device→measured: release the pinned 100% height. An already
-                    // measured inline height STAYS while the re-measure lands — clearing
+                    // measured inline height STAYS while the re-measure lands - clearing
                     // it would flash the frame to its CSS min-height for one postMessage
                     // round-trip (the drag flicker; the height message replaces it anyway)
                     if (frame.style.height === '100%')
@@ -767,7 +852,7 @@
                 // device box exceeds the stage vertically → overflow visible (before:
                 // the phone frame grew past the closed stage); measured canvas wider
                 // than the stage → scroll it (desktop/tablet boxes), and stop centering
-                // then — a centered wider-than-box flex child has its start cut off by
+                // then - a centered wider-than-box flex child has its start cut off by
                 // the scroll origin and can never be scrolled into view.
                 var stage = root.querySelector('.preview');
                 if (stage) {
@@ -839,10 +924,18 @@
                     var prev = canvas.style.zoom;
                     canvas.style.zoom = '';
                     var stage = root.querySelector('.preview');
-                    var natural = canvas.getBoundingClientRect().width || 1;
+                    var box = canvas.getBoundingClientRect();
+                    var natural = box.width || 1;
                     var avail = Math.max(stage.clientWidth - 24, 120); // inline padding
+                    var fit = avail / natural;
+                    // in fullscreen the stage has a definite height: device boxes fit
+                    // it too, so a tablet never hangs below the docked toolbar
+                    var fs = document.fullscreenElement === root || root.classList.contains('ce-fs');
+                    if (fs && (vpMode === 'phone' || vpMode === 'tablet') && box.height) {
+                        fit = Math.min(fit, Math.max(stage.clientHeight - 24, 120) / box.height);
+                    }
                     canvas.style.zoom = prev;
-                    z = clamp(Math.floor(Math.min(avail / natural, 1) * 20) * 5, 25, 100);
+                    z = clamp(Math.floor(Math.min(fit, 1) * 20) * 5, 25, 100);
                 }
                 canvas.style.zoom = z < 100 ? String(z / 100) : '';
                 root.dataset.vpZoom = String(z);
@@ -852,8 +945,37 @@
                     return; // manual zoom is a deliberate choice
                 vpZoomApply();
             }, 120));
-            if (vpZ)
-                vpZ.addEventListener('input', vpZoomApply);
+            if (vpZ) {
+                // an empty (Auto) field steps from min=25 - seed 100 on the first
+                // spinner click / arrow key / wheel tick so zooming starts from full
+                // size; a seed nobody changed reverts to Auto on blur
+                var vpZSeeded = false;
+                vpZ.addEventListener('input', function () {
+                    vpZSeeded = false;
+                    vpZoomApply();
+                });
+                var vpZSeed = function (e) {
+                    if (vpZ.value)
+                        return;
+                    if (e.type === 'keydown' && !/^(ArrowUp|ArrowDown|PageUp|PageDown)$/.test(e.key))
+                        return;
+                    vpZ.value = '100';
+                    vpZSeeded = true;
+                };
+                vpZ.addEventListener('pointerdown', vpZSeed);
+                vpZ.addEventListener('keydown', vpZSeed);
+                vpZ.addEventListener('wheel', vpZSeed, { passive: true });
+                // clicking in to type: the seed is selected, so typing replaces it
+                vpZ.addEventListener('click', function () {
+                    if (vpZSeeded)
+                        vpZ.select();
+                });
+                vpZ.addEventListener('blur', function () {
+                    if (vpZSeeded)
+                        vpZ.value = '';
+                    vpZSeeded = false;
+                });
+            }
             vpRotate.addEventListener('click', function () {
                 if (vpRotate.disabled)
                     return;
@@ -884,6 +1006,8 @@
             // W/H fields drive vpApply). Measured modes are width-only (height
             // follows the content), so 'h' events only land in device modes.
             vpResize = root.querySelector('.ce-resizer');
+            // fullscreen enter/exit changes the stage size: re-fit + re-measure
+            refitViewport = vpApply;
             if (vpResize) {
                 // sync the wrapper once now (full mode = width axis, no n/s handles)
                 vpApply();
@@ -898,9 +1022,9 @@
                     // Live path is ONLY the cheap synchronous writes: the field readout
                     // and the wrapper width (the wrapper IS the canvas box). The full
                     // vpApply would clear the measured frame height and wait a
-                    // postMessage round-trip to restore it — per pointermove that is one
+                    // postMessage round-trip to restore it - per pointermove that is one
                     // collapse flash per event (the visible flicker). It runs on quiet.
-                    vpFitFrozen = true; // a drag IS a deliberate size — stop auto-fitting
+                    vpFitFrozen = true; // a drag IS a deliberate size - stop auto-fitting
                     var w = Math.round(clamp(d.width, 240, 1600));
                     vpW.value = String(w);
                     vpResize.style.width = w + 'px';
@@ -914,9 +1038,9 @@
             }
         }
         // -- toolbar -------------------------------------------------------------
-        // tabs are TOGGLES (both start off — SSR ships both panels hidden): clicking
+        // tabs are TOGGLES (both start off - SSR ships both panels hidden): clicking
         // a tab shows its panel and hides the other; clicking the ACTIVE tab
-        // collapses everything — the rendered demo is the hero, the lower area is
+        // collapses everything - the rendered demo is the hero, the lower area is
         // opt-in. read-state is requested whenever the state panel opens.
         function setTab(which) {
             root.querySelectorAll('.code-example-tab').forEach(function (t) {
@@ -939,6 +1063,7 @@
         });
         var rerunTimer = null;
         src.addEventListener('input', function () {
+            refreshHighlight();
             if (rerunTimer)
                 clearTimeout(rerunTimer);
             rerunTimer = setTimeout(function () {
@@ -948,6 +1073,7 @@
         });
         root.querySelector('.code-example-reset').addEventListener('click', function () {
             src.value = original;
+            refreshHighlight();
             run(src.value);
         });
         root.querySelector('.code-example-copy').addEventListener('click', function (ev) {
@@ -964,6 +1090,80 @@
                 setToolBtn(btn, 'copy', 'Copy failed');
             });
         });
+        // -- fullscreen ------------------------------------------------------------
+        // Native fullscreen on the WHOLE card (.code-example): the stage fills the
+        // screen and the complete toolbar docks at the bottom, so device modes,
+        // W×H, zoom, the resize handles and the Code/State panels all keep
+        // working in fullscreen. Esc exits natively. A rejected request (the docs
+        // page itself sits in an iframe without allow="fullscreen", e.g. the UI
+        // tests) falls back to the .ce-fs fixed overlay - same layout, Esc + X
+        // handled here. Every enter/exit re-fits the canvas to the new stage.
+        var fsStage = root;
+        var fsBtn = root.querySelector('.code-example-full');
+        function fsIsOn() {
+            return document.fullscreenElement === fsStage || fsStage.classList.contains('ce-fs');
+        }
+        var fsWasOn = false;
+        function fsSync() {
+            var on = fsIsOn();
+            fsWasOn = on;
+            setToolBtn(fsBtn, on ? 'minimize' : 'maximize', on ? 'Exit fullscreen' : 'Fullscreen');
+            // after layout settles into the new box
+            setTimeout(refitViewport, 50);
+        }
+        function fsOff() {
+            var wasFallback = fsStage.classList.contains('ce-fs');
+            fsStage.classList.remove('ce-fs');
+            if (document.fullscreenElement === fsStage)
+                document.exitFullscreen();
+            else if (wasFallback)
+                fsSync();
+        }
+        fsBtn.addEventListener('click', function () {
+            if (fsIsOn()) {
+                fsOff();
+                return;
+            }
+            var fallback = function () {
+                fsStage.classList.add('ce-fs');
+                fsSync();
+            };
+            var req = fsStage.requestFullscreen ? fsStage.requestFullscreen() : null;
+            if (req && req.catch)
+                req.catch(fallback);
+            else if (!req)
+                fallback();
+        });
+        root.querySelector('.code-example-full-exit').addEventListener('click', fsOff);
+        // in fullscreen the stage size follows the screen AND the panels between
+        // stage and toolbar (Code/State opening, the editor growing) - re-fit
+        // whenever it changes, once per burst
+        var fsStageEl = root.querySelector('.preview');
+        var fsRefitTimer = 0;
+        if (fsStageEl && typeof ResizeObserver === 'function') {
+            new ResizeObserver(function () {
+                if (!fsIsOn())
+                    return;
+                clearTimeout(fsRefitTimer);
+                fsRefitTimer = setTimeout(refitViewport, 60);
+            }).observe(fsStageEl);
+        }
+        document.addEventListener('fullscreenchange', function () {
+            if (!document.fullscreenElement)
+                fsStage.classList.remove('ce-fs');
+            // only the card whose mode actually changed re-syncs (every card hears the event)
+            if (fsIsOn() !== fsWasOn)
+                fsSync();
+        });
+        document.addEventListener('keydown', function (ev) {
+            if (ev.key !== 'Escape')
+                return;
+            // native Esc already exits real-browser fullscreen (the page never sees
+            // it) - this covers the fallback overlay AND environments where the
+            // browser UI gesture is absent (embedded docs, headless)
+            if (fsStage.classList.contains('ce-fs') || document.fullscreenElement === fsStage)
+                fsOff();
+        });
         // toolbar label + icon swap: the <i> placeholder becomes an <svg> in place
         // when lucide re-runs, so the button keeps its icon after a text change
         function setToolBtn(btn, icon, label) {
@@ -974,7 +1174,7 @@
         buildControls();
         run(src.value);
     }
-    // first load + every SPA navigation (docs.onPageReady — the same hook site.js
+    // first load + every SPA navigation (docs.onPageReady - the same hook site.js
     // and shiki use; layout.js installs df$.shadcn.docs before this fires)
     document.addEventListener('DOMContentLoaded', function () {
         init();

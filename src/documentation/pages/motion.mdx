@@ -1,0 +1,171 @@
+---
+title: "Motion"
+description: "Motion component - the shared entrance-animation vocabulary: CSS @keyframes as the source of truth, driven declaratively via data-df-entrance or imperatively via ddf$.entrance()."
+slug: "motion"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="motion" title="Motion" component="motion">
+  The shared entrance vocabulary for every component - decks, cards, lists, dialogs. CSS <code>@keyframes</code> are the source of truth (geometry, easing, reduced-motion); one attribute applies them declaratively, and a ~60-line controller (<code>ddf$.entrance()</code>) owns trigger/replay, timing overrides and the <code>finished</code>/<code>cancel</code> lifecycle through the browser's own <code>CSSAnimation</code> objects. No animation library.
+</PageHeader>
+
+<SkillPanel component="motion">
+  <SkillField label="Native basis">
+<SkillText><code>@keyframes</code> + the CSS Animations model, driven by the <code>data-df-entrance</code> attribute - <code>animation-composition: add</code> composes with pre-existing transforms instead of replacing them.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@keyframes" title="the effect geometry - one rule per direction"><code>@keyframes</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/animation-composition" title="compose with the element's own transform/filter"><code>animation-composition</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Element/getAnimations" title="the controller drives the platform's own CSSAnimation objects"><code>getAnimations()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Animation/finished" title="the lifecycle promise"><code>Animation.finished</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/clip-path" title="the wipe/wipe-up/iris entrances"><code>clip-path</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="1ms instead of none - the finished contract keeps working"><code>prefers-reduced-motion</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Attributes">
+<SkillRow>
+    <code>data-df-entrance</code>
+    <code>data-df-stagger</code>
+    <code>data-df-draw</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Entrances (data-df-entrance)">
+<SkillGrid>
+    <Variant name="up · down · left · right" description="drift in from a side" />
+    <Variant name="zoom · zoom-out · pop" description="scale - pop overshoots" />
+    <Variant name="spin · flip · skew" description="rotational" />
+    <Variant name="blur" description="focus pull" />
+    <Variant name="wipe · wipe-up · iris" description="clip-path reveals" />
+    <Variant name="fade" description="quiet cross-fade" />
+  </SkillGrid>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Anatomy" hint="One attribute is the entire API: data-df-entrance picks the effect, the --df-motion-* custom properties tune it (any ancestor, container or inline style - inline wins). The live grid below runs all fifteen; press Replay to re-fire them." previewStyle="align-items:flex-start;"
+<table class="table mini-table">
+  <tbody>
+    <tr><td><code>data-df-entrance="up"</code></td><td>drift in from below (also down / left / right)</td></tr>
+    <tr><td><code>data-df-entrance="pop"</code></td><td>scale with overshoot (also zoom / zoom-out)</td></tr>
+    <tr><td><code>data-df-entrance="flip"</code></td><td>rotational (also spin / skew)</td></tr>
+    <tr><td><code>data-df-entrance="wipe"</code></td><td>clip-path reveals (also wipe-up / iris)</td></tr>
+    <tr><td><code>style="--df-motion-delay:400ms"</code></td><td>timing surface (also -duration / -ease / -distance …)</td></tr>
+    <tr><td><code>data-df-stagger=""</code></td><td>container grader for child delays</td></tr>
+    <tr><td><code>data-df-draw</code> + <code>pathLength="1"</code></td><td>SVG draw-in primitive</td></tr>
+  </tbody>
+</table>
+```
+
+```html example label="The vocabulary" hint="All fifteen entrances are one attribute each - they run on application (fresh DOM included; animations, unlike transitions, need no rendered from-state). Replay any of them with the button." previewStyle="align-items:flex-start;"
+<div id="vocab" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:0.75rem 1.25rem; font-family:var(--font-mono); font-size:0.85rem;">
+  <code data-df-entrance="up">up</code>
+  <code data-df-entrance="down">down</code>
+  <code data-df-entrance="left">left</code>
+  <code data-df-entrance="right">right</code>
+  <code data-df-entrance="zoom">zoom</code>
+  <code data-df-entrance="zoom-out">zoom-out</code>
+  <code data-df-entrance="pop" style="--df-motion-ease:cubic-bezier(.34,1.56,.64,1);">pop</code>
+  <code data-df-entrance="spin">spin</code>
+  <code data-df-entrance="flip">flip</code>
+  <code data-df-entrance="skew">skew</code>
+  <code data-df-entrance="blur">blur</code>
+  <code data-df-entrance="wipe">wipe</code>
+  <code data-df-entrance="wipe-up">wipe-up</code>
+  <code data-df-entrance="iris">iris</code>
+  <code data-df-entrance="fade">fade</code>
+</div>
+<button class="btn" data-size="sm" onclick="document.querySelectorAll('#vocab [data-df-entrance]').forEach((el) => ddf$.entrance(el))">Replay all</button>
+```
+
+```html example label="Stagger + timing" hint="data-df-stagger grades children by --df-motion-stagger-step (first 8, then capped) while each keeps its own direction; duration/ease/distance are plain custom properties - set them on any ancestor, container or element (inline wins). Run it again with the button." previewStyle="align-items:flex-start;"
+<section id="stagger-demo" style="--df-motion-duration:520ms; --df-motion-distance:28px;">
+  <h4 data-df-entrance="wipe" style="margin:0 0 0.75rem;">Release 2.4</h4>
+  <ul data-df-stagger style="--df-motion-stagger-step:140ms; margin:0 0 0.85rem; padding:0; list-style:none; display:grid; gap:0.5rem;">
+    <li data-df-entrance="up" class="card" style="padding:0.5rem 0.85rem;">Entrance vocabulary - fifteen directions, zero JS</li>
+    <li data-df-entrance="up" class="card" style="padding:0.5rem 0.85rem;">animation-composition: add - your transforms survive</li>
+    <li data-df-entrance="up" class="card" style="padding:0.5rem 0.85rem;">Deterministic replay: cancel → play, finished/cancel handles</li>
+    <li data-df-entrance="up" class="card" style="padding:0.5rem 0.85rem;">1ms under prefers-reduced-motion - contract intact</li>
+  </ul>
+  <button class="btn" data-size="sm" onclick="document.querySelectorAll('#stagger-demo [data-df-entrance]').forEach((el) => ddf$.entrance(el))">Run stagger</button>
+</section>
+```
+
+```html example label="SVG draw-in" hint="data-df-draw is its own primitive: pathLength=1 calibrates distance-along-path, so one dash rule (1 → 0) fits any geometry. Replay via ddf$.draw(pathEl) - the button does exactly that." previewStyle="align-items:flex-start;"
+<svg id="draw-demo" width="360" height="110" viewBox="0 0 360 110" fill="none" stroke="var(--primary)" stroke-width="5" stroke-linecap="round" style="display:block; margin-bottom:0.85rem;">
+  <path data-df-draw pathLength="1" style="--df-motion-duration:900ms;" d="M8 90 C 90 85, 150 20, 210 40 S 320 95, 352 14" />
+</svg>
+<button class="btn" data-size="sm" onclick="ddf$.draw(document.querySelector('#draw-demo path'))">Draw again</button>
+```
+
+```html example label="JS controller" hint="The imperative half: entrance() retriggers the same keyframes with per-call timing, returns a finished promise + cancel - no class toggling, no forced reflow. Unknown effects throw. Pick an effect chip or let it cycle." previewStyle="align-items:flex-start;"
+<div class="card" id="m-console" style="max-width:26rem; padding:1rem;">
+  <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; margin-bottom:0.85rem;">
+    <code style="font-size:0.8rem;">ddf$.entrance(card, effect)</code>
+    <span class="badge" data-variant="secondary" id="m-status">idle</span>
+  </div>
+  <div id="m-card" class="card" data-df-entrance="up" style="padding:1.25rem 1rem; text-align:center; font-weight:600; margin-bottom:0.85rem;">
+    Ship it. <span class="badge" data-variant="outline" id="m-effect" style="margin-left:0.4rem;">up</span>
+  </div>
+  <div id="m-chips" style="display:flex; flex-wrap:wrap; gap:0.4rem;">
+    <button class="btn" data-variant="outline" data-size="sm" data-effect="flip">flip</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-effect="pop">pop</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-effect="spin">spin</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-effect="wipe">wipe</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-effect="iris">iris</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-effect="zoom-out">zoom-out</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-effect="skew">skew</button>
+  </div>
+</div>
+<script>
+  // all.js (core → ddf$) boots AFTER example scripts in the sandbox, so the
+  // handler references ddf$ only at click time - never at parse time
+  document.getElementById('m-chips').addEventListener('click', async (e) => {
+    const chip = e.target.closest('[data-effect]');
+    if (!chip) return;
+    const card = document.getElementById('m-card');
+    const status = document.getElementById('m-status');
+    document.getElementById('m-effect').textContent = chip.dataset.effect;
+    status.textContent = 'animating…';
+    const motion = ddf$.entrance(card, chip.dataset.effect, { duration: 420 });
+    await motion.finished; // resolves on settle (or cancel)
+    status.textContent = 'settled';
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Motion is a static stylesheet plus a core-embedded controller - no per-element State API and no JavaScript file of its own; the runtime declares only <code>default</code>.</p>
+
+<h2 class="h2-display">Per-animation deep dives</h2>
+<p>Every animation also exists as an imperative <code>df$.anim.*</code> channel with paired <strong>in/out variants</strong>, orientation options (<code>north</code>/<code>south</code>/<code>west</code>/<code>east</code>), a <code>play()</code>/<code>pause()</code>/<code>resume()</code>/<code>reset()</code> lifecycle and optional <strong>scroll-bound progress</strong> (parallax) - each has its own page with live demos:</p>
+
+<div class="grid gap-3" style="grid-template-columns:repeat(auto-fill,minmax(14rem,1fr));">
+  <a class="card" href="anim-fade.html" style="display:block;padding:1rem;text-decoration:none;color:inherit;"><strong>Fade</strong><br /><span class="text-sm text-muted-foreground">fadeIn / fadeOut - quiet opacity cross-fade</span></a>
+  <a class="card" href="anim-up.html" style="display:block;padding:1rem;text-decoration:none;color:inherit;"><strong>Slide Up</strong><br /><span class="text-sm text-muted-foreground">slideIn / slideOut - drift, four orientations</span></a>
+  <a class="card" href="anim-down.html" style="display:block;padding:1rem;text-decoration:none;color:inherit;"><strong>Slide Down</strong><br /><span class="text-sm text-muted-foreground">slideIn / slideOut from the north edge</span></a>
+  <a class="card" href="anim-left.html" style="display:block;padding:1rem;text-decoration:none;color:inherit;"><strong>Slide Left</strong><br /><span class="text-sm text-muted-foreground">slideIn / slideOut from the east edge</span></a>
+  <a class="card" href="anim-right.html" style="display:block;padding:1rem;text-decoration:none;color:inherit;"><strong>Slide Right</strong><br /><span class="text-sm text-muted-foreground">slideIn / slideOut from the west edge</span></a>
+  <a class="card" href="anim-zoom.html" style="display:block;padding:1rem;text-decoration:none;color:inherit;"><strong>Zoom</strong><br /><span class="text-sm text-muted-foreground">zoomIn / zoomOut - scale with origin</span></a>
+  <a class="card" href="anim-zoom-out.html" style="display:block;padding:1rem;text-decoration:none;color:inherit;"><strong>Zoom Out</strong><br /><span class="text-sm text-muted-foreground">shrink-in / grow-out, scale 1.1</span></a>
+  <a class="card" href="anim-pop.html" style="display:block;padding:1rem;text-decoration:none;color:inherit;"><strong>Pop</strong><br /><span class="text-sm text-muted-foreground">popIn / popOut - springy overshoot</span></a>
+  <a class="card" href="anim-spin.html" style="display:block;padding:1rem;text-decoration:none;color:inherit;"><strong>Spin</strong><br /><span class="text-sm text-muted-foreground">spinIn / spinOut - half-turn rotation</span></a>
+  <a class="card" href="anim-flip.html" style="display:block;padding:1rem;text-decoration:none;color:inherit;"><strong>Flip</strong><br /><span class="text-sm text-muted-foreground">flipIn / flipOut - 3D rotateX/rotateY</span></a>
+  <a class="card" href="anim-skew.html" style="display:block;padding:1rem;text-decoration:none;color:inherit;"><strong>Skew</strong><br /><span class="text-sm text-muted-foreground">skewIn / skewOut - shear, four orientations</span></a>
+  <a class="card" href="anim-blur.html" style="display:block;padding:1rem;text-decoration:none;color:inherit;"><strong>Blur</strong><br /><span class="text-sm text-muted-foreground">blurIn / blurOut - focus pull</span></a>
+  <a class="card" href="anim-wipe.html" style="display:block;padding:1rem;text-decoration:none;color:inherit;"><strong>Wipe</strong><br /><span class="text-sm text-muted-foreground">wipeIn / wipeOut - clip-path reveal</span></a>
+  <a class="card" href="anim-wipe-up.html" style="display:block;padding:1rem;text-decoration:none;color:inherit;"><strong>Wipe Up</strong><br /><span class="text-sm text-muted-foreground">wipeIn / wipeOut from the south edge</span></a>
+  <a class="card" href="anim-iris.html" style="display:block;padding:1rem;text-decoration:none;color:inherit;"><strong>Iris</strong><br /><span class="text-sm text-muted-foreground">irisIn / irisOut - circle opens from any point</span></a>
+</div>
+
+<p class="text-sm text-muted-foreground">The composite <code>blocksIn</code>/<code>blocksOut</code> roll-over (N panels covering/uncovering an element with staggered delays) and the slide-board composition live on the <a href="anim-canvas.html" style="text-decoration:underline;text-underline-offset:3px;">Animation Canvas</a> page.</p>
+
+<SourceFiles component="motion" section="css">
+  <SourceNote for="css">The entire vocabulary: the <code>--df-motion-\*</code> tunables (defaults at <code>:root</code>, overridable by any ancestor), the direction → <code>animation-name</code> mapping with <code>animation-composition: add</code>, the fifteen <code>df-enter-\*</code> keyframes, <code>df-draw</code>, the stagger grader and the reduced-motion flattening.</SourceNote>
+</SourceFiles>
+
+</DocPage>

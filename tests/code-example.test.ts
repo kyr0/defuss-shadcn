@@ -6,7 +6,7 @@ import { normalizeFenceHtml } from '../src/documentation/lib/mdx-example';
  * Why: the executable-example mechanism (plans/cmp-schemas-and-codeexample.md
  * §27 CodeExample browser tests). Drives the REAL built page in a same-origin
  * iframe: the sandbox is cross-origin (opaque), so all assertions go through
- * the host card — the textarea (source), the toolbar, the generated controls,
+ * the host card - the textarea (source), the toolbar, the generated controls,
  * and `data-state-values` (the §11 observation mirror the bridge syncs).
  */
 
@@ -56,7 +56,7 @@ describe('CodeExample (input page)', () => {
     const card = doc.querySelector('.code-example') as HTMLElement;
     const codePanel = card.querySelector('[data-panel="code"]') as HTMLElement;
     const codeTab = card.querySelector('.code-example-tab[data-tab="code"]') as HTMLButtonElement;
-    // default: rendered demo is the hero — the lower area is not shown
+    // default: rendered demo is the hero - the lower area is not shown
     expect(codePanel.hidden).toBe(true);
     expect(codeTab.getAttribute('aria-pressed')).toBe('false');
     // tabs carry icons (lucide placeholders swapped by createIcons)
@@ -105,13 +105,13 @@ describe('CodeExample (input page)', () => {
 
   it('editing the JS changes behavior (example source runs verbatim)', async () => {
     const { doc } = await openDocPage('input.html');
-    // find the "With button" example — its <script type="module"> logs input events
+    // find the "With button" example - its <script type="module"> logs input events
     const card = [...doc.querySelectorAll('.code-example')].find((c) =>
       (c.querySelector('.code-example-src') as HTMLTextAreaElement).value.includes('console.log'),
     ) as HTMLElement;
     expect(card).toBeTruthy();
     await waitForSandboxReady(card);
-    // replace the log with an assignment that mutates the example DOM — the
+    // replace the log with an assignment that mutates the example DOM - the
     // bridge's MutationObserver syncs it back into data-state-values
     await editSource(
       doc,
@@ -284,7 +284,7 @@ describe('CodeExample (input page)', () => {
     const focusBtn = card.querySelector('.code-example-actions button[data-action="focus"]') as HTMLElement;
     expect(focusBtn, 'input schema declares the focus action').toBeTruthy();
     focusBtn.click();
-    // the focus() lands inside the sandbox without throwing — a clean errBox
+    // the focus() lands inside the sandbox without throwing - a clean errBox
     // after the round-trip is the observable proof (no example script errored)
     await new Promise((r) => setTimeout(r, 300));
     expect(errorOf(card).textContent || '').toBe('');
@@ -317,7 +317,7 @@ describe('CodeExample (input page)', () => {
 describe('CodeExample (dialog page)', () => {
   it('dialog page schema is embedded; open state + showModal/close actions drive the real dialog', async () => {
     const { doc } = await openDocPage('dialog.html');
-    // dialog.mdx has no example fences yet — the CodeExample machinery is
+    // dialog.mdx has no example fences yet - the CodeExample machinery is
     // exercised through input.mdx; here we assert the States contract table
     // rendered as a real <table> with the schema's single boolean row.
     const tables = [...doc.querySelectorAll('table.table')];
@@ -338,7 +338,7 @@ describe('CodeExample viewport toolbar (device emulation)', () => {
     const btn = (mode: string) => card.querySelector(`.code-example-vp[data-vp="${mode}"]`) as HTMLButtonElement;
     const device = vp('.ce-device');
 
-    // default: Full — height field inert, placeholder "Full"
+    // default: Full - height field inert, placeholder "Full"
     expect(h.disabled).toBe(true);
     expect(h.placeholder).toBe('Full');
     expect(btn('phone').getAttribute('aria-pressed')).toBe('false');
@@ -377,7 +377,7 @@ describe('CodeExample viewport toolbar (device emulation)', () => {
     expect(h.placeholder).toBe('Full');
     expect((btn('rotate') as HTMLButtonElement).disabled).toBe(true);
 
-    // resizer (dogfooded): controlled wrapper — axis drops to w in measured
+    // resizer (dogfooded): controlled wrapper - axis drops to w in measured
     // modes (n/s handles removed, corners kept), keyboard grows W by 10
     expect(rz().getAttribute('data-resize-mode')).toBe('controlled');
     expect(rz().dataset.axis).toBe('w');
@@ -402,7 +402,7 @@ describe('CodeExample viewport toolbar (device emulation)', () => {
 
 describe('normalizeFenceHtml (fence self-closing → HTML-valid)', () => {
   // root cause of the "Timeline §Activity Feed smashed" bug: JSX-style
-  // self-closing divs are invalid in HTML flow — the parser opens an unclosed
+  // self-closing divs are invalid in HTML flow - the parser opens an unclosed
   // element and nests the whole rest of the fence inside it.
   it('closes non-void elements', () => {
     expect(normalizeFenceHtml('<div class="timeline-dot" />')).toBe('<div class="timeline-dot"></div>');

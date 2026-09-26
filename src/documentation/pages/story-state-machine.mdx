@@ -1,0 +1,206 @@
+---
+title: "Story State Machine - Presentation"
+description: "Cinematic Presentation design language presenting five fictional streaming services as a 12-slide deck of claims - baseline, comparison, composition and churn, each claim a state of one chart that morphs into the next."
+slug: "story-state-machine"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="story-state-machine" title="Story State Machine" component="presentation">
+  Cinematic Presentation: letterboxed black, warm white and one orange - a chart built as a sequence of claims about five fictional streaming services, every claim a new state of the same instance.
+</PageHeader>
+
+```html example label="Cinematic Presentation" schema="none" height="26" hint="Slides cross-fade slowly like cuts in a film (df$.anim fadeIn over 1.8s, declared on the deck); orange curtains mark the act breaks. One deck-level chart (df$.shadcn.chart.deck) is the state machine: baseline bars → comparison with last year → composition donut → churn bars, one instance throughout. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-story" data-anim-in="fadeIn" data-anim-in-duration="1800" data-anim-out="fadeOut" data-anim-out-duration="1800" style="--presentation-ink:#050505;--presentation-ink-foreground:#F6F4EF;--presentation-paper:#F6F4EF;--presentation-paper-foreground:#050505;--presentation-accent:#FF5B35;font-family:'Avenir Next', 'Helvetica Neue', Arial, sans-serif;" tabindex="-1" aria-label="The streaming year - told as a sequence of claims">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="Subscribers of five fictional streaming services: Nova+ 54 million, Beacon 41, Orbit 29, Lumen 18, Reel 11, compared with last year, as shares of 153 million, and monthly churn rates"></div>
+  <section class="slide" data-slide data-theme="ink" aria-label="Cover">
+    <div aria-hidden="true" style="position:absolute; inset-inline:0; top:0; height:70px; background:#000;"></div>
+    <div aria-hidden="true" style="position:absolute; inset-inline:0; bottom:0; height:70px; background:#000;"></div>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Story state machine · Cinematic Presentation</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-family:'Avenir Next', 'Helvetica Neue', Arial, sans-serif; font-weight:700; letter-spacing:-0.03em; font-size:7rem;">The streaming year</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">Five services, 153 million subscriptions, four claims - one chart that never cuts.</p>
+    <p class="presentation-note">Letterbox bars: this is a film.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="baseline" style="justify-content:flex-start;" aria-label="Claim 1">
+    <header class="presentation-header"><span>Claim 1 · Baseline</span><span>Subscribers, millions</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Avenir Next', 'Helvetica Neue', Arial, sans-serif; font-weight:700; letter-spacing:-0.03em;">Nova+ leads with 54 million</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Establish the baseline before anything moves.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="compare" style="justify-content:flex-start;" aria-label="Claim 2">
+    <header class="presentation-header"><span>Claim 2 · Comparison</span><span>This year vs last year</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Avenir Next', 'Helvetica Neue', Arial, sans-serif; font-weight:700; letter-spacing:-0.03em;">Orbit and Reel grew fastest; Beacon shrank</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The comparison bars slide in beside the baseline.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="share" style="justify-content:flex-start;" aria-label="Claim 3">
+    <header class="presentation-header"><span>Claim 3 · Composition</span><span>Share of 153 million</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Avenir Next', 'Helvetica Neue', Arial, sans-serif; font-weight:700; letter-spacing:-0.03em;">Nova+ and Beacon hold 62% of the market</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The same bars fold into a donut.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Key figures">
+    <p class="presentation-eyebrow" data-df-entrance="fade">Interlude</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:'Avenir Next', 'Helvetica Neue', Arial, sans-serif; font-weight:700; letter-spacing:-0.03em;"><span data-count="153">153</span> M</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">subscriptions across five services</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#FF5B35; font-family:'Avenir Next', 'Helvetica Neue', Arial, sans-serif; font-weight:700; letter-spacing:-0.03em;">+<span data-count="32">32</span>%</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">Orbit - the fastest-growing service</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:'Avenir Next', 'Helvetica Neue', Arial, sans-serif; font-weight:700; letter-spacing:-0.03em;"><span data-count="3.1">3.1</span>%</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">monthly churn at Nova+, the lowest</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">Growth wins headlines. Churn wins years.</p>
+    <p class="presentation-note">The line of the interlude.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Screen" style="overflow:hidden;">
+    <video autoplay muted loop playsinline aria-hidden="true" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.55; mix-blend-mode:screen;">
+      <source src="videos/demo.webm" type="video/webm" />
+      <source src="videos/demo.mp4" type="video/mp4" />
+    </video>
+    <div aria-hidden="true" style="position:absolute; inset:0; background:linear-gradient(90deg, #050505 40%, rgba(255,91,53,.2));"></div>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Act II</p>
+    <h2 class="presentation-title" data-df-entrance="blur" style="position:relative; font-size:5rem; max-width:1100px; font-family:'Avenir Next', 'Helvetica Neue', Arial, sans-serif; font-weight:700; letter-spacing:-0.03em; font-size:5.5rem;">Everyone subscribes. Few stay.</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:400ms; position:relative; max-width:900px;">The average subscriber tried 3.4 services this year and kept 2.1.</p>
+    <p class="presentation-note">Hold on the dark frame.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="north" data-anim-in-blocks="4" data-anim-in-color="#FF5B35" aria-label="Service table">
+    <header class="presentation-header"><span>The ledger</span><span>Millions of subscribers</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" data-density="spacious" style="font-size:1.7rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">Five fictional streaming services (synthetic).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">Service</th><th class="table-head" style="text-align:right">Last year</th><th class="table-head" style="text-align:right">This year</th><th class="table-head" style="text-align:right">Change</th><th class="table-head" style="text-align:right">Monthly churn</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row"><td class="table-cell">Nova+</td><td class="table-cell" style="text-align:right">46</td><td class="table-cell" style="text-align:right">54</td><td class="table-cell" style="text-align:right">+17%</td><td class="table-cell" style="text-align:right">3.1%</td></tr>
+          <tr class="table-row"><td class="table-cell">Beacon</td><td class="table-cell" style="text-align:right">43</td><td class="table-cell" style="text-align:right">41</td><td class="table-cell" style="text-align:right">−5%</td><td class="table-cell" style="text-align:right">4.4%</td></tr>
+          <tr class="table-row"><td class="table-cell">Orbit</td><td class="table-cell" style="text-align:right">22</td><td class="table-cell" style="text-align:right">29</td><td class="table-cell" style="text-align:right">+32%</td><td class="table-cell" style="text-align:right">5.8%</td></tr>
+          <tr class="table-row"><td class="table-cell">Lumen</td><td class="table-cell" style="text-align:right">19</td><td class="table-cell" style="text-align:right">18</td><td class="table-cell" style="text-align:right">−5%</td><td class="table-cell" style="text-align:right">6.2%</td></tr>
+          <tr class="table-row"><td class="table-cell">Reel</td><td class="table-cell" style="text-align:right">7</td><td class="table-cell" style="text-align:right">11</td><td class="table-cell" style="text-align:right">+57%</td><td class="table-cell" style="text-align:right">7.9%</td></tr>
+        </tbody>
+        <tfoot>
+          <tr class="table-row"><td class="table-cell">Total</td><td class="table-cell" style="text-align:right;font-weight:700">137</td><td class="table-cell" style="text-align:right;font-weight:700">153</td><td class="table-cell" style="text-align:right;font-weight:700">+12%</td><td class="table-cell" style="text-align:right;font-weight:700">—</td></tr>
+        </tfoot>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Reel grew 57% - from the smallest base.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-family:'Avenir Next', 'Helvetica Neue', Arial, sans-serif; font-weight:700; letter-spacing:-0.03em; font-size:3.2rem;">“We did not win on catalogue. We won on the people who stopped cancelling.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#FF5B35; color:#050505;"><span class="avatar-fallback">IN</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Ines Navarro<br /><span style="opacity:0.7; font-size:1.4rem;">Head of retention, Nova+ - fictional</span></p>
+    </div>
+    <p class="presentation-note">Sets up the churn claim.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-chart-state="churn" style="justify-content:flex-start;" aria-label="Claim 4">
+    <header class="presentation-header"><span>Claim 4 · Churn</span><span>Monthly churn, %</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:'Avenir Next', 'Helvetica Neue', Arial, sans-serif; font-weight:700; letter-spacing:-0.03em;">The smaller the service, the faster it leaks</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The donut unfolds into churn bars - the fourth claim.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Questions from the audience">
+    <header class="presentation-header"><span>Q & A</span><span>After the screening</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; font-family:'Avenir Next', 'Helvetica Neue', Arial, sans-serif; font-weight:700; letter-spacing:-0.03em;">Questions from the audience</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="st-qa" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Can Reel keep growing at 57%?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Not at 7.9% monthly churn: it replaces almost its whole base every year.</p></div>
+      </details>
+      <details class="accordion-item" name="st-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Why did Beacon shrink?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">A price rise in spring; churn jumped from 3.6% to 4.4% the month after.</p></div>
+      </details>
+      <details class="accordion-item" name="st-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>What wins next year?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Bundles - services sold together churned 40% less in the pilot markets.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The Reel answer is the sharpest.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Takeaways">
+    <header class="presentation-header"><span>Final act</span><span>Four claims</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">▸</span><span>Build a chart as a sequence of claims, one state per claim.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">▸</span><span>Keep one instance and stable names - let the data morph.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">▸</span><span>Growth rankings and churn rankings tell opposite stories.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">▸</span><span>The quiet number - churn - decides the next year.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Roll credits after this.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" data-anim-in="blocksIn" data-anim-in-direction="south" data-anim-in-blocks="4" data-anim-in-color="#FF5B35" aria-label="Closing">
+    <div aria-hidden="true" style="position:absolute; inset-inline:0; top:0; height:70px; background:#000;"></div>
+    <div aria-hidden="true" style="position:absolute; inset-inline:0; bottom:0; height:70px; background:#000;"></div>
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-family:'Avenir Next', 'Helvetica Neue', Arial, sans-serif; font-weight:700; letter-spacing:-0.03em;">Build the chart as a story</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">Five fictional services, synthetic numbers - the state machine is the real craft.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">Fade to black.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) - build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-story');
+    const TEXT = '#F6F4EF', MUTED = '#7D7A74', ORANGE = '#FF5B35';
+    // [service, last year M, this year M, monthly churn %]
+    const s = [['Nova+', 46, 54, 3.1], ['Beacon', 43, 41, 4.4], ['Orbit', 22, 29, 5.8], ['Lumen', 19, 18, 6.2], ['Reel', 7, 11, 7.9]];
+    const G = { left: 190, right: 190, top: 330, bottom: 150 };
+    const yCats = { type: 'category', inverse: true, data: s.map((r) => r[0]), axisLine: { show: false }, axisLabel: { color: TEXT, fontWeight: 700 } };
+    const xM = { type: 'value', max: 60, axisLabel: { color: MUTED, formatter: '{value}M' }, splitLine: { lineStyle: { color: 'rgba(246,244,239,.08)' } } };
+    // series 'main' carries the identity through all four claims (id + item names)
+    const main = (value, color, extra = {}) => ({ id: 'main', name: 'This year', type: 'bar', barWidth: '42%',
+      data: s.map((r) => ({ name: r[0], value: r[value], itemStyle: { color: color(r), borderRadius: [0, 6, 6, 0] } })), ...extra });
+
+    df$.shadcn.chart.deck(deck, {
+      base: { tooltip: { trigger: 'item' } },
+      states: {
+        baseline: { grid: G, xAxis: xM, yAxis: yCats,
+          series: [main(2, (r) => (r[0] === 'Nova+' ? ORANGE : TEXT), { label: { show: true, position: 'right', formatter: '{c}M', color: TEXT, fontWeight: 700 } })] },
+        compare: { grid: G, xAxis: xM, yAxis: yCats, legend: { top: 300, right: 190, textStyle: { color: TEXT } },
+          series: [
+            main(2, (r) => (r[2] > r[1] ? ORANGE : TEXT), { label: { show: true, position: 'right', formatter: '{c}M', color: TEXT, fontWeight: 700 } }),
+            { id: 'then', name: 'Last year', type: 'bar', barWidth: '42%', data: s.map((r) => ({ name: r[0], value: r[1] })), itemStyle: { color: 'rgba(246,244,239,.22)', borderRadius: [0, 6, 6, 0] } },
+          ] },
+        share: {
+          series: [{ id: 'main', type: 'pie', radius: ['30%', '52%'], center: ['50%', '64%'],
+            data: s.map((r, i) => ({ name: r[0], value: r[2], itemStyle: { color: [ORANGE, TEXT, '#B8B4AC', '#7D7A74', '#4A4844'][i] } })),
+            itemStyle: { borderColor: '#050505', borderWidth: 6 },
+            label: { formatter: (p) => p.name + '  ' + Math.round(p.percent) + '%', color: TEXT, fontWeight: 700 }, labelLine: { lineStyle: { color: MUTED }, length: 20, length2: 30 } }],
+        },
+        churn: { grid: G, yAxis: yCats,
+          xAxis: { type: 'value', max: 9, axisLabel: { color: MUTED, formatter: '{value}%' }, splitLine: { lineStyle: { color: 'rgba(246,244,239,.08)' } } },
+          series: [main(3, (r) => (r[3] > 5.5 ? ORANGE : TEXT), { label: { show: true, position: 'right', formatter: '{c}%', color: TEXT, fontWeight: 700 } })] },
+      },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 32-story-state-machine (Cinematic Presentation) - fictional services, synthetic numbers.</p>
+<SourceFiles component="presentation" />
+</DocPage>

@@ -1,0 +1,251 @@
+---
+title: "Sankey — Presentation"
+description: "Industrial Schematic design language presenting a year of a city’s waste as a 12-slide deck — a Sankey from sources through material streams to outcomes that isolates plastics, then re-reads the flow as outcome and recovery-rate bars, one continuous chart."
+slug: "sankey"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+<PageHeader slug="sankey" title="Sankey" component="presentation">
+  Industrial Schematic: grey drafting paper, condensed labels, rails and a warning orange — where 412,000 tonnes of a city’s waste go in one year, from doorstep to furnace, compost heap or new bottle.
+</PageHeader>
+
+```html example label="Industrial Schematic" schema="none" height="26" hint="Slides run in and out like a conveyor (df$.anim slideIn / slideOut, declared on the deck); orange curtains mark the breaks. One deck-level chart (df$.shadcn.chart.deck): the Sankey isolates plastics, then gives way to outcome bars that morph into the recovery rate per stream. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<section class="presentation" id="deck-sankey" data-anim-in="slideIn" data-anim-in-distance="140px" data-anim-out="slideOut" data-anim-out-distance="140px" style="--presentation-ink:#222A2F;--presentation-ink-foreground:#E7E2D7;--presentation-paper:#E7E2D7;--presentation-paper-foreground:#222A2F;--presentation-accent:#E0582D;font-family:Arial Narrow, Arial, sans-serif;" tabindex="-1" aria-label="Where a city’s waste goes — one year of material flows">
+  <!-- ONE chart for the whole deck: slides name the state they show via
+       data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
+  <div class="chart presentation-stage" role="img" aria-label="A city’s 412 thousand tonnes of waste in one year as a Sankey diagram from three sources through six material streams to four outcomes: 144 thousand tonnes recycled, 68 composted, 159 burned for energy and 41 landfilled; then outcomes and recovery rate per stream"></div>
+  <section class="slide" data-slide data-theme="paper" aria-label="Cover">
+    <svg aria-hidden="true" width="700" height="560" viewBox="0 0 700 560" style="position:absolute; right:100px; top:170px;">
+      <rect x="20" y="40" width="26" height="200" fill="#222A2F" />
+      <rect x="20" y="270" width="26" height="140" fill="#222A2F" />
+      <rect x="330" y="20" width="26" height="150" fill="#3D6E94" />
+      <rect x="330" y="200" width="26" height="120" fill="#3D6E94" />
+      <rect x="330" y="350" width="26" height="90" fill="#3D6E94" />
+      <rect x="650" y="60" width="26" height="220" fill="#E0582D" />
+      <rect x="650" y="320" width="26" height="110" fill="#E0582D" />
+      <path d="M46 60 C 190 60, 190 40, 330 40 L330 150 C 190 150, 190 200, 46 200 Z" fill="rgba(61,110,148,.25)" />
+      <path d="M46 290 C 190 290, 190 220, 330 220 L330 300 C 190 300, 190 380, 46 380 Z" fill="rgba(61,110,148,.25)" />
+      <path d="M356 40 C 500 40, 500 80, 650 80 L650 250 C 500 250, 500 420, 356 420 Z" fill="rgba(224,88,45,.22)" />
+      <path d="M0 520 H700" stroke="#222A2F" stroke-width="2" stroke-dasharray="10 8" />
+    </svg>
+    <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Sankey · Industrial Schematic</p>
+    <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-family:DIN Condensed, Arial Narrow, Arial, sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:-0.01em; line-height:0.95; font-size:7rem; max-width:780px;">Where a city’s waste goes</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px; max-width:700px;">412,000 tonnes a year — three sources, six streams, four ways out.</p>
+    <p class="presentation-note">The schematic on the cover is the Sankey without numbers.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="flow" style="justify-content:flex-start;" aria-label="All flows">
+    <header class="presentation-header"><span>Flows 2025</span><span>Thousand tonnes per year</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:DIN Condensed, Arial Narrow, Arial, sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:-0.01em; line-height:0.95;">From doorstep to destination</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Band width = tonnes. Left: who throws it away; middle: which bin; right: where it ends.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="plastics" style="justify-content:flex-start;" aria-label="Plastics">
+    <header class="presentation-header"><span>Flows 2025</span><span>Plastics highlighted</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:DIN Condensed, Arial Narrow, Arial, sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:-0.01em; line-height:0.95;">Plastics: only 40% come back</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Everything else fades — 25 of 42 kt of plastics are burned.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="outcomes" style="justify-content:flex-start;" aria-label="Outcomes">
+    <header class="presentation-header"><span>Outcomes</span><span>Thousand tonnes per year</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:DIN Condensed, Arial Narrow, Arial, sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:-0.01em; line-height:0.95;">Half is recycled or composted</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The right-hand column of the Sankey becomes four bars.</p>
+  </section>
+  <section class="slide" data-slide data-theme="ink" aria-label="Key figures">
+    <p class="presentation-eyebrow" data-df-entrance="fade">Three numbers for the city council</p>
+    <div data-df-stagger style="--df-motion-stagger-step:220ms; display:flex; gap:5.5rem; align-items:flex-start; margin-top:1.5rem;">
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:DIN Condensed, Arial Narrow, Arial, sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:-0.01em; line-height:0.95;"><span data-count="412">412</span> kt</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">of waste in one year</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#E0582D; font-family:DIN Condensed, Arial Narrow, Arial, sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:-0.01em; line-height:0.95;"><span data-count="51">51</span>%</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">recycled or composted</p>
+      </div>
+      <div data-df-entrance="up">
+        <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:DIN Condensed, Arial Narrow, Arial, sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:-0.01em; line-height:0.95;"><span data-count="10">10</span>%</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">still ends in landfill</p>
+      </div>
+    </div>
+    <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">The residual bin is the problem: 152 kt, and not one tonne of it is recovered as material.</p>
+    <p class="presentation-note">Where the remaining gains are.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Rooftops">
+    <header class="presentation-header"><span>Sources</span><span>Households: 238 kt</span></header>
+    <div style="display:flex; gap:4.5rem; align-items:center; margin-top:3.5rem;">
+      <div style="flex:1 1 0; min-width:0;">
+        <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; font-family:DIN Condensed, Arial Narrow, Arial, sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:-0.01em; line-height:0.95; font-size:3.6rem;">It starts under these roofs</h2>
+        <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:300ms; font-size:1.7rem;">Households produce 58% of the city’s waste — 238,000 tonnes, about 650 tonnes every day.</p>
+      </div>
+      <figure class="image" data-ratio="4/3" data-df-entrance="zoom-out" style="--df-motion-delay:150ms; flex:0 0 700px; margin:0;">
+        <img src="https://picsum.photos/id/188/960/720" alt="Snow-dusted rooftops of an old city under a grey winter sky, a church dome in the distance" loading="lazy" width="960" height="720" style="width:100%; height:100%; object-fit:cover;" />
+        <figcaption class="image-caption" style="font-size:1.25rem;">Rooftops in winter (stock photo).</figcaption>
+      </figure>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The left edge of the Sankey is people.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="east" data-anim-in-blocks="5" data-anim-in-color="#E0582D" aria-label="Stream table">
+    <header class="presentation-header"><span>Streams</span><span>Thousand tonnes, 2025</span></header>
+    <div class="table-container" data-df-entrance="up" style="margin-top:3rem;">
+      <table class="table" style="font-size:1.7rem;">
+        <caption class="table-caption" style="font-size:1.35rem;">Material streams and how much of each is recovered as material (synthetic).</caption>
+        <thead>
+          <tr class="table-row"><th class="table-head">Stream</th><th class="table-head" style="text-align:right">Collected</th><th class="table-head" style="text-align:right">Recovered</th><th class="table-head" style="text-align:right">Rate</th></tr>
+        </thead>
+        <tbody>
+          <tr class="table-row"><td class="table-cell">Residual</td><td class="table-cell" style="text-align:right">152</td><td class="table-cell" style="text-align:right">0</td><td class="table-cell" style="text-align:right">0%</td></tr>
+          <tr class="table-row"><td class="table-cell">Paper</td><td class="table-cell" style="text-align:right">82</td><td class="table-cell" style="text-align:right">74</td><td class="table-cell" style="text-align:right">90%</td></tr>
+          <tr class="table-row"><td class="table-cell">Organic</td><td class="table-cell" style="text-align:right">76</td><td class="table-cell" style="text-align:right">68</td><td class="table-cell" style="text-align:right">89%</td></tr>
+          <tr class="table-row" style="font-weight:700"><td class="table-cell">Plastics</td><td class="table-cell" style="text-align:right">42</td><td class="table-cell" style="text-align:right">17</td><td class="table-cell" style="text-align:right">40%</td></tr>
+          <tr class="table-row"><td class="table-cell">Rubble</td><td class="table-cell" style="text-align:right">36</td><td class="table-cell" style="text-align:right">31</td><td class="table-cell" style="text-align:right">86%</td></tr>
+          <tr class="table-row"><td class="table-cell">Glass</td><td class="table-cell" style="text-align:right">24</td><td class="table-cell" style="text-align:right">22</td><td class="table-cell" style="text-align:right">92%</td></tr>
+        </tbody>
+        <tfoot>
+          <tr class="table-row"><td class="table-cell">Total</td><td class="table-cell" style="text-align:right;font-weight:700">412</td><td class="table-cell" style="text-align:right;font-weight:700">212</td><td class="table-cell" style="text-align:right;font-weight:700">51%</td></tr>
+        </tfoot>
+      </table>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Organic “recovered” means composted.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Field note">
+    <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-family:DIN Condensed, Arial Narrow, Arial, sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:-0.01em; line-height:0.95; font-size:3.2rem; text-transform:none;">“A stacked bar told us the recycling rate. The Sankey told us which bin to fix — and that it is the grey one.”</p>
+    </blockquote>
+    <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
+      <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#222A2F; color:#E0582D;"><span class="avatar-fallback">JK</span></span>
+      <p class="presentation-lede" style="font-size:1.7rem;">Jonas Kranz<br /><span style="opacity:0.7; font-size:1.4rem;">Head of waste management — fictional</span></p>
+    </div>
+    <p class="presentation-note">Flows beat totals — the study’s thesis.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-chart-state="rates" style="justify-content:flex-start;" aria-label="Recovery rate">
+    <header class="presentation-header"><span>Streams</span><span>Share recovered as material</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:DIN Condensed, Arial Narrow, Arial, sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:-0.01em; line-height:0.95;">Four streams clear the target — plastics lag</h2>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The same bars, now per stream, against the 65% target.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Questions from the council">
+    <header class="presentation-header"><span>Q & A</span><span>Council committee</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.2rem; margin-block:5.25rem 1.5rem; font-family:DIN Condensed, Arial Narrow, Arial, sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:-0.01em; line-height:0.95; font-size:3rem;">Questions from the council</h2>
+    <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
+      <details class="accordion-item" name="sk-qa" open data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Why is burning counted separately?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Energy recovery makes heat and power, but the material is gone — so it does not count toward recycling.</p></div>
+      </details>
+      <details class="accordion-item" name="sk-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>What is in the residual bin?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Sorting studies find about a third is organic waste that belongs in the brown bin.</p></div>
+      </details>
+      <details class="accordion-item" name="sk-qa" data-df-entrance="up">
+        <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>What would moving that third change?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">About 50 kt more compost — the combined rate would rise from 51% to 64%.</p></div>
+      </details>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The residual bin question is the policy.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" aria-label="Takeaways">
+    <header class="presentation-header"><span>Takeaways</span><span>For the waste plan</span></header>
+    <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">▶</span><span>A Sankey shows where things go, not just how much there is.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">▶</span><span>Half the waste is recycled or composted; a tenth is landfilled.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">▶</span><span>Plastics recover 40% — the weakest separate stream.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">▶</span><span>Fix the residual bin: 152 kt with zero material recovery.</span></li>
+    </ul>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">Short, schematic, actionable.</p>
+  </section>
+  <section class="slide" data-slide data-theme="paper" data-anim-in="blocksIn" data-anim-in-direction="west" data-anim-in-blocks="5" data-anim-in-color="#E0582D" aria-label="Closing">
+    <svg aria-hidden="true" width="700" height="560" viewBox="0 0 700 560" style="position:absolute; right:100px; top:170px;">
+      <rect x="20" y="40" width="26" height="200" fill="#222A2F" />
+      <rect x="20" y="270" width="26" height="140" fill="#222A2F" />
+      <rect x="330" y="20" width="26" height="150" fill="#3D6E94" />
+      <rect x="330" y="200" width="26" height="120" fill="#3D6E94" />
+      <rect x="330" y="350" width="26" height="90" fill="#3D6E94" />
+      <rect x="650" y="60" width="26" height="220" fill="#E0582D" />
+      <rect x="650" y="320" width="26" height="110" fill="#E0582D" />
+      <path d="M46 60 C 190 60, 190 40, 330 40 L330 150 C 190 150, 190 200, 46 200 Z" fill="rgba(61,110,148,.25)" />
+      <path d="M46 290 C 190 290, 190 220, 330 220 L330 300 C 190 300, 190 380, 46 380 Z" fill="rgba(61,110,148,.25)" />
+      <path d="M356 40 C 500 40, 500 80, 650 80 L650 250 C 500 250, 500 420, 356 420 Z" fill="rgba(224,88,45,.22)" />
+      <path d="M0 520 H700" stroke="#222A2F" stroke-width="2" stroke-dasharray="10 8" />
+    </svg>
+    <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-family:DIN Condensed, Arial Narrow, Arial, sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:-0.01em; line-height:0.95; font-size:7rem;">Follow the flow</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px; max-width:700px;">Synthetic tonnages for a fictional city — the Sankey is the real way to show where things go.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn">Copy the deck</button>
+      <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
+    </p>
+    <p class="presentation-note">End on the rails.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="12" value="1"></progress>
+</section>
+<script>
+  // df$ exists only after all.js boots (it loads after example scripts in the
+  // sandbox) — build the stage in the load handler, never at parse time.
+  window.addEventListener('load', () => {
+    const deck = document.getElementById('deck-sankey');
+    const INK = '#222A2F', MUTED = '#737C7E', GRID = 'rgba(34,42,47,.12)';
+    // three columns: source → stream → outcome
+    const nodes = [
+      ['Households', INK], ['Businesses', INK], ['Construction', INK],
+      ['Residual', '#737C7E'], ['Paper', '#3D6E94'], ['Organic', '#2F7F77'], ['Plastics', '#B8933D'], ['Rubble', '#6D5879'], ['Glass', '#5A8FA8'],
+      ['Recycled', '#E0582D'], ['Composted', '#2F7F77'], ['Energy recovery', '#B8933D'], ['Landfill', '#3C474E'],
+    ];
+    const color = Object.fromEntries(nodes);
+    const links = [
+      ['Households', 'Residual', 96], ['Households', 'Organic', 64], ['Households', 'Paper', 38], ['Households', 'Plastics', 22], ['Households', 'Glass', 18],
+      ['Businesses', 'Residual', 42], ['Businesses', 'Paper', 44], ['Businesses', 'Plastics', 20], ['Businesses', 'Organic', 12], ['Businesses', 'Glass', 6],
+      ['Construction', 'Residual', 14], ['Construction', 'Rubble', 36],
+      ['Residual', 'Energy recovery', 118], ['Residual', 'Landfill', 34],
+      ['Organic', 'Composted', 68], ['Organic', 'Energy recovery', 8],
+      ['Paper', 'Recycled', 74], ['Paper', 'Energy recovery', 8],
+      ['Plastics', 'Recycled', 17], ['Plastics', 'Energy recovery', 25],
+      ['Glass', 'Recycled', 22], ['Glass', 'Landfill', 2],
+      ['Rubble', 'Recycled', 31], ['Rubble', 'Landfill', 5],
+    ];
+    const flow = (focus) => ({
+      series: [{ id: 'waste', type: 'sankey', top: 330, bottom: 100, left: 150, right: 330, nodeWidth: 26, nodeGap: 16, layoutIterations: 64, draggable: false,
+        emphasis: { focus: 'adjacency' },
+        data: nodes.map(([n, c]) => ({ name: n, itemStyle: { color: c, opacity: !focus || n === focus || links.some((l) => (l[0] === focus && l[1] === n) || (l[1] === focus && l[0] === n)) ? 1 : 0.25 } })),
+        links: links.map(([s, t, v]) => ({ source: s, target: t, value: v, lineStyle: { opacity: !focus || s === focus || t === focus ? 0.45 : 0.06 } })),
+        lineStyle: { color: 'gradient', curveness: 0.5 },
+        label: { color: INK, fontWeight: 700, fontSize: 20, formatter: '{b}  {c}' } }],
+    });
+    const bars = (list, value, fmt, target) => ({
+      grid: { left: 340, right: 220, top: 340, bottom: 140 },
+      xAxis: { type: 'value', max: target ? 100 : null, axisLabel: { color: MUTED, formatter: target ? '{value}%' : '{value} kt' }, splitLine: { lineStyle: { color: GRID } } },
+      yAxis: { type: 'category', inverse: true, data: list, axisLine: { lineStyle: { color: INK, width: 2 } }, axisTick: { show: false }, axisLabel: { color: INK, fontWeight: 700 } },
+      series: [{ id: 'bars', type: 'bar', barWidth: '58%',
+        data: list.map((n) => ({ name: n, value: value[n], itemStyle: { color: color[n], borderRadius: [0, 4, 4, 0] } })),
+        label: { show: true, position: 'right', color: INK, fontWeight: 800, formatter: fmt },
+        markLine: target ? { symbol: 'none', silent: true, data: [{ xAxis: target }], lineStyle: { color: '#E0582D', type: 'dashed', width: 3 },
+          label: { formatter: target + '% target', color: '#E0582D', fontWeight: 800, position: 'start', distance: 8 } } : undefined }],
+    });
+    const outcome = { Recycled: 144, Composted: 68, 'Energy recovery': 159, Landfill: 41 };
+    const rate = { Glass: 92, Paper: 90, Organic: 89, Rubble: 86, Plastics: 40, Residual: 0 };
+
+    df$.shadcn.chart.deck(deck, {
+      base: { tooltip: { trigger: 'item' } },
+      states: {
+        flow: flow(null),
+        plastics: flow('Plastics'),
+        outcomes: bars(['Energy recovery', 'Recycled', 'Composted', 'Landfill'], outcome, '{c} kt', 0),
+        rates: bars(Object.keys(rate), rate, '{c}%', 65),
+      },
+    });
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 20-sankey (Industrial Schematic) — synthetic tonnages for a fictional city.</p>
+<SourceFiles component="presentation" />
+</DocPage>

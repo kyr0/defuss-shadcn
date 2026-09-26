@@ -8,7 +8,7 @@ import { icbRect } from './lib/viewport.ts';
  * fixture (trigger + destructive confirmation dialog, mirroring the doc page)
  * over HTTP in a real browser, then verifies the modal geometry, the
  * Escape/backdrop hardening that distinguishes alert dialogs, close-button
- * wiring, focus return, and the named State API — the same files consumers
+ * wiring, focus return, and the named State API - the same files consumers
  * copy from dist/, unmodified.
  */
 
@@ -47,7 +47,7 @@ try {
     await page.click('[data-alert-dialog-trigger="demo-alert-dialog-1"]');
     await page.waitForFunction(() => (document.querySelector('#demo-alert-dialog-1') as HTMLDialogElement).open);
     // margin:auto centers within the fixed-element containing block, which the
-    // scrollbar-gutter scroll lock shrinks by the classic scrollbar — measure
+    // scrollbar-gutter scroll lock shrinks by the classic scrollbar - measure
     // against the ICB sentinel, not innerWidth (see lib/viewport.ts).
     const geom = await page.evaluate((icb) => {
       const el = document.querySelector('#demo-alert-dialog-1') as HTMLDialogElement;
@@ -90,7 +90,7 @@ try {
   await check('page behind the modal stays put; position restored on close', async () => {
     // real user flow: trigger is clicked while visible, so the position it
     // leaves is the position close() must hand back (focus-restore then
-    // needs no scroll — the lock means the page never moved in between)
+    // needs no scroll - the lock means the page never moved in between)
     await page.click('[data-alert-dialog-trigger="demo-alert-dialog-1"]');
     await page.waitForFunction(() => (document.querySelector('#demo-alert-dialog-1') as HTMLDialogElement).open);
     const before = await page.evaluate(() => document.scrollingElement!.scrollTop);

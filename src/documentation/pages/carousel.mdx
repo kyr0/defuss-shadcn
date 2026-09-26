@@ -1,6 +1,6 @@
 ---
 title: "Carousel"
-description: "Carousel component — scrollable content slider with CSS scroll-snap."
+description: "Carousel component - scrollable content slider with CSS scroll-snap."
 slug: "carousel"
 ---
 
@@ -92,7 +92,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm font-medium mb-2 mt-8">With Dot Indicators</p>
 
-<p class="text-muted-foreground text-sm mb-4">Add an empty <code>.carousel-dots</code> container — dots are auto-generated from the slide count.</p>
+<p class="text-muted-foreground text-sm mb-4">Add an empty <code>.carousel-dots</code> container - dots are auto-generated from the slide count.</p>
 
 ```html example height="18"
 <div class="carousel" role="region" aria-roledescription="carousel" aria-label="Dots demo" style="max-width:24rem;margin:0 auto;">
@@ -115,7 +115,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm font-medium mb-2 mt-8">With Counter</p>
 
-<p class="text-muted-foreground text-sm mb-4">Add a <code>.carousel-counter</code> element — JS updates it automatically.</p>
+<p class="text-muted-foreground text-sm mb-4">Add a <code>.carousel-counter</code> element - JS updates it automatically.</p>
 
 ```html example height="18"
 <div class="carousel" role="region" aria-roledescription="carousel" aria-label="Counter demo" style="max-width:24rem;margin:0 auto;">
@@ -160,7 +160,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm font-medium mb-2 mt-8">Loop</p>
 
-<p class="text-muted-foreground text-sm mb-4">Add <code>data-loop</code> for infinite circular navigation — buttons never disable.</p>
+<p class="text-muted-foreground text-sm mb-4">Add <code>data-loop</code> for infinite circular navigation - buttons never disable.</p>
 
 ```html example height="18"
 <div class="carousel" data-loop role="region" aria-roledescription="carousel" aria-label="Loop demo" style="max-width:24rem;margin:0 auto;">
@@ -218,7 +218,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
           <p class="card-description">A new design system built from scratch</p>
         </div>
         <div class="card-content">
-          <p class="text-muted-foreground" style="font-size:0.875rem;">Built with modern CSS and native web APIs. No frameworks, no libraries — just the platform.</p>
+          <p class="text-muted-foreground" style="font-size:0.875rem;">Built with modern CSS and native web APIs. No frameworks, no libraries - just the platform.</p>
         </div>
       </div>
     </div>
@@ -240,7 +240,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
           <p class="card-description">Accessible by default</p>
         </div>
         <div class="card-content">
-          <p class="text-muted-foreground" style="font-size:0.875rem;">WAI-ARIA patterns, keyboard navigation, reduced motion, high contrast — all built in.</p>
+          <p class="text-muted-foreground" style="font-size:0.875rem;">WAI-ARIA patterns, keyboard navigation, reduced motion, high contrast - all built in.</p>
         </div>
       </div>
     </div>
@@ -258,11 +258,11 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
   <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
-    <li><code>default</code> — showing a slide; <code>setState('default', \{ index \})</code> scrolls to that slide (loop-aware), and <code>getState().config.index</code> reports the live index</li>
+    <li><code>default</code> - showing a slide; <code>setState('default', \{ index \})</code> scrolls to that slide (loop-aware), and <code>getState().config.index</code> reports the live index</li>
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/carousel-\{state\}.png</code>.</p>
 
-Machine contract — verified against <a href="../schemas/carousel.schema.json"><code>carousel.schema.json</code></a> by <code>bun run verify</code>:
+Machine contract - verified against <a href="../schemas/carousel.schema.json"><code>carousel.schema.json</code></a> by <code>bun run verify</code>:
 
 
 ```states
