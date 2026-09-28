@@ -1,0 +1,818 @@
+/* defuss-shadcn - optional shape utilities.
+ * A catalog of reusable silhouettes to mix a design up: radius scale,
+ * organic + asymmetric corners, cut/notch/scoop corners (native
+ * corner-shape where supported, clip-path/mask fallback), clip-path
+ * silhouettes, section edges, a shadow scale plus stylized shadows,
+ * frames and background patterns.
+ *
+ * Every class is :where() (zero specificity) inside @layer utilities, so it
+ * beats component styles (@layer components) without specificity fights,
+ * and any author rule overrides it. Colors come only from the tweakcn token
+ * set; per-instance knobs are optional custom properties with fallbacks
+ * (set them inline or on an ancestor - they inherit):
+ *
+ *   --shape-cut     cut / notch / scoop / ticket size   (default 0.75rem)
+ *   --shape-round   organic corner radius               (default 2rem)
+ *   --shape-slant   parallelogram / chevron / arrow run (default 1.5rem)
+ *   --shape-edge    section edge depth                  (default 2.5rem)
+ *   --shape-tail    speech-bubble tail height           (default 0.75rem)
+ *   --shape-ink     shadow / frame / pattern color      (per family)
+ *   --shape-pattern pattern tile size                   (default 16px)
+ *
+ * Clip-path and mask cut the element's own box-shadow and border: pair a
+ * clipped shape with drop-shadow-* on a WRAPPER element.
+ */
+@layer components, utilities;
+
+@layer utilities {
+  /* ── Radius scale (token-derived) ─────────────────────────── */
+  :where(.rounded-none) { border-radius: 0; }
+  :where(.rounded-sm) { border-radius: var(--radius-sm); }
+  :where(.rounded-md) { border-radius: var(--radius-md); }
+  :where(.rounded-lg) { border-radius: var(--radius-lg); }
+  :where(.rounded-xl) { border-radius: var(--radius-xl); }
+  :where(.rounded-2xl) { border-radius: calc(var(--radius) + 12px); }
+  :where(.rounded-full) { border-radius: 9999px; }
+
+  /* ── Organic + asymmetric corners (border-radius: borders and
+        box-shadows follow the curve) ──────────────────────────── */
+  :where(.corner-leaf) { border-radius: var(--shape-round, 2rem) 0; }
+  :where(.corner-leaf-reverse) { border-radius: 0 var(--shape-round, 2rem); }
+  :where(.corner-tab) { border-radius: var(--shape-round, 2rem) var(--shape-round, 2rem) 0 0; }
+  :where(.corner-tab-bottom) { border-radius: 0 0 var(--shape-round, 2rem) var(--shape-round, 2rem); }
+  :where(.corner-bubble) { border-radius: var(--shape-round, 2rem) var(--shape-round, 2rem) var(--shape-round, 2rem) 0; }
+  :where(.corner-bubble-end) { border-radius: var(--shape-round, 2rem) var(--shape-round, 2rem) 0 var(--shape-round, 2rem); }
+  :where(.corner-drop) { border-radius: 50% 50% 50% 0; }
+  :where(.corner-arch) { border-radius: 9999px 9999px 0 0; }
+  :where(.corner-pill-end) { border-radius: 0 9999px 9999px 0; }
+  :where(.corner-blob) { border-radius: 63% 37% 54% 46% / 55% 48% 52% 45%; }
+  :where(.corner-blob-2) { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+  :where(.corner-blob-3) { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+  :where(.corner-blob-4) { border-radius: 58% 42% 38% 62% / 42% 55% 45% 58%; }
+  :where(.corner-blob-5) { border-radius: 70% 30% 50% 50% / 30% 30% 70% 70%; }
+  :where(.corner-egg) { border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; }
+  :where(.corner-lens) { border-radius: 100% 0; }
+  :where(.corner-quarter) { border-radius: 100% 0 0 0; }
+  :where(.corner-half) { border-radius: 100% 100% 0 0 / 100% 100% 0 0; }
+  /* hand-drawn wobble - pair with a border (frame-sketch does both) */
+  :where(.corner-sketch) { border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px; }
+
+  /* ── Organic silhouettes (mask of overlapping circles: work best on a
+        square box - aspect-ratio: 1) ─────────────────────────────── */
+  :where(.shape-flower) {
+    mask:
+      radial-gradient(25% 25% at 50% 26%, #000 98%, #0000 100%), radial-gradient(25% 25% at 74% 50%, #000 98%, #0000 100%),
+      radial-gradient(25% 25% at 50% 74%, #000 98%, #0000 100%), radial-gradient(25% 25% at 26% 50%, #000 98%, #0000 100%),
+      radial-gradient(28% 28% at 50% 50%, #000 98%, #0000 100%);
+  }
+  :where(.shape-flower-6) {
+    mask:
+      radial-gradient(22% 22% at 50% 24%, #000 98%, #0000 100%), radial-gradient(22% 22% at 72.5% 37%, #000 98%, #0000 100%),
+      radial-gradient(22% 22% at 72.5% 63%, #000 98%, #0000 100%), radial-gradient(22% 22% at 50% 76%, #000 98%, #0000 100%),
+      radial-gradient(22% 22% at 27.5% 63%, #000 98%, #0000 100%), radial-gradient(22% 22% at 27.5% 37%, #000 98%, #0000 100%),
+      radial-gradient(26% 26% at 50% 50%, #000 98%, #0000 100%);
+  }
+  :where(.shape-daisy) {
+    mask:
+      radial-gradient(15% 15% at 50% 17%, #000 98%, #0000 100%), radial-gradient(15% 15% at 73.3% 26.7%, #000 98%, #0000 100%),
+      radial-gradient(15% 15% at 83% 50%, #000 98%, #0000 100%), radial-gradient(15% 15% at 73.3% 73.3%, #000 98%, #0000 100%),
+      radial-gradient(15% 15% at 50% 83%, #000 98%, #0000 100%), radial-gradient(15% 15% at 26.7% 73.3%, #000 98%, #0000 100%),
+      radial-gradient(15% 15% at 17% 50%, #000 98%, #0000 100%), radial-gradient(15% 15% at 26.7% 26.7%, #000 98%, #0000 100%),
+      radial-gradient(24% 24% at 50% 50%, #000 98%, #0000 100%);
+  }
+  /* two lobes + a 90° wedge tangent to them */
+  :where(.shape-heart) {
+    mask:
+      radial-gradient(25% 25% at 30% 32%, #000 98%, #0000 100%), radial-gradient(25% 25% at 70% 32%, #000 98%, #0000 100%),
+      conic-gradient(from -45deg at 50% 100%, #000 90deg, #0000 0) 0 75.86% / 100% 42% no-repeat; /* spans 44%..86% */
+  }
+  :where(.shape-cloud) {
+    mask:
+      radial-gradient(22% 22% at 28% 60%, #000 98%, #0000 100%), radial-gradient(28% 28% at 52% 46%, #000 98%, #0000 100%),
+      radial-gradient(20% 20% at 75% 60%, #000 98%, #0000 100%), radial-gradient(40% 14% at 51% 68%, #000 98%, #0000 100%);
+  }
+
+  /* ── Cut, notch, scoop, squircle corners ──────────────────────
+     Native corner-shape (Chromium 139+) keeps borders and shadows on the
+     silhouette; elsewhere clip-path / mask draw the same outline. */
+  :where(.corner-squircle) { border-radius: var(--shape-round, 2rem); }
+  :where(.cut-corners) {
+    --_c: var(--shape-cut, 0.75rem);
+    clip-path: polygon(var(--_c) 0, calc(100% - var(--_c)) 0, 100% var(--_c), 100% calc(100% - var(--_c)),
+      calc(100% - var(--_c)) 100%, var(--_c) 100%, 0 calc(100% - var(--_c)), 0 var(--_c));
+  }
+  :where(.notch-corners) {
+    --_c: var(--shape-cut, 0.75rem);
+    clip-path: polygon(var(--_c) 0, calc(100% - var(--_c)) 0, calc(100% - var(--_c)) var(--_c), 100% var(--_c),
+      100% calc(100% - var(--_c)), calc(100% - var(--_c)) calc(100% - var(--_c)), calc(100% - var(--_c)) 100%,
+      var(--_c) 100%, var(--_c) calc(100% - var(--_c)), 0 calc(100% - var(--_c)), 0 var(--_c), var(--_c) var(--_c));
+  }
+  :where(.scoop-corners) {
+    --_c: var(--shape-cut, 0.75rem);
+    mask:
+      radial-gradient(circle at 0 0, #0000 var(--_c), #000 calc(var(--_c) + 0.5px)) 0 0 / 51% 51% no-repeat,
+      radial-gradient(circle at 100% 0, #0000 var(--_c), #000 calc(var(--_c) + 0.5px)) 100% 0 / 51% 51% no-repeat,
+      radial-gradient(circle at 0 100%, #0000 var(--_c), #000 calc(var(--_c) + 0.5px)) 0 100% / 51% 51% no-repeat,
+      radial-gradient(circle at 100% 100%, #0000 var(--_c), #000 calc(var(--_c) + 0.5px)) 100% 100% / 51% 51% no-repeat;
+  }
+  :where(.corner-superellipse) { border-radius: var(--shape-round, 2rem); }
+  /* round + bevel alternating (fallback: radius on two corners, cuts on two) */
+  :where(.corner-mixed) {
+    --_c: var(--shape-round, 2rem);
+    border-radius: var(--_c) 0 var(--_c) 0;
+    clip-path: polygon(0 0, calc(100% - var(--_c)) 0, 100% var(--_c), 100% 100%, var(--_c) 100%, 0 calc(100% - var(--_c)));
+  }
+  @supports (corner-shape: bevel) {
+    :where(.corner-squircle) { corner-shape: squircle; }
+    :where(.corner-superellipse) { corner-shape: superellipse(4); }
+    :where(.corner-mixed) { clip-path: none; border-radius: var(--_c); corner-shape: round bevel; }
+    :where(.cut-corners) { clip-path: none; border-radius: var(--_c); corner-shape: bevel; }
+    :where(.notch-corners) { clip-path: none; border-radius: var(--_c); corner-shape: notch; }
+    :where(.scoop-corners) { mask: none; border-radius: var(--_c); corner-shape: scoop; }
+  }
+
+  /* single / diagonal cuts (clip-path everywhere - corner-shape would need
+     per-corner radii the author may already use) */
+  :where(.cut-corner-tl) { --_c: var(--shape-cut, 0.75rem); clip-path: polygon(var(--_c) 0, 100% 0, 100% 100%, 0 100%, 0 var(--_c)); }
+  :where(.cut-corner-tr) { --_c: var(--shape-cut, 0.75rem); clip-path: polygon(0 0, calc(100% - var(--_c)) 0, 100% var(--_c), 100% 100%, 0 100%); }
+  :where(.cut-corner-br) { --_c: var(--shape-cut, 0.75rem); clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--_c)), calc(100% - var(--_c)) 100%, 0 100%); }
+  :where(.cut-corner-bl) { --_c: var(--shape-cut, 0.75rem); clip-path: polygon(0 0, 100% 0, 100% 100%, var(--_c) 100%, 0 calc(100% - var(--_c))); }
+  :where(.cut-corners-diagonal) {
+    --_c: var(--shape-cut, 0.75rem);
+    clip-path: polygon(var(--_c) 0, 100% 0, 100% calc(100% - var(--_c)), calc(100% - var(--_c)) 100%, 0 100%, 0 var(--_c));
+  }
+  :where(.cut-corners-top) {
+    --_c: var(--shape-cut, 0.75rem);
+    clip-path: polygon(var(--_c) 0, calc(100% - var(--_c)) 0, 100% var(--_c), 100% 100%, 0 100%, 0 var(--_c));
+  }
+  :where(.cut-corners-bottom) {
+    --_c: var(--shape-cut, 0.75rem);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--_c)), calc(100% - var(--_c)) 100%, var(--_c) 100%, 0 calc(100% - var(--_c)));
+  }
+  :where(.notch-corner-tr) {
+    --_c: var(--shape-cut, 0.75rem);
+    clip-path: polygon(0 0, calc(100% - var(--_c)) 0, calc(100% - var(--_c)) var(--_c), 100% var(--_c), 100% 100%, 0 100%);
+  }
+  :where(.scoop-corner-tr) {
+    --_c: var(--shape-cut, 0.75rem);
+    mask: radial-gradient(circle at 100% 0, #0000 var(--_c), #000 calc(var(--_c) + 0.5px));
+  }
+  /* folder tab along the top edge */
+  :where(.corner-folder) {
+    --_c: var(--shape-cut, 0.75rem);
+    clip-path: polygon(0 0, 40% 0, calc(40% + var(--_c)) var(--_c), 100% var(--_c), 100% 100%, 0 100%);
+  }
+  /* folded page corner: the cut plus a shaded flap (background-image) */
+  :where(.dog-ear) {
+    --_c: calc(var(--shape-cut, 0.75rem) * 2);
+    clip-path: polygon(0 0, calc(100% - var(--_c)) 0, 100% var(--_c), 100% 100%, 0 100%);
+    background-image: linear-gradient(225deg, #0000 50%, rgb(0 0 0 / 0.22) 50%);
+    background-position: 100% 0;
+    background-size: var(--_c) var(--_c);
+    background-repeat: no-repeat;
+  }
+  /* postage stamp: half-circle perforation on every edge */
+  :where(.stamp) {
+    --_r: calc(var(--shape-cut, 0.75rem) / 2);
+    mask:
+      radial-gradient(var(--_r) at var(--_r) var(--_r), #0000 97%, #000)
+        calc(-1 * var(--_r)) calc(-1 * var(--_r)) / calc(3 * var(--_r)) calc(3 * var(--_r)) round,
+      linear-gradient(#000 0 0) 50% / calc(100% - 3 * var(--_r)) calc(100% - 3 * var(--_r)) no-repeat;
+  }
+  :where(.ticket-vertical) {
+    --_c: var(--shape-cut, 0.75rem);
+    mask:
+      radial-gradient(circle at 50% 0, #0000 var(--_c), #000 calc(var(--_c) + 0.5px)) 0 0 / 100% 51% no-repeat,
+      radial-gradient(circle at 50% 100%, #0000 var(--_c), #000 calc(var(--_c) + 0.5px)) 0 100% / 100% 51% no-repeat;
+  }
+  /* ticket: half-circle bites out of both sides */
+  :where(.ticket) {
+    --_c: var(--shape-cut, 0.75rem);
+    mask:
+      radial-gradient(circle at 0 50%, #0000 var(--_c), #000 calc(var(--_c) + 0.5px)) 0 0 / 51% 100% no-repeat,
+      radial-gradient(circle at 100% 50%, #0000 var(--_c), #000 calc(var(--_c) + 0.5px)) 100% 0 / 51% 100% no-repeat;
+  }
+
+  /* ── Clip-path silhouettes ─────────────────────────────────── */
+  :where(.clip-circle) { clip-path: circle(50%); }
+  :where(.clip-ellipse) { clip-path: ellipse(50% 50%); }
+  :where(.clip-triangle) { clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+  :where(.clip-triangle-down) { clip-path: polygon(0 0, 100% 0, 50% 100%); }
+  :where(.clip-diamond) { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+  :where(.clip-pentagon) { clip-path: polygon(50% 0, 100% 38%, 82% 100%, 18% 100%, 0 38%); }
+  :where(.clip-hexagon) { clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); }
+  :where(.clip-octagon) { clip-path: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%); }
+  :where(.clip-star) { clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
+  :where(.clip-burst) {
+    clip-path: polygon(50% 0, 59% 17%, 75% 7%, 76% 25%, 93% 25%, 83% 41%, 100% 50%, 83% 59%, 93% 75%, 76% 75%,
+      75% 93%, 59% 83%, 50% 100%, 41% 83%, 25% 93%, 24% 75%, 7% 75%, 17% 59%, 0 50%, 17% 41%, 7% 25%, 24% 25%, 25% 7%, 41% 17%);
+  }
+  :where(.clip-cross) { clip-path: polygon(35% 0, 65% 0, 65% 35%, 100% 35%, 100% 65%, 65% 65%, 65% 100%, 35% 100%, 35% 65%, 0 65%, 0 35%, 35% 35%); }
+  :where(.clip-shield) { clip-path: polygon(50% 0, 100% 14%, 100% 52%, 50% 100%, 0 52%, 0 14%); }
+  :where(.clip-parallelogram) {
+    --_s: var(--shape-slant, 1.5rem);
+    clip-path: polygon(var(--_s) 0, 100% 0, calc(100% - var(--_s)) 100%, 0 100%);
+  }
+  :where(.clip-trapezoid) {
+    --_s: var(--shape-slant, 1.5rem);
+    clip-path: polygon(var(--_s) 0, calc(100% - var(--_s)) 0, 100% 100%, 0 100%);
+  }
+  :where(.clip-arrow) {
+    --_s: var(--shape-slant, 1.5rem);
+    clip-path: polygon(0 0, calc(100% - var(--_s)) 0, 100% 50%, calc(100% - var(--_s)) 100%, 0 100%);
+  }
+  :where(.clip-chevron) {
+    --_s: var(--shape-slant, 1.5rem);
+    clip-path: polygon(0 0, calc(100% - var(--_s)) 0, 100% 50%, calc(100% - var(--_s)) 100%, 0 100%, var(--_s) 50%);
+  }
+  :where(.clip-ribbon) {
+    --_s: var(--shape-slant, 1.5rem);
+    clip-path: polygon(0 0, 100% 0, calc(100% - var(--_s)) 50%, 100% 100%, 0 100%);
+  }
+  /* speech bubble: the transparent bottom border reserves the tail's room
+     (the background still paints under it), clip-path draws the tail */
+  :where(.clip-message) {
+    --_t: var(--shape-tail, 0.75rem);
+    border-block-end: var(--_t) solid transparent;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--_t)), calc(1.5rem + var(--_t)) calc(100% - var(--_t)),
+      1.25rem 100%, 1.25rem calc(100% - var(--_t)), 0 calc(100% - var(--_t)));
+  }
+  :where(.clip-message-end) {
+    --_t: var(--shape-tail, 0.75rem);
+    border-block-end: var(--_t) solid transparent;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--_t)), calc(100% - 1.25rem) calc(100% - var(--_t)),
+      calc(100% - 1.25rem) 100%, calc(100% - 1.5rem - var(--_t)) calc(100% - var(--_t)), 0 calc(100% - var(--_t)));
+  }
+  :where(.clip-message-top) {
+    --_t: var(--shape-tail, 0.75rem);
+    border-block-start: var(--_t) solid transparent;
+    clip-path: polygon(0 var(--_t), 1.25rem var(--_t), 1.25rem 0, calc(1.5rem + var(--_t)) var(--_t), 100% var(--_t), 100% 100%, 0 100%);
+  }
+  /* callout pointing left (at the vertical middle) */
+  :where(.clip-callout-left) {
+    --_t: var(--shape-tail, 0.75rem);
+    border-left: var(--_t) solid transparent;
+    clip-path: polygon(var(--_t) 0, 100% 0, 100% 100%, var(--_t) 100%, var(--_t) calc(50% + var(--_t)), 0 50%, var(--_t) calc(50% - var(--_t)));
+  }
+  :where(.clip-arrow-left) {
+    --_s: var(--shape-slant, 1.5rem);
+    clip-path: polygon(var(--_s) 0, 100% 0, 100% 100%, var(--_s) 100%, 0 50%);
+  }
+  :where(.clip-chevron-left) {
+    --_s: var(--shape-slant, 1.5rem);
+    clip-path: polygon(var(--_s) 0, 100% 0, calc(100% - var(--_s)) 50%, 100% 100%, var(--_s) 100%, 0 50%);
+  }
+  :where(.clip-arrow-both) {
+    --_s: var(--shape-slant, 1.5rem);
+    clip-path: polygon(var(--_s) 0, calc(100% - var(--_s)) 0, 100% 50%, calc(100% - var(--_s)) 100%, var(--_s) 100%, 0 50%);
+  }
+  :where(.clip-arrow-down) {
+    --_s: var(--shape-slant, 1.5rem);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--_s)), 50% 100%, 0 calc(100% - var(--_s)));
+  }
+  :where(.clip-chevron-down) {
+    --_s: var(--shape-slant, 1.5rem);
+    clip-path: polygon(0 0, 50% var(--_s), 100% 0, 100% calc(100% - var(--_s)), 50% 100%, 0 calc(100% - var(--_s)));
+  }
+  /* price tag: pointed start with a punched hole */
+  :where(.clip-tag) {
+    --_s: var(--shape-slant, 1.5rem);
+    clip-path: polygon(var(--_s) 0, 100% 0, 100% 100%, var(--_s) 100%, 0 50%);
+    mask: radial-gradient(circle at calc(var(--_s) * 0.8) 50%, #0000 0.2rem, #000 calc(0.2rem + 0.5px));
+  }
+  /* swallowtail at both ends */
+  :where(.clip-banner) {
+    --_s: var(--shape-slant, 1.5rem);
+    clip-path: polygon(0 0, 100% 0, calc(100% - var(--_s)) 50%, 100% 100%, 0 100%, var(--_s) 50%);
+  }
+  :where(.clip-bookmark) {
+    --_s: var(--shape-slant, 1.5rem);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - var(--_s)), 0 100%);
+  }
+  :where(.clip-pennant) { clip-path: polygon(0 0, 100% 50%, 0 100%); }
+
+  /* ── More silhouettes ────────────────────────────────────────── */
+  :where(.clip-house) { clip-path: polygon(50% 0, 100% 42%, 100% 100%, 0 100%, 0 42%); }
+  :where(.clip-bolt) { clip-path: polygon(62% 0, 14% 58%, 44% 58%, 34% 100%, 86% 38%, 56% 38%, 72% 0); }
+  :where(.clip-frame) {
+    clip-path: polygon(evenodd, 0 0, 100% 0, 100% 100%, 0 100%, 0 0, 22% 22%, 22% 78%, 78% 78%, 78% 22%, 22% 22%);
+  }
+  :where(.clip-donut) { mask: radial-gradient(closest-side, #0000 52%, #000 53% 98%, #0000 100%); }
+  :where(.clip-moon) {
+    clip-path: circle(50%);
+    mask: radial-gradient(circle at 72% 30%, #0000 36%, #000 36.5%);
+  }
+
+  /* ── 3D silhouettes: clip-path + light/shadow facets painted as
+        background-image over YOUR background-color (set the color with
+        background-color, not the background shorthand). Designed for a
+        square box. ──────────────────────────────────────────────── */
+  :where(.clip-cube) {
+    clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+    background-image: conic-gradient(from -63.43deg at 50% 50%,
+      rgb(255 255 255 / 0.32) 0 126.87deg, rgb(0 0 0 / 0.3) 0 243.43deg, rgb(0 0 0 / 0.08) 0);
+  }
+  :where(.clip-pyramid) {
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+    background-image: linear-gradient(90deg, rgb(255 255 255 / 0.22) 50%, rgb(0 0 0 / 0.28) 50%);
+  }
+  :where(.clip-diamond-3d) {
+    clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+    background-image: conic-gradient(rgb(255 255 255 / 0.12) 0 90deg, rgb(0 0 0 / 0.32) 0 180deg,
+      rgb(0 0 0 / 0.15) 0 270deg, rgb(255 255 255 / 0.3) 0);
+  }
+  :where(.clip-hexagon-3d) {
+    clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
+    background-image: conic-gradient(from -26.57deg at 50% 50%,
+      rgb(255 255 255 / 0.32) 0 53.13deg, rgb(255 255 255 / 0.1) 0 116.57deg, rgb(0 0 0 / 0.2) 0 180deg,
+      rgb(0 0 0 / 0.34) 0 233.13deg, rgb(0 0 0 / 0.14) 0 296.57deg, rgb(255 255 255 / 0.2) 0);
+  }
+  /* each point: one lit half, one shaded half */
+  :where(.clip-star-3d) {
+    clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    background-image: repeating-conic-gradient(from 0deg at 50% 51%, rgb(255 255 255 / 0.28) 0 36deg, rgb(0 0 0 / 0.24) 0 72deg);
+  }
+  /* cut gem: lit crown band over a faceted pavilion */
+  :where(.clip-gem) {
+    clip-path: polygon(22% 0, 78% 0, 100% 32%, 50% 100%, 0 32%);
+    background-image:
+      linear-gradient(90deg, rgb(255 255 255 / 0.22) 0 22%, rgb(255 255 255 / 0.45) 22% 50%, rgb(255 255 255 / 0.3) 50% 78%, rgb(255 255 255 / 0.1) 78%),
+      conic-gradient(from -36.3deg at 50% 100%, rgb(0 0 0 / 0.08) 0 18deg, rgb(255 255 255 / 0.14) 0 36deg,
+        rgb(0 0 0 / 0.24) 0 54deg, rgb(0 0 0 / 0.4) 0 72.6deg, #0000 0);
+    background-size: 100% 32%, 100% 100%;
+    background-repeat: no-repeat;
+  }
+  :where(.clip-sphere) {
+    clip-path: circle(50%);
+    background-image:
+      radial-gradient(circle at 32% 28%, rgb(255 255 255 / 0.75), rgb(255 255 255 / 0) 28%),
+      radial-gradient(circle at 50% 50%, rgb(0 0 0 / 0) 40%, rgb(0 0 0 / 0.45) 72%);
+  }
+  :where(.clip-cylinder) {
+    border-radius: 50% / 14%;
+    background-image:
+      radial-gradient(50% 14% at 50% 14%, rgb(255 255 255 / 0.3) 98%, #0000 100%),
+      linear-gradient(90deg, rgb(0 0 0 / 0.3), rgb(255 255 255 / 0.25) 30%, rgb(0 0 0 / 0.05) 55%, rgb(0 0 0 / 0.38));
+  }
+  :where(.clip-coin) {
+    clip-path: circle(50%);
+    background-image:
+      radial-gradient(closest-side, #0000 76%, rgb(0 0 0 / 0.2) 77% 81%, #0000 82%),
+      radial-gradient(circle at 30% 25%, rgb(255 255 255 / 0.5), #0000 40%),
+      linear-gradient(135deg, rgb(255 255 255 / 0.2), rgb(0 0 0 / 0.3));
+  }
+
+  /* ── Section edges (hero / band dividers) ───────────────────── */
+  :where(.edge-slant-bottom-reverse) { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 calc(100% - var(--shape-edge, 2.5rem))); }
+  :where(.edge-skew) {
+    clip-path: polygon(0 var(--shape-edge, 2.5rem), 100% 0, 100% calc(100% - var(--shape-edge, 2.5rem)), 0 100%);
+  }
+  :where(.edge-notch-bottom) {
+    --_e: var(--shape-edge, 2.5rem);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, calc(50% + var(--_e)) 100%, 50% calc(100% - var(--_e)), calc(50% - var(--_e)) 100%, 0 100%);
+  }
+  :where(.edge-concave-bottom) {
+    mask: radial-gradient(60% var(--shape-edge, 2.5rem) at 50% 100%, #0000 98%, #000 100%);
+  }
+  :where(.edge-torn-bottom) {
+    --_e: var(--shape-edge, 2.5rem);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--_e) * 0.5), 95% calc(100% - var(--_e) * 0.1),
+      90% calc(100% - var(--_e) * 0.7), 86% calc(100% - var(--_e) * 0.2), 81% calc(100% - var(--_e) * 0.9),
+      76% calc(100% - var(--_e) * 0.3), 71% calc(100% - var(--_e) * 0.6), 66% 100%, 60% calc(100% - var(--_e) * 0.8),
+      55% calc(100% - var(--_e) * 0.2), 50% calc(100% - var(--_e) * 0.7), 45% calc(100% - var(--_e) * 0.1),
+      39% calc(100% - var(--_e) * 0.9), 34% calc(100% - var(--_e) * 0.4), 29% calc(100% - var(--_e) * 0.8), 24% 100%,
+      18% calc(100% - var(--_e) * 0.6), 13% calc(100% - var(--_e) * 0.2), 8% calc(100% - var(--_e) * 0.9),
+      4% calc(100% - var(--_e) * 0.3), 0 calc(100% - var(--_e) * 0.6));
+  }
+  /* square battlements */
+  :where(.edge-crenel-bottom) {
+    --_e: calc(var(--shape-edge, 2.5rem) / 2);
+    mask:
+      linear-gradient(#000 0 0) top / 100% calc(100% - var(--_e) + 1px) no-repeat,
+      linear-gradient(90deg, #000 50%, #0000 0) bottom / calc(2 * var(--_e)) var(--_e) round no-repeat;
+  }
+  :where(.edge-zigzag-top) {
+    --_e: calc(var(--shape-edge, 2.5rem) / 2);
+    mask: conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(2 * var(--_e)) 100% round no-repeat;
+  }
+  :where(.edge-scallop-top) {
+    --_e: calc(var(--shape-edge, 2.5rem) / 3);
+    mask:
+      linear-gradient(#000 0 0) bottom / 100% calc(100% - var(--_e) + 1px) no-repeat,
+      radial-gradient(circle var(--_e) at 50% 100%, #000 98%, #0000) top / calc(2 * var(--_e)) var(--_e) round no-repeat;
+  }
+  :where(.edge-wave-top) {
+    --_e: calc(var(--shape-edge, 2.5rem) / 2);
+    mask:
+      linear-gradient(#000 0 0) bottom / 100% calc(100% - var(--_e) + 1px) no-repeat,
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 10' preserveAspectRatio='none'%3E%3Cpath d='M0 10H40V5Q30 10 20 5T0 5Z'/%3E%3C/svg%3E")
+        top / calc(4 * var(--_e)) var(--_e) round no-repeat;
+  }
+  :where(.edge-slant-bottom) { clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--shape-edge, 2.5rem)), 0 100%); }
+  :where(.edge-slant-top) { clip-path: polygon(0 var(--shape-edge, 2.5rem), 100% 0, 100% 100%, 0 100%); }
+  :where(.edge-point-bottom) { clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--shape-edge, 2.5rem)), 50% 100%, 0 calc(100% - var(--shape-edge, 2.5rem))); }
+  :where(.edge-curve-bottom) {
+    border-end-start-radius: 50% var(--shape-edge, 2.5rem);
+    border-end-end-radius: 50% var(--shape-edge, 2.5rem);
+  }
+  :where(.edge-curve-top) {
+    border-start-start-radius: 50% var(--shape-edge, 2.5rem);
+    border-start-end-radius: 50% var(--shape-edge, 2.5rem);
+  }
+  :where(.edge-zigzag-bottom) {
+    --_e: calc(var(--shape-edge, 2.5rem) / 2);
+    mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(2 * var(--_e)) 100% round no-repeat;
+  }
+  :where(.edge-scallop-bottom) {
+    --_e: calc(var(--shape-edge, 2.5rem) / 3);
+    /* the solid part overlaps the scallop row by 1px - no hairline seam */
+    mask:
+      linear-gradient(#000 0 0) top / 100% calc(100% - var(--_e) + 1px) no-repeat,
+      radial-gradient(circle var(--_e) at 50% 0, #000 98%, #0000) bottom / calc(2 * var(--_e)) var(--_e) round no-repeat;
+  }
+  /* one sine period per tile (4 × depth wide), stretched by the SVG */
+  :where(.edge-wave-bottom) {
+    --_e: calc(var(--shape-edge, 2.5rem) / 2);
+    mask:
+      linear-gradient(#000 0 0) top / 100% calc(100% - var(--_e) + 1px) no-repeat,
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 10' preserveAspectRatio='none'%3E%3Cpath d='M0 0H40V5Q30 0 20 5T0 5Z'/%3E%3C/svg%3E")
+        bottom / calc(4 * var(--_e)) var(--_e) round no-repeat;
+  }
+
+  /* ── Shadow scale (the theme's own tokens) ─────────────────── */
+  :where(.shadow-none) { box-shadow: none; }
+  :where(.shadow-2xs) { box-shadow: var(--shadow-2xs); }
+  :where(.shadow-xs) { box-shadow: var(--shadow-xs); }
+  :where(.shadow-sm) { box-shadow: var(--shadow-sm); }
+  :where(.shadow) { box-shadow: var(--shadow); }
+  :where(.shadow-md) { box-shadow: var(--shadow-md); }
+  :where(.shadow-lg) { box-shadow: var(--shadow-lg); }
+  :where(.shadow-xl) { box-shadow: var(--shadow-xl); }
+  :where(.shadow-2xl) { box-shadow: var(--shadow-2xl); }
+
+  /* ── Stylized shadows ─────────────────────────────────────── */
+  /* hard offset (brutalist): --shape-ink recolors, the size is the class */
+  :where(.shadow-hard-sm) { box-shadow: 2px 2px 0 0 var(--shape-ink, var(--foreground)); }
+  :where(.shadow-hard) { box-shadow: 4px 4px 0 0 var(--shape-ink, var(--foreground)); }
+  :where(.shadow-hard-lg) { box-shadow: 8px 8px 0 0 var(--shape-ink, var(--foreground)); }
+  /* paper stack: two offset sheets behind the element */
+  :where(.shadow-stack) {
+    box-shadow:
+      6px 6px 0 -1px var(--background), 6px 6px 0 0 var(--shape-ink, var(--border)),
+      12px 12px 0 -1px var(--background), 12px 12px 0 0 var(--shape-ink, var(--border));
+  }
+  /* smooth layered depth (five doubling layers) */
+  :where(.shadow-layered) {
+    --_k: color-mix(in oklch, var(--foreground) 6%, transparent);
+    box-shadow: 0 1px 1px var(--_k), 0 2px 2px var(--_k), 0 4px 4px var(--_k), 0 8px 8px var(--_k), 0 16px 16px var(--_k);
+  }
+  /* floating: large soft shadow pulled under the element */
+  :where(.shadow-float) {
+    box-shadow:
+      0 30px 60px -12px color-mix(in oklch, var(--foreground) 22%, transparent),
+      0 18px 36px -18px color-mix(in oklch, var(--foreground) 30%, transparent);
+  }
+  :where(.shadow-inner) { box-shadow: inset 0 2px 6px 0 color-mix(in oklch, var(--foreground) 14%, transparent); }
+  :where(.shadow-glow) {
+    box-shadow:
+      0 0 0 1px color-mix(in oklch, var(--shape-ink, var(--primary)) 35%, transparent),
+      0 0 28px 4px color-mix(in oklch, var(--shape-ink, var(--primary)) 40%, transparent);
+  }
+  :where(.shadow-ring) { box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--shape-ink, var(--ring)); }
+  /* 3D key / pressable edge */
+  :where(.shadow-edge) { box-shadow: 0 4px 0 0 color-mix(in oklch, var(--shape-ink, var(--foreground)) 75%, var(--background)); }
+  /* long diagonal (flat design) */
+  :where(.shadow-long) {
+    --_k: color-mix(in oklch, var(--shape-ink, var(--foreground)) 16%, transparent);
+    box-shadow: 1px 1px 0 var(--_k), 2px 2px 0 var(--_k), 3px 3px 0 var(--_k), 4px 4px 0 var(--_k), 5px 5px 0 var(--_k),
+      6px 6px 0 var(--_k), 7px 7px 0 var(--_k), 8px 8px 0 var(--_k), 9px 9px 0 var(--_k), 10px 10px 0 var(--_k);
+  }
+  /* soft UI: light top-left, dark bottom-right (best on --muted / --background) */
+  :where(.shadow-neu) {
+    box-shadow:
+      6px 6px 14px light-dark(color-mix(in oklch, var(--foreground) 16%, transparent), color-mix(in oklch, black 55%, transparent)),
+      -6px -6px 14px light-dark(color-mix(in oklch, var(--background) 70%, white), color-mix(in oklch, white 7%, transparent));
+  }
+  :where(.shadow-neu-inset) {
+    box-shadow:
+      inset 5px 5px 10px light-dark(color-mix(in oklch, var(--foreground) 14%, transparent), color-mix(in oklch, black 55%, transparent)),
+      inset -5px -5px 10px light-dark(color-mix(in oklch, var(--background) 70%, white), color-mix(in oklch, white 7%, transparent));
+  }
+  /* lifts on hover / keyboard focus */
+  :where(.shadow-lift) {
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease, translate 0.2s ease;
+  }
+  :where(.shadow-lift):hover,
+  :where(.shadow-lift):focus-visible,
+  :where(.shadow-lift):focus-within {
+    box-shadow: var(--shadow-xl);
+    translate: 0 -3px;
+  }
+  /* filter shadows follow the painted silhouette - put them on a WRAPPER of
+     a clip-path / mask shape (the clip would cut its own filter) */
+  :where(.drop-shadow) { filter: drop-shadow(0 10px 14px color-mix(in oklch, var(--foreground) 25%, transparent)); }
+  :where(.drop-shadow-hard) { filter: drop-shadow(4px 4px 0 var(--shape-ink, var(--foreground))); }
+  /* six stacked 1px drop-shadows compound into a solid 6px extrusion -
+     turns any clip-path silhouette into a 3D block */
+  :where(.drop-shadow-extrude) {
+    --_k: var(--shape-ink, color-mix(in oklch, var(--foreground) 60%, var(--background)));
+    filter: drop-shadow(1px 1px 0 var(--_k)) drop-shadow(1px 1px 0 var(--_k)) drop-shadow(1px 1px 0 var(--_k))
+      drop-shadow(1px 1px 0 var(--_k)) drop-shadow(1px 1px 0 var(--_k)) drop-shadow(1px 1px 0 var(--_k));
+  }
+  :where(.drop-shadow-float) { filter: drop-shadow(0 22px 14px color-mix(in oklch, var(--foreground) 24%, transparent)); }
+
+  /* more stylized box-shadows */
+  :where(.shadow-outline-offset) {
+    box-shadow: 6px 6px 0 -2px var(--background), 6px 6px 0 0 var(--shape-ink, var(--foreground));
+  }
+  :where(.shadow-retro) { box-shadow: 4px 4px 0 0 var(--chart-1), 8px 8px 0 0 var(--chart-2); }
+  :where(.shadow-rainbow) {
+    box-shadow: 3px 3px 0 0 var(--chart-1), 6px 6px 0 0 var(--chart-2), 9px 9px 0 0 var(--chart-3),
+      12px 12px 0 0 var(--chart-4), 15px 15px 0 0 var(--chart-5);
+  }
+  /* solid 3D block (eight 1px steps) */
+  :where(.shadow-extrude) {
+    --_k: var(--shape-ink, color-mix(in oklch, var(--foreground) 70%, var(--background)));
+    box-shadow: 1px 1px 0 var(--_k), 2px 2px 0 var(--_k), 3px 3px 0 var(--_k), 4px 4px 0 var(--_k), 5px 5px 0 var(--_k),
+      6px 6px 0 var(--_k), 7px 7px 0 var(--_k), 8px 8px 0 var(--_k);
+  }
+  :where(.shadow-colored) { box-shadow: 0 14px 30px -10px color-mix(in oklch, var(--shape-ink, var(--primary)) 60%, transparent); }
+  :where(.shadow-bottom) { box-shadow: 0 14px 12px -12px color-mix(in oklch, var(--foreground) 40%, transparent); }
+  :where(.shadow-hairline) { box-shadow: 0 0 0 1px var(--shape-ink, var(--border)); }
+  :where(.shadow-inner-hard) { box-shadow: inset 4px 4px 0 0 color-mix(in oklch, var(--shape-ink, var(--foreground)) 16%, transparent); }
+  /* raised bevel: lit top-left edge, shaded bottom-right edge */
+  :where(.shadow-bevel) { box-shadow: inset 2px 2px 0 rgb(255 255 255 / 0.4), inset -2px -2px 0 rgb(0 0 0 / 0.25); }
+  :where(.shadow-neon) {
+    --_k: var(--shape-ink, var(--primary));
+    box-shadow: 0 0 2px var(--_k), 0 0 8px var(--_k), 0 0 22px color-mix(in oklch, var(--_k) 70%, transparent),
+      inset 0 0 8px color-mix(in oklch, var(--_k) 55%, transparent);
+  }
+  /* die-cut sticker: a background-colored rim + soft drop */
+  :where(.shadow-sticker) {
+    box-shadow: 0 0 0 5px var(--background), 0 10px 18px -4px color-mix(in oklch, var(--foreground) 40%, transparent);
+  }
+  /* two sheets peeking out underneath */
+  :where(.shadow-paper-stack) {
+    --_k: color-mix(in oklch, var(--foreground) 22%, transparent);
+    box-shadow: 0 1px 1px var(--_k), 0 10px 0 -5px var(--background), 0 10px 1px -4px var(--_k),
+      0 20px 0 -10px var(--background), 0 20px 1px -9px var(--_k);
+  }
+
+  /* ── Frames ───────────────────────────────────────────────── */
+  :where(.frame-double) { border: 4px double var(--shape-ink, var(--foreground)); }
+  :where(.frame-dashed) { border: 2px dashed var(--shape-ink, var(--border)); }
+  :where(.frame-offset) { outline: 1px solid var(--shape-ink, var(--foreground)); outline-offset: 6px; }
+  :where(.frame-stitched) {
+    outline: 2px dashed color-mix(in oklch, var(--shape-ink, currentColor) 45%, transparent);
+    outline-offset: -8px;
+  }
+  /* L-shaped corner brackets (background-image only: background-color stays yours) */
+  :where(.frame-corners) {
+    --_i: var(--shape-ink, var(--foreground));
+    --_l: 1rem;
+    background-image:
+      linear-gradient(var(--_i) 0 0), linear-gradient(var(--_i) 0 0), linear-gradient(var(--_i) 0 0), linear-gradient(var(--_i) 0 0),
+      linear-gradient(var(--_i) 0 0), linear-gradient(var(--_i) 0 0), linear-gradient(var(--_i) 0 0), linear-gradient(var(--_i) 0 0);
+    background-position: 0 0, 0 0, 100% 0, 100% 0, 0 100%, 0 100%, 100% 100%, 100% 100%;
+    background-size: var(--_l) 2px, 2px var(--_l), var(--_l) 2px, 2px var(--_l), var(--_l) 2px, 2px var(--_l), var(--_l) 2px, 2px var(--_l);
+    background-repeat: no-repeat;
+  }
+  /* gradient border over the card surface (chart palette) */
+  :where(.frame-gradient) {
+    border: 2px solid transparent;
+    background:
+      linear-gradient(var(--card), var(--card)) padding-box,
+      linear-gradient(135deg, var(--chart-1), var(--chart-2), var(--chart-3), var(--chart-4)) border-box;
+  }
+  :where(.frame-conic) {
+    border: 3px solid transparent;
+    background:
+      linear-gradient(var(--card), var(--card)) padding-box,
+      conic-gradient(var(--chart-1), var(--chart-2), var(--chart-3), var(--chart-4), var(--chart-5), var(--chart-1)) border-box;
+  }
+  :where(.frame-dotted) { border: 3px dotted var(--shape-ink, var(--foreground)); }
+  :where(.frame-thick) { border: 4px solid var(--shape-ink, var(--foreground)); }
+  :where(.frame-ridge) { border: 6px ridge var(--shape-ink, var(--muted-foreground)); }
+  :where(.frame-groove) { border: 6px groove var(--shape-ink, var(--muted-foreground)); }
+  /* hairline border + an inner rule 4px inside it */
+  :where(.frame-inset) {
+    border: 1px solid var(--shape-ink, var(--foreground));
+    box-shadow: inset 0 0 0 4px var(--background), inset 0 0 0 5px var(--shape-ink, var(--foreground));
+  }
+  :where(.frame-sketch) {
+    border: 2px solid var(--shape-ink, var(--foreground));
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  }
+  :where(.frame-accent) { border-inline-start: 4px solid var(--shape-ink, var(--primary)); }
+  :where(.frame-underline) { border-block-end: 3px solid var(--shape-ink, var(--primary)); }
+  /* instant photo: a thick bottom rim */
+  :where(.frame-polaroid) {
+    border: 10px solid var(--card);
+    border-bottom-width: 2.75rem;
+    box-shadow: var(--shadow-md);
+  }
+  /* app window: title bar with traffic lights (in a transparent border, so
+     background-color stays yours) */
+  :where(.frame-window) {
+    border: 1px solid var(--border);
+    border-top: 1.75rem solid transparent;
+    background-image:
+      radial-gradient(circle, #ff5f57 4px, #0000 4.5px), radial-gradient(circle, #febc2e 4px, #0000 4.5px),
+      radial-gradient(circle, #28c840 4px, #0000 4.5px), linear-gradient(var(--muted), var(--muted));
+    background-origin: border-box;
+    background-position: 10px 8px, 28px 8px, 46px 8px, 0 0;
+    background-size: 12px 12px, 12px 12px, 12px 12px, 100% 1.75rem;
+    background-repeat: no-repeat;
+  }
+  /* film strip: sprocket holes punched through two dark bands */
+  :where(.frame-film) {
+    --_k: var(--shape-ink, var(--foreground));
+    border-block: 16px solid transparent;
+    background-image:
+      linear-gradient(90deg, var(--background) 8px, #0000 8px), linear-gradient(90deg, var(--background) 8px, #0000 8px),
+      linear-gradient(var(--_k), var(--_k)), linear-gradient(var(--_k), var(--_k));
+    background-origin: border-box;
+    background-position: 4px 4px, 4px calc(100% - 4px), 0 0, 0 100%;
+    background-size: 16px 8px, 16px 8px, 100% 16px, 100% 16px;
+    background-repeat: repeat-x, repeat-x, no-repeat, no-repeat;
+  }
+  /* animated dashed border (static under reduced motion) */
+  :where(.frame-marching-ants) {
+    --_k: var(--shape-ink, var(--foreground));
+    background-image:
+      linear-gradient(90deg, var(--_k) 50%, #0000 0), linear-gradient(90deg, var(--_k) 50%, #0000 0),
+      linear-gradient(0deg, var(--_k) 50%, #0000 0), linear-gradient(0deg, var(--_k) 50%, #0000 0);
+    background-size: 12px 2px, 12px 2px, 2px 12px, 2px 12px;
+    background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+    background-position: 0 0, 0 100%, 0 0, 100% 0;
+    animation: shape-march 0.6s linear infinite;
+  }
+
+  /* ── Background patterns (background-image only) ─────────── */
+  :where(.pattern-dots) {
+    --_i: var(--shape-ink, color-mix(in oklch, currentColor 22%, transparent));
+    background-image: radial-gradient(var(--_i) 1.25px, transparent 1.75px);
+    background-size: var(--shape-pattern, 16px) var(--shape-pattern, 16px);
+  }
+  :where(.pattern-grid) {
+    --_i: var(--shape-ink, color-mix(in oklch, currentColor 14%, transparent));
+    background-image: linear-gradient(var(--_i) 1px, transparent 1px), linear-gradient(90deg, var(--_i) 1px, transparent 1px);
+    background-size: var(--shape-pattern, 16px) var(--shape-pattern, 16px);
+  }
+  :where(.pattern-lines) {
+    --_i: var(--shape-ink, color-mix(in oklch, currentColor 14%, transparent));
+    background-image: repeating-linear-gradient(-45deg, var(--_i) 0 1px, transparent 1px calc(var(--shape-pattern, 16px) / 2));
+  }
+  :where(.pattern-checker) {
+    --_i: var(--shape-ink, color-mix(in oklch, currentColor 8%, transparent));
+    background-image: conic-gradient(var(--_i) 25%, transparent 0 50%, var(--_i) 0 75%, transparent 0);
+    background-size: var(--shape-pattern, 16px) var(--shape-pattern, 16px);
+  }
+  :where(.pattern-zigzag) {
+    --_i: var(--shape-ink, color-mix(in oklch, currentColor 14%, transparent));
+    --_p: var(--shape-pattern, 16px);
+    background-image:
+      linear-gradient(135deg, var(--_i) 25%, transparent 25%), linear-gradient(225deg, var(--_i) 25%, transparent 25%);
+    background-size: var(--_p) var(--_p);
+    background-position: 0 0, 0 0;
+  }
+  :where(.pattern-crosshatch) {
+    --_i: var(--shape-ink, color-mix(in oklch, currentColor 14%, transparent));
+    --_p: calc(var(--shape-pattern, 16px) / 2);
+    background-image:
+      repeating-linear-gradient(45deg, var(--_i) 0 1px, transparent 1px var(--_p)),
+      repeating-linear-gradient(-45deg, var(--_i) 0 1px, transparent 1px var(--_p));
+  }
+  :where(.pattern-lines-horizontal) {
+    --_i: var(--shape-ink, color-mix(in oklch, currentColor 16%, transparent));
+    background-image: repeating-linear-gradient(to bottom, var(--_i) 0 1px, transparent 1px calc(var(--shape-pattern, 16px) / 2));
+  }
+  :where(.pattern-lines-vertical) {
+    --_i: var(--shape-ink, color-mix(in oklch, currentColor 16%, transparent));
+    background-image: repeating-linear-gradient(to right, var(--_i) 0 1px, transparent 1px calc(var(--shape-pattern, 16px) / 2));
+  }
+  /* bold diagonal hazard stripes */
+  :where(.pattern-stripes) {
+    --_i: var(--shape-ink, color-mix(in oklch, currentColor 10%, transparent));
+    background-image: repeating-linear-gradient(-45deg, var(--_i) 0 calc(var(--shape-pattern, 16px) / 2), transparent 0 var(--shape-pattern, 16px));
+  }
+  :where(.pattern-triangles) {
+    --_i: var(--shape-ink, color-mix(in oklch, currentColor 10%, transparent));
+    background-image: linear-gradient(45deg, var(--_i) 50%, transparent 50%);
+    background-size: var(--shape-pattern, 16px) var(--shape-pattern, 16px);
+  }
+  /* four ink corners per tile leave a diamond grid */
+  :where(.pattern-diamonds) {
+    --_i: var(--shape-ink, color-mix(in oklch, currentColor 10%, transparent));
+    background-image:
+      linear-gradient(135deg, var(--_i) 25%, transparent 25%), linear-gradient(225deg, var(--_i) 25%, transparent 25%),
+      linear-gradient(315deg, var(--_i) 25%, transparent 25%), linear-gradient(45deg, var(--_i) 25%, transparent 25%);
+    background-size: var(--shape-pattern, 16px) var(--shape-pattern, 16px);
+  }
+  :where(.pattern-chevrons) {
+    --_i: var(--shape-ink, color-mix(in oklch, currentColor 12%, transparent));
+    --_p: var(--shape-pattern, 16px);
+    background-image:
+      linear-gradient(135deg, var(--_i) 25%, transparent 25%), linear-gradient(225deg, var(--_i) 25%, transparent 25%),
+      linear-gradient(315deg, var(--_i) 25%, transparent 25%), linear-gradient(45deg, var(--_i) 25%, transparent 25%);
+    background-size: var(--_p) var(--_p);
+    background-position: calc(var(--_p) / -2) 0, calc(var(--_p) / -2) 0, 0 0, 0 0;
+  }
+  /* interlocking half-moons */
+  :where(.pattern-rings) {
+    --_i: var(--shape-ink, color-mix(in oklch, currentColor 14%, transparent));
+    --_p: var(--shape-pattern, 16px);
+    background-image:
+      radial-gradient(circle at 100% 50%, transparent 20%, var(--_i) 21% 34%, transparent 35%),
+      radial-gradient(circle at 0 50%, transparent 20%, var(--_i) 21% 34%, transparent 35%);
+    background-size: calc(var(--_p) * 1.5) calc(var(--_p) * 3);
+  }
+  /* concentric ripples out of the top-left corner */
+  :where(.pattern-ripples) {
+    --_i: var(--shape-ink, color-mix(in oklch, currentColor 16%, transparent));
+    background-image: repeating-radial-gradient(circle at 0 0, var(--_i) 0 1px, transparent 1px calc(var(--shape-pattern, 16px) * 0.75));
+  }
+  :where(.pattern-polka) {
+    --_i: var(--shape-ink, color-mix(in oklch, currentColor 14%, transparent));
+    --_p: var(--shape-pattern, 16px);
+    background-image: radial-gradient(var(--_i) 20%, transparent 21%), radial-gradient(var(--_i) 20%, transparent 21%);
+    background-size: var(--_p) var(--_p);
+    background-position: 0 0, calc(var(--_p) / 2) calc(var(--_p) / 2);
+  }
+  :where(.pattern-plaid) {
+    --_i: var(--shape-ink, color-mix(in oklch, currentColor 8%, transparent));
+    --_p: calc(var(--shape-pattern, 16px) * 2);
+    background-image:
+      repeating-linear-gradient(90deg, var(--_i) 0 calc(var(--_p) * 0.25), transparent 0 calc(var(--_p) * 0.5),
+        var(--_i) 0 calc(var(--_p) * 0.56), transparent 0 var(--_p)),
+      repeating-linear-gradient(0deg, var(--_i) 0 calc(var(--_p) * 0.25), transparent 0 calc(var(--_p) * 0.5),
+        var(--_i) 0 calc(var(--_p) * 0.56), transparent 0 var(--_p));
+  }
+  /* running-bond bricks: mortar lines + joints that shift every row */
+  :where(.pattern-bricks) {
+    --_i: var(--shape-ink, color-mix(in oklch, currentColor 16%, transparent));
+    --_p: var(--shape-pattern, 16px);
+    background-image:
+      linear-gradient(var(--_i) 1px, transparent 1px),
+      conic-gradient(from 270deg at 1px 50%, var(--_i) 0 90deg, transparent 0),
+      conic-gradient(from 270deg at 1px 50%, var(--_i) 0 90deg, transparent 0);
+    background-size: calc(var(--_p) * 2) var(--_p), calc(var(--_p) * 2) calc(var(--_p) * 2), calc(var(--_p) * 2) calc(var(--_p) * 2);
+    background-position: 0 0, 0 0, var(--_p) var(--_p);
+  }
+  /* minor + major grid */
+  :where(.pattern-blueprint) {
+    --_i: var(--shape-ink, color-mix(in oklch, currentColor 18%, transparent));
+    --_m: color-mix(in oklch, var(--_i) 60%, transparent);
+    --_p: var(--shape-pattern, 16px);
+    background-image:
+      linear-gradient(var(--_i) 1px, transparent 1px), linear-gradient(90deg, var(--_i) 1px, transparent 1px),
+      linear-gradient(var(--_m) 1px, transparent 1px), linear-gradient(90deg, var(--_m) 1px, transparent 1px);
+    background-size: calc(var(--_p) * 5) calc(var(--_p) * 5), calc(var(--_p) * 5) calc(var(--_p) * 5), var(--_p) var(--_p), var(--_p) var(--_p);
+  }
+  :where(.pattern-sunburst) {
+    --_i: var(--shape-ink, color-mix(in oklch, currentColor 8%, transparent));
+    background-image: repeating-conic-gradient(from 0deg at 50% 50%, var(--_i) 0 6deg, transparent 0 12deg);
+  }
+  /* soft chart-color gradient mesh (hero / card backdrops) */
+  :where(.pattern-mesh) {
+    background-image:
+      radial-gradient(at 15% 20%, color-mix(in oklch, var(--chart-1) 45%, transparent), transparent 55%),
+      radial-gradient(at 85% 15%, color-mix(in oklch, var(--chart-2) 40%, transparent), transparent 50%),
+      radial-gradient(at 75% 85%, color-mix(in oklch, var(--chart-3) 40%, transparent), transparent 55%),
+      radial-gradient(at 20% 90%, color-mix(in oklch, var(--chart-4) 35%, transparent), transparent 50%);
+  }
+  /* film grain (SVG turbulence, mid-gray: reads on light and dark) */
+  :where(.pattern-grain) {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .35 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+@keyframes shape-march {
+  to { background-position: 12px 0, -12px 100%, 0 -12px, 100% 12px; }
+}
+
+/* Accessibility: lift + marching ants are decoration - no motion when reduced */
+@media (prefers-reduced-motion: reduce) {
+  @layer utilities {
+    :where(.shadow-lift) { transition: none; }
+    :where(.shadow-lift):hover,
+    :where(.shadow-lift):focus-visible,
+    :where(.shadow-lift):focus-within { translate: none; }
+    :where(.frame-marching-ants) { animation: none; }
+  }
+}
+
+/* Forced colors drop box-shadows and background images: shadow-only and
+   pattern-only silhouettes keep a visible system-color outline */
+@media (forced-colors: active) {
+  @layer utilities {
+    :where(.shadow-hard-sm, .shadow-hard, .shadow-hard-lg, .shadow-stack, .shadow-layered, .shadow-float,
+      .shadow-glow, .shadow-ring, .shadow-edge, .shadow-long, .shadow-neu, .shadow-neu-inset, .shadow-lift,
+      .shadow-outline-offset, .shadow-retro, .shadow-rainbow, .shadow-extrude, .shadow-colored, .shadow-bottom,
+      .shadow-hairline, .shadow-inner-hard, .shadow-bevel, .shadow-neon, .shadow-sticker, .shadow-paper-stack,
+      .frame-corners, .frame-gradient, .frame-conic, .frame-inset, .frame-window, .frame-film, .frame-marching-ants) {
+      outline: 1px solid CanvasText;
+    }
+  }
+}

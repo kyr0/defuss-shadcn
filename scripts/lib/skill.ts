@@ -84,6 +84,109 @@ export function assembleSkillText(template: string, entries: SkillEntry[]): stri
   const index = entries.map(renderSkillEntry).join('\n');
   if (!template.includes(SKILL_COMPONENTS_MARKER))
     throw new Error(`${SKILL_TEMPLATE_FILE} lost the ${SKILL_COMPONENTS_MARKER} marker`);
-  return template.replace(SKILL_COMPONENTS_MARKER, index.trimEnd());
+  return template.replace(SKILL_COMPONENTS_MARKER, () => index.trimEnd()); // fn: index may contain `$`
 }
 
+
+// -- Top-level SKILL.md (the whole project packaged as one agent skill) ------
+
+/** Template for the repo-root SKILL.md (relative to src/) and its output (relative to the repo root). */
+export const ROOT_SKILL_TEMPLATE_FILE = 'SKILL_root_tpl.md';
+export const ROOT_SKILL_OUTPUT_FILE = 'SKILL.md';
+export const ROOT_SKILL_DOCS_MARKER = '<!-- DOCS -->';
+
+/** One documentation page as the sidebar lists it (children = its submenu). */
+export interface RootDocPage {
+  label: string;
+  slug: string;
+  description: string;
+  children: RootDocPage[];
+}
+
+export interface RootDocSection {
+  heading: string;
+  pages: RootDocPage[];
+}
+
+export interface RootSkillData {
+  version: string;
+  total: number;
+  withJs: number;
+  /** sidebar sections in order - pages AND components, the renderer splits them */
+  sections: RootDocSection[];
+  components: (SkillEntry & { hasJs: boolean })[];
+}
+
+const pageLink = (slug: string): string => `src/documentation/pages/${slug}.mdx`;
+
+/** Frontmatter prose may name elements (`An <hr> …`, `<dialog> + showModal()`):
+ *  outside code spans a markdown renderer would emit them as REAL elements, so
+ *  wrap every bare tag in backticks (existing `code` spans stay untouched). */
+export function mdProse(text: string): string {
+  return text
+    .split(/(`[^`]*`)/)
+    .map((part, i) => (i % 2 ? part : part.replace(/<\/?[a-zA-Z][^<>]*>/g, (tag) => `\`${tag}\``)))
+    .join('');
+}
+const skillLink = (folder: string): string => `dist/components/${folder}/component-skill.md`;
+
+/** Docs map: every sidebar page that is NOT a component page (those live in the index). */
+function renderDocsMap(data: RootSkillData, isComponent: (slug: string) => boolean): string {
+  const line = (p: RootDocPage, depth: number): string[] => {
+    const own = isComponent(p.slug)
+      ? []
+      : [`${'  '.repeat(depth)}- [${p.label}](${pageLink(p.slug)})${p.description ? ` - ${mdProse(p.description)}` : ''}`];
+    return [...own, ...p.children.flatMap((c) => line(c, isComponent(p.slug) ? depth : depth + 1))];
+  };
+  return data.sections
+    .map((s) => ({ heading: s.heading, lines: s.pages.flatMap((p) => line(p, 0)) }))
+    .filter((s) => s.lines.length)
+    .map((s) => `### ${s.heading}\n\n${s.lines.join('\n')}`)
+    .join('\n\n');
+}
+
+/** Component index, grouped by sidebar section (unlisted components last). */
+function renderComponentIndex(data: RootSkillData): string {
+  const bySlug = new Map(data.components.map((c) => [c.folder, c]));
+  const seen = new Set<string>();
+  const block = (c: (typeof data.components)[number]): string => {
+    const states = c.supportedStates.split(',').map((s) => `\`${s.trim()}\``).join(', ');
+    return [
+      `#### ${c.name} · ${c.type} · ${c.hasJs ? 'JS' : 'CSS'}`,
+      '',
+      `- **Why:** ${mdProse(c.why)}`,
+      `- **When:** ${mdProse(c.when)}`,
+      `- **States:** ${states} · **Skill:** [${skillLink(c.folder)}](${skillLink(c.folder)}) · **Examples:** [${pageLink(c.folder)}](${pageLink(c.folder)})`,
+    ].join('\n');
+  };
+  const collect = (pages: RootDocPage[]): string[] =>
+    pages.flatMap((p) => {
+      const c = bySlug.get(p.slug);
+      const own = c && !seen.has(c.folder) ? (seen.add(c.folder), [block(c)]) : [];
+      return [...own, ...collect(p.children)];
+    });
+  const groups = data.sections
+    .map((s) => ({ heading: s.heading, blocks: collect(s.pages) }))
+    .filter((g) => g.blocks.length);
+  const rest = data.components.filter((c) => !seen.has(c.folder)).map(block);
+  if (rest.length) groups.push({ heading: 'Other', blocks: rest });
+  return groups.map((g) => `### ${g.heading}\n\n${g.blocks.join('\n\n')}`).join('\n\n');
+}
+
+/** Pure assembly of the repo-root SKILL.md (template + nav/page/skill data). */
+export function assembleRootSkillText(template: string, data: RootSkillData): string {
+  for (const marker of [ROOT_SKILL_DOCS_MARKER, SKILL_COMPONENTS_MARKER]) {
+    if (!template.includes(marker)) throw new Error(`${ROOT_SKILL_TEMPLATE_FILE} lost the ${marker} marker`);
+  }
+  const isComponent = (slug: string): boolean => data.components.some((c) => c.folder === slug);
+  return template
+    .replaceAll('{{VERSION}}', data.version)
+    .replaceAll('{{TOTAL}}', String(data.total))
+    .replaceAll('{{WITH_JS}}', String(data.withJs))
+    .replaceAll('{{CSS_ONLY}}', String(data.total - data.withJs))
+    // function replacers: rendered text contains `df$` - a string replacement
+    // would read "$`" as "insert the text before the match"
+    .replace(ROOT_SKILL_DOCS_MARKER, () => renderDocsMap(data, isComponent))
+    .replace(SKILL_COMPONENTS_MARKER, () => renderComponentIndex(data))
+    .replace(/\n{3,}/g, '\n\n');
+}

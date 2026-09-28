@@ -20,7 +20,165 @@ if (!__df$shared || __df$shared.abi !== '0.9.0') {
 const { defussGlobals } = __df$shared;
 const df$ = defussGlobals();
 const numberInputStates = ['default'];
-const getInput = (wrapper) => wrapper.querySelector('input[type="number"]');
+// the editable field: <input type="number">, or the text field of a
+// currency-masked wrapper (hidden outputs are never the field)
+const getInput = (wrapper) => wrapper.querySelector('input:not([type="hidden"])');
+// -- Currency mask (data-currency on the wrapper) -----------------------------
+// A native number input cannot show grouping, a locale's decimal comma or a
+// currency symbol, so a currency field is <input type="text" inputmode=
+// "decimal"> masked through Intl.NumberFormat: the LOCALE decides decimal and
+// group separators, the symbol, its side and the fraction digits (EUR 2,
+// JPY 0, …). data-locale picks it (else the nearest [lang], else the
+// browser's); data-currency-display = symbol | narrowSymbol | code | name.
+/** Everything the mask needs to know about a (currency, locale) pair. */
+function currencyConfig(wrapper) {
+    const currency = String(wrapper.dataset.currency || 'USD').toUpperCase();
+    const locale = wrapper.dataset.locale || wrapper.closest('[lang]')?.getAttribute('lang') || navigator.language;
+    const currencyDisplay = wrapper.dataset.currencyDisplay || 'symbol';
+    const money = new Intl.NumberFormat(locale, { style: 'currency', currency, currencyDisplay });
+    const parts = money.formatToParts(1234567.5);
+    const index = (type) => parts.findIndex((p) => p.type === type);
+    const fraction = money.resolvedOptions().maximumFractionDigits ?? 2;
+    return {
+        locale,
+        currency,
+        fraction,
+        decimal: parts.find((p) => p.type === 'decimal')?.value ?? '.',
+        symbol: parts.find((p) => p.type === 'currency')?.value ?? currency,
+        prefix: index('currency') < index('integer'),
+        grouping: new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }),
+        fixed: new Intl.NumberFormat(locale, { minimumFractionDigits: fraction, maximumFractionDigits: fraction }),
+    };
+}
+/**
+ * Split typed text into integer + fraction digits. The locale's decimal
+ * separator marks the fraction; the OTHER of "," / "." counts as decimal too
+ * when it is followed by no more digits than the currency allows - so a
+ * numpad "." in de-DE ("12." → "12,") works, while "1.234" (a group) stays
+ * an integer. Everything else that isn't a digit is dropped.
+ */
+function parseMoney(text, cfg) {
+    let dec = text.lastIndexOf(cfg.decimal);
+    if (dec < 0 && cfg.fraction > 0) {
+        const alt = cfg.decimal === ',' ? '.' : ',';
+        const i = text.lastIndexOf(alt);
+        // only digits after it, and no more than the currency's fraction digits
+        if (i >= 0 && /^\d*$/.test(text.slice(i + 1)) && text.length - i - 1 <= cfg.fraction)
+            dec = i;
+    }
+    if (cfg.fraction === 0)
+        dec = -1;
+    const int = (dec < 0 ? text : text.slice(0, dec)).replace(/\D/g, '').replace(/^0+(?=\d)/, '');
+    const frac = dec < 0 ? null : text.slice(dec + 1).replace(/\D/g, '').slice(0, cfg.fraction);
+    return { int, frac };
+}
+/** Locale text for integer + fraction digits (grouped; BigInt: no float loss). */
+const moneyText = (int, frac, cfg) => (int ? cfg.grouping.format(BigInt(int)) : frac !== null ? '0' : '') + (frac !== null ? cfg.decimal + frac : '');
+/** The machine value for forms / getState, normalised - "1234.5" whether the
+ * field shows 1.234,5 or 1.234,50; '' when empty. */
+const moneyValue = ({ int, frac }) => {
+    if (!int && !frac)
+        return '';
+    const f = (frac ?? '').replace(/0+$/, '');
+    return `${int || '0'}${f ? '.' + f : ''}`;
+};
+/**
+ * Re-mask the field after typing, keeping the caret after the same number of
+ * digits it followed before (grouping characters come and go under it).
+ */
+function maskMoney(wrapper, input, cfg) {
+    const raw = input.value;
+    const caret = input.selectionStart ?? raw.length;
+    const digitsBefore = raw.slice(0, caret).replace(/\D/g, '').length;
+    const parsed = parseMoney(raw, cfg);
+    const text = moneyText(parsed.int, parsed.frac, cfg);
+    if (text !== raw) {
+        input.value = text;
+        let pos = 0;
+        for (let seen = 0; pos < text.length && seen < digitsBefore; pos++)
+            if (/\d/.test(text[pos]))
+                seen++;
+        // typed the decimal separator right here: land after it
+        if (text[pos] === cfg.decimal && raw.slice(0, caret).match(/[.,]$/))
+            pos++;
+        input.setSelectionRange(pos, pos);
+    }
+    wrapper._moneyExact = moneyValue(parsed);
+    writeMoneyOutput(wrapper, wrapper._moneyExact);
+}
+/** Commit (blur / Enter / step / preset): full fraction digits, "0" for empty int. */
+function commitMoney(wrapper, input, cfg, number = null, remember = true) {
+    const value = number ?? moneyValue(parseMoney(input.value, cfg));
+    if (remember)
+        wrapper._moneyExact = value === '' || !Number.isFinite(Number(value)) ? '' : String(Number(value));
+    if (value === '' || !Number.isFinite(Number(value))) {
+        input.value = '';
+        writeMoneyOutput(wrapper, '');
+        return;
+    }
+    input.value = cfg.fixed.format(Number(value));
+    writeMoneyOutput(wrapper, moneyValue(parseMoney(input.value, cfg)));
+}
+/** Mirror the machine value into input[data-number-output] (+ change) and the wrapper. */
+function writeMoneyOutput(wrapper, value) {
+    wrapper.dataset.value = value;
+    wrapper.querySelectorAll('input[data-number-output]').forEach((out) => {
+        if (out.value === value)
+            return;
+        out.value = value;
+        out.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+}
+/** Show the locale's symbol on the locale's side (a unit label is created if missing). */
+function placeCurrencySymbol(wrapper, input, cfg) {
+    let unit = wrapper.querySelector('.number-input-unit');
+    if (!unit) {
+        unit = document.createElement('label');
+        unit.className = 'number-input-unit';
+        if (input.id)
+            unit.htmlFor = input.id;
+    }
+    unit.textContent = cfg.symbol;
+    if (cfg.prefix && unit.nextElementSibling !== input)
+        input.before(unit);
+    if (!cfg.prefix && input.nextElementSibling !== unit)
+        input.after(unit);
+}
+/** Set up (or re-set after data-locale / data-currency changes) a currency field. */
+function setupCurrency(wrapper, input) {
+    const cfg = currencyConfig(wrapper);
+    wrapper._money = cfg;
+    placeCurrencySymbol(wrapper, input, cfg);
+    input.setAttribute('inputmode', cfg.fraction > 0 ? 'decimal' : 'numeric');
+    // re-setup (locale / currency switch): render the remembered EXACT amount;
+    // first setup: the authored value - a machine number ("1234.5") or
+    // already-localised text ("1.234,50", e.g. a re-serialised field)
+    if (wrapper._moneyExact !== undefined) {
+        commitMoney(wrapper, input, cfg, wrapper._moneyExact, false);
+        return;
+    }
+    const authored = (input.getAttribute('value') ?? '').trim();
+    const machine = /^\d+(\.\d+)?$/.test(authored) ? authored : moneyValue(parseMoney(authored, cfg));
+    commitMoney(wrapper, input, cfg, machine === '' ? '' : machine);
+}
+/**
+ * Fixed decimals (data-decimals="N" on the wrapper): the value is shown with
+ * exactly N fraction digits - 19 → "19.0", a step from 19.5 → "20.0" (native
+ * stepUp() would print "20"). Applied on init, after every step, on commit
+ * (change = blur/Enter - never mid-typing) and on setState presets. The
+ * input's value stays a plain number string, so forms submit it unchanged.
+ */
+function formatDecimals(wrapper, input) {
+    const d = parseInt(wrapper.dataset.decimals ?? '', 10);
+    if (!Number.isFinite(d) || d < 0 || input.value === '')
+        return;
+    const n = input.valueAsNumber;
+    if (!Number.isFinite(n))
+        return;
+    const fixed = n.toFixed(d);
+    if (input.value !== fixed)
+        input.value = fixed;
+}
 /**
  * UI side of setState: 'default' optionally presets { value } through the
  * native input (events dispatched so listeners see the change).
@@ -29,7 +187,15 @@ function triggerStateChange(wrapper, config) {
     const input = getInput(wrapper);
     if (!input || config?.value === undefined)
         return;
+    if (wrapper._money) {
+        // currency: { value } is the machine number (1234.5), rendered per locale
+        commitMoney(wrapper, input, wrapper._money, config.value === '' ? '' : String(config.value));
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+        return;
+    }
     input.value = String(config.value);
+    formatDecimals(wrapper, input);
     input.dispatchEvent(new Event('input', { bubbles: true }));
     input.dispatchEvent(new Event('change', { bubbles: true }));
 }
@@ -49,7 +215,13 @@ export const numberInputApi = {
         return {
             name: wrapper.dataset.stateName || 'default',
             // live value - reflects stepper clicks and typing, not just setState
-            config: { ...wrapper._stateConfig, value: input ? input.value : '' },
+            // currency fields add the machine value + currency/locale; value stays
+            // what the field shows
+            config: {
+                ...wrapper._stateConfig,
+                value: input ? input.value : '',
+                ...(wrapper._money ? { number: wrapper.dataset.value ?? '', currency: wrapper._money.currency, locale: wrapper._money.locale } : {}),
+            },
         };
     },
 };
@@ -63,17 +235,54 @@ function init() {
             setState: (stateName, config) => numberInputApi.setState(wrapper, stateName, config),
             getState: () => numberInputApi.getState(wrapper),
         };
-        const input = wrapper.querySelector('input[type="number"]');
+        const input = getInput(wrapper);
         const decBtn = wrapper.querySelector('[data-action="decrement"]');
         const incBtn = wrapper.querySelector('[data-action="increment"]');
         if (!input)
             return;
+        if (wrapper.hasAttribute('data-currency')) {
+            setupCurrency(wrapper, input);
+            input.addEventListener('input', (e) => {
+                if (e.isComposing)
+                    return;
+                maskMoney(wrapper, input, wrapper._money);
+            });
+            input.addEventListener('blur', () => { commitMoney(wrapper, input, wrapper._money); });
+            // steppers + ArrowUp/Down nudge by data-step (default 1), clamped to data-min / data-max
+            const nudge = (direction) => {
+                const step = Number(input.dataset.step || 1);
+                const min = input.dataset.min === undefined ? -Infinity : Number(input.dataset.min);
+                const max = input.dataset.max === undefined ? Infinity : Number(input.dataset.max);
+                const current = Number(moneyValue(parseMoney(input.value, wrapper._money)) || 0);
+                const next = Math.min(max, Math.max(min, Math.round((current + direction * step) * 1e6) / 1e6));
+                commitMoney(wrapper, input, wrapper._money, String(next));
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+                input.dispatchEvent(new Event('change', { bubbles: true }));
+            };
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    nudge(e.key === 'ArrowUp' ? 1 : -1);
+                }
+            });
+            if (decBtn)
+                decBtn.addEventListener('click', () => { nudge(-1); });
+            if (incBtn)
+                incBtn.addEventListener('click', () => { nudge(1); });
+            // switching locale / currency / display at runtime re-renders the same amount
+            new MutationObserver(() => { setupCurrency(wrapper, input); }).observe(wrapper, { attributes: true, attributeFilter: ['data-locale', 'data-currency', 'data-currency-display'] });
+            return;
+        }
+        formatDecimals(wrapper, input);
+        // commit (blur / Enter) re-applies the fixed decimals to typed values
+        input.addEventListener('change', () => { formatDecimals(wrapper, input); });
         const update = (direction) => {
             try {
                 if (direction > 0)
                     input.stepUp();
                 else
                     input.stepDown();
+                formatDecimals(wrapper, input);
                 input.dispatchEvent(new Event('input', { bubbles: true }));
                 input.dispatchEvent(new Event('change', { bubbles: true }));
             }

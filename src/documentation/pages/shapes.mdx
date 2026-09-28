@@ -1,0 +1,490 @@
+---
+title: "Shapes"
+description: "A catalog of reusable silhouettes to mix a design up: radius scale, organic and cut corners, clip-path shapes, section edges, shadows, frames and patterns - one opt-in stylesheet."
+slug: "shapes"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="shapes" title="Shapes" introStyle="max-width:38rem;">
+  A catalog of ready-made silhouettes for websites, landing pages and documentation: radius scale, organic and cut corners, clip-path shapes, section edges, a shadow scale plus stylized shadows, frames and background patterns. One opt-in stylesheet, token colors only - so every shape follows the active theme and dark mode. Every code block is the live demo.
+</PageHeader>
+
+<h2 id="install" class="h2-display">Load the module</h2>
+
+<DocText><code>theme/utils/shapes.css</code> is optional, like the sizing and layout modules - no component depends on it. Load it after the token file. Every class is a zero-specificity <code>:where()</code> rule in <code>@layer utilities</code>, so it overrides component styles (a <code>card</code> becomes a leaf, a <code>btn</code> gets a hard shadow) and any rule of your own overrides it.</DocText>
+
+```html
+<link rel="stylesheet" href="../theme/utils/default-semantic-tokens.css">
+<!-- optional module: corners, clips, edges, shadows, frames, patterns -->
+<link rel="stylesheet" href="../theme/utils/shapes.css">
+```
+
+<div class="sep" />
+
+<h2 id="radius" class="h2-display">Radius scale</h2>
+
+<DocText>The theme's own radius tokens as classes - <code>rounded-sm</code> to <code>rounded-xl</code> follow <code>--radius</code>, so a square theme (Doom 64) and a pill theme (ChatGPT) both stay true to themselves. <code>rounded-full</code> makes pills and circles.</DocText>
+
+```html example schema="none"
+<style>.shape-demo { aspect-ratio: 1; background-color: var(--primary); }</style>
+<div class="grid grid-cols-auto gap-5" style="--layout-min:5.5rem;">
+  <div class="stack items-center gap-2"><div class="shape-demo w-full rounded-none"></div><p class="demo-label">rounded-none</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full rounded-sm"></div><p class="demo-label">rounded-sm</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full rounded-md"></div><p class="demo-label">rounded-md</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full rounded-lg"></div><p class="demo-label">rounded-lg</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full rounded-xl"></div><p class="demo-label">rounded-xl</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full rounded-2xl"></div><p class="demo-label">rounded-2xl</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full rounded-full"></div><p class="demo-label">rounded-full</p></div>
+</div>
+```
+
+<div class="sep" />
+
+<h2 id="organic" class="h2-display">Organic and asymmetric corners</h2>
+
+<DocText>Plain <code>border-radius</code> recipes, so borders and box-shadows follow the curve. Leaves, tabs, speech bubbles, drops, arches and three blobs. <code>--shape-round</code> (default 2rem) sets the radius of the leaf, tab and bubble shapes.</DocText>
+
+```html example schema="none"
+<style>.shape-demo { aspect-ratio: 1; background-color: var(--primary); }</style>
+<div class="grid grid-cols-auto gap-5" style="--layout-min:5.5rem;">
+  <div class="stack items-center gap-2"><div class="shape-demo w-full corner-leaf"></div><p class="demo-label">corner-leaf</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full corner-leaf-reverse"></div><p class="demo-label">corner-leaf-reverse</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full corner-tab"></div><p class="demo-label">corner-tab</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full corner-tab-bottom"></div><p class="demo-label">corner-tab-bottom</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full corner-bubble"></div><p class="demo-label">corner-bubble</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full corner-bubble-end"></div><p class="demo-label">corner-bubble-end</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full corner-drop"></div><p class="demo-label">corner-drop</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full corner-arch"></div><p class="demo-label">corner-arch</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full corner-pill-end"></div><p class="demo-label">corner-pill-end</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full corner-blob"></div><p class="demo-label">corner-blob</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full corner-blob-2"></div><p class="demo-label">corner-blob-2</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full corner-blob-3"></div><p class="demo-label">corner-blob-3</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full corner-blob-4"></div><p class="demo-label">corner-blob-4</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full corner-blob-5"></div><p class="demo-label">corner-blob-5</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full corner-egg"></div><p class="demo-label">corner-egg</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full corner-lens"></div><p class="demo-label">corner-lens</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full corner-quarter"></div><p class="demo-label">corner-quarter</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full corner-half"></div><p class="demo-label">corner-half</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full corner-sketch"></div><p class="demo-label">corner-sketch</p></div>
+</div>
+```
+
+<DocText>Organic silhouettes built from overlapping circles in a <code>mask</code>: a four-petal flower, a six-petal flower, a daisy, a heart and a cloud. They are designed for a square box (<code>aspect-ratio: 1</code>) and look great on images and in accent colors.</DocText>
+
+```html example schema="none"
+<style>.shape-demo { aspect-ratio: 1; background-color: var(--primary); }</style>
+<div class="grid grid-cols-auto gap-5" style="--layout-min:6.5rem;">
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-flower" style="background-color:var(--chart-1);"></div><p class="demo-label">shape-flower</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-flower-6" style="background-color:var(--chart-2);"></div><p class="demo-label">shape-flower-6</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-daisy" style="background-color:var(--chart-3);"></div><p class="demo-label">shape-daisy</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-heart" style="background-color:var(--destructive);"></div><p class="demo-label">shape-heart</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-cloud" style="background-color:var(--chart-4);"></div><p class="demo-label">shape-cloud</p></div>
+  <div class="stack items-center gap-2"><img class="shape-flower-6" src="images/mk-portrait2.png" alt="Portrait" width="104" height="104" style="object-fit:cover;"><p class="demo-label">flower on an image</p></div>
+</div>
+```
+
+<div class="sep" />
+
+<h2 id="cut-corners" class="h2-display">Cut, notch, scoop and squircle corners</h2>
+
+<DocText>Where the browser supports the native <code>corner-shape</code> property (Chromium 139+), these use it, so borders and shadows keep following the outline. Other browsers draw the same outline with <code>clip-path</code> (cut, notch) or <code>mask</code> (scoop), and <code>corner-squircle</code> falls back to a plain round corner. <code>--shape-cut</code> (default 0.75rem) sets the size of the cut.</DocText>
+
+```html example schema="none"
+<style>.shape-demo { aspect-ratio: 1; background-color: var(--primary); }</style>
+<div class="grid grid-cols-auto gap-5" style="--layout-min:5.5rem;">
+  <div class="stack items-center gap-2"><div class="shape-demo w-full corner-squircle"></div><p class="demo-label">corner-squircle</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full cut-corners"></div><p class="demo-label">cut-corners</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full notch-corners"></div><p class="demo-label">notch-corners</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full scoop-corners"></div><p class="demo-label">scoop-corners</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full cut-corners" style="--shape-cut:1.75rem;"></div><p class="demo-label">--shape-cut: 1.75rem</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full scoop-corners" style="--shape-cut:1.75rem;"></div><p class="demo-label">--shape-cut: 1.75rem</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full corner-superellipse"></div><p class="demo-label">corner-superellipse</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full corner-mixed"></div><p class="demo-label">corner-mixed</p></div>
+</div>
+```
+
+<DocText>Single-corner, paired and diagonal cuts, a single notch or scoop, a folder tab, a folded page corner (<code>dog-ear</code>), a postage <code>stamp</code> with perforated edges, and <code>ticket</code> / <code>ticket-vertical</code> with half-circle bites. These use <code>clip-path</code> / <code>mask</code> in every browser.</DocText>
+
+```html example schema="none"
+<style>.shape-demo { aspect-ratio: 1; background-color: var(--primary); }</style>
+<div class="grid grid-cols-auto gap-5" style="--layout-min:5.5rem;">
+  <div class="stack items-center gap-2"><div class="shape-demo w-full cut-corner-tl"></div><p class="demo-label">cut-corner-tl</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full cut-corner-tr"></div><p class="demo-label">cut-corner-tr</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full cut-corner-br"></div><p class="demo-label">cut-corner-br</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full cut-corner-bl"></div><p class="demo-label">cut-corner-bl</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full cut-corners-diagonal"></div><p class="demo-label">cut-corners-diagonal</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full ticket"></div><p class="demo-label">ticket</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full ticket-vertical"></div><p class="demo-label">ticket-vertical</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full cut-corners-top"></div><p class="demo-label">cut-corners-top</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full cut-corners-bottom"></div><p class="demo-label">cut-corners-bottom</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full notch-corner-tr"></div><p class="demo-label">notch-corner-tr</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full scoop-corner-tr" style="--shape-cut:1.5rem;"></div><p class="demo-label">scoop-corner-tr</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full corner-folder"></div><p class="demo-label">corner-folder</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full dog-ear" style="background-color:var(--secondary);"></div><p class="demo-label">dog-ear</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full stamp" style="background-color:var(--chart-2);"></div><p class="demo-label">stamp</p></div>
+</div>
+```
+
+<div class="sep" />
+
+<h2 id="clip" class="h2-display">Clip-path silhouettes</h2>
+
+<DocText>Geometric shapes for avatars, image crops, markers and decoration. They work on any element, including <code>{"<img>"}</code> and <code>{"<video>"}</code>. Keep text out of the sharp shapes (triangle, star, burst): the clip cuts off whatever it covers.</DocText>
+
+```html example schema="none"
+<style>.shape-demo { aspect-ratio: 1; background-color: var(--primary); }</style>
+<div class="grid grid-cols-auto gap-5" style="--layout-min:5.5rem;">
+  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-circle"></div><p class="demo-label">clip-circle</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-ellipse" style="aspect-ratio:3/2;"></div><p class="demo-label">clip-ellipse</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-triangle"></div><p class="demo-label">clip-triangle</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-triangle-down"></div><p class="demo-label">clip-triangle-down</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-diamond"></div><p class="demo-label">clip-diamond</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-pentagon"></div><p class="demo-label">clip-pentagon</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-hexagon"></div><p class="demo-label">clip-hexagon</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-octagon"></div><p class="demo-label">clip-octagon</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-star"></div><p class="demo-label">clip-star</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-burst"></div><p class="demo-label">clip-burst</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-cross"></div><p class="demo-label">clip-cross</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-shield"></div><p class="demo-label">clip-shield</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-house"></div><p class="demo-label">clip-house</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-bolt"></div><p class="demo-label">clip-bolt</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-frame"></div><p class="demo-label">clip-frame</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-donut"></div><p class="demo-label">clip-donut</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-moon"></div><p class="demo-label">clip-moon</p></div>
+</div>
+```
+
+<h3 id="clip-3d" class="text-lg font-medium mt-8 mb-2">3D silhouettes</h3>
+
+<DocText>Silhouettes with light and shadow painted on their faces - a cube, a pyramid, faceted diamond, hexagon and star, a cut gem, a sphere, a cylinder and a coin. The shading is a <code>background-image</code> of translucent white and black over <strong>your</strong> <code>background-color</code>, so one class works in every color and theme (set the color with <code>background-color</code>, not the <code>background</code> shorthand). Designed for a square box.</DocText>
+
+```html example schema="none"
+<style>.shape-demo { aspect-ratio: 1; background-color: var(--primary); }</style>
+<div class="grid grid-cols-auto gap-5" style="--layout-min:6.5rem;">
+  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-cube" style="background-color:var(--chart-1);"></div><p class="demo-label">clip-cube</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-pyramid" style="background-color:var(--chart-2);"></div><p class="demo-label">clip-pyramid</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-diamond-3d" style="background-color:var(--chart-3);"></div><p class="demo-label">clip-diamond-3d</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-hexagon-3d" style="background-color:var(--chart-4);"></div><p class="demo-label">clip-hexagon-3d</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-star-3d" style="background-color:var(--chart-5);"></div><p class="demo-label">clip-star-3d</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-gem" style="background-color:var(--chart-2);"></div><p class="demo-label">clip-gem</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-sphere" style="background-color:var(--chart-1);"></div><p class="demo-label">clip-sphere</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-cylinder" style="background-color:var(--chart-3);"></div><p class="demo-label">clip-cylinder</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-coin" style="background-color:#d4a017;"></div><p class="demo-label">clip-coin</p></div>
+</div>
+```
+
+<DocText>Any flat silhouette becomes a solid 3D block with <code>drop-shadow-extrude</code> on a wrapper: six stacked 1px drop shadows add up to a 6px extrusion that follows the clipped outline. <code>drop-shadow-float</code> makes the shape hover above the page. <code>--shape-ink</code> sets the extrusion color.</DocText>
+
+```html example schema="none"
+<style>.shape-demo { aspect-ratio: 1; background-color: var(--primary); width: 6rem; }</style>
+<div class="flex gap-8 flex-wrap items-center p-2">
+  <div class="drop-shadow-extrude"><div class="shape-demo clip-hexagon" style="background-color:var(--chart-1);"></div></div>
+  <div class="drop-shadow-extrude" style="--shape-ink:var(--foreground);"><div class="shape-demo clip-star" style="background-color:var(--chart-4);"></div></div>
+  <div class="drop-shadow-extrude"><div class="shape-demo shape-heart" style="background-color:var(--destructive);"></div></div>
+  <div class="drop-shadow-extrude"><div class="shape-demo clip-bolt" style="background-color:#f5b400;"></div></div>
+  <div class="drop-shadow-float"><div class="shape-demo clip-sphere" style="background-color:var(--chart-2);"></div></div>
+  <div class="drop-shadow-float"><div class="shape-demo clip-cube" style="background-color:var(--chart-3);"></div></div>
+</div>
+```
+
+<DocText>The same classes on real images - a hexagon avatar row and a star-shaped crop.</DocText>
+
+```html example schema="none"
+<div class="flex items-center gap-4 flex-wrap">
+  <img class="clip-hexagon" src="images/mk-portrait.png" alt="Portrait" width="88" height="88" style="object-fit:cover;">
+  <img class="clip-hexagon" src="images/mk-portrait2.png" alt="Portrait" width="88" height="88" style="object-fit:cover;">
+  <img class="clip-octagon" src="images/mk-square.png" alt="Product" width="88" height="88" style="object-fit:cover;">
+  <img class="clip-circle" src="images/mk-portrait.png" alt="Portrait" width="88" height="88" style="object-fit:cover;">
+  <img class="clip-star" src="images/mk-square.png" alt="Product" width="104" height="104" style="object-fit:cover;">
+</div>
+```
+
+<div class="sep" />
+
+<h2 id="directional" class="h2-display">Arrows, chevrons, ribbons and bubbles</h2>
+
+<DocText>Directional shapes that can hold text: <code>clip-parallelogram</code>, <code>clip-trapezoid</code>, <code>clip-arrow</code>, <code>clip-chevron</code> (they chain into a step bar) and <code>clip-ribbon</code> for tags and banners. <code>--shape-slant</code> (default 1.5rem) sets how far the edges run; give the element at least that much inline padding. <code>clip-message</code> adds a speech-bubble tail - a transparent bottom border reserves the tail's space, so the text never runs into it.</DocText>
+
+```html example schema="none"
+<div class="stack gap-5">
+  <div class="flex gap-3 flex-wrap items-center">
+    <span class="clip-parallelogram" style="background:var(--primary);color:var(--primary-foreground);padding:0.5rem 2rem;font-weight:600;">clip-parallelogram</span>
+    <span class="clip-trapezoid" style="background:var(--secondary);color:var(--secondary-foreground);padding:0.5rem 2rem;font-weight:600;">clip-trapezoid</span>
+    <span class="clip-arrow" style="background:var(--primary);color:var(--primary-foreground);padding:0.5rem 2.25rem 0.5rem 1rem;font-weight:600;">clip-arrow</span>
+    <span class="clip-ribbon" style="background:var(--destructive);color:var(--destructive-foreground);padding:0.5rem 2.25rem 0.5rem 1rem;font-weight:600;">clip-ribbon</span>
+  </div>
+  <ol class="flex" style="list-style:none;margin:0;padding:0;">
+    <li class="clip-arrow" style="background:var(--primary);color:var(--primary-foreground);padding:0.625rem 2rem 0.625rem 1rem;">1 · Cart</li>
+    <li class="clip-chevron" style="background:var(--primary);color:var(--primary-foreground);padding:0.625rem 2rem 0.625rem 2.25rem;margin-inline-start:-0.75rem;">2 · Shipping</li>
+    <li class="clip-chevron" style="background:var(--muted);color:var(--muted-foreground);padding:0.625rem 2rem 0.625rem 2.25rem;margin-inline-start:-0.75rem;">3 · Payment</li>
+  </ol>
+  <p class="clip-message" style="max-width:20rem;margin:0;background:var(--secondary);color:var(--secondary-foreground);padding:0.75rem 1rem;">clip-message: a speech bubble whose tail never covers the text.</p>
+</div>
+```
+
+<DocText>More directions and banners: arrows pointing left, both ways and down, a left chevron, a price <code>clip-tag</code> with a punched hole, a swallowtail <code>clip-banner</code>, a <code>clip-bookmark</code> and a triangular <code>clip-pennant</code>. <code>clip-chevron-down</code> stacks into a vertical process. Bubbles come with the tail at the bottom end (<code>clip-message-end</code>), at the top (<code>clip-message-top</code>) or pointing left (<code>clip-callout-left</code>); <code>--shape-tail</code> sets the tail size.</DocText>
+
+```html example schema="none"
+<style>.dir-demo { color: var(--primary-foreground); background-color: var(--primary); font-weight: 600; }</style>
+<div class="stack gap-5">
+  <div class="flex gap-3 flex-wrap items-center">
+    <span class="dir-demo clip-arrow-left" style="padding:0.5rem 1rem 0.5rem 2.25rem;">clip-arrow-left</span>
+    <span class="dir-demo clip-chevron-left" style="padding:0.5rem 2rem 0.5rem 2.25rem;">clip-chevron-left</span>
+    <span class="dir-demo clip-arrow-both" style="padding:0.5rem 2.25rem;">clip-arrow-both</span>
+    <span class="dir-demo clip-tag" style="padding:0.5rem 1rem 0.5rem 2.25rem;background-color:var(--chart-2);">clip-tag · €24</span>
+    <span class="dir-demo clip-banner" style="padding:0.5rem 2.25rem;background-color:var(--destructive);color:var(--destructive-foreground);">clip-banner</span>
+  </div>
+  <div class="flex gap-6 flex-wrap items-start">
+    <span class="dir-demo clip-bookmark" style="padding:0.75rem 1rem 2.25rem;width:6rem;text-align:center;">clip-bookmark</span>
+    <span class="dir-demo clip-pennant" style="padding:1.25rem 3rem 1.25rem 0.75rem;background-color:var(--chart-4);">pennant</span>
+    <ol class="stack" style="list-style:none;margin:0;padding:0;width:11rem;">
+      <li class="dir-demo clip-arrow-down" style="padding:0.5rem 1rem 1.75rem;text-align:center;">1 · Plan</li>
+      <li class="dir-demo clip-chevron-down" style="padding:1.75rem 1rem 1.75rem;text-align:center;margin-top:-1.25rem;">2 · Build</li>
+      <li class="dir-demo clip-chevron-down" style="padding:1.75rem 1rem 1.75rem;text-align:center;margin-top:-1.25rem;background-color:var(--muted);color:var(--muted-foreground);">3 · Ship</li>
+    </ol>
+  </div>
+  <div class="flex gap-4 flex-wrap items-center">
+    <p class="clip-message-end" style="max-width:15rem;margin:0;background:var(--primary);color:var(--primary-foreground);padding:0.75rem 1rem;">clip-message-end: my reply.</p>
+    <p class="clip-message-top" style="max-width:15rem;margin:0;background:var(--secondary);color:var(--secondary-foreground);padding:0.75rem 1rem;">clip-message-top: a tooltip-like note.</p>
+    <p class="clip-callout-left" style="max-width:15rem;margin:0;background:var(--muted);color:var(--foreground);padding:0.75rem 1rem;">clip-callout-left: points at the thing to its left.</p>
+  </div>
+</div>
+```
+
+<div class="sep" />
+
+<h2 id="edges" class="h2-display">Section edges</h2>
+
+<DocText>Edges for page sections: hero bands, feature strips, footers. <code>--shape-edge</code> (default 2.5rem) sets the depth. The slant, skew, point, notch and torn edges use <code>clip-path</code>, the curve edges <code>border-radius</code> (so a border follows them), and the concave, zigzag, scallop, wave and crenel edges a <code>mask</code>. Zigzag, scallop and wave also come as <code>-top</code> variants. Leave bottom padding at least as deep as the edge.</DocText>
+
+```html example schema="none"
+<style>.edge-band { background: var(--primary); color: var(--primary-foreground); padding: 1.25rem 1.5rem 3.25rem; font: 500 0.8125rem var(--font-mono); }</style>
+<div class="grid grid-cols-auto gap-5" style="--layout-min:14rem;">
+  <div class="edge-band edge-slant-bottom">edge-slant-bottom</div>
+  <div class="edge-band edge-slant-top" style="padding-top:3.25rem;padding-bottom:1.25rem;">edge-slant-top</div>
+  <div class="edge-band edge-point-bottom">edge-point-bottom</div>
+  <div class="edge-band edge-curve-bottom">edge-curve-bottom</div>
+  <div class="edge-band edge-curve-top" style="padding-top:3.25rem;padding-bottom:1.25rem;">edge-curve-top</div>
+  <div class="edge-band edge-zigzag-bottom">edge-zigzag-bottom</div>
+  <div class="edge-band edge-scallop-bottom">edge-scallop-bottom</div>
+  <div class="edge-band edge-wave-bottom">edge-wave-bottom</div>
+  <div class="edge-band edge-slant-bottom-reverse">edge-slant-bottom-reverse</div>
+  <div class="edge-band edge-skew" style="padding-top:3.25rem;">edge-skew</div>
+  <div class="edge-band edge-notch-bottom">edge-notch-bottom</div>
+  <div class="edge-band edge-concave-bottom">edge-concave-bottom</div>
+  <div class="edge-band edge-torn-bottom">edge-torn-bottom</div>
+  <div class="edge-band edge-crenel-bottom">edge-crenel-bottom</div>
+  <div class="edge-band edge-zigzag-top" style="padding-top:3.25rem;padding-bottom:1.25rem;">edge-zigzag-top</div>
+  <div class="edge-band edge-scallop-top" style="padding-top:3.25rem;padding-bottom:1.25rem;">edge-scallop-top</div>
+  <div class="edge-band edge-wave-top" style="padding-top:3.25rem;padding-bottom:1.25rem;">edge-wave-top</div>
+</div>
+```
+
+<div class="sep" />
+
+<h2 id="shadow-scale" class="h2-display">Shadow scale</h2>
+
+<DocText><code>shadow-2xs</code> to <code>shadow-2xl</code> use the theme's own shadow tokens (<code>--shadow-*</code>), so a theme with hard offset shadows makes these hard too. <code>shadow-none</code> removes a component's shadow.</DocText>
+
+```html example schema="none"
+<div class="grid grid-cols-auto gap-6 p-2" style="--layout-min:8rem;">
+  <div class="card shadow-none"><div class="card-header"><p class="card-title text-sm">shadow-none</p></div></div>
+  <div class="card shadow-2xs"><div class="card-header"><p class="card-title text-sm">shadow-2xs</p></div></div>
+  <div class="card shadow-xs"><div class="card-header"><p class="card-title text-sm">shadow-xs</p></div></div>
+  <div class="card shadow-sm"><div class="card-header"><p class="card-title text-sm">shadow-sm</p></div></div>
+  <div class="card shadow"><div class="card-header"><p class="card-title text-sm">shadow</p></div></div>
+  <div class="card shadow-md"><div class="card-header"><p class="card-title text-sm">shadow-md</p></div></div>
+  <div class="card shadow-lg"><div class="card-header"><p class="card-title text-sm">shadow-lg</p></div></div>
+  <div class="card shadow-xl"><div class="card-header"><p class="card-title text-sm">shadow-xl</p></div></div>
+  <div class="card shadow-2xl"><div class="card-header"><p class="card-title text-sm">shadow-2xl</p></div></div>
+</div>
+```
+
+<div class="sep" />
+
+<h2 id="shadow-styles" class="h2-display">Stylized shadows</h2>
+
+<DocText>Shadows with a character: hard offset (brutalist), a paper stack, smooth layered depth, a floating card, an inset well, a glow, a focus-style ring, a 3D key edge, a long flat-design shadow and soft UI (<code>shadow-neu</code> - best on <code>--muted</code> or <code>--background</code>). <code>--shape-ink</code> recolors the hard, stack, glow, ring, edge and long shadows. <code>shadow-lift</code> rises on hover and keyboard focus (without motion when reduced motion is requested). Further styles: an outlined offset copy, two- and five-color retro offsets in the chart palette, a solid 3D <code>shadow-extrude</code>, a tinted <code>shadow-colored</code>, a bottom-only shadow, a hairline, a hard inset, a raised <code>shadow-bevel</code>, a <code>shadow-neon</code> glow, a die-cut <code>shadow-sticker</code> and a <code>shadow-paper-stack</code> of sheets peeking out underneath.</DocText>
+
+```html example schema="none"
+<div class="grid grid-cols-auto gap-8 p-4" style="--layout-min:9rem;">
+  <div class="card shadow-hard-sm"><div class="card-header"><p class="card-title text-sm">shadow-hard-sm</p></div></div>
+  <div class="card shadow-hard"><div class="card-header"><p class="card-title text-sm">shadow-hard</p></div></div>
+  <div class="card shadow-hard-lg"><div class="card-header"><p class="card-title text-sm">shadow-hard-lg</p></div></div>
+  <div class="card shadow-hard" style="--shape-ink:var(--primary);"><div class="card-header"><p class="card-title text-sm">--shape-ink: primary</p></div></div>
+  <div class="card shadow-stack"><div class="card-header"><p class="card-title text-sm">shadow-stack</p></div></div>
+  <div class="card shadow-layered"><div class="card-header"><p class="card-title text-sm">shadow-layered</p></div></div>
+  <div class="card shadow-float"><div class="card-header"><p class="card-title text-sm">shadow-float</p></div></div>
+  <div class="card shadow-inner"><div class="card-header"><p class="card-title text-sm">shadow-inner</p></div></div>
+  <div class="card shadow-glow"><div class="card-header"><p class="card-title text-sm">shadow-glow</p></div></div>
+  <div class="card shadow-ring"><div class="card-header"><p class="card-title text-sm">shadow-ring</p></div></div>
+  <div class="card shadow-edge"><div class="card-header"><p class="card-title text-sm">shadow-edge</p></div></div>
+  <div class="card shadow-long"><div class="card-header"><p class="card-title text-sm">shadow-long</p></div></div>
+  <div class="card shadow-neu" style="background:var(--muted);border-color:transparent;"><div class="card-header"><p class="card-title text-sm">shadow-neu</p></div></div>
+  <div class="card shadow-neu-inset" style="background:var(--muted);border-color:transparent;"><div class="card-header"><p class="card-title text-sm">shadow-neu-inset</p></div></div>
+  <div class="card shadow-lift" tabindex="0"><div class="card-header"><p class="card-title text-sm">shadow-lift</p></div></div>
+  <div class="card shadow-outline-offset"><div class="card-header"><p class="card-title text-sm">shadow-outline-offset</p></div></div>
+  <div class="card shadow-retro"><div class="card-header"><p class="card-title text-sm">shadow-retro</p></div></div>
+  <div class="card shadow-rainbow"><div class="card-header"><p class="card-title text-sm">shadow-rainbow</p></div></div>
+  <div class="card shadow-extrude"><div class="card-header"><p class="card-title text-sm">shadow-extrude</p></div></div>
+  <div class="card shadow-colored" style="--shape-ink:var(--chart-1);"><div class="card-header"><p class="card-title text-sm">shadow-colored</p></div></div>
+  <div class="card shadow-bottom"><div class="card-header"><p class="card-title text-sm">shadow-bottom</p></div></div>
+  <div class="card shadow-hairline"><div class="card-header"><p class="card-title text-sm">shadow-hairline</p></div></div>
+  <div class="card shadow-inner-hard"><div class="card-header"><p class="card-title text-sm">shadow-inner-hard</p></div></div>
+  <div class="card shadow-bevel" style="background:var(--primary);color:var(--primary-foreground);border-color:transparent;"><div class="card-header"><p class="card-title text-sm">shadow-bevel</p></div></div>
+  <div class="card shadow-neon" style="--shape-ink:var(--chart-2);"><div class="card-header"><p class="card-title text-sm">shadow-neon</p></div></div>
+  <div class="card shadow-sticker" style="background:var(--chart-4);color:#fff;border-color:transparent;"><div class="card-header"><p class="card-title text-sm">shadow-sticker</p></div></div>
+  <div class="card shadow-paper-stack"><div class="card-header"><p class="card-title text-sm">shadow-paper-stack</p></div></div>
+</div>
+```
+
+<DocText>A <code>clip-path</code> or <code>mask</code> also cuts off the element's own box-shadow. To give a clipped shape a shadow, put <code>drop-shadow</code> or <code>drop-shadow-hard</code> on a wrapper element: the <code>filter</code> follows whatever the wrapper paints, including the clipped outline.</DocText>
+
+```html example schema="none"
+<style>.shape-demo { aspect-ratio: 1; background-color: var(--primary); width: 6rem; }</style>
+<div class="flex gap-8 flex-wrap items-center p-2">
+  <div class="drop-shadow"><div class="shape-demo clip-hexagon"></div></div>
+  <div class="drop-shadow-hard"><div class="shape-demo clip-star"></div></div>
+  <div class="drop-shadow-hard" style="--shape-ink:var(--chart-2);"><div class="shape-demo cut-corners-diagonal"></div></div>
+  <div class="drop-shadow"><div class="shape-demo ticket" style="aspect-ratio:2/1;width:9rem;"></div></div>
+</div>
+```
+
+<div class="sep" />
+
+<h2 id="frames" class="h2-display">Frames</h2>
+
+<DocText>Borders and outlines as decoration: a double rule, a dashed border, a floating offset outline, an inset stitch line, L-shaped corner brackets (drawn with <code>background-image</code>, so you keep your own background color) and a gradient border in the chart palette - plus a conic rainbow border, dotted, thick, inset-rule, ridge, groove and hand-drawn <code>frame-sketch</code> borders, an accent bar and an underline, animated <code>frame-marching-ants</code> (static under reduced motion), an app <code>frame-window</code> with traffic lights, a <code>frame-film</code> strip and an instant-photo <code>frame-polaroid</code>.</DocText>
+
+```html example schema="none"
+<style>.frame-demo { display: grid; place-items: center; min-height: 6rem; padding: 1rem; font: 500 0.75rem var(--font-mono); color: var(--muted-foreground); }</style>
+<div class="grid grid-cols-auto gap-6 p-2" style="--layout-min:10rem;">
+  <div class="frame-demo frame-double">frame-double</div>
+  <div class="frame-demo frame-dashed rounded-lg">frame-dashed</div>
+  <div class="frame-demo frame-offset rounded-md">frame-offset</div>
+  <div class="frame-demo frame-stitched rounded-lg" style="background:var(--secondary);color:var(--secondary-foreground);">frame-stitched</div>
+  <div class="frame-demo frame-corners">frame-corners</div>
+  <div class="frame-demo frame-gradient rounded-xl">frame-gradient</div>
+  <div class="frame-demo frame-conic rounded-xl">frame-conic</div>
+  <div class="frame-demo frame-dotted rounded-lg">frame-dotted</div>
+  <div class="frame-demo frame-thick">frame-thick</div>
+  <div class="frame-demo frame-inset">frame-inset</div>
+  <div class="frame-demo frame-ridge">frame-ridge</div>
+  <div class="frame-demo frame-groove">frame-groove</div>
+  <div class="frame-demo frame-sketch">frame-sketch</div>
+  <div class="frame-demo frame-accent" style="background:var(--muted);justify-items:start;">frame-accent</div>
+  <div class="frame-demo frame-underline">frame-underline</div>
+  <div class="frame-demo frame-marching-ants">frame-marching-ants</div>
+  <div class="frame-demo frame-window rounded-md" style="background-color:var(--card);">frame-window</div>
+  <div class="frame-demo frame-film" style="background-color:var(--muted);">frame-film</div>
+  <div class="frame-demo frame-polaroid pattern-mesh" style="min-height:8rem;">frame-polaroid</div>
+</div>
+```
+
+<div class="sep" />
+
+<h2 id="patterns" class="h2-display">Background patterns</h2>
+
+<DocText>Background textures drawn with CSS gradients - dots, grid, lines (diagonal, horizontal, vertical, crosshatch), bold stripes, checker, zigzag, triangles, diamonds, chevrons, half-moon rings, ripples, polka dots, plaid, bricks, a blueprint grid and sunburst rays. <code>pattern-mesh</code> is a soft chart-color gradient backdrop for heroes, <code>pattern-grain</code> an SVG film grain. They default to a faint tint of the text color (<code>currentColor</code>), so they work on any surface in light and dark mode. <code>--shape-ink</code> sets the color and <code>--shape-pattern</code> (default 16px) the tile size.</DocText>
+
+```html example schema="none"
+<style>.pattern-demo { display: grid; place-items: center; min-height: 7rem; font: 500 0.75rem var(--font-mono); }</style>
+<div class="grid grid-cols-auto gap-4" style="--layout-min:10rem;">
+  <div class="pattern-demo pattern-dots rounded-lg frame-dashed">pattern-dots</div>
+  <div class="pattern-demo pattern-grid rounded-lg frame-dashed">pattern-grid</div>
+  <div class="pattern-demo pattern-lines rounded-lg frame-dashed">pattern-lines</div>
+  <div class="pattern-demo pattern-checker rounded-lg frame-dashed">pattern-checker</div>
+  <div class="pattern-demo pattern-zigzag rounded-lg frame-dashed">pattern-zigzag</div>
+  <div class="pattern-demo pattern-crosshatch rounded-lg frame-dashed">pattern-crosshatch</div>
+  <div class="pattern-demo pattern-lines-horizontal rounded-lg frame-dashed">pattern-lines-horizontal</div>
+  <div class="pattern-demo pattern-lines-vertical rounded-lg frame-dashed">pattern-lines-vertical</div>
+  <div class="pattern-demo pattern-stripes rounded-lg frame-dashed">pattern-stripes</div>
+  <div class="pattern-demo pattern-triangles rounded-lg frame-dashed">pattern-triangles</div>
+  <div class="pattern-demo pattern-diamonds rounded-lg frame-dashed">pattern-diamonds</div>
+  <div class="pattern-demo pattern-chevrons rounded-lg frame-dashed">pattern-chevrons</div>
+  <div class="pattern-demo pattern-rings rounded-lg frame-dashed">pattern-rings</div>
+  <div class="pattern-demo pattern-ripples rounded-lg frame-dashed">pattern-ripples</div>
+  <div class="pattern-demo pattern-polka rounded-lg frame-dashed">pattern-polka</div>
+  <div class="pattern-demo pattern-plaid rounded-lg frame-dashed">pattern-plaid</div>
+  <div class="pattern-demo pattern-bricks rounded-lg frame-dashed">pattern-bricks</div>
+  <div class="pattern-demo pattern-blueprint rounded-lg frame-dashed">pattern-blueprint</div>
+  <div class="pattern-demo pattern-sunburst rounded-lg frame-dashed">pattern-sunburst</div>
+  <div class="pattern-demo pattern-grain rounded-lg frame-dashed">pattern-grain</div>
+  <div class="pattern-demo pattern-mesh rounded-lg frame-dashed">pattern-mesh</div>
+  <div class="pattern-demo pattern-blueprint rounded-lg" style="background-color:#1e3a8a;color:#fff;--shape-ink:rgb(255 255 255 / 0.35);">blueprint on navy</div>
+  <div class="pattern-demo pattern-stripes rounded-lg" style="background-color:#facc15;color:#111;--shape-ink:#111;--shape-pattern:24px;"><span style="background:#facc15;padding:0.125rem 0.5rem;">hazard stripes</span></div>
+  <div class="pattern-demo pattern-dots rounded-lg" style="background-color:var(--primary);color:var(--primary-foreground);--shape-pattern:12px;">on primary, 12px</div>
+</div>
+```
+
+<div class="sep" />
+
+<h2 id="mix" class="h2-display">Mix it up</h2>
+
+<DocText>The shapes combine with each other and with the shipped components. Below: a hero band with a wave edge and a dot pattern, a brutalist pricing card with a ribbon tag, a coupon ticket, and a testimonial with a hexagon avatar and a speech bubble.</DocText>
+
+```html example schema="none"
+<div class="stack gap-8">
+  <section class="edge-wave-bottom pattern-dots" style="background-color:var(--primary);color:var(--primary-foreground);--shape-ink:color-mix(in oklch, var(--primary-foreground) 25%, transparent);padding:2.5rem 2rem 4rem;">
+    <h3 style="margin:0 0 0.5rem;font-size:1.75rem;font-weight:700;letter-spacing:-0.02em;">Ship shapes, not screenshots.</h3>
+    <p style="margin:0 0 1.25rem;max-width:30rem;opacity:0.85;">One stylesheet, token colors only - every silhouette follows the active theme.</p>
+    <button class="btn rounded-full shadow-hard" data-variant="secondary" style="--shape-ink:color-mix(in oklch, var(--primary-foreground) 45%, transparent);">Get started</button>
+  </section>
+
+  <div class="grid grid-cols-auto gap-8 p-2" style="--layout-min:15rem;">
+    <div class="card rounded-none shadow-hard-lg" style="border:2px solid var(--foreground);">
+      <div class="card-header">
+        <span class="clip-ribbon" style="align-self:flex-start;background:var(--destructive);color:var(--destructive-foreground);padding:0.25rem 1.75rem 0.25rem 0.75rem;font-size:0.75rem;font-weight:700;">MOST POPULAR</span>
+        <h3 class="card-title" style="font-size:1.5rem;">Pro · €19</h3>
+        <p class="card-description">Everything in Free, plus unlimited decks.</p>
+      </div>
+      <div class="card-footer"><button class="btn w-full rounded-none shadow-hard-sm">Choose Pro</button></div>
+    </div>
+
+    <div class="drop-shadow" style="align-self:center;">
+      <div class="ticket stack gap-1" style="--shape-cut:1rem;background:var(--secondary);color:var(--secondary-foreground);padding:1.25rem 2.25rem;">
+        <span class="demo-label" style="margin:0;">COUPON</span>
+        <strong style="font-size:1.75rem;letter-spacing:-0.02em;">-25 %</strong>
+        <span class="text-sm">Code SHAPES25</span>
+      </div>
+    </div>
+
+    <div class="flex gap-3 items-end">
+      <div class="drop-shadow-hard" style="--shape-ink:var(--primary);flex-shrink:0;"><img class="clip-hexagon" src="images/mk-portrait2.png" alt="Hannah Lee" width="64" height="64" style="object-fit:cover;"></div>
+      <p class="clip-message corner-bubble" style="margin:0;background:var(--muted);color:var(--foreground);padding:0.75rem 1rem;--shape-round:1rem;">“A hexagon, a bubble, a ribbon - and the landing page finally felt like ours.”</p>
+    </div>
+  </div>
+</div>
+```
+
+<div class="sep" />
+
+<h2 id="knobs" class="h2-display">Custom properties</h2>
+
+<DocText>All settings are optional custom properties with defaults. Set them inline or on a parent - they inherit, so one declaration on a section sets every shape inside it.</DocText>
+
+<div class="overflow-x-auto mb-8">
+  <table class="table">
+    <thead><tr><th>Property</th><th>Default</th><th>Used by</th></tr></thead>
+    <tbody>
+      <tr><td><code>--shape-cut</code></td><td><code>0.75rem</code></td><td><code>{"cut-*"}</code>, <code>{"notch-*"}</code>, <code>{"scoop-*"}</code>, <code>{"ticket*"}</code>, <code>stamp</code>, <code>dog-ear</code>, <code>corner-folder</code></td></tr>
+      <tr><td><code>--shape-round</code></td><td><code>2rem</code></td><td><code>{"corner-leaf*"}</code>, <code>{"corner-tab*"}</code>, <code>{"corner-bubble*"}</code>, <code>corner-squircle</code>, <code>corner-superellipse</code>, <code>corner-mixed</code></td></tr>
+      <tr><td><code>--shape-slant</code></td><td><code>1.5rem</code></td><td><code>clip-parallelogram</code>, <code>clip-trapezoid</code>, <code>{"clip-arrow*"}</code>, <code>{"clip-chevron*"}</code>, <code>clip-ribbon</code>, <code>clip-tag</code>, <code>clip-banner</code>, <code>clip-bookmark</code></td></tr>
+      <tr><td><code>--shape-edge</code></td><td><code>2.5rem</code></td><td><code>{"edge-*"}</code></td></tr>
+      <tr><td><code>--shape-tail</code></td><td><code>0.75rem</code></td><td><code>{"clip-message*"}</code>, <code>clip-callout-left</code></td></tr>
+      <tr><td><code>--shape-ink</code></td><td>per family</td><td>hard / stack / glow / ring / edge / long / extrude / neon / colored shadows, <code>drop-shadow-hard</code>, <code>drop-shadow-extrude</code>, frames, patterns</td></tr>
+      <tr><td><code>--shape-pattern</code></td><td><code>16px</code></td><td><code>{"pattern-*"}</code></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="sep" />
+
+<h2 id="accessibility" class="h2-display">Accessibility</h2>
+
+<DocText>Shapes are decoration: they never replace a label, and clipped text should stay inside the visible area. In forced-colors mode (Windows High Contrast) the browser removes box-shadows and background images, so every shadow-only or pattern-only silhouette gets a system-color outline instead. <code>shadow-lift</code> and <code>frame-marching-ants</code> drop their motion under <code>prefers-reduced-motion: reduce</code>. When you set a <code>--shape-ink</code> behind text, check the contrast yourself - the module only uses theme tokens and cannot know which one you picked.</DocText>
+
+</DocPage>

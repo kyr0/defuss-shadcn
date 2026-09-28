@@ -22,36 +22,33 @@
 </head>
 <body>
   <main>
-    <!-- 2×2 board: every direction wired, mixed data-anim-* declarations -->
+    <!-- 2×2 board: every direction wired, mixed data-anim-in arrivals, a 40-unit gap -->
     <div class="anim-canvas" id="board" aria-label="Fixture board" data-pan-duration="5"
-         style="--anim-canvas-width: 640; --anim-canvas-height: 360">
+         style="--anim-canvas-width: 640; --anim-canvas-height: 360; --anim-canvas-gap: 40">
       <section class="anim-canvas-slide fx-slide" id="s1" data-active aria-label="Slide one"
                data-east="s2" data-south="s3"
-               data-anim-in="slideIn" data-anim-in-duration="5"
-               data-anim-out="slideOut" data-anim-out-duration="5">
+               data-anim-in="slideIn" data-anim-in-duration="5">
         <h2>Slide one</h2>
-        <p>slideIn/slideOut</p>
+        <p>slideIn arrival</p>
       </section>
       <section class="anim-canvas-slide fx-slide" id="s2" aria-label="Slide two"
                data-west="s1" data-south="s4"
-               data-anim-in="blocksIn" data-anim-in-direction="north" data-anim-in-duration="5" data-anim-in-blocks="2" data-anim-in-stagger="1" data-anim-in-color="rgb(14, 165, 233)"
-               data-anim-out="blocksOut" data-anim-out-direction="north" data-anim-out-duration="5" data-anim-out-blocks="2" data-anim-out-stagger="1">
-        <h2>Slide two</h2>
-        <p>blocksIn/blocksOut curtain</p>
+               data-anim-in="blocksIn" data-anim-in-direction="north" data-anim-in-duration="5" data-anim-in-blocks="2" data-anim-in-stagger="1" data-anim-in-color="rgb(14, 165, 233)">
+        <!-- content replays on arrival (shared motion entrance + counter) -->
+        <h2 data-df-entrance="up">Slide two</h2>
+        <p>blocksIn arrival curtain · <span id="s2-count" data-count="42">42</span></p>
       </section>
       <section class="anim-canvas-slide fx-slide" id="s3" aria-label="Slide three"
                data-north="s1" data-east="s4"
-               data-anim-in="irisIn" data-anim-in-origin="50% 50%" data-anim-in-duration="5"
-               data-anim-out="irisOut" data-anim-out-origin="50% 50%" data-anim-out-duration="5">
+               data-anim-in="irisIn" data-anim-in-origin="50% 50%" data-anim-in-duration="5">
         <h2>Slide three</h2>
-        <p>irisIn/irisOut</p>
+        <p>irisIn arrival</p>
       </section>
       <section class="anim-canvas-slide fx-slide" id="s4" aria-label="Slide four"
                data-north="s2" data-west="s3"
-               data-anim-in="slideIn" data-anim-in-duration="5"
-               data-anim-out="slideOut" data-anim-out-duration="5">
+               data-anim-in="slideIn" data-anim-in-duration="5">
         <h2>Slide four</h2>
-        <p>slideIn/slideOut</p>
+        <p>slideIn arrival</p>
       </section>
       <div class="anim-canvas-controls">
         <button type="button" class="anim-canvas-control" data-anim-canvas-go="west" aria-label="West slide">←</button>

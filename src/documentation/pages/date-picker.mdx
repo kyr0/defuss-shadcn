@@ -47,8 +47,19 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <input class="date-input" type="datetime-local" id="meeting">
 ```
 
-```html example label="With constraints"
-<input class="date-input" type="date" min="2024-01-01" max="2026-12-31">
+```html example label="With constraints" hint="min / max hold for the calendar AND for typing: type 15 May 2030 into either field and leave it - the browser marks it out of range (:user-invalid), the border turns destructive and the .date-input-hint below states the allowed range with a warning sign. The hint is always there (aria-describedby), so the range is known before anyone types. The second field shows the invalid look directly (aria-invalid, as an app would flag a server-side error)."
+<div class="grid grid-cols-auto gap-4" style="--layout-min:14rem;">
+  <div>
+    <label class="label" for="d-out">Outbound</label>
+    <input class="date-input" type="date" id="d-out" value="2026-03-10" min="2024-01-01" max="2026-12-31" aria-describedby="d-out-hint">
+    <p class="date-input-hint" id="d-out-hint">Between 1 Jan 2024 and 31 Dec 2026.</p>
+  </div>
+  <div>
+    <label class="label" for="d-back">Return</label>
+    <input class="date-input" type="date" id="d-back" value="2030-05-15" min="2024-01-01" max="2026-12-31" aria-invalid="true" aria-describedby="d-back-hint">
+    <p class="date-input-hint" id="d-back-hint">Between 1 Jan 2024 and 31 Dec 2026.</p>
+  </div>
+</div>
 ```
 
 ```html example label="Sizes" hint="Same ladder as .input via data-size - md is 2.25rem, so date fields row-align with text inputs."

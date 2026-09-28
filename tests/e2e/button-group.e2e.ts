@@ -77,4 +77,41 @@ await cssSmoke('button-group', [
   { label: 'size ladder: md button is 36px', selector: '#bg-md .btn', css: { height: '36px' } },
   { label: 'size ladder: lg button is 44px', selector: '#bg-lg .btn', css: { height: '44px' } },
   { label: 'size ladder: xl button is 52px', selector: '#bg-xl .btn', css: { height: '52px' } },
+  {
+    label: 'split button: the separator is the ONE 1px divider (neighbouring borders drop, no gap)',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const main = document.getElementById('bg-split-main')!;
+        const more = document.getElementById('bg-split-more')!;
+        return {
+          gap: Math.round(more.getBoundingClientRect().left - main.getBoundingClientRect().right),
+          mainEnd: getComputedStyle(main).borderRightWidth,
+          moreStart: getComputedStyle(more).borderLeftWidth,
+          mainOuter: getComputedStyle(main).borderLeftWidth,
+        };
+      });
+      assert.deepEqual(r, { gap: 1, mainEnd: '0px', moreStart: '0px', mainOuter: '1px' });
+    },
+  },
+  {
+    label: 'split button: inner corners stay square, outer corners rounded - one control',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const cs = (id: string) => getComputedStyle(document.getElementById(id)!);
+        return [cs('bg-split-main').borderTopRightRadius, cs('bg-split-more').borderTopLeftRadius, cs('bg-split-main').borderTopLeftRadius !== '0px', cs('bg-split-more').borderTopRightRadius !== '0px'];
+      });
+      assert.deepEqual(r, ['0px', '0px', true, true]);
+    },
+  },
+  {
+    label: 'vertical group: a separator is the one 1px divider there too',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const top = document.getElementById('bg-vs-top')!;
+        const bottom = document.getElementById('bg-vs-bottom')!;
+        return [Math.round(bottom.getBoundingClientRect().top - top.getBoundingClientRect().bottom), getComputedStyle(top).borderBottomWidth, getComputedStyle(bottom).borderTopWidth, getComputedStyle(top).borderBottomLeftRadius];
+      });
+      assert.deepEqual(r, [1, '0px', '0px', '0px']);
+    },
+  },
 ]);

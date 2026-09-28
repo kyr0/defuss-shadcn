@@ -37,5 +37,40 @@
       // indeterminate is a JS-only property (no HTML attribute) - set it once
       document.getElementById('cb-indet').indeterminate = true;
     </script>
+    <!-- gap hit area: the whitespace between box and label toggles too -->
+    <div class="checkbox-item"><input class="checkbox" type="checkbox" id="cb-gap" /><label for="cb-gap">Gap target</label></div>
+    <div class="checkbox-item-block"><input class="checkbox" type="checkbox" id="cb-gap-block" /><div><label for="cb-gap-block">Block gap target</label><p>Description</p></div></div>
+    <!-- select all: parent box summarises the group (mixed / checked / empty) -->
+    <fieldset style="border:none;padding:0;margin:0;display:flex;flex-direction:column;gap:0.5rem;">
+      <legend>Items</legend>
+      <div class="checkbox-item">
+        <input class="checkbox" type="checkbox" id="sa-all" aria-controls="sa-1 sa-2 sa-3">
+        <label for="sa-all">Show all</label>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:0.5rem;padding-inline-start:1.625rem;">
+        <div class="checkbox-item"><input class="checkbox" type="checkbox" id="sa-1" checked><label for="sa-1">One</label></div>
+        <div class="checkbox-item"><input class="checkbox" type="checkbox" id="sa-2"><label for="sa-2">Two</label></div>
+        <div class="checkbox-item"><input class="checkbox" type="checkbox" id="sa-3"><label for="sa-3">Three</label></div>
+      </div>
+    </fieldset>
+    <script>
+      // a parent box = a .checkbox whose aria-controls lists its children's ids
+      document.querySelectorAll('.checkbox[aria-controls]').forEach((parent) => {
+        const children = parent.getAttribute('aria-controls').split(' ').map((id) => document.getElementById(id));
+        // some ticked = mixed, all = checked, none = empty
+        const sync = () => {
+          const ticked = children.filter((c) => c.checked).length;
+          parent.checked = ticked === children.length;
+          parent.indeterminate = ticked > 0 && ticked < children.length;
+        };
+        // clicking the parent (mixed or empty -> checked, checked -> empty) sets every child
+        parent.addEventListener('change', () => {
+          children.forEach((c) => { c.checked = parent.checked; });
+          sync();
+        });
+        children.forEach((c) => c.addEventListener('change', sync));
+        sync();
+      });
+    </script>
   </body>
 </html>

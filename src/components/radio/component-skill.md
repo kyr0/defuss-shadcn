@@ -10,7 +10,7 @@ supportedStates: default
 # Pattern: Radio Group
 
 ## Native basis
-`<input type="radio">` elements with shared `name` attribute for mutual exclusivity, grouped by `<fieldset>` + `<legend>`.
+`<input type="radio">` elements. **The shared `name` is what makes them one set**: every radio with the same `name` in the same form (or, without a form, the same document) is one mutually exclusive group - checking one unchecks the rest, and the form submits `name=value` for the checked one. `<fieldset>` + `<legend>` only *label* the set (the legend is its accessible name); they do not make it exclusive - radios with different names in one fieldset are independent, and radios sharing a name are one set even with no fieldset.
 
 ---
 
@@ -151,6 +151,7 @@ Set `data-density` on the `.radio-group` root. A whitespace policy, not a zoom: 
 
 ## Notes
 
+- **Gap hit area**: inside `.radio-item` / `.radio-item-block` the radio's click target spans the gap to its label (a transparent `::before`), so clicking the whitespace between circle and text selects too. Keep the label after the control and link it with `for`.
 - Styled with `appearance: none` and a custom dot via `::after`.
 - The `name` attribute is required for mutual exclusivity.
 - No JavaScript needed - browsers handle group behavior natively.

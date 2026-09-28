@@ -1,6 +1,6 @@
 ---
 title: "Installation"
-description: "Install defuss-shadcn - copy CSS files, link tokens, and start building. No npm, no bundler required."
+description: "Install defuss-shadcn - straight from the jsDelivr CDN into plain HTML, or with npm into a bundled project. No framework, no build step for the CDN path."
 slug: "installation"
 ---
 
@@ -9,7 +9,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <DocPage meta={meta}>
 
 <PageHeader slug="installation" title="Installation">
-  Each component is a self-contained folder with a static component skill, a stylesheet, and a JavaScript file if needed. No npm. No build step.
+  Each component is a self-contained folder with a static component skill, a stylesheet, and a JavaScript file if needed. Two ways in: the jsDelivr CDN for plain HTML (no build step), or npm for projects that already have a package manager and bundler.
 </PageHeader>
 
 <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 1rem;">Quick start</h2>
@@ -20,10 +20,10 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <div>
     <div class="flex items-center gap-3 mb-3">
       <span style="width:1.625rem;height:1.625rem;border-radius:50%;background:var(--primary);color:var(--primary-foreground);font-size:0.75rem;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</span>
-      <h3 style="margin:0;font-size:1rem;font-weight:500;">Add a theme</h3>
+      <h3 style="margin:0;font-size:1rem;font-weight:500;">Add the base: tokens + utilities</h3>
     </div>
-    <pre><code class="language-markup">{"<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/utils/default-semantic-tokens.css\">"}</code></pre>
-    <p class="text-sm text-muted-foreground mt-2">This defines every token for the default light and dark theme. To switch themes, you just switch this file - that's all the theme selector in this documentation site is doing. Compatible with <DocLink href="https://tweakcn.com" target="_blank">tweakcn.com</DocLink> theme exports.</p>
+    <pre><code class="language-markup">{"<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/core.css\">\n\n<!-- optional: a theme preset AFTER core overrides the default tokens -->\n<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/bubblegum.css\">"}</code></pre>
+    <p class="text-sm text-muted-foreground mt-2"><code>core.css</code> defines every token for the default light and dark theme plus the sizing, layout and accessibility utilities the examples use (<code>flex</code>, <code>gap-4</code>, <code>stack</code>, <code>sr-only</code> …). To switch themes, load one preset from <code>dist/theme/</code> after it - that's all the theme selector in this documentation site is doing. Compatible with <DocLink href="https://tweakcn.com" target="_blank">tweakcn.com</DocLink> theme exports.</p>
   </div>
   <div>
     <div class="flex items-center gap-3 mb-3">
@@ -38,7 +38,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
       <span style="width:1.625rem;height:1.625rem;border-radius:50%;background:var(--primary);color:var(--primary-foreground);font-size:0.75rem;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</span>
       <h3 style="margin:0;font-size:1rem;font-weight:500;">Add the components</h3>
     </div>
-    <pre><code class="language-markup">{"<!-- Everything at once: the bundle (embeds the core runtime) -->\n<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.css\">\n<script type=\"module\" src=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.js\"></script>\n\n<!-- …or the core pair + only what you need -->\n<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/core.css\">\n<script type=\"module\" src=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/core.js\"></script>\n<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/button/button.css\">\n<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.css\">\n\n<!-- JS - after core, when the component needs it -->\n<script type=\"module\" src=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.js\"></script>"}</code></pre>
+    <pre><code class="language-markup">{"<!-- Everything at once: every component's CSS + the bundle (embeds the core runtime) -->\n<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.css\">\n<script type=\"module\" src=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.js\"></script>\n\n<!-- …or only what you need: per-component CSS, then core.js + per-component JS -->\n<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/button/button.css\">\n<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.css\">\n<script type=\"module\" src=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/core.js\"></script>\n<!-- JS - after core, when the component needs it -->\n<script type=\"module\" src=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.js\"></script>"}</code></pre>
     <p class="text-sm text-muted-foreground mt-2">Two delivery modes, one implementation: <strong>load core plus the components you use, or load all alone</strong> - both include the <code>df$</code> runtime (defuss-query + defuss-morph) through core; documentation code is separate, and there is no framework or jQuery dependency. <code>all.css</code> / <code>all.js</code> bundle the core runtime plus every component (this documentation site loads exactly these two files). Prefer a smaller payload? Load <code>core.js</code> once, then pick per-component <code>.css</code> + <code>.js</code> files from <code>components/\{name\}/</code> - a component script without core fails fast with one actionable load-order error.</p>
   </div>
   <div>
@@ -56,6 +56,14 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     </div>
     <p class="text-sm text-muted-foreground">Serve your HTML via any local server (e.g. <code>npx serve</code>). ES modules require HTTP - they don't run from <code>file://</code>. Dark mode toggles automatically when you add <code>class="dark"</code> to <code>&lt;html&gt;</code>.</p>
   </div>
+</div>
+
+<div style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border);">
+  <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.75rem;">With a package manager</h2>
+  <p class="text-sm text-muted-foreground mb-3">In a project that already has a package manager and a bundler (Vite, webpack, Rollup, Parcel, esbuild, Bun), install the package and import the same files in the same order - side-effect imports, once, in the app entry. The package ships plain CSS and ES modules; the bundler only resolves the paths.</p>
+  <pre><code class="language-bash">{"npm install defuss-shadcn   # or: bun add / pnpm add / yarn add defuss-shadcn"}</code></pre>
+  <pre><code class="language-javascript">{"// everything: tokens + utilities → all component CSS → runtime + all behavior\nimport 'defuss-shadcn/dist/components/core.css';\nimport 'defuss-shadcn/dist/components/all.css';\nimport 'defuss-shadcn/dist/components/all.js';\n\n// …or only what you need (core.js MUST precede every component .js)\nimport 'defuss-shadcn/dist/components/core.css';\nimport 'defuss-shadcn/dist/components/dialog/dialog.css';\nimport 'defuss-shadcn/dist/components/core.js';\nimport 'defuss-shadcn/dist/components/dialog/dialog.js';"}</code></pre>
+  <p class="text-sm text-muted-foreground mt-2">Icons and charts stay separate packages: <code>npm install lucide</code> (then <code>createIcons(&#123; icons &#125;)</code>) for <code>&lt;i data-lucide&gt;</code>, and <code>npm install echarts</code> assigned to <code>globalThis.echarts</code> before a chart mounts. For AI agents, the package's root <code>SKILL.md</code> condenses both install paths, the rules, and an index of every component skill and documentation page.</p>
 </div>
 
 <div style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border);">

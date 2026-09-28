@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
+import { assertLegibleDisabled } from './lib/disabled.ts';
 
 /**
  * Why: radio is CSS-only - appearance:none circle + a centered ::after dot.
@@ -32,14 +33,16 @@ await cssSmoke('radio', [
     },
   },
   {
-    label: ':disabled dims the control AND its sibling label',
-    run: async (page) => {
-      const pair = await page.evaluate(() => [
-        getComputedStyle(document.querySelector('#r-disabled')!).opacity,
-        getComputedStyle(document.querySelector('label[for="r-disabled"]')!).opacity,
-      ]);
-      assert.deepEqual(pair, ['0.5', '0.5'], '.radio:disabled + label is dimmed too');
-    },
+    label: 'disabled radio stays legible: mid-grey ring, muted surface, muted label, no hand pointer',
+    run: (page) => assertLegibleDisabled(page, { control: '#r-disabled', label: 'label[for="r-disabled"]', tokens: { 'background-color': '--muted' } }),
+  },
+  {
+    label: 'disabled ring edge stands apart from both its muted fill and the page (a readable shape, not a ghost)',
+    distinct: [
+      { selector: '#r-disabled', prop: 'border-top-color' },
+      { selector: '#r-disabled', prop: 'background-color' },
+      { selector: 'body', prop: 'background-color' },
+    ],
   },
   {
     label: 'aria-invalid recolors the border (distinct from unchecked)',
@@ -79,4 +82,69 @@ await cssSmoke('radio', [
   },
   { label: 'density comfortable keeps the 8px default gap', selector: '#rg-comfortable', css: { gap: '8px' } },
   { label: 'density spacious → option gap 12px', selector: '#rg-spacious', css: { gap: '12px' } },
+  {
+    label: 'clicking the gap between control and label toggles (.radio-item)',
+    run: async (page) => {
+      // the midpoint of the whitespace between the control and its label text
+      const at = await page.evaluate(() => {
+        const input = document.querySelector('#rd-gap')!;
+        const label = document.querySelector('label[for="rd-gap"]')!;
+        const a = input.getBoundingClientRect();
+        const b = label.getBoundingClientRect();
+        return { x: (a.right + b.left) / 2, y: a.top + a.height / 2, gap: b.left - a.right };
+      });
+      assert.ok(at.gap > 2, 'fixture has a real gap between control and label');
+      await page.mouse.click(at.x, at.y);
+      assert.equal(await page.evaluate(() => (document.querySelector('#rd-gap') as HTMLInputElement).checked), true);
+    },
+  },
+  {
+    label: 'clicking the gap between control and label toggles (.radio-item-block)',
+    run: async (page) => {
+      // the midpoint of the whitespace between the control and its label text
+      const at = await page.evaluate(() => {
+        const input = document.querySelector('#rd-gap-block')!;
+        const label = document.querySelector('label[for="rd-gap-block"]')!;
+        const a = input.getBoundingClientRect();
+        const b = label.getBoundingClientRect();
+        return { x: (a.right + b.left) / 2, y: a.top + a.height / 2, gap: b.left - a.right };
+      });
+      assert.ok(at.gap > 2, 'fixture has a real gap between control and label');
+      await page.mouse.click(at.x, at.y);
+      assert.equal(await page.evaluate(() => (document.querySelector('#rd-gap-block') as HTMLInputElement).checked), true);
+    },
+  },
+  {
+    label: 'disabled radio card stays legible: no fade, muted title, no hand pointer',
+    run: (page) => assertLegibleDisabled(page, { control: '#rd-card-disabled', label: '.radio-card:has(#rd-card-disabled) > label' }),
+  },
+  {
+    label: 'the shared name makes the set: picking one clears the other and the form submits one value',
+    run: async (page) => {
+      await page.click('label[for="rn-m"]');
+      const r = await page.evaluate(() => ({
+        s: (document.getElementById('rn-s') as HTMLInputElement).checked,
+        m: (document.getElementById('rn-m') as HTMLInputElement).checked,
+        size: new FormData(document.getElementById('rn-form') as HTMLFormElement).getAll('size'),
+      }));
+      assert.deepEqual(r, { s: false, m: true, size: ['m'] });
+    },
+  },
+  {
+    label: 'different names in ONE fieldset are independent (the fieldset groups nothing)',
+    run: async (page) => {
+      await page.click('label[for="rn-a"]');
+      await page.click('label[for="rn-b"]');
+      const both = await page.evaluate(() => ['rn-a', 'rn-b'].map((id) => (document.getElementById(id) as HTMLInputElement).checked));
+      assert.deepEqual(both, [true, true]);
+    },
+  },
+  {
+    label: 'a shared name is one set even with no fieldset',
+    run: async (page) => {
+      await page.click('label[for="rn-y"]');
+      const r = await page.evaluate(() => ['rn-x', 'rn-y'].map((id) => (document.getElementById(id) as HTMLInputElement).checked));
+      assert.deepEqual(r, [false, true]);
+    },
+  },
 ]);

@@ -90,15 +90,21 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 ```html example label="Checked by default"
 <div class="switch-item">
-  <input class="switch" type="checkbox" role="switch" checked>
-  <label>Notifications</label>
+  <input class="switch" type="checkbox" role="switch" id="sw-notify" checked>
+  <label for="sw-notify">Notifications</label>
 </div>
 ```
 
-```html example label="Disabled" hint="Disabled state - .switch-item auto-dims the label via :has()."
-<div class="switch-item">
-  <input class="switch" type="checkbox" role="switch" disabled>
-  <label>Disabled</label>
+```html example label="Disabled" hint="Disabled stays legible: the track keeps its full shade (a softened primary when on), the knob turns muted, and .switch-item mutes the label and shows the not-allowed cursor over it via :has() - no opacity fade."
+<div class="flex flex-col gap-3">
+  <div class="switch-item">
+    <input class="switch" type="checkbox" role="switch" id="sw-disabled" disabled>
+    <label for="sw-disabled">Disabled</label>
+  </div>
+  <div class="switch-item">
+    <input class="switch" type="checkbox" role="switch" id="sw-disabled-on" disabled checked>
+    <label for="sw-disabled-on">Disabled on</label>
+  </div>
 </div>
 ```
 

@@ -43,6 +43,7 @@ Never edit `dist/` directly; it is deleted and rebuilt on every build.
 
 ```
 defuss-shadcn/
+├── SKILL.md                           ← the whole project as ONE agent skill (generated from src/SKILL_root_tpl.md + nav.ts + page/skill frontmatter; ships in the npm package; `root SKILL.md ↔ sources` gate)
 ├── dist/                              ← the distributable (drop into any project)
 │   ├── SKILL.md                       ← agent entry point (generated from src/SKILL_tpl.md + skill frontmatter)
 │   ├── stats.json                     ← generated size/surface summary (counts per type, JS split, byte sizes; `make stats`)
@@ -53,7 +54,8 @@ defuss-shadcn/
 │   │       ├── default-semantic-tokens.css    ← tokens (source of truth for colors, radius, shadows)
 │   │       ├── sizing.css                     ← opt-in numeric scale (w-4 = 4 base units, --size-* aliases, density)
 │   │       ├── layout.css                     ← opt-in layout surface (flex, grid, stack, container, query, overflow)
-│   │       └── accessibility.css              ← opt-in screen-reader utilities (.sr-only / .not-sr-only)
+│   │       ├── accessibility.css              ← opt-in screen-reader utilities (.sr-only / .not-sr-only)
+│   │       └── shapes.css                     ← opt-in shape utilities (corners, clips, edges, shadows, frames, patterns)
 │   ├── schemas/                       ← published machine contracts (from src/components/*/*.schema.json; manifest.json lists them)
 │   ├── components/                    ← self-contained component folders
 │   │   ├── all.css / all.js          ← generated single-file bundle (scripts/bundle.ts; + .min twins & maps from minify.ts)
@@ -79,7 +81,7 @@ defuss-shadcn/
 │   │                                     Example(+Label/Hint/Code), Demo(+DemoCode), SourceFiles (+SourceNote),
 │   │                                     StatesSection, ChangelogEntries, StatsClaim/Cards, PrevNext, SiteFooter,
 │   │                                     ArchBody, PageOverlay - static, no hydration
-│   ├── runtime/*.ts                   ← client JS (tsc → public/js): layout.ts (pre-paint dark/wide, SPA router,
+│   ├── runtime/*.ts                   ← client JS (tsc → public/js): layout.ts (pre-paint dark mode, SPA router,
 │   │                                     palette, nav persistence, TOC tracking), site.ts (copy, code collapse,
 │   │                                     viewport toolbar, tabs, swatches), code-example.ts (CodeExample host:
 │   │                                     srcdoc sandbox, schema-driven editors, state mirror), themes.ts,
@@ -110,7 +112,7 @@ defuss-shadcn/
 │   ├── changelog-entry.ts             ← changelog data surgery for deploy.sh (add entry / stamp hash - the two-commit rule)
 │   ├── lib/mirror.ts                  ← shared docs/ mirror transform (sync-docs + verify compare against it)
 │   ├── lib/skill.ts                   ← SKILL.md generation core: frontmatter parser + index renderer (pure)
-│   ├── lib/skill-files.ts             ← dist/SKILL.md index generator from src/SKILL_tpl.md + skill frontmatter (build.ts regenerates every build)
+│   ├── lib/skill-files.ts             ← dist/SKILL.md index generator from src/SKILL_tpl.md + skill frontmatter, and the repo-root SKILL.md from src/SKILL_root_tpl.md + nav.ts + page frontmatter (build.ts regenerates both every build)
 │   ├── create-screenshots.ts          ← parallel default-state screenshots for agent inspection
 │   ├── lib/audit.ts                   ← undefined-utility audit (used by verify)
 │   ├── lib/links.ts                   ← markdown link checker (verify markdown link integrity gate; pure)
@@ -533,7 +535,8 @@ contract that keeps everything else honest.
   and the executed source - one string, no `code=` prop to drift (the old
   divergence bug is structurally impossible; `FORBIDDEN_CODE_EXAMPLE_PROPS` +
   the `example fence rules` verify gate enforce it). The fence renders an SSR
-  card; the runtime boots a sandboxed iframe (`srcdoc`, `sandbox="allow-scripts"`,
+  card; the runtime boots a sandboxed iframe (`srcdoc`, `sandbox="allow-scripts allow-forms"` -
+  forms only so submit/invalid handlers run; the bridge cancels the navigation -
   per-example channel id) that loads the real token CSS + all.js + lucide, runs
   the example verbatim, and bridges state both ways: the State tab's editors are
   generated **exclusively** from the schema (editorFor in scripts/lib/schema.ts),
@@ -678,7 +681,7 @@ When testing, use the existing dev server - don't start a new one.
 The client runtime (`runtime/*.ts`, compiled to `public/js/` before the SSG
 build) adds the interactive behavior on top of the static markup:
 
-- **pre-paint init** (layout.ts, synchronous in `<head>`) - dark mode + wide mode
+- **pre-paint init** (layout.ts, synchronous in `<head>`) - dark mode
   from localStorage/OS preference, no FOUC
 - **SPA router** (layout.ts) - intercepts nav clicks, fetches the sibling page,
   swaps `<main>` innerHTML + the `.site-toc` aside, migrates page-level
@@ -1144,7 +1147,7 @@ index, and TOC pick the page up automatically.
 
 The sidebar is ordered by dependency (primitives first):
 1. Introduction (Getting Started, Installation, How to Use, Component Skills, Verified Agentic Engineering (VAE), Changelog) - the only section open on first load (`ALWAYS_OPEN_SECTION` in `lib/nav.ts`)
-2. Guides (Theming, Dark Mode, Data Attribute API, State API, Cascade Layers, JavaScript Modules, Native Web APIs, Animations → {Motion, Animation Canvas, Fade, Slide Up, Slide Down, Slide Left, Slide Right, Zoom, Zoom Out, Pop, Spin, Flip, Skew, Blur, Wipe, Wipe Up, Iris}, Sizing → {Width & Height, Spacing, Density}, Layout → {Container, Flex, Grid}, Accessibility) - Sizing/Layout/Animations are parent pages with nested submenu children (`NavItem.children`)
+2. Guides (Theming, Dark Mode, Data Attribute API, State API, Cascade Layers, JavaScript Modules, Native Web APIs, Animations → {Motion, Animation Canvas, Fade, Slide Up, Slide Down, Slide Left, Slide Right, Zoom, Zoom Out, Pop, Spin, Flip, Skew, Blur, Wipe, Wipe Up, Iris}, Sizing → {Width & Height, Spacing, Density}, Layout → {Container, Flex, Grid}, Shapes, Accessibility) - Sizing/Layout/Animations are parent pages with nested submenu children (`NavItem.children`)
 3. Primitives (Typography, Separator, Icon, Heading Anchor)
 4. Actions (Button, Toggle, Toggle Group, Button Group, Toolbar)
 5. Forms & Inputs (Label, Input, Textarea, Checkbox, Radio Group, Switch, Slider, Select, Number Input, File Input, Color Picker, Date Picker, Combobox, Form)

@@ -40,10 +40,63 @@
       </li>
     </ul>
 
+    <!-- selection (data-selectable) + disabled + link leaves + empty branch + long label -->
+    <ul class="tree" data-selectable role="tree" aria-label="Selectable" id="tvs" style="width:16rem;">
+      <li class="tree-item" role="treeitem" id="tvs-inbox" aria-selected="true"><span class="tree-leaf" tabindex="0"><span>Inbox</span></span></li>
+      <li class="tree-item" role="treeitem" id="tvs-sent"><span class="tree-leaf" tabindex="0"><span>Sent</span></span></li>
+      <li class="tree-item" role="treeitem" id="tvs-locked" aria-disabled="true"><span class="tree-leaf" tabindex="0"><span>Locked</span></span></li>
+      <li class="tree-item" role="treeitem" id="tvs-archive" aria-expanded="false">
+        <details class="tree-branch" id="tvs-archive-branch">
+          <summary class="tree-branch-trigger" tabindex="0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"></path></svg><span>Archive</span></summary>
+          <ul class="tree-group" role="group"><li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>2025</span></span></li></ul>
+        </details>
+      </li>
+      <li class="tree-item" role="treeitem" id="tvs-legal" aria-expanded="false" aria-disabled="true">
+        <details class="tree-branch" id="tvs-legal-branch">
+          <summary class="tree-branch-trigger" tabindex="0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"></path></svg><span>Legal</span></summary>
+          <ul class="tree-group" role="group"><li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>Contract.pdf</span></span></li></ul>
+        </details>
+      </li>
+      <li class="tree-item" role="treeitem" id="tvs-drafts" aria-expanded="true">
+        <details class="tree-branch" open>
+          <summary class="tree-branch-trigger" tabindex="0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"></path></svg><span>Drafts</span></summary>
+          <ul class="tree-group" role="group" id="tvs-empty-default"></ul>
+        </details>
+      </li>
+      <li class="tree-item" role="treeitem" aria-expanded="true">
+        <details class="tree-branch" open>
+          <summary class="tree-branch-trigger" tabindex="0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"></path></svg><span>Reports</span></summary>
+          <ul class="tree-group" role="group" id="tvs-empty-custom" data-empty="No reports yet">
+          </ul>
+        </details>
+      </li>
+      <li class="tree-item" role="treeitem" id="tvs-link-item"><a class="tree-leaf" href="#linked" id="tvs-link"><span>Theming</span></a></li>
+      <li class="tree-item" role="treeitem" aria-disabled="true"><a class="tree-leaf" href="#never" id="tvs-link-disabled"><span>Blocked link</span></a></li>
+      <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span id="tvs-long" title="fra-edge-01.production.internal.example.com">fra-edge-01.production.internal.example.com</span></span></li>
+    </ul>
     <script type="module" src="/dist/components/core.js"></script>
     <script type="module" src="/dist/components/tree-view/tree-view.js"></script>
       <ul class="tree" role="tree" aria-label="Density compact" id="tvd-compact" data-density="compact" style="width:16rem;margin-top:1rem;"><li class="tree-item" role="treeitem" aria-expanded="true"><details class="tree-branch" open><summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg><span>src</span></summary><ul class="tree-group" role="group"><li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>a.ts</span></span></li></ul></details></li></ul>
     <ul class="tree" role="tree" aria-label="Density comfortable" id="tvd-comfortable" data-density="comfortable" style="width:16rem;margin-top:1rem;"><li class="tree-item" role="treeitem" aria-expanded="true"><details class="tree-branch" open><summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg><span>src</span></summary><ul class="tree-group" role="group"><li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>a.ts</span></span></li></ul></details></li></ul>
     <ul class="tree" role="tree" aria-label="Density spacious" id="tvd-spacious" data-density="spacious" style="width:16rem;margin-top:1rem;"><li class="tree-item" role="treeitem" aria-expanded="true"><details class="tree-branch" open><summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg><span>src</span></summary><ul class="tree-group" role="group"><li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>a.ts</span></span></li></ul></details></li></ul>
+  <!-- variant: guides - one vertical guideline per nested group -->
+  <ul class="tree" data-variant="guides" role="tree" aria-label="Guides" id="tvg">
+    <li class="tree-item" role="treeitem" aria-expanded="true">
+      <details class="tree-branch" open>
+        <summary class="tree-branch-trigger" tabindex="0" id="tvg-src"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"></path></svg><span>src</span></summary>
+        <ul class="tree-group" role="group" id="tvg-g1">
+          <li class="tree-item" role="treeitem" aria-expanded="true">
+            <details class="tree-branch" open>
+              <summary class="tree-branch-trigger" tabindex="0" id="tvg-ui"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"></path></svg><span>ui</span></summary>
+              <ul class="tree-group" role="group" id="tvg-g2">
+                <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0" id="tvg-leaf"><span>button.tsx</span></span></li>
+              </ul>
+            </details>
+          </li>
+          <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>index.ts</span></span></li>
+        </ul>
+      </details>
+    </li>
+  </ul>
 </body>
 </html>

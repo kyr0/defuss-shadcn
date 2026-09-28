@@ -31,7 +31,43 @@
       <table class="calendar-grid" role="grid"></table>
     </div>
 
+    <!-- range mode: one calendar (preset 12-16 Oct, min date 2026-10-05) + a two-month .calendar-range with form fields -->
+    <div class="calendar" id="cal-range" data-mode="range" data-range-start="2026-10-12" data-range-end="2026-10-16" data-min-date="2026-10-05" style="margin-top:1rem;"><div class="calendar-header"><button class="calendar-nav" data-action="prev-month" aria-label="Previous month">‹</button><span class="calendar-heading"></span><button class="calendar-nav" data-action="next-month" aria-label="Next month">›</button></div><table class="calendar-grid" role="grid"></table></div>
+    <div class="calendar-range" id="cal-stay" role="group" aria-label="Stay" data-current-date="2026-10" style="margin-top:1rem;">
+      <div class="calendar" id="cal-stay-a"><div class="calendar-header"><button class="calendar-nav" data-action="prev-month" aria-label="Previous month">‹</button><span class="calendar-heading"></span><button class="calendar-nav" data-action="next-month" aria-label="Next month">›</button></div><table class="calendar-grid" role="grid"></table></div>
+      <div class="calendar" id="cal-stay-b"><div class="calendar-header"><button class="calendar-nav" data-action="prev-month" aria-label="Previous month">‹</button><span class="calendar-heading"></span><button class="calendar-nav" data-action="next-month" aria-label="Next month">›</button></div><table class="calendar-grid" role="grid"></table></div>
+      <div class="calendar-range-footer">
+        <input type="text" readonly id="stay-in" data-range-input="start" aria-label="Check-in" />
+        <input type="text" readonly id="stay-out" data-range-input="end" aria-label="Check-out" />
+      </div>
+    </div>
     <script type="module" src="/dist/components/core.js"></script>
+    <!-- month / year picker, dropdown caption, day data -->
+    <div class="calendar" id="cal-jump" data-current-date="2026-09" data-min-date="2020-03-01">
+  <div class="calendar-header">
+    <button class="calendar-nav" data-action="prev-month" aria-label="Previous month"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
+    <span class="calendar-heading" aria-live="polite"></span>
+    <button class="calendar-nav" data-action="next-month" aria-label="Next month"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+  </div>
+      <table class="calendar-grid" role="grid"></table>
+    </div>
+    <div class="calendar" id="cal-dd" data-caption="dropdown" data-year-from="1950" data-year-to="2030" data-current-date="2026-09">
+  <div class="calendar-header">
+    <button class="calendar-nav" data-action="prev-month" aria-label="Previous month"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
+    <span class="calendar-heading" aria-live="polite"></span>
+    <button class="calendar-nav" data-action="next-month" aria-label="Next month"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+  </div>
+      <table class="calendar-grid" role="grid"></table>
+    </div>
+    <div class="calendar" id="cal-days" data-current-date="2026-12">
+  <div class="calendar-header">
+    <button class="calendar-nav" data-action="prev-month" aria-label="Previous month"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
+    <button type="button" class="calendar-heading" aria-live="polite"></button>
+    <button class="calendar-nav" data-action="next-month" aria-label="Next month"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+  </div>
+      <table class="calendar-grid" role="grid"></table>
+      <script type="application/json" class="calendar-days">{ "2026-12-25": { "mark": "holiday", "label": "Christmas Day" }, "2026-12-18": { "mark": "booked", "disabled": true }, "2026-12-08": { "note": "€119" }, "2026-12-09": { "mark": "<bad>", "note": "<b>x</b>" } }</script>
+    </div>
     <script type="module" src="/dist/components/calendar/calendar.js"></script>
   </body>
 </html>

@@ -198,9 +198,13 @@
     toolbar.appendChild(allBtn);
     syncAllBtn(); // blocks start collapsed - the button must offer "Expand all"
 
-    // Place toolbar inside the sticky header (after the last child)
+    // Place the toolbar in the header's title row (level with the h1, under
+    // "Built with"); older headers without the slot get it at their end
     var pageHeader = main.querySelector('.page-header');
-    if (pageHeader) {
+    var actions = pageHeader && pageHeader.querySelector('.page-header-actions');
+    if (actions) {
+      actions.appendChild(toolbar);
+    } else if (pageHeader) {
       pageHeader.appendChild(toolbar);
     } else {
       (pairs.length ? pairs[0].wrapper : examples[0]).insertAdjacentElement('beforebegin', toolbar);

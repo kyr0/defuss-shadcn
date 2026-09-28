@@ -135,7 +135,7 @@ export function CodeExample({ source, component, label, hint, height, mode, prev
               grip (240..1600 w, 240..1400 h). */}
           <div class="resizer ce-resizer" data-handles="all" data-resize-mode="controlled" data-axis="both" data-min="240" data-max="1600" data-min-h="240" data-max-h="1400">
             <div class="ce-device">
-              <iframe class="code-example-frame" sandbox="allow-scripts" title={name} style="width:100%;min-height:8rem;border:0;display:block;"></iframe>
+              <iframe class="code-example-frame" sandbox="allow-scripts allow-forms" allow="clipboard-write" title={name} style="width:100%;min-height:8rem;border:0;display:block;"></iframe>
               <span class="ce-device-island" aria-hidden="true"></span>
               <span class="ce-device-home" aria-hidden="true"></span>
             </div>

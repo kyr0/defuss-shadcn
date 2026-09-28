@@ -16,6 +16,13 @@
   var ch = globalThis.__CE_CH;
   var schema = globalThis.__CE_SCHEMA || { states: {}, actions: {} };
 
+  // -- forms ------------------------------------------------------------
+  // The frame allows forms so examples' submit / invalid handlers run; the
+  // navigation a submit would start is always cancelled here (document,
+  // bubble phase - after the example's own form listeners) because it would
+  // replace the example document with a blank one.
+  document.addEventListener('submit', function (e) { e.preventDefault(); });
+
   function post(kind, extra) {
     var msg = { type: 'ce', ch: ch, kind: kind };
     if (extra) for (var k in extra) msg[k] = extra[k];
@@ -300,6 +307,28 @@
   });
   document.addEventListener('click', sync, true);
   new MutationObserver(sync).observe(document.body, { childList: true, attributes: true, subtree: true, characterData: true });
+
+  // Height-only follow-up for size changes no mutation announces: CSS
+  // transitions that run AFTER the last sync (open <details> expanding via
+  // ::details-content, @starting-style entrances), late image/font layout.
+  // The body is flow-root, so its box IS the content height - resizing the
+  // iframe never feeds back into it (no ratchet). Deduped: an unchanged
+  // height posts nothing.
+  var lastHeight = -1;
+  var heightQueued = false;
+  function syncHeight() {
+    if (heightQueued) return;
+    heightQueued = true;
+    setTimeout(function () {
+      heightQueued = false;
+      var h = contentHeight();
+      if (h === lastHeight) return;
+      lastHeight = h;
+      post('height', { height: h });
+    }, 0);
+  }
+  if (typeof ResizeObserver === 'function') new ResizeObserver(syncHeight).observe(document.body);
+  document.addEventListener('transitionend', syncHeight, true);
 
   addEventListener('DOMContentLoaded', function () {
     post('ready');

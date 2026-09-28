@@ -41,7 +41,9 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <SkillText dense>• Branch items have <code>role="treeitem"</code> and <code>aria-expanded</code></SkillText>
   <SkillText dense>• Leaf items have <code>role="treeitem"</code> without <code>aria-expanded</code></SkillText>
   <SkillText dense>• Nested groups use <code>role="group"</code></SkillText>
-  <p class="text-muted-foreground m-0">• Keyboard: Arrow keys navigate, Enter/Space toggles branches</p>
+  <SkillText dense>• <code>data-selectable</code> tree: <code>aria-selected</code> on every operable item, click / Enter / Space selects, <code>tree-select</code> event</SkillText>
+  <SkillText dense>• <code>aria-disabled="true"</code> items stay focusable but can't be opened, selected or followed</SkillText>
+  <p class="text-muted-foreground m-0">• Keyboard: Arrow keys navigate, Enter/Space toggles branches (and selects in a selectable tree)</p>
   </SkillField>
 </SkillPanel>
 
@@ -131,6 +133,411 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
         </svg>
         <span>README.md</span>
       </span>
+    </li>
+  </ul>
+</div>
+```
+
+```html example label="Guidelines" hint="data-variant='guides' on the tree root draws a vertical guideline under every open folder, so the depth of nesting reads at a glance. The guideline of the level that holds keyboard focus darkens."
+<div style="max-width:18rem;border:1px solid var(--border);border-radius:var(--radius-lg);padding:0.5rem;">
+  <ul class="tree" data-variant="guides" role="tree" aria-label="Project files">
+    <li class="tree-item" role="treeitem" aria-expanded="true">
+      <details class="tree-branch" open>
+        <summary class="tree-branch-trigger" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>src</span></summary>
+        <ul class="tree-group" role="group">
+          <li class="tree-item" role="treeitem" aria-expanded="true">
+            <details class="tree-branch" open>
+              <summary class="tree-branch-trigger" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>components</span></summary>
+              <ul class="tree-group" role="group">
+                <li class="tree-item" role="treeitem" aria-expanded="true">
+                  <details class="tree-branch" open>
+                    <summary class="tree-branch-trigger" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>ui</span></summary>
+                    <ul class="tree-group" role="group">
+                      <li class="tree-item" role="treeitem">
+                        <span class="tree-leaf" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>button.tsx</span></span>
+                      </li>
+                      <li class="tree-item" role="treeitem">
+                        <span class="tree-leaf" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>card.tsx</span></span>
+                      </li>
+                      <li class="tree-item" role="treeitem">
+                        <span class="tree-leaf" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>dialog.tsx</span></span>
+                      </li>
+                    </ul>
+                  </details>
+                </li>
+                <li class="tree-item" role="treeitem" aria-expanded="true">
+                  <details class="tree-branch" open>
+                    <summary class="tree-branch-trigger" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>forms</span></summary>
+                    <ul class="tree-group" role="group">
+                      <li class="tree-item" role="treeitem">
+                        <span class="tree-leaf" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>input.tsx</span></span>
+                      </li>
+                      <li class="tree-item" role="treeitem">
+                        <span class="tree-leaf" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>select.tsx</span></span>
+                      </li>
+                    </ul>
+                  </details>
+                </li>
+                <li class="tree-item" role="treeitem">
+                  <span class="tree-leaf" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>header.tsx</span></span>
+                </li>
+              </ul>
+            </details>
+          </li>
+          <li class="tree-item" role="treeitem" aria-expanded="true">
+            <details class="tree-branch" open>
+              <summary class="tree-branch-trigger" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>lib</span></summary>
+              <ul class="tree-group" role="group">
+                <li class="tree-item" role="treeitem">
+                  <span class="tree-leaf" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>utils.ts</span></span>
+                </li>
+                <li class="tree-item" role="treeitem">
+                  <span class="tree-leaf" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>format.ts</span></span>
+                </li>
+              </ul>
+            </details>
+          </li>
+          <li class="tree-item" role="treeitem">
+            <span class="tree-leaf" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>index.ts</span></span>
+          </li>
+        </ul>
+      </details>
+    </li>
+    <li class="tree-item" role="treeitem" aria-expanded="false">
+      <details class="tree-branch">
+        <summary class="tree-branch-trigger" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>public</span></summary>
+        <ul class="tree-group" role="group">
+          <li class="tree-item" role="treeitem">
+            <span class="tree-leaf" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>favicon.ico</span></span>
+          </li>
+        </ul>
+      </details>
+    </li>
+    <li class="tree-item" role="treeitem">
+      <span class="tree-leaf" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>package.json</span></span>
+    </li>
+    <li class="tree-item" role="treeitem">
+      <span class="tree-leaf" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>README.md</span></span>
+    </li>
+  </ul>
+</div>
+```
+
+```html example label="Selection" hint="Add data-selectable to the tree root: a click, Enter or Space selects the row (aria-selected='true' - a primary-tinted surface and medium weight). A folder toggles AND selects. Every choice fires a bubbling tree-select event with the treeitem in detail.item."
+<div style="max-width:18rem;border:1px solid var(--border);border-radius:var(--radius-lg);padding:0.5rem;">
+  <ul class="tree" role="tree" aria-label="Mail folders" data-selectable id="mail-tree">
+    <li class="tree-item" role="treeitem" aria-selected="true"><span class="tree-leaf" tabindex="0"><span>Inbox</span></span></li>
+    <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>Drafts</span></span></li>
+    <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>Sent</span></span></li>
+    <li class="tree-item" role="treeitem" aria-expanded="true">
+      <details class="tree-branch" open>
+        <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><span>Archive</span></summary>
+        <ul class="tree-group" role="group">
+          <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>2025</span></span></li>
+          <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>2024</span></span></li>
+        </ul>
+      </details>
+    </li>
+    <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>Trash</span></span></li>
+  </ul>
+</div>
+<p class="text-sm text-muted-foreground" style="margin:0.75rem 0 0;">Selected: <output id="mail-selected">Inbox</output></p>
+<script>
+  document.getElementById('mail-tree').addEventListener('tree-select', (e) => {
+    document.getElementById('mail-selected').textContent = e.detail.item.querySelector('span:last-child').textContent;
+  });
+</script>
+```
+
+```html example label="Disabled items" hint="aria-disabled='true' on a treeitem dims the row and makes it inert: a disabled folder can't be opened (click, Enter, Space, ArrowRight), a disabled row can't be selected or followed. It stays in the arrow-key path, so screen-reader users still learn it exists."
+<div style="max-width:18rem;border:1px solid var(--border);border-radius:var(--radius-lg);padding:0.5rem;">
+  <ul class="tree" role="tree" aria-label="Workspace" data-selectable>
+    <li class="tree-item" role="treeitem" aria-expanded="true">
+      <details class="tree-branch" open>
+        <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><span>Workspace</span></summary>
+        <ul class="tree-group" role="group">
+          <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>Roadmap.md</span></span></li>
+          <li class="tree-item" role="treeitem" aria-expanded="false" aria-disabled="true">
+            <details class="tree-branch">
+              <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg><span>Legal (restricted)</span></summary>
+              <ul class="tree-group" role="group">
+                <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>Contract.pdf</span></span></li>
+              </ul>
+            </details>
+          </li>
+          <li class="tree-item" role="treeitem" aria-disabled="true"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg><span>Budget.xlsx (locked)</span></span></li>
+          <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>Notes.md</span></span></li>
+        </ul>
+      </details>
+    </li>
+  </ul>
+</div>
+```
+
+```html example label="Beyond files" hint="Any hierarchy fits: product categories, an org chart, a docs navigation menu. Icons are optional - the chevron is the only required glyph. Navigation leaves are links (a.tree-leaf with href); aria-selected marks the current page."
+<div class="grid grid-cols-auto gap-4" style="--layout-min:14rem;">
+  <div>
+    <p class="demo-label">Product categories</p>
+    <ul class="tree" role="tree" aria-label="Product categories" data-selectable>
+      <li class="tree-item" role="treeitem" aria-expanded="true">
+        <details class="tree-branch" open>
+          <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><span>Electronics</span></summary>
+          <ul class="tree-group" role="group">
+            <li class="tree-item" role="treeitem" aria-expanded="true">
+              <details class="tree-branch" open>
+                <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><span>Audio</span></summary>
+                <ul class="tree-group" role="group">
+                  <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>Headphones</span></span></li>
+                  <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>Speakers</span></span></li>
+                </ul>
+              </details>
+            </li>
+            <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>Cameras</span></span></li>
+            <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>Laptops</span></span></li>
+          </ul>
+        </details>
+      </li>
+      <li class="tree-item" role="treeitem" aria-expanded="false">
+        <details class="tree-branch">
+          <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><span>Home & Garden</span></summary>
+          <ul class="tree-group" role="group">
+            <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>Furniture</span></span></li>
+            <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>Lighting</span></span></li>
+          </ul>
+        </details>
+      </li>
+      <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>Books</span></span></li>
+    </ul>
+  </div>
+  <div>
+    <p class="demo-label">Org chart</p>
+    <ul class="tree" role="tree" aria-label="Organisation" data-variant="guides">
+      <li class="tree-item" role="treeitem" aria-expanded="true">
+        <details class="tree-branch" open>
+          <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><span>Maria Chen · CEO</span></summary>
+          <ul class="tree-group" role="group">
+            <li class="tree-item" role="treeitem" aria-expanded="true">
+              <details class="tree-branch" open>
+                <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><span>Jonas Weber · CTO</span></summary>
+                <ul class="tree-group" role="group">
+                  <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>Platform team (6)</span></span></li>
+                  <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>Design systems (4)</span></span></li>
+                </ul>
+              </details>
+            </li>
+            <li class="tree-item" role="treeitem" aria-expanded="false">
+              <details class="tree-branch">
+                <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><span>Aisha Khan · CFO</span></summary>
+                <ul class="tree-group" role="group">
+                  <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>Finance (5)</span></span></li>
+                </ul>
+              </details>
+            </li>
+            <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span>Tom Ruiz · Chief of Staff</span></span></li>
+          </ul>
+        </details>
+      </li>
+    </ul>
+  </div>
+  <div>
+    <p class="demo-label">Navigation menu</p>
+    <nav aria-label="Documentation">
+      <ul class="tree" role="tree" aria-label="Documentation" data-selectable>
+        <li class="tree-item" role="treeitem" aria-expanded="true">
+          <details class="tree-branch" open>
+            <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><span>Getting started</span></summary>
+            <ul class="tree-group" role="group">
+              <li class="tree-item" role="treeitem"><a class="tree-leaf" href="#installation"><span>Installation</span></a></li>
+              <li class="tree-item" role="treeitem" aria-selected="true"><a class="tree-leaf" href="#theming"><span>Theming</span></a></li>
+            </ul>
+          </details>
+        </li>
+        <li class="tree-item" role="treeitem" aria-expanded="false">
+          <details class="tree-branch">
+            <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><span>Components</span></summary>
+            <ul class="tree-group" role="group">
+              <li class="tree-item" role="treeitem"><a class="tree-leaf" href="#button"><span>Button</span></a></li>
+              <li class="tree-item" role="treeitem"><a class="tree-leaf" href="#dialog"><span>Dialog</span></a></li>
+            </ul>
+          </details>
+        </li>
+        <li class="tree-item" role="treeitem"><a class="tree-leaf" href="#changelog"><span>Changelog</span></a></li>
+      </ul>
+    </nav>
+  </div>
+</div>
+```
+
+```html example label="Collapsed and expanded" hint="The same tree authored two ways: every <details> closed (only the top level shows) or every <details> open with aria-expanded='true' (the whole hierarchy at once). The open attribute is the whole API; each branch's api.setState('expanded') / ('default') changes it later."
+<div class="grid grid-cols-auto gap-4" style="--layout-min:14rem;">
+  <div>
+    <p class="demo-label">Fully collapsed</p>
+    <ul class="tree" role="tree" aria-label="Collapsed project">
+      <li class="tree-item" role="treeitem" aria-expanded="false">
+        <details class="tree-branch">
+          <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>src</span></summary>
+          <ul class="tree-group" role="group">
+            <li class="tree-item" role="treeitem" aria-expanded="false">
+              <details class="tree-branch">
+                <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>components</span></summary>
+                <ul class="tree-group" role="group">
+                  <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>button.tsx</span></span></li>
+                  <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>card.tsx</span></span></li>
+                </ul>
+              </details>
+            </li>
+            <li class="tree-item" role="treeitem" aria-expanded="false">
+              <details class="tree-branch">
+                <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>lib</span></summary>
+                <ul class="tree-group" role="group">
+                  <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>utils.ts</span></span></li>
+                </ul>
+              </details>
+            </li>
+            <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>index.ts</span></span></li>
+          </ul>
+        </details>
+      </li>
+      <li class="tree-item" role="treeitem" aria-expanded="false">
+        <details class="tree-branch">
+          <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>tests</span></summary>
+          <ul class="tree-group" role="group">
+            <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>app.test.ts</span></span></li>
+          </ul>
+        </details>
+      </li>
+      <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>package.json</span></span></li>
+    </ul>
+  </div>
+  <div>
+    <p class="demo-label">Fully expanded</p>
+    <ul class="tree" role="tree" aria-label="Expanded project">
+      <li class="tree-item" role="treeitem" aria-expanded="true">
+        <details class="tree-branch" open>
+          <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>src</span></summary>
+          <ul class="tree-group" role="group">
+            <li class="tree-item" role="treeitem" aria-expanded="true">
+              <details class="tree-branch" open>
+                <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>components</span></summary>
+                <ul class="tree-group" role="group">
+                  <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>button.tsx</span></span></li>
+                  <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>card.tsx</span></span></li>
+                </ul>
+              </details>
+            </li>
+            <li class="tree-item" role="treeitem" aria-expanded="true">
+              <details class="tree-branch" open>
+                <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>lib</span></summary>
+                <ul class="tree-group" role="group">
+                  <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>utils.ts</span></span></li>
+                </ul>
+              </details>
+            </li>
+            <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>index.ts</span></span></li>
+          </ul>
+        </details>
+      </li>
+      <li class="tree-item" role="treeitem" aria-expanded="true">
+        <details class="tree-branch" open>
+          <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>tests</span></summary>
+          <ul class="tree-group" role="group">
+            <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>app.test.ts</span></span></li>
+          </ul>
+        </details>
+      </li>
+      <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>package.json</span></span></li>
+    </ul>
+  </div>
+</div>
+```
+
+```html example label="Deep nesting" hint="Eight levels in a 20rem frame, with guides so each level stays traceable. Every level indents 1.25rem; labels that run out of room truncate with an ellipsis instead of overflowing - keep the full text in title for hover and assistive tech."
+<div style="max-width:20rem;border:1px solid var(--border);border-radius:var(--radius-lg);padding:0.5rem;">
+  <ul class="tree" role="tree" aria-label="Infrastructure" data-variant="guides">
+    <li class="tree-item" role="treeitem" aria-expanded="true">
+      <details class="tree-branch" open>
+        <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>Company</span></summary>
+        <ul class="tree-group" role="group">
+          <li class="tree-item" role="treeitem" aria-expanded="true">
+            <details class="tree-branch" open>
+              <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>Engineering</span></summary>
+              <ul class="tree-group" role="group">
+                <li class="tree-item" role="treeitem" aria-expanded="true">
+                  <details class="tree-branch" open>
+                    <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>Platform</span></summary>
+                    <ul class="tree-group" role="group">
+                      <li class="tree-item" role="treeitem" aria-expanded="true">
+                        <details class="tree-branch" open>
+                          <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>Infrastructure</span></summary>
+                          <ul class="tree-group" role="group">
+                            <li class="tree-item" role="treeitem" aria-expanded="true">
+                              <details class="tree-branch" open>
+                                <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>Networking</span></summary>
+                                <ul class="tree-group" role="group">
+                                  <li class="tree-item" role="treeitem" aria-expanded="true">
+                                    <details class="tree-branch" open>
+                                      <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>Edge</span></summary>
+                                      <ul class="tree-group" role="group">
+                                        <li class="tree-item" role="treeitem" aria-expanded="true">
+                                          <details class="tree-branch" open>
+                                            <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>Europe</span></summary>
+                                            <ul class="tree-group" role="group">
+                                              <li class="tree-item" role="treeitem" aria-expanded="true">
+                                                <details class="tree-branch" open>
+                                                  <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>Frankfurt</span></summary>
+                                                  <ul class="tree-group" role="group">
+                                                    <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span title="fra-edge-01.production.internal.example.com">fra-edge-01.production.internal.example.com</span></span></li>
+                                                    <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span title="fra-edge-02.production.internal.example.com">fra-edge-02.production.internal.example.com</span></span></li>
+                                                  </ul>
+                                                </details>
+                                              </li>
+                                            </ul>
+                                          </details>
+                                        </li>
+                                      </ul>
+                                    </details>
+                                  </li>
+                                </ul>
+                              </details>
+                            </li>
+                          </ul>
+                        </details>
+                      </li>
+                    </ul>
+                  </details>
+                </li>
+              </ul>
+            </details>
+          </li>
+        </ul>
+      </details>
+    </li>
+  </ul>
+</div>
+```
+
+```html example label="Empty branch" hint="A folder with no children keeps its role='group' list empty; the tree shows a muted placeholder row instead of opening onto nothing. The text defaults to 'Empty' - set data-empty on the .tree-group for your own wording."
+<div style="max-width:18rem;border:1px solid var(--border);border-radius:var(--radius-lg);padding:0.5rem;">
+  <ul class="tree" role="tree" aria-label="Reports">
+    <li class="tree-item" role="treeitem" aria-expanded="true">
+      <details class="tree-branch" open>
+        <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>Reports</span></summary>
+        <ul class="tree-group" role="group">
+          <li class="tree-item" role="treeitem" aria-expanded="true">
+            <details class="tree-branch" open>
+              <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>Drafts</span></summary>
+              <ul class="tree-group" role="group"></ul>
+            </details>
+          </li>
+          <li class="tree-item" role="treeitem" aria-expanded="true">
+            <details class="tree-branch" open>
+              <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>Q4 2026</span></summary>
+              <ul class="tree-group" role="group" data-empty="No reports yet"></ul>
+            </details>
+          </li>
+          <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>Q3 2026.pdf</span></span></li>
+        </ul>
+      </details>
     </li>
   </ul>
 </div>

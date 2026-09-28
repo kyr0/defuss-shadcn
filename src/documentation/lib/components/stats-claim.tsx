@@ -1,6 +1,6 @@
 import type { Props } from 'defuss';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
-import { repoFile } from '../repo';
+import { readSkillMeta, repoFile } from '../repo';
 
 interface StatsDoc {
   total: number;
@@ -79,18 +79,64 @@ export function StatsCards(_props: Props) {
       </div>
       <div class="statistic">
         <p class="statistic-title">Bundle</p>
-        <p class="statistic-value">{formatKiB(s.bundle.totalSizeGzMinified)}</p>
+        <p class="statistic-value flex flex-wrap items-center gap-2">
+          {formatKiB(s.bundle.totalSizeGzMinified)}
+          <span class="badge" data-variant="secondary" title="gzip-compressed size">gzip</span>
+        </p>
         <p class="statistic-description">
-          <code>all.min.css</code> + <code>all.min.js</code>, gzip
+          <code>all.min.css</code> + <code>all.min.js</code>
         </p>
       </div>
       <div class="statistic">
         <p class="statistic-title">Core runtime</p>
-        <p class="statistic-value">{formatKiB(s.core.totalSizeGzMinified)}</p>
+        <p class="statistic-value flex flex-wrap items-center gap-2">
+          {formatKiB(s.core.totalSizeGzMinified)}
+          <span class="badge" data-variant="secondary" title="gzip-compressed size">gzip</span>
+        </p>
         <p class="statistic-description">
-          <code>core.min.js</code> + <code>core.min.css</code>, gzip
+          <code>core.min.js</code> + <code>core.min.css</code>
         </p>
       </div>
+    </div>
+  );
+}
+
+/** JavaScript Modules page: which components ship a .js (a `{name}.ts`
+ *  source) and which are CSS-only - read from the actual src/components tree
+ *  at docs build time (was a hand-kept list that had drifted: Slider and
+ *  Avatar were filed as CSS-only). Names come from the skill frontmatter,
+ *  each linking to its page. */
+export function ComponentJsSplit(_props: Props) {
+  const dirs = readdirSync(repoFile('src', 'components'))
+    .filter((d) => statSync(repoFile('src', 'components', d)).isDirectory())
+    .sort();
+  const hasJs = (d: string) => readdirSync(repoFile('src', 'components', d)).some((f) => f === `${d}.ts`);
+  const column = (title: string, hint: string, names: string[]) => (
+    <div class="code-card-col">
+      <div class="code-card-head">
+        <span class="mono-meta">
+          {title} ({names.length})
+        </span>
+      </div>
+      <div style="padding:1.25rem;font-size:0.8125rem;">
+        <p class="text-muted-foreground" style="margin:0 0 0.75rem;">{hint}</p>
+        <p style="margin:0;line-height:1.9;">
+          {names.map((d, i) => (
+            <>
+              <a href={`${d}.html`} style="text-decoration:underline;text-underline-offset:3px;">
+                {readSkillMeta(d)?.name ?? d}
+              </a>
+              {i < names.length - 1 ? ' · ' : ''}
+            </>
+          ))}
+        </p>
+      </div>
+    </div>
+  );
+  return (
+    <div class="grid grid-cols-auto gap-4 mb-10">
+      {column('CSS-only - no JS needed', 'Pure markup + CSS - native elements (details, form controls, progress, meter) carry the behavior.', dirs.filter((d) => !hasJs(d)))}
+      {column('Ships JavaScript', 'Keyboard models, focus management, state coordination, rendering - and every one exposes the State API.', dirs.filter(hasJs))}
     </div>
   );
 }

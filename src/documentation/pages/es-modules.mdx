@@ -1,15 +1,15 @@
 ---
 title: "JavaScript Modules"
-description: "How defuss-shadcn uses native ES modules for interactive components - no bundler needed."
+description: "How interactive components ship as native ES modules on one runtime - core.js installs df$ (defuss-query + defuss-morph), components bind to it. No bundler needed."
 slug: "es-modules"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard, ComponentJsSplit } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
 <PageHeader slug="es-modules" title="JavaScript Modules" introStyle="max-width:38rem;">
-  Interactive components ship as native <DocLink href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules" target="_blank">ES modules</DocLink>. Load them with <code>&lt;script type="module"&gt;</code> - no bundler, no build step, no framework.
+  Interactive components ship as native <DocLink href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules" target="_blank">ES modules</DocLink> on one shared runtime: <code>core.js</code> installs <code>df$</code> - defuss-query over defuss-morph - and every component binds to it. Load them with <code>&lt;script type="module"&gt;</code> - no bundler, no build step, no framework.
 </PageHeader>
 
 <H2>What is <code>type="module"</code>?</H2>
@@ -49,15 +49,48 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<H2>No <code>import</code>, no <code>export</code></H2>
+<H2>One runtime, loaded first</H2>
 
-<p class="text-sm text-muted-foreground mb-5"> You'll notice our component modules don't use <code>import</code> or <code>export</code> at all. This is intentional. Each <code>.js</code> file is a <strong>side-effect module</strong> - it wraps its DOM-querying logic in an <code>init()</code> function, calls it once on load, and sets up a <code>MutationObserver</code> to re-run it whenever the DOM changes. There's nothing to export because the module's purpose <em>is</em> its side effect: wiring behavior to HTML elements. </p>
+<p class="text-sm text-muted-foreground mb-5"> Every interactive component runs on the same runtime: <code>core.js</code> installs the callable <code>df$</code> - <DocLink href="dom-querying.html">defuss-query</DocLink> (selection, traversal, scalar writes, events) over <DocLink href="dom-querying.html">defuss-morph</DocLink> (key-aware DOM reconciliation) - plus the shared component layer at <code>df$.shadcn.shared</code>. It is the <strong>only</strong> script that creates <code>df$</code>. Load it before any component script, or load <code>all.js</code>, which embeds the same core first. A component without core fails fast with one actionable load-order error, before it renders or registers anything. </p>
 
-<CodeCard title="dialog.js - init() + MutationObserver pattern" lang="javascript" mb="1.5rem">{"// No imports - this component has no dependencies\n// No exports - the side effect IS the module\n\nfunction init() {\n  document.querySelectorAll('[data-dialog-trigger]:not([data-init])').forEach((trigger) => {\n    trigger.dataset.init = '';\n    const dialog = document.getElementById(trigger.dataset.dialogTrigger);\n    if (!dialog) return;\n    trigger.addEventListener('click', () => {\n      dialog._trigger = trigger;\n      dialog.showModal();\n    });\n  });\n}\n\ninit();\nnew MutationObserver(init).observe(document, { childList: true, subtree: true });"}</CodeCard>
+<CodeCard title="load order - modular or all-in-one" lang="markup" mb="2.5rem">{"<!-- modular: core first, then only the components you use -->\n<script type=\"module\" src=\"components/core.min.js\"></script>\n<script type=\"module\" src=\"components/dialog/dialog.min.js\"></script>\n<script type=\"module\" src=\"components/tabs/tabs.min.js\"></script>\n\n<!-- or everything at once (all.js embeds core first) -->\n<script type=\"module\" src=\"components/all.min.js\"></script>"}</CodeCard>
 
-<p class="text-sm text-muted-foreground mb-3"> There are no <code>import</code> statements either - components don't depend on each other. A dialog doesn't depend on a tooltip; a dropdown shares no code with a combobox. The ONE shared dependency is the core runtime: <code>core.js</code> installs the callable <code>df$</code> (defuss-query + defuss-morph) and the shared layer at <code>df$.shadcn.shared</code>, and every component script binds to it. Load core first - or <code>all.js</code>, which embeds it - a component without core fails fast with one actionable load-order error. </p>
+<div class="sep" />
 
-<p class="text-sm text-muted-foreground mb-5"> This is the key advantage of <em>this pattern</em>, not ES modules in general: <strong>no bundler, no import maps, no dependency resolution between components</strong>. Drop module-script tags onto the page in the right order (core, then components) and they work. Remove a component and nothing else breaks. You're composing at the HTML level, not the JavaScript level - and the query/morph runtime you'd otherwise vendor yourself ships once as <code>core.min.js</code>. </p>
+<H2>Anatomy of a component module</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> Components are authored in TypeScript under <code>src/components/</code> and compiled to plain ES modules in <code>dist/</code>. Each module imports two things from the shared layer - its registry namespace (<code>defussGlobals()</code>) and the query runtime (<code>defussQuery()</code>) - and exports its State API. The shape below is condensed, but every part of it is what the shipped components do and what <code>verify</code> checks: </p>
+
+<CodeCard title="example.ts - the shape every JS component follows" lang="javascript" mb="1.5rem">{"// src/components/example/example.ts - the source (build.ts compiles it to dist/)\nimport { defussGlobals, defussQuery } from '../../shared/state-api.js';\n\nconst df$ = defussGlobals();     // OUR registry namespace: df$.shadcn (not the global callable)\nconst dfDollar = defussQuery();  // the installed runtime: defuss-query over defuss-morph\n\n// 1. declared states - 'default' first (agents + tests drive them by name)\nconst exampleStates = ['default', 'open'];\n\n// 2. the ONLY function that touches the DOM for a state change - scalar writes via query\nfunction triggerStateChange(el, stateName) {\n  const open = stateName === 'open';\n  dfDollar(el).attr('data-open', open ? '' : null);              // null removes the attribute\n  dfDollar(el).find('.example-trigger').attr('aria-expanded', String(open));\n}\n\n// 3. registry API - element passed explicitly, unknown names throw\nexport const exampleApi = {\n  setState(el, stateName, config = {}) {\n    if (!exampleStates.includes(stateName)) {\n      throw new Error(`example: unknown state \"${stateName}\" (supported: ${exampleStates.join(', ')})`);\n    }\n    triggerStateChange(el, stateName, config);\n    el.dataset.stateName = stateName;  // state lives on the ELEMENT, never in module scope\n    el._stateConfig = config;\n  },\n  getState: (el) => ({ name: el.dataset.stateName || 'default', config: el._stateConfig ?? {} }),\n};\ndf$.exampleApi = exampleApi;         // → df$.shadcn.exampleApi\ndf$.exampleStates = exampleStates;   // → df$.shadcn.exampleStates\n\n// 4. structure renders through keyed morph - never innerHTML\nfunction renderDays(grid, isoDays) {\n  // stable ids = identity: matched nodes MOVE, so focus and listeners survive\n  dfDollar(grid).morph(isoDays.map((iso) => `<button id=\"d${iso}\">${iso.slice(-2)}</button>`).join(''));\n}\n\n// 5. per-instance binding with a double-init guard, auto-init on DOM changes\nfunction init() {\n  document.querySelectorAll('.example:not([data-init])').forEach((el) => {\n    el.dataset.init = '';\n    el.api = {\n      setState: (stateName, config) => exampleApi.setState(el, stateName, config),\n      getState: () => exampleApi.getState(el),\n    };\n    // native protocols stay native (listeners, showModal, showPopover, focus)\n    el.querySelector('.example-trigger')?.addEventListener('click', () => {\n      exampleApi.setState(el, exampleApi.getState(el).name === 'open' ? 'default' : 'open');\n    });\n  });\n}\n\ninit();\nnew MutationObserver(init).observe(document, { childList: true, subtree: true });"}</CodeCard>
+
+<div class="grid grid-cols-auto gap-4 mb-10">
+  <div class="code-card-col">
+    <div class="code-card-head"><span class="mono-meta">defuss-query for writes</span></div>
+    <div style="padding:1.25rem;font-size:0.8125rem;" class="text-muted-foreground">Flags, ARIA attributes, classes, values and literal text go through <code>.prop()</code> / <code>.attr()</code> / <code>.val()</code> / <code>.text()</code>; exact moves and mounts through <code>.append()</code> / <code>.before()</code> / <code>.after()</code> / <code>.remove()</code>.</div>
+  </div>
+  <div class="code-card-col">
+    <div class="code-card-head"><span class="mono-meta">defuss-morph for structure</span></div>
+    <div style="padding:1.25rem;font-size:0.8125rem;" class="text-muted-foreground"><code>df$(container).morph(next)</code> reconciles a subtree by key/id instead of replacing <code>innerHTML</code>: matched nodes are moved, never recreated, so focus, selection and listeners survive a re-render.</div>
+  </div>
+  <div class="code-card-col">
+    <div class="code-card-head"><span class="mono-meta">Native protocols stay native</span></div>
+    <div style="padding:1.25rem;font-size:0.8125rem;" class="text-muted-foreground"><code>showModal()</code>, <code>showPopover()</code>, <code>focus()</code>, drag-and-drop and plain listeners on authored markup remain platform APIs. <code>verify</code>'s DOM-boundary gate rejects <code>innerHTML =</code>, <code>appendChild</code> and friends in components that use the runtime.</div>
+  </div>
+</div>
+
+<H2>What ships in <code>dist/</code></H2>
+
+<p class="text-sm text-muted-foreground mb-5"> The shared layer is emitted <strong>once</strong>, inside <code>core.js</code>. The build rewrites each component's shared import into a small binding to that installed runtime, guarded by the release's ABI stamp - so no component carries its own copy of the helpers, and a component from a different release refuses to run instead of misbehaving: </p>
+
+<CodeCard title="the generated head of a shipped component" lang="javascript" mb="2.5rem">{"// dist/components/dialog/dialog.js - generated by scripts/build.ts (do not edit)\n// The shared import is rewritten into a binding to the ONE runtime core installed:\nvar __df$core = globalThis.df$;\nvar __df$shared = __df$core && __df$core.shadcn && __df$core.shadcn.shared;\nif (!__df$shared || __df$shared.abi !== '<this release>') {\n  throw new Error(\n    'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',\n  );\n}\nconst { defussGlobals } = __df$shared;\nconst df$ = defussGlobals();\n// ...the component body follows, unchanged"}</CodeCard>
+
+<H2>From the shipped components</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> Real lines from the current sources - how the rendering components use the runtime. Details and the full operation table: <DocLink href="dom-querying.html">DOM Querying &amp; Morphing</DocLink>; the per-element contract: <DocLink href="state-api.html">State API</DocLink>. </p>
+
+<CodeCard title="query + morph in calendar, carousel, combobox, pagination, toast" lang="javascript" mb="2.5rem">{"// calendar - the month grid re-renders through keyed morph (ISO-date cell ids):\ndfDollar(grid).morph(renderGrid(year, month, selectedDay, calId, minDate, maxDate));\n\n// carousel - dots keyed by id, reconciled in ONE morph pass:\ndfDollar(dotsContainer).morph(html);\n\n// combobox / command - filtering is scalar writes; the listbox is never rebuilt:\ndfDollar(item).prop('hidden', !match);\ndfDollar(item).attr('aria-selected', 'true');\ndfDollar(list).find('.command-separator').prop('hidden', !!query);\n\n// pagination - page links that stay visible MOVE (node identity → focus survives):\ndfDollar(nextLi).before(node);\n\n// toast - mount, fill and dismiss through query's exact structural ops:\ndfDollar(document.body).append(toastContainer);\ndfDollar(p).text(title);            // literal user text - never parsed as markup\ndfDollar(el).remove();"}</CodeCard>
+
+<p class="text-sm text-muted-foreground mb-5"> Components still don't depend on <em>each other</em>: a dialog shares no code with a tooltip, a dropdown none with a combobox. The one shared dependency is core. Drop the script tags onto the page in the right order (core, then components) and they work; remove a component and nothing else breaks. You compose at the HTML level - no bundler, no import maps, no dependency resolution between components. </p>
 
 <div class="sep" />
 
@@ -71,10 +104,10 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
       <span class="mono-meta">Static page</span>
     </div>
     <div style="padding:1.25rem;font-size:0.8125rem;display:flex;flex-direction:column;gap:0.75rem;">
-      <div class="text-muted-foreground">Add <code>&lt;script type="module"&gt;</code> tags and you're done</div>
+      <div class="text-muted-foreground">Add the <code>&lt;script type="module"&gt;</code> tags (core first) and you're done</div>
       <div class="text-muted-foreground">Modules run once after the HTML is parsed</div>
       <div class="text-muted-foreground">All components initialize automatically</div>
-      <div class="text-muted-foreground">Nothing else to think about</div>
+      <div class="text-muted-foreground">Every instance gets its <code>el.api</code></div>
     </div>
   </div>
   <div class="code-card-col">
@@ -84,72 +117,23 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <div style="padding:1.25rem;font-size:0.8125rem;display:flex;flex-direction:column;gap:0.75rem;">
       <div class="text-muted-foreground">New HTML inserted after page load needs initialization</div>
       <div class="text-muted-foreground">Each component uses a <code>MutationObserver</code> to watch for new elements</div>
-      <div class="text-muted-foreground">New elements are automatically initialized - no manual re-import needed</div>
-      <div class="text-muted-foreground">Already-initialized elements are skipped via <code>data-init</code> guard</div>
+      <div class="text-muted-foreground">New elements are initialized automatically - no re-import, no re-render</div>
+      <div class="text-muted-foreground">Already-initialized elements are skipped via the <code>data-init</code> guard</div>
     </div>
   </div>
 </div>
 
-<p class="text-sm text-muted-foreground mb-3"> On a static page, the <code>&lt;script&gt;</code> tags run once after the DOM is ready and every component just works. No setup, no configuration. </p>
+<p class="text-sm text-muted-foreground mb-5"> In an SPA or any page that updates its HTML, each component module watches the document with a <code>MutationObserver</code> and re-runs its initialization. The <code>data-init</code> attribute on every initialized element prevents double-binding - the <code>:not(\[data-init\])</code> selector wires up only new elements, so even many observers stay cheap. Morph-rendered structure keeps its identity across re-renders, so an already-initialized element is never initialized twice: </p>
 
-<p class="text-sm text-muted-foreground mb-5"> In an SPA or any page that dynamically updates its HTML, new elements are initialized automatically. Each component module sets up a <code>MutationObserver</code> that watches the document for DOM changes and re-runs its initialization logic. The <code>data-init</code> attribute on every initialized element prevents double-binding - the <code>:not(\[data-init\])</code> selector ensures only new elements are wired up. Even with many component observers on the page, each callback is cheap because the <code>querySelectorAll</code> guard skips already-initialized elements immediately. There is nothing to call or configure: </p>
-
-<CodeCard title="how auto-initialization works inside each component module" lang="javascript" mb="2.5rem">{"// Each component module follows this pattern:\n\nfunction init() {\n  document.querySelectorAll('.my-component:not([data-init])').forEach((el) => {\n    el.dataset.init = '';\n    // ... bind event listeners, set ARIA attributes, etc.\n  });\n}\n\n// Run once on load\ninit();\n\n// Auto-run when the DOM changes (SPA navigation, dynamic content, etc.)\nnew MutationObserver(init).observe(document, { childList: true, subtree: true });"}</CodeCard>
+<CodeCard title="how auto-initialization works inside each component module" lang="javascript" mb="2.5rem">{"// auto-initialization, inside every component module:\nfunction init() {\n  document.querySelectorAll('.my-component:not([data-init])').forEach((el) => {\n    el.dataset.init = '';            // the guard: first line, every time\n    el.api = { /* setState / getState bound to this element */ };\n    // ... listeners, ARIA wiring\n  });\n}\n\ninit();                              // once on load\nnew MutationObserver(init).observe(document, { childList: true, subtree: true });"}</CodeCard>
 
 <div class="sep" />
 
 <H2>Which components need JS?</H2>
 
-<p class="text-sm text-muted-foreground mb-5"> Most components are CSS-only. JavaScript is only used when HTML and CSS can't express the behavior - things like keyboard navigation, focus management, and state coordination. </p>
+<p class="text-sm text-muted-foreground mb-5"> Most components are CSS-only. JavaScript is used only where HTML and CSS can't express the behavior - keyboard navigation, focus management, state coordination and rendering. This list is generated from the component tree at build time (a component ships JavaScript when it has a <code>{"{name}.ts"}</code> source), so it is always current: </p>
 
-<div class="grid grid-cols-auto gap-4 mb-10">
-  <div class="code-card-col">
-    <div style="padding:0.75rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);">
-      <span class="mono-meta">CSS-only - no JS needed</span>
-    </div>
-    <div style="padding:1.25rem;font-size:0.8125rem;display:flex;flex-direction:column;gap:1rem;">
-      <div>
-        <div class="group-label">Static display</div>
-        <div class="text-muted-foreground">Badge, Card, Alert, Spinner, Skeleton, Separator, Progress, Image, Avatar (fallback needs JS)</div>
-      </div>
-      <div>
-        <div class="group-label">Native interactive</div>
-        <div class="text-muted-foreground">Checkbox, Radio, Select, Switch, Slider, Input, Textarea, File Input</div>
-      </div>
-      <div>
-        <div class="group-label">Native with <code>&lt;details&gt;</code></div>
-        <div class="text-muted-foreground">Collapsible</div>
-      </div>
-    </div>
-  </div>
-  <div class="code-card-col">
-    <div style="padding:0.75rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);">
-      <span class="mono-meta">Needs JavaScript</span>
-    </div>
-    <div style="padding:1.25rem;font-size:0.8125rem;display:flex;flex-direction:column;gap:1rem;">
-      <div>
-        <div class="group-label">Modal coordination</div>
-        <div class="text-muted-foreground">Dialog, Sheet, Alert Dialog, Command</div>
-      </div>
-      <div>
-        <div class="group-label">Keyboard navigation</div>
-        <div class="text-muted-foreground">Tabs, Dropdown, Combobox, Toolbar, Navigation Menu</div>
-      </div>
-      <div>
-        <div class="group-label">Constraint logic</div>
-        <div class="text-muted-foreground">Accordion (single mode), Toggle, Toggle Group</div>
-      </div>
-      <div>
-        <div class="group-label">Positioning &amp; wiring</div>
-        <div class="text-muted-foreground">Tooltip, Popover, Context Menu, Calendar, Carousel, Sortable</div>
-      </div>
-      <div>
-        <div class="group-label">Programmatic API</div>
-        <div class="text-muted-foreground">Toast - exposes <code>\df$.shadcn.toast</code></div>
-      </div>
-    </div>
-  </div>
-</div>
+<ComponentJsSplit />
 
 <div class="sep" />
 

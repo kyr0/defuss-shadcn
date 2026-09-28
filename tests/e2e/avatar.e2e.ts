@@ -76,13 +76,14 @@ try {
         // clipping would show it as a ≤2px sliver or 0-size
         w: b.width,
         h: b.height,
-        // dot center lies exactly on the circle's bottom-right edge
-        onEdge: Math.abs(b.right - a.right) < 1 && Math.abs(b.bottom - a.bottom) < 1,
+        // the dot is anchored at the bottom-right corner, pushed out by half
+        // its rim (1.5px at the default size) - never inside, never adrift
+        onEdge: b.right - a.right >= 0 && b.right - a.right <= 2 && b.bottom - a.bottom >= 0 && b.bottom - a.bottom <= 2,
       };
     });
     assert.equal(badge.overflow, 'visible', 'avatars with badges must not clip');
-    assert.ok(badge.w >= 10 && badge.h >= 10, `dot renders full 10px (got ${badge.w}x${badge.h})`);
-    assert.ok(badge.onEdge, 'dot anchored at the circle edge');
+    assert.ok(badge.w >= 20 && badge.h >= 20, `dot renders full 20px (got ${badge.w}x${badge.h})`);
+    assert.ok(badge.onEdge, 'dot anchored at the bottom-right corner (half-rim outset)');
   });
 
   await check('full size scale squares xs/sm/md/lg/xl = 24/32/40/48/64', async () => {
@@ -138,6 +139,68 @@ try {
     assert.deepEqual(reg.states, ['default', 'error']);
     assert.ok(reg.dollarWorks, 'globalThis.$ query alias missing');
   });
+  const badge = (sel: string) =>
+    page.$eval(sel, (el) => {
+      const cs = getComputedStyle(el);
+      return { bg: cs.backgroundColor, image: cs.backgroundImage, shadow: cs.boxShadow, mask: cs.maskImage || (cs as any).webkitMaskImage };
+    });
+
+  await check('status badge: no variant stays the historical green = online', async () => {
+    const [plain, online] = [await badge('#av-badge .avatar-badge'), await badge('#av-status-online')];
+    assert.equal(plain.bg, online.bg);
+    assert.equal(online.bg, 'rgb(22, 163, 74)');
+  });
+
+  await check('status badge: online / offline / busy / away are four distinct looks', async () => {
+    const [on, off, busy, away] = await Promise.all(['online', 'offline', 'busy', 'away'].map((v) => badge('#av-status-' + v)));
+    assert.equal(new Set([on.bg, off.bg, busy.bg, away.bg]).size, 4, 'four fill colours');
+    assert.equal(busy.bg, 'rgb(220, 38, 38)', 'busy is red');
+    assert.equal(away.bg, 'rgb(245, 158, 11)', 'away is amber');
+  });
+
+  await check('status badge: each non-online state carries a shape cue, not colour alone', async () => {
+    const [off, busy, away] = await Promise.all(['offline', 'busy', 'away'].map((v) => badge('#av-status-' + v)));
+    assert.match(off.shadow, /inset/, 'offline is a hollow ring (inset ring)');
+    assert.match(busy.image, /linear-gradient/, 'busy carries a bar');
+    assert.match(away.image, /linear-gradient.*linear-gradient/, 'away carries clock hands');
+    assert.ok(!away.mask || away.mask === 'none', 'no mask - the silhouette stays whole');
+  });
+
+  await check('status badge: 1.25rem at the default avatar size, scaled with data-size', async () => {
+    const r = await page.evaluate(() => {
+      const probe = (size: string | null) => {
+        const av = document.createElement('span');
+        av.className = 'avatar';
+        if (size) av.dataset.size = size;
+        const b = document.createElement('span');
+        b.className = 'avatar-badge';
+        av.append(b);
+        document.body.append(av);
+        const w = b.getBoundingClientRect().width;
+        av.remove();
+        return w;
+      };
+      return [null, 'xs', 'sm', 'md', 'lg', 'xl'].map(probe);
+    });
+    assert.deepEqual(r, [20, 12, 16, 20, 24, 28]);
+  });
+
+  await check('status badge: every state paints in FRONT of the avatar', async () => {
+    const hits = await page.$$eval('[id^="av-status-"]', (els) => els.map((el) => {
+      const r = el.getBoundingClientRect();
+      return document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2) === el;
+    }));
+    assert.deepEqual(hits, [true, true, true, true]);
+  });
+
+  await check('status badge: named for assistive tech (role=img + aria-label)', async () => {
+    const r = await page.$$eval('[id^="av-status-"]', (els) => els.map((e) => [e.getAttribute('role'), e.getAttribute('aria-label')]));
+    for (const [role, label] of r) {
+      assert.equal(role, 'img');
+      assert.ok(label && label.length > 0);
+    }
+  });
+
 } finally {
   await browser.close();
   server.stop();

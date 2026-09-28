@@ -17,30 +17,35 @@
     &[data-size="xs"] {
       width: 1.5rem;
       height: 1.5rem;
+      --_badge: 0.75rem;
       font-size: 0.5625rem;
     }
 
     &[data-size="sm"] {
       width: 2rem;
       height: 2rem;
+      --_badge: 1rem;
       font-size: 0.6875rem;
     }
 
     &[data-size="md"] {
       width: 2.5rem;
       height: 2.5rem;
+      --_badge: 1.25rem;
       font-size: 0.75rem;
     }
 
     &[data-size="lg"] {
       width: 3rem;
       height: 3rem;
+      --_badge: 1.5rem;
       font-size: 0.875rem;
     }
 
     &[data-size="xl"] {
       width: 4rem;
       height: 4rem;
+      --_badge: 1.75rem;
       font-size: 1rem;
     }
   }
@@ -72,15 +77,57 @@
     display: none;
   }
 
+  /* Status dot. data-variant picks the presence state; no variant = online
+     (the historical green). Status colours are literals by design - the
+     tweakcn token set has no success/warning pair (AGENTS.md token rule).
+     Colour is never the only cue (WCAG 1.4.1): offline is a hollow ring,
+     busy carries a bar, away clock hands - the four read apart in greyscale
+     and in forced-colors mode. Every cue is PAINTED inside a full circle
+     (no mask): the silhouette and its separating rim stay whole, so the dot
+     always sits in front of the avatar. Size scales with the avatar
+     (--_badge, set per data-size below); rim and cues scale with it.
+     Name it with role="img" + aria-label. */
   .avatar-badge {
+    --_rim: max(2px, calc(var(--_badge, 1.25rem) * 0.15));
     position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 0.625rem;
-    height: 0.625rem;
+    right: calc(var(--_rim) * -0.5);
+    bottom: calc(var(--_rim) * -0.5);
+    z-index: 1;
+    width: var(--_badge, 1.25rem);
+    height: var(--_badge, 1.25rem);
+    box-sizing: border-box;
     border-radius: 9999px;
     background-color: #16a34a;
-    border: 2px solid var(--background);
+    border: var(--_rim) solid var(--background);
+    background-repeat: no-repeat;
+
+    &[data-variant="online"] {
+      background-color: #16a34a;
+    }
+
+    /* hollow ring: "not here" */
+    &[data-variant="offline"] {
+      background-color: var(--background);
+      box-shadow: inset 0 0 0 max(2px, calc(var(--_badge, 1.25rem) * 0.14)) #9ca3af;
+    }
+
+    /* red with a bar: do not disturb */
+    &[data-variant="busy"] {
+      background-color: #dc2626;
+      background-image: linear-gradient(#fff 0 0);
+      background-size: 56% max(2px, calc(var(--_badge, 1.25rem) * 0.14));
+      background-position: center;
+    }
+
+    /* amber with clock hands (12 → 3 o'clock): away / be right back */
+    &[data-variant="away"] {
+      background-color: #f59e0b;
+      background-image: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);
+      background-size: max(2px, calc(var(--_badge, 1.25rem) * 0.12)) 34%, 30% max(2px, calc(var(--_badge, 1.25rem) * 0.12));
+      /* hour hand: centred, from ~16% down to the centre; minute hand: from
+         the centre to ~80% (percent positions: (box - layer) * p) */
+      background-position: 50% 24%, 71% 50%;
+    }
   }
 
   /* Avatar group */
@@ -111,5 +158,17 @@
     font-weight: 500;
     border: 2px solid var(--background);
     margin-left: -0.5rem;
+  }
+}
+
+/* Forced colors (Windows High Contrast) would repaint the status fills with
+   the system Canvas colour and erase the dot. Presence colour carries meaning
+   (like a chart series), so the badge keeps its own palette; the ring / bar /
+   crescent shape cues stay as well. */
+@media (forced-colors: active) {
+  @layer components {
+    .avatar-badge {
+      forced-color-adjust: none;
+    }
   }
 }

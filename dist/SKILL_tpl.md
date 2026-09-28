@@ -11,24 +11,27 @@
 **Via CDN** (everything at once, or pick only the components you use):
 
 ```html
-<!-- 1. theme (design tokens - swap this file to re-theme everything) -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/utils/default-semantic-tokens.css">
+<!-- 1. base: design tokens + sizing/layout/accessibility utilities (a theme preset from theme/ may follow) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/core.css">
 
 <!-- 2. icons -->
 <script src="https://unpkg.com/lucide@1.8.0"></script>
 <script>lucide.createIcons();</script>
 
-<!-- 3a. the bundle: every component's CSS + JS in two includes -->
+<!-- 3a. the bundle: every component's CSS + JS (all.js embeds the core runtime) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.css">
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.js"></script>
 
-<!-- 3b. …or one CSS link per component, one script per interactive component -->
+<!-- 3b. …or one CSS link per component, then core.js + one script per interactive component -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/button/button.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.css">
+<script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/core.js"></script>
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.js"></script>
 ```
 
-**Self-hosting:** copy `dist/` into your project and use the same paths without the CDN prefix. No build step, no package manager.
+**Self-hosting:** copy `dist/` into your project and use the same paths without the CDN prefix. No build step.
+
+**With a package manager:** `npm install defuss-shadcn`, then import `defuss-shadcn/dist/components/core.css`, `…/all.css` and `…/all.js` (in that order) from the app entry. The package's root `SKILL.md` covers both install paths, the rules and an index of every documentation page.
 
 Then: for every component you use, read its skill file (linked per-component below) and emit exactly the documented markup - classes, `data-*` attributes, and ARIA included. The CSS and JS wire themselves up from those attributes.
 

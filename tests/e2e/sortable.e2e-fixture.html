@@ -20,6 +20,24 @@
       <li class="sortable-item" draggable="true" role="option" tabindex="-1" aria-disabled="true"><span class="sortable-handle">::</span><span>locked</span></li>
     </ul>
 
+    <!-- mirrors the doc page's Disabled Items example: a locked row in the MIDDLE is a fixed divider -->
+    <ul class="sortable" role="listbox" aria-label="Release steps" id="sb-locked" style="width:20rem;margin-top:2rem;">
+      <li class="sortable-item" draggable="true" role="option" tabindex="-1"><span class="sortable-handle">::</span><span>Configure database</span></li>
+      <li class="sortable-item" draggable="true" role="option" tabindex="-1"><span class="sortable-handle">::</span><span>Set up CI/CD</span></li>
+      <li class="sortable-item" aria-disabled="true" tabindex="-1"><span class="sortable-handle">::</span><span>Security review</span></li>
+      <li class="sortable-item" draggable="true" role="option" tabindex="-1"><span class="sortable-handle">::</span><span>Deploy application</span></li>
+      <li class="sortable-item" draggable="true" role="option" tabindex="-1"><span class="sortable-handle">::</span><span>Monitor rollout</span></li>
+      <li class="sortable-item" draggable="true" role="option" tabindex="-1"><span class="sortable-handle">::</span><span>Write postmortem</span></li>
+    </ul>
+
+    <!-- move buttons -->
+    <ul class="sortable" id="sb-moves" aria-label="Moves" style="width:22rem;margin-top:2rem;"><li class="sortable-item" draggable="true" tabindex="0" id="mv-a"><span class="sortable-handle">⋮⋮</span><span>Alpha</span><span class="sortable-moves"><button type="button" class="sortable-move" data-move="up">↑</button><button type="button" class="sortable-move" data-move="down">↓</button></span></li><li class="sortable-item" draggable="true" tabindex="-1" id="mv-b"><span class="sortable-handle">⋮⋮</span><span>Beta</span><span class="sortable-moves"><button type="button" class="sortable-move" data-move="up">↑</button><button type="button" class="sortable-move" data-move="down">↓</button></span></li><li class="sortable-item" draggable="true" tabindex="-1" id="mv-c"><span class="sortable-handle">⋮⋮</span><span>Gamma</span><span class="sortable-moves"><button type="button" class="sortable-move" data-move="up">↑</button><button type="button" class="sortable-move" data-move="down">↓</button></span></li></ul>
+    <!-- connected lists -->
+    <div style="display:flex;gap:1rem;margin-top:2rem;">
+      <ul class="sortable" id="bin-a" aria-label="Backlog" data-group="g" data-empty="Drop here" style="width:14rem;"><li class="sortable-item" draggable="true" tabindex="0" id="bi-1"><span class="sortable-handle">⋮⋮</span><span>One</span></li><li class="sortable-item" draggable="true" tabindex="-1" id="bi-2"><span class="sortable-handle">⋮⋮</span><span>Two</span></li></ul>
+      <ul class="sortable" id="bin-b" aria-label="Done" data-group="g" data-empty="Drop here" style="width:14rem;"><li class="sortable-item" draggable="true" tabindex="0" id="bi-3"><span class="sortable-handle">⋮⋮</span><span>Three</span></li></ul>
+      <ul class="sortable" id="bin-solo" aria-label="Solo" style="width:14rem;"><li class="sortable-item" draggable="true" tabindex="0" id="bi-4"><span class="sortable-handle">⋮⋮</span><span>Four</span></li></ul>
+    </div>
     <script type="module" src="/dist/components/core.js"></script>
     <script type="module" src="/dist/components/sortable/sortable.js"></script>
       <ul class="sortable" id="srt-compact" data-density="compact" aria-label="Density compact" style="width:18rem;margin-top:1rem;"><li class="sortable-item" draggable="true"><span class="sortable-handle">⋮⋮</span><span>Task A</span></li><li class="sortable-item" draggable="true"><span class="sortable-handle">⋮⋮</span><span>Task B</span></li></ul>

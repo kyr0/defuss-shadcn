@@ -12,6 +12,9 @@
     /* artboard contract - override on the mount for other formats */
     --anim-canvas-width: 1280;
     --anim-canvas-height: 720;
+    /* gutter between board cells (board units): separates the overview
+       tiles and shows as a seam while the board pans. 0 = flush cells. */
+    --anim-canvas-gap: 80;
 
     position: relative;
     display: block;
@@ -31,8 +34,8 @@
       will-change: transform;
     }
 
-    /* a board cell: card surface, flush against its neighbors (radius only
-       appears in overview, where the tiles separate) */
+    /* a board cell: card surface, separated from its neighbors by the gap
+       (radius + shadow appear in overview, where every cell is a tile) */
     & .anim-canvas-slide {
       position: absolute;
       box-sizing: border-box;

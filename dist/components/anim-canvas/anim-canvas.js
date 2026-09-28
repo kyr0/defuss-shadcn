@@ -3,9 +3,9 @@
 // viewport frames exactly one of them (1:1), arrow keys move directionally
 // (data-east/west/north/south id refs), and a zoomed-out overview shows the
 // whole board at once (click a tile to zoom back in). EVERY animation is the
-// shared engine (df$.anim, src/shared/anim.ts): per-slide in/out channels are
-// declared in markup (data-anim-in/data-anim-out + discrete config attrs) and
-// played through the registry - the canvas composes the public engine, it
+// shared engine (df$.anim, src/shared/anim.ts): each slide declares how it
+// ARRIVES (data-anim-in + discrete config attrs) - only the slide you move to
+// animates, the one you leave pans out of frame still - played through the registry - the canvas composes the public engine, it
 // never grows a private one. The board pan is plain WAAPI (el.animate), the
 // platform API, with a 1ms collapse under prefers-reduced-motion (same
 // contract the engine keeps). Keyboard rides the shared bindGlobalKeys.
@@ -37,7 +37,7 @@ if (!__df$shared || __df$shared.abi !== '0.9.0') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, defussQuery, anim, bindGlobalKeys } = __df$shared;
+const { defussGlobals, defussQuery, anim, bindGlobalKeys, entrance, draw, animateCount } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 const animCanvasStates = ['default', 'overview'];
@@ -49,7 +49,7 @@ const DIRS = {
 };
 /**
  * Registry lookup with the engine's fail-loud contract: a typo in
- * data-anim-in/data-anim-out throws a naming error, never a silent no-op
+ * data-anim-in throws a naming error, never a silent no-op
  * (mirrors animChannel - which the emitted shared binding cannot carry, see
  * the preamble note).
  */
@@ -59,22 +59,26 @@ function channelFor(name) {
     }
     return anim[name];
 }
-/** The animation a slide declares for one phase, with per-slide config. */
-function animNameFor(slide, phase) {
-    return (phase === 'in' ? slide.dataset.animIn : slide.dataset.animOut) || (phase === 'in' ? 'slideIn' : 'slideOut');
+/** The arrival animation a slide declares (default slideIn, travel direction). */
+function animNameFor(slide) {
+    return slide.dataset.animIn || 'slideIn';
 }
 /**
- * Discrete per-slide config attrs (data-anim-in-direction|duration|easing|
- * origin|distance|blocks|stagger|color, same for -out-). Absent values fall
- * back to the engine defaults; direction falls back to the travel direction.
+ * Discrete per-slide arrival config (data-anim-in-direction|duration|delay|
+ * easing|origin|distance|blocks|stagger|color). Absent values fall back to
+ * the engine defaults; direction falls back to the travel direction, delay to
+ * the arrival lead (see arrive).
  */
-function animOptsFor(slide, phase, travel) {
+function animOptsFor(slide, travel) {
     const d = slide.dataset;
-    const p = phase === 'in' ? 'animIn' : 'animOut';
+    const p = 'animIn';
     const opts = { direction: d[`${p}Direction`] ?? travel };
     const duration = parseFloat(d[`${p}Duration`] ?? '');
     if (Number.isFinite(duration))
         opts.duration = duration;
+    const delay = parseFloat(d[`${p}Delay`] ?? '');
+    if (Number.isFinite(delay))
+        opts.delay = delay;
     if (d[`${p}Easing`])
         opts.easing = d[`${p}Easing`];
     if (d[`${p}Origin`])
@@ -110,8 +114,8 @@ function focusView(root, ctx, slide) {
     const s = Math.min(box.width / ctx.w, box.height / ctx.h);
     return {
         s,
-        tx: (box.width - ctx.w * s) / 2 - p.x * ctx.w * s,
-        ty: (box.height - ctx.h * s) / 2 - p.y * ctx.h * s,
+        tx: (box.width - ctx.w * s) / 2 - p.x * (ctx.w + ctx.gap) * s,
+        ty: (box.height - ctx.h * s) / 2 - p.y * (ctx.h + ctx.gap) * s,
     };
 }
 /** The overview view: every slide in frame at once, ~8% margin around the bbox. */
@@ -129,13 +133,14 @@ function overviewView(root, ctx) {
         maxX = Math.max(maxX, p.x);
         maxY = Math.max(maxY, p.y);
     }
-    const bw = (maxX - minX + 1) * ctx.w;
-    const bh = (maxY - minY + 1) * ctx.h;
+    // cells + the gutters BETWEEN them (none outside the outermost cells)
+    const bw = (maxX - minX + 1) * (ctx.w + ctx.gap) - ctx.gap;
+    const bh = (maxY - minY + 1) * (ctx.h + ctx.gap) - ctx.gap;
     const s = Math.min(box.width / bw, box.height / bh) * 0.92;
     return {
         s,
-        tx: (box.width - bw * s) / 2 - minX * ctx.w * s,
-        ty: (box.height - bh * s) / 2 - minY * ctx.h * s,
+        tx: (box.width - bw * s) / 2 - minX * (ctx.w + ctx.gap) * s,
+        ty: (box.height - bh * s) / 2 - minY * (ctx.h + ctx.gap) * s,
     };
 }
 /**
@@ -198,23 +203,86 @@ function activate(root, ctx, slide) {
     root.dataset.currentSlide = slide.id; // the bridge/schema observation point
     applySlideState(root, ctx);
 }
+/** Arrival lead (ms): the in-animation starts when the pan is ~35% there,
+ * so the slide materializes as the camera reaches it - not off-screen. */
+function arrivalLead(root) {
+    return reducedMotion() ? 0 : Math.round(panDuration(root) * 0.35);
+}
+/** Content builds this long after the slide itself starts arriving. */
+const CONTENT_LAG = 280;
+/** Parse a resolved CSS time list ("0.24s", "120ms") to ms (first entry). */
+function cssMs(v) {
+    const first = (v || '').split(',')[0].trim();
+    const n = parseFloat(first);
+    if (!Number.isFinite(n))
+        return 0;
+    return first.endsWith('ms') ? n : n * 1000;
+}
+/**
+ * Why: the arrival is more than the slide's own in-animation - its content
+ * builds in. Every [data-df-entrance] / [data-df-draw] descendant replays
+ * through the SHARED motion controller (same calls presentation makes on
+ * activation) offset by the arrival, and [data-count] counters re-run.
+ * Each element keeps its authored timing: the resolved animation-delay
+ * (inline --df-motion-delay OR a [data-df-stagger] grade) is read once and
+ * cached, the offset rides on top - never flattening a stagger, never
+ * accumulating across revisits. Fill-mode both keeps content in its start
+ * state during the delay, so nothing flashes while the camera arrives.
+ */
+function replayContent(slide, offset) {
+    const withOffset = (el) => {
+        const d = el.dataset;
+        if (d.animCanvasBaseDelay === undefined)
+            d.animCanvasBaseDelay = String(cssMs(getComputedStyle(el).animationDelay));
+        return parseFloat(d.animCanvasBaseDelay) + offset;
+    };
+    slide.querySelectorAll('[data-df-entrance]').forEach((el) => {
+        entrance(el, undefined, { delay: withOffset(el) });
+    });
+    slide.querySelectorAll('[data-df-draw]').forEach((el) => {
+        draw(el, { delay: withOffset(el) });
+    });
+    slide.querySelectorAll('[data-count]').forEach((el) => {
+        animateCount(el, { delay: offset });
+    });
+}
+/** A slide we LEAVE never animates: any arrival still in flight on it
+ * snaps to its settled end (fill-mode keeps the finished frame), so the pan
+ * carries a still slide out of frame. */
+function settle(slide) {
+    for (const a of slide.getAnimations({ subtree: true })) {
+        try {
+            a.finish();
+        }
+        catch {
+            a.cancel(); // an infinite animation cannot finish - unwind it instead
+        }
+    }
+}
+/**
+ * The arrival: ONLY the slide we move to animates. Its declared in-channel
+ * (data-anim-in + config, default slideIn with the travel direction) plays
+ * with a lead so it lands as the camera arrives; the blocks pair composes as
+ * a curtain the TARGET arrives under - it starts fully covered and the
+ * panels roll off it (blocksOut) - and its content builds in after it.
+ */
+function arrive(root, target, travel) {
+    const lead = arrivalLead(root);
+    const inName = animNameFor(target);
+    const opts = animOptsFor(target, travel);
+    if (opts.delay === undefined)
+        opts.delay = lead;
+    channelFor(inName === 'blocksIn' ? 'blocksOut' : inName).play(target, opts);
+    replayContent(target, (opts.delay ?? lead) + (reducedMotion() ? 0 : CONTENT_LAG));
+}
 /**
  * The transition. No-op while busy or already there; an overview open
- * collapses into the target (the zoom IS the transition). The blocks pair is
- * always a CURTAIN, never a per-slide effect: whether the target declares
- * data-anim-in="blocksIn" or the current slide declares
- * data-anim-out="blocksOut", the cover builds on the slide we LEAVE, the
- * board pans and the active flag flips underneath, and the reveal plays on
- * the slide we ARRIVE at (blocksOut for a blocks target, else its own
- * in-anim). A declared blocksOut therefore never replays a pointless
- * cover+reveal on the old slide the user just moved away from.
- * Everything else plays current's out-anim and target's in-anim concurrently
- * with the pan - all through the shared registry channels.
- *
- * busy covers exactly the sequencing window (cover → pan → flip); the slide
- * in/out anims themselves TRAIL - they are per-channel and restart
- * deterministically, so a fast arrow-key repeat is never swallowed by a
- * cosmetic tail.
+ * collapses into the target (the zoom IS the transition, the content still
+ * builds in). Otherwise the board pans and only the arriving slide animates
+ * (see arrive) - the slide we leave stays still and simply pans out of
+ * frame (settle). busy covers the pan; the arrival animations are
+ * per-channel and restart deterministically, so a fast arrow-key repeat is
+ * never swallowed by a cosmetic tail.
  */
 async function goTo(root, ctx, id) {
     const target = ctx.byId.get(id);
@@ -229,9 +297,9 @@ async function goTo(root, ctx, id) {
     ctx.busy = true;
     try {
         if (root.hasAttribute('data-overview')) {
-            // zoom back into the clicked/chosen slide - the pan carries the story
             root.removeAttribute('data-overview');
             activate(root, ctx, target);
+            replayContent(target, reducedMotion() ? 0 : Math.round(panDuration(root) * 0.5));
             await panTo(root, ctx, focusView(root, ctx, target));
             return;
         }
@@ -240,30 +308,10 @@ async function goTo(root, ctx, id) {
         const dx = to.x - from.x;
         const dy = to.y - from.y;
         const travel = dx > 0 ? 'east' : dx < 0 ? 'west' : dy > 0 ? 'south' : dy < 0 ? 'north' : 'east';
-        const current = ctx.active;
-        const inName = animNameFor(target, 'in');
-        const outName = target !== current ? animNameFor(current, 'out') : null;
-        if (target !== current && (inName === 'blocksIn' || outName === 'blocksOut')) {
-            // curtain config comes from the blocks-declaring slide
-            const cfg = animOptsFor(inName === 'blocksIn' ? target : current, inName === 'blocksIn' ? 'in' : 'out', travel);
-            const cover = channelFor('blocksIn').play(current, cfg);
-            const pan = panTo(root, ctx, focusView(root, ctx, target));
-            await cover.finished; // sequencing: the flip happens under the cover
-            await pan;
-            activate(root, ctx, target);
-            cover.reset(); // a settled blocksIn keeps its overlay - the now-hidden slide must not
-            // the reveal belongs to the slide we ARRIVE at (cosmetic, trails)
-            const reveal = inName === 'blocksIn' ? 'blocksOut' : inName;
-            channelFor(reveal).play(target, animOptsFor(target, 'in', travel));
-            return;
-        }
+        settle(ctx.active);
         activate(root, ctx, target);
         const pan = panTo(root, ctx, focusView(root, ctx, target));
-        // in/out anims trail the pan: per-channel, deterministic restart
-        channelFor(inName).play(target, animOptsFor(target, 'in', travel));
-        if (target !== current) {
-            channelFor(outName).play(current, animOptsFor(current, 'out', travel));
-        }
+        arrive(root, target, travel);
         await pan;
     }
     finally {
@@ -289,8 +337,10 @@ function exitOverview(root, ctx, focus) {
         return;
     ctx.busy = true;
     root.removeAttribute('data-overview');
-    if (focus && ctx.byId.get(focus.id) === focus)
+    if (focus && ctx.byId.get(focus.id) === focus) {
         activate(root, ctx, focus);
+        replayContent(focus, reducedMotion() ? 0 : Math.round(panDuration(root) * 0.5));
+    }
     else
         applySlideState(root, ctx);
     void panTo(root, ctx, focusView(root, ctx, ctx.active)).then(() => {
@@ -424,6 +474,10 @@ function init() {
         const cs = getComputedStyle(root);
         const w = parseFloat(cs.getPropertyValue('--anim-canvas-width')) || 1280;
         const h = parseFloat(cs.getPropertyValue('--anim-canvas-height')) || 720;
+        // gutter between cells (board units): the overview reads as separate
+        // tiles, and a pan shows the seam between neighbors. 0 is allowed.
+        const gapRaw = parseFloat(cs.getPropertyValue('--anim-canvas-gap'));
+        const gap = Number.isFinite(gapRaw) && gapRaw >= 0 ? gapRaw : 80;
         // relation map → board positions by BFS from the start slide (0,0):
         // the authored data-active slide, else the first one. Dangling id refs
         // and conflicting positions fail LOUD (console.error), never silently.
@@ -485,8 +539,8 @@ function init() {
         }
         // board layout: absolute cells in board units (px at scale 1)
         for (const [s, p] of pos) {
-            s.style.left = `${p.x * w}px`;
-            s.style.top = `${p.y * h}px`;
+            s.style.left = `${p.x * (w + gap)}px`;
+            s.style.top = `${p.y * (h + gap)}px`;
             s.style.width = `${w}px`;
             s.style.height = `${h}px`;
         }
@@ -494,13 +548,15 @@ function init() {
         // fail loud at init, not mid-transition (the registry throws the same
         // way; this just moves the error to authoring time)
         for (const s of slides) {
-            for (const phase of ['In', 'Out']) {
-                const name = s.dataset[`anim${phase}`];
-                if (name)
-                    channelFor(name);
+            if (s.dataset.animIn)
+                channelFor(s.dataset.animIn);
+            // the leaving slide never animates - an authored out-animation would
+            // be silently dead markup, so say so once at init
+            if (s.dataset.animOut) {
+                console.warn(`anim-canvas: #${s.id || '(unnamed)'} declares data-anim-out="${s.dataset.animOut}" - ignored: only the ARRIVING slide animates (declare its data-anim-in)`);
             }
         }
-        const ctx = { board, slides, byId, pos, w, h, active: start, busy: false, view: null, pan: null };
+        const ctx = { board, slides, byId, pos, w, h, gap, active: start, busy: false, view: null, pan: null };
         root._animCanvas = ctx;
         // authored directional/overview chrome (optional): click delegation on the
         // root; in overview a click on a slide tile zooms back into it
@@ -538,6 +594,11 @@ function init() {
         new ResizeObserver(frame).observe(root);
         activate(root, ctx, start);
         frame();
+        // the start slide's counters run once on load (its entrances already
+        // play from CSS as the page renders)
+        start.querySelectorAll('[data-count]').forEach((el) => {
+            animateCount(el);
+        });
     });
 }
 bindKeys();

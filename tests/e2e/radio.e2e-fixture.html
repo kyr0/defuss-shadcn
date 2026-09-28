@@ -53,5 +53,32 @@
       <div class="radio-item"><input type="radio" name="dsp" class="radio" id="r-dsp" /><label for="r-dsp">One</label></div>
       <div class="radio-item"><input type="radio" name="dsp" class="radio" id="r-dsp2" /><label for="r-dsp2">Two</label></div>
     </fieldset>
+    <!-- gap hit area: the whitespace between circle and label selects too -->
+    <div class="radio-item"><input class="radio" type="radio" name="gap" id="rd-gap" /><label for="rd-gap">Gap target</label></div>
+    <div class="radio-item-block"><input class="radio" type="radio" name="gap-block" id="rd-gap-block" /><label for="rd-gap-block">Block gap target</label><span class="radio-description">Description</span></div>
+    <!-- disabled choice card: the card dims once, not again on dot + label -->
+    <fieldset class="radio-group">
+      <label class="radio-card" for="rd-card-disabled">
+        <input class="radio" type="radio" name="card" id="rd-card-disabled" disabled />
+        <label for="rd-card-disabled">Legacy</label>
+        <span class="radio-description">No longer offered.</span>
+      </label>
+    </fieldset>
+    <!-- the name makes the set: shared name = exclusive; different names in one fieldset = independent -->
+    <form id="rn-form">
+      <fieldset class="radio-group">
+        <legend>Shared</legend>
+        <div class="radio-item"><input class="radio" type="radio" name="size" id="rn-s" value="s" checked /><label for="rn-s">S</label></div>
+        <div class="radio-item"><input class="radio" type="radio" name="size" id="rn-m" value="m" /><label for="rn-m">M</label></div>
+      </fieldset>
+      <fieldset class="radio-group">
+        <legend>Different names</legend>
+        <div class="radio-item"><input class="radio" type="radio" name="size-a" id="rn-a" value="a" /><label for="rn-a">A</label></div>
+        <div class="radio-item"><input class="radio" type="radio" name="size-b" id="rn-b" value="b" /><label for="rn-b">B</label></div>
+      </fieldset>
+      <!-- same name, no fieldset: still one set -->
+      <div class="radio-item"><input class="radio" type="radio" name="loose" id="rn-x" value="x" checked /><label for="rn-x">X</label></div>
+      <div class="radio-item"><input class="radio" type="radio" name="loose" id="rn-y" value="y" /><label for="rn-y">Y</label></div>
+    </form>
   </body>
 </html>

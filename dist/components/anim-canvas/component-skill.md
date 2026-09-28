@@ -1,7 +1,7 @@
 ---
 name: Animation Canvas
 type: TPL
-why: One board, slides side by side like a chess board - every slide transition is the shared df$.anim engine (data-attribute declared), the viewport pan is one WAAPI transform; no canvas-private animation exists.
+why: One board, slides side by side like a chess board - the viewport pan is one WAAPI transform and only the arriving slide animates, through the shared df$.anim engine (data-attribute declared) plus the shared motion entrances for its content; no canvas-private animation exists.
 when: Spatial slide boards and zoomable story maps with directional navigation + an at-a-glance overview - not linear decks (use Presentation) and not scrollable pages.
 where: dist/components/anim-canvas/anim-canvas.css + dist/components/anim-canvas/anim-canvas.js
 supportedStates: default, overview
@@ -36,22 +36,24 @@ registry, it ships no animation of its own.
 ## Structure
 
 ```html
-<div class="anim-canvas" style="--anim-canvas-width: 1280; --anim-canvas-height: 720" data-pan-duration="1500">
+<div class="anim-canvas" style="--anim-canvas-width: 1280; --anim-canvas-height: 720; --anim-canvas-gap: 80" data-pan-duration="1500">
   <!-- Slide 1 (first .anim-canvas-slide, or the one carrying data-active)
        starts active at board position (0,0); every other position derives
        by BFS over the relations: east = x+1, west = x−1, south = y+1,
        north = y−1. -->
   <section class="anim-canvas-slide" id="s1" data-active
            data-east="s2" data-south="s3"
-           data-anim-in="slideIn" data-anim-in-direction="east"
-           data-anim-out="slideOut" data-anim-out-direction="west">…</section>
+           data-anim-in="zoomIn">
+    <!-- content builds in on every arrival (shared motion controller) -->
+    <h2 data-df-entrance="up">…</h2>
+    <p data-df-entrance="up" style="--df-motion-delay: 200ms">…</p>
+  </section>
   <section class="anim-canvas-slide" id="s2" data-west="s1" data-south="s4"
            data-anim-in="blocksIn" data-anim-in-direction="north"
            data-anim-in-blocks="6" data-anim-in-stagger="70"
-           data-anim-out="blocksOut" data-anim-out-direction="north">…</section>
+           data-anim-in-color="var(--primary)">…</section>
   <section class="anim-canvas-slide" id="s3" data-north="s1" data-east="s4"
-           data-anim-in="irisIn" data-anim-in-origin="50% 50%"
-           data-anim-out="irisOut" data-anim-out-origin="50% 50%">…</section>
+           data-anim-in="irisIn" data-anim-in-origin="50% 50%">…</section>
   <section class="anim-canvas-slide" id="s4" data-north="s2" data-west="s3">…</section>
 
   <!-- optional chrome: directional + overview controls (click delegation) -->
@@ -70,19 +72,22 @@ Relation and animation contract per slide:
 | `id` | REQUIRED - relations reference slides by id |
 | `data-active` | the initially active slide (default: the first) |
 | `data-east` / `data-west` / `data-north` / `data-south` | id of the neighbor in that direction (the chess-board edges) |
-| `data-anim-in` / `data-anim-out` | engine animation name for entering / leaving THIS slide (default `slideIn` / `slideOut` with the travel direction) |
-| `data-anim-in-direction` | `north` / `south` / `east` / `west` (same for `-out-`) |
-| `data-anim-in-duration` / `-easing` / `-origin` / `-distance` / `-blocks` / `-stagger` / `-color` | discrete per-slide engine config (same names for `-out-`); absent values fall back to the engine defaults |
+| `data-anim-in` | engine animation this slide ARRIVES with (default `slideIn` with the travel direction). There is no out-animation: the slide you leave stays still and pans out of frame (a leftover `data-anim-out` is ignored with a console warning) |
+| `data-anim-in-direction` | `north` / `south` / `east` / `west` (default: the travel direction) |
+| `data-anim-in-delay` | ms before the arrival starts (default: ~35% of the pan, so the slide materializes as the camera reaches it) |
+| `data-anim-in-duration` / `-easing` / `-origin` / `-distance` / `-blocks` / `-stagger` / `-color` | discrete per-slide engine config; absent values fall back to the engine defaults |
 
 Root attributes: `--anim-canvas-width` / `--anim-canvas-height` (board units,
-inline style or CSS), `data-pan-duration` (board pan ms, default 1500),
+inline style or CSS), `--anim-canvas-gap` (gutter between cells in board units,
+default 80; `0` = flush cells), `data-pan-duration` (board pan ms, default 1500),
 `data-current-slide` (live id mirror, written by the runtime),
 `data-overview` (overview mode flag).
 
 ## Variants
 
 None - there are no `data-variant` / `data-size` axes. Art direction is the
-local custom-property surface (`--anim-canvas-width`, `--anim-canvas-height`)
+local custom-property surface (`--anim-canvas-width`, `--anim-canvas-height`,
+`--anim-canvas-gap`)
 plus the per-slide animation declarations; slide surfaces read `--card` /
 `--border` / `--radius-lg` from the active theme.
 
@@ -131,24 +136,27 @@ canvas.api.getState();                                  // { name, config: { sli
   fail loud with a `console.error` naming the slides; the map must be
   consistent (wiring s1→s2→s4 and s1→s3→s4 means both paths must land s4 on
   the same cell).
-- **Everything animated is the shared engine.** `data-anim-in`/`data-anim-out`
-  name `df$.anim` channels; the canvas adds no animation vocabulary of its
+- **Everything animated is the shared engine.** `data-anim-in` names a
+  `df$.anim` channel and content uses the shared motion entrances; the canvas adds no animation vocabulary of its
   own. Declared names are validated at init - a typo throws at load, not
   mid-transition.
-- **The blocks pair is a curtain, never a per-slide effect.** Whether a slide
-  declares `data-anim-in="blocksIn"` or `data-anim-out="blocksOut"`, the
-  canvas composes one curtain: the cover builds on the slide you LEAVE, the
-  board pans and the active flag flips underneath, and the reveal plays on
-  the slide you ARRIVE at (blocksOut for a blocks target, else its own
-  in-anim). A declared blocksOut never replays a pointless cover+reveal on
-  the old slide. Always set an explicit `data-anim-in-color` /
-  `data-anim-out-color` that CONTRASTS with the slide surface (e.g.
-  `var(--primary)`) - the default `currentColor` inherits the slide's text
-  color and can blend in invisibly.
+- **Only the arriving slide animates.** The slide you leave stays still - it
+  simply pans out of frame (any arrival still in flight on it snaps to its
+  settled end). The target's `data-anim-in` starts when the pan is ~35% there
+  (`data-anim-in-delay` overrides), so it materializes as the camera reaches it.
+- **Content builds in on every arrival.** `[data-df-entrance]`,
+  `[data-df-draw]` and `[data-count]` descendants replay through the shared
+  motion controller (the same calls presentation makes), offset by the
+  arrival. Each element keeps its authored timing - inline
+  `--df-motion-delay` or a `[data-df-stagger]` grade - with the offset on top.
+  Zooming into a tile from the overview builds its content too.
+- **`blocksIn` is an arrival curtain.** The target arrives fully covered and the
+  panels roll off it (the engine's `blocksOut` reveal). Always set an explicit
+  `data-anim-in-color` that CONTRASTS with the slide surface (e.g.
+  `var(--primary)`) - the default `currentColor` can blend in invisibly.
 - **Overview click-to-zoom**: in `[data-overview]` every slide gets
   `cursor: pointer` (CSS) and clicking a tile makes it active and zooms in.
 - **Missing declarations default to the travel direction**: arriving from the
-  east plays `slideIn` direction `east` on the target and `slideOut`
-  direction `east` on the current slide.
+  east plays `slideIn` direction `east` on the target.
 - The docs CodeExample bridge round-trips serialized DOM - init is
   idempotent for an already-built `.anim-canvas-board`.

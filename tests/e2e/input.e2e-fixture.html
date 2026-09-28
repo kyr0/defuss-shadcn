@@ -9,6 +9,9 @@
   <body style="padding:2rem;">
     <!-- mirrors the doc page: default, disabled, readonly, invalid -->
     <input class="input" id="in-default" placeholder="Placeholder" />
+    <!-- native in-field buttons: search clear "×" + date/time picker icon (pointer cursor) -->
+    <input class="input" type="search" id="in-search" value="query" aria-label="Search" />
+    <input class="input" type="date" id="in-date" value="2026-09-27" aria-label="Date" />
     <input class="input" id="in-disabled" disabled value="Disabled" />
     <input class="input" id="in-readonly" readonly value="Readonly" />
     <input class="input" id="in-invalid" aria-invalid="true" value="Invalid" />
@@ -17,5 +20,27 @@
     <input class="input" id="in-md" data-size="md" value="Medium" />
     <input class="input" id="in-lg" data-size="lg" value="Large" />
     <input class="input" id="in-xl" data-size="xl" value="Extra large" />
+    <!-- input group: leading icon, trailing button, text addons, states, sizes -->
+    <div class="input-group" id="ig-lead" style="margin-top:1rem;width:24rem;">
+      <svg class="input-group-icon" id="ig-lead-icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/></svg>
+      <input class="input" id="ig-lead-input" aria-label="Search" />
+    </div>
+    <div class="input-group" id="ig-trail" style="margin-top:1rem;width:24rem;">
+      <input class="input" id="ig-trail-input" readonly value="sk-123" aria-label="Key" />
+      <button type="button" class="input-group-button" id="ig-trail-btn" aria-label="Copy"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><svg id="ig-trail-hidden" aria-hidden="true" hidden viewBox="0 0 24 24"><path d="M18 6 6 18"/></svg></button>
+    </div>
+    <div class="input-group" id="ig-text" style="margin-top:1rem;width:24rem;">
+      <span class="input-group-text" id="ig-text-start">https://</span>
+      <input class="input" id="ig-text-input" value="defuss" aria-label="Subdomain" />
+      <span class="input-group-text" id="ig-text-end">.example.com</span>
+    </div>
+    <div class="input-group" id="ig-invalid" style="margin-top:1rem;width:24rem;"><input class="input" aria-invalid="true" aria-label="Invalid" /></div>
+    <div class="input-group" id="ig-disabled" style="margin-top:1rem;width:24rem;"><input class="input" disabled value="Disabled" aria-label="Disabled" /></div>
+    <div class="input-group" id="ig-lg" data-size="lg" style="margin-top:1rem;width:24rem;"><input class="input" aria-label="Large" /><button type="button" class="input-group-button" id="ig-lg-btn" aria-label="Go"></button></div>
+    <!-- validation timing -->
+    <input class="input" type="email" id="vt-alone" aria-label="Standalone email" style="margin-top:1rem;" />
+    <form id="vt-native"><input class="input" type="email" id="vt-native-in" aria-label="Form email" /><textarea class="textarea" id="vt-native-ta" minlength="10" aria-label="Form notes"></textarea></form>
+    <form id="vt-submit" data-validate="submit"><input class="input" type="email" id="vt-submit-in" aria-label="Submit-timed email" /></form>
+    <button type="button" id="vt-elsewhere">elsewhere</button>
   </body>
 </html>

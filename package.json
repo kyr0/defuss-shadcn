@@ -4,6 +4,20 @@
   "type": "module",
   "description": "A modular, fully static, semantic shadcn design token library with extremely low complexity, easy debuggability and tiny bundle size for agentic engineering and AI agents.",
   "packageManager": "bun@1.3.9",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kyr0/defuss-shadcn.git"
+  },
+  "homepage": "https://kyr0.github.io/defuss-shadcn/",
+  "files": [
+    "dist",
+    "!dist/documentation",
+    "src/documentation/pages",
+    "SKILL.md",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "bun scripts/build.ts && bun scripts/bundle.ts && bun scripts/minify.ts && bun scripts/stats.ts && bun run build:docs && bun scripts/verify.ts",

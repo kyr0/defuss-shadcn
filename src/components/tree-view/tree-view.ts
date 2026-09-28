@@ -50,9 +50,50 @@ export const treeViewApi = {
 df$.treeViewApi = treeViewApi;
 df$.treeViewStates = treeViewStates;
 
+/** The treeitem a row (branch trigger or leaf) belongs to. */
+const itemOf = (row) => row.closest('[role="treeitem"]');
+/** aria-disabled="true" on the treeitem: focusable, never operable. */
+const isDisabled = (item) => item?.getAttribute('aria-disabled') === 'true';
+
+/**
+ * Single selection (APG tree, opt-in via data-selectable on .tree): the
+ * chosen treeitem gets aria-selected="true", every other selectable item
+ * "false"; disabled items are skipped. Announces the choice as a bubbling
+ * `tree-select` CustomEvent ({ detail: { item } }) - selection is an
+ * interaction on the tree, not a per-branch State API state.
+ */
+function selectItem(tree, item) {
+  if (!item || isDisabled(item) || item.getAttribute('aria-selected') === 'true') return;
+  tree.querySelectorAll('[role="treeitem"][aria-selected="true"]').forEach((other) => other.setAttribute('aria-selected', 'false'));
+  item.setAttribute('aria-selected', 'true');
+  tree.dispatchEvent(new CustomEvent('tree-select', { bubbles: true, detail: { item } }));
+}
+
 function init() {
   document.querySelectorAll('.tree[role="tree"]:not([data-init])').forEach((tree) => {
     tree.dataset.init = '';
+    const selectable = tree.hasAttribute('data-selectable');
+    if (selectable) {
+      // every operable item states its selection explicitly (authored
+      // aria-selected="true" wins); disabled items carry none
+      tree.querySelectorAll('[role="treeitem"]').forEach((item) => {
+        if (!isDisabled(item) && !item.hasAttribute('aria-selected')) item.setAttribute('aria-selected', 'false');
+      });
+    }
+
+    /* Clicks: disabled rows neither toggle nor navigate; selectable trees
+       select the clicked row (a branch toggles AND selects, like a file
+       explorer). */
+    tree.addEventListener('click', (e) => {
+      const row = e.target.closest('.tree-branch-trigger, .tree-leaf');
+      if (!row || !tree.contains(row)) return;
+      const item = itemOf(row);
+      if (isDisabled(item)) {
+        e.preventDefault(); // <summary> would toggle, <a> would navigate
+        return;
+      }
+      if (selectable) selectItem(tree, item);
+    });
     /* Keep aria-expanded in sync with <details> open state */
     tree.querySelectorAll('.tree-branch').forEach((details) => {
       const treeitem = details.closest('[role="treeitem"]');
@@ -94,8 +135,22 @@ function init() {
         case 'ArrowRight':
           e.preventDefault();
           { const detailsR = target.closest('details.tree-branch');
-          if (detailsR && !detailsR.open) detailsR.open = true; }
+          if (detailsR && !detailsR.open && !isDisabled(itemOf(target))) detailsR.open = true; }
           break;
+        case 'Enter':
+        case ' ': {
+          const item = itemOf(target);
+          // disabled: no native <summary> toggle, no link activation
+          if (isDisabled(item)) {
+            e.preventDefault();
+            break;
+          }
+          if (!selectable) break;
+          // a leaf span has no native activation - keep Space from scrolling
+          if (target.matches('span.tree-leaf')) e.preventDefault();
+          selectItem(tree, item);
+          break;
+        }
         case 'ArrowLeft':
           e.preventDefault();
           { const detailsL = target.closest('details.tree-branch');

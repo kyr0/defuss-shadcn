@@ -8,11 +8,11 @@ slug: "index"
 fullTitle: "defuss-shadcn - Semantic HTML · Shadcn Tokens · Plain CSS"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, CssOnlyStat, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, CssOnlyStat, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard, DeckRail } from "../lib/components/index";
 
-<DocPage meta={meta} mainStyle="flex: 1; min-width: 0; max-width: 44rem; padding: 3rem 3.5rem 8rem;">
+<DocPage meta={meta} mainStyle="flex: 0 1 44rem; min-width: 0; max-width: 44rem; padding: 3rem 3.5rem 8rem;" aside={<DeckRail slug="system-in-numbers" title="The System in Numbers - defuss-shadcn presented as a slide deck"><p class="deck-rail-eyebrow">Statistics</p><StatsClaim /><StatsCards /></DeckRail>}>
 
-<p class="text-sm text-muted-foreground mb-3" style="font-family: var(--font-mono);">defuss-shadcn / Introduction / index</p>
+<p class="text-sm text-muted-foreground mt-0 mb-3" style="font-family: var(--font-mono);">defuss-shadcn / Introduction / index</p>
 
 <h1 style="font-family: var(--font-display); font-size: 3.25rem; font-weight: 400; line-height: 1.05; letter-spacing: -0.04em; margin: 0 0 1.25rem; color: var(--foreground);"> A UI component system<br /><em style="font-style: italic; font-weight: 300;">that scales with <i>local</i> AI.</em></h1>
 
@@ -27,11 +27,15 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-8" style="max-width:36rem;"> Why this system exists, from the agents who built it: <a href="architecture.html" style="text-decoration:underline;text-underline-offset:4px;">ARCH.md</a>. </p>
 
+<div class="rail-fallback">
+
 <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.875rem;">Statistics</h2>
 
 <StatsClaim />
 
 <StatsCards />
+
+</div>
 
 <div class="grid gap-4 mb-12" style="grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));">
   <div class="card">
@@ -61,7 +65,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
         </div>
         <h3 class="card-title card-title-sm">Component Skills</h3>
       </div>
-      <p class="card-description card-desc-sm">Every component includes a structured skill - markup, variants, sizes, density, ARIA, and wiring conventions - grounded in web standards; every interactive component also ships a machine-readable <code>*.schema.json</code> contract that drives its docs controls. Point an agent at <code>dist/SKILL.md</code>: the generated index of every skill (type/why/when/where + supported states).</p>
+      <p class="card-description card-desc-sm">Every component ships a structured skill and a <code>*.schema.json</code> contract. Point an agent at <code>dist/SKILL.md</code>.</p>
     </div>
     <div style="height:1.25rem;" />
   </div>

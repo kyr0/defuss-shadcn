@@ -73,6 +73,20 @@ Requires JavaScript for keyboard navigation and ARIA management.
 
 ---
 
+## Alignment
+
+The menu opens below the trigger, its start edge on the trigger's start edge.
+`data-align="end"` on the `.dropdown-content` lines its END edge up with the
+trigger's end instead - for a split button's chevron or an icon trigger at the
+end of a row, where a start-aligned menu would hang out past the control.
+Either way the preferred edge is only a preference: when the menu would leave
+the viewport it flips to the trigger's other edge (`flip-inline` - an
+end-aligned menu near the left edge opens start-aligned under the trigger,
+and vice versa), and above the trigger when there is no room below
+(`flip-block`) - pure CSS anchor positioning, no measuring script.
+
+---
+
 ## Sizes
 
 Set `data-size` on the `.dropdown-content` popover; items, labels, shortcuts and the check/radio indicators scale together.

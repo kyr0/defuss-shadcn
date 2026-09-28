@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
+import { assertLegibleDisabled } from './lib/disabled.ts';
 
 /**
  * Why: select is CSS-only - the appearance:none + inline-SVG chevron restyle
@@ -37,9 +38,8 @@ await cssSmoke('select', [
     },
   },
   {
-    label: ':disabled dims to 0.5 / not-allowed',
-    selector: '#se-disabled',
-    css: { opacity: '0.5', cursor: 'not-allowed' },
+    label: 'disabled select stays legible: full --input border, muted surface + text, not-allowed',
+    run: (page) => assertLegibleDisabled(page, { control: '#se-disabled', tokens: { 'border-top-color': '--input', 'background-color': '--muted', color: '--muted-foreground' } }),
   },
   {
     label: 'aria-invalid recolors the border',
@@ -70,6 +70,62 @@ await cssSmoke('select', [
       await page.selectOption('#se-default', '');
       const cleared = await page.$eval('#se-default', (el) => (el as HTMLSelectElement).value);
       assert.equal(cleared, '', 're-choosing the empty option empties the select');
+    },
+  },
+  {
+    label: 'select[multiple] is a list box: auto height (no 36px lock), no chevron, tinted chosen rows',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const sel = document.getElementById('sel-multi')!;
+        const chosen = sel.querySelector('option[value="at"]')!;
+        const plain = sel.querySelector('option[value="be"]')!;
+        return {
+          height: sel.getBoundingClientRect().height,
+          chevron: getComputedStyle(sel).backgroundImage,
+          chosenBg: getComputedStyle(chosen).backgroundImage,
+          plainBg: getComputedStyle(plain).backgroundImage,
+        };
+      });
+      assert.ok(r.height > 100, 'shows its rows (got ' + r.height + 'px)');
+      assert.equal(r.chevron, 'none');
+      assert.match(r.chosenBg, /gradient/);
+      assert.equal(r.plainBg, 'none');
+    },
+  },
+  {
+    label: 'select[multiple] submits every chosen value; Ctrl/⌘-click adds one',
+    run: async (page) => {
+      const values = () => page.evaluate(() => new FormData(document.getElementById('sel-multi-form') as HTMLFormElement).getAll('ship'));
+      assert.deepEqual(await values(), ['at', 'de']);
+      await page.click('#sel-multi option[value="fr"]', { modifiers: [process.platform === 'darwin' ? 'Meta' : 'Control'] });
+      assert.deepEqual(await values(), ['at', 'de', 'fr']);
+    },
+  },
+  {
+    label: 'an unavailable option (disabled) cannot be chosen while the rest of the list works',
+    run: async (page) => {
+      const value = () => page.$eval('#sel-size', (el) => (el as HTMLSelectElement).value);
+      await page.selectOption('#sel-size', 'm');
+      assert.equal(await value(), 'm', 'the list stays usable');
+      // Playwright refuses disabled options exactly like a user would be refused
+      const refused = await page.selectOption('#sel-size', 'l', { timeout: 1000 }).then(() => false, () => true);
+      assert.ok(refused, 'the disabled option is not selectable');
+      const inGroup = await page.selectOption('#sel-size', 'old', { timeout: 1000 }).then(() => false, () => true);
+      assert.ok(inGroup, 'options of a disabled optgroup are not selectable');
+      assert.equal(await value(), 'm');
+    },
+  },
+  {
+    label: 'list box: a disabled option is muted and a click does not select it',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const cs = (v: string) => getComputedStyle(document.querySelector('#sel-size-list option[value="' + v + '"]')!);
+        return { off: cs('l').color, on: cs('m').color };
+      });
+      assert.notEqual(r.off, r.on, 'muted colour');
+      await page.click('#sel-size-list option[value="l"]', { force: true });
+      const chosen = await page.evaluate(() => new FormData(document.getElementById('sel-size-form') as HTMLFormElement).getAll('sizes'));
+      assert.ok(!chosen.includes('l'), 'not submitted');
     },
   },
 ]);

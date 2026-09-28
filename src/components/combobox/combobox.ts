@@ -44,11 +44,19 @@ export const comboboxApi = {
     popover._stateConfig = config;
   },
   getState(popover) {
-    const selected = popover.querySelector('[role="option"][aria-selected="true"]');
+    const selected = Array.from(popover.querySelectorAll('[role="option"][aria-selected="true"]')) as HTMLElement[];
+    const labels = selected.map((o) => o.textContent?.trim() ?? '');
     return {
       // reflect reality: trigger clicks and Escape change the UI too
       name: popover.matches(':popover-open') ? 'open' : 'default',
-      config: { ...popover._stateConfig, value: selected?.textContent?.trim() ?? '' },
+      // value: the chosen label (joined in multi-select); values / labels:
+      // every chosen option's data-value / text, in list order
+      config: {
+        ...popover._stateConfig,
+        value: labels.join(', '),
+        values: selected.map((o) => o.dataset.value ?? o.textContent?.trim() ?? ''),
+        labels,
+      },
     };
   },
 };
@@ -56,9 +64,226 @@ export const comboboxApi = {
 df$.comboboxApi = comboboxApi;
 df$.comboboxStates = comboboxStates;
 
+/** Escape text for the tag/hidden-input markup rendered through morph. */
+const esc = (t: string) =>
+  t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+/** A value that is safe inside an element id. */
+const idPart = (t: string) => t.replace(/[^\w-]/g, '_');
+let comboSeq = 0;
+
+/**
+ * Tag input (data-tags on a data-multiple .combobox): the chosen options sit
+ * as removable tags INSIDE a field-like box (.combobox-field) next to the
+ * text input the user types into - no trigger button. Typing opens and
+ * filters the list; Enter picks the EXACT match (case-insensitive) or, with
+ * data-creatable, creates a new tag from the text ("Create …" row); arrow
+ * keys can pick any other listed option instead. Comma commits like Enter,
+ * Backspace in the empty input removes the last tag, Escape closes the list.
+ * Created tags become real options (data-created) so they can be toggled
+ * like the rest. data-name renders one hidden input per value.
+ */
+function initTags(wrapper: HTMLElement) {
+  const field = wrapper.querySelector('.combobox-field') as HTMLElement | null;
+  const input = wrapper.querySelector('.combobox-field-input') as HTMLInputElement | null;
+  const popover = wrapper.querySelector('.combobox-content') as HTMLElement | null;
+  const listbox = wrapper.querySelector('[role="listbox"]') as HTMLElement | null;
+  if (!field || !input || !popover || !listbox) return;
+  const empty = wrapper.querySelector('.combobox-empty') as HTMLElement | null;
+  const creatable = wrapper.hasAttribute('data-creatable');
+  const uid = wrapper.id || popover.id || `dfcb-${++comboSeq}`;
+  const options = () => Array.from(listbox.querySelectorAll('[role="option"]:not(.combobox-create)')) as HTMLElement[];
+  const valueOf = (o: HTMLElement) => o.dataset.value ?? o.textContent!.trim();
+  const labelOf = (o: HTMLElement) => o.textContent!.trim();
+
+  dfDollar(listbox).attr('aria-multiselectable', 'true');
+  // anchor the list to the whole field (not just the input)
+  const anchorId = `--combobox-${uid}`;
+  dfDollar(field).css('anchorName', anchorId);
+  dfDollar(popover).css('positionAnchor', anchorId);
+
+  // tags live inside the field, before the input
+  const tags = document.createElement('span');
+  tags.className = 'combobox-tags';
+  dfDollar(input).before(tags);
+
+  // the "Create …" row, shown while the text matches no option exactly
+  let createRow: HTMLElement | null = null;
+  if (creatable) {
+    createRow = document.createElement('div');
+    createRow.className = 'combobox-item combobox-create';
+    createRow.id = `${uid}-create`;
+    createRow.setAttribute('role', 'option');
+    createRow.setAttribute('aria-selected', 'false');
+    createRow.hidden = true;
+    dfDollar(listbox).append(createRow);
+  }
+
+  let highlighted: HTMLElement | null = null;
+  const highlight = (el: HTMLElement | null) => {
+    if (highlighted) dfDollar(highlighted).data('highlighted', null);
+    highlighted = el;
+    if (el) {
+      dfDollar(el).data('highlighted', '');
+      el.scrollIntoView({ block: 'nearest' });
+      dfDollar(input).attr('aria-activedescendant', el.id);
+    } else dfDollar(input).attr('aria-activedescendant', null);
+  };
+  const visible = () => [...options(), ...(createRow ? [createRow] : [])].filter((o) => !o.hidden && o.getAttribute('aria-disabled') !== 'true');
+  const isOpen = () => popover.matches(':popover-open');
+  const open = () => {
+    if (isOpen()) return;
+    safeShowPopover(popover);
+    dfDollar(input).attr('aria-expanded', 'true');
+  };
+  const close = () => {
+    if (isOpen()) popover.hidePopover();
+    dfDollar(input).attr('aria-expanded', 'false');
+    highlight(null);
+  };
+
+  /** Filter by the typed text; auto-highlight the exact match, else the create row. */
+  const filter = () => {
+    const text = input.value.trim();
+    const q = text.toLowerCase();
+    let exact: HTMLElement | null = null;
+    let any = false;
+    for (const o of options()) {
+      const match = !q || labelOf(o).toLowerCase().includes(q);
+      dfDollar(o).prop('hidden', !match);
+      if (match) any = true;
+      if (q && labelOf(o).toLowerCase() === q) exact = o;
+    }
+    if (createRow) {
+      const showCreate = !!text && !exact;
+      dfDollar(createRow).prop('hidden', !showCreate);
+      if (showCreate) dfDollar(createRow).text(`Create "${text}"`); // literal text (§5.2)
+    }
+    if (empty) dfDollar(empty).prop('hidden', any || (!!createRow && !createRow.hidden));
+    highlight(exact ?? (createRow && !createRow.hidden ? createRow : !creatable ? visible()[0] ?? null : null));
+  };
+
+  /** Tags + hidden inputs + combobox:change - the tag input's single renderer. */
+  const render = (announce = true, created: string | null = null) => {
+    const chosen = options().filter((o) => o.getAttribute('aria-selected') === 'true');
+    const labels = chosen.map(labelOf);
+    const values = chosen.map(valueOf);
+    const name = wrapper.dataset.name;
+    dfDollar(tags).morph(
+      labels
+        .map((label, i) => `<span class="combobox-tag" id="${uid}-tag-${idPart(values[i])}">${esc(label)}<button type="button" class="combobox-tag-remove" data-value="${esc(values[i])}" aria-label="Remove ${esc(label)}" tabindex="-1"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span>`)
+        .join('') +
+        (name ? values.map((v) => `<input type="hidden" name="${esc(name)}" value="${esc(v)}" id="${uid}-input-${idPart(v)}">`).join('') : ''),
+    ); // escaped text + static icon (§5.1)
+    // the placeholder only while there are no tags (it would read as a value)
+    if (input.dataset.placeholder === undefined) input.dataset.placeholder = input.placeholder;
+    input.placeholder = labels.length ? '' : input.dataset.placeholder;
+    if (announce) wrapper.dispatchEvent(new CustomEvent('combobox:change', { bubbles: true, detail: { values, labels, created } }));
+  };
+
+  /** Commit: exact match / highlighted row / new tag from the text. */
+  const commit = (row: HTMLElement | null) => {
+    const text = input.value.trim();
+    let created: string | null = null;
+    // (createRow &&: without data-creatable both are null - never "create")
+    if ((createRow && row === createRow) || (!row && creatable && text)) {
+      if (!text) return;
+      // an exact match (maybe filtered out by a stale highlight) wins over creating
+      const exact = options().find((o) => labelOf(o).toLowerCase() === text.toLowerCase());
+      if (exact) row = exact;
+      else {
+        const option = document.createElement('div');
+        option.className = 'combobox-item';
+        option.setAttribute('role', 'option');
+        option.dataset.value = text;
+        option.dataset.created = '';
+        option.id = `${uid}-opt-${idPart(text)}-${options().length}`;
+        dfDollar(option).text(text); // literal user text (§5.2)
+        if (createRow) dfDollar(createRow).before(option);
+        else dfDollar(listbox).append(option);
+        row = option;
+        created = text;
+      }
+      dfDollar(row).attr('aria-selected', 'true');
+    } else if (row) {
+      if (row.getAttribute('aria-disabled') === 'true') return;
+      // typed to find it → add; clicked / arrowed on a chosen one → toggle off
+      const on = row.getAttribute('aria-selected') === 'true';
+      dfDollar(row).attr('aria-selected', on && !text ? 'false' : 'true');
+    } else return;
+    dfDollar(input).val('');
+    render(true, created);
+    filter();
+    input.focus();
+  };
+
+  render(false);
+  filter();
+
+  field.addEventListener('mousedown', (e) => {
+    // clicks on the box (not a tag button) focus the input
+    if (!(e.target as HTMLElement).closest('button, input')) {
+      e.preventDefault();
+      input.focus();
+    }
+  });
+  tags.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest('.combobox-tag-remove') as HTMLElement | null;
+    if (!btn) return;
+    const option = options().find((o) => valueOf(o) === btn.dataset.value);
+    if (option) dfDollar(option).attr('aria-selected', 'false');
+    render();
+    filter();
+    input.focus();
+  });
+  input.addEventListener('focus', () => { open(); filter(); });
+  input.addEventListener('input', () => { open(); filter(); });
+  input.addEventListener('keydown', (e) => {
+    const rows = visible();
+    const at = highlighted ? rows.indexOf(highlighted) : -1;
+    switch (e.key) {
+      case 'ArrowDown': e.preventDefault(); open(); highlight(rows[Math.min(at + 1, rows.length - 1)] ?? null); break;
+      case 'ArrowUp': e.preventDefault(); highlight(rows[Math.max(at - 1, 0)] ?? null); break;
+      case 'Enter': e.preventDefault(); commit(highlighted); break;
+      case ',': if (input.value.trim()) { e.preventDefault(); commit(highlighted); } break;
+      case 'Backspace': {
+        if (input.value !== '') break;
+        const chosen = options().filter((o) => o.getAttribute('aria-selected') === 'true');
+        const last = chosen[chosen.length - 1];
+        if (!last) break;
+        e.preventDefault();
+        dfDollar(last).attr('aria-selected', 'false');
+        render();
+        filter();
+        break;
+      }
+      case 'Escape': e.preventDefault(); close(); break;
+      case 'Tab': close(); break;
+    }
+  });
+  // pointer picks keep focus in the input (mousedown default would blur it)
+  listbox.addEventListener('mousedown', (e) => e.preventDefault());
+  listbox.addEventListener('click', (e) => {
+    const row = (e.target as HTMLElement).closest('[role="option"]') as HTMLElement | null;
+    if (row && !row.hidden) commit(row);
+  });
+  listbox.addEventListener('mousemove', (e) => {
+    const row = (e.target as HTMLElement).closest('[role="option"]') as HTMLElement | null;
+    if (row && !row.hidden && row !== highlighted) highlight(row);
+  });
+  // leaving the whole widget closes the list
+  wrapper.addEventListener('focusout', (e) => {
+    if (!wrapper.contains(e.relatedTarget as Node) && !popover.contains(e.relatedTarget as Node)) close();
+  });
+  popover.addEventListener('toggle', (e) => { if ((e as ToggleEvent).newState === 'closed') dfDollar(input).attr('aria-expanded', 'false'); });
+}
+
 function init() {
   document.querySelectorAll('.combobox:not([data-init])').forEach((wrapper) => {
     wrapper.dataset.init = '';
+    if (wrapper.hasAttribute('data-tags')) {
+      initTags(wrapper as HTMLElement);
+      return;
+    }
     // scoped lookup through query (§3 direct integration); raw refs below are
     // kept only for native protocols (showPopover/focus/anchor wiring)
     const $wrapper = dfDollar(wrapper);
@@ -99,12 +324,73 @@ function init() {
     ); // trusted static icon markup (§5.1)
     dfDollar(clearBtn).css('positionAnchor', anchorId);
     $trigger.after(clearBtn);
+    // -- Multi-select (data-multiple) ----------------------------------------
+    // Several options at once: toggling keeps the popover open, the chosen
+    // options show as removable tags BELOW the trigger (buttons may not nest
+    // inside the trigger <button>), and data-name renders one hidden input
+    // per value so the choice submits with the form.
+    const multiple = wrapper.hasAttribute('data-multiple');
+    const uid = wrapper.id || popover.id || `dfcb-${++comboSeq}`;
+    let tags: HTMLElement | null = null;
+    if (multiple) {
+      $listbox.attr('aria-multiselectable', 'true');
+      tags = document.createElement('div');
+      tags.className = 'combobox-tags';
+      tags.setAttribute('role', 'list');
+      tags.setAttribute('aria-label', `Selected ${trigger.getAttribute('aria-label') || document.getElementById(trigger.getAttribute('aria-labelledby') || '')?.textContent?.trim() || 'options'}`);
+      dfDollar(clearBtn).after(tags);
+      // a tag's × removes its option; focus moves to the neighbouring tag
+      // (or back to the trigger) so keyboard users never lose their place
+      tags.addEventListener('click', (e) => {
+        const btn = (e.target as HTMLElement).closest('.combobox-tag-remove') as HTMLElement | null;
+        if (!btn) return;
+        const option = Array.from(allItems).find((o) => (o.dataset.value ?? o.textContent.trim()) === btn.dataset.value);
+        const all = Array.from(tags!.querySelectorAll('.combobox-tag-remove')) as HTMLElement[];
+        const at = all.indexOf(btn);
+        if (option) dfDollar(option).attr('aria-selected', 'false');
+        renderSelection();
+        const rest = Array.from(tags!.querySelectorAll('.combobox-tag-remove')) as HTMLElement[];
+        (rest[Math.min(at, rest.length - 1)] ?? trigger).focus();
+      });
+    }
+
+    /**
+     * Mirror the selection into the trigger label (placeholder when empty,
+     * the chosen labels otherwise), the tags + hidden inputs (multi), and
+     * announce it as combobox:change { values, labels }.
+     */
+    const renderSelection = (announce = true) => {
+      const chosen = Array.from(allItems).filter((o) => o.getAttribute('aria-selected') === 'true');
+      const labels = chosen.map((o) => o.textContent.trim());
+      const values = chosen.map((o) => o.dataset.value ?? o.textContent.trim());
+      // multi: the tags below already list every choice - the trigger shows a
+      // summary instead of repeating them: the one label, else "{n} selected"
+      // (data-selected-label on .combobox-value translates it, {n} = count)
+      const summary = multiple && labels.length > 1
+        ? ($value.data('selectedLabel') ?? '{n} selected').replace('{n}', String(labels.length))
+        : labels.join(', ');
+      if (labels.length) $value.text(summary).attr('data-placeholder', null);
+      else $value.text(placeholder).attr('data-placeholder', placeholder);
+      if (tags) {
+        const name = wrapper.dataset.name;
+        dfDollar(tags).morph(
+          labels
+            .map((label, i) => `<span class="combobox-tag" role="listitem" id="${uid}-tag-${idPart(values[i])}">${esc(label)}<button type="button" class="combobox-tag-remove" data-value="${esc(values[i])}" aria-label="Remove ${esc(label)}"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span>`)
+            .join('') +
+            (name ? values.map((v) => `<input type="hidden" name="${esc(name)}" value="${esc(v)}" id="${uid}-input-${idPart(v)}">`).join('') : ''),
+        ); // escaped option text + static icon (§5.1: text is never parsed as markup)
+      }
+      if (announce) wrapper.dispatchEvent(new CustomEvent('combobox:change', { bubbles: true, detail: { values, labels } }));
+    };
+    // authored aria-selected="true" options are the initial selection
+    if (multiple) renderSelection(false);
+
     clearBtn.addEventListener('click', () => {
       allItems.attr('aria-selected', 'false');
-      // literal placeholder text + re-declare data-placeholder: selectItem
-      // removed it, and it is the very marker the CSS :has() rule keys off
-      // to hide this button again
-      $value.text(placeholder).attr('data-placeholder', placeholder);
+      // placeholder text + data-placeholder are re-declared by renderSelection:
+      // the latter is the very marker the CSS :has() rule keys off to hide
+      // this button again
+      renderSelection();
       // the button goes display:none with the selection - keep focus usable
       trigger.focus();
     });
@@ -161,10 +447,17 @@ function init() {
     };
     const selectItem = (item) => {
       if (item.getAttribute('aria-disabled') === 'true') return;
+      if (multiple) {
+        // toggle, keep the list open and the search focused for the next pick
+        dfDollar(item).attr('aria-selected', item.getAttribute('aria-selected') === 'true' ? 'false' : 'true');
+        renderSelection();
+        searchInput.focus();
+        return;
+      }
       allItems.attr('aria-selected', 'false');
       dfDollar(item).attr('aria-selected', 'true');
       // trigger label mirrors the option's literal text (§3: query .text())
-      $value.text(item.textContent.trim()).attr('data-placeholder', null);
+      renderSelection();
       close();
     };
     trigger.addEventListener('click', () => { if (isOpen()) { close(); } else { open(); } });
@@ -179,6 +472,17 @@ function init() {
         case 'Enter': e.preventDefault(); if (highlighted >= 0 && items[highlighted]) selectItem(items[highlighted]); break;
         case 'Escape': e.preventDefault(); close(); break;
         case 'Tab': close(); break;
+        case 'Backspace': {
+          // multi: Backspace in an empty search removes the last chosen option
+          if (!multiple || searchInput.value !== '') break;
+          const chosen = Array.from(allItems).filter((o) => o.getAttribute('aria-selected') === 'true');
+          const last = chosen[chosen.length - 1];
+          if (!last) break;
+          e.preventDefault();
+          dfDollar(last).attr('aria-selected', 'false');
+          renderSelection();
+          break;
+        }
       }
     });
     listbox.addEventListener('click', (e) => { const item = e.target.closest('[role="option"]'); if (item && !item.hidden && item.getAttribute('aria-disabled') !== 'true') selectItem(item); });

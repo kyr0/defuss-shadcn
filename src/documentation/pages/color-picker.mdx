@@ -27,17 +27,27 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <SkillRow>
     <code>.color-picker</code>
     <code>.color-picker-value</code>
+    <code>.color-picker-format</code>
   </SkillRow>
+  </SkillField>
+
+  <SkillField label="Notation (data-format)">
+<SkillGrid>
+    <Variant name="hex" description="#6366f1 - the default" />
+    <Variant name="rgb" description="rgb(99 102 241)" />
+    <Variant name="hsl" description="hsl(238.7 83.5% 66.7%)" />
+    <Variant name="oklch" description="oklch(0.5854 0.2041 277.12) - the system tokens' notation" />
+  </SkillGrid>
   </SkillField>
 
   <SkillField label="Notes">
 <SkillText dense>• The native color picker renders a full-featured dialog - no JS needed.</SkillText>
-  <SkillText dense>• The wrapper adds a styled border and displays the current hex value.</SkillText>
+  <SkillText dense>• The wrapper adds a styled border and shows the value in the notation <code>data-format</code> asks for; <code>input[data-color-output]</code> submits it that way.</SkillText>
   <p class="text-muted-foreground m-0">• The color swatch is provided by the browser's native <code>&lt;input type="color"&gt;</code>.</p>
   </SkillField>
 </SkillPanel>
 
-```html example label="Default" hint="Color picker with hex value display."
+```html example label="Default" hint="Color picker with the picked value next to the swatch (hex unless data-format asks for another notation)."
 <div>
   <label class="label" for="d-color">Background Color</label>
   <div class="color-picker">
@@ -64,6 +74,63 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     </div>
   </div>
 </div>
+```
+
+```html example label="Notation" hint="data-format picks the notation the value is shown in: hex (the default), rgb, hsl or oklch - CSS Color 4 syntax, ready to paste into a stylesheet or token file. oklch is the notation this system's own theme tokens use. Every form round-trips: pasted back into CSS it gives exactly the colour you picked."
+<div class="grid grid-cols-auto gap-4" style="--layout-min:17rem;">
+  <div>
+    <label class="label" for="n-hex">hex</label>
+    <div class="color-picker" data-format="hex">
+      <input type="color" id="n-hex" value="#6366f1"></input>
+      <span class="color-picker-value">#6366f1</span>
+    </div>
+  </div>
+  <div>
+    <label class="label" for="n-rgb">rgb</label>
+    <div class="color-picker" data-format="rgb">
+      <input type="color" id="n-rgb" value="#6366f1"></input>
+      <span class="color-picker-value">#6366f1</span>
+    </div>
+  </div>
+  <div>
+    <label class="label" for="n-hsl">hsl</label>
+    <div class="color-picker" data-format="hsl">
+      <input type="color" id="n-hsl" value="#6366f1"></input>
+      <span class="color-picker-value">#6366f1</span>
+    </div>
+  </div>
+  <div>
+    <label class="label" for="n-oklch">oklch</label>
+    <div class="color-picker" data-format="oklch">
+      <input type="color" id="n-oklch" value="#6366f1"></input>
+      <span class="color-picker-value">#6366f1</span>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="Switchable notation" hint="Let the user choose: a select.color-picker-format inside the picker switches the notation live. An input[data-color-output] inside the picker always holds the value in the chosen notation, so the form submits it that way (the native input keeps #rrggbb under its own name). Click the value to select it for copying."
+<form id="brand-form" onsubmit="event.preventDefault()">
+  <label class="label" for="brand-color">Brand colour</label>
+  <div class="color-picker" data-format="oklch">
+    <input type="color" id="brand-color" value="#0f766e"></input>
+    <span class="color-picker-value">#0f766e</span>
+    <input type="hidden" name="brand" data-color-output></input>
+    <select class="color-picker-format" aria-label="Colour notation">
+      <option value="hex">HEX</option>
+      <option value="rgb">RGB</option>
+      <option value="hsl">HSL</option>
+      <option value="oklch">OKLCH</option>
+    </select>
+  </div>
+  <p class="text-sm text-muted-foreground" style="margin:0.75rem 0 0;">Submits <code>brand=<output id="brand-out"></output></code></p>
+</form>
+<script>
+  const out = document.querySelector('#brand-form [data-color-output]');
+  const show = () => { document.getElementById('brand-out').textContent = out.value; };
+  out.addEventListener('change', show);
+  setTimeout(show, 0);
+</script>
 ```
 
 ```html example label="Sizes" hint="The box height lands on the shared input ladder via data-size - md is the typical 2.25rem."

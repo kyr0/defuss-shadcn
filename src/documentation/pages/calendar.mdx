@@ -41,15 +41,29 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillRow>
   </SkillField>
 
+  <SkillField label="Date range">
+<SkillRow>
+    <code>\[data-mode="range"\]</code>
+    <code>.calendar-range</code>
+    <code>.calendar-range-footer</code>
+    <code>\[data-range-start\]</code>
+    <code>\[data-range-end\]</code>
+    <code>\[data-in-range\]</code>
+    <code>\[data-range-input\]</code>
+    <code>calendar:range</code>
+  </SkillRow>
+  </SkillField>
+
   <SkillField label="Accessibility">
 <SkillText dense>• Month heading uses <code>aria-live="polite"</code> for navigation announcements</SkillText>
   <SkillText dense>• Day cells are focusable buttons within the grid</SkillText>
-  <SkillText dense>• Arrow keys navigate the grid, Enter/Space selects a day</SkillText>
+  <SkillText dense>• Arrow keys navigate the grid, Enter/Space selects a day - in range mode across every month shown</SkillText>
+  <SkillText dense>• Selected days carry <code>aria-selected="true"</code> (both endpoints and the span between)</SkillText>
   <p class="text-muted-foreground m-0">• Previous/next navigation buttons have <code>aria-label</code></p>
   </SkillField>
 </SkillPanel>
 
-```html example label="Basic Calendar" hint="Interactive calendar with month navigation and date selection." height="24"
+```html example label="Basic Calendar" hint="Arrows step a month. The month and year in the middle are a button: it opens a month grid (the arrows then step a year), and the year there opens a grid of 12 years (the arrows step 12) - pick a year, then a month, and you are there. Escape goes back to the days. A plain <span class=&quot;calendar-heading&quot;> is upgraded to this button automatically." height="24"
 <div class="calendar">
   <div class="calendar-header">
     <button class="calendar-nav" data-action="prev-month" aria-label="Previous month">
@@ -57,7 +71,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
         <path d="m15 18-6-6 6-6"></path>
       </svg>
     </button>
-    <span class="calendar-heading" aria-live="polite"></span>
+    <button type="button" class="calendar-heading" aria-live="polite"></button>
     <button class="calendar-nav" data-action="next-month" aria-label="Next month">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="m9 18 6-6-6-6"></path>
@@ -68,41 +82,148 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </div>
 ```
 
-```html example label="Side by Side" hint="Place multiple calendars side-by-side for range selection patterns." height="24"
-<div style="display:flex;gap:1.0rem;flex-wrap:wrap;">
+```html example label="Date of birth (dropdowns)" hint="data-caption=&quot;dropdown&quot; puts native month and year selects between the arrows - the quickest way to a date decades away: open the year and type 1987. Years run from data-year-from to data-year-to (defaults: data-min-date / data-max-date, else 100 years back to 10 ahead); months outside min / max are disabled." height="24"
+<div class="calendar" data-caption="dropdown" data-year-from="1920" data-max-date="2026-09-28" data-current-date="1990-06" id="dob">
+  <div class="calendar-header">
+    <button class="calendar-nav" data-action="prev-month" aria-label="Previous month"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
+    <span class="calendar-heading" aria-live="polite"></span>
+    <button class="calendar-nav" data-action="next-month" aria-label="Next month"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+  </div>
+  <table class="calendar-grid" role="grid"></table>
+</div>
+<p class="text-sm text-muted-foreground" style="margin:0.75rem 0 0;">Date of birth: <output id="dob-out">not chosen</output></p>
+<script>
+  const dob = new Intl.DateTimeFormat(undefined, { dateStyle: 'long' });
+  document.getElementById('dob').addEventListener('calendar:select', (e) => {
+    document.getElementById('dob-out').textContent = dob.format(e.detail.date);
+  });
+</script>
+```
+
+```html example label="Marked days" hint="Your own day types: a JSON <script class=&quot;calendar-days&quot;> inside the calendar maps ISO dates to { mark, label, note, disabled }. mark becomes data-mark on the cell - holiday (red), event (a dot) and booked (struck through) have a look built in, any other name gets a neutral dot for your own CSS. label is the tooltip and part of the day's accessible name (&quot;Friday, 25 December 2026, Christmas Day&quot;); disabled: true blocks the day (a blackout date)." height="24"
+<div class="calendar" data-current-date="2026-12" aria-label="Leave planner">
+  <div class="calendar-header">
+    <button class="calendar-nav" data-action="prev-month" aria-label="Previous month"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
+    <button type="button" class="calendar-heading" aria-live="polite"></button>
+    <button class="calendar-nav" data-action="next-month" aria-label="Next month"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+  </div>
+  <table class="calendar-grid" role="grid"></table>
+  <script type="application/json" class="calendar-days">
+    {
+      "2026-12-08": { "mark": "event", "label": "Team offsite" },
+      "2026-12-17": { "mark": "event", "label": "Release freeze starts" },
+      "2026-12-18": { "mark": "booked", "label": "Office closed - move", "disabled": true },
+      "2026-12-24": { "mark": "holiday", "label": "Christmas Eve" },
+      "2026-12-25": { "mark": "holiday", "label": "Christmas Day" },
+      "2026-12-26": { "mark": "holiday", "label": "Boxing Day" },
+      "2026-12-31": { "mark": "holiday", "label": "New Year's Eve" },
+      "2027-01-01": { "mark": "holiday", "label": "New Year's Day" }
+    }
+  </script>
+</div>
+<div class="flex flex-wrap gap-4 text-sm text-muted-foreground" style="margin-top:0.75rem;">
+  <span><span style="color:var(--destructive);font-weight:600;">24</span> holiday</span>
+  <span>• event</span>
+  <span><s>18</s> blocked</span>
+</div>
+```
+
+```html example label="Prices per night" hint="A note is a second line under the number - here each night's price; the cells grow to fit. The data is loaded per month: calendar:view fires whenever the visible month changes (arrows, month / year picker, setState) and the page answers with api.setDays() for exactly that month (fetch it from your API; this one computes it). Booked nights are mark: booked + disabled, so a stay can't start on them." height="28"
+<div class="calendar" data-mode="range" data-min-date="2026-10-01" data-current-date="2026-10" id="nightly" aria-label="Stay dates">
+  <div class="calendar-header">
+    <button class="calendar-nav" data-action="prev-month" aria-label="Previous month"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
+    <button type="button" class="calendar-heading" aria-live="polite"></button>
+    <button class="calendar-nav" data-action="next-month" aria-label="Next month"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+  </div>
+  <table class="calendar-grid" role="grid"></table>
+</div>
+<p class="text-sm text-muted-foreground" style="margin:0.75rem 0 0;">Stay: <output id="nightly-out">pick arrival and departure</output></p>
+<script type="module">
+  const cal = document.getElementById('nightly');
+  const money = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+  const priceOf = (d) => (d.getDay() === 5 || d.getDay() === 6 ? 149 : 119) + (d.getMonth() === 11 ? 40 : 0);
+  const booked = (d) => [3, 4, 5, 17, 18].includes(d.getDate());
+  // one month's day data - in an app this is a fetch
+  const monthDays = (year, month) => {
+    const days = {};
+    for (let day = 1; day <= new Date(year, month + 1, 0).getDate(); day++) {
+      const d = new Date(year, month, day);
+      const iso = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+      days[iso] = booked(d)
+        ? { mark: 'booked', label: 'Booked', disabled: true }
+        : { note: money.format(priceOf(d)) };
+    }
+    return days;
+  };
+  cal.addEventListener('calendar:view', (e) => cal.api.setDays(monthDays(e.detail.year, e.detail.month), { merge: true }));
+  const { year, month } = cal.api.getState().config;
+  cal.api.setDays(monthDays(year, month));
+  cal.addEventListener('calendar:range', (e) => {
+    const { start, end } = e.detail;
+    if (!end) return (document.getElementById('nightly-out').textContent = 'pick a departure date');
+    let total = 0;
+    for (const d = new Date(start); d < end; d.setDate(d.getDate() + 1)) total += priceOf(d);
+    const nights = Math.round((end - start) / 864e5);
+    document.getElementById('nightly-out').textContent = nights + (nights === 1 ? ' night, ' : ' nights, ') + money.format(total);
+  });
+</script>
+```
+
+```html example label="Date range" hint="data-mode='range' turns a calendar into a range picker: the first click sets the start, the second the end, and the days between form one highlighted span. A click before the start begins again there, so an end can never precede its start. data-range-start / data-range-end preset (and always mirror) the choice; every change fires calendar:range." height="24"
+<div class="calendar" data-mode="range" data-range-start="2026-10-12" data-range-end="2026-10-16" id="report-range" aria-label="Report period">
+  <div class="calendar-header">
+    <button class="calendar-nav" data-action="prev-month" aria-label="Previous month"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
+    <span class="calendar-heading" aria-live="polite"></span>
+    <button class="calendar-nav" data-action="next-month" aria-label="Next month"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+  </div>
+  <table class="calendar-grid" role="grid"></table>
+</div>
+<p class="text-sm text-muted-foreground" style="margin:0.75rem 0 0;">Report period: <output id="report-range-out">12 Oct – 16 Oct 2026</output></p>
+<script>
+  const fmt = new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+  document.getElementById('report-range').addEventListener('calendar:range', (e) => {
+    const { start, end } = e.detail;
+    document.getElementById('report-range-out').textContent = end ? fmt.formatRange(start, end) : fmt.format(start) + ' – pick an end date';
+  });
+</script>
+```
+
+```html example label="Two-month range" hint="Wrap calendars in .calendar-range and they become ONE picker: consecutive months that page together (one pair of arrows), one shared range drawn across both grids, and a live preview of the span while you choose the end. Form fields marked data-range-input='start' / 'end' inside the wrapper receive the ISO dates, so the stay submits as one answer." height="30"
+<div class="calendar-range" id="stay" role="group" aria-label="Stay dates" data-range-start="2026-10-12" data-range-end="2026-10-15">
   <div class="calendar">
     <div class="calendar-header">
-      <button class="calendar-nav" data-action="prev-month" aria-label="Previous month">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m15 18-6-6 6-6"></path>
-        </svg>
-      </button>
+      <button class="calendar-nav" data-action="prev-month" aria-label="Previous month"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
       <span class="calendar-heading" aria-live="polite"></span>
-      <button class="calendar-nav" data-action="next-month" aria-label="Next month">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m9 18 6-6-6-6"></path>
-        </svg>
-      </button>
+      <button class="calendar-nav" data-action="next-month" aria-label="Next month"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
     </div>
     <table class="calendar-grid" role="grid"></table>
   </div>
   <div class="calendar">
     <div class="calendar-header">
-      <button class="calendar-nav" data-action="prev-month" aria-label="Previous month">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m15 18-6-6 6-6"></path>
-        </svg>
-      </button>
+      <button class="calendar-nav" data-action="prev-month" aria-label="Previous month"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
       <span class="calendar-heading" aria-live="polite"></span>
-      <button class="calendar-nav" data-action="next-month" aria-label="Next month">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m9 18 6-6-6-6"></path>
-        </svg>
-      </button>
+      <button class="calendar-nav" data-action="next-month" aria-label="Next month"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
     </div>
     <table class="calendar-grid" role="grid"></table>
+  </div>
+  <div class="calendar-range-footer">
+    <span><strong id="stay-dates">12 Oct → 15 Oct 2026</strong> · <span id="stay-nights">3 nights</span></span>
+    <input type="hidden" name="check-in" data-range-input="start">
+    <input type="hidden" name="check-out" data-range-input="end">
+    <button class="btn" data-size="sm" id="stay-book">Book stay</button>
   </div>
 </div>
+<script>
+  const stay = document.getElementById('stay');
+  const day = new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short' });
+  stay.addEventListener('calendar:range', (e) => {
+    const { start, end } = e.detail;
+    const nights = end ? Math.round((end - start) / 86400000) : 0;
+    document.getElementById('stay-dates').textContent = end ? day.format(start) + ' → ' + day.format(end) : day.format(start) + ' → choose check-out';
+    document.getElementById('stay-nights').textContent = end ? nights + (nights === 1 ? ' night' : ' nights') : '';
+    document.getElementById('stay-book').disabled = !end || nights === 0;
+  });
+</script>
 ```
 
 ```html example label="Density" hint="Set data-density on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only the frame padding and the day hit-areas scale (typography stays identical). comfortable matches the unsized default." height="24"

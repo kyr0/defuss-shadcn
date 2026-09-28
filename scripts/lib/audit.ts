@@ -91,7 +91,7 @@ const TW = new RegExp(
  */
 function moduleDefinedClasses(root: string): Set<string> {
   const set = new Set<string>();
-  for (const sheet of ['sizing.css', 'layout.css', 'accessibility.css']) {
+  for (const sheet of ['sizing.css', 'layout.css', 'accessibility.css', 'shapes.css']) {
     const file = join(root, 'src/theme/utils', sheet);
     if (!existsSync(file)) continue;
     // selectors are escaped CSS (`.w-0\.5` = class "w-0.5", `.w-1\/2` = "w-1/2")

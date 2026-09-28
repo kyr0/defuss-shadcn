@@ -26,15 +26,19 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <SkillField label="Classes">
 <SkillRow>
     <code>.number-input</code>
+    <code>.number-input-unit</code>
   </SkillRow>
   </SkillField>
 
   <SkillField label="Data attributes">
-<SkillText>• <code>data-action</code></SkillText>
+<SkillText dense>• <code>data-action</code> - <code>decrement</code> / <code>increment</code> on the stepper buttons</SkillText>
+  <SkillText dense>• <code>data-decimals</code> - fixed fraction digits on the wrapper (19 → 19.0)</SkillText>
+  <SkillText dense>• <code>data-currency</code> / <code>data-locale</code> / <code>data-currency-display</code> - locale-aware money mask (Intl.NumberFormat)</SkillText>
+  <SkillText>• <code>data-number-output</code> - hidden field receiving the machine value (1234.5)</SkillText>
   </SkillField>
 
   <SkillField label="Notes">
-<SkillText dense>• Reuses the <code>.input</code> class for consistent styling.</SkillText>
+<SkillText dense>• A unit is a <code>&lt;label class="number-input-unit" for&gt;</code> before or after the input - it joins the accessible name.</SkillText>
   <SkillText dense>• Native spinner buttons are hidden with <code>::-webkit-inner-spin-button</code>.</SkillText>
   <SkillText dense>• Use <code>min</code>, <code>max</code>, and <code>step</code> for range constraints.</SkillText>
   <p class="text-muted-foreground m-0">• Keyboard: arrow keys increment/decrement by step value.</p>
@@ -52,15 +56,129 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </div>
 ```
 
-```html example label="With step"
+```html example label="Unit and fixed decimals" hint="A temperature wants both: data-decimals='1' keeps one fraction digit (19 shows as 19.0, a step from 19.5 lands on 20.0) and a .number-input-unit label after the input shows °C. The unit is a second label for the input - clicking it focuses the field and screen readers announce 'Temperature °C'."
 <div>
   <label class="label" for="d-temp">Temperature</label>
-  <div class="number-input">
+  <div class="number-input" data-decimals="1">
     <button data-action="decrement" aria-label="Decrease">−</button>
-    <input type="number" id="d-temp" value="20.0" min="-40" max="60" step="0.5"></input>
+    <input type="number" id="d-temp" value="19" min="-40" max="60" step="0.5"></input>
+    <label class="number-input-unit" for="d-temp">°C</label>
     <button data-action="increment" aria-label="Increase">+</button>
   </div>
 </div>
+```
+
+```html example label="Units" hint="Any unit, before or after the value: % for a discount, kg with one decimal, hours in quarter steps, € in front with cents - even an emoji. The value aligns toward its unit so the pair reads as one, and the unit is part of the text (it is copied along with the number)."
+<div class="grid grid-cols-auto gap-4" style="--layout-min:11rem;">
+  <div>
+    <label class="label" for="u-discount">Discount</label>
+    <div class="number-input">
+      <button data-action="decrement" aria-label="Decrease">−</button>
+      <input type="number" id="u-discount" value="15" min="0" max="100" step="5"></input>
+      <label class="number-input-unit" for="u-discount">%</label>
+      <button data-action="increment" aria-label="Increase">+</button>
+    </div>
+  </div>
+  <div>
+    <label class="label" for="u-weight">Weight</label>
+    <div class="number-input" data-decimals="1">
+      <button data-action="decrement" aria-label="Decrease">−</button>
+      <input type="number" id="u-weight" value="72.5" min="0" max="300" step="0.5"></input>
+      <label class="number-input-unit" for="u-weight">kg</label>
+      <button data-action="increment" aria-label="Increase">+</button>
+    </div>
+  </div>
+  <div>
+    <label class="label" for="u-hours">Duration</label>
+    <div class="number-input" data-decimals="2">
+      <button data-action="decrement" aria-label="Decrease">−</button>
+      <input type="number" id="u-hours" value="1.5" min="0" max="24" step="0.25"></input>
+      <label class="number-input-unit" for="u-hours">h</label>
+      <button data-action="increment" aria-label="Increase">+</button>
+    </div>
+  </div>
+  <div>
+    <label class="label" for="u-budget">Budget</label>
+    <div class="number-input" data-decimals="2">
+      <button data-action="decrement" aria-label="Decrease">−</button>
+      <label class="number-input-unit" for="u-budget">€</label>
+      <input type="number" id="u-budget" value="250" min="0" step="10"></input>
+      <button data-action="increment" aria-label="Increase">+</button>
+    </div>
+  </div>
+  <div>
+    <label class="label" for="u-coffee">Coffee</label>
+    <div class="number-input">
+      <button data-action="decrement" aria-label="Decrease">−</button>
+      <input type="number" id="u-coffee" value="2" min="0" max="12" step="1"></input>
+      <label class="number-input-unit" for="u-coffee">☕ cups</label>
+      <button data-action="increment" aria-label="Increase">+</button>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="Currency" hint="data-currency turns the field into a masked money input driven by Intl.NumberFormat: the locale (data-locale, else the page's lang) decides the decimal and group separators, the currency symbol and its side, and the minor unit (EUR 2 digits, JPY none). Typing is masked live - letters are dropped, groups appear as you type, the caret stays put - and blur pads the cents. An input[data-number-output] submits the plain machine value (1234.5)."
+<div class="grid grid-cols-auto gap-4" style="--layout-min:13rem;">
+  <div>
+    <label class="label" for="c-price">Price (de-DE, EUR)</label>
+    <div class="number-input w-full" data-currency="EUR" data-locale="de-DE">
+      <input type="text" id="c-price" value="1234.5"></input>
+      <input type="hidden" name="price" data-number-output></input>
+    </div>
+  </div>
+  <div>
+    <label class="label" for="c-donation">Donation (en-US, USD)</label>
+    <div class="number-input w-full" data-currency="USD" data-locale="en-US">
+      <button data-action="decrement" aria-label="Decrease by 5">−</button>
+      <input type="text" id="c-donation" value="25" data-step="5" data-min="5"></input>
+      <button data-action="increment" aria-label="Increase by 5">+</button>
+    </div>
+  </div>
+  <div>
+    <label class="label" for="c-budget">Budget (ja-JP, JPY)</label>
+    <div class="number-input w-full" data-currency="JPY" data-locale="ja-JP">
+      <input type="text" id="c-budget" value="150000"></input>
+    </div>
+  </div>
+</div>
+<p class="text-sm text-muted-foreground" style="margin:0.75rem 0 0;">Price submits <code>price=<output id="c-price-out">1234.5</output></code></p>
+<script>
+  document.querySelector('[name="price"]').addEventListener('change', (e) => {
+    document.getElementById('c-price-out').textContent = e.target.value;
+  });
+</script>
+```
+
+```html example label="Currency per locale" hint="Change the locale and the SAME amount re-renders: separators, symbol, symbol side and grouping all come from the platform (Intl.NumberFormat) - including Indian lakh grouping (12,34,567.80) and Swiss apostrophes. Set data-locale / data-currency at any time; data-currency-display switches between symbol, narrowSymbol, code and name."
+<div style="display:flex;gap:1rem;align-items:end;flex-wrap:wrap;">
+  <div>
+    <label class="label" for="c-any">Amount</label>
+    <div class="number-input" data-currency="EUR" data-locale="de-DE" id="c-any-field">
+      <input type="text" id="c-any" value="1234567.8"></input>
+    </div>
+  </div>
+  <div>
+    <label class="label" for="c-any-locale">Locale · currency</label>
+    <select class="select" id="c-any-locale">
+      <option value="de-DE|EUR">de-DE · EUR</option>
+      <option value="en-US|USD">en-US · USD</option>
+      <option value="en-GB|GBP">en-GB · GBP</option>
+      <option value="fr-FR|EUR">fr-FR · EUR</option>
+      <option value="de-CH|CHF">de-CH · CHF</option>
+      <option value="en-IN|INR">en-IN · INR</option>
+      <option value="ja-JP|JPY">ja-JP · JPY</option>
+    </select>
+  </div>
+</div>
+<script>
+  document.getElementById('c-any-locale').addEventListener('change', (e) => {
+    const [locale, currency] = e.target.value.split('|');
+    const field = document.getElementById('c-any-field');
+    field.dataset.locale = locale;
+    field.dataset.currency = currency;
+  });
+</script>
 ```
 
 ```html example label="Sizes" hint="The stepper follows the shared input ladder via data-size - md is 2.25rem like every other form control."

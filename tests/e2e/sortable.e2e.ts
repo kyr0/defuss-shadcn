@@ -131,6 +131,52 @@ try {
     );
   });
 
+  // -- locked item in the middle: a fixed slot, never pushed ---------------------
+  const AUTHORED = ['Configure database', 'Set up CI/CD', 'Security review', 'Deploy application', 'Monitor rollout', 'Write postmortem'];
+  const resetLocked = () => page.$eval('#sb-locked', (el) => (el as HTMLElement & { api: { setState(n: string): void } }).api.setState('default'));
+
+  await check('locked middle row: Alt+Up past it keeps it in place (keyboard)', async () => {
+    await resetLocked();
+    // "Deploy application" sits right below the lock; one Alt+Up steps over it
+    await page.focus('#sb-locked .sortable-item:nth-child(4)');
+    await page.keyboard.press('Alt+ArrowUp');
+    const after = await order(page, 'sb-locked');
+    assert.equal(after[2], 'Security review', 'the locked row is still third');
+    assert.deepEqual(after, ['Configure database', 'Deploy application', 'Security review', 'Set up CI/CD', 'Monitor rollout', 'Write postmortem'], 'moved item takes the free slot above; its neighbour shifts across');
+    assert.equal(await focusLabel(page), 'Deploy application', 'focus follows the moved item');
+    await page.waitForFunction(() => document.querySelector('#sb-locked + .sortable-live')?.textContent?.includes('position 2 of 6'));
+  });
+
+  await check('locked middle row: dragging an item from above it to the bottom keeps it in place', async () => {
+    await resetLocked();
+    // synthetic HTML5 drag: Configure database → dropped after Write postmortem
+    await page.evaluate(() => {
+      const items = [...document.querySelectorAll('#sb-locked .sortable-item')] as HTMLElement[];
+      const src = items[0];
+      const dst = items[5];
+      const dt = new DataTransfer();
+      const r = dst.getBoundingClientRect();
+      const at = { bubbles: true, cancelable: true, dataTransfer: dt, clientX: r.left + 5, clientY: r.bottom - 2 };
+      src.dispatchEvent(new DragEvent('dragstart', at));
+      dst.dispatchEvent(new DragEvent('dragover', at));
+      dst.dispatchEvent(new DragEvent('drop', at));
+      src.dispatchEvent(new DragEvent('dragend', at));
+    });
+    const after = await order(page, 'sb-locked');
+    assert.equal(after[2], 'Security review', 'the locked row is still third - the divider did not climb');
+    assert.deepEqual(after, ['Set up CI/CD', 'Deploy application', 'Security review', 'Monitor rollout', 'Write postmortem', 'Configure database'], 'two items stay above the divider, three below');
+  });
+
+  await check('locked middle row: the locked item itself cannot be picked up or focused', async () => {
+    await resetLocked();
+    assert.deepEqual(await order(page, 'sb-locked'), AUTHORED, 'reset restores the authored order');
+    const lockedDraggable = await page.$eval('#sb-locked .sortable-item:nth-child(3)', (el) => el.getAttribute('draggable'));
+    assert.notEqual(lockedDraggable, 'true', 'not draggable');
+    await page.focus('#sb-locked .sortable-item:nth-child(2)');
+    await page.keyboard.press('ArrowDown');
+    assert.equal(await focusLabel(page), 'Deploy application', 'ArrowDown skips the locked row');
+  });
+
   await check('horizontal orientation uses Left/Right', async () => {
     await page.focus('#sb-horizontal .sortable-item:nth-child(1)');
     await page.keyboard.press('ArrowRight');
@@ -182,6 +228,122 @@ try {
     assert.ok(reg.hasApi, 'df$.sortableApi.setState missing');
     assert.deepEqual(reg.states, ['default']);
     assert.ok(reg.dollarWorks, 'globalThis.$ query alias missing');
+  });
+
+  const labels = (id: string) =>
+    page.$$eval(`#${id} .sortable-item`, (els) => els.map((el) => el.querySelector('span:not(.sortable-handle)')!.textContent!.trim()));
+
+  await check('move buttons: labelled per item, Up disabled on the first and Down on the last', async () => {
+    const r = await page.$$eval('#sb-moves .sortable-move', (bs) => bs.map((b) => [b.getAttribute('aria-label'), (b as HTMLButtonElement).disabled]));
+    assert.deepEqual(r, [
+      ['Move Alpha up', true], ['Move Alpha down', false],
+      ['Move Beta up', false], ['Move Beta down', false],
+      ['Move Gamma up', false], ['Move Gamma down', true],
+    ]);
+  });
+
+  await check('move buttons: a tap moves the item, announces it, and focus stays on the button', async () => {
+    const events: unknown[] = [];
+    await page.exposeFunction('__mvEvent', (d: unknown) => events.push(d));
+    await page.$eval('#sb-moves', (l) => l.addEventListener('sortable-change', (e: any) => (globalThis as any).__mvEvent(e.detail.index)));
+    await page.click('#mv-a .sortable-move[data-move="down"]');
+    assert.deepEqual(await labels('sb-moves'), ['Beta', 'Alpha', 'Gamma']);
+    assert.equal(await page.evaluate(() => document.activeElement?.getAttribute('aria-label')), 'Move Alpha down');
+    await page.waitForTimeout(50);
+    assert.equal(await page.$eval('#sb-moves + .sortable-live', (el) => el.textContent), 'Alpha, moved to position 2 of 3');
+    await page.keyboard.press('Enter'); // the focused button again
+    assert.deepEqual(await labels('sb-moves'), ['Beta', 'Gamma', 'Alpha']);
+    assert.deepEqual(events, [1, 2]);
+  });
+
+  await check('move buttons: at the edge the pressed button disables and focus passes to its twin', async () => {
+    const r = await page.evaluate(() => ({
+      downDisabled: (document.querySelector('#mv-a .sortable-move[data-move="down"]') as HTMLButtonElement).disabled,
+      focus: document.activeElement?.getAttribute('aria-label'),
+    }));
+    assert.deepEqual(r, { downDisabled: true, focus: 'Move Alpha up' });
+    await page.click('#mv-a .sortable-move[data-move="up"]');
+    await page.click('#mv-a .sortable-move[data-move="up"]');
+    assert.deepEqual(await labels('sb-moves'), ['Alpha', 'Beta', 'Gamma']);
+  });
+
+  /** A native drag, event by event: dragstart on the source, dragover +
+   *  drop at a point on the target (pos = offset inside it; default its
+   *  centre), dragend on the source - real DragEvents with a real
+   *  DataTransfer, so the component's own handlers do the work. Playwright's
+   *  drag emulation is not used here: it silently drops drags after focus
+   *  changes or a repeat drag of the same element (flaky, and reproducible
+   *  with the pre-change sortable.js too). */
+  const drag = async (src: string, dst: string, pos?: { x: number; y: number }) => {
+    await page.evaluate(([src, dst, pos]) => {
+      const source = document.querySelector(src as string)!;
+      const target = document.querySelector(dst as string)!;
+      const r = target.getBoundingClientRect();
+      const p = pos as { x: number; y: number } | null;
+      const at = { clientX: r.left + (p ? p.x : r.width / 2), clientY: r.top + (p ? p.y : r.height / 2) };
+      const dataTransfer = new DataTransfer();
+      const fire = (el: Element, type: string, extra = {}) =>
+        el.dispatchEvent(new DragEvent(type, { bubbles: true, cancelable: true, dataTransfer, ...extra }));
+      fire(source, 'dragstart');
+      const over = document.elementFromPoint(at.clientX, at.clientY) ?? target;
+      fire(over, 'dragover', at);
+      fire(over, 'drop', at);
+      fire(source, 'dragend');
+    }, [src, dst, pos ?? null]);
+    await page.waitForTimeout(50);
+  };
+
+  await check('connected lists: dragging an item into the other list moves it there (before the hovered row)', async () => {
+    await drag('#bi-1', '#bi-3', { x: 20, y: 4 });
+    assert.deepEqual([await labels('bin-a'), await labels('bin-b')], [['Two'], ['One', 'Three']]);
+  });
+
+  await check('connected lists: an item that arrived can be reordered and dragged back', async () => {
+    await drag('#bi-1', '#bi-3', { x: 20, y: 30 });
+    assert.deepEqual(await labels('bin-b'), ['Three', 'One']);
+    await drag('#bi-1', '#bi-2', { x: 20, y: 4 });
+    assert.deepEqual([await labels('bin-a'), await labels('bin-b')], [['One', 'Two'], ['Three']]);
+  });
+
+  await check('connected lists: an emptied list stays a drop zone and accepts a drop at the end', async () => {
+    await drag('#bi-3', '#bi-2', { x: 20, y: 30 });
+    const zone = await page.$eval('#bin-b', (l) => ({ h: l.getBoundingClientRect().height, text: getComputedStyle(l, '::before').content, border: getComputedStyle(l).borderTopStyle }));
+    assert.deepEqual([await labels('bin-b'), zone.text, zone.border], [[], '"Drop here"', 'dashed']);
+    assert.ok(zone.h >= 44, 'empty zone keeps a height, got ' + zone.h);
+    await drag('#bi-2', '#bin-b');
+    assert.deepEqual([await labels('bin-a'), await labels('bin-b')], [['One', 'Three'], ['Two']]);
+  });
+
+  await check('connected lists: both lists report the move (detail.from / detail.to)', async () => {
+    await page.evaluate(() => {
+      (globalThis as any).__bin = [];
+      for (const id of ['bin-a', 'bin-b']) {
+        document.getElementById(id)!.addEventListener('sortable-change', (e: any) => {
+          (globalThis as any).__bin.push(id + ':' + e.detail.index + ':' + (e.detail.from?.id ?? '-') + ':' + (e.detail.to?.id ?? '-'));
+        }, { once: true });
+      }
+    });
+    await drag('#bi-1', '#bin-b');
+    assert.deepEqual([await labels('bin-a'), await labels('bin-b')], [['Three'], ['Two', 'One']]);
+    assert.deepEqual((await page.evaluate(() => (globalThis as any).__bin)).sort(), ['bin-a:-1:-:bin-b', 'bin-b:1:bin-a:-']);
+  });
+
+  await check('connected lists: Alt+ArrowLeft / Alt+ArrowRight move the focused item between lists', async () => {
+    await page.focus('#bi-2');
+    await page.keyboard.press('Alt+ArrowLeft');
+    assert.deepEqual([await labels('bin-a'), await labels('bin-b')], [['Two', 'Three'], ['One']]);
+    assert.equal(await page.evaluate(() => document.activeElement?.id), 'bi-2');
+    await page.waitForTimeout(50);
+    assert.equal(await page.$eval('#bin-a + .sortable-live', (el) => el.textContent), 'Two, moved to Backlog, position 1 of 2');
+    await page.keyboard.press('Alt+ArrowRight');
+    assert.deepEqual([await labels('bin-a'), await labels('bin-b')], [['Three'], ['Two', 'One']]);
+    // roving tabindex repaired in the list it left
+    assert.equal(await page.$eval('#bi-3', (el) => el.getAttribute('tabindex')), '0');
+  });
+
+  await check('connected lists: a list outside the group rejects the drop', async () => {
+    await drag('#bi-3', '#bi-4');
+    assert.deepEqual([await labels('bin-a'), await labels('bin-solo')], [['Three'], ['Four']]);
   });
 
   await check('sortable: density "compact" → padding-top 6px', async () => {

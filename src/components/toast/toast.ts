@@ -128,7 +128,7 @@ const toastCreate = (options) => {
   dfDollar(contentEl).append(textDiv);
   const closeBtn = document.createElement('button');
   closeBtn.className = 'toast-close'; closeBtn.setAttribute('aria-label', 'Dismiss'); closeBtn.dataset.toastClose = '';
-  dfDollar(closeBtn).html('<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>');
+  dfDollar(closeBtn).html('<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>');
   dfDollar(contentEl).append(closeBtn);
   dfDollar(el).append(contentEl);
   if (action) {

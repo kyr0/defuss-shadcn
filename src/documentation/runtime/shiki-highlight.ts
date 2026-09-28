@@ -68,7 +68,14 @@ async function highlightAll() {
 
         // Replace old <pre> content with Shiki output
         pre.className = newPre.className
-        pre.setAttribute('style', newPre.getAttribute('style') || '')
+        // keep the authored inline style (e.g. a code-card's
+        // border-radius:0/border:none reset, which layout.css keys on) and
+        // append Shiki's colour variables - replacing it made nested blocks
+        // regain their own rounded, bordered box inside the card
+        if (!pre.dataset.authoredStyle) pre.dataset.authoredStyle = pre.getAttribute('style') || ' '
+        var authored = pre.dataset.authoredStyle.trim()
+        var shikiStyle = newPre.getAttribute('style') || ''
+        pre.setAttribute('style', authored ? authored.replace(/;?$/, ';') + shikiStyle : shikiStyle)
         pre.innerHTML = newPre.innerHTML
       })
     )

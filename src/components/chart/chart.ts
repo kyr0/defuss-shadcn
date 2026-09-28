@@ -360,10 +360,12 @@ export function mount(el: HTMLElement, option: Option = {}): ChartMount {
   ro.observe(el);
   observers.set(el, ro);
   replayOnSlide(el);
+  replayOnView(el);
   return {
     instance,
     setOption: (opt, notMerge = false) => instance.setOption(opt, notMerge),
     dispose: () => {
+      viewObserver?.unobserve(el);
       ro.disconnect();
       observers.delete(el);
       instances.delete(el);
@@ -391,6 +393,34 @@ function replay(el: HTMLElement, inst: EChartsInstanceLike): void {
   journal.ops = ops;
   journal.overflow = false;
   for (const [option, arg, lazy] of ops) raw(withMotion(resolveColors(el, option) as Option), arg, lazy);
+}
+
+/** One shared observer for every chart still waiting to be seen. */
+let viewObserver: IntersectionObserver | undefined;
+
+/**
+ * Why: a chart mounts as soon as its script runs - during page load, or far
+ * below the fold - so its entrance animation (a gauge sweeping 0 → 77%, bars
+ * growing) plays while nobody is looking. The first time a chart is actually
+ * on screen (30% visible), its journal replays once, so the entrance plays
+ * in view. Slide charts are excluded (replayOnSlide owns them), and so is
+ * reduced motion (there is no animation to show).
+ */
+function replayOnView(el: HTMLElement): void {
+  if (reducedMotion() || el.closest('[data-slide]') || typeof IntersectionObserver !== 'function') return;
+  viewObserver ??= new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const chartEl = entry.target as HTMLElement;
+        viewObserver?.unobserve(chartEl);
+        const i = instances.get(chartEl);
+        if (i && chartEl.isConnected && !i.isDisposed?.()) replay(chartEl, i);
+      }
+    },
+    { threshold: 0.3 },
+  );
+  viewObserver.observe(el);
 }
 
 /** Slides whose charts replay on activation (one observer per slide). */

@@ -82,6 +82,18 @@
     & .radio-card { padding: 1.25rem 1.5rem; }
   }
 
+  /* Gap hit area: inside an item layout the radio's click target spans the
+     gap to its label (a transparent ::before, part of the input's own hit
+     box), so clicking the whitespace between circle and text selects too -
+     the label's `for` covers the text itself. Inline-end only: the label
+     always sits after the radio (the block layout's second grid column). */
+  :is(.radio-item, .radio-item-block) > .radio::before {
+    content: '';
+    position: absolute;
+    inset-block: -0.25rem;
+    inset-inline: -0.25rem -0.5rem;
+  }
+
   /* -- Card variant ------------------------------------------- */
   .radio-card {
     position: relative;
@@ -108,9 +120,11 @@
     }
 
     &:has(.radio:disabled) {
-      opacity: 0.5;
       cursor: not-allowed;
-      pointer-events: none;
+      background: var(--muted);
+
+      &:hover { background: var(--muted); }
+      & > label { color: var(--muted-foreground); cursor: not-allowed; }
     }
 
     & > .radio {
@@ -166,11 +180,24 @@
       outline-offset: 2px;
     }
 
+    /* Disabled = legible but inert: never an opacity fade (0.5 on a light
+       --border edge left a ghost you had to look for). The shape keeps its
+       full-strength edge, the surface turns muted, a chosen state keeps a
+       softened primary fill, and the label goes muted with the no-entry
+       cursor - "a choice that exists but is unavailable right now". */
     &:disabled {
-      opacity: 0.5;
+      background: var(--muted);
+      /* a mid-grey ring: --border on the muted fill is too faint to read as a shape */
+      border-color: color-mix(in oklch, var(--muted-foreground) 50%, var(--background));
       cursor: not-allowed;
 
-      & + label { opacity: 0.5; cursor: not-allowed; }
+      &:checked {
+        border-color: color-mix(in oklch, var(--primary) 45%, var(--background));
+
+        &::after { background: color-mix(in oklch, var(--primary) 45%, var(--background)); }
+      }
+
+      & + label { color: var(--muted-foreground); cursor: not-allowed; }
     }
 
     &[aria-invalid="true"] {

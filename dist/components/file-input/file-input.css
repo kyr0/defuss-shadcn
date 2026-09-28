@@ -6,6 +6,9 @@
        unsized default = the ladder's md step (field standard) */
     box-sizing: border-box;
     width: 100%;
+    /* the chosen file name is the whole point of the control's text part -
+       never let a flex/grid row squeeze it below a readable path length */
+    min-inline-size: min(100%, 24rem);
     height: 2.25rem;
     border: 1px solid var(--input);
     border-radius: var(--radius-md);
@@ -44,9 +47,20 @@
       box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
     }
 
+    /* Disabled = legible but inert: muted surface + text inside the
+       full-strength border - never an opacity fade */
     &:disabled {
-      opacity: 0.5;
+      background-color: var(--muted);
+      color: var(--muted-foreground);
+      box-shadow: none;
       cursor: not-allowed;
+
+      &::file-selector-button {
+        color: var(--muted-foreground);
+        cursor: not-allowed;
+
+        &:hover { background: var(--muted); }
+      }
     }
 
     /* -- Sizes: same ladder as .input/.date-input (md = 2.25rem; the

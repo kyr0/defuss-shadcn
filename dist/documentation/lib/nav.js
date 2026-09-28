@@ -71,6 +71,7 @@ export const NAV = [
                     { label: 'Grid', href: 'grid.html' },
                 ],
             },
+            { label: 'Shapes', href: 'shapes.html' },
             { label: 'Accessibility', href: 'accessibility.html' },
         ] },
     { heading: 'Primitives', items: [

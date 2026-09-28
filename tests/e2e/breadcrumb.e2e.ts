@@ -50,6 +50,17 @@ await cssSmoke('breadcrumb', [
     ],
   },
   {
+    label: 'a breadcrumb link underlines on hover (and only then)',
+    run: async (page) => {
+      const deco = () =>
+        page.$eval('a.breadcrumb-link[href]', (el) => getComputedStyle(el).textDecorationLine);
+      assert.equal(await deco(), 'none', 'no underline at rest');
+      await page.hover('a.breadcrumb-link[href]');
+      await page.waitForTimeout(50);
+      assert.equal(await deco(), 'underline', 'underline while hovered');
+    },
+  },
+  {
     // size ladder mirrors the shared field sizes: 12/13/14/16/18px on the list
     label: 'data-size scales the trail type 12/13/14/16/18px',
     run: async (page) => {

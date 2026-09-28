@@ -20,6 +20,8 @@ import {
 } from './lib/changelog.ts';
 import {
   parseSkillFrontmatter,
+  ROOT_SKILL_OUTPUT_FILE,
+  ROOT_SKILL_TEMPLATE_FILE,
   SKILL_FRONTMATTER_KEYS,
   SKILL_OUTPUT_FILE,
   SKILL_TEMPLATE_FILE,
@@ -28,10 +30,10 @@ import { readmeCssOnlyProblems } from './lib/readme.ts';
 import { ariaDescribedByProblems, fieldDescriptionOwnerProblems, fieldFeatureProblems } from './lib/fields.ts';
 import { parseThemes, defaultTokenModes, sidebarContrastProblems, radiusConsistencyProblems } from './lib/contrast.ts';
 import { themeCssText, themeFileName, themeJsonText, themeJsonFileName } from './lib/theme-css.ts';
-import { buildSkillText } from './lib/skill-files.ts';
+import { buildRootSkillText, buildSkillText } from './lib/skill-files.ts';
 import { archBodyHtml } from '../src/documentation/lib/arch-md.ts';
 import { typeBadgeHtml, type ComponentType } from './lib/taxonomy.ts';
-import { docsDistToSrc, isDocsSsgAuthoringSrc } from './lib/docs-ssg.ts';
+import { docsDistToSrc, isDocsSsgAuthoringSrc, STANDALONE_DECKS, standaloneDeckFile } from './lib/docs-ssg.ts';
 import { markdownLinkProblems, type MdDoc } from './lib/links.ts';
 import {
   exampleFences,
@@ -245,11 +247,14 @@ check(
   'load the bundle on every doc page: <link rel="stylesheet" href="../components/all.css"> and <script type="module" src="../components/all.js"></script>',
 );
 
-// 8. every doc page is reachable from the sidebar (lib/nav.ts NAV)
+// 8. every doc page is reachable from the sidebar (lib/nav.ts NAV) - except
+// the chrome-free standalone decks, which are frames of a page that IS in the
+// sidebar (their own .mdx), never navigation targets themselves
 const navSrc = readFileSync(join(DOCS, 'lib/nav.ts'), 'utf8');
+const standaloneDeckPages = new Set(STANDALONE_DECKS.map(standaloneDeckFile));
 check(
   'sidebar coverage',
-  docPages.filter((p) => !navSrc.includes(`'${p}'`)).map((p) => `${p} not referenced in lib/nav.ts`),
+  docPages.filter((p) => !standaloneDeckPages.has(p) && !navSrc.includes(`'${p}'`)).map((p) => `${p} not referenced in lib/nav.ts`),
   "add the page to the NAV array in src/documentation/lib/nav.ts",
 );
 
@@ -1010,7 +1015,7 @@ check(
 // Fenced code samples are stripped before parsing (see scripts/lib/links.ts).
 {
   const mdSources: MdDoc[] = [
-    ...['README.md', 'AGENTS.md', 'ARCH.md'].map((f) => [f, join(ROOT, f)] as const),
+    ...['README.md', 'AGENTS.md', 'ARCH.md', 'SKILL.md'].map((f) => [f, join(ROOT, f)] as const),
     ...walk(SRC, ['.md']).map((p) => [relative(ROOT, p), p] as const),
     ...walk(DOCS_PAGES, ['.mdx']).map((p) => [relative(ROOT, p), p] as const),
   ]
@@ -1376,6 +1381,23 @@ check(
       'SKILL.md ↔ skills',
       skillProblems,
       'run `bun run build` (build.ts regenerates src/SKILL.md from SKILL_tpl.md + frontmatter; never edit SKILL.md by hand)',
+    );
+    // the repo-root SKILL.md (the whole project as ONE agent skill: install
+    // paths, rules, docs map from nav.ts + page frontmatter, component index
+    // from skill frontmatter) - same drift class, one more source set
+    const rootProblems: string[] = [];
+    try {
+      const fresh = await buildRootSkillText(ROOT);
+      if (!existsSync(join(ROOT, ROOT_SKILL_OUTPUT_FILE))) rootProblems.push(`${ROOT_SKILL_OUTPUT_FILE} missing at the repo root`);
+      else if (readFileSync(join(ROOT, ROOT_SKILL_OUTPUT_FILE), 'utf8') !== fresh)
+        rootProblems.push(`${ROOT_SKILL_OUTPUT_FILE} is stale vs src/${ROOT_SKILL_TEMPLATE_FILE} + nav.ts + page/skill frontmatter`);
+    } catch (e) {
+      rootProblems.push(`${(e as Error).message.split(' - ')[0]} - ${ROOT_SKILL_OUTPUT_FILE} cannot be generated`);
+    }
+    check(
+      'root SKILL.md ↔ sources',
+      rootProblems,
+      `run \`bun run build\` (build.ts regenerates the repo-root ${ROOT_SKILL_OUTPUT_FILE} from src/${ROOT_SKILL_TEMPLATE_FILE}; never edit it by hand)`,
     );
   }
 

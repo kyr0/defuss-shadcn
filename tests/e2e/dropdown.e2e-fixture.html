@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
     <link rel="stylesheet" href="/dist/components/button/button.css" />
     <link rel="stylesheet" href="/dist/components/dropdown/dropdown.css" />
+    <link rel="stylesheet" href="/dist/components/button-group/button-group.css" />
   </head>
   <body style="padding:12rem;">
     <!-- mirrors doc demo 1: options menu (label, group, disabled, separator, destructive) -->
@@ -37,6 +38,25 @@
       </div>
     </div>
 
+    <!-- split button (button-group page): chevron trigger, end-aligned menu after the group -->
+    <div class="btn-group" role="group" aria-label="Split action" style="margin-top:2rem;">
+      <button class="btn" data-variant="outline">Save</button>
+      <hr role="separator">
+      <button class="btn" data-variant="outline" data-size="icon" id="split-trigger" aria-label="More save options" aria-haspopup="menu" aria-expanded="false" aria-controls="split-menu" data-dropdown-trigger="split-menu">v</button>
+    </div>
+    <div id="split-menu" role="menu" popover class="dropdown-content" data-align="end" aria-label="Save options">
+      <button role="menuitem" class="dropdown-item" tabindex="-1">Save as draft</button>
+      <button role="menuitem" class="dropdown-item" tabindex="-1">Save a copy</button>
+    </div>
+    <!-- viewport edges: the preferred alignment doesn't fit, the menu flips to the other edge -->
+    <button class="btn" data-variant="outline" data-size="icon" id="edge-left-trigger" aria-label="Left edge menu" aria-haspopup="menu" aria-expanded="false" data-dropdown-trigger="edge-left-menu" style="position:fixed;left:4px;bottom:40vh;">v</button>
+    <div id="edge-left-menu" role="menu" popover class="dropdown-content" data-align="end" aria-label="Left edge" style="min-width:12rem;">
+      <button role="menuitem" class="dropdown-item" tabindex="-1">Item A</button>
+    </div>
+    <button class="btn" data-variant="outline" data-size="icon" id="edge-right-trigger" aria-label="Right edge menu" aria-haspopup="menu" aria-expanded="false" data-dropdown-trigger="edge-right-menu" style="position:fixed;right:4px;bottom:40vh;">v</button>
+    <div id="edge-right-menu" role="menu" popover class="dropdown-content" aria-label="Right edge" style="min-width:12rem;">
+      <button role="menuitem" class="dropdown-item" tabindex="-1">Item A</button>
+    </div>
     <script type="module" src="/dist/components/core.js"></script>
     <script type="module" src="/dist/components/dropdown/dropdown.js"></script>
       <button class="btn" data-variant="outline" data-dropdown-trigger="z-dropdown-xs-pop" aria-haspopup="menu">Size xs</button><div id="z-dropdown-xs-pop" role="menu" popover class="dropdown-content" data-size="xs" aria-label="Size xs" style="min-width:10rem;"><button role="menuitem" class="dropdown-item">Item A</button><button role="menuitem" class="dropdown-item">Item B</button></div>

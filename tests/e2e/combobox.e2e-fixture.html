@@ -53,6 +53,33 @@
       </div>
     </div>
 
+    <!-- multi-select: data-multiple + data-name (hidden inputs), authored preselection -->
+    <form id="cbm-form" style="margin-top:2rem;width:16rem;">
+      <div class="combobox" id="cb-multi" data-multiple data-name="tags">
+        <label class="label" id="cbm-label">Tags</label>
+        <button type="button" class="btn combobox-trigger" data-variant="outline" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="cbm-label" aria-controls="cbm-pop"><span class="combobox-value" data-placeholder="Add tags...">Add tags...</span><svg class="combobox-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24"><path d="m7 15 5 5 5-5"/></svg></button>
+        <div id="cbm-pop" class="combobox-content" popover>
+          <div class="combobox-search"><input class="combobox-search-input" id="cbm-search" type="text" role="combobox" aria-controls="cbm-list" placeholder="Search..." /></div>
+          <div id="cbm-list" role="listbox" class="combobox-listbox" aria-label="Tags">
+            <div class="combobox-empty" hidden>No results found.</div>
+            <div role="option" id="cbm-design" class="combobox-item" data-value="design" aria-selected="true">Design</div><div role="option" id="cbm-eng" class="combobox-item" data-value="eng" aria-selected="true">Engineering</div><div role="option" id="cbm-a11y" class="combobox-item" data-value="a11y" aria-selected="false">Accessibility</div><div role="option" id="cbm-perf" class="combobox-item" data-value="perf" aria-selected="false">Performance</div>
+          </div>
+        </div>
+      </div>
+    </form>
+    <!-- tag input: tags inside the field, typing autocompletes, Enter picks the exact match or creates -->
+    <form id="cbt-form" style="margin-top:2rem;width:20rem;">
+      <div class="combobox" id="cb-tags" data-multiple data-tags data-creatable data-name="topics">
+        <label class="label" for="cb-tags-input">Topics</label>
+        <div class="combobox-field"><input class="combobox-field-input" id="cb-tags-input" type="text" role="combobox" autocomplete="off" aria-expanded="false" aria-controls="cb-tags-list" placeholder="Type a topic..." /></div>
+        <div id="cb-tags-pop" class="combobox-content" popover="manual"><div id="cb-tags-list" role="listbox" class="combobox-listbox" aria-label="Topics"><div class="combobox-empty" hidden>No topics.</div><div role="option" id="cbt-css" class="combobox-item" data-value="css" aria-selected="true">CSS</div><div role="option" id="cbt-ts" class="combobox-item" data-value="ts" aria-selected="false">TypeScript</div><div role="option" id="cbt-js" class="combobox-item" data-value="js" aria-selected="false">JavaScript</div><div role="option" id="cbt-a11y" class="combobox-item" data-value="a11y" aria-selected="false">Accessibility</div></div></div>
+      </div>
+      <div class="combobox" id="cb-tags-fixed" data-multiple data-tags data-name="fixed">
+        <label class="label" for="cb-tags-fixed-input">Topics</label>
+        <div class="combobox-field"><input class="combobox-field-input" id="cb-tags-fixed-input" type="text" role="combobox" autocomplete="off" aria-expanded="false" aria-controls="cb-tags-fixed-list" placeholder="Type a topic..." /></div>
+        <div id="cb-tags-fixed-pop" class="combobox-content" popover="manual"><div id="cb-tags-fixed-list" role="listbox" class="combobox-listbox" aria-label="Topics"><div class="combobox-empty" hidden>No topics.</div><div role="option" id="cbf-red" class="combobox-item" data-value="red" aria-selected="false">Red</div><div role="option" id="cbf-green" class="combobox-item" data-value="green" aria-selected="false">Green</div><div role="option" id="cbf-blue" class="combobox-item" data-value="blue" aria-selected="false">Blue</div></div></div>
+      </div>
+    </form>
     <script type="module" src="/dist/components/core.js"></script>
     <script type="module" src="/dist/components/combobox/combobox.js"></script>
       <div class="combobox" id="z-combobox-xs" data-size="xs" style="width:14rem;margin-top:1rem;"><button class="btn combobox-trigger" data-variant="outline" aria-haspopup="listbox" aria-expanded="false" aria-controls="z-combobox-xs-pop"><span class="combobox-value" data-placeholder="Select…">Select…</span><svg class="combobox-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg></button><div id="z-combobox-xs-pop" class="combobox-content" popover><div class="combobox-search"><input class="combobox-search-input" type="text" placeholder="Search..." /></div><div class="combobox-listbox" role="listbox"><div class="combobox-empty" hidden>No results found.</div><div role="option" class="combobox-item" aria-selected="false">Alpha</div><div role="option" class="combobox-item" aria-selected="false">Beta</div></div></div></div>

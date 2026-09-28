@@ -46,13 +46,25 @@
       }
     }
 
+    /* Disabled = legible but inert: a muted surface and muted text inside
+       the full-strength border - never an opacity fade that lets the box
+       dissolve into the page. */
     &:disabled {
-      opacity: 0.5;
+      background-color: var(--muted);
+      color: var(--muted-foreground);
+      box-shadow: none;
       cursor: not-allowed;
     }
 
     /* -- Invalid state --------------------------------------- */
-    &:is([aria-invalid="true"], :user-invalid) {
+    /* WHEN a field turns red: aria-invalid="true" always (the page decided).
+       The browser's own verdict (:user-invalid, i.e. after the user left a
+       changed field) only counts inside a <form> - a standalone text box has
+       nothing to submit, so a half-typed value is never judged - and inside
+       form[data-validate="submit"] only once the page has stamped
+       data-submitted on the form (a submit attempt): check when the person
+       is finished, not the instant they leave the box. */
+    &:is([aria-invalid="true"], :user-invalid:is(form *):not(form[data-validate="submit"]:not([data-submitted]) *)) {
       border-color: var(--destructive);
 
       &:focus {
@@ -84,12 +96,150 @@
       }
     }
 
+    /* -- Native in-field buttons ------------------------------
+       The clear "×" of type="search" and the calendar/clock icon of the
+       date/time types are clickable controls INSIDE the text field - without
+       this they inherit the field's text cursor and look like more text to
+       type into (the file picker's button above already points). */
+    &::-webkit-search-cancel-button,
+    &::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+    }
+
     /* -- Sizes ----------------------------------------------- */
     &[data-size="xs"] { height: 1.75rem; padding: 0 0.5rem;   font-size: 0.75rem; }
     &[data-size="sm"] { height: 2rem;    padding: 0 0.625rem; font-size: 0.8125rem; }
     &[data-size="md"] { height: 2.25rem; padding: 0 0.75rem;  font-size: 0.875rem; }
     &[data-size="lg"] { height: 2.75rem; padding: 0 1rem;     font-size: 1rem; }
     &[data-size="xl"] { height: 3.25rem; padding: 0 1.25rem;  font-size: 1.125rem; }
+  }
+
+  /* -- Input group: icons, text and buttons inside the field ---
+     The GROUP draws the field frame (border, radius, shadow, focus ring,
+     invalid / disabled / readonly surfaces); the .input inside goes
+     frameless and fills the rest. DOM order is the placement: an addon
+     before the .input sits at the start, one after it at the end - so a
+     trailing copy / show-password / clear button is just markup after the
+     input, and any addon width works without hand-tuned padding. */
+  .input-group {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 2.25rem;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    box-shadow: var(--shadow-xs);
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+    transition: border-color 150ms, box-shadow 150ms;
+
+    & > .input {
+      flex: 1;
+      min-width: 0;
+      height: 100%;
+      border: none;
+      border-radius: inherit;
+      background: transparent;
+      box-shadow: none;
+      font-size: inherit;
+
+      &:focus { box-shadow: none; }
+      &:not(:first-child) { padding-inline-start: 0.5rem; }
+      &:not(:last-child) { padding-inline-end: 0.5rem; }
+    }
+
+    &:has(> .input:focus) {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
+    }
+
+    &:has(> .input:is([aria-invalid="true"], :user-invalid:is(form *):not(form[data-validate="submit"]:not([data-submitted]) *))) {
+      border-color: var(--destructive);
+
+      &:has(> .input:focus) {
+        box-shadow: 0 0 0 2px oklch(from var(--destructive) l c h / 0.2);
+      }
+    }
+
+    /* readonly: the group carries the muted surface (the input's own
+       readonly background would stop short of the addons) */
+    &:has(> .input:read-only:not(:disabled)) {
+      background: var(--muted);
+
+      & > .input { background: transparent; }
+      &:has(> .input:focus) {
+        border-color: var(--input);
+        box-shadow: var(--shadow-xs);
+      }
+    }
+
+    &:has(> .input:disabled) {
+      background: var(--muted);
+      box-shadow: none;
+      cursor: not-allowed;
+
+      & > .input { background: transparent; }
+    }
+
+    /* decorative icon (inline <svg> or lucide <i>) */
+    & > .input-group-icon {
+      flex-shrink: 0;
+      width: 1rem;
+      height: 1rem;
+      color: var(--muted-foreground);
+      pointer-events: none;
+
+      &:first-child { margin-inline-start: 0.75rem; }
+      &:last-child { margin-inline-end: 0.75rem; }
+    }
+
+    /* static text: a unit, a protocol, a domain */
+    & > .input-group-text {
+      flex-shrink: 0;
+      white-space: nowrap;
+      color: var(--muted-foreground);
+      user-select: none;
+
+      &:first-child { margin-inline-start: 0.75rem; }
+      &:last-child { margin-inline-end: 0.75rem; }
+    }
+
+    /* an in-field action: copy, show/hide, clear, open a picker */
+    & > .input-group-button {
+      flex-shrink: 0;
+      display: inline-grid;
+      place-items: center;
+      box-sizing: border-box;
+      height: calc(100% - 0.5rem);
+      aspect-ratio: 1;
+      padding: 0;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--muted-foreground);
+      cursor: pointer;
+      transition: background-color 150ms, color 150ms;
+
+      & svg { width: 1rem; height: 1rem; }
+      /* icon swaps (copy -> check, eye -> eye-off): the UA's [hidden] rule
+         only covers HTML elements, so a hidden <svg> needs its own */
+      & svg[hidden] { display: none; }
+      &:hover { background: var(--accent); color: var(--accent-foreground); }
+      &:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+      &:disabled { cursor: not-allowed; background: transparent; color: var(--muted-foreground); }
+      &:first-child { margin-inline-start: 0.25rem; }
+      &:last-child { margin-inline-end: 0.25rem; }
+      & + .input-group-button { margin-inline-start: 0.125rem; }
+    }
+
+    /* -- Sizes: the same ladder as .input, set on the group ------ */
+    &[data-size="xs"] { height: 1.75rem; font-size: 0.75rem; }
+    &[data-size="sm"] { height: 2rem;    font-size: 0.8125rem; }
+    &[data-size="md"] { height: 2.25rem; font-size: 0.875rem; }
+    &[data-size="lg"] { height: 2.75rem; font-size: 1rem; }
+    &[data-size="xl"] { height: 3.25rem; font-size: 1.125rem; }
   }
 
   /* -- Auto-growing textarea --------------------------------- */
@@ -131,7 +281,7 @@
     }
 
     .input:disabled {
-      opacity: 0.7;
+      border-color: var(--muted-foreground);
     }
   }
 
@@ -153,12 +303,22 @@
       border-color: GrayText;
     }
 
-    .input:is([aria-invalid="true"], :user-invalid) {
+    .input:is([aria-invalid="true"], :user-invalid:is(form *):not(form[data-validate="submit"]:not([data-submitted]) *)) {
       border-color: LinkText;
     }
 
     .field-error {
       color: LinkText;
+    }
+
+    .input-group {
+      border-color: ButtonBorder;
+      background: Field;
+
+      & > .input:focus { outline: none; }
+      &:has(> .input:focus) { outline: 2px solid Highlight; outline-offset: 1px; }
+      &:has(> .input:disabled) { border-color: GrayText; }
+      & > .input-group-button { color: ButtonText; }
     }
   }
 }

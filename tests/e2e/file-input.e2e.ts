@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
+import { assertLegibleDisabled } from './lib/disabled.ts';
 
 /**
  * Why: file-input is CSS-only - verify the 36px (md-step) control frame and that the
@@ -27,9 +28,23 @@ await cssSmoke('file-input', [
     },
   },
   {
-    label: 'disabled dims to 0.5 with not-allowed',
-    selector: '#fi-disabled',
-    css: { opacity: '0.5', cursor: 'not-allowed' },
+    label: 'disabled file input stays legible: full --input border, muted surface + text, not-allowed',
+    run: (page) => assertLegibleDisabled(page, { control: '#fi-disabled', tokens: { 'border-top-color': '--input', 'background-color': '--muted', color: '--muted-foreground' } }),
+  },
+  {
+    label: 'a squeezed file input keeps a readable width for the file name (min 24rem)',
+    run: async (page) => {
+      const w = await page.evaluate(() => {
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;width:900px';
+        row.innerHTML = '<span style="flex:1 0 800px">wide sibling</span><input type="file" class="file-input" style="flex:0 1 auto;width:auto">';
+        document.body.append(row);
+        const width = row.querySelector('input')!.getBoundingClientRect().width;
+        row.remove();
+        return width;
+      });
+      assert.equal(w, 384);
+    },
   },
 
   { label: 'file-input: data-size="xs" geometry', selector: '#z-fileinput-xs', css: { 'height': '28px' } },

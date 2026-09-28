@@ -39,17 +39,59 @@
       box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
     }
 
+    /* Disabled = legible but inert: a muted surface and muted text inside
+       the full-strength border - never an opacity fade that lets the box
+       dissolve into the page. */
     &:disabled {
-      opacity: 0.5;
+      background-color: var(--muted);
+      color: var(--muted-foreground);
+      box-shadow: none;
       cursor: not-allowed;
+      opacity: 1; /* Chrome's UA sheet fades select:disabled to 0.7 on its own */
     }
 
-    &:is([aria-invalid="true"], :user-invalid) {
+    &:is([aria-invalid="true"], :user-invalid:not(form[data-validate="submit"]:not([data-submitted]) *)) {
       border-color: var(--destructive);
 
       &:focus {
         border-color: var(--destructive);
         box-shadow: 0 0 0 2px oklch(from var(--destructive) l c h / 0.2);
+      }
+    }
+
+    /* -- Multiple (<select multiple>) ---------------------------
+       The browser renders a list box instead of a dropdown: every option is
+       visible (size="N" rows), Ctrl/⌘-click or Shift-click / Shift+arrows
+       pick several, and the form submits every chosen value under the same
+       name. No fixed height, no chevron; chosen options get a tinted row. */
+    &[multiple] {
+      height: auto;
+      padding: 0.25rem;
+      background-image: none;
+      overflow-y: auto;
+
+      & option {
+        padding: 0.375rem 0.5rem;
+        border-radius: calc(var(--radius-md) - 2px);
+        color: var(--foreground);
+      }
+
+      & option:checked {
+        /* a gradient beats the UA's opaque selection paint in every engine */
+        background: linear-gradient(color-mix(in oklch, var(--primary) 14%, transparent), color-mix(in oklch, var(--primary) 14%, transparent));
+        font-weight: 500;
+      }
+
+      /* one unavailable choice in a usable list */
+      & option:disabled {
+        color: var(--muted-foreground);
+        cursor: not-allowed;
+      }
+
+      & optgroup {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--muted-foreground);
       }
     }
 
@@ -59,6 +101,8 @@
     &[data-size="md"] { height: 2.25rem; padding-left: 0.75rem;  font-size: 0.875rem; }
     &[data-size="lg"] { height: 2.75rem; padding-left: 1rem;     font-size: 1rem; }
     &[data-size="xl"] { height: 3.25rem; padding-left: 1.25rem;  font-size: 1.125rem; }
+
+    &[multiple][data-size] { height: auto; }
   }
 }
 

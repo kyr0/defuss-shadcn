@@ -26,8 +26,13 @@
       box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
     }
 
+    /* Disabled = legible but inert: a muted surface and muted text inside
+       the full-strength border - never an opacity fade that lets the box
+       dissolve into the page. */
     &:disabled {
-      opacity: 0.5;
+      background-color: var(--muted);
+      color: var(--muted-foreground);
+      box-shadow: none;
       cursor: not-allowed;
     }
 
@@ -40,6 +45,21 @@
     &[data-size="lg"] { height: 2.75rem; padding: 0 1rem;      font-size: 1rem; }
     &[data-size="xl"] { height: 3.25rem; padding: 0 1.25rem;   font-size: 1.125rem; }
 
+    /* -- Out of range / invalid ----------------------------------
+       The browser already rejects a TYPED date outside min/max (validity
+       rangeUnderflow / rangeOverflow) - the same rule the calendar popup
+       enforces by disabling days. :user-invalid shows it once the user has
+       interacted (an untouched empty field never turns red); aria-invalid
+       lets an app flag server-side errors the same way. */
+    &:is([aria-invalid="true"], :user-invalid:not(form[data-validate="submit"]:not([data-submitted]) *)) {
+      border-color: var(--destructive);
+
+      &:focus {
+        border-color: var(--destructive);
+        box-shadow: 0 0 0 2px oklch(from var(--destructive) l c h / 0.2);
+      }
+    }
+
     /* Style the calendar icon */
     &::-webkit-calendar-picker-indicator {
       cursor: pointer;
@@ -47,6 +67,27 @@
       transition: opacity 150ms;
 
       &:hover { opacity: 1; }
+    }
+  }
+
+  /* -- Range hint --------------------------------------------------
+     States the allowed dates up front (point aria-describedby at it, so it
+     is announced with the field) and turns into the error when the field
+     holds a date outside them: destructive colour + a warning sign, so the
+     state never rests on colour alone. Always rendered - no show/hide, no
+     live-region timing, no JavaScript. Place it after the input. */
+  .date-input-hint {
+    margin: 0.375rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+  }
+
+  .date-input:is([aria-invalid="true"], :user-invalid:not(form[data-validate="submit"]:not([data-submitted]) *)) ~ .date-input-hint {
+    color: var(--destructive);
+
+    &::before {
+      content: '⚠\FE0E  ';
+      font-weight: 600;
     }
   }
 }
@@ -67,6 +108,22 @@
       transition-duration: 0.01ms !important;
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
+    }
+  }
+}
+
+/* Forced colors (Windows High Contrast): the destructive colour is replaced
+   by system colours - the invalid field keeps a distinct border and the hint
+   keeps its warning sign. */
+@media (forced-colors: active) {
+  @layer components {
+    .date-input:is([aria-invalid="true"], :user-invalid:not(form[data-validate="submit"]:not([data-submitted]) *)) {
+      border-color: LinkText;
+      border-width: 2px;
+    }
+
+    .date-input:is([aria-invalid="true"], :user-invalid:not(form[data-validate="submit"]:not([data-submitted]) *)) ~ .date-input-hint {
+      color: LinkText;
     }
   }
 }

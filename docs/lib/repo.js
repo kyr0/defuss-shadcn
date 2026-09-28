@@ -11,6 +11,17 @@ export const REPO_ROOT = process.env.DEFUSS_SHADCN_ROOT ?? join(import.meta.dirn
 export function repoFile(...parts) {
     return join(REPO_ROOT, ...parts);
 }
+/**
+ * The repository's GitHub web URL, derived from package.json "repository"
+ * ("git+https://github.com/owner/name.git" -> "https://github.com/owner/name"),
+ * so doc-page source links follow the package metadata instead of a second
+ * hard-coded copy.
+ */
+export function repoWebUrl() {
+    const pkg = JSON.parse(readFileSync(repoFile('package.json'), 'utf8'));
+    const raw = typeof pkg.repository === 'string' ? pkg.repository : pkg.repository?.url ?? '';
+    return raw.replace(/^git\+/, '').replace(/^git@github\.com:/, 'https://github.com/').replace(/\.git$/, '');
+}
 /** Minimal YAML-frontmatter reader for component-skill.md files (flat
  * `key: value` pairs only - the skill contract bans anything fancier). */
 export function readSkillMeta(component) {

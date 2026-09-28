@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
+import { assertLegibleDisabled } from './lib/disabled.ts';
 
 /**
  * Why: switch is CSS-only - appearance:none track + a translated ::after
@@ -73,9 +74,20 @@ await cssSmoke('switch', [
     },
   },
   {
-    label: 'disabled dims to 0.5 / not-allowed',
-    selector: '#sw-disabled',
-    css: { opacity: '0.5', cursor: 'not-allowed' },
+    label: 'disabled switch stays legible: full --input track, no fade, muted label, no hand pointer',
+    run: (page) => assertLegibleDisabled(page, { control: '#sw-disabled', label: 'label[for="sw-disabled"]', tokens: { 'background-color': '--input' } }),
+  },
+  {
+    label: 'disabled ON switch keeps a visible (softened primary) track, distinct from off and from the page',
+    distinct: [
+      { selector: '#sw-disabled-on', prop: 'background-color' },
+      { selector: '#sw-disabled', prop: 'background-color' },
+      { selector: 'body', prop: 'background-color' },
+    ],
+  },
+  {
+    label: 'disabled ON switch: no fade, muted label',
+    run: (page) => assertLegibleDisabled(page, { control: '#sw-disabled-on', label: 'label[for="sw-disabled-on"]' }),
   },
   {
     label: 'aria-invalid track uses destructive (distinct from off)',
@@ -83,5 +95,37 @@ await cssSmoke('switch', [
       { selector: '#sw-off', prop: 'background-color' },
       { selector: '#sw-invalid', prop: 'background-color' },
     ],
+  },
+  {
+    label: 'clicking the gap between control and label toggles (.switch-item)',
+    run: async (page) => {
+      // the midpoint of the whitespace between the control and its label text
+      const at = await page.evaluate(() => {
+        const input = document.querySelector('#sw-gap')!;
+        const label = document.querySelector('label[for="sw-gap"]')!;
+        const a = input.getBoundingClientRect();
+        const b = label.getBoundingClientRect();
+        return { x: (a.right + b.left) / 2, y: a.top + a.height / 2, gap: b.left - a.right };
+      });
+      assert.ok(at.gap > 2, 'fixture has a real gap between control and label');
+      await page.mouse.click(at.x, at.y);
+      assert.equal(await page.evaluate(() => (document.querySelector('#sw-gap') as HTMLInputElement).checked), true);
+    },
+  },
+  {
+    label: 'clicking the gap between control and label toggles (.switch-item-block)',
+    run: async (page) => {
+      // the midpoint of the whitespace between the control and its label text
+      const at = await page.evaluate(() => {
+        const input = document.querySelector('#sw-gap-block')!;
+        const label = document.querySelector('label[for="sw-gap-block"]')!;
+        const a = input.getBoundingClientRect();
+        const b = label.getBoundingClientRect();
+        return { x: (a.right + b.left) / 2, y: a.top + a.height / 2, gap: b.left - a.right };
+      });
+      assert.ok(at.gap > 2, 'fixture has a real gap between control and label');
+      await page.mouse.click(at.x, at.y);
+      assert.equal(await page.evaluate(() => (document.querySelector('#sw-gap-block') as HTMLInputElement).checked), true);
+    },
   },
 ]);

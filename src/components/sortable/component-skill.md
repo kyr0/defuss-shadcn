@@ -68,6 +68,39 @@ HTML Drag and Drop API + keyboard reordering for accessible drag-and-drop lists.
 </li>
 ```
 
+### Move buttons (tap / click reordering)
+Native drag-and-drop mostly never starts on touch screens. Give every item
+Up / Down buttons and the list can be sorted by tapping - and without a
+mouse, visibly, next to the `Alt + Arrow` shortcut.
+```html
+<ul class="sortable" aria-label="Task priority">
+  <li class="sortable-item" draggable="true" tabindex="0">
+    <span class="sortable-handle">⋮⋮</span>
+    <span>Build components</span>
+    <span class="sortable-moves">
+      <button type="button" class="sortable-move" data-move="up"><svg aria-hidden="true">…</svg></button>
+      <button type="button" class="sortable-move" data-move="down"><svg aria-hidden="true">…</svg></button>
+    </span>
+  </li>
+</ul>
+```
+- `data-move="up"` = one slot earlier, `"down"` = one slot later (left / right in a horizontal list). Locked slots are stepped over, like every move.
+- The JS disables Up on the first movable item and Down on the last (re-synced after every move), and labels an unlabelled button "Move {item} up/down".
+- Focus stays on the pressed button, so repeated taps keep moving the same item; when the move disables it (list edge), focus passes to its twin.
+- Buttons grow to 44px under `pointer: coarse` (touch). Do not put them in `role="option"` items - interactive content inside an option is invalid ARIA; a plain `<ul>`/`<li>` list is right here.
+
+### Connected lists (`data-group`)
+Lists with the same `data-group` exchange items - drag from one to the
+other, and reorder inside each.
+```html
+<ul class="sortable" aria-label="Backlog" data-group="tasks" data-empty="Drop tasks here">…</ul>
+<ul class="sortable" aria-label="Done" data-group="tasks" data-empty="Drop tasks here">…</ul>
+```
+- Drop on a row = before / after it; drop on the list's free space (gap, padding, empty list) = at the end (the list shows a dashed outline while you hover it).
+- An empty grouped list keeps a height and becomes a dashed drop zone; `data-empty` is its text.
+- Keyboard: `Alt` + the cross-axis arrow (`Alt + →` / `Alt + ←` for vertical lists, `Alt + ↓` / `Alt + ↑` for horizontal) moves the focused item to the next / previous list of the group (document order), at the same position.
+- The `aria-label` of each list names it in the announcement ("Write tests, moved to Done, position 3 of 3").
+
 ## Orientation
 
 | `data-orientation` | Direction | Nav keys | Reorder keys |
@@ -93,7 +126,7 @@ Set `data-density` on the `.sortable` root; list gap and item padding scale.
 | `data-over="before"` | `.sortable-item` | Primary-colored top (or start) border |
 | `data-over="after"` | `.sortable-item` | Primary-colored bottom (or end) border |
 | `data-active` | `.sortable-item` | Ring border + accent background (keyboard focus) |
-| `aria-disabled="true"` | `.sortable-item` | Reduced opacity, not draggable |
+| `aria-disabled="true"` | `.sortable-item` | Reduced opacity, not draggable, keeps its position (fixed slot) |
 
 ### State API
 
@@ -120,6 +153,8 @@ The api is bound per list; the registry global is
 | `End` | Move focus to last item |
 | `Alt + ↓` / `Alt + →` | Move focused item down / right |
 | `Alt + ↑` / `Alt + ←` | Move focused item up / left |
+| `Alt + →` / `Alt + ←` (vertical, `data-group`) | Move focused item to the next / previous connected list |
+| `Enter` / `Space` on a `.sortable-move` | Move the item one slot up / down (focus stays on the button) |
 
 Arrow direction depends on orientation - vertical uses `↑`/`↓`, horizontal uses `←`/`→`.
 
@@ -132,16 +167,18 @@ Arrow direction depends on orientation - vertical uses `↑`/`↓`, horizontal u
 | `role="option"` | `.sortable-item` | Individual draggable item |
 | `draggable="true"` | `.sortable-item` | Enables native drag |
 | `tabindex` | `.sortable-item` | Roving tabindex: `0` on active, `-1` on others |
-| `aria-disabled="true"` | `.sortable-item` | Marks item as non-interactive |
+| `aria-disabled="true"` | `.sortable-item` | Marks item as non-interactive and locks its position |
 | `aria-live="assertive"` | `.sortable-live` | Live region announces reorder to screen readers |
 
 ## Events
 
 | Event | Target | `detail` |
 | --- | --- | --- |
-| `sortable-change` | `.sortable` | `{ item: HTMLElement, index: number }` |
+| `sortable-change` | `.sortable` | `{ item: HTMLElement, index: number }` - `index` is the item's new position in the full list, locked items included |
+| `sortable-change` (connected lists) | receiving `.sortable` | `{ item, index, from }` - `from` is the list the item came from |
+| `sortable-change` (connected lists) | the list it left | `{ item, index: -1, to }` - `to` is the list it went to |
 
-Dispatched via `CustomEvent` after every reorder (drag-drop or keyboard).
+Dispatched via `CustomEvent` after every reorder (drag-drop, keyboard or move button).
 
 ## Notes
 
@@ -153,5 +190,5 @@ Dispatched via `CustomEvent` after every reorder (drag-drop or keyboard).
 - Drop position is calculated from pointer midpoint - items drop before or after the target.
 - `prefers-reduced-motion: reduce` suppresses transitions.
 - `forced-colors: active` maps to system colors for High Contrast Mode.
-- Disabled items (`aria-disabled="true"`) are skipped by keyboard navigation and cannot be dragged.
+- Disabled items (`aria-disabled="true"`) are skipped by keyboard navigation and cannot be dragged - and they **keep their position**. A locked item is a fixed slot: the other items move around it, never push it. Moving an item onto a locked slot (Alt+Arrow, or dropping on its position) continues to the next free slot in the direction of travel, and the item on the other side shifts across - so a locked row in the middle stays a fixed divider and the groups above and below keep their size. At the list's edge (nothing free beyond the lock) the move is a no-op.
 - The `sortable-change` event bubbles so ancestors can listen for reorder events.

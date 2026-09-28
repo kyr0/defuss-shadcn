@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
-import { SKILL_OUTPUT_FILE } from './lib/skill.ts';
-import { buildSkillText } from './lib/skill-files.ts';
+import { ROOT_SKILL_OUTPUT_FILE, SKILL_OUTPUT_FILE } from './lib/skill.ts';
+import { buildRootSkillText, buildSkillText } from './lib/skill-files.ts';
 import { parseThemes } from './lib/contrast.ts';
 import { themeCssText, themeFileName, themeJsonText, themeJsonFileName } from './lib/theme-css.ts';
 import { schemaManifestText } from './lib/schema.ts';
@@ -55,6 +55,10 @@ rmSync(DIST, { recursive: true, force: true });
 // component-skill.md frontmatter, BEFORE copying, so dist/SKILL.md (the file
 // agents actually read) can never lag the skills.
 writeFileSync(join(SRC, SKILL_OUTPUT_FILE), buildSkillText(SRC));
+// 0a. the repo-root SKILL.md: the whole project packaged as ONE agent skill
+// (install paths, rules, docs map from nav.ts + page frontmatter, component
+// index from skill frontmatter). Ships in the npm package; never hand-edited.
+writeFileSync(join(ROOT, ROOT_SKILL_OUTPUT_FILE), await buildRootSkillText(ROOT));
 
 // 0b. regenerate one theme stylesheet per tweakcn preset into src/theme/,
 // from the themes.ts dataset (single source). The 1:1 copy below ships them

@@ -237,6 +237,49 @@ try {
     assert.equal(val, '18px');
   });
 
+  await check('split button: the chevron opens its menu, end-aligned under it (data-align="end")', async () => {
+    await page.click('#split-trigger');
+    assert.equal(await isOpen(page, 'split-menu'), true);
+    // aria-expanded follows the popover's (async) toggle event
+    await page.waitForFunction(() => document.getElementById('split-trigger')!.getAttribute('aria-expanded') === 'true', null, { timeout: 2000 });
+    await page.waitForTimeout(250); // the open transition scales from 0.96 - measure the settled box
+    const r = await page.evaluate(() => {
+      const t = document.getElementById('split-trigger')!.getBoundingClientRect();
+      const m = document.getElementById('split-menu')!.getBoundingClientRect();
+      return { endGap: Math.round(t.right - m.right), below: m.top >= t.bottom, widerThanTrigger: m.width > t.width };
+    });
+    assert.deepEqual(r, { endGap: 0, below: true, widerThanTrigger: true });
+  });
+
+  await check('split button: Escape closes the menu and returns focus to the chevron', async () => {
+    await page.keyboard.press('Escape');
+    assert.equal(await isOpen(page, 'split-menu'), false);
+    assert.equal(await page.evaluate(() => document.activeElement?.id), 'split-trigger');
+  });
+
+  const settledRects = async (trigger: string, menu: string) => {
+    await page.click('#' + trigger);
+    await page.waitForFunction((id) => document.getElementById(id)!.matches(':popover-open'), menu, { timeout: 2000 });
+    await page.waitForTimeout(250); // open transition (scale 0.96 -> 1)
+    const r = await page.evaluate(([t, m]) => {
+      const a = document.getElementById(t)!.getBoundingClientRect();
+      const b = document.getElementById(m)!.getBoundingClientRect();
+      return { startGap: Math.round(b.left - a.left), endGap: Math.round(a.right - b.right), inView: b.left >= 0 && b.right <= innerWidth, below: b.top >= a.bottom };
+    }, [trigger, menu]);
+    await page.keyboard.press('Escape');
+    return r;
+  };
+
+  await check('data-align="end" without room on the left: the menu flips to start-aligned under the trigger', async () => {
+    const r = await settledRects('edge-left-trigger', 'edge-left-menu');
+    assert.deepEqual([r.startGap, r.inView, r.below], [0, true, true]);
+  });
+
+  await check('start-aligned without room on the right: the menu flips to end-aligned under the trigger', async () => {
+    const r = await settledRects('edge-right-trigger', 'edge-right-menu');
+    assert.deepEqual([r.endGap, r.inView, r.below], [0, true, true]);
+  });
+
 } finally {
   await browser.close();
   server.stop();

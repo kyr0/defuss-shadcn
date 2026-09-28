@@ -22,6 +22,107 @@
     color: var(--foreground);
   }
 
+  /* The heading as a button (the JS upgrades a plain heading): the month +
+     year are the obvious thing to click - it opens the month grid, and in
+     the month grid the year opens the year grid. The chevron says "menu". */
+  button.calendar-heading {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.5rem;
+    border: none;
+    border-radius: var(--radius-md);
+    background: transparent;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background-color 150ms ease;
+
+    &::after {
+      content: '';
+      width: 0.375rem;
+      height: 0.375rem;
+      margin-top: -0.1875rem;
+      border: solid currentColor;
+      border-width: 0 1.5px 1.5px 0;
+      rotate: 45deg;
+      transition: rotate 150ms ease;
+    }
+
+    &[aria-expanded="true"]::after { rotate: -135deg; margin-top: 0.1875rem; }
+    &:hover { background-color: var(--accent); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  }
+
+  /* data-caption="dropdown": native month + year selects between the arrows
+     (the fastest way to a date decades away - type the year) */
+  .calendar-caption {
+    display: inline-flex;
+    gap: 0.25rem;
+  }
+
+  .calendar-select {
+    padding: 0.25rem 0.375rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background-color: transparent;
+    color: var(--foreground);
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+
+    &:hover { background-color: var(--accent); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  }
+
+  /* -- Month / year picker (data-view="months" | "years") -------
+     Swaps in for the day grid at the same size: 12 months or 12 years in a
+     4-column grid. The current one is filled, this month / year is tinted. */
+  .calendar-picker { display: none; }
+
+  .calendar[data-view] {
+    & .calendar-grid { display: none; }
+
+    & .calendar-picker {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      align-content: center;
+      gap: 0.375rem;
+      box-sizing: border-box;
+      padding: 0.25rem;
+    }
+  }
+
+  .calendar-pick {
+    height: 2.25rem;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-md);
+    background-color: transparent;
+    color: var(--foreground);
+    font: inherit;
+    font-size: 0.8125rem;
+    cursor: pointer;
+    transition: background-color 150ms ease, color 150ms ease;
+
+    &:hover { background-color: var(--accent); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+    &[data-today] { background-color: var(--accent); font-weight: 600; }
+
+    &[aria-current="true"] {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+    }
+
+    /* legible but inert (outside min / max), like every disabled control */
+    &:disabled {
+      background-color: transparent;
+      color: var(--muted-foreground);
+      text-decoration: line-through;
+      cursor: not-allowed;
+    }
+  }
+
   .calendar-nav {
     display: inline-flex;
     align-items: center;
@@ -143,6 +244,180 @@
       cursor: not-allowed;
     }
   }
+
+  /* -- Day data: marks + notes -----------------------------------
+     data-mark="…" is the page's own classification of a day (a holiday, a
+     booked night, a scheduled event): a dot in the cell's corner plus, for
+     the built-in names, a look of its own. Any other name gets the neutral
+     dot - style it with .calendar-day[data-mark="name"]. A note is a second
+     line under the number (a price, a count); a calendar with notes gets
+     taller cells (data-notes, set by the JS). */
+  .calendar-day button { position: relative; }
+
+  .calendar-day[data-mark] button::after {
+    content: '';
+    position: absolute;
+    top: 0.1875rem;
+    inset-inline-end: 0.1875rem;
+    width: 0.3125rem;
+    height: 0.3125rem;
+    border-radius: 50%;
+    background-color: var(--muted-foreground);
+  }
+
+  .calendar-day[data-mark="holiday"] button {
+    color: var(--destructive);
+    font-weight: 600;
+
+    &::after { background-color: var(--destructive); }
+  }
+
+  .calendar-day[data-mark="event"] button::after { background-color: var(--primary); }
+
+  .calendar-day[data-mark="booked"] button {
+    color: var(--muted-foreground);
+    text-decoration: line-through;
+    background-image: repeating-linear-gradient(135deg, transparent 0 4px, color-mix(in oklch, var(--muted-foreground) 18%, transparent) 4px 5px);
+
+    &::after { display: none; }
+  }
+
+  /* a marked day that is also blocked (booked, a blackout date) keeps its
+     look at full strength - the mark IS the information, the 0.35 fade of
+     a plain disabled day would erase it */
+  .calendar-day[data-mark][data-disabled]:not([data-outside]) button { opacity: 1; }
+
+  /* on a filled (selected / endpoint) day the marks follow its foreground */
+  .calendar-day:is([data-selected], [data-range-start], [data-range-end])[data-mark] button {
+    color: var(--primary-foreground);
+    &::after { background-color: currentColor; }
+  }
+
+  .calendar-day-note {
+    display: block;
+    font-size: 0.625rem;
+    line-height: 1;
+    font-weight: 400;
+    color: var(--muted-foreground);
+    text-decoration: none;
+  }
+
+  .calendar-day:is([data-selected], [data-range-start], [data-range-end]) .calendar-day-note {
+    color: inherit;
+    opacity: 0.85;
+  }
+
+  .calendar[data-notes] {
+    & .calendar-day-label { width: 2.75rem; }
+
+    & .calendar-day {
+      width: 2.75rem;
+      height: 3rem;
+
+      & button {
+        flex-direction: column;
+        gap: 0.1875rem;
+        width: 2.5rem;
+        height: 2.75rem;
+      }
+    }
+  }
+
+  /* -- Range mode ------------------------------------------------
+     A range picker is a .calendar[data-mode="range"] or a .calendar-range
+     wrapper around several calendars (consecutive months, one shared range).
+     Look: endpoints (data-range-start / -end) are filled with --primary,
+     the days between (data-in-range) form a continuous --accent band that
+     runs half into each endpoint cell (data-range-span). While only the start
+     is chosen, the hovered/focused day previews the span (data-range-preview:
+     lighter band, outlined end). Outside days are hidden - each month grid
+     shows only its own days, so the band never jumps between months. */
+  .calendar-range {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background-color: var(--card);
+
+    /* the months sit on the wrapper's card */
+    & > .calendar {
+      padding: 0;
+      border: none;
+      border-radius: 0;
+      background-color: transparent;
+    }
+
+    /* one pair of arrows for the whole picker: back on the first month,
+       forward on the last (visibility keeps the headings centred) */
+    & > .calendar ~ .calendar [data-action="prev-month"],
+    & > .calendar:has(~ .calendar) [data-action="next-month"] {
+      visibility: hidden;
+    }
+  }
+
+  /* summary row under the months: the chosen range as one answer.
+     contain: inline-size - the row takes the months' width instead of
+     widening the picker to its own (a 100%-basis row would stretch the
+     inline-flex card across the page) */
+  .calendar-range-footer {
+    flex-basis: 100%;
+    contain: inline-size;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.875rem;
+    color: var(--foreground);
+  }
+
+  :is(.calendar[data-mode="range"], .calendar-range .calendar) .calendar-day[data-outside] {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .calendar-day {
+    &[data-in-range] {
+      background-color: var(--accent);
+
+      & button {
+        color: var(--accent-foreground);
+      }
+    }
+
+    &[data-range-start][data-range-span] {
+      background: linear-gradient(to right, transparent 50%, var(--accent) 50%);
+    }
+
+    &[data-range-end][data-range-span] {
+      background: linear-gradient(to left, transparent 50%, var(--accent) 50%);
+    }
+
+    &:is([data-range-start], [data-range-end]) button {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+      font-weight: 500;
+    }
+
+    /* preview (start chosen, end not yet): lighter band, outlined end */
+    &[data-in-range][data-range-preview] {
+      background-color: color-mix(in oklch, var(--accent) 60%, transparent);
+    }
+
+    &[data-range-end][data-range-preview][data-range-span] {
+      background: linear-gradient(to left, transparent 50%, color-mix(in oklch, var(--accent) 60%, transparent) 50%);
+    }
+
+    &[data-range-end][data-range-preview] button {
+      background-color: var(--background);
+      color: var(--foreground);
+      box-shadow: inset 0 0 0 1.5px var(--primary);
+    }
+  }
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all
@@ -204,5 +479,32 @@
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
     }
+  }
+}
+
+/* Forced colors (Windows High Contrast) drop the accent band and the primary
+   fills: selected days (the single selection, both endpoints and the days
+   between) take the system Highlight pair instead. */
+@media (forced-colors: active) {
+  @layer components {
+    .calendar-day[aria-selected="true"] button {
+      forced-color-adjust: none;
+      background-color: Highlight;
+      color: HighlightText;
+    }
+
+    .calendar-pick[aria-current="true"] {
+      forced-color-adjust: none;
+      background-color: Highlight;
+      color: HighlightText;
+    }
+
+    .calendar-day[data-mark] button::after {
+      forced-color-adjust: none;
+      background-color: CanvasText;
+    }
+
+    .calendar-pick:disabled,
+    .calendar-day[data-mark="booked"] button { color: GrayText; }
   }
 }

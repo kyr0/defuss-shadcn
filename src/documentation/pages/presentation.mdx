@@ -260,21 +260,103 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </script>
 ```
 
-```html example label="Slide chrome + Art direction" component="presentation" height="16" hint="Slide chrome composes inside the artboard coordinates: .presentation-header (section label + hairline + accent tick), .presentation-slide-number (the runtime fills NN⁄NN - the fraction slash ⁄ slants by itself). The deck overrides its local --presentation-* surface and the shared --df-motion-* defaults for full art direction - here a 4:3 amber identity. Theme tokens stay untouched." previewStyle="align-items:flex-start;"
-<section class="presentation" tabindex="-1" aria-label="Custom-branded deck" style="--presentation-width:1024;--presentation-height:768;--presentation-ink:#0A1E4A;--presentation-ink-foreground:#F5F7FF;--presentation-paper:#FFF7ED;--presentation-paper-foreground:#1C1917;--presentation-accent:#F472B6;--df-motion-duration:900ms;--df-motion-distance:3rem;">
+```html example label="Slide chrome + Art direction" component="presentation" height="30" hint="Six slides of a 4:3 brand kickoff, art-directed entirely through the deck's local --presentation-* surface (ink / paper / accent) and the shared --df-motion-* defaults (900 ms, 3rem drift) - theme tokens stay untouched. The chrome composes inside the artboard coordinates: .presentation-header (section label + hairline + accent tick), .presentation-slide-number (the runtime fills NN⁄NN - the fraction slash ⁄ slants by itself), controls and progress. Slides slide in and fade out (data-anim-in/-out on the deck); each one's content builds with its own entrances. Use ← / → or the buttons." previewStyle="align-items:flex-start;"
+<style>
+  #kestrel .k-list { margin: 2.5rem 0 0; padding: 0; list-style: none; display: grid; gap: 1.1rem; font-size: 2.1rem; }
+  #kestrel .k-list li { display: flex; align-items: baseline; gap: 1.4rem; }
+  #kestrel .k-list b { font: 700 1.3rem/1 var(--font-mono); color: var(--presentation-accent); }
+  #kestrel .k-swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 2.5rem; }
+  #kestrel .k-swatch { height: 17rem; border-radius: 1.5rem; padding: 1.5rem; display: flex; flex-direction: column; justify-content: flex-end; font: 600 1.35rem/1.4 var(--font-mono); box-shadow: 0 0 0 2px rgba(255,255,255,.18) inset; }
+  #kestrel .k-swatch span { display: block; font: 700 2rem/1.1 var(--font-sans); margin-bottom: .35rem; }
+  #kestrel .k-type { display: grid; grid-template-columns: 17rem 1fr; gap: 3rem; align-items: center; margin-top: 2rem; }
+  #kestrel .k-aa { font: 800 15rem/0.85 var(--font-serif); letter-spacing: -.04em; color: var(--presentation-accent); }
+  #kestrel .k-scale { display: grid; gap: 1.1rem; }
+  #kestrel .k-scale p { margin: 0; display: flex; align-items: baseline; gap: 1.2rem; }
+  #kestrel .k-scale small { font: 600 1.1rem var(--font-mono); opacity: .6; min-width: 6rem; }
+  #kestrel .k-chips { display: flex; gap: 1.5rem; margin-top: 3rem; }
+  #kestrel .k-chip { flex: 1; padding: 2rem 1.5rem; border-radius: 1.5rem; background: rgba(244,114,182,.14); border: 2px solid rgba(244,114,182,.5); text-align: center; font: 700 1.8rem/1.2 var(--font-sans); }
+  #kestrel .k-chip code { display: block; margin-top: .6rem; font: 600 1.1rem var(--font-mono); opacity: .75; }
+</style>
+<section class="presentation" id="kestrel" tabindex="-1" aria-label="Kestrel - brand kickoff" data-anim-in="slideIn" data-anim-in-distance="120px" data-anim-out="fadeOut" style="--presentation-width:1024;--presentation-height:768;--presentation-ink:#0A1E4A;--presentation-ink-foreground:#F5F7FF;--presentation-paper:#FFF7ED;--presentation-paper-foreground:#1C1917;--presentation-accent:#F472B6;--df-motion-duration:900ms;--df-motion-distance:3rem;">
+  <!-- 1 · cover -->
   <section class="slide" data-slide data-theme="ink" aria-label="Cover">
     <header class="presentation-header"><span>Design</span><span>Kickoff</span></header>
-    <h1 class="presentation-title" data-df-entrance="wipe">A new identity</h1>
-    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:250ms;">One artboard, two palettes, ownable everywhere</p>
+    <p class="presentation-eyebrow" data-df-entrance="fade">Kestrel · brand refresh</p>
+    <h1 class="presentation-title" data-df-entrance="wipe" style="font-size:6.5rem;">A new<br />identity</h1>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:250ms;">One artboard, two palettes, ownable everywhere.</p>
     <span class="presentation-slide-number"></span>
     <p class="presentation-note">Lead with the palette story.</p>
   </section>
-  <section class="slide" data-slide data-theme="paper" aria-label="Closing">
-    <header class="presentation-header"><span>Design</span><span>Next</span></header>
-    <h2 class="presentation-title" data-df-entrance="flip">Ship it</h2>
+  <!-- 2 · agenda: a staggered list -->
+  <section class="slide" data-slide data-theme="paper" aria-label="Agenda">
+    <header class="presentation-header"><span>Design</span><span>Agenda</span></header>
+    <h2 class="presentation-title" data-df-entrance="up">Four decisions today</h2>
+    <ol class="k-list" data-df-stagger style="--df-motion-stagger-step:160ms;">
+      <li data-df-entrance="left"><b>01</b>Palette - ink, paper, one accent</li>
+      <li data-df-entrance="left"><b>02</b>Type - a serif display, a sans for work</li>
+      <li data-df-entrance="left"><b>03</b>Motion - everything enters, nothing jumps</li>
+      <li data-df-entrance="left"><b>04</b>Voice - short, warm, specific</li>
+    </ol>
     <span class="presentation-slide-number"></span>
-    <p class="presentation-note">Same slide, second chapter.</p>
+    <p class="presentation-note">Time-box each decision to ten minutes.</p>
   </section>
+  <!-- 3 · palette: the deck's own surface values, shown as swatches -->
+  <section class="slide" data-slide data-theme="ink" aria-label="Palette">
+    <header class="presentation-header"><span>01 · Palette</span><span>Two surfaces, one accent</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:4.2rem;">The palette is the brand</h2>
+    <div class="k-swatches" data-df-stagger style="--df-motion-stagger-step:180ms;">
+      <div class="k-swatch" data-df-entrance="pop" style="background:#0A1E4A; color:#F5F7FF;"><span>Ink</span>#0A1E4A</div>
+      <div class="k-swatch" data-df-entrance="pop" style="background:#FFF7ED; color:#1C1917;"><span>Paper</span>#FFF7ED</div>
+      <div class="k-swatch" data-df-entrance="pop" style="background:#F472B6; color:#1C1917;"><span>Accent</span>#F472B6</div>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">These are the deck's --presentation-* values - the site theme never changes.</p>
+  </section>
+  <!-- 4 · type: specimen + scale -->
+  <section class="slide" data-slide data-theme="paper" aria-label="Type">
+    <header class="presentation-header"><span>02 · Type</span><span>Serif display, sans for work</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:4.2rem;">A voice you can read</h2>
+    <div class="k-type">
+      <div class="k-aa" data-df-entrance="zoom" aria-hidden="true">Aa</div>
+      <div class="k-scale" data-df-stagger style="--df-motion-stagger-step:140ms;">
+        <p data-df-entrance="up" style="font:700 3.2rem/1 var(--font-serif);"><small>Display</small>Kestrel</p>
+        <p data-df-entrance="up" style="font:700 2.2rem/1.1 var(--font-sans);"><small>Title</small>Brand refresh</p>
+        <p data-df-entrance="up" style="font:400 1.5rem/1.4 var(--font-sans);"><small>Body</small>Short, warm and specific.</p>
+      </div>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The specimen zooms in; the scale steps in underneath.</p>
+  </section>
+  <!-- 5 · motion: three entrances, one timing -->
+  <section class="slide" data-slide data-theme="ink" aria-label="Motion">
+    <header class="presentation-header"><span>03 · Motion</span><span>900 ms, 3rem drift</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:4.2rem;">Everything enters,<br />nothing jumps</h2>
+    <div class="k-chips" data-df-stagger style="--df-motion-stagger-step:220ms;">
+      <div class="k-chip" data-df-entrance="spin">Spin<code>spin</code></div>
+      <div class="k-chip" data-df-entrance="pop">Pop<code>pop</code></div>
+      <div class="k-chip" data-df-entrance="blur">Focus<code>blur</code></div>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">One --df-motion-duration on the deck times every entrance.</p>
+  </section>
+  <!-- 6 · closing -->
+  <section class="slide" data-slide data-theme="paper" aria-label="Closing">
+    <header class="presentation-header"><span>04 · Voice</span><span>Next</span></header>
+    <h2 class="presentation-title" data-df-entrance="flip" style="font-size:7rem;">Ship it</h2>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:250ms;">Palette, type and motion locked - voice guide by Friday.</p>
+    <p data-df-entrance="up" style="--df-motion-delay:450ms; display:flex; gap:1rem; margin:2.5rem 0 0;">
+      <button type="button" class="btn" data-size="lg" style="font-size:1.4rem; height:3.6rem; padding-inline:1.9rem;">Approve</button>
+      <button type="button" class="btn" data-variant="outline" data-size="lg" style="font-size:1.4rem; height:3.6rem; padding-inline:1.9rem;">Request changes</button>
+    </p>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">End on the ask.</p>
+  </section>
+  <div class="presentation-controls">
+    <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
+    <span class="presentation-counter" aria-live="polite">1 / 6</span>
+    <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
+  </div>
+  <progress class="presentation-progress" max="6" value="1"></progress>
 </section>
 ```
 

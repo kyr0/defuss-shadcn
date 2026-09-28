@@ -17,7 +17,19 @@
     left: anchor(left);
     margin: 0;
     margin-top: 4px;
-    position-try-fallbacks: flip-block;
+    /* the preferred edge first; when the menu would leave the viewport it
+       flips to the trigger's OTHER edge (flip-inline swaps left: anchor(left)
+       <-> right: anchor(right)), above the trigger (flip-block), or both */
+    position-try-fallbacks: flip-inline, flip-block, flip-block flip-inline;
+
+    /* data-align="end": the menu's end edge lines up with the trigger's end
+       (a split button's chevron, an icon trigger at a row's end) instead of
+       hanging out past it - and falls back to start-aligned under the
+       trigger when there is no room for that (the fallbacks above) */
+    &[data-align="end"] {
+      left: auto;
+      right: anchor(right);
+    }
 
     /* -- Animation --------------------------------------------- */
     opacity: 0;

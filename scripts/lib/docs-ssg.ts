@@ -12,6 +12,17 @@
  *   lib/, data/, config.ts  → (build-time only, never shipped)
  *   tsconfig.json           → (editor-only JSX types for .tsx, never shipped)
  */
+/**
+ * Why: pages whose deck is ALSO rendered chrome-free as deck-{slug}.html
+ * (scripts/build-docs.ts, from the page's own example fence) so other pages
+ * can frame it - the Getting Started rail embeds the flagship deck. One list,
+ * shared by the producer and verify (dist 1:1 origin, sidebar exemption).
+ */
+export const STANDALONE_DECKS = ['system-in-numbers'];
+
+/** The generated standalone page name for a deck page slug. */
+export const standaloneDeckFile = (slug: string): string => `deck-${slug}.html`;
+
 export const DOCS_SSG_AUTHORING = ['pages', 'lib', 'runtime', 'public', 'data', 'config.ts', 'tsconfig.json', 'dist'];
 
 /** True for src/documentation-relative paths that are SSG authoring inputs. */
@@ -37,6 +48,9 @@ export function docsDistToSrc(relFromDistDocumentation: string): string | null {
   if (js) return `documentation/runtime/${js[1]}.ts`;
   // static assets live in public/ (mirrored to output root by defuss-ssg)
   if (/^(css|fonts|images|videos|templates)\//.test(r)) return `documentation/public/${r}`;
+  // standalone decks: deck-{n}.html ← pages/{n}.mdx (its example fence)
+  const deck = STANDALONE_DECKS.find((s) => r === standaloneDeckFile(s));
+  if (deck) return `documentation/pages/${deck}.mdx`;
   // pages: {n}.html ← pages/{n}.mdx
   if (r.endsWith('.html')) return `documentation/pages/${r.replace(/\.html$/, '')}.mdx`;
   return null;

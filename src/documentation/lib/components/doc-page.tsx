@@ -2,6 +2,7 @@ import type { Props } from 'defuss';
 import { SiteHeader } from './site-header';
 import { SiteNav } from './site-nav';
 import { PrevNext } from './prev-next';
+import { EditPage } from './edit-page';
 import { SiteFooter } from './site-footer';
 
 export interface DocPageMeta {
@@ -17,6 +18,9 @@ export interface DocPageProps extends Props {
   meta: DocPageMeta;
   /** index.html uses a taller hero padding */
   mainStyle?: string;
+  /** optional right column beside main (the Getting Started deck rail) -
+   * rendered as a sticky <aside class="site-aside"> in the white space */
+  aside?: unknown;
 }
 
 /**
@@ -25,7 +29,7 @@ export interface DocPageProps extends Props {
  * chrome (header, sidebar, TOC shell, footer) and the end-of-body scripts.
  * Replaces the ~40 lines of boilerplate every doc page used to repeat.
  */
-export function DocPage({ meta, mainStyle, children }: DocPageProps) {
+export function DocPage({ meta, mainStyle, aside, children }: DocPageProps) {
   const title = meta.fullTitle ?? `${meta.title} - defuss-shadcn`;
   const url = `https://kyr0.github.io/defuss-shadcn/documentation/${meta.slug}.html`;
   // partition: <PageOverlay> children render as direct body children (demo
@@ -70,6 +74,7 @@ export function DocPage({ meta, mainStyle, children }: DocPageProps) {
         <link rel="stylesheet" href="../theme/utils/sizing.css" />
         <link rel="stylesheet" href="../theme/utils/layout.css" />
         <link rel="stylesheet" href="../theme/utils/accessibility.css" />
+        <link rel="stylesheet" href="../theme/utils/shapes.css" />
         <link rel="stylesheet" href="css/docs-theme.css" />
         <link rel="stylesheet" href="css/docs-utilities.css" />
         <link rel="stylesheet" href="css/layout.css" />
@@ -83,7 +88,9 @@ export function DocPage({ meta, mainStyle, children }: DocPageProps) {
           <main style={mainStyle ?? 'flex: 1; min-width: 0; max-width: 44rem; padding: 2rem 3.5rem 8rem;'}>
             {mainKids}
             <PrevNext active={`${meta.slug}.html`} />
+            <EditPage slug={meta.slug} />
           </main>
+          {aside ? <aside class="site-aside">{aside}</aside> : null}
           <aside class="site-toc">
             <div class="site-toc-content"></div>
           </aside>

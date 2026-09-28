@@ -154,18 +154,11 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm font-medium mb-2 mt-8">Disabled Items</p>
 
-<p class="text-muted-foreground text-sm mb-4">Set <code>aria-disabled="true"</code> to lock items in place. Disabled items are skipped by keyboard and cannot be dragged.</p>
+<p class="text-muted-foreground text-sm mb-4">Set <code>aria-disabled="true"</code> to lock an item in place: it cannot be dragged, keyboard focus skips it, and it <strong>keeps its position</strong> while the other items move around it. A locked row in the middle is a fixed divider - move an item across it (drag it, or <code>Alt+↑</code>/<code>Alt+↓</code>) and the item steps over the locked slot while its neighbour on the other side shifts across, so the locked row stays put and both groups keep their size.</p>
 
-```html example height="18"
+```html example height="22"
 <div class="flex items-center justify-center py-10">
-  <ul class="sortable" role="listbox" aria-label="Reorder steps" style="width:20rem;">
-    <li class="sortable-item" aria-disabled="true" tabindex="-1">
-      <span class="sortable-handle">
-        <i data-lucide="grip-vertical"></i>
-      </span>
-      <i data-lucide="lock" style="width:0.875rem;height:0.875rem;flex-shrink:0;color:var(--muted-foreground);"></i>
-      <span>Authentication (locked)</span>
-    </li>
+  <ul class="sortable" role="listbox" aria-label="Release steps" style="width:20rem;">
     <li class="sortable-item" draggable="true" role="option" tabindex="0">
       <span class="sortable-handle">
         <i data-lucide="grip-vertical"></i>
@@ -178,11 +171,30 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
       </span>
       <span>Set up CI/CD</span>
     </li>
+    <li class="sortable-item" aria-disabled="true" tabindex="-1">
+      <span class="sortable-handle">
+        <i data-lucide="grip-vertical"></i>
+      </span>
+      <i data-lucide="lock" style="width:0.875rem;height:0.875rem;flex-shrink:0;color:var(--muted-foreground);"></i>
+      <span>Security review (locked)</span>
+    </li>
     <li class="sortable-item" draggable="true" role="option" tabindex="-1">
       <span class="sortable-handle">
         <i data-lucide="grip-vertical"></i>
       </span>
       <span>Deploy application</span>
+    </li>
+    <li class="sortable-item" draggable="true" role="option" tabindex="-1">
+      <span class="sortable-handle">
+        <i data-lucide="grip-vertical"></i>
+      </span>
+      <span>Monitor rollout</span>
+    </li>
+    <li class="sortable-item" draggable="true" role="option" tabindex="-1">
+      <span class="sortable-handle">
+        <i data-lucide="grip-vertical"></i>
+      </span>
+      <span>Write postmortem</span>
     </li>
   </ul>
 </div>
@@ -227,6 +239,77 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     </li>
   </ul>
 </div>
+```
+
+```html example label="Move buttons" hint="Up / Down buttons per item (.sortable-moves > .sortable-move[data-move=up|down]) reorder by tap or click - the way to sort on a touch screen, where drag-and-drop mostly never starts, and a visible alternative to Alt+Arrow for anyone not using a mouse. Up disables on the first item, Down on the last; focus stays on the button you pressed, so repeated taps keep moving the same item. Each button is labelled for screen readers (&quot;Move Run tests up&quot;) and every move is announced. Dragging still works." height="22"
+<div class="flex items-center justify-center py-10">
+  <ul class="sortable" aria-label="Task priority" style="width:22rem;">
+    <li class="sortable-item" draggable="true" tabindex="0">
+      <span class="sortable-handle">
+        <i data-lucide="grip-vertical"></i>
+      </span>
+      <span>Build components</span>
+      <span class="sortable-moves">
+        <button type="button" class="sortable-move" data-move="up"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg></button>
+        <button type="button" class="sortable-move" data-move="down"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+      </span>
+    </li>
+    <li class="sortable-item" draggable="true" tabindex="-1">
+      <span class="sortable-handle">
+        <i data-lucide="grip-vertical"></i>
+      </span>
+      <span>Write documentation</span>
+      <span class="sortable-moves">
+        <button type="button" class="sortable-move" data-move="up"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg></button>
+        <button type="button" class="sortable-move" data-move="down"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+      </span>
+    </li>
+    <li class="sortable-item" draggable="true" tabindex="-1">
+      <span class="sortable-handle">
+        <i data-lucide="grip-vertical"></i>
+      </span>
+      <span>Deploy to production</span>
+      <span class="sortable-moves">
+        <button type="button" class="sortable-move" data-move="up"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg></button>
+        <button type="button" class="sortable-move" data-move="down"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+      </span>
+    </li>
+    <li class="sortable-item" draggable="true" tabindex="-1">
+      <span class="sortable-handle">
+        <i data-lucide="grip-vertical"></i>
+      </span>
+      <span>Run tests</span>
+      <span class="sortable-moves">
+        <button type="button" class="sortable-move" data-move="up"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg></button>
+        <button type="button" class="sortable-move" data-move="down"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+      </span>
+    </li>
+  </ul>
+</div>
+```
+
+```html example label="Between two lists" hint="Lists that share a data-group exchange items: drag from Backlog to Done and back, and still reorder inside each one. Dropping on a row inserts before / after it; dropping on the list's free space adds to the end, and an emptied list stays a drop zone (its data-empty text says so). Keyboard: Alt+→ / Alt+← moves the focused item to the next / previous list. Both lists fire sortable-change - the receiving one with detail.from, the one it left with detail.to." height="22"
+<div class="flex flex-wrap gap-4">
+  <div class="flex-1 min-w-48">
+    <p class="demo-label">Backlog</p>
+    <ul class="sortable" id="bin-backlog" aria-label="Backlog" data-group="tasks" data-empty="Drop tasks here"><li class="sortable-item" draggable="true" tabindex="0"><span class="sortable-handle">⋮⋮</span><span>Design review</span></li><li class="sortable-item" draggable="true" tabindex="-1"><span class="sortable-handle">⋮⋮</span><span>Write tests</span></li><li class="sortable-item" draggable="true" tabindex="-1"><span class="sortable-handle">⋮⋮</span><span>Update changelog</span></li></ul>
+  </div>
+  <div class="flex-1 min-w-48">
+    <p class="demo-label">Done</p>
+    <ul class="sortable" id="bin-done" aria-label="Done" data-group="tasks" data-empty="Drop tasks here"><li class="sortable-item" draggable="true" tabindex="0"><span class="sortable-handle">⋮⋮</span><span>Set up CI</span></li><li class="sortable-item" draggable="true" tabindex="-1"><span class="sortable-handle">⋮⋮</span><span>Pick a name</span></li></ul>
+  </div>
+</div>
+<p class="text-sm text-muted-foreground mt-4 mb-0" id="bin-summary"></p>
+<script>
+  const lists = ['bin-backlog', 'bin-done'].map((id) => document.getElementById(id));
+  const summary = () => {
+    document.getElementById('bin-summary').textContent = lists
+      .map((l) => l.getAttribute('aria-label') + ': ' + (l.api?.getState().config.order.join(', ') || '(empty)'))
+      .join(' · ');
+  };
+  lists.forEach((l) => l.addEventListener('sortable-change', summary));
+  setTimeout(summary);
+</script>
 ```
 
 ```html example label="Density" hint="Set data-density on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25), typography and fixed dimensions stay identical. comfortable matches the unsized default." height="18"

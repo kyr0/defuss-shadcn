@@ -36,7 +36,8 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <code>data-north</code>
     <code>data-south</code>
     <code>data-anim-in</code>
-    <code>data-anim-out</code>
+    <code>data-anim-in-delay</code>
+    <code>--anim-canvas-gap</code>
     <code>data-overview</code>
     <code>data-current-slide</code>
     <code>data-pan-duration</code>
@@ -44,61 +45,134 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 
   <SkillField label="Notes">
-<p class="text-muted-foreground m-0">• Animations are engine names - see the <DocLink href="motion.html">Motion</DocLink> vocabulary and the per-animation deep dives (fade/slide/zoom/pop/spin/flip/skew/blur/wipe/iris + the blocks roll-over). • The blocks pair is always one curtain: the cover builds on the slide you leave, the board pans underneath, the reveal plays on the slide you arrive at - a declared <code>blocksOut</code> never replays on the old slide. • Arrow keys never swallow a direction that has no neighbor.</p>
+<p class="text-muted-foreground m-0">• Animations are engine names - see the <DocLink href="motion.html">Motion</DocLink> vocabulary and the per-animation deep dives (fade/slide/zoom/pop/spin/flip/skew/blur/wipe/iris + the blocks roll-over). • Only the slide you move to animates - the one you leave pans out of frame still. Its arrival starts as the camera reaches it, then its content builds in (<code>data-df-entrance</code> / <code>data-df-draw</code> / <code>data-count</code> replay through the shared motion controller). • <code>blocksIn</code> makes the arriving slide land under a curtain that rolls off it - give it a visible <code>data-anim-in-color</code>. • <code>--anim-canvas-gap</code> (board units, default 80) separates the cells - the overview shows them as tiles. • Arrow keys never swallow a direction that has no neighbor.</p>
   </SkillField>
 </SkillPanel>
 
-```html example label="A 2×2 board with mixed transitions" component="anim-canvas" height="28" hint="Four slides on one board: s1↔s2 east/west, s1↔s3 south/north, s2↔s4 south/north, s3↔s4 east/west. Click the canvas, then drive it with the arrow keys; O or Escape zooms out to the overview, clicking a tile zooms back in. Each slide declares its own df$.anim pair: s2 enters under a blocks curtain painted var(--primary) via data-anim-in-color (always give blend-overs a visible color), s3 opens as an iris, s1 and s4 slide with the travel direction. The State tab drives the same canvas through the schema (slide id + overview)."
+```html example label="A 3×2 story board" component="anim-canvas" height="21" hint="Six slides on one board, wired as a 3×2 grid. Click the canvas, then use the arrow keys (or the buttons); O or Escape zooms out to the overview (the gap separates the tiles), clicking a tile zooms back in. Only the slide you move TO animates: each declares its own df$.anim arrival (zoomIn, a blocks curtain it arrives under - painted a visible color via data-anim-in-color - wipeIn, slideIn, irisIn, blurIn) and its content then builds in through the shared motion entrances (data-df-entrance, data-df-draw, data-count). The slide you leave stays still and pans out of frame. The State tab drives the same canvas through the schema (slide id + overview)."
 <style>
-  .ac-demo-slide {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 4rem 5rem;
-  }
-  .ac-demo-slide h2 {
-    margin: 0 0 1rem;
-    font-size: 4rem;
-    line-height: 1.05;
-    letter-spacing: -0.02em;
-  }
-  .ac-demo-slide p {
-    margin: 0;
-    font-size: 1.6rem;
-    opacity: 0.85;
-  }
-  #ac-1 { background: #312e81; color: #e0e7ff; }
-  #ac-2 { background: #78350f; color: #fef3c7; }
-  #ac-3 { background: #064e3b; color: #d1fae5; }
-  #ac-4 { background: #4c0519; color: #ffe4e6; }
+  #ac-demo { --anim-canvas-gap: 96; background: #020617; }
+  .ac-s { display: flex; flex-direction: column; justify-content: center; padding: 72px 96px; font-family: Inter, system-ui, sans-serif; color: #e2f3ff; }
+  .ac-eyebrow { margin: 0 0 18px; font: 600 18px/1 ui-monospace, monospace; letter-spacing: .28em; text-transform: uppercase; color: #5af2c8; }
+  .ac-title { margin: 0; font-size: 92px; line-height: .95; letter-spacing: -.045em; font-weight: 800; }
+  .ac-lede { margin: 26px 0 0; max-width: 640px; font-size: 26px; line-height: 1.4; color: #b7cde0; }
+  .ac-grad { background: linear-gradient(90deg, #5af2c8, #7cc4ff 45%, #c79bff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .ac-hint { position: absolute; left: 96px; bottom: 56px; margin: 0; font: 600 16px ui-monospace, monospace; letter-spacing: .12em; color: #7aa4c4; }
+  #ac-1 { background: radial-gradient(ellipse at 70% 110%, #0f3b5c 0, transparent 55%), linear-gradient(180deg, #030712, #0a1a33); }
+  #ac-2 { background: linear-gradient(135deg, #04201f, #06343a); }
+  #ac-3 { background: linear-gradient(160deg, #0b1330, #151a45); }
+  #ac-4 { background: linear-gradient(180deg, #120a2a, #1f1147); }
+  #ac-5 { background: radial-gradient(circle at 50% 0, #0d4f45 0, transparent 60%), #031512; }
+  #ac-6 { background: linear-gradient(135deg, #1a0b2e, #0a1f3d 55%, #04312b); align-items: center; text-align: center; }
+  .ac-nums { display: flex; gap: 72px; margin-top: 40px; }
+  .ac-num b { display: block; font-size: 112px; line-height: 1; letter-spacing: -.04em; font-variant-numeric: tabular-nums; color: #5af2c8; }
+  .ac-num > span { display: block; margin-top: 12px; max-width: 260px; font-size: 22px; line-height: 1.35; color: #a8c7c4; }
+  .ac-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 40px; }
+  .ac-card { padding: 30px 28px; border: 1px solid rgba(199,155,255,.28); border-radius: 22px; background: rgba(255,255,255,.04); }
+  .ac-card i { display: block; width: 44px; height: 44px; margin-bottom: 18px; border-radius: 50%; }
+  .ac-card h3 { margin: 0 0 10px; font-size: 28px; }
+  .ac-card p { margin: 0; font-size: 20px; line-height: 1.45; color: #c9bde3; }
+  .ac-bars { display: flex; align-items: flex-end; gap: 22px; height: 300px; margin-top: 36px; padding-bottom: 14px; border-bottom: 2px solid rgba(90,242,200,.35); }
+  .ac-bar { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 10px; height: 100%; font: 600 18px ui-monospace, monospace; color: #8fb9b1; }
+  .ac-bar i { display: block; width: 100%; border-radius: 12px 12px 4px 4px; background: linear-gradient(180deg, #5af2c8, #1a8f7a); }
+  .ac-bar.is-peak i { background: linear-gradient(180deg, #c79bff, #5af2c8); box-shadow: 0 0 40px rgba(199,155,255,.55); }
+  .ac-bar.is-peak { color: #e9dcff; }
+  .ac-cta { display: flex; gap: 18px; justify-content: center; margin-top: 40px; }
+  .ac-key { display: inline-grid; place-items: center; min-width: 64px; height: 64px; padding: 0 18px; border: 2px solid rgba(226,243,255,.5); border-radius: 14px; font: 700 26px ui-monospace, monospace; }
 </style>
-<div class="anim-canvas" id="ac-demo" aria-label="Demo board">
-  <section class="anim-canvas-slide ac-demo-slide" id="ac-1" data-active aria-label="One"
-           data-east="ac-2" data-south="ac-3"
-           data-anim-in="slideIn" data-anim-out="slideOut">
-    <h2>One board, four slides</h2>
-    <p>Slides sit side by side like a chess board - the viewport frames exactly one.</p>
+<div class="anim-canvas" id="ac-demo" aria-label="Chasing the aurora - a story board">
+  <!-- 1 · cover: the aurora draws itself across the sky -->
+  <section class="anim-canvas-slide ac-s" id="ac-1" data-active aria-label="Cover"
+           data-east="ac-2" data-south="ac-4"
+           data-anim-in="zoomIn">
+    <svg aria-hidden="true" width="1280" height="720" viewBox="0 0 1280 720" style="position:absolute; inset:0;">
+      <defs>
+        <linearGradient id="ac-sky" x1="0" x2="1"><stop offset="0" stop-color="#5af2c8" /><stop offset=".55" stop-color="#7cc4ff" /><stop offset="1" stop-color="#c79bff" /></linearGradient>
+      </defs>
+      <path data-df-draw pathLength="1" d="M-20 260 C 220 120, 420 330, 640 200 S 1040 90, 1300 210" fill="none" stroke="url(#ac-sky)" stroke-width="46" stroke-linecap="round" opacity=".32" style="--df-motion-duration:2200ms" />
+      <path data-df-draw pathLength="1" d="M-20 330 C 260 210, 460 390, 700 280 S 1080 180, 1300 300" fill="none" stroke="url(#ac-sky)" stroke-width="18" stroke-linecap="round" opacity=".55" style="--df-motion-delay:300ms; --df-motion-duration:2200ms" />
+      <g fill="#e2f3ff">
+        <circle cx="140" cy="90" r="2.2" /><circle cx="380" cy="60" r="1.6" /><circle cx="610" cy="110" r="2" /><circle cx="860" cy="50" r="1.8" />
+        <circle cx="1040" cy="120" r="2.4" /><circle cx="1180" cy="70" r="1.6" /><circle cx="250" cy="170" r="1.4" /><circle cx="960" cy="200" r="1.4" />
+      </g>
+      <path d="M0 720 L 0 610 L 150 520 L 260 590 L 420 470 L 560 580 L 700 500 L 860 600 L 1010 480 L 1140 560 L 1280 500 L 1280 720 Z" fill="#020617" />
+    </svg>
+    <p class="ac-eyebrow" data-df-entrance="fade" style="position:relative;">A story board · anim-canvas</p>
+    <h2 class="ac-title" data-df-entrance="up" style="position:relative; --df-motion-delay:150ms;">Chasing<br /><span class="ac-grad">the aurora</span></h2>
+    <p class="ac-lede" data-df-entrance="up" style="position:relative; --df-motion-delay:350ms;">Fourteen nights above the Arctic Circle, laid out as one board. Move with the arrow keys - press O to see it all.</p>
+    <p class="ac-hint" data-df-entrance="fade" style="--df-motion-delay:700ms;">→ east · ↓ south · O overview</p>
   </section>
-  <section class="anim-canvas-slide ac-demo-slide" id="ac-2" aria-label="Two"
-           data-west="ac-1" data-south="ac-4"
-           data-anim-in="blocksIn" data-anim-in-direction="north" data-anim-in-blocks="6" data-anim-in-stagger="70" data-anim-in-color="var(--primary)"
-           data-anim-out="blocksOut" data-anim-out-direction="north">
-    <h2>Blocks roll over</h2>
-    <p>The composite blocksIn/blocksOut pair composes as a curtain: cover, pan underneath, roll off.</p>
+
+  <!-- 2 · the numbers: the slide arrives under an aurora-green curtain -->
+  <section class="anim-canvas-slide ac-s" id="ac-2" aria-label="The numbers"
+           data-west="ac-1" data-east="ac-3" data-south="ac-5"
+           data-anim-in="blocksIn" data-anim-in-direction="north" data-anim-in-blocks="7" data-anim-in-stagger="60" data-anim-in-color="#5af2c8">
+    <p class="ac-eyebrow" data-df-entrance="fade">The expedition in numbers</p>
+    <h2 class="ac-title" data-df-entrance="up" style="font-size:72px; --df-motion-delay:100ms;">Cold, dark, <span class="ac-grad">worth it</span></h2>
+    <div class="ac-nums" data-df-stagger style="--df-motion-stagger-step:160ms;">
+      <div class="ac-num" data-df-entrance="up"><b><span data-count="69.6" data-count-decimals="1">69.6</span>°N</b><span>latitude of Tromsø, where the trip starts</span></div>
+      <div class="ac-num" data-df-entrance="up"><b><span data-count="14">14</span></b><span>nights with the aurora overhead</span></div>
+      <div class="ac-num" data-df-entrance="up"><b>−<span data-count="27">27</span>°C</b><span>the coldest night, on the Finnmark plateau</span></div>
+    </div>
   </section>
-  <section class="anim-canvas-slide ac-demo-slide" id="ac-3" aria-label="Three"
-           data-north="ac-1" data-east="ac-4"
-           data-anim-in="irisIn" data-anim-in-origin="50% 50%"
-           data-anim-out="irisOut" data-anim-out-origin="50% 50%">
-    <h2>Iris from the center</h2>
-    <p>irisIn opens a clip-path circle around the declared origin.</p>
+
+  <!-- 3 · the route draws itself; the towns pop in along it -->
+  <section class="anim-canvas-slide ac-s" id="ac-3" aria-label="The route"
+           data-west="ac-2" data-south="ac-6"
+           data-anim-in="wipeIn" data-anim-in-direction="east">
+    <p class="ac-eyebrow" data-df-entrance="fade">The route</p>
+    <h2 class="ac-title" data-df-entrance="up" style="font-size:72px; --df-motion-delay:100ms;">Along the coast,<br />then inland</h2>
+    <svg aria-hidden="true" width="1088" height="330" viewBox="0 0 1088 330" style="margin-top:28px;">
+      <path d="M20 250 C 160 140, 260 300, 400 210 S 640 70, 780 150 S 980 240, 1060 110" fill="none" stroke="rgba(124,196,255,.18)" stroke-width="30" stroke-linecap="round" />
+      <path data-df-draw pathLength="1" d="M20 250 C 160 140, 260 300, 400 210 S 640 70, 780 150 S 980 240, 1060 110" fill="none" stroke="#7cc4ff" stroke-width="6" stroke-linecap="round" style="--df-motion-delay:200ms; --df-motion-duration:1800ms" />
+      <g font-family="Inter, system-ui, sans-serif" font-size="24" font-weight="700" fill="#e2f3ff">
+        <g data-df-entrance="pop" style="--df-motion-delay:200ms;"><circle cx="20" cy="250" r="14" fill="#5af2c8" /><text x="44" y="296">Tromsø</text></g>
+        <g data-df-entrance="pop" style="--df-motion-delay:600ms;"><circle cx="400" cy="210" r="14" fill="#5af2c8" /><text x="380" y="262">Alta</text></g>
+        <g data-df-entrance="pop" style="--df-motion-delay:1000ms;"><circle cx="780" cy="150" r="14" fill="#5af2c8" /><text x="740" y="112">Karasjok</text></g>
+        <g data-df-entrance="pop" style="--df-motion-delay:1400ms;"><circle cx="1060" cy="110" r="18" fill="#c79bff" /><text x="1076" y="72" text-anchor="end">Kirkenes</text></g>
+      </g>
+    </svg>
   </section>
-  <section class="anim-canvas-slide ac-demo-slide" id="ac-4" aria-label="Four"
-           data-north="ac-2" data-west="ac-3"
-           data-anim-in="slideIn" data-anim-out="slideOut">
-    <h2>Overview on O</h2>
-    <p>Zoom out, see the whole board, click a tile to zoom back in.</p>
+
+  <!-- 4 · why it glows: three cards flip in, one after another -->
+  <section class="anim-canvas-slide ac-s" id="ac-4" aria-label="Why it glows"
+           data-north="ac-1" data-east="ac-5"
+           data-anim-in="slideIn">
+    <p class="ac-eyebrow" data-df-entrance="fade" style="color:#c79bff;">Why the sky glows</p>
+    <h2 class="ac-title" data-df-entrance="up" style="font-size:72px; --df-motion-delay:100ms;">Sun, field, <span class="ac-grad">oxygen</span></h2>
+    <div class="ac-cards" data-df-stagger style="--df-motion-stagger-step:220ms;">
+      <div class="ac-card" data-df-entrance="flip"><i style="background:#ffb45a;"></i><h3>Solar wind</h3><p>Charged particles stream away from the Sun at hundreds of kilometres per second.</p></div>
+      <div class="ac-card" data-df-entrance="flip"><i style="background:#7cc4ff;"></i><h3>Magnetic field</h3><p>Earth's field funnels them down towards the polar regions.</p></div>
+      <div class="ac-card" data-df-entrance="flip"><i style="background:#5af2c8;"></i><h3>Green light</h3><p>Excited oxygen glows at 557.7 nm - the classic green curtain.</p></div>
+    </div>
   </section>
+
+  <!-- 5 · the forecast: the bars rise, the best night glows -->
+  <section class="anim-canvas-slide ac-s" id="ac-5" aria-label="The forecast"
+           data-north="ac-2" data-west="ac-4" data-east="ac-6"
+           data-anim-in="irisIn" data-anim-in-origin="50% 50%">
+    <p class="ac-eyebrow" data-df-entrance="fade">Kp index · 0 to 9</p>
+    <h2 class="ac-title" data-df-entrance="up" style="font-size:72px; --df-motion-delay:100ms;">Night six: <span class="ac-grad">Kp 7</span></h2>
+    <div class="ac-bars" data-df-stagger style="--df-motion-stagger-step:110ms;">
+      <div class="ac-bar" data-df-entrance="wipe-up"><i style="height:22%"></i>2</div>
+      <div class="ac-bar" data-df-entrance="wipe-up"><i style="height:33%"></i>3</div>
+      <div class="ac-bar" data-df-entrance="wipe-up"><i style="height:44%"></i>4</div>
+      <div class="ac-bar" data-df-entrance="wipe-up"><i style="height:33%"></i>3</div>
+      <div class="ac-bar" data-df-entrance="wipe-up"><i style="height:56%"></i>5</div>
+      <div class="ac-bar is-peak" data-df-entrance="wipe-up"><i style="height:78%"></i>7</div>
+      <div class="ac-bar" data-df-entrance="wipe-up"><i style="height:44%"></i>4</div>
+    </div>
+  </section>
+
+  <!-- 6 · closing: the call to zoom out -->
+  <section class="anim-canvas-slide ac-s" id="ac-6" aria-label="Closing"
+           data-north="ac-3" data-west="ac-5"
+           data-anim-in="blurIn">
+    <p class="ac-eyebrow" data-df-entrance="fade">End of the board</p>
+    <h2 class="ac-title" data-df-entrance="zoom" style="--df-motion-delay:100ms;">Now see<br /><span class="ac-grad">the whole trip</span></h2>
+    <div class="ac-cta" data-df-entrance="pop" style="--df-motion-delay:500ms;"><span class="ac-key">O</span><span class="ac-key">Esc</span><span class="ac-key">⛶</span></div>
+  </section>
+
   <div class="anim-canvas-controls">
     <button type="button" class="anim-canvas-control" data-anim-canvas-go="west" aria-label="West slide">←</button>
     <button type="button" class="anim-canvas-control" data-anim-canvas-go="north" aria-label="North slide">↑</button>

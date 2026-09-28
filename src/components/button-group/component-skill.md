@@ -58,6 +58,8 @@ supportedStates: default
 
 ## Notes
 
+- **Split button**: `<hr role="separator">` between the action and a `data-size="icon"` chevron is the single 1px dividing line - the buttons on either side drop the border that touches it and keep square inner corners, so the two halves read as one control. Make the chevron a Dropdown trigger (`data-dropdown-trigger`, `aria-haspopup="menu"`, `aria-expanded`, `aria-controls`) and put the `.dropdown-content` menu AFTER the group (a child inside the group would count as its last button), with `data-align="end"` so it lines up with the chevron.
+
 - Button groups work best with the `outline` variant - the connected borders create a cohesive unit.
 - Adjacent button borders collapse so only one border renders between buttons.
 - The group removes internal border-radii to create seamless joins.

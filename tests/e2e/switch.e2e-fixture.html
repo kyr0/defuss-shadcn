@@ -16,7 +16,11 @@
     <div class="switch-item"><input type="checkbox" role="switch" class="switch" id="sw-lg" data-size="lg" /></div>
     <div class="switch-item"><input type="checkbox" role="switch" class="switch" id="sw-xl" data-size="xl" /></div>
     <div class="switch-item"><input type="checkbox" role="switch" class="switch" id="sw-xl-on" data-size="xl" checked /></div>
-    <div class="switch-item"><input type="checkbox" role="switch" class="switch" id="sw-disabled" disabled /></div>
+    <div class="switch-item"><input type="checkbox" role="switch" class="switch" id="sw-disabled" disabled /><label for="sw-disabled">Disabled</label></div>
+    <div class="switch-item"><input type="checkbox" role="switch" class="switch" id="sw-disabled-on" disabled checked /><label for="sw-disabled-on">Disabled on</label></div>
     <div class="switch-item"><input type="checkbox" role="switch" class="switch" id="sw-invalid" aria-invalid="true" /></div>
+    <!-- gap hit area: the whitespace between switch and label toggles too -->
+    <div class="switch-item"><input type="checkbox" role="switch" class="switch" id="sw-gap" /><label for="sw-gap">Gap target</label></div>
+    <div class="switch-item-block"><label for="sw-gap-block">Block gap target</label><input type="checkbox" role="switch" class="switch" id="sw-gap-block" /><span class="switch-description">Description</span></div>
   </body>
 </html>

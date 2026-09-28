@@ -149,6 +149,72 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </div>
 ```
 
+```html example label="Multi-select" hint="data-multiple on the .combobox picks several options: a click or Enter toggles an option and the list stays open, each option shows a checkbox (the listbox is aria-multiselectable), and the choices appear as removable tags under the trigger. Backspace in the empty search removes the last tag; the clear button empties all. data-name renders one hidden input per value, so the form submits every tag; each change fires combobox:change { values, labels }." height="30"
+<form onsubmit="event.preventDefault()" style="width:18rem;">
+  <div class="combobox" data-multiple data-name="tags" id="post-tags">
+    <label class="label" id="post-tags-label">Tags</label>
+    <button type="button" class="btn combobox-trigger" data-variant="outline" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="post-tags-label" aria-controls="post-tags-popover">
+      <span class="combobox-value" data-placeholder="Add tags...">Add tags...</span>
+      <svg class="combobox-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5"></path><path d="m7 9 5-5 5 5"></path></svg>
+    </button>
+    <div id="post-tags-popover" class="combobox-content" popover>
+      <div class="combobox-search">
+        <svg class="combobox-search-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+        <input class="combobox-search-input" type="text" role="combobox" autocomplete="off" aria-expanded="true" aria-controls="post-tags-listbox" aria-activedescendant aria-autocomplete="list" placeholder="Search tags..."></input>
+      </div>
+      <div id="post-tags-listbox" role="listbox" class="combobox-listbox" aria-label="Tags">
+        <div class="combobox-empty" hidden>No tags found.</div>
+      <div role="option" id="post-tag-design" class="combobox-item" data-value="design" aria-selected="true">Design</div>
+      <div role="option" id="post-tag-engineering" class="combobox-item" data-value="engineering" aria-selected="true">Engineering</div>
+      <div role="option" id="post-tag-accessibility" class="combobox-item" data-value="accessibility" aria-selected="false">Accessibility</div>
+      <div role="option" id="post-tag-performance" class="combobox-item" data-value="performance" aria-selected="false">Performance</div>
+      <div role="option" id="post-tag-release" class="combobox-item" data-value="release" aria-selected="false">Release notes</div>
+      <div role="option" id="post-tag-tutorial" class="combobox-item" data-value="tutorial" aria-selected="false">Tutorial</div>
+      <div role="option" id="post-tag-case-study" class="combobox-item" data-value="case-study" aria-selected="false">Case study</div>
+      </div>
+    </div>
+  </div>
+  <p class="text-sm text-muted-foreground" style="margin:0.75rem 0 0;">Submits <code id="post-tags-out">tags=design&amp;tags=engineering</code></p>
+</form>
+<script>
+  document.getElementById('post-tags').addEventListener('combobox:change', (e) => {
+    const q = e.detail.values.map((v) => 'tags=' + v).join('&');
+    document.getElementById('post-tags-out').textContent = q || '(nothing)';
+  });
+</script>
+```
+
+```html example label="Tag input" hint="data-tags puts the tags INSIDE the field and you type right there: the list opens and filters as you type. Enter (or a comma) picks the exact match - case doesn't matter - or, with data-creatable, creates a new tag from what you typed (the 'Create …' row). Arrow keys pick any other listed option instead. Backspace in the empty field removes the last tag, Escape closes the list. Created tags become options too; data-name submits every tag." height="30"
+<form onsubmit="event.preventDefault()" style="width:22rem;">
+  <div class="combobox" data-multiple data-tags data-creatable data-name="topics" id="post-topics">
+    <label class="label" for="post-topics-input">Topics</label>
+    <div class="combobox-field">
+      <input class="combobox-field-input" id="post-topics-input" type="text" role="combobox" autocomplete="off" aria-expanded="false" aria-controls="post-topics-list" aria-autocomplete="list" placeholder="Type a topic..."></input>
+    </div>
+    <div id="post-topics-popover" class="combobox-content" popover="manual">
+      <div id="post-topics-list" role="listbox" class="combobox-listbox" aria-label="Topics">
+        <div class="combobox-empty" hidden>No topics found.</div>
+      <div role="option" id="topic-css" class="combobox-item" data-value="css" aria-selected="true">CSS</div>
+      <div role="option" id="topic-html" class="combobox-item" data-value="html" aria-selected="true">HTML</div>
+      <div role="option" id="topic-javascript" class="combobox-item" data-value="javascript" aria-selected="false">JavaScript</div>
+      <div role="option" id="topic-typescript" class="combobox-item" data-value="typescript" aria-selected="false">TypeScript</div>
+      <div role="option" id="topic-accessibility" class="combobox-item" data-value="accessibility" aria-selected="false">Accessibility</div>
+      <div role="option" id="topic-performance" class="combobox-item" data-value="performance" aria-selected="false">Performance</div>
+      <div role="option" id="topic-design-systems" class="combobox-item" data-value="design-systems" aria-selected="false">Design systems</div>
+      </div>
+    </div>
+  </div>
+  <p class="text-sm text-muted-foreground" style="margin:0.75rem 0 0;">Submits <code id="post-topics-out">topics=css&amp;topics=html</code><span id="post-topics-created"></span></p>
+</form>
+<script>
+  document.getElementById('post-topics').addEventListener('combobox:change', (e) => {
+    const q = e.detail.values.map((v) => 'topics=' + encodeURIComponent(v)).join('&');
+    document.getElementById('post-topics-out').textContent = q || '(nothing)';
+    if (e.detail.created) document.getElementById('post-topics-created').textContent = ' · created "' + e.detail.created + '"';
+  });
+</script>
+```
+
 ```html example label="Disabled" hint="Disable the trigger button to prevent interaction." height="24"
 <div class="combobox" style="width:14rem;">
   <label class="label" id="cb-disabled-label">Framework</label>

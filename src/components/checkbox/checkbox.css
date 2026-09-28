@@ -56,12 +56,24 @@
       outline-offset: 2px;
     }
 
+    /* Disabled = legible but inert: never an opacity fade (0.5 on a light
+       --border edge left a ghost you had to look for). The shape keeps its
+       full-strength edge, the surface turns muted, a chosen state keeps a
+       softened primary fill, and the label goes muted with the no-entry
+       cursor - "a choice that exists but is unavailable right now". */
     &:disabled {
-      opacity: 0.5;
+      background-color: var(--muted);
+      /* a mid-grey edge: --border on the muted fill is too faint to read as a box */
+      border-color: color-mix(in oklch, var(--muted-foreground) 50%, var(--background));
       cursor: not-allowed;
+
+      &:is(:checked, :indeterminate) {
+        background-color: color-mix(in oklch, var(--primary) 45%, var(--background));
+        border-color: transparent;
+      }
     }
 
-    &:is([aria-invalid="true"], :user-invalid) {
+    &:is([aria-invalid="true"], :user-invalid:not(form[data-validate="submit"]:not([data-submitted]) *)) {
       border-color: var(--destructive);
     }
   }
@@ -98,11 +110,30 @@
     }
   }
 
+  /* Gap hit area: inside an item layout the control's click target spans
+     the gap to its label (a transparent ::before, part of the input's own
+     hit box), so clicking the whitespace between control and text toggles
+     too - the label's `for` covers the text itself. Inline-end only: the
+     label always sits after the control (block layouts place it in the
+     second grid column). */
+  :is(.checkbox-item, .checkbox-item-block) > .checkbox::before {
+    content: '';
+    position: absolute;
+    inset-block: -0.25rem;
+    inset-inline: -0.25rem calc(-1 * 0.5rem);
+  }
+
   /* Disabled auto-styling */
   .checkbox-item:has(.checkbox:disabled),
   .checkbox-item-block:has(.checkbox:disabled) {
-    opacity: 0.5;
     cursor: not-allowed;
+
+    /* the text says "unavailable" too - and never offers the hand pointer
+       for a click that cannot land */
+    & label {
+      color: var(--muted-foreground);
+      cursor: not-allowed;
+    }
   }
 
   /* -- Accessibility ---------------------------------------- */
@@ -118,7 +149,7 @@
     }
 
     .checkbox:disabled {
-      opacity: 0.7;
+      border-color: var(--muted-foreground);
     }
   }
 

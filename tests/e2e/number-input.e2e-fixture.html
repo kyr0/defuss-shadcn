@@ -20,6 +20,31 @@
       <button data-action="increment" aria-label="Increase">+</button>
     </div>
 
+    <!-- unit + fixed decimals (temperature), prefix currency without steppers, prefix with steppers, no-max width -->
+    <label class="label" for="ni-temp-input">Temperature</label>
+    <div class="number-input" id="ni-temp" data-decimals="1">
+      <button data-action="decrement" aria-label="Decrease">−</button>
+      <input type="number" id="ni-temp-input" value="19" min="-40" max="60" step="0.5" />
+      <label class="number-input-unit" for="ni-temp-input" id="ni-temp-unit">°C</label>
+      <button data-action="increment" aria-label="Increase">+</button>
+    </div>
+    <label class="label" for="ni-price-input">Price</label>
+    <div class="number-input" id="ni-price" data-decimals="2">
+      <label class="number-input-unit" for="ni-price-input" id="ni-price-unit">€</label>
+      <input type="number" id="ni-price-input" value="24.9" min="0" step="0.01" inputmode="decimal" />
+    </div>
+    <div class="number-input" id="ni-donation" data-decimals="2">
+      <button data-action="decrement" aria-label="Decrease">−</button>
+      <label class="number-input-unit" for="ni-donation-input">$</label>
+      <input type="number" id="ni-donation-input" value="25" min="5" max="1000" step="5" />
+      <button data-action="increment" aria-label="Increase">+</button>
+    </div>
+    <!-- currency mask: Intl.NumberFormat per locale (separators, symbol + side, fraction digits) -->
+    <div class="number-input" id="m-de" data-currency="EUR" data-locale="de-DE"><button data-action="decrement" aria-label="Decrease">−</button><input type="text" id="m-de-input" value="1234.5" aria-label="m-de" data-step="5" data-min="0" /><input type="hidden" name="m-de" data-number-output id="m-de-out" /><button data-action="increment" aria-label="Increase">+</button></div>
+    <div class="number-input" id="m-us" data-currency="USD" data-locale="en-US"><input type="text" id="m-us-input" value="1234.5" aria-label="m-us" /></div>
+    <div class="number-input" id="m-jp" data-currency="JPY" data-locale="ja-JP"><input type="text" id="m-jp-input" value="1234.5" aria-label="m-jp" /></div>
+    <div class="number-input" id="m-ch" data-currency="CHF" data-locale="de-CH"><input type="text" id="m-ch-input" value="1234.5" aria-label="m-ch" /></div>
+    <div class="number-input" id="m-fr" data-currency="EUR" data-locale="fr-FR"><input type="text" id="m-fr-input" value="1234.5" aria-label="m-fr" /></div>
     <script type="module" src="/dist/components/core.js"></script>
     <script type="module" src="/dist/components/number-input/number-input.js"></script>
       <div class="number-input" id="z-numberinput-xs" data-size="xs"><button data-action="decrement" aria-label="Decrease">−</button><input type="number" value="1" min="0" max="99" step="1" aria-label="Size xs" /><button data-action="increment" aria-label="Increase">+</button></div>

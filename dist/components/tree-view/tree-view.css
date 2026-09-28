@@ -105,6 +105,99 @@
       color: var(--muted-foreground);
     }
   }
+  /* -- Labels -----------------------------------------------------
+     The label is the trigger's / leaf's last <span>. Deep nesting eats the
+     inline space (1.25rem indent per level), so a long label truncates with
+     an ellipsis instead of overflowing the tree - put the full text in
+     title="…" when it matters. Leaves may be links (<a class="tree-leaf">,
+     navigation trees): no underline, pointer cursor. */
+  :is(.tree-branch-trigger, .tree-leaf) > span:last-child {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  a.tree-leaf {
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  /* -- Selection (opt-in: data-selectable on .tree) ---------------
+     aria-selected on the treeitem is the state (tree-view.js writes it on
+     click / Enter / Space; authored markup may preset it). The selected row
+     gets a primary-tinted surface and medium weight - distinct from the
+     neutral accent hover surface, in every theme. The row is the item's
+     leaf OR its branch's <summary> (a grandchild: <li> > <details> > <summary>). */
+  :is(.tree-item[aria-selected="true"] > .tree-leaf,
+    .tree-item[aria-selected="true"] > .tree-branch > .tree-branch-trigger) {
+    background-color: color-mix(in oklch, var(--primary) 12%, transparent);
+    color: var(--foreground);
+    font-weight: 500;
+  }
+
+  .tree[data-selectable] :is(.tree-leaf, .tree-branch-trigger) {
+    cursor: pointer;
+  }
+
+  /* -- Disabled: aria-disabled="true" on the treeitem --------------
+     Still focusable (APG: disabled items stay in the keyboard path) but not
+     operable - tree-view.js refuses to open or select it. The dimming covers
+     the row only; an open disabled branch's children keep their own state. */
+  :is(.tree-item[aria-disabled="true"] > .tree-leaf,
+    .tree-item[aria-disabled="true"] > .tree-branch > .tree-branch-trigger) {
+    opacity: 0.5;
+    cursor: not-allowed;
+
+    &:hover {
+      background-color: transparent;
+    }
+  }
+
+  /* -- Empty branch -----------------------------------------------
+     A folder with no children shows a muted placeholder row instead of
+     opening onto nothing. Text: data-empty on the .tree-group ("Empty" by
+     default). :has() rather than :empty - authored whitespace would defeat
+     :empty. Generated content: screen readers announce the group's size. ::after, because
+     the guides variant already draws its line with ::before. */
+  .tree-group:not(:has(> .tree-item))::after {
+    content: 'Empty';
+    display: block;
+    padding: 0.25rem 0.5rem;
+    padding-left: calc(0.5rem + 0.875rem + 0.375rem);
+    color: var(--muted-foreground);
+    font-style: italic;
+  }
+
+  .tree-group[data-empty]:not(:has(> .tree-item))::after {
+    content: attr(data-empty);
+  }
+
+  /* -- Variant: guides --------------------------------------------
+     data-variant="guides" on the .tree root draws one vertical guideline
+     per nested .tree-group, so the depth of nesting reads at a glance. The
+     line sits under the parent branch's chevron centre (trigger padding
+     0.5rem + half the 0.875rem chevron) and spans the whole group; it is a
+     border, not a background, so forced-colors keeps it visible. The line
+     of the innermost group that holds focus darkens - the keyboard user
+     sees which level they are on. */
+  .tree[data-variant="guides"] .tree-group {
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset-block: 0;
+      inset-inline-start: calc(0.5rem + 0.4375rem - 0.5px);
+      border-inline-start: 1px solid var(--border);
+      pointer-events: none;
+    }
+
+    &:focus-within:not(:has(.tree-group:focus-within))::before {
+      border-inline-start-color: var(--muted-foreground);
+    }
+  }
+
   /* -- Density ----------------------------------------------------
      data-density on the .tree root scales the row padding-block. Indent
      (padding-left) is structural - untouched. comfortable == the default. */
@@ -172,6 +265,20 @@
       transition-duration: 0.01ms !important;
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
+    }
+  }
+}
+
+/* Forced colors (Windows High Contrast) drop the tinted surface - the
+   selected row must still read as selected: system
+   Highlight pair, the same signal native listboxes use. */
+@media (forced-colors: active) {
+  @layer components {
+    :is(.tree-item[aria-selected="true"] > .tree-leaf,
+      .tree-item[aria-selected="true"] > .tree-branch > .tree-branch-trigger) {
+      forced-color-adjust: none;
+      background-color: Highlight;
+      color: HighlightText;
     }
   }
 }

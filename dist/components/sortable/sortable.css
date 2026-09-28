@@ -89,6 +89,75 @@
     & svg { width: 1rem; height: 1rem; }
   }
 
+  /* -- Move buttons: reorder by tap / click --------------------
+     Native drag-and-drop mostly never starts on touch screens, so a list
+     people must reorder by tapping carries Up / Down buttons per item.
+     They sit at the item's end; Up/Down disable at the list's edges. */
+  .sortable-moves {
+    display: inline-flex;
+    gap: 0.25rem;
+    flex-shrink: 0;
+    margin-inline-start: auto;
+  }
+
+  .sortable-move {
+    display: inline-grid;
+    place-items: center;
+    box-sizing: border-box;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--background);
+    color: var(--foreground);
+    cursor: pointer;
+    transition: background-color 150ms, color 150ms;
+
+    & svg { width: 1rem; height: 1rem; }
+    &:hover { background: var(--accent); color: var(--accent-foreground); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+    /* legible but inert, like every disabled control (no opacity fade) */
+    &:disabled {
+      background: var(--muted);
+      color: var(--muted-foreground);
+      cursor: not-allowed;
+    }
+
+    /* a finger needs a bigger target than a pointer (WCAG 2.5.5: 44px) */
+    @media (pointer: coarse) {
+      width: 2.75rem;
+      height: 2.75rem;
+    }
+  }
+
+  /* -- Connected lists (data-group) ------------------------------
+     A list that items can be dragged INTO needs a body even when empty:
+     an empty grouped list is a dashed drop zone (its data-empty text, if
+     any, says what goes there), and a drag over the list's own box - gap,
+     padding, empty zone - marks it as "drop at the end". */
+  .sortable[data-group] {
+    min-height: 2.75rem;
+
+    &:not(:has(.sortable-item)) {
+      align-items: center;
+      justify-content: center;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-md);
+      color: var(--muted-foreground);
+      font-size: 0.875rem;
+
+      &::before { content: attr(data-empty); }
+    }
+  }
+
+  .sortable[data-over="end"] {
+    outline: 2px dashed var(--primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-md);
+  }
+
   /* Live region for screen reader announcements */
   .sortable-live {
     position: absolute;
@@ -103,7 +172,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .sortable-item { transition: none; }
+    .sortable-item, .sortable-move { transition: none; }
   }
 
   @media (prefers-contrast: more) {
@@ -127,6 +196,12 @@
       &[aria-disabled="true"] { color: GrayText; border-color: GrayText; }
     }
     .sortable-handle { color: GrayText; }
+    .sortable-move {
+      border-color: ButtonText;
+      color: ButtonText;
+      &:disabled { border-color: GrayText; color: GrayText; }
+    }
+    .sortable[data-over="end"] { outline-color: Highlight; }
   }
   /* -- Density ----------------------------------------------------
      data-density on the .sortable root scales the list gap and the item

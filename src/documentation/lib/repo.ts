@@ -15,6 +15,18 @@ export function repoFile(...parts: string[]): string {
   return join(REPO_ROOT, ...parts);
 }
 
+/**
+ * The repository's GitHub web URL, derived from package.json "repository"
+ * ("git+https://github.com/owner/name.git" -> "https://github.com/owner/name"),
+ * so doc-page source links follow the package metadata instead of a second
+ * hard-coded copy.
+ */
+export function repoWebUrl(): string {
+  const pkg = JSON.parse(readFileSync(repoFile('package.json'), 'utf8'));
+  const raw = typeof pkg.repository === 'string' ? pkg.repository : pkg.repository?.url ?? '';
+  return raw.replace(/^git\+/, '').replace(/^git@github\.com:/, 'https://github.com/').replace(/\.git$/, '');
+}
+
 export interface SkillMeta {
   name: string;
   type: 'ATM' | 'MOL' | 'ORG' | 'BLK' | 'TPL';

@@ -10,6 +10,13 @@
     border-radius: var(--radius-sm); outline: none;
     transition: color 150ms ease;
     &:hover { color: var(--foreground); }
+    /* only a real link underlines - a .breadcrumb-link button (dropdown /
+       ellipsis trigger) is not navigation and keeps the color-only hover */
+    &:is(a[href]):hover {
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
     &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
   }
   /* -- Sizes ------------------------------------------------------

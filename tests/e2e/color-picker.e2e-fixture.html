@@ -19,6 +19,18 @@
       <span class="color-picker-value">#10b981</span>
     </div>
 
+    <!-- notations: authored data-format per picker + a user-switchable one with a form output -->
+    <div class="color-picker" id="cp-rgb" data-format="rgb"><input type="color" value="#6366f1" aria-label="rgb" /><span class="color-picker-value"></span></div>
+    <div class="color-picker" id="cp-hsl" data-format="hsl"><input type="color" value="#6366f1" aria-label="hsl" /><span class="color-picker-value"></span></div>
+    <div class="color-picker" id="cp-oklch" data-format="oklch"><input type="color" value="#6366f1" aria-label="oklch" /><span class="color-picker-value"></span></div>
+    <div class="color-picker" id="cp-switch" data-format="oklch">
+      <input type="color" value="#0a0a0a" aria-label="Brand colour" />
+      <span class="color-picker-value"></span>
+      <input type="hidden" name="brand" data-color-output id="cp-switch-out" />
+      <select class="color-picker-format" aria-label="Colour notation" id="cp-switch-select">
+        <option value="hex">HEX</option><option value="rgb">RGB</option><option value="hsl">HSL</option><option value="oklch">OKLCH</option>
+      </select>
+    </div>
     <script type="module" src="/dist/components/core.js"></script>
     <script type="module" src="/dist/components/color-picker/color-picker.js"></script>
       <span class="color-picker" id="z-colorpicker-xs" data-size="xs"><input type="color" value="#6366f1" /><span class="color-picker-value">#6366F1</span></span>

@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
+  assembleRootSkillText,
   assembleSkillText,
+  mdProse,
+  ROOT_SKILL_DOCS_MARKER,
+  type RootSkillData,
   parseSkillFrontmatter,
   renderSkillEntry,
   SKILL_COMPONENTS_MARKER,
@@ -122,5 +126,54 @@ describe('assembleSkillText', () => {
 
   it('throws when the template lost its marker', () => {
     expect(() => assembleSkillText('# no marker here', [entry()])).toThrow(/marker/);
+  });
+});
+
+describe('assembleRootSkillText (repo-root SKILL.md)', () => {
+  const dialog = { folder: 'dialog', name: 'Dialog', type: 'MOL', why: 'Native <dialog> + showModal().', when: 'Modals.', where: 'x', supportedStates: 'default, open', hasJs: true };
+  const badge = { folder: 'badge', name: 'Badge', type: 'ATM', why: 'A span.', when: 'Labels - `df$` free.', where: 'y', supportedStates: 'default', hasJs: false };
+  const data = (): RootSkillData => ({
+    version: '9.9.9',
+    total: 2,
+    withJs: 1,
+    sections: [
+      { heading: 'Guides', pages: [{ label: 'Theming', slug: 'theming', description: 'Tokens.', children: [] }] },
+      { heading: 'Overlays', pages: [{ label: 'Dialog', slug: 'dialog', description: 'Modal.', children: [] }] },
+    ],
+    components: [dialog, badge],
+  });
+  const tpl = `v{{VERSION}} {{TOTAL}}/{{WITH_JS}}/{{CSS_ONLY}}\n${ROOT_SKILL_DOCS_MARKER}\n${SKILL_COMPONENTS_MARKER}`;
+
+  it('fills version and counts', () => {
+    expect(assembleRootSkillText(tpl, data())).toMatch(/^v9\.9\.9 2\/1\/1/);
+  });
+
+  it('maps non-component pages to their .mdx source and leaves component pages to the index', () => {
+    const out = assembleRootSkillText(tpl, data());
+    expect(out).toContain('- [Theming](src/documentation/pages/theming.mdx) - Tokens.');
+    expect(out).not.toContain('- [Dialog](src/documentation/pages/dialog.mdx)');
+  });
+
+  it('indexes components by sidebar section with why/when, skill and example links', () => {
+    const out = assembleRootSkillText(tpl, data());
+    expect(out).toContain('### Overlays\n\n#### Dialog · MOL · JS');
+    expect(out).toContain('[dist/components/dialog/component-skill.md](dist/components/dialog/component-skill.md)');
+    expect(out).toContain('**Examples:** [src/documentation/pages/dialog.mdx](src/documentation/pages/dialog.mdx)');
+    expect(out).toContain('**States:** `default`, `open`');
+    // a component missing from the sidebar still lands in the index
+    expect(out).toContain('### Other\n\n#### Badge · ATM · CSS');
+  });
+
+  it('keeps $ sequences literal (no String.replace pattern expansion)', () => {
+    expect(assembleRootSkillText(tpl, data())).toContain('Labels - `df$` free.');
+  });
+
+  it('wraps bare tags in backticks so markdown renders them as text', () => {
+    expect(mdProse('Native <dialog> + `<details>`')).toBe('Native `<dialog>` + `<details>`');
+    expect(assembleRootSkillText(tpl, data())).toContain('Native `<dialog>` + showModal().');
+  });
+
+  it('throws when the template lost a marker', () => {
+    expect(() => assembleRootSkillText('no markers', data())).toThrow(/marker/);
   });
 });

@@ -2,7 +2,7 @@
 name: Combobox
 type: MOL
 why: Text input filtering an anchored list with the aria-activedescendant keyboard model.
-when: Choosing from a long list the user narrows by typing - states, tags, users.
+when: Choosing from a long list the user narrows by typing - states, tags, users; data-multiple picks SEVERAL (tags, countries you ship to, people to invite, filter categories) with checkboxes + removable tags. For one value from a short list use select; for a handful of options checkboxes.
 where: dist/components/combobox/combobox.css + dist/components/combobox/combobox.js
 supportedStates: default, open
 ---
@@ -99,6 +99,55 @@ the search input when the popover opens.
 ```
 
 ---
+
+## Multi-select
+
+```html
+<div class="combobox" data-multiple data-name="tags">
+  <label class="label" id="tags-label">Tags</label>
+  <button type="button" class="btn combobox-trigger" data-variant="outline" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="tags-label" aria-controls="tags-pop">
+    <span class="combobox-value" data-placeholder="Add tags..." data-selected-label="{n} tags">Add tags...</span>
+    <svg class="combobox-chevron">…</svg>
+  </button>
+  <div id="tags-pop" class="combobox-content" popover>
+    <div class="combobox-search">…<input class="combobox-search-input" role="combobox" …></div>
+    <div id="tags-list" role="listbox" class="combobox-listbox" aria-label="Tags">
+      <div role="option" id="tag-design" class="combobox-item" data-value="design" aria-selected="true">Design</div>
+      <div role="option" id="tag-eng" class="combobox-item" data-value="eng" aria-selected="false">Engineering</div>
+    </div>
+  </div>
+</div>
+```
+
+- `data-multiple` on `.combobox`: the listbox becomes `aria-multiselectable`, every option shows a checkbox, and a click / Enter **toggles** an option while the list stays open (search keeps focus for the next pick).
+- The choices appear as removable **tags** under the trigger (`.combobox-tags` → `.combobox-tag` + `.combobox-tag-remove`, rendered by the script - not inside the trigger, where buttons can't nest). A tag's × removes it and moves focus to the next tag; **Backspace** in the empty search removes the last choice; the clear button empties all.
+- The trigger summarises: placeholder when empty, the label for one choice, else `{n} selected` - `data-selected-label="{n} tags"` on `.combobox-value` rewords it.
+- `data-name` renders one `<input type="hidden" name="{data-name}" value="{data-value}">` per choice, so the form submits them all (`tags=design&tags=eng`). Preselect with `aria-selected="true"`.
+- Every change fires `combobox:change` on the wrapper with `detail = { values, labels }` (also in single mode). `popover.api.getState().config` reports `values` / `labels`.
+
+### Tag input (tags inside the field, autocomplete, create)
+
+```html
+<div class="combobox" data-multiple data-tags data-creatable data-name="topics">
+  <label class="label" for="topics-input">Topics</label>
+  <div class="combobox-field">
+    <input class="combobox-field-input" id="topics-input" type="text" role="combobox" autocomplete="off"
+           aria-expanded="false" aria-controls="topics-list" aria-autocomplete="list" placeholder="Type a topic...">
+  </div>
+  <div id="topics-pop" class="combobox-content" popover="manual">
+    <div id="topics-list" role="listbox" class="combobox-listbox" aria-label="Topics">
+      <div class="combobox-empty" hidden>No topics found.</div>
+      <div role="option" id="topic-css" class="combobox-item" data-value="css" aria-selected="true">CSS</div>
+      <div role="option" id="topic-ts" class="combobox-item" data-value="typescript" aria-selected="false">TypeScript</div>
+    </div>
+  </div>
+</div>
+```
+
+- `data-tags` (with `data-multiple`): no trigger button - a `.combobox-field` box (looks like `.input`) holds the tags and the `.combobox-field-input` the user types into; the list is `popover="manual"` and anchored to the field.
+- **Typing** opens and filters the list. **Enter** (or a **comma**) picks the **exact** match (case-insensitive) - never a duplicate; with `data-creatable` and no exact match it **creates** a tag from the text (the highlighted `Create "…"` row). **Arrow keys** pick any other listed option instead. Without `data-creatable` the first match is highlighted and unknown text is never added.
+- Created tags become real options (`data-created`, `data-value` = the text), so they toggle like the rest. `combobox:change` reports them as `detail.created`.
+- **Backspace** in the empty input removes the last tag; a tag's × removes that one; **Escape** or leaving the widget closes the list. The placeholder shows only while there are no tags. `data-name` renders one hidden input per tag.
 
 ## Data Attributes
 

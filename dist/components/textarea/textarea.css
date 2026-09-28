@@ -27,13 +27,27 @@
 
     &::placeholder { color: var(--muted-foreground); }
 
+    /* Disabled = legible but inert: a muted surface and muted text inside
+       the full-strength border - never an opacity fade that lets the box
+       dissolve into the page. */
     &:disabled {
-      opacity: 0.5;
+      background-color: var(--muted);
+      color: var(--muted-foreground);
+      box-shadow: none;
       cursor: not-allowed;
+      /* resize stays off (Chrome would still let a disabled field be dragged
+         taller), but the corner keeps a grip so it still reads as a text
+         field - two painted diagonal strokes where the native grip sits */
       resize: none;
+      background-image:
+        linear-gradient(135deg, transparent 0 46%, var(--muted-foreground) 46% 54%, transparent 54%),
+        linear-gradient(135deg, transparent 0 46%, var(--muted-foreground) 46% 54%, transparent 54%);
+      background-repeat: no-repeat;
+      background-size: 0.625rem 0.625rem, 0.3125rem 0.3125rem;
+      background-position: right 0.1875rem bottom 0.1875rem, right 0.1875rem bottom 0.1875rem;
     }
 
-    &:is([aria-invalid="true"], :user-invalid) {
+    &:is([aria-invalid="true"], :user-invalid:is(form *):not(form[data-validate="submit"]:not([data-submitted]) *)) {
       border-color: var(--destructive);
 
       &:focus {
@@ -56,7 +70,7 @@
     }
 
     .textarea:disabled {
-      opacity: 0.7;
+      border-color: var(--muted-foreground);
     }
   }
 
@@ -74,11 +88,12 @@
 
     .textarea:disabled {
       opacity: 1;
+      background-image: none;
       color: GrayText;
       border-color: GrayText;
     }
 
-    .textarea:is([aria-invalid="true"], :user-invalid) {
+    .textarea:is([aria-invalid="true"], :user-invalid:is(form *):not(form[data-validate="submit"]:not([data-submitted]) *)) {
       border-color: LinkText;
     }
   }

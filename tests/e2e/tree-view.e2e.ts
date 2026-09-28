@@ -209,6 +209,144 @@ try {
     const val = await page.$eval('#tvd-spacious .tree-leaf', (el) => getComputedStyle(el).paddingTop);
     assert.equal(val, '6px');
   });
+  await check('tree-view: variant "guides" draws a 1px guideline per nested group', async () => {
+    const guides = await page.evaluate(() =>
+      [...document.querySelectorAll('#tvg .tree-group')].map((g) => {
+        const b = getComputedStyle(g, '::before');
+        return { content: b.content, width: b.borderInlineStartWidth, height: parseFloat(b.height) };
+      }),
+    );
+    assert.equal(guides.length, 2);
+    for (const g of guides) {
+      assert.equal(g.content, '""');
+      assert.equal(g.width, '1px');
+      assert.ok(g.height > 0, 'guideline spans the group');
+    }
+  });
+
+  await check('tree-view: the guideline sits under the parent chevron centre', async () => {
+    for (const [trigger, group] of [['tvg-src', 'tvg-g1'], ['tvg-ui', 'tvg-g2']]) {
+      const [chevron, line] = await page.evaluate(([tId, gId]) => {
+        const c = document.querySelector(`#${tId} svg`)!.getBoundingClientRect();
+        const g = document.getElementById(gId)!;
+        const b = getComputedStyle(g, '::before');
+        return [c.left + c.width / 2, g.getBoundingClientRect().left + parseFloat(b.left) + 0.5];
+      }, [trigger, group]);
+      assert.ok(Math.abs(chevron - line) <= 1, `${group}: line x ${line} vs chevron centre ${chevron}`);
+    }
+  });
+
+  await check('tree-view: the default tree draws no guideline', async () => {
+    const content = await page.$eval('#tv-demo .tree-group', (g) => getComputedStyle(g, '::before').content);
+    assert.equal(content, 'none');
+  });
+
+  await check('tree-view: guides - only the innermost focused level darkens', async () => {
+    const color = (id: string) => page.$eval(`#${id}`, (g) => getComputedStyle(g, '::before').borderInlineStartColor);
+    const [outerRest, innerRest] = [await color('tvg-g1'), await color('tvg-g2')];
+    assert.equal(outerRest, innerRest, 'at rest both levels share the border color');
+    await page.focus('#tvg-leaf');
+    const [outerFocus, innerFocus] = [await color('tvg-g1'), await color('tvg-g2')];
+    assert.notEqual(innerFocus, innerRest, 'the focused level darkens');
+    assert.equal(outerFocus, outerRest, 'outer levels stay at rest');
+  });
+  const sel = (id: string) => page.$eval('#' + id, (el) => el.getAttribute('aria-selected'));
+
+  await check('tree-view: data-selectable marks every operable item (authored true kept, disabled left out)', async () => {
+    assert.equal(await sel('tvs-inbox'), 'true');
+    assert.equal(await sel('tvs-sent'), 'false');
+    assert.equal(await sel('tvs-archive'), 'false');
+    assert.equal(await sel('tvs-locked'), null, 'disabled items carry no aria-selected');
+  });
+
+  await check('tree-view: the selected row is visibly distinct (tinted surface + weight)', async () => {
+    const [on, off] = await page.evaluate(() => ['#tvs-inbox', '#tvs-sent'].map((id) => {
+      const cs = getComputedStyle(document.querySelector(id + ' > .tree-leaf')!);
+      return { bg: cs.backgroundColor, weight: cs.fontWeight };
+    }));
+    assert.notEqual(on.bg, off.bg, 'selected row has its own surface');
+    assert.equal(on.weight, '500');
+  });
+
+  await check('tree-view: clicking a leaf selects it, deselects the rest, fires tree-select', async () => {
+    await page.evaluate(() => {
+      (globalThis as any).__picked = [];
+      document.getElementById('tvs')!.addEventListener('tree-select', (e: Event) => (globalThis as any).__picked.push((e as CustomEvent).detail.item.id));
+    });
+    await page.click('#tvs-sent > .tree-leaf');
+    assert.equal(await sel('tvs-sent'), 'true');
+    assert.equal(await sel('tvs-inbox'), 'false');
+    assert.deepEqual(await page.evaluate(() => (globalThis as any).__picked), ['tvs-sent']);
+  });
+
+  await check('tree-view: Enter / Space select from the keyboard', async () => {
+    await page.focus('#tvs-inbox > .tree-leaf');
+    await page.keyboard.press('Enter');
+    assert.equal(await sel('tvs-inbox'), 'true');
+    await page.focus('#tvs-sent > .tree-leaf');
+    await page.keyboard.press(' ');
+    assert.equal(await sel('tvs-sent'), 'true');
+    assert.equal(await sel('tvs-inbox'), 'false');
+  });
+
+  await check('tree-view: clicking a branch toggles AND selects it', async () => {
+    await page.click('#tvs-archive-branch > summary');
+    assert.equal(await page.$eval('#tvs-archive-branch', (d) => (d as HTMLDetailsElement).open), true);
+    assert.equal(await sel('tvs-archive'), 'true');
+  });
+
+  await check('tree-view: a disabled leaf is dimmed and cannot be selected (click / Enter)', async () => {
+    const opacity = await page.$eval('#tvs-locked > .tree-leaf', (el) => getComputedStyle(el).opacity);
+    assert.equal(opacity, '0.5');
+    await page.click('#tvs-locked > .tree-leaf', { force: true }); // Playwright skips aria-disabled targets - a real user click still lands
+    await page.focus('#tvs-locked > .tree-leaf');
+    await page.keyboard.press('Enter');
+    assert.equal(await sel('tvs-locked'), null);
+    assert.equal(await sel('tvs-archive'), 'true', 'the previous selection is kept');
+  });
+
+  await check('tree-view: a disabled branch stays focusable but never opens (click / Enter / Space / ArrowRight)', async () => {
+    const opacity = await page.$eval('#tvs-legal-branch > summary', (el) => getComputedStyle(el).opacity);
+    assert.equal(opacity, '0.5', 'the branch row is dimmed');
+    await page.click('#tvs-legal-branch > summary', { force: true });
+    for (const key of ['Enter', ' ', 'ArrowRight']) {
+      await page.focus('#tvs-legal-branch > summary');
+      await page.keyboard.press(key);
+    }
+    assert.equal(await page.$eval('#tvs-legal-branch', (d) => (d as HTMLDetailsElement).open), false);
+    assert.equal(await page.evaluate(() => document.activeElement?.closest('#tvs-legal') !== null), true, 'focus stays on it');
+  });
+
+  await check('tree-view: a disabled link leaf does not navigate', async () => {
+    await page.click('#tvs-link-disabled', { force: true });
+    assert.notEqual(await page.evaluate(() => location.hash), '#never');
+  });
+
+  await check('tree-view: link leaves render without underline and select on click', async () => {
+    const deco = await page.$eval('#tvs-link', (el) => getComputedStyle(el).textDecorationLine);
+    assert.equal(deco, 'none');
+    await page.click('#tvs-link');
+    assert.equal(await sel('tvs-link-item'), 'true');
+    assert.equal(await page.evaluate(() => location.hash), '#linked');
+  });
+
+  await check('tree-view: an empty branch shows the placeholder row (default + data-empty text)', async () => {
+    const [def, custom] = await page.evaluate(() => ['#tvs-empty-default', '#tvs-empty-custom'].map((id) => getComputedStyle(document.querySelector(id)!, '::after').content));
+    assert.equal(def, '"Empty"');
+    assert.equal(custom, '"No reports yet"', 'whitespace-only group still counts as empty');
+  });
+
+  await check('tree-view: a long label truncates with an ellipsis instead of overflowing', async () => {
+    const r = await page.$eval('#tvs-long', (el) => ({
+      overflow: getComputedStyle(el).textOverflow,
+      clipped: el.scrollWidth > el.clientWidth,
+      inside: el.getBoundingClientRect().right <= document.getElementById('tvs')!.getBoundingClientRect().right + 0.5,
+    }));
+    assert.equal(r.overflow, 'ellipsis');
+    assert.ok(r.clipped, 'the label is actually cut');
+    assert.ok(r.inside, 'the label stays inside the tree');
+  });
+
 } finally {
   await browser.close();
   server.stop();

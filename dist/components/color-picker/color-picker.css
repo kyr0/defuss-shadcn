@@ -35,10 +35,34 @@
       }
     }
 
+    /* the value is meant to be used: one click selects all of it for copy;
+       tabular digits keep the width steady while dragging through colours */
     & .color-picker-value {
       font-size: 0.8125rem;
       font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
       color: var(--muted-foreground);
+      white-space: nowrap;
+      user-select: all;
+    }
+
+    /* optional notation switcher (hex / rgb / hsl / oklch) at the end */
+    & .color-picker-format {
+      margin-inline-start: auto;
+      padding: 0 0 0 0.5rem;
+      border: none;
+      border-inline-start: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted-foreground);
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      cursor: pointer;
+
+      &:focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: 2px;
+        border-radius: var(--radius-sm);
+      }
     }
 
     /* -- Sizes -------------------------------------------------

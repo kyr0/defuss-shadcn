@@ -83,6 +83,7 @@ supportedStates: default
 
 ## Notes
 
+- **Gap hit area**: inside `.switch-item` / `.switch-item-block` the switch's click target spans the gap to its label (a transparent `::before`), so clicking the whitespace between switch and text toggles too. Link the label with `for` (in `.switch-item-block` the grid places it after the switch).
 - Pure CSS - no JavaScript needed.
 - The thumb slides via `:checked` and `translateX()`.
 - Uses `appearance: none` with `::after` for the thumb.

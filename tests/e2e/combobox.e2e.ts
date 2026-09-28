@@ -336,6 +336,199 @@ try {
     assert.equal(val, '52px');
   });
 
+  // -- multi-select -----------------------------------------------------
+  const multi = () =>
+    page.evaluate(() => {
+      const w = document.getElementById('cb-multi')!;
+      return {
+        trigger: w.querySelector('.combobox-value')!.textContent,
+        tags: Array.from(w.querySelectorAll('.combobox-tag')).map((t) => t.textContent!.trim()),
+        inputs: new FormData(document.getElementById('cbm-form') as HTMLFormElement).getAll('tags'),
+        open: document.getElementById('cbm-pop')!.matches(':popover-open'),
+      };
+    });
+
+  await check('multi: aria-multiselectable, authored preselection → tags, summary, hidden inputs', async () => {
+    assert.equal(await page.$eval('#cbm-list', (el) => el.getAttribute('aria-multiselectable')), 'true');
+    assert.deepEqual(await multi(), { trigger: '2 selected', tags: ['Design', 'Engineering'], inputs: ['design', 'eng'], open: false });
+  });
+
+  await check('multi: clicking an option toggles it and the list stays open', async () => {
+    await page.evaluate(() => {
+      (globalThis as any).__changes = [];
+      document.getElementById('cb-multi')!.addEventListener('combobox:change', (e: Event) => (globalThis as any).__changes.push((e as CustomEvent).detail.values));
+    });
+    await page.click('#cb-multi .combobox-trigger');
+    await page.click('#cbm-a11y');
+    let m = await multi();
+    assert.equal(m.open, true, 'still open after a pick');
+    assert.deepEqual(m.tags, ['Design', 'Engineering', 'Accessibility']);
+    assert.equal(m.trigger, '3 selected');
+    await page.click('#cbm-design');
+    m = await multi();
+    assert.deepEqual(m.inputs, ['eng', 'a11y'], 'toggled off again');
+    assert.deepEqual(await page.evaluate(() => (globalThis as any).__changes), [['design', 'eng', 'a11y'], ['eng', 'a11y']]);
+  });
+
+  await check('multi: options show a checkbox that fills when chosen', async () => {
+    const r = await page.evaluate(() => {
+      const box = (id: string) => getComputedStyle(document.getElementById(id)!, '::before');
+      const tick = (id: string) => getComputedStyle(document.getElementById(id)!, '::after').content;
+      return { on: box('cbm-eng').backgroundColor, off: box('cbm-perf').backgroundColor, offBorder: box('cbm-perf').borderTopWidth, tickOn: tick('cbm-eng'), tickOff: tick('cbm-perf') };
+    });
+    assert.notEqual(r.on, r.off, 'chosen box is filled');
+    assert.equal(r.offBorder, '1px', 'unchosen shows an empty box');
+    assert.equal(r.tickOn, '""');
+    assert.equal(r.tickOff, 'none');
+  });
+
+  await check('multi: Enter toggles the highlighted option and keeps the list open', async () => {
+    await page.fill('#cbm-search', 'perf');
+    await page.keyboard.press('Enter');
+    const m = await multi();
+    assert.equal(m.open, true);
+    assert.deepEqual(m.inputs, ['eng', 'a11y', 'perf']);
+  });
+
+  await check('multi: Backspace in the empty search removes the last choice', async () => {
+    await page.fill('#cbm-search', '');
+    await page.focus('#cbm-search');
+    await page.keyboard.press('Backspace');
+    assert.deepEqual((await multi()).inputs, ['eng', 'a11y']);
+    await page.keyboard.press('Escape');
+  });
+
+  await check("multi: a tag's × removes it and focus moves to the next tag", async () => {
+    await page.click('#cb-multi .combobox-tag-remove[data-value="eng"]');
+    const m = await multi();
+    assert.deepEqual(m.tags, ['Accessibility']);
+    assert.equal(m.trigger, 'Accessibility', 'one choice shows its label');
+    assert.equal(await page.evaluate(() => (document.activeElement as HTMLElement)?.dataset.value), 'a11y');
+  });
+
+  await check('multi: the clear button empties everything (placeholder, no tags, no inputs)', async () => {
+    await page.click('#cb-multi .combobox-clear');
+    assert.deepEqual(await multi(), { trigger: 'Add tags...', tags: [], inputs: [], open: false });
+    assert.equal(await page.$eval('#cb-multi .combobox-tags', (el) => getComputedStyle(el).display), 'none', 'no empty gap');
+  });
+
+  await check('multi state API: getState reports values + labels', async () => {
+    await page.click('#cb-multi .combobox-trigger');
+    await page.click('#cbm-perf');
+    await page.click('#cbm-design');
+    const c = await page.$eval('#cbm-pop', (p: any) => p.api.getState().config);
+    assert.deepEqual([c.values, c.labels, c.value], [['design', 'perf'], ['Design', 'Performance'], 'Design, Performance']);
+    await page.keyboard.press('Escape');
+  });
+
+  // -- tag input (data-tags) -------------------------------------------
+  const tagState = (id: string) =>
+    page.evaluate((wid) => {
+      const w = document.getElementById(wid)!;
+      const input = w.querySelector('.combobox-field-input') as HTMLInputElement;
+      return {
+        tags: Array.from(w.querySelectorAll('.combobox-field .combobox-tag')).map((t) => t.textContent!.trim()),
+        values: new FormData(document.getElementById('cbt-form') as HTMLFormElement).getAll(w.dataset.name!),
+        input: input.value,
+        placeholder: input.placeholder,
+        open: w.querySelector('.combobox-content')!.matches(':popover-open'),
+        highlighted: w.querySelector('[data-highlighted]')?.textContent?.trim() ?? null,
+        visible: Array.from(w.querySelectorAll('[role="option"]:not([hidden])')).map((o) => o.textContent!.trim()),
+      };
+    }, id);
+
+  await check('tag input: tags render INSIDE the field, next to the input; placeholder hidden while tags exist', async () => {
+    const r = await page.evaluate(() => {
+      const tag = document.querySelector('#cb-tags .combobox-tag')!;
+      return { inField: !!tag.closest('.combobox-field'), sameBox: tag.closest('.combobox-field') === document.getElementById('cb-tags-input')!.parentElement };
+    });
+    assert.deepEqual(r, { inField: true, sameBox: true });
+    const st = await tagState('cb-tags');
+    assert.deepEqual([st.tags, st.values, st.placeholder], [['CSS'], ['css'], '']);
+  });
+
+  await check('tag input: typing opens + filters; with no exact match the "Create" row is highlighted', async () => {
+    await page.evaluate(() => {
+      (globalThis as any).__tagEvents = [];
+      document.getElementById('cb-tags')!.addEventListener('combobox:change', (e: Event) => (globalThis as any).__tagEvents.push((e as CustomEvent).detail));
+    });
+    await page.click('#cb-tags-input');
+    await page.keyboard.type('scr');
+    const st = await tagState('cb-tags');
+    assert.equal(st.open, true);
+    assert.deepEqual(st.visible, ['TypeScript', 'JavaScript', 'Create "scr"']);
+    assert.equal(st.highlighted, 'Create "scr"');
+  });
+
+  await check('tag input: Enter on an EXACT match (any case) picks the existing option, never a duplicate', async () => {
+    await page.fill('#cb-tags-input', 'typescript');
+    const hl = (await tagState('cb-tags')).highlighted;
+    assert.equal(hl, 'TypeScript', 'the exact match is highlighted, no create row');
+    await page.keyboard.press('Enter');
+    const st = await tagState('cb-tags');
+    assert.deepEqual([st.tags, st.values, st.input], [['CSS', 'TypeScript'], ['css', 'ts'], '']);
+  });
+
+  await check('tag input: Enter with no exact match creates a new tag (and a real option)', async () => {
+    await page.keyboard.type('Web Components');
+    await page.keyboard.press('Enter');
+    const st = await tagState('cb-tags');
+    assert.deepEqual(st.tags, ['CSS', 'TypeScript', 'Web Components']);
+    assert.deepEqual(st.values, ['css', 'ts', 'Web Components']);
+    const ev = await page.evaluate(() => (globalThis as any).__tagEvents.at(-1));
+    assert.equal(ev.created, 'Web Components');
+    assert.equal(await page.$eval('#cb-tags-list', (l) => !!l.querySelector('[data-created]')), true, 'created tags become options');
+  });
+
+  await check('tag input: a comma commits like Enter', async () => {
+    await page.keyboard.type('Rust,');
+    assert.deepEqual((await tagState('cb-tags')).tags, ['CSS', 'TypeScript', 'Web Components', 'Rust']);
+  });
+
+  await check('tag input: arrow keys pick another listed option instead of creating', async () => {
+    await page.keyboard.type('a');
+    // highlighted = "Create a" (no exact match); ArrowUp walks back to a listed option
+    await page.keyboard.press('ArrowUp');
+    const hl = (await tagState('cb-tags')).highlighted;
+    assert.notEqual(hl, 'Create "a"');
+    await page.keyboard.press('Enter');
+    const st = await tagState('cb-tags');
+    assert.ok(st.tags.includes(hl!), 'the arrowed option was added: ' + hl);
+    assert.ok(!st.tags.includes('a'), 'nothing created');
+  });
+
+  await check('tag input: Backspace in the empty input removes the last tag; × removes any', async () => {
+    const before = (await tagState('cb-tags')).tags;
+    await page.fill('#cb-tags-input', '');
+    await page.keyboard.press('Backspace');
+    assert.deepEqual((await tagState('cb-tags')).tags, before.slice(0, -1));
+    await page.click('#cb-tags .combobox-tag-remove[data-value="css"]');
+    assert.ok(!(await tagState('cb-tags')).tags.includes('CSS'));
+  });
+
+  await check('tag input: Escape closes the list; leaving the field closes it too', async () => {
+    await page.click('#cb-tags-input');
+    await page.keyboard.press('Escape');
+    assert.equal((await tagState('cb-tags')).open, false);
+    await page.click('#cb-tags-input');
+    await page.click('body', { position: { x: 5, y: 5 } });
+    assert.equal((await tagState('cb-tags')).open, false);
+  });
+
+  await check('tag input without data-creatable: Enter takes the first match, never creates', async () => {
+    await page.click('#cb-tags-fixed-input');
+    await page.keyboard.type('re');
+    let st = await tagState('cb-tags-fixed');
+    assert.deepEqual(st.visible, ['Red', 'Green']);
+    assert.equal(st.highlighted, 'Red');
+    await page.keyboard.press('Enter');
+    await page.keyboard.type('purple');
+    await page.keyboard.press('Enter');
+    st = await tagState('cb-tags-fixed');
+    assert.deepEqual(st.values, ['red']);
+    assert.equal(st.input, 'purple', 'unknown text stays - nothing was created');
+  });
+
 } finally {
   await browser.close();
   server.stop();

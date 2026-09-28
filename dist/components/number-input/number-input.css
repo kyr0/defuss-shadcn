@@ -25,8 +25,12 @@
       background: transparent;
       height: 100%;
       /* 4rem basis, but GROWS when the container is widened (w-full demos,
-         grid cells): a fixed width left dead space after the + button */
+         grid cells): a fixed width left dead space after the + button.
+         width pins the intrinsic size too - Chrome otherwise derives a
+         number input's width from the digit count of max (no max: ~170px,
+         max="100": 34px), so the field width followed a validation attr. */
       flex: 1 1 4rem;
+      width: 4rem;
       min-width: 0;
       text-align: center;
       font-size: 0.875rem;
@@ -72,6 +76,42 @@
       }
     }
 
+    /* -- Unit affix: <label class="number-input-unit" for="…"> -----
+       A unit (°C, %, kg, €, h) sits before or after the input. It is a
+       second <label> for the input: clicking it focuses the field and the
+       unit joins the accessible name ("Temperature °C"). The value aligns
+       TOWARD the unit so number + unit read as one ("19.0 °C", "€ 24.90"). */
+    & .number-input-unit {
+      display: flex;
+      align-items: center;
+      align-self: stretch;
+      flex-shrink: 0;
+      padding-inline: 0.25rem;
+      color: var(--muted-foreground);
+      font-size: 0.875rem;
+      font-family: var(--font-sans);
+      white-space: nowrap;
+      cursor: text;
+
+      /* edge of the box (no stepper on that side): field padding */
+      &:first-child { padding-inline-start: 0.75rem; }
+      &:last-child { padding-inline-end: 0.75rem; }
+    }
+
+    /* NOT user-select: none - the unit is part of the value when text is
+       selected, copied or exported ("72,5 kg", not a bare "72,5") */
+
+    &:has(input:not([type="hidden"]) + .number-input-unit) input { text-align: end; }
+    &:has(.number-input-unit + input:not([type="hidden"])) input { text-align: start; }
+
+    /* currency fields carry grouped amounts ("1.234.567,89") */
+    &[data-currency] input { width: 8rem; }
+
+    /* stepper-less field (currency, measurements): the input reaches the box
+       edge - give it the regular field padding there */
+    & input:first-child { padding-inline-start: 0.75rem; }
+    & input:last-child { padding-inline-end: 0.75rem; }
+
     &:focus-within {
       border-color: var(--ring);
       box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
@@ -86,11 +126,13 @@
       height: 1.75rem;
       & input { height: 100%; width: 3rem; font-size: 0.75rem; }
       & button { height: 100%; width: 1.5rem; font-size: 0.875rem; }
+      & .number-input-unit { font-size: 0.75rem; }
     }
     &[data-size="sm"] {
       height: 2rem;
       & input { height: 100%; width: 3.5rem; font-size: 0.8125rem; }
       & button { height: 100%; width: 1.75rem; font-size: 0.9375rem; }
+      & .number-input-unit { font-size: 0.8125rem; }
     }
     &[data-size="md"] {
       height: 2.25rem;
@@ -101,11 +143,13 @@
       height: 2.75rem;
       & input { height: 100%; width: 4.5rem; font-size: 1rem; }
       & button { height: 100%; width: 2.25rem; font-size: 1.125rem; }
+      & .number-input-unit { font-size: 1rem; }
     }
     &[data-size="xl"] {
       height: 3.25rem;
       & input { height: 100%; width: 5rem; font-size: 1.125rem; }
       & button { height: 100%; width: 2.5rem; font-size: 1.25rem; }
+      & .number-input-unit { font-size: 1.125rem; }
     }
   }
 }

@@ -104,6 +104,10 @@
 .code-card-title { font-size: 0.75rem; font-family: var(--font-mono); color: var(--muted-foreground); }
 /* Card box (header strip + body): margin-bottom stays per-instance inline. */
 .code-card { border: 1px solid var(--border); border-radius: var(--radius-xl); overflow: hidden; }
+/* The card owns the frame: its code block (Shiki-highlighted or not) is flush
+   inside it - no own radius/border/background that would draw rounded inner
+   corners under the square header strip. */
+.code-card > pre, .code-card-col > pre { border: 0; border-radius: 0; background: transparent; }
 
 /* Bordered muted content box in composition demos (layout page). */
 .demo-box { border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--muted); color: var(--muted-foreground); padding: 1rem; }

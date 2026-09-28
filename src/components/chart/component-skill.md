@@ -19,6 +19,7 @@ with `role="img"` + `aria-label` as the accessible surface and ECharts' own
 ## Native Web APIs
 
 - [`ResizeObserver`](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver) - container-accurate resize + zero-size deferral (the chart boots once its box has real width+height)
+- [`IntersectionObserver`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver) - the entrance animation replays the first time a chart is 30% on screen (not while it mounts off-screen or during page load)
 - [`matchMedia('(prefers-reduced-motion: reduce)')`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) - evaluated per apply; forces `animation: false`
 - [CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties) - the theme adapter reads `--chart-1`..`--chart-5`, `--popover*`, `--border`, `--font-sans` and the element's own `color` / `font-family` off `getComputedStyle(el)`; `--chart-font-size` (component-local, default 13px) sets the type scale
 - [`<canvas>` 2D `fillStyle`](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle) - one 1×1 probe converts oklch / color-mix / any CSS colour to sRGB for ECharts
@@ -140,6 +141,7 @@ compose this primitive with a page-owned option, never extend the component.
   otherwise ONE actionable error names the exact `<script>` tag to add. The
   component never loads or bundles echarts itself.
 - The renderer is **SVG** - crisp at any density, selectable, smaller DOM.
+- **Entrance on first view**: a chart mounts immediately, but its entrance animation (a gauge sweeping from 0, bars growing) replays once the chart is first 30% visible - so it plays in view, not during page load or below the fold. Slide charts replay on slide activation instead; reduced motion skips both.
 - Theme switching needs no JS: one document-level observer re-derives every
   live chart's theme (`setTheme`) and replays its options so `var(--x)`
   references re-resolve. A long merge stream (a bar race ticking

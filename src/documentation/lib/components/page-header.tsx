@@ -50,10 +50,16 @@ export function PageHeader({
       ) : (
         <p class="text-sm text-muted-foreground mb-3" style="font-family:var(--font-mono);">defuss-shadcn / {trailText}</p>
       )}
-      <h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0 0 0.75rem;">
-        {name}
-        {skill ? <TypeBadge type={skill.type} /> : null}
-      </h1>
+      {/* title row: the h1 on the left, page-level actions on the right (the
+          runtime puts the "Expand all code" toolbar here - level with the
+          title, under "Built with", instead of a row of its own) */}
+      <div class="page-header-title-row">
+        <h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0;">
+          {name}
+          {skill ? <TypeBadge type={skill.type} /> : null}
+        </h1>
+        <div class="page-header-actions"></div>
+      </div>
       {children ? (
         <p class={`text-muted-foreground leading-relaxed ${skill ? 'mb-6' : 'mb-10'}`} {...(introStyle ? { style: introStyle } : {})}>
           {(() => {

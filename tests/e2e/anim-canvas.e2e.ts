@@ -60,10 +60,10 @@ try {
       return { s1: read('s1'), s2: read('s2'), s3: read('s3'), s4: read('s4') };
     });
     assert.deepEqual(geo.s1, { left: '0px', top: '0px', width: '640px', height: '360px' }, 's1 at (0,0)');
-    assert.equal(geo.s2.left, '640px', 's2 sits east of s1');
-    assert.equal(geo.s3.top, '360px', 's3 sits south of s1');
-    assert.equal(geo.s4.left, '640px', 's4 sits south-east');
-    assert.equal(geo.s4.top, '360px', 's4 sits south-east');
+    assert.equal(geo.s2.left, '680px', 's2 sits east of s1, one 40-unit gap away');
+    assert.equal(geo.s3.top, '400px', 's3 sits south of s1, one gap away');
+    assert.equal(geo.s4.left, '680px', 's4 sits south-east');
+    assert.equal(geo.s4.top, '400px', 's4 sits south-east');
     const overflow = await page.$eval('#board', (el) => getComputedStyle(el).overflow);
     assert.equal(overflow, 'hidden', 'the viewport clips the board');
   });
@@ -75,26 +75,29 @@ try {
     assert.equal(await page.$eval('#s2', (el) => el.getAttribute('aria-hidden')), 'true', 's2 aria-hidden');
   });
 
-  await check('ArrowRight moves east to s2 (blocks curtain transition)', async () => {
+  // running animations on a slide (and its subtree) right now
+  const running = (id: string) =>
+    page.$eval(`#${id}`, (el) => el.getAnimations({ subtree: true }).filter((x) => x.playState === 'running').length);
+
+  await check('ArrowRight arrives at s2: only the target animates, under the blocks curtain', async () => {
     await page.keyboard.press('ArrowRight');
     await expectActive(page, 's2', 'after ArrowRight');
+    assert.equal(await running('s1'), 0, 'the slide we left never animates');
+    // blocksIn declares an ARRIVAL curtain: the target lands covered, the
+    // panels roll off it (the engine's blocksOut reveal) - never the old slide
+    assert.equal(await page.$eval('#s1', (el) => !!el.querySelector('[data-df-anim-blocks]')), false, 'no curtain on the slide we left');
+    // its content built in: the entrance replayed (arrival offset cached on the
+    // element) and the counter re-ran up to its value
+    assert.ok(await page.$eval('#s2 h2', (el) => (el as HTMLElement).dataset.animCanvasBaseDelay !== undefined), 'content entrance replayed on arrival');
+    await page.waitForFunction(() => document.getElementById('s2-count')!.textContent === '42', null, { timeout: 5000 });
   });
 
-  await check('ArrowLeft moves back west to s1 (curtain covers the slide we leave - blocksOut never replays on it)', async () => {
-    // arrival at s2 legitimately played the blocksOut reveal - clear that
-    // instance so the exit assertion starts from idle
-    await page.$eval('#s2', (el) => globalThis.df$.anim.blocksOut.reset(el));
+  await check('ArrowLeft back to s1: s2 pans out still - no out-animation, no curtain residue', async () => {
+    await page.$eval('#s2', (el) => globalThis.df$.anim.blocksOut.reset(el)); // start from idle
     await page.keyboard.press('ArrowLeft');
     await expectActive(page, 's1', 'after ArrowLeft');
-    await page.waitForTimeout(200); // let the trailing reveal settle
-    // the curtain pair composes as one story: cover on the slide we LEFT
-    // (reset after the flip), arrival revealed by its own slideIn - a
-    // declared blocksOut must never self-reveal the old slide
-    assert.equal(
-      await page.$eval('#s2', (el) => globalThis.df$.anim.blocksOut.state(el)),
-      'idle',
-      'blocksOut never played on the old slide',
-    );
+    assert.equal(await running('s2'), 0, 'the slide we left never animates');
+    assert.equal(await page.$eval('#s2', (el) => globalThis.df$.anim.blocksOut.state(el)), 'idle', 'no curtain replay on the old slide');
     assert.equal(await page.$eval('#s2', (el) => !!el.querySelector('[data-df-anim-blocks]')), false, 'no curtain residue on the old slide');
     assert.equal(await page.$eval('#s1', (el) => !!el.querySelector('[data-df-anim-blocks]')), false, 'no blocks on the arrival slide (slideIn reveals it)');
     assert.equal(await page.$eval('#s2', (el) => getComputedStyle(el).opacity), '1', 'old slide stays visible (out of frame), never self-hidden');

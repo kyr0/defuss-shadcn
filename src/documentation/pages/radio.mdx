@@ -9,7 +9,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <DocPage meta={meta}>
 
 <PageHeader slug="radio" title="Radio Group" component="radio">
-  A set of mutually exclusive options. Built on native <code>&lt;input type="radio"&gt;</code> with <code>&lt;fieldset&gt;</code> grouping.
+  A set of mutually exclusive options, built on native <code>&lt;input type="radio"&gt;</code>. What makes radios one set is a shared <code>name</code>: pick one and the browser clears the previous choice. The <code>&lt;fieldset&gt;</code> + <code>&lt;legend&gt;</code> only label the set - for sighted readers and screen readers - they do not make it exclusive.
 </PageHeader>
 
 <SkillPanel component="radio">
@@ -58,7 +58,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
   <SkillField label="Notes">
 <SkillText dense>• Styled with <code>appearance: none</code> and a custom dot via <code>::after</code>.</SkillText>
-  <SkillText dense>• The <code>name</code> attribute is required for mutual exclusivity.</SkillText>
+  <SkillText dense>• The shared <code>name</code> IS the set: same name (in the same form) = one exclusive set. <code>&lt;fieldset&gt;</code> only labels it - radios with different names in one fieldset are independent.</SkillText>
   <SkillText dense>• No JavaScript needed - browsers handle group behavior natively.</SkillText>
   <SkillText dense>• Use <code>.radio-item</code> for simple label. Use <code>.radio-item-block</code> for label + description.</SkillText>
   <SkillText dense>• Use <code>.radio-card</code> for card-style selection with <code>:has()</code> highlight.</SkillText>
@@ -67,7 +67,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 </SkillPanel>
 
-```html example label="Default" hint="Radio group with fieldset and legend."
+```html example label="Default" hint="Three radios share name=&quot;plan&quot; - that shared name is what makes them one set (pick one, the previous clears) and what the form submits (plan=free). The fieldset + legend give the set its label."
 <fieldset class="radio-group">
   <legend class="label">Choose a plan</legend>
   <div class="radio-item">
@@ -83,6 +83,51 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <label for="ent">Enterprise</label>
   </div>
 </fieldset>
+```
+
+```html example label="The name makes the set" hint="Try both. Left: every radio has name=&quot;size&quot;, so picking one clears the other - one set, and the form submits one size. Right: same fieldset, but each radio has its own name, so each is a set of one - all three stay selected and none can be cleared by clicking. The fieldset groups nothing; the name does. Radios with a shared name behave as one set even with no fieldset at all (still add one - the legend is the set's accessible label). The set is scoped to its form: the same name in two different forms is two sets."
+<form class="flex flex-wrap gap-8" onsubmit="event.preventDefault()">
+  <fieldset class="radio-group">
+    <legend class="label">Shared name - one set</legend>
+    <div class="radio-item">
+      <input class="radio" type="radio" name="size" id="sz-s" value="s" checked>
+      <label for="sz-s">Small</label>
+    </div>
+    <div class="radio-item">
+      <input class="radio" type="radio" name="size" id="sz-m" value="m">
+      <label for="sz-m">Medium</label>
+    </div>
+    <div class="radio-item">
+      <input class="radio" type="radio" name="size" id="sz-l" value="l">
+      <label for="sz-l">Large</label>
+    </div>
+  </fieldset>
+  <fieldset class="radio-group">
+    <legend class="label">Different names - broken</legend>
+    <div class="radio-item">
+      <input class="radio" type="radio" name="size-small" id="bad-s" value="s">
+      <label for="bad-s">Small</label>
+    </div>
+    <div class="radio-item">
+      <input class="radio" type="radio" name="size-medium" id="bad-m" value="m">
+      <label for="bad-m">Medium</label>
+    </div>
+    <div class="radio-item">
+      <input class="radio" type="radio" name="size-large" id="bad-l" value="l">
+      <label for="bad-l">Large</label>
+    </div>
+  </fieldset>
+  <p class="text-sm text-muted-foreground w-full m-0">Form submits: <output id="size-out">size=s</output></p>
+</form>
+<script>
+  const form = document.getElementById('size-out').form;
+  const show = () => {
+    const pairs = [...new FormData(form)].map(([k, v]) => k + '=' + v);
+    document.getElementById('size-out').value = pairs.join('&') || '(nothing)';
+  };
+  form.addEventListener('change', show);
+  show();
+</script>
 ```
 
 ```html example label="With Description" hint="Radio items with label and description text using .radio-item-block."

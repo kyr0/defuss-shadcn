@@ -11,8 +11,13 @@
 // Protocol (plan §9): host → sandbox {type:'ce-host', ch, kind:'set-state'|
 // 'action'|'read-state'|'set-dark'}; sandbox → host {type:'ce', ch, kind:
 // 'ready'|'state'|'error'|'height'}. `ch` is a per-example channel id, so
-// examples on one page cannot cross-talk. The iframe is sandbox="allow-scripts"
-// ONLY (§9): no allow-same-origin - edited examples cannot touch the page.
+// examples on one page cannot cross-talk. The iframe is sandbox="allow-scripts
+// allow-forms" (§9): no allow-same-origin - edited examples cannot touch the
+// page. allow-forms only lets a form example's submit/invalid handlers run
+// (without it the browser aborts submission before either event fires); the
+// bridge cancels the navigation itself, so a submit never replaces the example.
+// Its permissions policy delegates just `clipboard-write` (allow=), so copy
+// buttons in examples really copy (write-only, still gated on a user click).
 //
 // One document-level `message` listener routes by channel through a registry
 // (per-example listeners would leak across SPA navigations). Every observed
@@ -44,6 +49,8 @@
         // .sr-only lives here - without it, visually-hidden demo text would
         // render visibly inside the sandbox (icon examples looked broken)
         'accessibility.css',
+        // shape utilities (corners, clips, edges, shadows, frames, patterns)
+        'shapes.css',
         'docs-theme.css',
         'docs-utilities.css',
         'components/all.css',

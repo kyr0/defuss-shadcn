@@ -11,7 +11,7 @@
 
 **A UI component system that scales with _local_ AI.** Themeable components built on semantic HTML, modern CSS, and vanilla JavaScript. No framework. No build step for consumers - `dist/` is committed and ready to use as-is. The simplest possible foundation for AI-driven prototyping.
 
-**77 components - 34 with JavaScript, 43 CSS-only - 96.9 KiB minified + compressed - 64.7 KiB as the all.css/all.js bundle.**
+**77 components - 34 with JavaScript, 43 CSS-only - 109.8 KiB minified + compressed - 76.3 KiB as the all.css/all.js bundle.**
 43 of 77 components need no JavaScript - native HTML and modern CSS cover them entirely.
 <!-- parity anchor: README ↔ index (AGENTS.md) - the footprint sentence and pillar set must match src/documentation/pages/index.mdx; commit both files together -->
 The footprint is measured from the shipped `dist/` files on every build and published as
@@ -19,7 +19,7 @@ The footprint is measured from the shipped `dist/` files on every build and publ
 
 The set includes 13 marketing blocks (Site Header, Hero, Pricing, Testimonials, Blog, Footer, …) - full-page sections composed from the same tokens and primitives, all CSS-only.
 
-**[Documentation & Live Demos →](https://kyr0.github.io/defuss-shadcn/)** · [Architecture (ARCH.md)](ARCH.md) · [Agent integration guide (dist/SKILL.md)](dist/SKILL.md)
+**[Documentation & Live Demos →](https://kyr0.github.io/defuss-shadcn/)** · [Architecture (ARCH.md)](ARCH.md) · [Agent skill (SKILL.md)](SKILL.md)
 
 The docs site dogfoods the CDN install: it loads its `all.css` / `all.js` bundle and theme from the jsDelivr CDN, the same URLs as the CDN quick start above - if it renders, the CDN install works.
 
@@ -40,8 +40,8 @@ A portable UI component system built on the [shadcn/ui](https://ui.shadcn.com) t
 ### Via CDN
 
 ```html
-<!-- 1. Add a theme -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/utils/default-semantic-tokens.css">
+<!-- 1. Add the base: tokens + sizing/layout/accessibility utilities (a theme preset from dist/theme/ may follow) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/core.css">
 
 <!-- 2. Add the icons -->
 <script src="https://unpkg.com/lucide@1.8.0"></script>
@@ -51,17 +51,34 @@ A portable UI component system built on the [shadcn/ui](https://ui.shadcn.com) t
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.css">
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.js"></script>
 
-<!-- 3b. …or core + only the components you use -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/core.css">
-<script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/core.js"></script>
+<!-- 3b. …or only the components you use: their CSS, then core.js + their JS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/button/button.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.css">
+<script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/core.js"></script>
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.js"></script>
 ```
 
 Two delivery modes, one implementation: **load core plus the components you use, or load all alone.** The core pair is `core.css` (tokens + sizing + layout + accessibility utilities) + `core.js` (the `df$` runtime: defuss-query + defuss-morph); documentation code is separate. No framework or jQuery dependency.
 
 `core.js` installs the callable `df$` runtime (query + morph + the shared component layer at `df$.shadcn.shared`) - every component `.js` requires it, loaded first; a missing or mismatched core fails with one actionable load-order error before anything renders. `all.css` / `all.js` bundle the core runtime plus every component (minified twins: `core.min.js`, `all.min.css` + `all.min.css.map`, `all.min.js` + `all.min.js.map`). Every runtime bundle carries a per-release provenance pointer (bundled upstream versions + license hashes; full notice in `components/NOTICE.txt`). The per-component files stay available - include only what you use; their stylesheets are independent of each other.
+
+### Via npm
+
+In a project with a package manager and a bundler, install the package and import the same files in the same order from the app entry:
+
+```bash
+npm install defuss-shadcn   # or: bun add / pnpm add / yarn add defuss-shadcn
+```
+
+```js
+import 'defuss-shadcn/dist/components/core.css'; // tokens + utilities
+import 'defuss-shadcn/dist/components/all.css';  // every component's styles
+import 'defuss-shadcn/dist/components/all.js';   // df$ runtime + every component's behavior
+```
+
+### For AI agents: SKILL.md
+
+[`SKILL.md`](SKILL.md) (repo root, shipped in the npm package) packages the whole project as one agent skill: the exact install steps for both paths (npm or jsDelivr, no TypeScript for standalone HTML), the include order, the rules to follow, a map of every documentation page (guides + live examples, linked as MDX sources) and an index of all component skills with why/when - generated from the sources on every build.
 
 ### Self-hosting
 
@@ -106,13 +123,14 @@ Tokens are compatible with [tweakcn.com](https://tweakcn.com) theme exports. A t
 
 ## Optional modules
 
-Three standalone stylesheets live beside the token file and are opt-in - no component depends on them, and the token export stays tweakcn-pure:
+Four standalone stylesheets live beside the token file and are opt-in - no component depends on them, and the token export stays tweakcn-pure:
 
 - [`dist/theme/utils/sizing.css`](dist/theme/utils/sizing.css) - one numeric scale (`w-4` = four base units, `--size-*` aliases, density-aware spacing)
 - [`dist/theme/utils/layout.css`](dist/theme/utils/layout.css) - small layout surface (`flex`, `grid`, `stack`, `container`, named `query` boundaries, overflow + text-flow helpers)
 - [`dist/theme/utils/accessibility.css`](dist/theme/utils/accessibility.css) - screen-reader-only content (`.sr-only` / `.not-sr-only`, the clip pattern)
+- [`dist/theme/utils/shapes.css`](dist/theme/utils/shapes.css) - reusable silhouettes to mix a design up (radius scale, organic / cut / notch / scoop corners, clip-path shapes, section edges, shadow scale + stylized shadows, frames, background patterns)
 
-Load them after the tokens, before component CSS. Docs: [Sizing](https://kyr0.github.io/defuss-shadcn/sizing.html) · [Layout](https://kyr0.github.io/defuss-shadcn/layout.html) · [Accessibility](https://kyr0.github.io/defuss-shadcn/accessibility.html)
+Load them after the tokens, before component CSS. Docs: [Sizing](https://kyr0.github.io/defuss-shadcn/sizing.html) · [Layout](https://kyr0.github.io/defuss-shadcn/layout.html) · [Shapes](https://kyr0.github.io/defuss-shadcn/shapes.html) · [Accessibility](https://kyr0.github.io/defuss-shadcn/accessibility.html)
 
 ## Components
 

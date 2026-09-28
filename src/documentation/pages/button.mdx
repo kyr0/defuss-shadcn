@@ -68,12 +68,14 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </SkillPanel>
 
 ```html example label="Variants" hint="Six styles via data-variant. Default has a solid primary fill."
-<button class="btn" data-variant="default">Default</button>
-<button class="btn" data-variant="secondary">Secondary</button>
-<button class="btn" data-variant="outline">Outline</button>
-<button class="btn" data-variant="ghost">Ghost</button>
-<button class="btn" data-variant="destructive">Destructive</button>
-<button class="btn" data-variant="link">Link</button>
+<div class="flex flex-wrap items-center gap-3">
+  <button class="btn" data-variant="default">Default</button>
+  <button class="btn" data-variant="secondary">Secondary</button>
+  <button class="btn" data-variant="outline">Outline</button>
+  <button class="btn" data-variant="ghost">Ghost</button>
+  <button class="btn" data-variant="destructive">Destructive</button>
+  <button class="btn px-4" data-variant="link">Link</button>
+</div>
 ```
 
 ```html example label="Sizes" hint="The full five-step scale via data-size - the default equals md - plus icon-only variants."

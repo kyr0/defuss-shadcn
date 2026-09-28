@@ -45,6 +45,15 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillGrid>
   </SkillField>
 
+  <SkillField label="Badge status (data-variant on .avatar-badge)">
+<SkillGrid>
+    <Variant name="online" description="Green dot (also the no-variant default)" />
+    <Variant name="offline" description="Hollow grey ring" />
+    <Variant name="busy" description="Red dot with a bar - in a meeting" />
+    <Variant name="away" description="Amber with clock hands - idle / afk" />
+  </SkillGrid>
+  </SkillField>
+
   <SkillField label="Data attributes">
 <SkillText>• <code>data-error</code></SkillText>
   </SkillField>
@@ -52,14 +61,14 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <SkillField label="Accessibility">
 <SkillText dense>• <code>&lt;img&gt;</code> must have an <code>alt</code> attribute describing the user</SkillText>
   <SkillText dense>• Fallback text should be initials or a meaningful abbreviation</SkillText>
-  <p class="text-muted-foreground m-0">• Avatar badge should use <code>aria-label</code> to convey status when meaningful</p>
+  <p class="text-muted-foreground m-0">• A status badge needs <code>role="img"</code> + <code>aria-label</code> ("Online", "Busy" …) - a bare <code>&lt;span&gt;</code> can't carry a name</p>
   </SkillField>
 </SkillPanel>
 
 ```html example label="Basic" hint="Avatar with image and fallback."
 <div style="display:flex;gap:1.0rem;align-items:center;">
   <span class="avatar">
-    <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn"></img>
+    <img class="avatar-image" src="https://github.com/kyr0.png" alt="@shadcn"></img>
     <span class="avatar-fallback">CN</span>
   </span>
   <span class="avatar">
@@ -71,50 +80,79 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 ```html example label="Sizes" hint="The full five-step scale via data-size - the default equals md."
 <div style="display:flex;gap:1.0rem;align-items:center;">
   <span class="avatar" data-size="xs">
-    <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn"></img>
+    <img class="avatar-image" src="https://github.com/kyr0.png" alt="@shadcn"></img>
     <span class="avatar-fallback">CN</span>
   </span>
   <span class="avatar" data-size="sm">
-    <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn"></img>
+    <img class="avatar-image" src="https://github.com/kyr0.png" alt="@shadcn"></img>
     <span class="avatar-fallback">CN</span>
   </span>
   <span class="avatar" data-size="md">
-    <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn"></img>
+    <img class="avatar-image" src="https://github.com/kyr0.png" alt="@shadcn"></img>
     <span class="avatar-fallback">CN</span>
   </span>
   <span class="avatar" data-size="lg">
-    <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn"></img>
+    <img class="avatar-image" src="https://github.com/kyr0.png" alt="@shadcn"></img>
     <span class="avatar-fallback">CN</span>
   </span>
   <span class="avatar" data-size="xl">
-    <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn"></img>
+    <img class="avatar-image" src="https://github.com/kyr0.png" alt="@shadcn"></img>
     <span class="avatar-fallback">CN</span>
   </span>
 </div>
 ```
 
-```html example label="With Badge" hint="Status indicator badge positioned at the bottom-right."
-<div style="display:flex;gap:1.0rem;align-items:center;">
+```html example label="With Badge" hint="Presence status at the bottom-right: data-variant='online' (green), 'offline' (grey ring), 'busy' (red with a bar - in a meeting, do not disturb) or 'away' (amber with clock hands). Each state has its own shape as well as its colour, so it reads without colour vision too. role='img' + aria-label gives the dot its spoken name."
+<div style="display:flex;gap:1.25rem;align-items:center;flex-wrap:wrap;">
   <span class="avatar">
-    <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn"></img>
+    <img class="avatar-image" src="https://github.com/kyr0.png" alt="@shadcn"></img>
     <span class="avatar-fallback">CN</span>
-    <span class="avatar-badge"></span>
+    <span class="avatar-badge" data-variant="online" role="img" aria-label="Online"></span>
   </span>
   <span class="avatar">
     <span class="avatar-fallback">JD</span>
-    <span class="avatar-badge"></span>
+    <span class="avatar-badge" data-variant="offline" role="img" aria-label="Offline"></span>
+  </span>
+  <span class="avatar">
+    <span class="avatar-fallback">AK</span>
+    <span class="avatar-badge" data-variant="busy" role="img" aria-label="Busy"></span>
+  </span>
+  <span class="avatar">
+    <span class="avatar-fallback">MR</span>
+    <span class="avatar-badge" data-variant="away" role="img" aria-label="Away"></span>
   </span>
 </div>
+```
+
+```html example label="Status in a list" hint="The badge is the person's state at a glance - pair it with the state in text wherever there is room, so the dot is a shortcut, not the only carrier."
+<ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:0.75rem;max-width:18rem;">
+  <li style="display:flex;align-items:center;gap:0.75rem;">
+    <span class="avatar"><img class="avatar-image" src="https://github.com/kyr0.png" alt=""></img><span class="avatar-fallback">CN</span><span class="avatar-badge" data-variant="online" role="img" aria-label="Online"></span></span>
+    <span class="flex flex-col"><strong class="text-sm">shadcn</strong><span class="text-xs text-muted-foreground">Online</span></span>
+  </li>
+  <li style="display:flex;align-items:center;gap:0.75rem;">
+    <span class="avatar"><span class="avatar-fallback">AK</span><span class="avatar-badge" data-variant="busy" role="img" aria-label="Busy"></span></span>
+    <span class="flex flex-col"><strong class="text-sm">Aisha Khan</strong><span class="text-xs text-muted-foreground">In a meeting until 15:00</span></span>
+  </li>
+  <li style="display:flex;align-items:center;gap:0.75rem;">
+    <span class="avatar"><span class="avatar-fallback">MR</span><span class="avatar-badge" data-variant="away" role="img" aria-label="Away"></span></span>
+    <span class="flex flex-col"><strong class="text-sm">Maya Ruiz</strong><span class="text-xs text-muted-foreground">Away · 20 min</span></span>
+  </li>
+  <li style="display:flex;align-items:center;gap:0.75rem;">
+    <span class="avatar"><span class="avatar-fallback">JD</span><span class="avatar-badge" data-variant="offline" role="img" aria-label="Offline"></span></span>
+    <span class="flex flex-col"><strong class="text-sm">John Doe</strong><span class="text-xs text-muted-foreground">Last seen yesterday</span></span>
+  </li>
+</ul>
 ```
 
 ```html example label="Avatar Group" hint="Overlapping avatars with an optional count."
 <div class="avatar-group">
   <span class="avatar">
-    <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn"></img>
+    <img class="avatar-image" src="https://github.com/kyr0.png" alt="@shadcn"></img>
     <span class="avatar-fallback">CN</span>
   </span>
   <span class="avatar">
-    <img class="avatar-image" src="https://github.com/maxleiter.png" alt="@maxleiter"></img>
+    <img class="avatar-image" src="https://github.com/kyr0.png" alt="@maxleiter"></img>
     <span class="avatar-fallback">ML</span>
   </span>
   <span class="avatar">
@@ -129,7 +167,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <article class="card" style="width:18rem;">
   <div class="card-header" style="display:flex;flex-direction:row;align-items:center;gap:0.75rem;">
     <span class="avatar">
-      <img class="avatar-image" src="https://github.com/shadcn.png" alt="@shadcn"></img>
+      <img class="avatar-image" src="https://github.com/kyr0.png" alt="@shadcn"></img>
       <span class="avatar-fallback">CN</span>
       <span class="avatar-badge"></span>
     </span>

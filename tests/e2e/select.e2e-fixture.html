@@ -35,5 +35,12 @@
     <select class="select" id="se-xl" data-size="xl" style="margin-top:1rem;">
       <option>Extra large</option>
     </select>
+    <!-- multiple: native list box -->
+    <form id="sel-multi-form"><select class="select" id="sel-multi" name="ship" multiple size="4"><option value="at" selected>Austria</option><option value="be">Belgium</option><option value="de" selected>Germany</option><option value="fr">France</option></select></form>
+    <!-- unavailable options: one disabled option / a disabled optgroup in a usable list -->
+    <form id="sel-size-form">
+      <select class="select" id="sel-size" name="size"><option value="" selected>Select a size</option><option value="m">M</option><option value="l" disabled>L - out of stock</option><optgroup label="Legacy" disabled><option value="old">Old</option></optgroup></select>
+      <select class="select" id="sel-size-list" name="sizes" multiple size="3"><option value="m">M</option><option value="l" disabled>L - out of stock</option><option value="xl">XL</option></select>
+    </form>
   </body>
 </html>

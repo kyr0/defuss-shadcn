@@ -78,6 +78,42 @@ supportedStates: default
 </fieldset>
 ```
 
+### Select all (parent box + group) - what the mixed state is for
+A parent box above a group summarises it: **some** children ticked → mixed
+(`indeterminate = true`, the dash), **all** → checked, **none** → empty.
+Clicking the parent while mixed or empty ticks every child; while checked it
+clears them (the browser drops the mixed flag on click and flips `checked`,
+so the page only copies `parent.checked` to the children). The parent names
+its children with `aria-controls` (WAI-ARIA APG mixed-checkbox pattern);
+indent the children by the box width + gap (`1.625rem`) so they line up
+under the parent's label. The wiring is a few lines of page script: on every
+child `change`, recount and set `parent.checked` / `parent.indeterminate`;
+on the parent's `change`, set every child to `parent.checked`. Run the
+recount once on load so authored `checked` children show the right parent.
+```html
+<fieldset class="flex flex-col gap-2">
+  <legend>Items to display</legend>
+  <div class="checkbox-item">
+    <input class="checkbox" type="checkbox" id="all" aria-controls="item-a item-b item-c">
+    <label for="all">Show all items</label>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:0.5rem;padding-inline-start:1.625rem;">
+    <div class="checkbox-item">
+      <input class="checkbox" type="checkbox" id="item-a" checked>
+      <label for="item-a">Item A</label>
+    </div>
+    <div class="checkbox-item">
+      <input class="checkbox" type="checkbox" id="item-b">
+      <label for="item-b">Item B</label>
+    </div>
+    <div class="checkbox-item">
+      <input class="checkbox" type="checkbox" id="item-c">
+      <label for="item-c">Item C</label>
+    </div>
+  </div>
+</fieldset>
+```
+
 ---
 
 ## Keyboard
@@ -98,12 +134,13 @@ All keyboard behavior is provided natively by `<input type="checkbox">`.
 - Use `<fieldset>` + `<legend>` for checkbox groups.
 - Use `aria-invalid="true"` for validation errors.
 - Point `aria-describedby` from the control to the `.field-description`'s `id` - visual proximity alone never reaches a screen reader.
-- Use `indeterminate` property via JS for the indeterminate (mixed) state.
+- Use `indeterminate` property via JS for the indeterminate (mixed) state - screen readers announce it as "mixed" / "partially checked". A mixed parent box names its children with `aria-controls` (see "Select all").
 
 ---
 
 ## Notes
 
+- **Gap hit area**: inside `.checkbox-item` / `.checkbox-item-block` the box's click target spans the gap to its label (a transparent `::before`), so clicking the whitespace between box and text toggles too. Keep the label after the control and link it with `for`.
 - Styled with `appearance: none` and a custom checkmark via `::after` pseudo-element.
 - The checkmark uses a CSS-only approach - no SVG or icon font needed.
 - Indeterminate state is set via JavaScript: `checkbox.indeterminate = true;`.

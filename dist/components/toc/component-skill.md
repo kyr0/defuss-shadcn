@@ -1,6 +1,6 @@
 ---
 name: Table of Contents
-type: BLK
+type: MOL
 why: A section-nav block of heading links with active-section tracking classes - pure markup, the observer is the host's.
 when: Docs/blog/spec pages with in-page sections that deserve a persistent rail.
 where: dist/components/toc/toc.css
@@ -74,3 +74,4 @@ Set `data-density` on the `.toc` root. A whitespace policy, not a zoom: only gap
 ## Notes
 
 - Build the link list at build time from the page's headings (ids + text) - a hand-maintained ToC drifts immediately.
+- Position is the host's: a left rail beside the content, or the docs' right rail (`position: sticky; top: 0` inside the scrolling area) - the docs page demonstrates both. Move `aria-current` from an IntersectionObserver rooted on the scroll container.

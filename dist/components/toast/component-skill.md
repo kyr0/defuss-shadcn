@@ -41,7 +41,7 @@ region announcements. Follows `role="status"` with `aria-live="polite"`.
       <p class="toast-description">Monday, January 3rd at 6:00pm</p>
     </div>
     <button class="toast-close" aria-label="Dismiss" data-toast-close>
-      <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24"
+      <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24"
            fill="none" stroke="currentColor" stroke-width="2">
         <path d="M18 6 6 18M6 6l12 12"/>
       </svg>
@@ -67,7 +67,7 @@ region announcements. Follows `role="status"` with `aria-live="polite"`.
       <p class="toast-title">Saved successfully</p>
     </div>
     <button class="toast-close" aria-label="Dismiss" data-toast-close>
-      <svg aria-hidden="true" width="14" height="14">...</svg>
+      <svg aria-hidden="true" width="18" height="18">...</svg>
     </button>
   </div>
 </div>

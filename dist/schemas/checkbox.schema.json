@@ -77,6 +77,25 @@
       "editor": {
         "component": "checkbox"
       }
+    },
+    "indeterminate": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".checkbox"
+      },
+      "mutation": {
+        "kind": "property",
+        "name": "indeterminate"
+      },
+      "observation": {
+        "kind": "property",
+        "name": "indeterminate"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
     }
   },
   "actions": {}

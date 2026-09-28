@@ -4,7 +4,10 @@ import {
   parseSkillFrontmatter,
   SKILL_FRONTMATTER_KEYS,
   SKILL_TEMPLATE_FILE,
+  ROOT_SKILL_TEMPLATE_FILE,
   assembleSkillText,
+  assembleRootSkillText,
+  type RootDocPage,
   type SkillEntry,
 } from './skill.ts';
 
@@ -42,4 +45,41 @@ export function buildSkillText(src: string): string {
     readFileSync(join(src, SKILL_TEMPLATE_FILE), 'utf8'),
     skillEntries(join(src, 'components')),
   );
+}
+
+/** Page frontmatter (`title:` / `description:`) of one docs page, or blanks. */
+function pageMeta(pagesDir: string, slug: string): { title: string; description: string } {
+  const file = join(pagesDir, `${slug}.mdx`);
+  if (!existsSync(file)) return { title: '', description: '' };
+  const fm = readFileSync(file, 'utf8').match(/^---\n([\s\S]*?)\n---/)?.[1] ?? '';
+  const field = (k: string): string =>
+    (fm.match(new RegExp(`^${k}:\\s*"?(.*?)"?\\s*$`, 'm'))?.[1] ?? '').replace(/\\"/g, '"');
+  return { title: field('title'), description: field('description') };
+}
+
+/** Why: the repo-root SKILL.md - the whole project as ONE agent skill. Pure
+ * function of the repo (template, sidebar nav, page + skill frontmatter,
+ * package version), so build.ts writes it and verify.ts compares it. */
+export async function buildRootSkillText(root: string): Promise<string> {
+  const src = join(root, 'src');
+  const pagesDir = join(src, 'documentation', 'pages');
+  const { NAV } = await import(join(src, 'documentation', 'lib', 'nav.ts'));
+  type Nav = { label: string; href: string; children?: Nav[] };
+  const toPage = (n: Nav): RootDocPage => {
+    const slug = n.href.replace(/\.html$/, '');
+    return { label: n.label, slug, description: pageMeta(pagesDir, slug).description, children: (n.children ?? []).map(toPage) };
+  };
+  const compsDir = join(src, 'components');
+  const components = skillEntries(compsDir).map((e) => ({
+    ...e,
+    hasJs: existsSync(join(compsDir, e.folder, `${e.folder}.ts`)),
+  }));
+  const version = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).version as string;
+  return assembleRootSkillText(readFileSync(join(src, ROOT_SKILL_TEMPLATE_FILE), 'utf8'), {
+    version,
+    total: components.length,
+    withJs: components.filter((c) => c.hasJs).length,
+    sections: (NAV as { heading: string; items: Nav[] }[]).map((s) => ({ heading: s.heading, pages: s.items.map(toPage) })),
+    components,
+  });
 }

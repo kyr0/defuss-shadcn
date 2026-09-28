@@ -1,6 +1,6 @@
 ---
 title: "defuss-shadcn - The System in Numbers"
-description: "defuss-shadcn presents itself - the flagship 10-slide deck with the system's real numbers (77 components, 56% CSS-only, 96.9 KiB min+gz): glyph cover, unit dots, gauge, tanks, chart staircase, taxonomy donut, stopwatch, branching route."
+description: "defuss-shadcn presents itself - the flagship 10-slide deck with the system's real numbers (77 components, 56% CSS-only, 109.8 KiB min+gz): glyph cover, unit dots, gauge, tanks, chart staircase, taxonomy donut, stopwatch, branching route."
 slug: "system-in-numbers"
 ---
 
@@ -9,7 +9,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
 <DocPage meta={meta}>
 
 <PageHeader slug="system-in-numbers" title="The System in Numbers" component="presentation">
-  The flagship deck: defuss-shadcn presents itself - 77 components, 56% CSS-only, 96.9 KiB - ten slides with real measurements instead of placeholders.
+  The flagship deck: defuss-shadcn presents itself - 77 components, 56% CSS-only, 109.8 KiB - ten slides with real measurements instead of placeholders.
 </PageHeader>
 
 ```html example label="Design System Report" schema="none" height="26" hint="Ten slides in two-colour discipline (navy / deep blue / white + the five taxonomy data colours). Every slide change is a 14-blade blue curtain from the df$.anim engine (data-anim-in=&quot;blocksIn&quot; on the deck, a colour that shows on navy AND on white), plus a section mini-route, self-drawing SVG glyphs, a typewriter, offset-path trains, liquid tanks, a needle gauge, a taxonomy donut and a stopwatch - slide 6 is the shipped chart component. All numbers are real, measured from dist/stats.json. ← / → to navigate, N for notes, F for fullscreen."
@@ -250,12 +250,12 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     <div class="abs sys-fact" data-df-entrance="up" style="--df-motion-delay:1.2s; left:120px; top:715px"><b>0</b><span>runtime dependencies</span></div>
     <div class="sys-dots" id="sys-dots"></div>
     <div class="sys-collab" style="left:620px"><b>46</b><span>atoms</span></div>
-    <div class="sys-collab" style="left:795px"><b>14</b><span>molecules</span></div>
-    <div class="sys-collab" style="left:970px"><b>14</b><span>blocks</span></div>
+    <div class="sys-collab" style="left:795px"><b>15</b><span>molecules</span></div>
+    <div class="sys-collab" style="left:970px"><b>13</b><span>blocks</span></div>
     <div class="sys-collab" style="left:1145px"><b>1</b><span>organism</span></div>
     <div class="sys-collab" style="left:1320px"><b>2</b><span>templates</span></div>
     <div class="abs sys-axlab" style="left:620px; top:842px">Taxonomy</div>
-    <p class="presentation-note">Every dot is one component: 46 atoms, 14 molecules, 14 blocks, one organism and two templates.</p>
+    <p class="presentation-note">Every dot is one component: 46 atoms, 15 molecules, 13 blocks, one organism and two templates.</p>
   </section>
   <!-- 3 · Opening - the route: zigzag line map with a looping train -->
   <section class="slide" data-slide id="sys-route" data-theme="ink" data-sec="0" aria-label="The route">
@@ -325,11 +325,11 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
   </section>
   <!-- 6 · System - staircase: the shipped chart component + bouncing ball -->
   <section class="slide" data-slide id="sys-treppe" data-theme="paper" data-sec="1" aria-label="Shipped sizes">
-    <h2 class="abs sys-h-l" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:106px">The whole system:<br>96.9 KiB.</h2>
+    <h2 class="abs sys-h-l" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:106px">The whole system:<br>109.8 KiB.</h2>
     <p class="abs" data-df-entrance="up" style="--df-motion-delay:.4s; left:124px; top:318px; font-size:28px; font-weight:500; margin:0">Minified + gzip - measured from dist/stats.json</p>
-    <div class="chart" id="sys-treppe-chart" role="img" aria-label="Bar chart of shipped sizes: total 96.9 KiB, bundle 64.7 KiB, core 24.1 KiB, 1.3 KiB per component on average" style="position:absolute; left:120px; top:340px; width:1360px; height:440px"></div>
+    <div class="chart" id="sys-treppe-chart" role="img" aria-label="Bar chart of shipped sizes: total 109.8 KiB, bundle 76.3 KiB, core 24.1 KiB, 1.4 KiB per component on average" style="position:absolute; left:120px; top:340px; width:1360px; height:440px"></div>
     <div class="sys-ball" style="offset-path:path('M 320 200 L 320 390 Q 480 290 640 490 Q 800 400 960 615 Q 1120 540 1280 686')"></div>
-    <p class="presentation-note">The whole system weighs 96.9 KiB minified and gzipped - the bundle 64.7, the core 24.1, 1.3 KiB per component on average.</p>
+    <p class="presentation-note">The whole system weighs 109.8 KiB minified and gzipped - the bundle 76.3, the core 24.1, 1.4 KiB per component on average.</p>
   </section>
   <!-- 7 · Components - taxonomy donut in the five class colours -->
   <section class="slide" data-slide id="sys-radar" data-theme="ink" data-sec="3" aria-label="What the system is made of">
@@ -337,18 +337,18 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     <p class="abs" data-df-entrance="up" style="--df-motion-delay:.5s; left:120px; top:330px; width:560px; font-size:38px; font-weight:600; line-height:1.2; margin:0">77 components in five taxonomy classes.</p>
     <div class="sys-leg">
       <div data-df-entrance="left" style="--df-motion-delay:1.1s"><i class="sw-atm"></i><span>Atoms</span><b>46</b></div>
-      <div data-df-entrance="left" style="--df-motion-delay:1.3s"><i class="sw-mol"></i><span>Molecules</span><b>14</b></div>
-      <div data-df-entrance="left" style="--df-motion-delay:1.5s"><i class="sw-blk"></i><span>Blocks</span><b>14</b></div>
+      <div data-df-entrance="left" style="--df-motion-delay:1.3s"><i class="sw-mol"></i><span>Molecules</span><b>15</b></div>
+      <div data-df-entrance="left" style="--df-motion-delay:1.5s"><i class="sw-blk"></i><span>Blocks</span><b>13</b></div>
       <div data-df-entrance="left" style="--df-motion-delay:1.7s"><i class="sw-org"></i><span>Organisms</span><b>1</b></div>
       <div data-df-entrance="left" style="--df-motion-delay:1.9s"><i class="sw-tpl"></i><span>Templates</span><b>2</b></div>
     </div>
-    <svg class="sys-fx" viewBox="0 0 1600 900" role="img" aria-label="Donut: taxonomy of the 77 components - 46 atoms, 14 molecules, 14 blocks, 1 organism, 2 templates">
+    <svg class="sys-fx" viewBox="0 0 1600 900" role="img" aria-label="Donut: taxonomy of the 77 components - 46 atoms, 15 molecules, 13 blocks, 1 organism, 2 templates">
       <g transform="rotate(-90 1150 500)">
         <circle class="sys-seg" cx="1150" cy="500" r="160" stroke="#06B6D4" stroke-dashoffset="0" style="--f:600.6; --d:.6s"></circle>
-        <circle class="sys-seg" cx="1150" cy="500" r="160" stroke="#3B82F6" stroke-dashoffset="-600.6" style="--f:182.8; --d:.95s"></circle>
-        <circle class="sys-seg" cx="1150" cy="500" r="160" stroke="#F59E0B" stroke-dashoffset="-783.4" style="--f:182.8; --d:1.3s"></circle>
-        <circle class="sys-seg" cx="1150" cy="500" r="160" stroke="#8B5CF6" stroke-dashoffset="-966.2" style="--f:13.1; --d:1.65s"></circle>
-        <circle class="sys-seg" cx="1150" cy="500" r="160" stroke="#64748B" stroke-dashoffset="-979.3" style="--f:26.1; --d:2s"></circle>
+        <circle class="sys-seg" cx="1150" cy="500" r="160" stroke="#3B82F6" stroke-dashoffset="-600.6" style="--f:195.8; --d:.95s"></circle>
+        <circle class="sys-seg" cx="1150" cy="500" r="160" stroke="#F59E0B" stroke-dashoffset="-796.4" style="--f:169.7; --d:1.3s"></circle>
+        <circle class="sys-seg" cx="1150" cy="500" r="160" stroke="#8B5CF6" stroke-dashoffset="-966.1" style="--f:13.1; --d:1.65s"></circle>
+        <circle class="sys-seg" cx="1150" cy="500" r="160" stroke="#64748B" stroke-dashoffset="-979.2" style="--f:26.1; --d:2s"></circle>
       </g>
       <circle class="sys-ringl" cx="1150" cy="500" r="80"></circle>
       <circle class="sys-ringl" cx="1150" cy="500" r="160"></circle>
@@ -366,7 +366,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
       <circle class="sys-blip" cx="1250" cy="420" r="10" style="--d:.45s"></circle>
       <circle class="sys-blip" cx="1330" cy="330" r="9" style="--d:.55s"></circle>
     </svg>
-    <p class="presentation-note">What the system is made of: 46 atoms, 14 molecules, 14 blocks, 1 organism, 2 templates.</p>
+    <p class="presentation-note">What the system is made of: 46 atoms, 15 molecules, 13 blocks, 1 organism, 2 templates.</p>
   </section>
   <!-- 8 · Quality - stopwatch (one full run) + verification ranking -->
   <section class="slide" data-slide id="sys-watch" data-theme="paper" data-sec="5" aria-label="The verification">
@@ -388,7 +388,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     </svg>
     <div class="sys-rows">
       <div class="sys-row top" data-df-entrance="left" style="--df-motion-delay:.7s"><span>Tests</span><i style="width:100%; --d:.7s"></i><b>281</b></div>
-      <div class="sys-row" data-df-entrance="left" style="--df-motion-delay:.82s"><span>Screenshots</span><i style="width:72.6%; --d:.82s"></i><b>204</b></div>
+      <div class="sys-row" data-df-entrance="left" style="--df-motion-delay:.82s"><span>Screenshots</span><i style="width:76.3%; --d:.82s"></i><b>204</b></div>
       <div class="sys-row hot" data-df-entrance="left" style="--df-motion-delay:.94s"><span>E2E files</span><i style="width:29.5%; --d:.94s"></i><b>83</b></div>
       <div class="sys-row hot" data-df-entrance="left" style="--df-motion-delay:1.06s"><span>Verify gates</span><i style="width:24.9%; --d:1.06s"></i><b>70</b></div>
     </div>
@@ -493,7 +493,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
 
     // S2: 77 unit dots raining into the five taxonomy columns (46/14/14/1/2)
     const dots = document.getElementById('sys-dots');
-    const columns = [[46, 'atm'], [14, 'mol'], [14, 'blk'], [1, 'org'], [2, 'tpl']];
+    const columns = [[46, 'atm'], [15, 'mol'], [13, 'blk'], [1, 'org'], [2, 'tpl']];
     columns.forEach(([n, cls], k) => {
       for (let j = 0; j < n; j++) {
         const row = Math.floor(j / 5), col = j % 5;
@@ -551,8 +551,8 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
         type: 'bar',
         barWidth: 240,
         barMaxWidth: 240, // the artboard theme caps bars narrower - the ball needs landing room
-        data: [96.9, 64.7, 24.1, {
-          value: 1.3,
+        data: [109.8, 76.3, 24.1, {
+          value: 1.4,
           // above the ball's final resting place on this tiny bar
           label: { position: 'top', distance: 52, color: '#0A1E4A' },
         }],

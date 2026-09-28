@@ -359,6 +359,9 @@
     /* artboard contract - override on the mount for other formats */
     --anim-canvas-width: 1280;
     --anim-canvas-height: 720;
+    /* gutter between board cells (board units): separates the overview
+       tiles and shows as a seam while the board pans. 0 = flush cells. */
+    --anim-canvas-gap: 80;
 
     position: relative;
     display: block;
@@ -378,8 +381,8 @@
       will-change: transform;
     }
 
-    /* a board cell: card surface, flush against its neighbors (radius only
-       appears in overview, where the tiles separate) */
+    /* a board cell: card surface, separated from its neighbors by the gap
+       (radius + shadow appear in overview, where every cell is a tile) */
     & .anim-canvas-slide {
       position: absolute;
       box-sizing: border-box;
@@ -489,30 +492,35 @@
     &[data-size="xs"] {
       width: 1.5rem;
       height: 1.5rem;
+      --_badge: 0.75rem;
       font-size: 0.5625rem;
     }
 
     &[data-size="sm"] {
       width: 2rem;
       height: 2rem;
+      --_badge: 1rem;
       font-size: 0.6875rem;
     }
 
     &[data-size="md"] {
       width: 2.5rem;
       height: 2.5rem;
+      --_badge: 1.25rem;
       font-size: 0.75rem;
     }
 
     &[data-size="lg"] {
       width: 3rem;
       height: 3rem;
+      --_badge: 1.5rem;
       font-size: 0.875rem;
     }
 
     &[data-size="xl"] {
       width: 4rem;
       height: 4rem;
+      --_badge: 1.75rem;
       font-size: 1rem;
     }
   }
@@ -544,15 +552,57 @@
     display: none;
   }
 
+  /* Status dot. data-variant picks the presence state; no variant = online
+     (the historical green). Status colours are literals by design - the
+     tweakcn token set has no success/warning pair (AGENTS.md token rule).
+     Colour is never the only cue (WCAG 1.4.1): offline is a hollow ring,
+     busy carries a bar, away clock hands - the four read apart in greyscale
+     and in forced-colors mode. Every cue is PAINTED inside a full circle
+     (no mask): the silhouette and its separating rim stay whole, so the dot
+     always sits in front of the avatar. Size scales with the avatar
+     (--_badge, set per data-size below); rim and cues scale with it.
+     Name it with role="img" + aria-label. */
   .avatar-badge {
+    --_rim: max(2px, calc(var(--_badge, 1.25rem) * 0.15));
     position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 0.625rem;
-    height: 0.625rem;
+    right: calc(var(--_rim) * -0.5);
+    bottom: calc(var(--_rim) * -0.5);
+    z-index: 1;
+    width: var(--_badge, 1.25rem);
+    height: var(--_badge, 1.25rem);
+    box-sizing: border-box;
     border-radius: 9999px;
     background-color: #16a34a;
-    border: 2px solid var(--background);
+    border: var(--_rim) solid var(--background);
+    background-repeat: no-repeat;
+
+    &[data-variant="online"] {
+      background-color: #16a34a;
+    }
+
+    /* hollow ring: "not here" */
+    &[data-variant="offline"] {
+      background-color: var(--background);
+      box-shadow: inset 0 0 0 max(2px, calc(var(--_badge, 1.25rem) * 0.14)) #9ca3af;
+    }
+
+    /* red with a bar: do not disturb */
+    &[data-variant="busy"] {
+      background-color: #dc2626;
+      background-image: linear-gradient(#fff 0 0);
+      background-size: 56% max(2px, calc(var(--_badge, 1.25rem) * 0.14));
+      background-position: center;
+    }
+
+    /* amber with clock hands (12 → 3 o'clock): away / be right back */
+    &[data-variant="away"] {
+      background-color: #f59e0b;
+      background-image: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);
+      background-size: max(2px, calc(var(--_badge, 1.25rem) * 0.12)) 34%, 30% max(2px, calc(var(--_badge, 1.25rem) * 0.12));
+      /* hour hand: centred, from ~16% down to the centre; minute hand: from
+         the centre to ~80% (percent positions: (box - layer) * p) */
+      background-position: 50% 24%, 71% 50%;
+    }
   }
 
   /* Avatar group */
@@ -583,6 +633,18 @@
     font-weight: 500;
     border: 2px solid var(--background);
     margin-left: -0.5rem;
+  }
+}
+
+/* Forced colors (Windows High Contrast) would repaint the status fills with
+   the system Canvas colour and erase the dot. Presence colour carries meaning
+   (like a chart series), so the badge keeps its own palette; the ring / bar /
+   crescent shape cues stay as well. */
+@media (forced-colors: active) {
+  @layer components {
+    .avatar-badge {
+      forced-color-adjust: none;
+    }
   }
 }
 
@@ -909,6 +971,13 @@
     border-radius: var(--radius-sm); outline: none;
     transition: color 150ms ease;
     &:hover { color: var(--foreground); }
+    /* only a real link underlines - a .breadcrumb-link button (dropdown /
+       ellipsis trigger) is not navigation and keeps the color-only hover */
+    &:is(a[href]):hover {
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
     &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
   }
   /* -- Sizes ------------------------------------------------------
@@ -1142,26 +1211,24 @@
        horizontal groups; ungated they also squared vertical buttons' corners
        at a higher specificity than the vertical block below, leaving "Top"
        with a rounded top-left but a square top-right (issue #13). */
-    &:where(:not([data-orientation="vertical"])) > .btn:not(:first-child):not(:has(+ [role="separator"])) {
+    &:where(:not([data-orientation="vertical"])) > .btn:not(:first-child) {
       border-start-start-radius: 0;
       border-end-start-radius: 0;
     }
 
-    &:where(:not([data-orientation="vertical"])) > .btn:not(:last-child):not([role="separator"] + .btn) {
+    &:where(:not([data-orientation="vertical"])) > .btn:not(:last-child) {
       border-start-end-radius: 0;
       border-end-end-radius: 0;
     }
 
-    /* Buttons after a separator get start radii back */
-    & > [role="separator"] + .btn {
-      border-start-start-radius: var(--radius-md);
-      border-end-start-radius: var(--radius-md);
-    }
-
-    /* Buttons before a separator get end radii back */
-    & > .btn:has(+ [role="separator"]) {
-      border-start-end-radius: var(--radius-md);
-      border-end-end-radius: var(--radius-md);
+    /* A separator JOINS the control (a split button: action | menu trigger):
+       it is the one dividing line, so the buttons on either side keep their
+       square inner corners and drop the border that touches it - 1px total,
+       not border + rule + border with rounded inner corners (which read as
+       two buttons with a gap). */
+    &:where(:not([data-orientation="vertical"])) {
+      & > .btn:has(+ [role="separator"]) { border-inline-end-width: 0; }
+      & > [role="separator"] + .btn { border-inline-start-width: 0; }
     }
 
     /* Ensure hovered/focused button stacks above its neighbors */
@@ -1213,6 +1280,9 @@
         width: auto;
         height: 1px;
       }
+
+      & > .btn:has(+ [role="separator"]) { border-block-end-width: 0; }
+      & > [role="separator"] + .btn { border-block-start-width: 0; }
     }
   }
 
@@ -1246,6 +1316,107 @@
     font-size: 0.875rem;
     font-weight: 500;
     color: var(--foreground);
+  }
+
+  /* The heading as a button (the JS upgrades a plain heading): the month +
+     year are the obvious thing to click - it opens the month grid, and in
+     the month grid the year opens the year grid. The chevron says "menu". */
+  button.calendar-heading {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.5rem;
+    border: none;
+    border-radius: var(--radius-md);
+    background: transparent;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background-color 150ms ease;
+
+    &::after {
+      content: '';
+      width: 0.375rem;
+      height: 0.375rem;
+      margin-top: -0.1875rem;
+      border: solid currentColor;
+      border-width: 0 1.5px 1.5px 0;
+      rotate: 45deg;
+      transition: rotate 150ms ease;
+    }
+
+    &[aria-expanded="true"]::after { rotate: -135deg; margin-top: 0.1875rem; }
+    &:hover { background-color: var(--accent); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  }
+
+  /* data-caption="dropdown": native month + year selects between the arrows
+     (the fastest way to a date decades away - type the year) */
+  .calendar-caption {
+    display: inline-flex;
+    gap: 0.25rem;
+  }
+
+  .calendar-select {
+    padding: 0.25rem 0.375rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background-color: transparent;
+    color: var(--foreground);
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+
+    &:hover { background-color: var(--accent); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  }
+
+  /* -- Month / year picker (data-view="months" | "years") -------
+     Swaps in for the day grid at the same size: 12 months or 12 years in a
+     4-column grid. The current one is filled, this month / year is tinted. */
+  .calendar-picker { display: none; }
+
+  .calendar[data-view] {
+    & .calendar-grid { display: none; }
+
+    & .calendar-picker {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      align-content: center;
+      gap: 0.375rem;
+      box-sizing: border-box;
+      padding: 0.25rem;
+    }
+  }
+
+  .calendar-pick {
+    height: 2.25rem;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-md);
+    background-color: transparent;
+    color: var(--foreground);
+    font: inherit;
+    font-size: 0.8125rem;
+    cursor: pointer;
+    transition: background-color 150ms ease, color 150ms ease;
+
+    &:hover { background-color: var(--accent); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+    &[data-today] { background-color: var(--accent); font-weight: 600; }
+
+    &[aria-current="true"] {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+    }
+
+    /* legible but inert (outside min / max), like every disabled control */
+    &:disabled {
+      background-color: transparent;
+      color: var(--muted-foreground);
+      text-decoration: line-through;
+      cursor: not-allowed;
+    }
   }
 
   .calendar-nav {
@@ -1369,6 +1540,180 @@
       cursor: not-allowed;
     }
   }
+
+  /* -- Day data: marks + notes -----------------------------------
+     data-mark="…" is the page's own classification of a day (a holiday, a
+     booked night, a scheduled event): a dot in the cell's corner plus, for
+     the built-in names, a look of its own. Any other name gets the neutral
+     dot - style it with .calendar-day[data-mark="name"]. A note is a second
+     line under the number (a price, a count); a calendar with notes gets
+     taller cells (data-notes, set by the JS). */
+  .calendar-day button { position: relative; }
+
+  .calendar-day[data-mark] button::after {
+    content: '';
+    position: absolute;
+    top: 0.1875rem;
+    inset-inline-end: 0.1875rem;
+    width: 0.3125rem;
+    height: 0.3125rem;
+    border-radius: 50%;
+    background-color: var(--muted-foreground);
+  }
+
+  .calendar-day[data-mark="holiday"] button {
+    color: var(--destructive);
+    font-weight: 600;
+
+    &::after { background-color: var(--destructive); }
+  }
+
+  .calendar-day[data-mark="event"] button::after { background-color: var(--primary); }
+
+  .calendar-day[data-mark="booked"] button {
+    color: var(--muted-foreground);
+    text-decoration: line-through;
+    background-image: repeating-linear-gradient(135deg, transparent 0 4px, color-mix(in oklch, var(--muted-foreground) 18%, transparent) 4px 5px);
+
+    &::after { display: none; }
+  }
+
+  /* a marked day that is also blocked (booked, a blackout date) keeps its
+     look at full strength - the mark IS the information, the 0.35 fade of
+     a plain disabled day would erase it */
+  .calendar-day[data-mark][data-disabled]:not([data-outside]) button { opacity: 1; }
+
+  /* on a filled (selected / endpoint) day the marks follow its foreground */
+  .calendar-day:is([data-selected], [data-range-start], [data-range-end])[data-mark] button {
+    color: var(--primary-foreground);
+    &::after { background-color: currentColor; }
+  }
+
+  .calendar-day-note {
+    display: block;
+    font-size: 0.625rem;
+    line-height: 1;
+    font-weight: 400;
+    color: var(--muted-foreground);
+    text-decoration: none;
+  }
+
+  .calendar-day:is([data-selected], [data-range-start], [data-range-end]) .calendar-day-note {
+    color: inherit;
+    opacity: 0.85;
+  }
+
+  .calendar[data-notes] {
+    & .calendar-day-label { width: 2.75rem; }
+
+    & .calendar-day {
+      width: 2.75rem;
+      height: 3rem;
+
+      & button {
+        flex-direction: column;
+        gap: 0.1875rem;
+        width: 2.5rem;
+        height: 2.75rem;
+      }
+    }
+  }
+
+  /* -- Range mode ------------------------------------------------
+     A range picker is a .calendar[data-mode="range"] or a .calendar-range
+     wrapper around several calendars (consecutive months, one shared range).
+     Look: endpoints (data-range-start / -end) are filled with --primary,
+     the days between (data-in-range) form a continuous --accent band that
+     runs half into each endpoint cell (data-range-span). While only the start
+     is chosen, the hovered/focused day previews the span (data-range-preview:
+     lighter band, outlined end). Outside days are hidden - each month grid
+     shows only its own days, so the band never jumps between months. */
+  .calendar-range {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background-color: var(--card);
+
+    /* the months sit on the wrapper's card */
+    & > .calendar {
+      padding: 0;
+      border: none;
+      border-radius: 0;
+      background-color: transparent;
+    }
+
+    /* one pair of arrows for the whole picker: back on the first month,
+       forward on the last (visibility keeps the headings centred) */
+    & > .calendar ~ .calendar [data-action="prev-month"],
+    & > .calendar:has(~ .calendar) [data-action="next-month"] {
+      visibility: hidden;
+    }
+  }
+
+  /* summary row under the months: the chosen range as one answer.
+     contain: inline-size - the row takes the months' width instead of
+     widening the picker to its own (a 100%-basis row would stretch the
+     inline-flex card across the page) */
+  .calendar-range-footer {
+    flex-basis: 100%;
+    contain: inline-size;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.875rem;
+    color: var(--foreground);
+  }
+
+  :is(.calendar[data-mode="range"], .calendar-range .calendar) .calendar-day[data-outside] {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .calendar-day {
+    &[data-in-range] {
+      background-color: var(--accent);
+
+      & button {
+        color: var(--accent-foreground);
+      }
+    }
+
+    &[data-range-start][data-range-span] {
+      background: linear-gradient(to right, transparent 50%, var(--accent) 50%);
+    }
+
+    &[data-range-end][data-range-span] {
+      background: linear-gradient(to left, transparent 50%, var(--accent) 50%);
+    }
+
+    &:is([data-range-start], [data-range-end]) button {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+      font-weight: 500;
+    }
+
+    /* preview (start chosen, end not yet): lighter band, outlined end */
+    &[data-in-range][data-range-preview] {
+      background-color: color-mix(in oklch, var(--accent) 60%, transparent);
+    }
+
+    &[data-range-end][data-range-preview][data-range-span] {
+      background: linear-gradient(to left, transparent 50%, color-mix(in oklch, var(--accent) 60%, transparent) 50%);
+    }
+
+    &[data-range-end][data-range-preview] button {
+      background-color: var(--background);
+      color: var(--foreground);
+      box-shadow: inset 0 0 0 1.5px var(--primary);
+    }
+  }
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all
@@ -1430,6 +1775,33 @@
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
     }
+  }
+}
+
+/* Forced colors (Windows High Contrast) drop the accent band and the primary
+   fills: selected days (the single selection, both endpoints and the days
+   between) take the system Highlight pair instead. */
+@media (forced-colors: active) {
+  @layer components {
+    .calendar-day[aria-selected="true"] button {
+      forced-color-adjust: none;
+      background-color: Highlight;
+      color: HighlightText;
+    }
+
+    .calendar-pick[aria-current="true"] {
+      forced-color-adjust: none;
+      background-color: Highlight;
+      color: HighlightText;
+    }
+
+    .calendar-day[data-mark] button::after {
+      forced-color-adjust: none;
+      background-color: CanvasText;
+    }
+
+    .calendar-pick:disabled,
+    .calendar-day[data-mark="booked"] button { color: GrayText; }
   }
 }
 
@@ -1824,12 +2196,24 @@
       outline-offset: 2px;
     }
 
+    /* Disabled = legible but inert: never an opacity fade (0.5 on a light
+       --border edge left a ghost you had to look for). The shape keeps its
+       full-strength edge, the surface turns muted, a chosen state keeps a
+       softened primary fill, and the label goes muted with the no-entry
+       cursor - "a choice that exists but is unavailable right now". */
     &:disabled {
-      opacity: 0.5;
+      background-color: var(--muted);
+      /* a mid-grey edge: --border on the muted fill is too faint to read as a box */
+      border-color: color-mix(in oklch, var(--muted-foreground) 50%, var(--background));
       cursor: not-allowed;
+
+      &:is(:checked, :indeterminate) {
+        background-color: color-mix(in oklch, var(--primary) 45%, var(--background));
+        border-color: transparent;
+      }
     }
 
-    &:is([aria-invalid="true"], :user-invalid) {
+    &:is([aria-invalid="true"], :user-invalid:not(form[data-validate="submit"]:not([data-submitted]) *)) {
       border-color: var(--destructive);
     }
   }
@@ -1866,11 +2250,30 @@
     }
   }
 
+  /* Gap hit area: inside an item layout the control's click target spans
+     the gap to its label (a transparent ::before, part of the input's own
+     hit box), so clicking the whitespace between control and text toggles
+     too - the label's `for` covers the text itself. Inline-end only: the
+     label always sits after the control (block layouts place it in the
+     second grid column). */
+  :is(.checkbox-item, .checkbox-item-block) > .checkbox::before {
+    content: '';
+    position: absolute;
+    inset-block: -0.25rem;
+    inset-inline: -0.25rem calc(-1 * 0.5rem);
+  }
+
   /* Disabled auto-styling */
   .checkbox-item:has(.checkbox:disabled),
   .checkbox-item-block:has(.checkbox:disabled) {
-    opacity: 0.5;
     cursor: not-allowed;
+
+    /* the text says "unavailable" too - and never offers the hand pointer
+       for a click that cannot land */
+    & label {
+      color: var(--muted-foreground);
+      cursor: not-allowed;
+    }
   }
 
   /* -- Accessibility ---------------------------------------- */
@@ -1886,7 +2289,7 @@
     }
 
     .checkbox:disabled {
-      opacity: 0.7;
+      border-color: var(--muted-foreground);
     }
   }
 
@@ -2071,10 +2474,34 @@
       }
     }
 
+    /* the value is meant to be used: one click selects all of it for copy;
+       tabular digits keep the width steady while dragging through colours */
     & .color-picker-value {
       font-size: 0.8125rem;
       font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
       color: var(--muted-foreground);
+      white-space: nowrap;
+      user-select: all;
+    }
+
+    /* optional notation switcher (hex / rgb / hsl / oklch) at the end */
+    & .color-picker-format {
+      margin-inline-start: auto;
+      padding: 0 0 0 0.5rem;
+      border: none;
+      border-inline-start: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted-foreground);
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      cursor: pointer;
+
+      &:focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: 2px;
+        border-radius: var(--radius-sm);
+      }
     }
 
     /* -- Sizes -------------------------------------------------
@@ -2186,6 +2613,164 @@
   .combobox:has(.combobox-value:not([data-placeholder])) {
     & .combobox-clear { display: grid; }
     & .combobox-chevron { display: none; }
+  }
+
+  /* -- Multi-select (data-multiple) --------------------------------
+     Options show a checkbox (empty box → filled with a check), the chosen
+     options sit as removable tags under the trigger. The check is ::after,
+     painted in --primary-foreground over the ::before box, so it stays
+     visible in light and dark (primary flips, its foreground flips with it). */
+  .combobox[data-multiple] .combobox-item {
+    padding-inline-start: 1.875rem;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset-inline-start: 0.5rem;
+      top: 50%;
+      width: 1rem;
+      height: 1rem;
+      transform: translateY(-50%);
+      box-sizing: border-box;
+      border: 1px solid var(--input);
+      border-radius: calc(var(--radius-sm) * 0.75);
+      background: var(--background);
+      mask: none;
+    }
+
+    &[aria-selected="true"]::before {
+      border-color: var(--primary);
+      background-color: var(--primary);
+      mask: none;
+    }
+
+    &[aria-selected="true"]::after {
+      content: '';
+      position: absolute;
+      inset-inline-start: 0.625rem;
+      top: 50%;
+      width: 0.75rem;
+      height: 0.75rem;
+      transform: translateY(-50%);
+      background-color: var(--primary-foreground);
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / contain no-repeat;
+    }
+  }
+
+  .combobox-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    margin-top: 0.5rem;
+
+    /* nothing chosen: no empty gap under the trigger */
+    &:not(:has(.combobox-tag)) {
+      display: none;
+    }
+  }
+
+  .combobox-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    max-width: 100%;
+    padding: 0.125rem 0.25rem 0.125rem 0.5rem;
+    border-radius: var(--radius-sm);
+    background-color: var(--secondary);
+    color: var(--secondary-foreground);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+  }
+
+  .combobox-tag-remove {
+    display: inline-grid;
+    place-items: center;
+    width: 1rem;
+    height: 1rem;
+    padding: 0;
+    border: none;
+    border-radius: calc(var(--radius-sm) * 0.75);
+    background: transparent;
+    color: var(--muted-foreground);
+    cursor: pointer;
+
+    &:hover {
+      background-color: color-mix(in oklch, var(--foreground) 10%, transparent);
+      color: var(--foreground);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 1px;
+    }
+  }
+
+  /* -- Tag input (data-tags) ----------------------------------------
+     Tags INSIDE a field-like box, typed into directly: .combobox-field looks
+     like .input (same border, radius, ring on focus-within), the tags and the
+     text input wrap together, the input takes the remaining width. */
+  .combobox-field {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+    box-sizing: border-box;
+    min-height: 2.25rem;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    box-shadow: var(--shadow-xs);
+    cursor: text;
+    transition: border-color 150ms, box-shadow 150ms;
+
+    &:focus-within {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
+    }
+
+    /* the tag span dissolves into the field's wrap (tags + input flow together) */
+    & > .combobox-tags {
+      display: contents;
+    }
+
+    & .combobox-tag {
+      line-height: 1.375rem;
+    }
+  }
+
+  .combobox-field-input {
+    flex: 1 1 6rem;
+    min-width: 6rem;
+    height: 1.625rem;
+    padding: 0 0.25rem;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--foreground);
+    font: inherit;
+    font-size: 0.875rem;
+
+    &::placeholder {
+      color: var(--muted-foreground);
+    }
+  }
+
+  /* "Create …" row: a plus instead of the checkbox */
+  .combobox[data-multiple] .combobox-item.combobox-create {
+    color: var(--muted-foreground);
+
+    &::before {
+      border: none;
+      border-radius: 0;
+      background-color: currentColor;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E") center / contain no-repeat;
+    }
+
+    &[data-highlighted] {
+      color: var(--accent-foreground);
+    }
   }
 
   .combobox-content {
@@ -2582,8 +3167,13 @@
       box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
     }
 
+    /* Disabled = legible but inert: a muted surface and muted text inside
+       the full-strength border - never an opacity fade that lets the box
+       dissolve into the page. */
     &:disabled {
-      opacity: 0.5;
+      background-color: var(--muted);
+      color: var(--muted-foreground);
+      box-shadow: none;
       cursor: not-allowed;
     }
 
@@ -2596,6 +3186,21 @@
     &[data-size="lg"] { height: 2.75rem; padding: 0 1rem;      font-size: 1rem; }
     &[data-size="xl"] { height: 3.25rem; padding: 0 1.25rem;   font-size: 1.125rem; }
 
+    /* -- Out of range / invalid ----------------------------------
+       The browser already rejects a TYPED date outside min/max (validity
+       rangeUnderflow / rangeOverflow) - the same rule the calendar popup
+       enforces by disabling days. :user-invalid shows it once the user has
+       interacted (an untouched empty field never turns red); aria-invalid
+       lets an app flag server-side errors the same way. */
+    &:is([aria-invalid="true"], :user-invalid:not(form[data-validate="submit"]:not([data-submitted]) *)) {
+      border-color: var(--destructive);
+
+      &:focus {
+        border-color: var(--destructive);
+        box-shadow: 0 0 0 2px oklch(from var(--destructive) l c h / 0.2);
+      }
+    }
+
     /* Style the calendar icon */
     &::-webkit-calendar-picker-indicator {
       cursor: pointer;
@@ -2603,6 +3208,27 @@
       transition: opacity 150ms;
 
       &:hover { opacity: 1; }
+    }
+  }
+
+  /* -- Range hint --------------------------------------------------
+     States the allowed dates up front (point aria-describedby at it, so it
+     is announced with the field) and turns into the error when the field
+     holds a date outside them: destructive colour + a warning sign, so the
+     state never rests on colour alone. Always rendered - no show/hide, no
+     live-region timing, no JavaScript. Place it after the input. */
+  .date-input-hint {
+    margin: 0.375rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+  }
+
+  .date-input:is([aria-invalid="true"], :user-invalid:not(form[data-validate="submit"]:not([data-submitted]) *)) ~ .date-input-hint {
+    color: var(--destructive);
+
+    &::before {
+      content: '⚠\FE0E  ';
+      font-weight: 600;
     }
   }
 }
@@ -2623,6 +3249,22 @@
       transition-duration: 0.01ms !important;
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
+    }
+  }
+}
+
+/* Forced colors (Windows High Contrast): the destructive colour is replaced
+   by system colours - the invalid field keeps a distinct border and the hint
+   keeps its warning sign. */
+@media (forced-colors: active) {
+  @layer components {
+    .date-input:is([aria-invalid="true"], :user-invalid:not(form[data-validate="submit"]:not([data-submitted]) *)) {
+      border-color: LinkText;
+      border-width: 2px;
+    }
+
+    .date-input:is([aria-invalid="true"], :user-invalid:not(form[data-validate="submit"]:not([data-submitted]) *)) ~ .date-input-hint {
+      color: LinkText;
     }
   }
 }
@@ -2743,7 +3385,19 @@
     left: anchor(left);
     margin: 0;
     margin-top: 4px;
-    position-try-fallbacks: flip-block;
+    /* the preferred edge first; when the menu would leave the viewport it
+       flips to the trigger's OTHER edge (flip-inline swaps left: anchor(left)
+       <-> right: anchor(right)), above the trigger (flip-block), or both */
+    position-try-fallbacks: flip-inline, flip-block, flip-block flip-inline;
+
+    /* data-align="end": the menu's end edge lines up with the trigger's end
+       (a split button's chevron, an icon trigger at a row's end) instead of
+       hanging out past it - and falls back to start-aligned under the
+       trigger when there is no room for that (the fallbacks above) */
+    &[data-align="end"] {
+      left: auto;
+      right: anchor(right);
+    }
 
     /* -- Animation --------------------------------------------- */
     opacity: 0;
@@ -3142,6 +3796,9 @@
        unsized default = the ladder's md step (field standard) */
     box-sizing: border-box;
     width: 100%;
+    /* the chosen file name is the whole point of the control's text part -
+       never let a flex/grid row squeeze it below a readable path length */
+    min-inline-size: min(100%, 24rem);
     height: 2.25rem;
     border: 1px solid var(--input);
     border-radius: var(--radius-md);
@@ -3180,9 +3837,20 @@
       box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
     }
 
+    /* Disabled = legible but inert: muted surface + text inside the
+       full-strength border - never an opacity fade */
     &:disabled {
-      opacity: 0.5;
+      background-color: var(--muted);
+      color: var(--muted-foreground);
+      box-shadow: none;
       cursor: not-allowed;
+
+      &::file-selector-button {
+        color: var(--muted-foreground);
+        cursor: not-allowed;
+
+        &:hover { background: var(--muted); }
+      }
     }
 
     /* -- Sizes: same ladder as .input/.date-input (md = 2.25rem; the
@@ -3831,13 +4499,25 @@
       }
     }
 
+    /* Disabled = legible but inert: a muted surface and muted text inside
+       the full-strength border - never an opacity fade that lets the box
+       dissolve into the page. */
     &:disabled {
-      opacity: 0.5;
+      background-color: var(--muted);
+      color: var(--muted-foreground);
+      box-shadow: none;
       cursor: not-allowed;
     }
 
     /* -- Invalid state --------------------------------------- */
-    &:is([aria-invalid="true"], :user-invalid) {
+    /* WHEN a field turns red: aria-invalid="true" always (the page decided).
+       The browser's own verdict (:user-invalid, i.e. after the user left a
+       changed field) only counts inside a <form> - a standalone text box has
+       nothing to submit, so a half-typed value is never judged - and inside
+       form[data-validate="submit"] only once the page has stamped
+       data-submitted on the form (a submit attempt): check when the person
+       is finished, not the instant they leave the box. */
+    &:is([aria-invalid="true"], :user-invalid:is(form *):not(form[data-validate="submit"]:not([data-submitted]) *)) {
       border-color: var(--destructive);
 
       &:focus {
@@ -3869,12 +4549,150 @@
       }
     }
 
+    /* -- Native in-field buttons ------------------------------
+       The clear "×" of type="search" and the calendar/clock icon of the
+       date/time types are clickable controls INSIDE the text field - without
+       this they inherit the field's text cursor and look like more text to
+       type into (the file picker's button above already points). */
+    &::-webkit-search-cancel-button,
+    &::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+    }
+
     /* -- Sizes ----------------------------------------------- */
     &[data-size="xs"] { height: 1.75rem; padding: 0 0.5rem;   font-size: 0.75rem; }
     &[data-size="sm"] { height: 2rem;    padding: 0 0.625rem; font-size: 0.8125rem; }
     &[data-size="md"] { height: 2.25rem; padding: 0 0.75rem;  font-size: 0.875rem; }
     &[data-size="lg"] { height: 2.75rem; padding: 0 1rem;     font-size: 1rem; }
     &[data-size="xl"] { height: 3.25rem; padding: 0 1.25rem;  font-size: 1.125rem; }
+  }
+
+  /* -- Input group: icons, text and buttons inside the field ---
+     The GROUP draws the field frame (border, radius, shadow, focus ring,
+     invalid / disabled / readonly surfaces); the .input inside goes
+     frameless and fills the rest. DOM order is the placement: an addon
+     before the .input sits at the start, one after it at the end - so a
+     trailing copy / show-password / clear button is just markup after the
+     input, and any addon width works without hand-tuned padding. */
+  .input-group {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 2.25rem;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    box-shadow: var(--shadow-xs);
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+    transition: border-color 150ms, box-shadow 150ms;
+
+    & > .input {
+      flex: 1;
+      min-width: 0;
+      height: 100%;
+      border: none;
+      border-radius: inherit;
+      background: transparent;
+      box-shadow: none;
+      font-size: inherit;
+
+      &:focus { box-shadow: none; }
+      &:not(:first-child) { padding-inline-start: 0.5rem; }
+      &:not(:last-child) { padding-inline-end: 0.5rem; }
+    }
+
+    &:has(> .input:focus) {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
+    }
+
+    &:has(> .input:is([aria-invalid="true"], :user-invalid:is(form *):not(form[data-validate="submit"]:not([data-submitted]) *))) {
+      border-color: var(--destructive);
+
+      &:has(> .input:focus) {
+        box-shadow: 0 0 0 2px oklch(from var(--destructive) l c h / 0.2);
+      }
+    }
+
+    /* readonly: the group carries the muted surface (the input's own
+       readonly background would stop short of the addons) */
+    &:has(> .input:read-only:not(:disabled)) {
+      background: var(--muted);
+
+      & > .input { background: transparent; }
+      &:has(> .input:focus) {
+        border-color: var(--input);
+        box-shadow: var(--shadow-xs);
+      }
+    }
+
+    &:has(> .input:disabled) {
+      background: var(--muted);
+      box-shadow: none;
+      cursor: not-allowed;
+
+      & > .input { background: transparent; }
+    }
+
+    /* decorative icon (inline <svg> or lucide <i>) */
+    & > .input-group-icon {
+      flex-shrink: 0;
+      width: 1rem;
+      height: 1rem;
+      color: var(--muted-foreground);
+      pointer-events: none;
+
+      &:first-child { margin-inline-start: 0.75rem; }
+      &:last-child { margin-inline-end: 0.75rem; }
+    }
+
+    /* static text: a unit, a protocol, a domain */
+    & > .input-group-text {
+      flex-shrink: 0;
+      white-space: nowrap;
+      color: var(--muted-foreground);
+      user-select: none;
+
+      &:first-child { margin-inline-start: 0.75rem; }
+      &:last-child { margin-inline-end: 0.75rem; }
+    }
+
+    /* an in-field action: copy, show/hide, clear, open a picker */
+    & > .input-group-button {
+      flex-shrink: 0;
+      display: inline-grid;
+      place-items: center;
+      box-sizing: border-box;
+      height: calc(100% - 0.5rem);
+      aspect-ratio: 1;
+      padding: 0;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--muted-foreground);
+      cursor: pointer;
+      transition: background-color 150ms, color 150ms;
+
+      & svg { width: 1rem; height: 1rem; }
+      /* icon swaps (copy -> check, eye -> eye-off): the UA's [hidden] rule
+         only covers HTML elements, so a hidden <svg> needs its own */
+      & svg[hidden] { display: none; }
+      &:hover { background: var(--accent); color: var(--accent-foreground); }
+      &:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+      &:disabled { cursor: not-allowed; background: transparent; color: var(--muted-foreground); }
+      &:first-child { margin-inline-start: 0.25rem; }
+      &:last-child { margin-inline-end: 0.25rem; }
+      & + .input-group-button { margin-inline-start: 0.125rem; }
+    }
+
+    /* -- Sizes: the same ladder as .input, set on the group ------ */
+    &[data-size="xs"] { height: 1.75rem; font-size: 0.75rem; }
+    &[data-size="sm"] { height: 2rem;    font-size: 0.8125rem; }
+    &[data-size="md"] { height: 2.25rem; font-size: 0.875rem; }
+    &[data-size="lg"] { height: 2.75rem; font-size: 1rem; }
+    &[data-size="xl"] { height: 3.25rem; font-size: 1.125rem; }
   }
 
   /* -- Auto-growing textarea --------------------------------- */
@@ -3916,7 +4734,7 @@
     }
 
     .input:disabled {
-      opacity: 0.7;
+      border-color: var(--muted-foreground);
     }
   }
 
@@ -3938,12 +4756,22 @@
       border-color: GrayText;
     }
 
-    .input:is([aria-invalid="true"], :user-invalid) {
+    .input:is([aria-invalid="true"], :user-invalid:is(form *):not(form[data-validate="submit"]:not([data-submitted]) *)) {
       border-color: LinkText;
     }
 
     .field-error {
       color: LinkText;
+    }
+
+    .input-group {
+      border-color: ButtonBorder;
+      background: Field;
+
+      & > .input:focus { outline: none; }
+      &:has(> .input:focus) { outline: 2px solid Highlight; outline-offset: 1px; }
+      &:has(> .input:disabled) { border-color: GrayText; }
+      & > .input-group-button { color: ButtonText; }
     }
   }
 }
@@ -4388,8 +5216,12 @@
       background: transparent;
       height: 100%;
       /* 4rem basis, but GROWS when the container is widened (w-full demos,
-         grid cells): a fixed width left dead space after the + button */
+         grid cells): a fixed width left dead space after the + button.
+         width pins the intrinsic size too - Chrome otherwise derives a
+         number input's width from the digit count of max (no max: ~170px,
+         max="100": 34px), so the field width followed a validation attr. */
       flex: 1 1 4rem;
+      width: 4rem;
       min-width: 0;
       text-align: center;
       font-size: 0.875rem;
@@ -4435,6 +5267,42 @@
       }
     }
 
+    /* -- Unit affix: <label class="number-input-unit" for="…"> -----
+       A unit (°C, %, kg, €, h) sits before or after the input. It is a
+       second <label> for the input: clicking it focuses the field and the
+       unit joins the accessible name ("Temperature °C"). The value aligns
+       TOWARD the unit so number + unit read as one ("19.0 °C", "€ 24.90"). */
+    & .number-input-unit {
+      display: flex;
+      align-items: center;
+      align-self: stretch;
+      flex-shrink: 0;
+      padding-inline: 0.25rem;
+      color: var(--muted-foreground);
+      font-size: 0.875rem;
+      font-family: var(--font-sans);
+      white-space: nowrap;
+      cursor: text;
+
+      /* edge of the box (no stepper on that side): field padding */
+      &:first-child { padding-inline-start: 0.75rem; }
+      &:last-child { padding-inline-end: 0.75rem; }
+    }
+
+    /* NOT user-select: none - the unit is part of the value when text is
+       selected, copied or exported ("72,5 kg", not a bare "72,5") */
+
+    &:has(input:not([type="hidden"]) + .number-input-unit) input { text-align: end; }
+    &:has(.number-input-unit + input:not([type="hidden"])) input { text-align: start; }
+
+    /* currency fields carry grouped amounts ("1.234.567,89") */
+    &[data-currency] input { width: 8rem; }
+
+    /* stepper-less field (currency, measurements): the input reaches the box
+       edge - give it the regular field padding there */
+    & input:first-child { padding-inline-start: 0.75rem; }
+    & input:last-child { padding-inline-end: 0.75rem; }
+
     &:focus-within {
       border-color: var(--ring);
       box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
@@ -4449,11 +5317,13 @@
       height: 1.75rem;
       & input { height: 100%; width: 3rem; font-size: 0.75rem; }
       & button { height: 100%; width: 1.5rem; font-size: 0.875rem; }
+      & .number-input-unit { font-size: 0.75rem; }
     }
     &[data-size="sm"] {
       height: 2rem;
       & input { height: 100%; width: 3.5rem; font-size: 0.8125rem; }
       & button { height: 100%; width: 1.75rem; font-size: 0.9375rem; }
+      & .number-input-unit { font-size: 0.8125rem; }
     }
     &[data-size="md"] {
       height: 2.25rem;
@@ -4464,11 +5334,13 @@
       height: 2.75rem;
       & input { height: 100%; width: 4.5rem; font-size: 1rem; }
       & button { height: 100%; width: 2.25rem; font-size: 1.125rem; }
+      & .number-input-unit { font-size: 1rem; }
     }
     &[data-size="xl"] {
       height: 3.25rem;
       & input { height: 100%; width: 5rem; font-size: 1.125rem; }
       & button { height: 100%; width: 2.5rem; font-size: 1.25rem; }
+      & .number-input-unit { font-size: 1.125rem; }
     }
   }
 }
@@ -5458,6 +6330,18 @@
     & .radio-card { padding: 1.25rem 1.5rem; }
   }
 
+  /* Gap hit area: inside an item layout the radio's click target spans the
+     gap to its label (a transparent ::before, part of the input's own hit
+     box), so clicking the whitespace between circle and text selects too -
+     the label's `for` covers the text itself. Inline-end only: the label
+     always sits after the radio (the block layout's second grid column). */
+  :is(.radio-item, .radio-item-block) > .radio::before {
+    content: '';
+    position: absolute;
+    inset-block: -0.25rem;
+    inset-inline: -0.25rem -0.5rem;
+  }
+
   /* -- Card variant ------------------------------------------- */
   .radio-card {
     position: relative;
@@ -5484,9 +6368,11 @@
     }
 
     &:has(.radio:disabled) {
-      opacity: 0.5;
       cursor: not-allowed;
-      pointer-events: none;
+      background: var(--muted);
+
+      &:hover { background: var(--muted); }
+      & > label { color: var(--muted-foreground); cursor: not-allowed; }
     }
 
     & > .radio {
@@ -5542,11 +6428,24 @@
       outline-offset: 2px;
     }
 
+    /* Disabled = legible but inert: never an opacity fade (0.5 on a light
+       --border edge left a ghost you had to look for). The shape keeps its
+       full-strength edge, the surface turns muted, a chosen state keeps a
+       softened primary fill, and the label goes muted with the no-entry
+       cursor - "a choice that exists but is unavailable right now". */
     &:disabled {
-      opacity: 0.5;
+      background: var(--muted);
+      /* a mid-grey ring: --border on the muted fill is too faint to read as a shape */
+      border-color: color-mix(in oklch, var(--muted-foreground) 50%, var(--background));
       cursor: not-allowed;
 
-      & + label { opacity: 0.5; cursor: not-allowed; }
+      &:checked {
+        border-color: color-mix(in oklch, var(--primary) 45%, var(--background));
+
+        &::after { background: color-mix(in oklch, var(--primary) 45%, var(--background)); }
+      }
+
+      & + label { color: var(--muted-foreground); cursor: not-allowed; }
     }
 
     &[aria-invalid="true"] {
@@ -5840,17 +6739,59 @@
       box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
     }
 
+    /* Disabled = legible but inert: a muted surface and muted text inside
+       the full-strength border - never an opacity fade that lets the box
+       dissolve into the page. */
     &:disabled {
-      opacity: 0.5;
+      background-color: var(--muted);
+      color: var(--muted-foreground);
+      box-shadow: none;
       cursor: not-allowed;
+      opacity: 1; /* Chrome's UA sheet fades select:disabled to 0.7 on its own */
     }
 
-    &:is([aria-invalid="true"], :user-invalid) {
+    &:is([aria-invalid="true"], :user-invalid:not(form[data-validate="submit"]:not([data-submitted]) *)) {
       border-color: var(--destructive);
 
       &:focus {
         border-color: var(--destructive);
         box-shadow: 0 0 0 2px oklch(from var(--destructive) l c h / 0.2);
+      }
+    }
+
+    /* -- Multiple (<select multiple>) ---------------------------
+       The browser renders a list box instead of a dropdown: every option is
+       visible (size="N" rows), Ctrl/⌘-click or Shift-click / Shift+arrows
+       pick several, and the form submits every chosen value under the same
+       name. No fixed height, no chevron; chosen options get a tinted row. */
+    &[multiple] {
+      height: auto;
+      padding: 0.25rem;
+      background-image: none;
+      overflow-y: auto;
+
+      & option {
+        padding: 0.375rem 0.5rem;
+        border-radius: calc(var(--radius-md) - 2px);
+        color: var(--foreground);
+      }
+
+      & option:checked {
+        /* a gradient beats the UA's opaque selection paint in every engine */
+        background: linear-gradient(color-mix(in oklch, var(--primary) 14%, transparent), color-mix(in oklch, var(--primary) 14%, transparent));
+        font-weight: 500;
+      }
+
+      /* one unavailable choice in a usable list */
+      & option:disabled {
+        color: var(--muted-foreground);
+        cursor: not-allowed;
+      }
+
+      & optgroup {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--muted-foreground);
       }
     }
 
@@ -5860,6 +6801,8 @@
     &[data-size="md"] { height: 2.25rem; padding-left: 0.75rem;  font-size: 0.875rem; }
     &[data-size="lg"] { height: 2.75rem; padding-left: 1rem;     font-size: 1rem; }
     &[data-size="xl"] { height: 3.25rem; padding-left: 1.25rem;  font-size: 1.125rem; }
+
+    &[multiple][data-size] { height: auto; }
   }
 }
 
@@ -7170,6 +8113,75 @@
     & svg { width: 1rem; height: 1rem; }
   }
 
+  /* -- Move buttons: reorder by tap / click --------------------
+     Native drag-and-drop mostly never starts on touch screens, so a list
+     people must reorder by tapping carries Up / Down buttons per item.
+     They sit at the item's end; Up/Down disable at the list's edges. */
+  .sortable-moves {
+    display: inline-flex;
+    gap: 0.25rem;
+    flex-shrink: 0;
+    margin-inline-start: auto;
+  }
+
+  .sortable-move {
+    display: inline-grid;
+    place-items: center;
+    box-sizing: border-box;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--background);
+    color: var(--foreground);
+    cursor: pointer;
+    transition: background-color 150ms, color 150ms;
+
+    & svg { width: 1rem; height: 1rem; }
+    &:hover { background: var(--accent); color: var(--accent-foreground); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+    /* legible but inert, like every disabled control (no opacity fade) */
+    &:disabled {
+      background: var(--muted);
+      color: var(--muted-foreground);
+      cursor: not-allowed;
+    }
+
+    /* a finger needs a bigger target than a pointer (WCAG 2.5.5: 44px) */
+    @media (pointer: coarse) {
+      width: 2.75rem;
+      height: 2.75rem;
+    }
+  }
+
+  /* -- Connected lists (data-group) ------------------------------
+     A list that items can be dragged INTO needs a body even when empty:
+     an empty grouped list is a dashed drop zone (its data-empty text, if
+     any, says what goes there), and a drag over the list's own box - gap,
+     padding, empty zone - marks it as "drop at the end". */
+  .sortable[data-group] {
+    min-height: 2.75rem;
+
+    &:not(:has(.sortable-item)) {
+      align-items: center;
+      justify-content: center;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-md);
+      color: var(--muted-foreground);
+      font-size: 0.875rem;
+
+      &::before { content: attr(data-empty); }
+    }
+  }
+
+  .sortable[data-over="end"] {
+    outline: 2px dashed var(--primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-md);
+  }
+
   /* Live region for screen reader announcements */
   .sortable-live {
     position: absolute;
@@ -7184,7 +8196,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .sortable-item { transition: none; }
+    .sortable-item, .sortable-move { transition: none; }
   }
 
   @media (prefers-contrast: more) {
@@ -7208,6 +8220,12 @@
       &[aria-disabled="true"] { color: GrayText; border-color: GrayText; }
     }
     .sortable-handle { color: GrayText; }
+    .sortable-move {
+      border-color: ButtonText;
+      color: ButtonText;
+      &:disabled { border-color: GrayText; color: GrayText; }
+    }
+    .sortable[data-over="end"] { outline-color: Highlight; }
   }
   /* -- Density ----------------------------------------------------
      data-density on the .sortable root scales the list gap and the item
@@ -7626,9 +8644,28 @@
       outline-offset: 2px;
     }
 
+    /* Disabled = legible but inert: never an opacity fade (0.5 on a light
+       --border edge left a ghost you had to look for). The shape keeps its
+       full-strength edge, the surface turns muted, a chosen state keeps a
+       softened primary fill, and the label goes muted with the no-entry
+       cursor - "a choice that exists but is unavailable right now". */
     &:disabled {
-      opacity: 0.5;
       cursor: not-allowed;
+      /* the off track keeps its full --input shade; an edge ring holds the
+         outline even where --input sits close to the page */
+      box-shadow: inset 0 0 0 1px var(--border);
+
+      &::after {
+        background: var(--muted);
+        box-shadow: 0 0 0 1px var(--border);
+      }
+
+      &:checked {
+        background: color-mix(in oklch, var(--primary) 45%, var(--background));
+        box-shadow: none;
+
+        &::after { background: var(--background); box-shadow: none; }
+      }
     }
 
     &[aria-invalid="true"] {
@@ -7741,11 +8778,37 @@
     }
   }
 
+  /* Gap hit area: inside an item layout the control's click target spans
+     the gap to its label (a transparent ::before, part of the input's own
+     hit box), so clicking the whitespace between control and text toggles
+     too - the label's `for` covers the text itself. Inline-end only: the
+     label always sits after the control (block layouts place it in the
+     second grid column). */
+  :is(.switch-item) > .switch::before {
+    content: '';
+    position: absolute;
+    inset-block: -0.25rem;
+    inset-inline: -0.25rem calc(-1 * 0.5rem);
+  }
+
+  :is(.switch-item-block) > .switch::before {
+    content: '';
+    position: absolute;
+    inset-block: -0.25rem;
+    inset-inline: -0.25rem calc(-1 * 0.75rem);
+  }
+
   /* Label disabled styling via :has() */
   .switch-item:has(.switch:disabled),
   .switch-item-block:has(.switch:disabled) {
-    opacity: 0.5;
     cursor: not-allowed;
+
+    /* the words say "unavailable" too - no hand pointer over a label whose
+       click cannot flip the switch */
+    & > label {
+      color: var(--muted-foreground);
+      cursor: not-allowed;
+    }
   }
 
   /* -- Accessibility ---------------------------------------- */
@@ -8249,13 +9312,27 @@
 
     &::placeholder { color: var(--muted-foreground); }
 
+    /* Disabled = legible but inert: a muted surface and muted text inside
+       the full-strength border - never an opacity fade that lets the box
+       dissolve into the page. */
     &:disabled {
-      opacity: 0.5;
+      background-color: var(--muted);
+      color: var(--muted-foreground);
+      box-shadow: none;
       cursor: not-allowed;
+      /* resize stays off (Chrome would still let a disabled field be dragged
+         taller), but the corner keeps a grip so it still reads as a text
+         field - two painted diagonal strokes where the native grip sits */
       resize: none;
+      background-image:
+        linear-gradient(135deg, transparent 0 46%, var(--muted-foreground) 46% 54%, transparent 54%),
+        linear-gradient(135deg, transparent 0 46%, var(--muted-foreground) 46% 54%, transparent 54%);
+      background-repeat: no-repeat;
+      background-size: 0.625rem 0.625rem, 0.3125rem 0.3125rem;
+      background-position: right 0.1875rem bottom 0.1875rem, right 0.1875rem bottom 0.1875rem;
     }
 
-    &:is([aria-invalid="true"], :user-invalid) {
+    &:is([aria-invalid="true"], :user-invalid:is(form *):not(form[data-validate="submit"]:not([data-submitted]) *)) {
       border-color: var(--destructive);
 
       &:focus {
@@ -8278,7 +9355,7 @@
     }
 
     .textarea:disabled {
-      opacity: 0.7;
+      border-color: var(--muted-foreground);
     }
   }
 
@@ -8296,11 +9373,12 @@
 
     .textarea:disabled {
       opacity: 1;
+      background-image: none;
       color: GrayText;
       border-color: GrayText;
     }
 
-    .textarea:is([aria-invalid="true"], :user-invalid) {
+    .textarea:is([aria-invalid="true"], :user-invalid:is(form *):not(form[data-validate="submit"]:not([data-submitted]) *)) {
       border-color: LinkText;
     }
   }
@@ -8701,8 +9779,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 1.25rem;
-    height: 1.25rem;
+    width: 1.75rem;
+    height: 1.75rem;
     border: none;
     background: transparent;
     color: var(--muted-foreground);
@@ -9445,6 +10523,99 @@
       color: var(--muted-foreground);
     }
   }
+  /* -- Labels -----------------------------------------------------
+     The label is the trigger's / leaf's last <span>. Deep nesting eats the
+     inline space (1.25rem indent per level), so a long label truncates with
+     an ellipsis instead of overflowing the tree - put the full text in
+     title="…" when it matters. Leaves may be links (<a class="tree-leaf">,
+     navigation trees): no underline, pointer cursor. */
+  :is(.tree-branch-trigger, .tree-leaf) > span:last-child {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  a.tree-leaf {
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  /* -- Selection (opt-in: data-selectable on .tree) ---------------
+     aria-selected on the treeitem is the state (tree-view.js writes it on
+     click / Enter / Space; authored markup may preset it). The selected row
+     gets a primary-tinted surface and medium weight - distinct from the
+     neutral accent hover surface, in every theme. The row is the item's
+     leaf OR its branch's <summary> (a grandchild: <li> > <details> > <summary>). */
+  :is(.tree-item[aria-selected="true"] > .tree-leaf,
+    .tree-item[aria-selected="true"] > .tree-branch > .tree-branch-trigger) {
+    background-color: color-mix(in oklch, var(--primary) 12%, transparent);
+    color: var(--foreground);
+    font-weight: 500;
+  }
+
+  .tree[data-selectable] :is(.tree-leaf, .tree-branch-trigger) {
+    cursor: pointer;
+  }
+
+  /* -- Disabled: aria-disabled="true" on the treeitem --------------
+     Still focusable (APG: disabled items stay in the keyboard path) but not
+     operable - tree-view.js refuses to open or select it. The dimming covers
+     the row only; an open disabled branch's children keep their own state. */
+  :is(.tree-item[aria-disabled="true"] > .tree-leaf,
+    .tree-item[aria-disabled="true"] > .tree-branch > .tree-branch-trigger) {
+    opacity: 0.5;
+    cursor: not-allowed;
+
+    &:hover {
+      background-color: transparent;
+    }
+  }
+
+  /* -- Empty branch -----------------------------------------------
+     A folder with no children shows a muted placeholder row instead of
+     opening onto nothing. Text: data-empty on the .tree-group ("Empty" by
+     default). :has() rather than :empty - authored whitespace would defeat
+     :empty. Generated content: screen readers announce the group's size. ::after, because
+     the guides variant already draws its line with ::before. */
+  .tree-group:not(:has(> .tree-item))::after {
+    content: 'Empty';
+    display: block;
+    padding: 0.25rem 0.5rem;
+    padding-left: calc(0.5rem + 0.875rem + 0.375rem);
+    color: var(--muted-foreground);
+    font-style: italic;
+  }
+
+  .tree-group[data-empty]:not(:has(> .tree-item))::after {
+    content: attr(data-empty);
+  }
+
+  /* -- Variant: guides --------------------------------------------
+     data-variant="guides" on the .tree root draws one vertical guideline
+     per nested .tree-group, so the depth of nesting reads at a glance. The
+     line sits under the parent branch's chevron centre (trigger padding
+     0.5rem + half the 0.875rem chevron) and spans the whole group; it is a
+     border, not a background, so forced-colors keeps it visible. The line
+     of the innermost group that holds focus darkens - the keyboard user
+     sees which level they are on. */
+  .tree[data-variant="guides"] .tree-group {
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset-block: 0;
+      inset-inline-start: calc(0.5rem + 0.4375rem - 0.5px);
+      border-inline-start: 1px solid var(--border);
+      pointer-events: none;
+    }
+
+    &:focus-within:not(:has(.tree-group:focus-within))::before {
+      border-inline-start-color: var(--muted-foreground);
+    }
+  }
+
   /* -- Density ----------------------------------------------------
      data-density on the .tree root scales the row padding-block. Indent
      (padding-left) is structural - untouched. comfortable == the default. */
@@ -9512,6 +10683,20 @@
       transition-duration: 0.01ms !important;
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
+    }
+  }
+}
+
+/* Forced colors (Windows High Contrast) drop the tinted surface - the
+   selected row must still read as selected: system
+   Highlight pair, the same signal native listboxes use. */
+@media (forced-colors: active) {
+  @layer components {
+    :is(.tree-item[aria-selected="true"] > .tree-leaf,
+      .tree-item[aria-selected="true"] > .tree-branch > .tree-branch-trigger) {
+      forced-color-adjust: none;
+      background-color: Highlight;
+      color: HighlightText;
     }
   }
 }

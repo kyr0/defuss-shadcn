@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
+import { assertLegibleDisabled } from './lib/disabled.ts';
 
 /**
  * Why: checkbox is CSS-only - appearance:none + the ::after check/dash are
@@ -56,9 +57,16 @@ await cssSmoke('checkbox', [
     },
   },
   {
-    label: 'disabled dims to 0.5 with not-allowed cursor',
-    selector: '#cb-disabled',
-    css: { opacity: '0.5', cursor: 'not-allowed' },
+    label: 'disabled checkbox stays legible: mid-grey edge, muted surface, muted label, no hand pointer',
+    run: (page) => assertLegibleDisabled(page, { control: '#cb-disabled', label: 'label[for="cb-disabled"]', tokens: { 'background-color': '--muted' } }),
+  },
+  {
+    label: 'disabled box edge stands apart from both its muted fill and the page (a readable shape, not a ghost)',
+    distinct: [
+      { selector: '#cb-disabled', prop: 'border-top-color' },
+      { selector: '#cb-disabled', prop: 'background-color' },
+      { selector: 'body', prop: 'background-color' },
+    ],
   },
   {
     label: 'aria-invalid recolors the border to destructive (distinct)',
@@ -71,5 +79,73 @@ await cssSmoke('checkbox', [
     label: '.checkbox-item-block aligns to the top for wrapping labels',
     selector: '.checkbox-item-block',
     css: { display: 'flex', 'align-items': 'flex-start' },
+  },
+  {
+    label: 'clicking the gap between control and label toggles (.checkbox-item)',
+    run: async (page) => {
+      // the midpoint of the whitespace between the control and its label text
+      const at = await page.evaluate(() => {
+        const input = document.querySelector('#cb-gap')!;
+        const label = document.querySelector('label[for="cb-gap"]')!;
+        const a = input.getBoundingClientRect();
+        const b = label.getBoundingClientRect();
+        return { x: (a.right + b.left) / 2, y: a.top + a.height / 2, gap: b.left - a.right };
+      });
+      assert.ok(at.gap > 2, 'fixture has a real gap between control and label');
+      await page.mouse.click(at.x, at.y);
+      assert.equal(await page.evaluate(() => (document.querySelector('#cb-gap') as HTMLInputElement).checked), true);
+    },
+  },
+  {
+    label: 'clicking the gap between control and label toggles (.checkbox-item-block)',
+    run: async (page) => {
+      // the midpoint of the whitespace between the control and its label text
+      const at = await page.evaluate(() => {
+        const input = document.querySelector('#cb-gap-block')!;
+        const label = document.querySelector('label[for="cb-gap-block"]')!;
+        const a = input.getBoundingClientRect();
+        const b = label.getBoundingClientRect();
+        return { x: (a.right + b.left) / 2, y: a.top + a.height / 2, gap: b.left - a.right };
+      });
+      assert.ok(at.gap > 2, 'fixture has a real gap between control and label');
+      await page.mouse.click(at.x, at.y);
+      assert.equal(await page.evaluate(() => (document.querySelector('#cb-gap-block') as HTMLInputElement).checked), true);
+    },
+  },
+  {
+    label: 'select all: the parent box follows its group - some = mixed (dash), all = checked, none = empty',
+    run: async (page) => {
+      const state = () => page.evaluate(() => {
+        const p = document.getElementById('sa-all') as HTMLInputElement;
+        const kids = ['sa-1', 'sa-2', 'sa-3'].map((id) => (document.getElementById(id) as HTMLInputElement).checked);
+        return { parent: p.indeterminate ? 'mixed' : p.checked ? 'checked' : 'empty', kids, dash: getComputedStyle(p, '::after').height };
+      });
+      let s = await state();
+      assert.deepEqual([s.parent, s.dash], ['mixed', '2px'], 'authored: one of three ticked -> mixed on load, drawn as the dash');
+      await page.click('label[for="sa-2"]');
+      await page.click('label[for="sa-3"]');
+      assert.equal((await state()).parent, 'checked', 'all ticked -> checked');
+      await page.click('label[for="sa-1"]');
+      assert.equal((await state()).parent, 'mixed', 'untick one -> back to mixed');
+      await page.click('label[for="sa-2"]');
+      await page.click('label[for="sa-3"]');
+      assert.equal((await state()).parent, 'empty', 'none ticked -> empty');
+    },
+  },
+  {
+    label: 'select all: clicking the parent ticks every child (from mixed or empty), clicking it full clears them',
+    run: async (page) => {
+      const kids = () => page.evaluate(() => ['sa-1', 'sa-2', 'sa-3'].map((id) => (document.getElementById(id) as HTMLInputElement).checked));
+      const parent = () => page.evaluate(() => { const p = document.getElementById('sa-all') as HTMLInputElement; return p.indeterminate ? 'mixed' : p.checked ? 'checked' : 'empty'; });
+      await page.click('label[for="sa-2"]');
+      assert.equal(await parent(), 'mixed');
+      await page.click('#sa-all');
+      assert.deepEqual([await parent(), await kids()], ['checked', [true, true, true]], 'mixed -> all ticked');
+      await page.click('#sa-all');
+      assert.deepEqual([await parent(), await kids()], ['empty', [false, false, false]], 'full -> all cleared');
+      await page.click('#sa-all');
+      assert.deepEqual([await parent(), await kids()], ['checked', [true, true, true]], 'empty -> all ticked');
+      assert.equal(await page.$eval('#sa-all', (p) => p.getAttribute('aria-controls')), 'sa-1 sa-2 sa-3');
+    },
   },
 ]);

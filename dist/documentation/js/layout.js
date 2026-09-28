@@ -1,6 +1,6 @@
 "use strict";
 // -- layout.js - docs chrome runtime --------------------------------------
-// Pre-paint dark/wide init, SPA router, search palette, theme popover, nav
+// Pre-paint dark-mode init, SPA router, search palette, theme popover, nav
 // collapse + scroll persistence, TOC active tracking, GitHub stars.
 //
 // The chrome MARKUP (header, sidebar, TOC, prev/next, footer) is static —
@@ -25,13 +25,6 @@
                 live[k] = docs[k];
         docs = live;
     });
-    /* -- Wide mode (must run before first paint, like dark mode) ---
-       Strips the content max-width so wide layouts (the marketing blocks)
-       render at full width. Persisted per-origin, same key discipline as
-       the theme. */
-    if (localStorage.getItem('defuss-shadcn-wide') === '1') {
-        document.documentElement.classList.add('wide');
-    }
     /* -- Dark mode (must run before first paint) ----------------- */
     var saved = localStorage.getItem('defuss-shadcn-theme');
     var darkMQ = window.matchMedia('(prefers-color-scheme: dark)');
@@ -157,28 +150,6 @@
             resetBtn.addEventListener('click', function () {
                 if (docs.applyTheme)
                     docs.applyTheme('default');
-            });
-        }
-        /* -- Wide mode toggle ------------------------------------- */
-        var wideBtn = document.getElementById('wide-toggle');
-        var syncWideBtn = function () {
-            if (!wideBtn)
-                return;
-            var on = document.documentElement.classList.contains('wide');
-            wideBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
-            var expand = wideBtn.querySelector('#icon-wide-expand');
-            var collapse = wideBtn.querySelector('#icon-wide-collapse');
-            if (expand)
-                expand.style.display = on ? 'none' : 'block';
-            if (collapse)
-                collapse.style.display = on ? 'block' : 'none';
-        };
-        syncWideBtn(); // the class was applied pre-paint above - reflect it
-        if (wideBtn) {
-            wideBtn.addEventListener('click', function () {
-                var on = document.documentElement.classList.toggle('wide');
-                localStorage.setItem('defuss-shadcn-wide', on ? '1' : '0');
-                syncWideBtn();
             });
         }
         /* -- Search palette ----------------------------------------
@@ -484,11 +455,29 @@
             var swap = function () {
                 /* Swap main content (incl. the static prev/next pager) */
                 oldMain.innerHTML = newMain.innerHTML;
+                /* per-page main geometry (DocPage mainStyle - the Getting Started
+                   column) must not leak onto the next page */
+                var newMainStyle = newMain.getAttribute('style');
+                if (newMainStyle)
+                    oldMain.setAttribute('style', newMainStyle);
+                else
+                    oldMain.removeAttribute('style');
                 /* The static TOC is per-page - swap it alongside main */
                 var oldToc = document.querySelector('.site-toc');
                 var newToc = doc.querySelector('.site-toc');
                 if (oldToc && newToc)
                     oldToc.replaceWith(document.importNode(newToc, true));
+                /* The right rail (DocPage `aside`) exists only on pages that
+                   declare one (Getting Started) - drop ours, adopt theirs */
+                var oldAside = document.querySelector('.site-aside');
+                var newAside = doc.querySelector('.site-aside');
+                if (oldAside)
+                    oldAside.remove();
+                if (newAside) {
+                    var toc = document.querySelector('.site-toc');
+                    if (toc)
+                        toc.before(document.importNode(newAside, true));
+                }
                 /* Migrate body-level overlays: page demos author dialogs/popovers
                    as direct body children (dialog.html, sheet.html), so a main
                    swap alone leaves their triggers dead. The chrome overlays

@@ -75,9 +75,70 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 ```
 
-```html example label="Disabled" previewStyle="margin:1.25rem;"
+```html example label="Multiple" hint="The native multi-select: add multiple (and size='N' for the visible rows) and the browser shows a list box - Ctrl/⌘-click adds or removes an option, Shift-click or Shift+arrows pick a run, and the form submits every chosen value under the same name. Best for a short, fixed list on desktop; for tags, people or a long searchable list use the Combobox multi-select, for a handful of options checkboxes."
+<div style="max-width:16rem;">
+  <label class="label" for="ship-to">Ship to</label>
+  <select class="select" id="ship-to" name="ship-to" multiple size="6" aria-describedby="ship-to-hint">
+    <option value="at" selected>Austria</option>
+    <option value="be">Belgium</option>
+    <option value="de" selected>Germany</option>
+    <option value="fr">France</option>
+    <option value="nl">Netherlands</option>
+    <option value="ch">Switzerland</option>
+  </select>
+  <p class="text-sm text-muted-foreground" id="ship-to-hint" style="margin:0.375rem 0 0;">Hold Ctrl (⌘ on Mac) to pick several.</p>
+</div>
+```
+
+<div class="card" style="margin:0 0 2rem;">
+  <div class="card-header">
+    <h3 class="card-title">Several choices? Pick the control by the list</h3>
+  </div>
+  <div class="card-content">
+    <ul class="text-sm" style="margin:0;padding-left:1.25rem;display:flex;flex-direction:column;gap:0.375rem;">
+      <li><strong>A handful of options, all worth seeing</strong> (2-7): a group of <DocLink href="checkbox.html">checkboxes</DocLink> - every choice visible, one click each.</li>
+      <li><strong>A short fixed list, mostly desktop</strong>: <code>&lt;select multiple&gt;</code> (above) - zero JavaScript, native keyboard and form behaviour; the Ctrl/⌘-click gesture needs a hint.</li>
+      <li><strong>Tags, people, countries - long or searchable lists</strong>: the <DocLink href="combobox.html">Combobox multi-select</DocLink> - type to filter, checkboxes in the list, removable tags, one hidden input per value.</li>
+    </ul>
+  </div>
+</div>
+
+```html example label="Unavailable options" hint="disabled on an <option> greys out ONE choice in an otherwise usable list - a size that's out of stock, a plan you're not eligible for. It can't be chosen by click or keyboard, and the browser skips it. Say why in the option text ('out of stock'), so the state isn't carried by grey alone. <optgroup disabled> switches off a whole group. (The empty 'Select …' placeholder is different: it stays enabled so it can clear the choice.)" previewStyle="margin:1.25rem;"
+<div class="grid grid-cols-auto gap-4" style="--layout-min:14rem;">
+  <div>
+    <label class="label" for="shirt-size">Size</label>
+    <select class="select" id="shirt-size" name="size">
+      <option value="" selected>Select a size</option>
+      <option value="s">S</option>
+      <option value="m">M</option>
+      <option value="l" disabled>L - out of stock</option>
+      <option value="xl">XL</option>
+    </select>
+  </div>
+  <div>
+    <label class="label" for="plan">Plan</label>
+    <select class="select" id="plan" name="plan">
+      <optgroup label="Current plans">
+        <option value="free">Free</option>
+        <option value="pro" selected>Pro</option>
+        <option value="team" disabled>Team - needs 3+ seats</option>
+      </optgroup>
+      <optgroup label="Legacy plans (no longer offered)" disabled>
+        <option value="starter">Starter</option>
+        <option value="business">Business</option>
+      </optgroup>
+    </select>
+  </div>
+</div>
+```
+
+```html example label="Disabled" hint="disabled on the <select> itself switches off the whole control - nothing can be chosen and it leaves the tab order. For one unavailable choice in a usable list, disable the <option> instead (above)." previewStyle="margin:1.25rem;"
 <div class="max-w-80">
-<select class="select" disabled>...</select>
+  <label class="label" for="region">Region</label>
+  <select class="select" id="region" disabled>
+    <option selected>Europe (locked by your organisation)</option>
+    <option>North America</option>
+  </select>
 </div>
 ```
 

@@ -15,5 +15,11 @@
     <input type="date" class="date-input" id="z-datepicker-md" data-size="md" style="margin-top:0.5rem;" />
     <input type="date" class="date-input" id="z-datepicker-lg" data-size="lg" style="margin-top:0.5rem;" />
     <input type="date" class="date-input" id="z-datepicker-xl" data-size="xl" style="margin-top:0.5rem;" />
+  <!-- range constraints: typed dates outside min/max must be flagged (:user-invalid) with the hint -->
+  <label for="dp-range">Travel date</label>
+  <input class="date-input" type="date" id="dp-range" min="2024-01-01" max="2026-12-31" aria-describedby="dp-range-hint" />
+  <p class="date-input-hint" id="dp-range-hint">Between 1 Jan 2024 and 31 Dec 2026.</p>
+  <input class="date-input" type="date" id="dp-flagged" value="2030-05-15" min="2024-01-01" max="2026-12-31" aria-invalid="true" aria-describedby="dp-flagged-hint" />
+  <p class="date-input-hint" id="dp-flagged-hint">Between 1 Jan 2024 and 31 Dec 2026.</p>
 </body>
 </html>

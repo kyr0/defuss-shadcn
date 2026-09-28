@@ -45,6 +45,7 @@ supportedStates: default
 
 ## Notes
 
+- **Validation timing**: `aria-invalid="true"` shows immediately; the browser's own checks (`:user-invalid`) only paint inside a `<form>`, and inside `<form data-validate="submit">` only after a submit attempt (`data-submitted` on the form) - see the Input skill's "Validation timing".
 - Uses `field-sizing: content` for auto-growing - no JavaScript needed.
 - Shares the same border, focus, disabled, and invalid styles as `.input`.
 - The textarea has a minimum height of 5rem (about 4 lines).

@@ -292,30 +292,42 @@ try {
     });
   });
 
-  await check('wide-mode toggle releases the main max-width (and persists)', async () => {
-    const before = await page.evaluate(() => getComputedStyle(document.querySelector('main')!).maxWidth);
-    assert.notEqual(before, 'none', 'main is unconstrained before toggling - the check proves nothing');
-
-    await page.click('#wide-toggle');
-    const wide = await page.evaluate(() => ({
+  await check('main is always maximized (no wide toggle); the rail page keeps its column', async () => {
+    // index.html carries the deck rail - its main keeps the 44rem column
+    // (earlier checks SPA-navigated away: start from a fresh index load)
+    // - only where the rail is shown (>= 88rem); below it, index is
+    // maximized like every other page
+    const viewport = page.viewportSize();
+    await page.setViewportSize({ width: 1600, height: 1000 });
+    await page.goto(`${server.url}${PAGE}`);
+    const railMain = () => page.evaluate(() => ({
+      toggle: !!document.getElementById('wide-toggle'),
+      aside: !!document.querySelector('.site-aside'),
       maxWidth: getComputedStyle(document.querySelector('main')!).maxWidth,
-      pressed: document.getElementById('wide-toggle')!.getAttribute('aria-pressed'),
-      stored: localStorage.getItem('defuss-shadcn-wide'),
-      icon: getComputedStyle(document.getElementById('icon-wide-collapse')!).display,
     }));
-    assert.equal(wide.maxWidth, 'none', 'wide mode did not release the max-width');
-    assert.equal(wide.pressed, 'true', 'aria-pressed not synced');
-    assert.equal(wide.stored, '1', 'state not persisted');
-    assert.notEqual(wide.icon, 'none', 'collapse icon not shown');
+    const rail = await railMain();
+    assert.equal(rail.toggle, false, 'the wide toggle is still in the header');
+    assert.ok(rail.aside, 'index lost its deck rail - the check proves nothing');
+    assert.notEqual(rail.maxWidth, 'none', 'the rail page main lost its column cap');
+    await page.setViewportSize({ width: 1200, height: 1000 });
+    assert.equal((await railMain()).maxWidth, 'none', 'index is capped although its rail is hidden');
+    if (viewport) await page.setViewportSize(viewport);
 
-    // toggle back so later checks (and reloads) see the default layout
-    await page.click('#wide-toggle');
-    const after = await page.evaluate(() => ({
-      maxWidth: getComputedStyle(document.querySelector('main')!).maxWidth,
-      stored: localStorage.getItem('defuss-shadcn-wide'),
-    }));
-    assert.equal(after.maxWidth, before, 'toggling off did not restore the width');
-    assert.equal(after.stored, '0', 'off-state not persisted');
+    // any other page renders main unconstrained
+    const other = await page.evaluate(async () => {
+      const html = await (await fetch('button.html')).text();
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const probe = document.createElement('div');
+      const main = document.createElement('main');
+      main.setAttribute('style', doc.querySelector('main')!.getAttribute('style') ?? '');
+      probe.append(main);
+      document.body.append(probe);
+      const maxWidth = getComputedStyle(main).maxWidth;
+      probe.remove();
+      return { maxWidth, inline: main.style.maxWidth };
+    });
+    assert.notEqual(other.inline, '', 'button.html main has no inline cap - the check proves nothing');
+    assert.equal(other.maxWidth, 'none', 'a regular page main is still capped');
   });
 
   await check('architecture page renders from ARCH.md (h2s + proof-loop section)', async () => {

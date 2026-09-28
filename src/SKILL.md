@@ -11,24 +11,27 @@
 **Via CDN** (everything at once, or pick only the components you use):
 
 ```html
-<!-- 1. theme (design tokens - swap this file to re-theme everything) -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/utils/default-semantic-tokens.css">
+<!-- 1. base: design tokens + sizing/layout/accessibility utilities (a theme preset from theme/ may follow) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/core.css">
 
 <!-- 2. icons -->
 <script src="https://unpkg.com/lucide@1.8.0"></script>
 <script>lucide.createIcons();</script>
 
-<!-- 3a. the bundle: every component's CSS + JS in two includes -->
+<!-- 3a. the bundle: every component's CSS + JS (all.js embeds the core runtime) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.css">
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.js"></script>
 
-<!-- 3b. …or one CSS link per component, one script per interactive component -->
+<!-- 3b. …or one CSS link per component, then core.js + one script per interactive component -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/button/button.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.css">
+<script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/core.js"></script>
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.js"></script>
 ```
 
-**Self-hosting:** copy `dist/` into your project and use the same paths without the CDN prefix. No build step, no package manager.
+**Self-hosting:** copy `dist/` into your project and use the same paths without the CDN prefix. No build step.
+
+**With a package manager:** `npm install defuss-shadcn`, then import `defuss-shadcn/dist/components/core.css`, `…/all.css` and `…/all.js` (in that order) from the app entry. The package's root `SKILL.md` covers both install paths, the rules and an index of every documentation page.
 
 Then: for every component you use, read its skill file (linked per-component below) and emit exactly the documented markup - classes, `data-*` attributes, and ARIA included. The CSS and JS wire themselves up from those attributes.
 
@@ -103,7 +106,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 ## Animation Canvas
 
 **Type:** TPL
-**Why:** One board, slides side by side like a chess board - every slide transition is the shared df$.anim engine (data-attribute declared), the viewport pan is one WAAPI transform; no canvas-private animation exists.
+**Why:** One board, slides side by side like a chess board - the viewport pan is one WAAPI transform and only the arriving slide animates, through the shared df$.anim engine (data-attribute declared) plus the shared motion entrances for its content; no canvas-private animation exists.
 **When:** Spatial slide boards and zoomable story maps with directional navigation + an at-a-glance overview - not linear decks (use Presentation) and not scrollable pages.
 **Files:** dist/components/anim-canvas/anim-canvas.css + dist/components/anim-canvas/anim-canvas.js
 **Supported states:** default, overview
@@ -183,8 +186,8 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 ## Calendar
 
 **Type:** ATM
-**Why:** Month grid with keyboard navigation and selection state via the State API.
-**When:** Displaying or selecting days inside a larger date UI - pair with a popover for a full picker.
+**Why:** Month grid with keyboard navigation and selection state via the State API - a single date or a start-end range (one span across one or several months).
+**When:** Picking a day, or a date RANGE as one answer (a stay, a report period, a holiday request, a filter) - data-mode="range" or a two-month .calendar-range; pair with a popover for a full picker. For a plain native date field use date-picker.
 **Files:** dist/components/calendar/calendar.css + dist/components/calendar/calendar.js
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/calendar.png
@@ -243,7 +246,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 ## Color Picker
 
 **Type:** ATM
-**Why:** Native <input type=color> plus a swatch popover - the browser owns the picking itself.
+**Why:** Native <input type=color> plus a swatch popover - the browser owns the picking itself; the value shows (and submits) in the notation you need - hex, rgb, hsl or oklch.
 **When:** A form field where the user chooses a color; use the bare native input when a popover is overkill.
 **Files:** dist/components/color-picker/color-picker.css + dist/components/color-picker/color-picker.js
 **Supported states:** default
@@ -254,7 +257,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 
 **Type:** MOL
 **Why:** Text input filtering an anchored list with the aria-activedescendant keyboard model.
-**When:** Choosing from a long list the user narrows by typing - states, tags, users.
+**When:** Choosing from a long list the user narrows by typing - states, tags, users; data-multiple picks SEVERAL (tags, countries you ship to, people to invite, filter categories) with checkboxes + removable tags. For one value from a short list use select; for a handful of options checkboxes.
 **Files:** dist/components/combobox/combobox.css + dist/components/combobox/combobox.js
 **Supported states:** default, open
 **Screenshots:** screenshots/{light,dark}/combobox.png, screenshots/{light,dark}/combobox-open.png
@@ -284,7 +287,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 
 **Type:** ATM
 **Why:** Text field plus calendar in a popover, wired declaratively with command/commandfor attributes.
-**When:** A form field where users type or pick a date.
+**When:** A form field where users type or pick a date - for a start-end date RANGE use the calendar's range mode (one span, one answer) instead of two separate fields.
 **Files:** dist/components/date-picker/date-picker.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/date-picker.png
@@ -454,7 +457,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 
 **Type:** ATM
 **Why:** Input plus stepper buttons bound to native min/max/step and arrow-key behavior.
-**When:** Numeric values where nudging or a bounded range matters - quantity, price.
+**When:** Numeric values where nudging, a bounded range, a unit or fixed decimals matter - quantity, temperature (19.0 °C), percent, weight, duration - and money with a locale-aware currency mask (data-currency + data-locale: separators, symbol side, minor unit via Intl). For a free-form range pick use slider.
 **Files:** dist/components/number-input/number-input.css + dist/components/number-input/number-input.js
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/number-input.png
@@ -554,7 +557,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 
 **Type:** ATM
 **Why:** Native <select> - the OS renders the options list, fully accessible on every platform.
-**When:** Pick one value from a list; prefer it over custom listboxes and comboboxes.
+**When:** Pick one value from a list; prefer it over custom listboxes and comboboxes. Several values from a short fixed list: select[multiple]; tags / people / long lists: combobox data-multiple; a handful of options: checkboxes.
 **Files:** dist/components/select/select.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/select.png
@@ -762,7 +765,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 
 ## Table of Contents
 
-**Type:** BLK
+**Type:** MOL
 **Why:** A section-nav block of heading links with active-section tracking classes - pure markup, the observer is the host's.
 **When:** Docs/blog/spec pages with in-page sections that deserve a persistent rail.
 **Files:** dist/components/toc/toc.css
@@ -814,7 +817,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 
 **Type:** ATM
 **Why:** role=tree with expandable nodes and the full arrow-key interaction model.
-**When:** Hierarchical data: file explorers, org charts, folder trees.
+**When:** Any hierarchy the user browses or picks from - file explorers, product categories, org charts, docs navigation menus (links as leaves); single selection and disabled items built in. For one flat level use a list; for show/hide sections use accordion.
 **Files:** dist/components/tree-view/tree-view.css + dist/components/tree-view/tree-view.js
 **Supported states:** default, expanded
 **Screenshots:** screenshots/{light,dark}/tree-view.png, screenshots/{light,dark}/tree-view-expanded.png

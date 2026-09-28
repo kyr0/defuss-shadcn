@@ -59,13 +59,55 @@ Also covers `<textarea>` with auto-grow via `field-sizing: content`.
 <p class="field-error" id="bad-email-err">Please enter a valid email address.</p>
 ```
 
-### With icon
+### Input group (icons, text and buttons inside the field)
+Wrap the `.input` in `.input-group`. The group draws the field frame (border,
+radius, focus ring, invalid / readonly / disabled surfaces) and the input
+inside goes frameless. **DOM order is the placement**: an addon before the
+`.input` sits at the start, one after it at the end - start and end combine
+freely, and any addon width works with no padding to tune.
+
+| Addon | Element | Use |
+| --- | --- | --- |
+| `.input-group-icon` | `<svg aria-hidden="true">` / `<i data-lucide>` | Decorative icon (search, mail) |
+| `.input-group-text` | `<span>` | Static text: protocol, domain, unit - not part of the submitted value |
+| `.input-group-button` | `<button type="button" aria-label="…">` | An in-field action: copy, show/hide password, clear, open a picker |
+
+Sizes go on the group (`data-size="xs|sm|md|lg|xl"`, same ladder as `.input`).
+
 ```html
-<div style="position:relative;">
-  <i data-lucide="search" style="position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);color:var(--muted-foreground);width:1rem;height:1rem;"></i>
-  <input class="input" type="search" placeholder="Search..." style="padding-left:2.25rem;">
+<!-- leading icon -->
+<div class="input-group">
+  <svg class="input-group-icon" aria-hidden="true" viewBox="0 0 24 24">…</svg>
+  <input class="input" type="search" placeholder="Search..." aria-label="Search">
+</div>
+
+<!-- trailing action: copy a readonly value -->
+<div class="input-group">
+  <input class="input" type="text" id="api-key" readonly value="sk-1234567890abcdef">
+  <button type="button" class="input-group-button" aria-label="Copy API key">
+    <svg aria-hidden="true" viewBox="0 0 24 24">…</svg>
+  </button>
+</div>
+
+<!-- show / hide password: the button flips type and aria-pressed -->
+<div class="input-group">
+  <input class="input" type="password" id="password" autocomplete="current-password">
+  <button type="button" class="input-group-button" aria-label="Show password" aria-pressed="false">
+    <svg aria-hidden="true" viewBox="0 0 24 24">…</svg>
+  </button>
+</div>
+
+<!-- text addons -->
+<div class="input-group">
+  <span class="input-group-text">https://</span>
+  <input class="input" type="text" aria-label="Subdomain">
+  <span class="input-group-text">.example.com</span>
 </div>
 ```
+
+The behaviour of a button (copying with `navigator.clipboard.writeText`,
+flipping `type` + `aria-pressed`, clearing the value and returning focus) is a
+few lines of page script - the component ships the layout and states only.
 
 ### File
 ```html
@@ -119,7 +161,7 @@ Also covers `<textarea>` with auto-grow via `field-sizing: content`.
 |-------|-------------|--------|
 | Default | - | Border `--input`, shadow-xs |
 | Focus | Native `:focus` | Ring `--ring` with glow |
-| Disabled | `disabled` attribute | 50% opacity |
+| Disabled | `disabled` attribute | Muted surface + muted text inside the full-strength border (no opacity fade), not-allowed cursor |
 | Readonly | `readonly` attribute | Muted background, 70% opacity, no focus ring change |
 | Invalid | `aria-invalid="true"` | Border `--destructive`, red ring on focus |
 | Required | `required` attribute | Works with native validation |
@@ -137,6 +179,21 @@ Also covers `<textarea>` with auto-grow via `field-sizing: content`.
 | `type` | Always | Use semantic types: `email`, `tel`, `url`, `search`, `password`, `number` |
 
 ---
+
+## Validation timing
+
+When does a field turn red? Three sources, from loudest to quietest:
+
+| Source | Shows | Use |
+| --- | --- | --- |
+| `aria-invalid="true"` | Always, immediately | The page's own verdict: custom rules, server errors |
+| `:user-invalid` (browser checks: `required`, `type="email"`, `pattern`, `min`/`max`…) inside a `<form>` | Once the user leaves a changed field | Default native feedback |
+| same, inside `<form data-validate="submit">` | Only after the page stamps `data-submitted` on the form (a submit attempt) | "Check when they're finished" - leaving a half-typed field is not an error |
+
+- **A text field outside any `<form>` is never judged automatically** (`.input`, `textarea.input`, `.textarea`, `.input-group`): there is nothing to submit, so a half-typed value is not an error. Use `aria-invalid` if such a field must show one.
+- `data-validate="submit"` needs two listeners on the form: a *capturing* `invalid` listener (the browser blocked the submit) and a `submit` listener (it passed), each setting `data-submitted`; clear it on `reset`.
+- **Custom validation** (your rule, your message, your moment): `<form data-validate="submit" novalidate>`; on `submit`, `preventDefault()`, stamp `data-submitted`, run each rule, and for a failing field set `setCustomValidity(message)`, `aria-invalid="true"` and the text of its `.field-error` (linked with `aria-describedby`), then focus the first failure. After that first attempt, re-check a field on `input` so an error clears the moment it is fixed. Rules the browser can't know - a taken username, two fields that must agree, a code in a set shape - live here.
+- Date, select and checkbox fields keep the native timing outside forms (their value is complete or empty - never half-typed) and follow `data-validate="submit"` inside one.
 
 ## Notes
 

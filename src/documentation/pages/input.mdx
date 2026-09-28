@@ -79,11 +79,11 @@ Every example on this page is one executable source: the editor bytes and the sa
 </div>
 ```
 
-```html example label="Disabled" hint="Non-interactive at 50% opacity - flip the disabled row in the State tab." height="9.5"
+```html example label="Disabled" hint="Non-interactive but legible: muted surface and text inside the full-strength border, not-allowed cursor - flip the disabled row in the State tab." height="9.5"
 <input data-example-root class="input" type="text" disabled placeholder="Disabled" />
 ```
 
-```html example label="Invalid" hint="aria-invalid with a .field-error message - native validation styling." height="11"
+```html example label="Invalid" hint="aria-invalid=&quot;true&quot; with a .field-error message: the page's own verdict, so it shows at once. The browser's automatic check (:user-invalid) is deliberately quieter - it never judges a standalone text field, and inside a form it can wait for a submit (see Form composition and Custom validation below)." height="11"
 <label class="label" for="invalid-email">Email</label>
 <input data-example-root class="input" type="email" id="invalid-email" aria-invalid="true" value="not-an-email" aria-describedby="invalid-email-err" />
 <p class="field-error" id="invalid-email-err">Please enter a valid email address.</p>
@@ -94,13 +94,63 @@ Every example on this page is one executable source: the editor bytes and the sa
 <input data-example-root class="input" type="text" id="name" required placeholder="Jane Doe" />
 ```
 
-```html example label="With icon" hint="Wrap in a relative container and position the icon absolutely." height="8"
-<div style="position:relative;max-width:24rem;">
-  <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);color:var(--muted-foreground);">
-    <circle cx="11" cy="11" r="8" />
-    <path d="m21 21-4.3-4.3" />
-  </svg>
-  <input data-example-root class="input" style="padding-left:2.25rem;" type="search" placeholder="Search..." />
+```html example label="With icon" hint="Wrap the field in .input-group: the group draws the frame, and an addon placed BEFORE the .input sits at the start. Icons get .input-group-icon (decorative, aria-hidden)." height="8"
+<div class="input-group" style="max-width:24rem;">
+  <svg class="input-group-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+  <input data-example-root class="input" type="search" placeholder="Search..." aria-label="Search" />
+</div>
+```
+
+```html example label="Icon at the end" hint="Same group, the addon placed AFTER the .input - DOM order is the placement, nothing else changes. Start and end addons combine freely." height="8"
+<div class="input-group" style="max-width:24rem;">
+  <input data-example-root class="input" type="email" placeholder="you@example.com" aria-label="Email" />
+  <svg class="input-group-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/></svg>
+</div>
+```
+
+```html example label="Clear button" hint="A trailing .input-group-button is a real, focusable button inside the field. Here it clears the search and returns focus; it hides itself while the field is empty (hidden toggled on input)." height="8"
+<div class="input-group" style="max-width:24rem;">
+  <svg class="input-group-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+  <input data-example-root class="input" type="text" id="clear-demo" value="design tokens" aria-label="Search" />
+  <button type="button" class="input-group-button" id="clear-demo-btn" aria-label="Clear search"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+</div>
+<script>
+  const field = document.getElementById('clear-demo');
+  const clear = document.getElementById('clear-demo-btn');
+  const sync = () => { clear.hidden = field.value === ''; };
+  field.addEventListener('input', sync);
+  clear.addEventListener('click', () => { field.value = ''; sync(); field.focus(); });
+  sync();
+</script>
+```
+
+```html example label="Password with show / hide" hint="The eye button flips type between password and text; aria-pressed tells screen readers whether the password is showing, and the icon follows it." height="11"
+<label class="label" for="pw-demo">Password</label>
+<div class="input-group" style="max-width:24rem;">
+  <input data-example-root class="input" type="password" id="pw-demo" value="correct horse battery" autocomplete="current-password" />
+  <button type="button" class="input-group-button" id="pw-demo-btn" aria-label="Show password" aria-pressed="false">
+    <svg data-icon="show" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
+    <svg data-icon="hide" hidden aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></svg>
+  </button>
+</div>
+<script>
+  const pw = document.getElementById('pw-demo');
+  const eye = document.getElementById('pw-demo-btn');
+  eye.addEventListener('click', () => {
+    const showing = pw.type === 'password';
+    pw.type = showing ? 'text' : 'password';
+    eye.setAttribute('aria-pressed', String(showing));
+    eye.querySelector('[data-icon="show"]').toggleAttribute('hidden', showing);
+    eye.querySelector('[data-icon="hide"]').toggleAttribute('hidden', !showing);
+  });
+</script>
+```
+
+```html example label="Text addons" hint="Static text around the value - a protocol, a domain, a unit - with .input-group-text. It is part of the frame, not of the value the form submits." height="8"
+<div class="input-group" style="max-width:24rem;">
+  <span class="input-group-text">https://</span>
+  <input data-example-root class="input" type="text" value="defuss" aria-label="Subdomain" />
+  <span class="input-group-text">.example.com</span>
 </div>
 ```
 
@@ -115,10 +165,39 @@ Every example on this page is one executable source: the editor bytes and the sa
 <textarea data-example-root class="input" id="message" placeholder="Your message..."></textarea>
 ```
 
-```html example label="Readonly" hint="Non-editable value the user can still select and copy." height="11"
+```html example label="Readonly" hint="Non-editable value the user can still select and copy - so it gets a copy button: a trailing .input-group-button writes the value with navigator.clipboard and confirms with a check for 1.5 s. If the clipboard is blocked (e.g. a sandboxed frame), it selects the text instead so Ctrl/⌘+C works." height="11"
 <label class="label" for="api-key">API Key</label>
-<input data-example-root class="input" type="text" id="api-key" readonly value="sk-1234567890abcdef" aria-describedby="api-key-desc" />
+<div class="input-group" style="max-width:24rem;">
+  <input data-example-root class="input" type="text" id="api-key" readonly value="sk-1234567890abcdef" aria-describedby="api-key-desc" />
+  <button type="button" class="input-group-button" id="api-key-copy" aria-label="Copy API key">
+    <svg data-icon="copy" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+    <svg data-icon="done" hidden aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+  </button>
+</div>
 <p class="field-description" id="api-key-desc">Your API key is read-only.</p>
+<script>
+  const key = document.getElementById('api-key');
+  const copy = document.getElementById('api-key-copy');
+  const done = (label) => {
+    copy.setAttribute('aria-label', label);
+    copy.querySelector('[data-icon="copy"]').toggleAttribute('hidden', true);
+    copy.querySelector('[data-icon="done"]').toggleAttribute('hidden', false);
+    setTimeout(() => {
+      copy.setAttribute('aria-label', 'Copy API key');
+      copy.querySelector('[data-icon="copy"]').toggleAttribute('hidden', false);
+      copy.querySelector('[data-icon="done"]').toggleAttribute('hidden', true);
+    }, 1500);
+  };
+  copy.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(key.value);
+      done('Copied');
+    } catch {
+      key.select(); // clipboard blocked: leave it selected for Ctrl/⌘+C
+      done('Selected - press Ctrl+C to copy');
+    }
+  });
+</script>
 ```
 
 ```html example label="With button" hint="Pair an input with a button for inline actions (the df$ handler below logs input events into the sandbox console)." height="8"
@@ -134,8 +213,8 @@ Every example on this page is one executable source: the editor bytes and the sa
 </script>
 ```
 
-```html example label="Form composition" hint="Multiple inputs with labels, descriptions, and a submit button." height="23"
-<form style="max-width:24rem;display:flex;flex-direction:column;gap:1.25rem;" onsubmit="return false;">
+```html example label="Form composition" hint="data-validate=&quot;submit&quot; on the form: the browser still checks required and the email format, but a field only turns red once someone tries to submit - leaving a half-typed address is not an error. Two listeners stamp data-submitted on the attempt (invalid fires when the browser blocks it, submit when it passes); reset clears it. Without data-validate, a field inside a form turns red as soon as it is left with an invalid value." height="23"
+<form id="compose-form" data-validate="submit" style="max-width:24rem;display:flex;flex-direction:column;gap:1.25rem;">
   <div>
     <label class="label" for="f-name">Name</label>
     <input class="input" type="text" id="f-name" required placeholder="Jane Doe" />
@@ -154,6 +233,81 @@ Every example on this page is one executable source: the editor bytes and the sa
     <button class="btn" data-variant="default" type="submit">Submit</button>
   </div>
 </form>
+<script>
+  const compose = document.getElementById('compose-form');
+  const attempted = () => compose.toggleAttribute('data-submitted', true);
+  compose.addEventListener('invalid', attempted, true); // blocked by the browser's checks
+  compose.addEventListener('submit', (e) => { attempted(); e.preventDefault(); });
+  compose.addEventListener('reset', () => compose.removeAttribute('data-submitted'));
+</script>
+```
+
+```html example label="Custom validation" hint="Your rule, your message, your moment. novalidate turns off the browser's bubbles; the page checks on submit - a username already taken, an invite code in a set shape, two passwords that must agree - and marks each failing field with aria-invalid, fills its .field-error and sets setCustomValidity (so :invalid and form.checkValidity() agree). Focus moves to the first problem. After that first attempt, each field re-checks as it is edited, so an error clears the moment it is fixed. Try: admin / abc / two different passwords." height="34"
+<form id="signup" data-validate="submit" novalidate style="max-width:24rem;display:flex;flex-direction:column;gap:1.25rem;">
+  <div>
+    <label class="label" for="su-user">Username</label>
+    <input class="input" type="text" id="su-user" name="username" autocomplete="username" aria-describedby="su-user-err" />
+    <p class="field-error" id="su-user-err" hidden></p>
+  </div>
+  <div>
+    <label class="label" for="su-code">Invite code</label>
+    <input class="input" type="text" id="su-code" name="code" placeholder="ABC-1234" autocomplete="off" aria-describedby="su-code-hint su-code-err" />
+    <p class="field-description" id="su-code-hint">Three letters, a dash, four digits.</p>
+    <p class="field-error" id="su-code-err" hidden></p>
+  </div>
+  <div>
+    <label class="label" for="su-pw">Password</label>
+    <input class="input" type="password" id="su-pw" name="password" autocomplete="new-password" aria-describedby="su-pw-err" />
+    <p class="field-error" id="su-pw-err" hidden></p>
+  </div>
+  <div>
+    <label class="label" for="su-pw2">Repeat password</label>
+    <input class="input" type="password" id="su-pw2" name="password2" autocomplete="new-password" aria-describedby="su-pw2-err" />
+    <p class="field-error" id="su-pw2-err" hidden></p>
+  </div>
+  <div style="display:flex;gap:0.75rem;align-items:center;justify-content:flex-end;">
+    <output id="su-done" class="text-sm text-muted-foreground"></output>
+    <button class="btn" data-variant="default" type="submit">Create account</button>
+  </div>
+</form>
+<script>
+  const signup = document.getElementById('signup');
+  const taken = new Set(['admin', 'root', 'john']);
+  // one rule per field: return the message, or '' when the value is fine
+  const rules = {
+    'su-user': (v) =>
+      !v ? 'Choose a username.'
+      : !/^[a-z0-9_]{3,16}$/.test(v) ? 'Use 3-16 lowercase letters, digits or _.'
+      : taken.has(v) ? 'That username is already taken.' : '',
+    'su-code': (v) => (/^[A-Z]{3}-\d{4}$/.test(v) ? '' : 'Codes look like ABC-1234.'),
+    'su-pw': (v) => (v.length >= 8 ? '' : 'Use at least 8 characters.'),
+    'su-pw2': (v) => (v && v === signup.elements.password.value ? '' : "The passwords don't match."),
+  };
+  const check = (field) => {
+    const message = rules[field.id](field.value.trim());
+    field.setCustomValidity(message);
+    if (message) field.setAttribute('aria-invalid', 'true');
+    else field.removeAttribute('aria-invalid');
+    const error = document.getElementById(field.id + '-err');
+    error.textContent = message;
+    error.hidden = !message;
+    return !message;
+  };
+  const fields = Object.keys(rules).map((id) => document.getElementById(id));
+  signup.addEventListener('submit', (e) => {
+    e.preventDefault();
+    signup.toggleAttribute('data-submitted', true);
+    const failing = fields.filter((f) => !check(f));
+    document.getElementById('su-done').value = failing.length ? '' : 'Account created.';
+    failing[0]?.focus();
+  });
+  // after the first attempt, re-check while editing so fixed errors clear at once
+  signup.addEventListener('input', (e) => {
+    if (!signup.hasAttribute('data-submitted') || !(e.target.id in rules)) return;
+    check(e.target);
+    if (e.target.id === 'su-pw' && signup.elements.password2.value) check(signup.elements.password2);
+  });
+</script>
 ```
 
 ## States

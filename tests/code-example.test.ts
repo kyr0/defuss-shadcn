@@ -73,7 +73,7 @@ describe('CodeExample (input page)', () => {
     const card = firstCard(doc);
     expect(card.getAttribute('data-component')).toBe('input');
     expect(JSON.parse(card.getAttribute('data-schema')!).name).toBe('input');
-    expect(card.querySelector('.code-example-frame')?.getAttribute('sandbox')).toBe('allow-scripts');
+    expect(card.querySelector('.code-example-frame')?.getAttribute('sandbox')).toBe('allow-scripts allow-forms');
   });
 
   it('displayed source === executed source (§4: one source, verbatim)', async () => {

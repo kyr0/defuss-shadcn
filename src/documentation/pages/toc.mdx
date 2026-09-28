@@ -34,14 +34,77 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 </SkillPanel>
 
-```html example label="Default" hint="A section nav with the current section marked via aria-current='location' - the host moves the marker as the reader scrolls (the docs' own runtime does exactly that). Try the links: they jump between the two mini sections in the card."
-<nav class="toc" aria-label="On this page">
-  <p class="toc-title">On This Page</p>
-  <a class="toc-link" href="#installation">Installation</a>
-  <a class="toc-link" href="#usage">Usage</a>
-  <a class="toc-link" href="#api" aria-current="location">API</a>
-  <a class="toc-link" href="#faq">FAQ</a>
-</nav>
+```html example label="Default" hint="A section nav with the current section marked via aria-current='location' - here as a left rail beside the main content. Scroll the content or click a link: a few lines of host script move the marker with an IntersectionObserver, exactly what the docs' own runtime does. The component itself ships no JavaScript." previewStyle="align-items:stretch;"
+<div id="toc-left" style="display:grid; grid-template-columns:11rem 1fr; gap:1.5rem; height:18rem; width:100%; max-width:42rem;">
+  <nav class="toc" aria-label="On this page" style="align-self:start;">
+    <p class="toc-title">On This Page</p>
+    <a class="toc-link" href="#tl-install" aria-current="location">Installation</a>
+    <a class="toc-link" href="#tl-usage">Usage</a>
+    <a class="toc-link" href="#tl-api">API</a>
+    <a class="toc-link" href="#tl-faq">FAQ</a>
+  </nav>
+  <main style="overflow-y:auto; padding-inline:1.5rem 0.5rem; border-left:1px solid var(--border);">
+    <section id="tl-install"><h3 style="margin:0 0 .5rem;">Installation</h3><p class="text-sm text-muted-foreground" style="margin:0 0 7rem;">Copy the stylesheet into your project, or load the bundle from the CDN. No build step.</p></section>
+    <section id="tl-usage"><h3 style="margin:0 0 .5rem;">Usage</h3><p class="text-sm text-muted-foreground" style="margin:0 0 7rem;">Render one link per heading. Keep the list short - it is a map, not the page.</p></section>
+    <section id="tl-api"><h3 style="margin:0 0 .5rem;">API</h3><p class="text-sm text-muted-foreground" style="margin:0 0 7rem;">Three classes and one attribute: .toc, .toc-title, .toc-link and aria-current="location".</p></section>
+    <section id="tl-faq"><h3 style="margin:0 0 .5rem;">FAQ</h3><p class="text-sm text-muted-foreground" style="margin:0 0 12rem;">Does it scroll the page? Native fragment links do - the component only styles them.</p></section>
+  </main>
+</div>
+<script>
+  // host behavior (not shipped): the section entering the top quarter of the
+  // scroll box becomes the current one
+  (() => {
+    const root = document.getElementById('toc-left');
+    const main = root.querySelector('main');
+    const links = [...root.querySelectorAll('.toc-link')];
+    const mark = (id) => links.forEach((l) => {
+      if (l.getAttribute('href') === '#' + id) l.setAttribute('aria-current', 'location');
+      else l.removeAttribute('aria-current');
+    });
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) if (e.isIntersecting) mark(e.target.id);
+    }, { root: main, rootMargin: '0px 0px -75% 0px' });
+    main.querySelectorAll('section').forEach((s) => io.observe(s));
+  })();
+</script>
+```
+
+```html example label="Docs rail" hint="The layout these docs use: main content on the left, the ToC as a sticky rail on the right. The rail stays in place (position: sticky) while the content scrolls underneath, and the same host observer moves aria-current as each section reaches the top." previewStyle="align-items:stretch;"
+<div id="toc-right" style="height:20rem; width:100%; max-width:46rem; overflow-y:auto; border:1px solid var(--border); border-radius:var(--radius-lg);">
+  <div style="display:grid; grid-template-columns:1fr 11rem; gap:2rem; padding:1.25rem 1.5rem;">
+    <article>
+      <h2 style="margin:0 0 .25rem; font-size:1.5rem;">Getting started</h2>
+      <p class="text-sm text-muted-foreground" style="margin:0 0 1.5rem;">Everything you need to ship your first page.</p>
+      <section id="tr-install"><h3 style="margin:0 0 .5rem;">Installation</h3><p class="text-sm text-muted-foreground" style="margin:0 0 6rem;">Link the token file and the bundle. Every component works the moment its markup is on the page.</p></section>
+      <section id="tr-theme"><h3 style="margin:0 0 .5rem;">Theming</h3><p class="text-sm text-muted-foreground" style="margin:0 0 6rem;">Swap one tweakcn preset for another - components only read tokens, so the whole page follows.</p></section>
+      <section id="tr-dark"><h3 style="margin:0 0 .5rem;">Dark mode</h3><p class="text-sm text-muted-foreground" style="margin:0 0 6rem;">Toggle the .dark class on the root; every token pair flips with it.</p></section>
+      <section id="tr-deploy"><h3 style="margin:0 0 .5rem;">Deploy</h3><p class="text-sm text-muted-foreground" style="margin:0 0 12rem;">It is static HTML and CSS - any file host will do.</p></section>
+    </article>
+    <nav class="toc" aria-label="On this page" style="position:sticky; top:0; align-self:start;">
+      <p class="toc-title">On This Page</p>
+      <a class="toc-link" href="#tr-install" aria-current="location">Installation</a>
+      <a class="toc-link" href="#tr-theme">Theming</a>
+      <a class="toc-link" href="#tr-dark">Dark mode</a>
+      <a class="toc-link" href="#tr-deploy">Deploy</a>
+    </nav>
+  </div>
+</div>
+<script>
+  // host behavior (not shipped): the section entering the top 40% of the
+  // scroll box becomes the current one
+  (() => {
+    const box = document.getElementById('toc-right');
+    const links = [...box.querySelectorAll('.toc-link')];
+    const mark = (id) => links.forEach((l) => {
+      if (l.getAttribute('href') === '#' + id) l.setAttribute('aria-current', 'location');
+      else l.removeAttribute('aria-current');
+    });
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) if (e.isIntersecting) mark(e.target.id);
+    }, { root: box, rootMargin: '0px 0px -60% 0px' });
+    box.querySelectorAll('section').forEach((s) => io.observe(s));
+  })();
+</script>
 ```
 
 ```html example label="Density" hint="Set data-density on the component root to scale the link rows' vertical rhythm. A whitespace policy, not a zoom: only the block padding scales (ratio 0.75 / 1 / 1.25), font size stays identical. comfortable matches the unsized default." previewStyle="align-items:flex-start;gap:1.5rem;"

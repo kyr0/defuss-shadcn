@@ -43,7 +43,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <SkillText dense>• Button groups work best with the <code>outline</code> variant - the connected borders create a cohesive unit.</SkillText>
   <SkillText dense>• Adjacent button borders collapse so only one border renders between buttons.</SkillText>
   <SkillText dense>• The group removes internal border-radii to create seamless joins.</SkillText>
-  <SkillText dense>• Use <code>&lt;hr role="separator"&gt;</code> in Split buttons to divide the primary action from its dropdown trigger.</SkillText>
+  <SkillText dense>• Use <code>&lt;hr role="separator"&gt;</code> in Split buttons to divide the primary action from its dropdown trigger - it is the single 1px line between them (the neighbouring borders drop, the inner corners stay square), and the trigger opens a Dropdown menu placed after the group.</SkillText>
   <SkillText dense>• Uses CSS logical properties for automatic RTL support.</SkillText>
   <p class="text-muted-foreground m-0">• No JavaScript required - this is purely a CSS layout component.</p>
   </SkillField>
@@ -113,15 +113,33 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 ```
 
-```html example label="Split button" hint="A primary action button with a dropdown trigger."
+```html example label="Split button" hint="The main action plus a menu of related ones. The separator is the single 1px line between them - the two halves stay one control. The chevron is a Dropdown trigger (data-dropdown-trigger + aria-haspopup=&quot;menu&quot;); the menu sits after the group and lines up with the chevron's end (data-align=&quot;end&quot;). Arrow keys move through the menu, Escape closes it and returns focus to the chevron." height="18"
 <div class="btn-group" role="group" aria-label="Split action">
-  <button class="btn" data-variant="outline">Save</button>
+  <button class="btn" data-variant="outline" id="split-save">Save</button>
   <hr role="separator">
   <button class="btn" data-variant="outline" data-size="icon"
-          aria-label="More options">
-    <i data-lucide="chevron-down"></i>
+          aria-label="More save options"
+          aria-haspopup="menu" aria-expanded="false" aria-controls="split-menu"
+          data-dropdown-trigger="split-menu">
+    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
   </button>
 </div>
+<div id="split-menu" role="menu" popover class="dropdown-content" data-align="end" aria-label="Save options">
+  <button role="menuitem" class="dropdown-item" tabindex="-1">Save as draft</button>
+  <button role="menuitem" class="dropdown-item" tabindex="-1">Save a copy</button>
+  <button role="menuitem" class="dropdown-item" tabindex="-1">Save and close</button>
+  <div class="dropdown-separator" role="separator"></div>
+  <button role="menuitem" class="dropdown-item" tabindex="-1">Schedule…</button>
+</div>
+<p class="text-sm text-muted-foreground" style="margin:0.75rem 0 0;">Last action: <output id="split-out">none</output></p>
+<script>
+  const out = document.getElementById('split-out');
+  document.getElementById('split-save').addEventListener('click', () => { out.textContent = 'Save'; });
+  document.getElementById('split-menu').addEventListener('click', (e) => {
+    const item = e.target.closest('[role="menuitem"]');
+    if (item) out.textContent = item.textContent.trim();
+  });
+</script>
 ```
 
 <SourceFiles component="button-group" section="css" />
