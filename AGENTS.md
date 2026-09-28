@@ -1165,9 +1165,12 @@ The sidebar is ordered by dependency (primitives first):
 13. Marketing (Site Header, Hero, Product Showcase, Brand Logos, Feature Details, Testimonials, Stats, Pricing, Blog, FAQ, Get In Touch, Newsletter, Site Footer) - CSS-only page sections composed from the same tokens + primitives
 
 Every section except Introduction (and the section holding the current
-page) renders **collapsed**; user toggles persist as a heading→'1'|'0' map
-in localStorage (`defuss-shadcn-nav-collapsed`), restored pre-paint by the
-inline script in `DocPage`. The docs sidebar **is the shipped `sidebar`
+page) renders **collapsed** - on every page. Only Introduction remembers a
+toggle across loads (`defuss-shadcn-nav-collapsed` in localStorage, restored
+pre-paint by the inline script in `DocPage`; SiteNav marks it
+`data-nav-always-open`); other sections' toggles last until the next
+navigation, and SPA navigation closes every section that doesn't hold the new
+page (Introduction excepted) - 13 sections never pile up open. The docs sidebar **is the shipped `sidebar`
 component** (`.app-sidebar`/`.sidebar-content`/`.sidebar-group`/
 `.sidebar-submenu`/`.sidebar-link`; the `nav-link` class rides along as the
 router's hook) - the header's panel-left toggle (next to the brand) or ⌘B

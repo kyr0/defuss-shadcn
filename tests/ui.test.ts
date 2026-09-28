@@ -228,33 +228,32 @@ test('sidebar sections are collapsible (dogfood of the sidebar-group pattern)', 
   const forms = groups.find((g) => g.dataset.navSection === 'Forms & Inputs')!;
   expect(forms.open, 'other sections start collapsed').toBe(false);
 
-  // clicking the summary expands the section and persists '1'
+  // clicking the summary expands the section - but only for this page: a
+  // non-Introduction toggle is never stored (13 sections used to pile up open)
   expect(forms.querySelector('a[href="input.html"]'), 'section contains its links').toBeTruthy();
+  doc.defaultView!.localStorage.setItem('defuss-shadcn-nav-collapsed', JSON.stringify({ 'Forms & Inputs': '1', Charts: '1' }));
   await clickSelector(doc, 'details[data-nav-section="Forms & Inputs"] > summary');
   await waitFor(() => forms.open, 'Forms & Inputs to expand');
-  // `open` flips synchronously on click but the toggle event (which persists
-  // to localStorage) is a queued task - wait on the stored value itself
-  await waitFor(
-    () => (doc.defaultView!.localStorage.getItem('defuss-shadcn-nav-collapsed') ?? '').includes('"Forms & Inputs":"1"'),
-    'expand to persist to localStorage',
-  );
+  const charts = groups.find((g) => g.dataset.navSection === 'Charts')!;
+  await clickSelector(doc, 'details[data-nav-section="Charts"] > summary');
+  await waitFor(() => charts.open, 'Charts to expand');
 
-  // collapsing again persists '0' - an explicit choice either way
-  await clickSelector(doc, 'details[data-nav-section="Forms & Inputs"] > summary');
-  await waitFor(() => !forms.open, 'Forms & Inputs to collapse');
-  await waitFor(
-    () => (doc.defaultView!.localStorage.getItem('defuss-shadcn-nav-collapsed') ?? '').includes('"Forms & Inputs":"0"'),
-    'collapse to persist to localStorage',
-  );
-
-  // SPA-navigating INTO the collapsed section re-opens it (never hide the page you opened)
+  // SPA-navigating to a page in Forms & Inputs keeps that section open and
+  // closes every other one except Introduction
   await clickSelector(doc, '.site-sidebar a[href="input.html"]');
   await waitFor(() => doc.querySelector('main h1')?.textContent?.includes('Input'), 'input page content');
-  await waitFor(() => forms.open, 'collapsed section to reopen on navigation into it');
+  await waitFor(() => forms.open && !charts.open, 'navigation keeps the active section open and closes the rest');
+  expect(intro.open, 'Introduction keeps its own state').toBe(true);
+
+  // Introduction is the one section whose toggle is remembered - saving it
+  // rewrites the map with that single key (older per-section entries go)
+  await clickSelector(doc, 'details[data-nav-section="Introduction"] > summary');
+  await waitFor(() => !intro.open, 'Introduction to collapse');
   await waitFor(
-    () => (doc.defaultView!.localStorage.getItem('defuss-shadcn-nav-collapsed') ?? '').includes('"Forms & Inputs":"1"'),
-    're-open to persist the new state',
+    () => doc.defaultView!.localStorage.getItem('defuss-shadcn-nav-collapsed') === JSON.stringify({ Introduction: '0' }),
+    'only the Introduction toggle is stored',
   );
+  doc.defaultView!.localStorage.removeItem('defuss-shadcn-nav-collapsed');
 });
 
 /** Runtime anchor clearance published by layout.js (fixed site header + sticky .page-header). */

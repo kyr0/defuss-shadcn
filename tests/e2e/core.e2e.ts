@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { chromium, type Page } from 'playwright';
 import { startServer } from './server.ts';
 
@@ -35,7 +36,9 @@ async function open(fixture: string): Promise<Page> {
   return page;
 }
 
-const ABI = '0.9.0'; // must track package.json (verify's `shared ABI` gate)
+// the shared ABI IS the package version (verify's `shared ABI` gate) - read it,
+// never hard-code it: a literal here broke the 0.9.1 release pipeline
+const ABI = JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8')).version as string;
 
 try {
   // -- core + selected components (modular mode) --------------------------

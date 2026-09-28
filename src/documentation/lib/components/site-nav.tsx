@@ -84,6 +84,7 @@ export function SiteNav({ active }: Props & { active: string }) {
             <details
               class="sidebar-group nav-section"
               {...(expanded ? { open: '' } : {})}
+              {...(section.heading === ALWAYS_OPEN_SECTION ? { 'data-nav-always-open': '' } : {})}
               data-nav-section={section.heading}
             >
               <summary>

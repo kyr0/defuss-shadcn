@@ -325,24 +325,16 @@
             });
         })();
         /* -- Nav collapse persistence --------------------------------
-           Sections render collapsed by default (except Introduction and the one
-           holding the current page - see SiteNav); the inline script in DocPage
-           re-applies remembered toggles pre-paint. Every explicit user toggle is
-           stored as heading → '1'|'0', so expanding a default-collapsed section
-           survives reloads exactly like collapsing an open one used to. */
+           Every page opens with only Introduction and the section holding the
+           current page expanded (SiteNav). Only Introduction remembers a toggle
+           across loads (the pre-paint script in DocPage re-applies a collapsed
+           Introduction); other sections' toggles last until the next navigation,
+           so 13 sections never pile up open. Saving rewrites the map with that
+           one key, which also drops the per-section entries older builds kept. */
         var NAV_COLLAPSE_KEY = 'defuss-shadcn-nav-collapsed';
-        var navToggles = function () {
-            try {
-                var m = JSON.parse(localStorage.getItem(NAV_COLLAPSE_KEY) || '{}');
-                return m && typeof m === 'object' && !Array.isArray(m) ? m : {};
-            }
-            catch {
-                return {};
-            }
-        };
-        document.querySelectorAll('details[data-nav-section]').forEach(function (d) {
+        document.querySelectorAll('details[data-nav-always-open]').forEach(function (d) {
             d.addEventListener('toggle', function () {
-                var map = navToggles();
+                var map = {};
                 map[d.dataset.navSection] = d.open ? '1' : '0';
                 try {
                     localStorage.setItem(NAV_COLLAPSE_KEY, JSON.stringify(map));
@@ -517,6 +509,13 @@
                     if (!d.open)
                         d.open = true;
                 }
+                /* ...and close every other section (Introduction keeps its own
+                   state): a sidebar of 13 sections stays tidy instead of
+                   accumulating every group the reader ever passed through. */
+                document.querySelectorAll('details[data-nav-section]:not([data-nav-always-open])').forEach(function (s) {
+                    if (s.open && !(active && s.contains(active)))
+                        s.open = false;
+                });
                 /* Push browser history */
                 if (pushState !== false) {
                     history.pushState({ page: href }, '', href);
