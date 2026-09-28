@@ -119,8 +119,11 @@ defuss-shadcn/
 │   ├── lib/links.ts                   ← markdown link checker (verify markdown link integrity gate; pure)
 │   ├── lib/minify.ts                  ← derived-artifact recognition (verify 1:1 allow-list + min-twin gate; pure)
 │   ├── lib/schema.ts                  ← component schema contract: validator + ## States table parser + CodeExample rules (pure)
-│   ├── push.sh                        ← commit + push dev → main (non-release)
-│   ├── deploy.sh                      ← release: version bump, changelog, tag, GitHub release
+│   ├── push.sh                        ← non-release: commit everything on main + push (SSH, else HTTPS via gh - lib/git-push.sh)
+│   ├── deploy.sh                      ← release, on main: bump every version site, changelog entry, make build, two-commit rule, tag v<version>, push, GitHub release, purge-cdn
+│   ├── bump-version.ts                ← moves every version site (lib/version-sites.ts) to a new version
+│   ├── lib/version-sites.ts           ← every file that carries the release version (package.json, plugin.json, SHARED_ABI, deck cover) - bump-version writes, verify's `version sites` gate checks
+│   ├── lib/git-push.sh                ← push_ref: push to origin, falling back to HTTPS with gh credentials when SSH is unavailable
 │   └── purge-cdn.ts                   ← purge jsDelivr @latest cache for all dist assets (run after deploy)
 ├── tests/                             ← UI tests (Vitest browser mode + Playwright)
 │   ├── helpers.ts                     ← loads real doc pages in a same-origin iframe

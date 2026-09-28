@@ -35,6 +35,7 @@ import { archBodyHtml } from '../src/documentation/lib/arch-md.ts';
 import { typeBadgeHtml, type ComponentType } from './lib/taxonomy.ts';
 import { docsDistToSrc, isDocsSsgAuthoringSrc, STANDALONE_DECKS, standaloneDeckFile } from './lib/docs-ssg.ts';
 import { markdownLinkProblems, type MdDoc } from './lib/links.ts';
+import { versionDrift } from './lib/version-sites.ts';
 import {
   exampleFences,
   findStatesTable,
@@ -526,6 +527,19 @@ check(
     'shared ABI',
     abi === pkgVersion ? [] : [`src/shared/version.ts says ${abi} but package.json says ${pkgVersion}`],
     'bump SHARED_ABI in src/shared/version.ts with the release (same-release core/components guard on it)',
+  );
+}
+
+// 10i. version sites: the release version also lives in the Claude Code plugin
+// manifest, the shared-ABI stamp and the flagship deck's cover - every site in
+// scripts/lib/version-sites.ts must equal package.json (a release that bumped
+// only package.json left them behind)
+{
+  const pkgVersion = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8')).version as string;
+  check(
+    'version sites',
+    versionDrift((file) => readFileSync(join(ROOT, file), 'utf8'), pkgVersion),
+    'run `bun scripts/bump-version.ts <version>` (moves every site in scripts/lib/version-sites.ts); releases do this via `bun run deploy`',
   );
 }
 

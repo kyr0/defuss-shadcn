@@ -5,35 +5,40 @@ set -euo pipefail
 # Default: patch, preserving current prerelease suffix
 #
 # Examples:
-#   ./scripts/deploy.sh              → 0.3.0-alpha  → 0.3.1-alpha  (patch bump, keep suffix)
-#   ./scripts/deploy.sh minor        → 0.3.1-alpha  → 0.4.0-alpha  (minor bump, keep suffix)
+#   ./scripts/deploy.sh              → 0.9.0        → 0.9.1        (patch bump, keep suffix)
+#   ./scripts/deploy.sh minor        → 0.9.1        → 0.10.0       (minor bump)
 #   ./scripts/deploy.sh patch beta   → 0.4.0-alpha  → 0.4.1-beta   (patch bump, change to beta)
 #   ./scripts/deploy.sh patch release→ 0.4.1-beta   → 0.4.2        (patch bump, drop suffix)
 #
-# This is a RELEASE deploy. It:
-#   1. Bumps the version in package.json (the docs header badge is stamped
-#      from it at docs build time - no second version literal exists)
-#   2. Generates a changelog entry from git commits (all messages since the
-#      last release)
-#   3. Commits to dev, then a SECOND commit embeds that commit's short hash
-#      into the changelog entry (verify's "changelog ↔ version" two-commit rule)
-#   4. Pushes dev, merges dev → main and pushes
-#   5. Creates a git tag
+# This is a RELEASE deploy, run on main with a clean tree. It:
+#   1. Moves EVERY version site to the new version (scripts/bump-version.ts:
+#      package.json, the Claude Code plugin manifest, the shared-ABI stamp,
+#      the deck cover - verify's `version sites` gate checks them)
+#   2. Adds a changelog entry with every commit message since the last
+#      release tag
+#   3. Runs the full pipeline (make build: lint → compile → … → verify → tests → e2e)
+#   4. Two-commit rule (verify's "changelog ↔ version" gate): commits the
+#      entry while the committed version is still the old one, then a SECOND
+#      commit stamps that commit's short hash into the entry and lands the bump
+#   5. Tags v<version>, pushes main + the tag (SSH, else HTTPS via gh - see
+#      scripts/lib/git-push.sh), creates the GitHub Release
+#   6. Purges the jsDelivr @latest cache, so the docs' CDN assets serve the
+#      new tag right away
 #
 # For non-release changes (README, doc fixes, etc.), use:
 #   bun run push
 
+source "$(dirname "$0")/lib/git-push.sh"
+
 BUMP_TYPE="${1:-patch}"
 PHASE="${2:-}"  # alpha, beta, rc, release, or empty (keep current)
 
-# Ensure we're on dev
 CURRENT_BRANCH=$(git branch --show-current)
-if [[ "$CURRENT_BRANCH" != "dev" ]]; then
-  echo "❌ You must be on the dev branch to deploy. Currently on: $CURRENT_BRANCH"
+if [[ "$CURRENT_BRANCH" != "main" ]]; then
+  echo "❌ You must be on main to deploy. Currently on: $CURRENT_BRANCH"
   exit 1
 fi
 
-# Ensure working tree is clean
 if [[ -n $(git status --porcelain) ]]; then
   echo "❌ Working tree is dirty. Commit or stash changes first."
   exit 1
@@ -41,12 +46,9 @@ fi
 
 # Read current version from package.json (may include prerelease suffix like -alpha)
 FULL_VERSION=$(node -p "require('./package.json').version")
-
-# Split into base version and prerelease suffix
 BASE_VERSION=$(echo "$FULL_VERSION" | sed 's/-.*//')
 CURRENT_SUFFIX=$(echo "$FULL_VERSION" | grep -o '\-.*' || true)
 
-# Compute new base version
 IFS='.' read -r MAJOR MINOR PATCH <<< "$BASE_VERSION"
 case "$BUMP_TYPE" in
   major) MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0 ;;
@@ -56,106 +58,82 @@ case "$BUMP_TYPE" in
 esac
 NEW_BASE="${MAJOR}.${MINOR}.${PATCH}"
 
-# Determine prerelease suffix for new version
 if [[ "$PHASE" == "release" ]]; then
   NEW_SUFFIX=""
 elif [[ -n "$PHASE" ]]; then
   NEW_SUFFIX="-${PHASE}"
 else
-  NEW_SUFFIX="$CURRENT_SUFFIX"  # keep current suffix
+  NEW_SUFFIX="$CURRENT_SUFFIX"
+fi
+NEW_VERSION="${NEW_BASE}${NEW_SUFFIX}"
+TAG="v${NEW_VERSION}"
+
+if git rev-parse -q --verify "refs/tags/${TAG}" > /dev/null; then
+  echo "❌ Tag ${TAG} already exists."
+  exit 1
 fi
 
-NEW_VERSION="${NEW_BASE}${NEW_SUFFIX}"
+echo "📦 Releasing v${FULL_VERSION} → ${TAG} (${BUMP_TYPE}${PHASE:+, phase: $PHASE})"
 
-echo "📦 Bumping version: v${FULL_VERSION} → v${NEW_VERSION} (${BUMP_TYPE}${PHASE:+, phase: $PHASE})"
+# 1. every version site
+bun scripts/bump-version.ts "${NEW_VERSION}"
 
-# Update package.json
-node -e "
-  const fs = require('fs');
-  const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-  pkg.version = '${NEW_VERSION}';
-  fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
-"
-
-echo "✅ Updated version in package.json (docs header badge is stamped from it at build time)"
-
-# Generate changelog entry from git commits since last tag.
-# Two-commit rule (verify's "changelog ↔ version" gate): the entry goes into
-# src/documentation/data/changelog.json with the version bump, then a SECOND
-# commit stamps this commit's short hash into the entry - proof of when the
-# entry was authored.
+# 2. changelog entry from the commits since the last release tag. Tags have
+# been written both with and without the v prefix (0.9.0, v0.8.3) - take the
+# newest tag reachable from HEAD, whatever its spelling.
 LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
 DATE=$(date +"%B %d, %Y")
-
-# Collect commit messages (skip merge commits and version bumps)
 if [[ -n "$LAST_TAG" ]]; then
   COMMITS=$(git log "${LAST_TAG}..HEAD" --pretty=format:"%s" --no-merges | grep -v "^chore: bump version" || true)
 else
   COMMITS=$(git log --pretty=format:"%s" --no-merges | grep -v "^chore: bump version" || true)
 fi
+COMMIT_LINES=()
+while IFS= read -r line; do
+  [[ -n "$line" ]] && COMMIT_LINES+=("$line")
+done < <(echo "$COMMITS" | awk '!seen[$0]++')
+bun scripts/changelog-entry.ts add "${NEW_VERSION}" "${DATE}" ${COMMIT_LINES[@]+"${COMMIT_LINES[@]}"}
+echo "✅ Changelog entry for ${TAG} (${#COMMIT_LINES[@]} commits since ${LAST_TAG:-the first commit})"
 
-# Dedupe, then write the entry as JSON (scripts/changelog-entry.ts escapes
-# markup and prepends the entry)
-mapfile -t COMMIT_LINES <<< "$(echo "$COMMITS" | awk '!seen[$0]++' | grep . || true)"
-if [[ ${#COMMIT_LINES[@]} -eq 0 ]]; then
-  COMMIT_LINES=()
-fi
-bun scripts/changelog-entry.ts add "${NEW_VERSION}" "${DATE}" "${COMMIT_LINES[@]}"
-
-echo "✅ Added changelog entry for v${NEW_VERSION}"
-
-# Regenerate everything from the bumped sources - compile, screenshots (layout.ts
-# is a screenshot input), docs mirror, verify, tests, e2e (same gates as CI).
+# 3. the full pipeline from the bumped sources (same gates as CI)
 make build
 
-# Two-commit rule (verify's "changelog ↔ version" gate): first commit the
-# changelog entry WHILE the old version is still in package.json (so every
-# commit on dev stays verify-green), then a second commit stamps that commit's
-# short hash into the entry and lands the version bump.
+# 4a. first commit: the entry alone, while the COMMITTED version is still the
+# old one - every commit on main stays verify-green
 git add src/documentation/data/changelog.json dist/documentation/changelog.html docs/changelog.html
-git commit -m "docs(changelog): add v${NEW_VERSION} entry"
+git commit -m "docs(changelog): add ${TAG} entry"
 ENTRY_HASH=$(git rev-parse --short HEAD)
 
-# Stamp the entry-authoring commit hash into the entry and rebuild the
-# generated trees for the bump commit.
+# 4b. second commit: stamp that hash into the entry, regenerate, land the bump
+# (the tree was clean before step 1, so everything left is this release)
 bun scripts/changelog-entry.ts stamp-hash "${NEW_VERSION}" "${ENTRY_HASH}"
-bun scripts/build.ts && bun scripts/minify.ts && bun run build:docs && bun scripts/sync-docs.ts
+bun scripts/build.ts && bun scripts/bundle.ts && bun scripts/minify.ts && bun scripts/stats.ts && bun run build:docs && bun scripts/sync-docs.ts
+PAGE_TIMEOUT_MS=60000 bun run screenshots
+bun scripts/verify.ts
+git add -A
+git commit -m "chore: bump version to ${TAG} (changelog ${ENTRY_HASH})"
 
-git add package.json src/documentation/data/changelog.json dist/ docs/
-git commit -m "chore: bump version to v${NEW_VERSION} (changelog ${ENTRY_HASH})"
-git push origin dev
+# 5. tag, push, GitHub Release
+git tag "${TAG}"
+push_ref main
+push_ref "${TAG}"
 
-# Merge into main and push
-git checkout main
-git merge dev -m "release: v${NEW_VERSION}"
-git push origin main
-
-# Tag the release
-git tag "v${NEW_VERSION}"
-git push origin "v${NEW_VERSION}"
-
-# Create GitHub Release from commit log
-RELEASE_NOTES=$(echo "$COMMITS" | sed 's/^/- /')
+RELEASE_NOTES=$(echo "$COMMITS" | awk '!seen[$0]++' | grep . | sed 's/^/- /' || true)
 if [[ -z "$RELEASE_NOTES" ]]; then
   RELEASE_NOTES="- Maintenance release"
 fi
-
 if command -v gh &> /dev/null; then
-  gh release create "v${NEW_VERSION}" \
-    --title "v${NEW_VERSION}" \
-    --notes "$RELEASE_NOTES" \
-    --target main
-  echo "✅ Created GitHub Release for v${NEW_VERSION}"
+  gh release create "${TAG}" --title "${TAG}" --notes "$RELEASE_NOTES" --verify-tag
+  echo "✅ Created GitHub Release ${TAG}"
 else
   echo "⚠️  gh CLI not found - skipping GitHub Release (install: https://cli.github.com)"
 fi
 
-# Switch back to dev
-git checkout dev
+# 6. the docs load their assets from jsDelivr @latest - make it re-resolve now
+bun run purge-cdn || echo "⚠️  purge-cdn failed - run \`bun run purge-cdn\` again once GitHub has the tag"
 
 echo ""
-echo "🚀 Deployed v${NEW_VERSION} to production!"
-echo "   • main branch pushed → Netlify will auto-deploy"
-echo "   • Tagged: v${NEW_VERSION}"
+echo "🚀 Released ${TAG}"
+echo "   • main + ${TAG} pushed (GitHub Pages serves docs/ from main)"
 echo "   • GitHub Release created"
-echo "   • Back on dev branch"
+echo "   • jsDelivr @latest purged"
