@@ -1015,7 +1015,7 @@ check(
 // Fenced code samples are stripped before parsing (see scripts/lib/links.ts).
 {
   const mdSources: MdDoc[] = [
-    ...['README.md', 'AGENTS.md', 'ARCH.md', 'SKILL.md'].map((f) => [f, join(ROOT, f)] as const),
+    ...['README.md', 'AGENTS.md', 'ARCH.md', ROOT_SKILL_OUTPUT_FILE].map((f) => [f, join(ROOT, f)] as const),
     ...walk(SRC, ['.md']).map((p) => [relative(ROOT, p), p] as const),
     ...walk(DOCS_PAGES, ['.mdx']).map((p) => [relative(ROOT, p), p] as const),
   ]

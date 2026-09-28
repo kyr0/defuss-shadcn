@@ -27,6 +27,8 @@ description: Build UI prototypes and pages with defuss-shadcn - shadcn-style com
 
 Everything else in this file is lookup: §2 rules, §3 documentation map (guides + examples), §4 component index (why/when + links).
 
+**Links** open the file on GitHub (the repository's `main` branch, raw text - fetch it). The link text is the file's path in the repository, which is also its path inside an npm install (`node_modules/defuss-shadcn/<path>`): read it locally when the package is installed.
+
 ## 1. Install
 
 ### Path A - package manager (npm, bun, pnpm, yarn)

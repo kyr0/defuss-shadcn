@@ -92,7 +92,10 @@ export function assembleSkillText(template: string, entries: SkillEntry[]): stri
 
 /** Template for the repo-root SKILL.md (relative to src/) and its output (relative to the repo root). */
 export const ROOT_SKILL_TEMPLATE_FILE = 'SKILL_root_tpl.md';
-export const ROOT_SKILL_OUTPUT_FILE = 'SKILL.md';
+/** The whole project as ONE Agent Skill, in the cross-harness layout
+ *  (skills/<name>/SKILL.md): the skills CLI (`npx skills add`) and the
+ *  Claude Code plugin (.claude-plugin/, source "./") both discover it there. */
+export const ROOT_SKILL_OUTPUT_FILE = 'skills/defuss-shadcn/SKILL.md';
 export const ROOT_SKILL_DOCS_MARKER = '<!-- DOCS -->';
 
 /** One documentation page as the sidebar lists it (children = its submenu). */
@@ -115,9 +118,14 @@ export interface RootSkillData {
   /** sidebar sections in order - pages AND components, the renderer splits them */
   sections: RootDocSection[];
   components: (SkillEntry & { hasJs: boolean })[];
+  /** Absolute base the links resolve against (e.g. the repo's raw GitHub
+   *  URL). An installed skill is its folder alone - repo-relative links
+   *  would point at nothing - so the generated skill links absolutely; the
+   *  link TEXT stays the repo path (= the path inside an npm install). */
+  sourceBase?: string;
 }
 
-const pageLink = (slug: string): string => `src/documentation/pages/${slug}.mdx`;
+const pagePath = (slug: string): string => `src/documentation/pages/${slug}.mdx`;
 
 /** Frontmatter prose may name elements (`An <hr> …`, `<dialog> + showModal()`):
  *  outside code spans a markdown renderer would emit them as REAL elements, so
@@ -128,14 +136,16 @@ export function mdProse(text: string): string {
     .map((part, i) => (i % 2 ? part : part.replace(/<\/?[a-zA-Z][^<>]*>/g, (tag) => `\`${tag}\``)))
     .join('');
 }
-const skillLink = (folder: string): string => `dist/components/${folder}/component-skill.md`;
+const skillPath = (folder: string): string => `dist/components/${folder}/component-skill.md`;
+/** [repo path](base + repo path) - the text says where the file lives in the repo / npm package. */
+const link = (base: string | undefined, path: string, text = path): string => `[${text}](${base ?? ''}${path})`;
 
 /** Docs map: every sidebar page that is NOT a component page (those live in the index). */
 function renderDocsMap(data: RootSkillData, isComponent: (slug: string) => boolean): string {
   const line = (p: RootDocPage, depth: number): string[] => {
     const own = isComponent(p.slug)
       ? []
-      : [`${'  '.repeat(depth)}- [${p.label}](${pageLink(p.slug)})${p.description ? ` - ${mdProse(p.description)}` : ''}`];
+      : [`${'  '.repeat(depth)}- ${link(data.sourceBase, pagePath(p.slug), p.label)}${p.description ? ` - ${mdProse(p.description)}` : ''}`];
     return [...own, ...p.children.flatMap((c) => line(c, isComponent(p.slug) ? depth : depth + 1))];
   };
   return data.sections
@@ -156,7 +166,7 @@ function renderComponentIndex(data: RootSkillData): string {
       '',
       `- **Why:** ${mdProse(c.why)}`,
       `- **When:** ${mdProse(c.when)}`,
-      `- **States:** ${states} · **Skill:** [${skillLink(c.folder)}](${skillLink(c.folder)}) · **Examples:** [${pageLink(c.folder)}](${pageLink(c.folder)})`,
+      `- **States:** ${states} · **Skill:** ${link(data.sourceBase, skillPath(c.folder))} · **Examples:** ${link(data.sourceBase, pagePath(c.folder))}`,
     ].join('\n');
   };
   const collect = (pages: RootDocPage[]): string[] =>

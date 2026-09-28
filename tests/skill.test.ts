@@ -154,6 +154,14 @@ describe('assembleRootSkillText (repo-root SKILL.md)', () => {
     expect(out).not.toContain('- [Dialog](src/documentation/pages/dialog.mdx)');
   });
 
+  it('with a sourceBase, links resolve absolutely while the link text stays the repo path', () => {
+    // an installed skill is its folder alone - repo-relative links would point at nothing
+    const out = assembleRootSkillText(tpl, { ...data(), sourceBase: 'https://raw.example/r/main/' });
+    expect(out).toContain('- [Theming](https://raw.example/r/main/src/documentation/pages/theming.mdx) - Tokens.');
+    expect(out).toContain('**Skill:** [dist/components/dialog/component-skill.md](https://raw.example/r/main/dist/components/dialog/component-skill.md)');
+    expect(out).toContain('**Examples:** [src/documentation/pages/dialog.mdx](https://raw.example/r/main/src/documentation/pages/dialog.mdx)');
+  });
+
   it('indexes components by sidebar section with why/when, skill and example links', () => {
     const out = assembleRootSkillText(tpl, data());
     expect(out).toContain('### Overlays\n\n#### Dialog · MOL · JS');

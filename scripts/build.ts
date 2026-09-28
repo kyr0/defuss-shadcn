@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { dirname, join, relative } from 'node:path';
 import { ROOT_SKILL_OUTPUT_FILE, SKILL_OUTPUT_FILE } from './lib/skill.ts';
 import { buildRootSkillText, buildSkillText } from './lib/skill-files.ts';
 import { parseThemes } from './lib/contrast.ts';
@@ -58,6 +58,7 @@ writeFileSync(join(SRC, SKILL_OUTPUT_FILE), buildSkillText(SRC));
 // 0a. the repo-root SKILL.md: the whole project packaged as ONE agent skill
 // (install paths, rules, docs map from nav.ts + page frontmatter, component
 // index from skill frontmatter). Ships in the npm package; never hand-edited.
+mkdirSync(dirname(join(ROOT, ROOT_SKILL_OUTPUT_FILE)), { recursive: true });
 writeFileSync(join(ROOT, ROOT_SKILL_OUTPUT_FILE), await buildRootSkillText(ROOT));
 
 // 0b. regenerate one theme stylesheet per tweakcn preset into src/theme/,

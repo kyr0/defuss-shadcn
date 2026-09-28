@@ -83,7 +83,8 @@
   @keyframes sys-drop { 0% { opacity: 0; } 30% { opacity: 1; } 100% { opacity: 1; transform: none; } }
   #sys-zahlen .sys-collab { position: absolute; width: 160px; text-align: center; top: 750px; }
   #sys-zahlen .sys-collab b { display: block; font-size: 34px; font-weight: 900; }
-  #sys-zahlen .sys-collab span { font-size: 22px; font-weight: 600; }
+  #sys-zahlen .sys-collab .type-badge { display: inline-block; margin-top: 6px; font-size: 22px; padding: 3px 12px; border-width: 2px; border-radius: 8px; }
+  #sys-zahlen h2 .type-badge { font-size: 36px; padding: 2px 12px; border-width: 3px; border-radius: 10px; vertical-align: 6px; letter-spacing: .04em; }
   #sys-zahlen .sys-fact { display: flex; align-items: baseline; gap: 14px; }
   #sys-zahlen .sys-fact b { font-size: 54px; font-weight: 900; }
   #sys-zahlen .sys-fact span { font-size: 22px; font-weight: 600; }
@@ -93,7 +94,7 @@
   #sys-route .sys-route-path { fill: none; stroke: #FFFFFF; stroke-width: 16; stroke-linejoin: round; stroke-linecap: round; }
   #sys-route .sys-route-ghost { fill: none; stroke: rgba(255,255,255,.09); stroke-width: 16; stroke-linejoin: round; }
   #sys-route .sys-stn { fill: var(--presentation-ink); stroke: #FFFFFF; stroke-width: 8; transform-box: fill-box; transform-origin: center; }
-  #sys-route .sys-stn-lab { font-weight: 800; font-size: 28px; letter-spacing: .06em; text-transform: uppercase; fill: #FFFFFF; }
+  #sys-route .sys-stn-lab { font-weight: 800; font-size: 20px; letter-spacing: .05em; text-transform: uppercase; fill: #FFFFFF; }
   #sys-route .sys-train { position: absolute; left: 0; top: 0; width: 58px; height: 26px; border-radius: 13px; background: #FFFFFF; offset-rotate: auto; offset-anchor: center; offset-distance: 0%; opacity: 0; box-shadow: inset 10px 0 0 -4px #FFFFFF, inset 0 0 0 5px #FFFFFF, inset 0 0 0 9px var(--presentation-ink); }
   #sys-route.is-on .sys-train { animation: sys-ride 7s cubic-bezier(.45,0,.55,1) 2.2s infinite; }
   @keyframes sys-ride { 0% { offset-distance: 0%; opacity: 0; } 6% { opacity: 1; } 88% { opacity: 1; } 100% { offset-distance: 100%; opacity: 0; } }
@@ -232,40 +233,48 @@
   &lt;section class="slide" data-slide id="sys-zahlen" data-theme="paper" data-sec="0" aria-label="The system in numbers"&gt;
     &lt;div class="abs sys-num" data-df-entrance="blur" style="--df-motion-delay:.1s; left:112px; top:120px; font-size:300px"&gt;&lt;span data-count="77"&gt;77&lt;/span&gt;&lt;/div&gt;
     &lt;div class="abs" data-df-entrance="up" style="--df-motion-delay:.5s; left:124px; top:400px; font-size:40px; font-weight:300; letter-spacing:.02em"&gt;components&lt;/div&gt;
-    &lt;h2 class="abs sys-h-m" data-df-entrance="up" style="--df-motion-delay:.8s; left:120px; top:500px; width:520px; font-size:50px"&gt;From ATM to TPL&lt;/h2&gt;
+    &lt;h2 class="abs sys-h-m" data-df-entrance="up" style="--df-motion-delay:.8s; left:120px; top:500px; width:520px; font-size:50px"&gt;From &lt;span class="type-badge" data-type="ATM" title="Atom"&gt;ATM&lt;/span&gt; to &lt;span class="type-badge" data-type="TPL" title="Template"&gt;TPL&lt;/span&gt;&lt;/h2&gt;
     &lt;div class="abs sys-fact" data-df-entrance="up" style="--df-motion-delay:1.2s; left:120px; top:715px"&gt;&lt;b&gt;0&lt;/b&gt;&lt;span&gt;runtime dependencies&lt;/span&gt;&lt;/div&gt;
     &lt;div class="sys-dots" id="sys-dots"&gt;&lt;/div&gt;
-    &lt;div class="sys-collab" style="left:620px"&gt;&lt;b&gt;46&lt;/b&gt;&lt;span&gt;atoms&lt;/span&gt;&lt;/div&gt;
-    &lt;div class="sys-collab" style="left:795px"&gt;&lt;b&gt;15&lt;/b&gt;&lt;span&gt;molecules&lt;/span&gt;&lt;/div&gt;
-    &lt;div class="sys-collab" style="left:970px"&gt;&lt;b&gt;13&lt;/b&gt;&lt;span&gt;blocks&lt;/span&gt;&lt;/div&gt;
-    &lt;div class="sys-collab" style="left:1145px"&gt;&lt;b&gt;1&lt;/b&gt;&lt;span&gt;organism&lt;/span&gt;&lt;/div&gt;
-    &lt;div class="sys-collab" style="left:1320px"&gt;&lt;b&gt;2&lt;/b&gt;&lt;span&gt;templates&lt;/span&gt;&lt;/div&gt;
-    &lt;div class="abs sys-axlab" style="left:620px; top:842px"&gt;Taxonomy&lt;/div&gt;
+    &lt;div class="sys-collab" style="left:620px"&gt;&lt;b&gt;46&lt;/b&gt;&lt;span class="type-badge" data-type="ATM" title="Atoms"&gt;ATM&lt;/span&gt;&lt;/div&gt;
+    &lt;div class="sys-collab" style="left:795px"&gt;&lt;b&gt;15&lt;/b&gt;&lt;span class="type-badge" data-type="MOL" title="Molecules"&gt;MOL&lt;/span&gt;&lt;/div&gt;
+    &lt;div class="sys-collab" style="left:970px"&gt;&lt;b&gt;13&lt;/b&gt;&lt;span class="type-badge" data-type="BLK" title="Blocks"&gt;BLK&lt;/span&gt;&lt;/div&gt;
+    &lt;div class="sys-collab" style="left:1145px"&gt;&lt;b&gt;1&lt;/b&gt;&lt;span class="type-badge" data-type="ORG" title="Organism"&gt;ORG&lt;/span&gt;&lt;/div&gt;
+    &lt;div class="sys-collab" style="left:1320px"&gt;&lt;b&gt;2&lt;/b&gt;&lt;span class="type-badge" data-type="TPL" title="Templates"&gt;TPL&lt;/span&gt;&lt;/div&gt;
+    &lt;div class="abs sys-axlab" style="left:620px; top:866px"&gt;Taxonomy&lt;/div&gt;
     &lt;p class="presentation-note"&gt;Every dot is one component: 46 atoms, 15 molecules, 13 blocks, one organism and two templates.&lt;/p&gt;
   &lt;/section&gt;
-  &lt;!-- 3 · Opening - the route: zigzag line map with a looping train --&gt;
-  &lt;section class="slide" data-slide id="sys-route" data-theme="ink" data-sec="0" aria-label="The route"&gt;
-    &lt;h2 class="abs sys-h-l" data-df-entrance="left" style="--df-motion-delay:.1s; left:120px; top:110px"&gt;The route&lt;/h2&gt;
-    &lt;svg class="sys-fx" viewBox="0 0 1600 900" role="img" aria-label="Line map with seven stations: opening, system, tokens, components, charts, quality, outlook"&gt;
-      &lt;path class="sys-route-ghost" d="M 120 520 H 260 L 380 400 H 470 L 590 520 H 680 L 800 400 H 890 L 1010 520 H 1100 L 1220 400 H 1310 L 1430 520 H 1520"&gt;&lt;/path&gt;
-      &lt;path class="sys-route-path" data-df-draw pathLength="1" style="--df-motion-delay:.3s; --df-motion-duration:2.2s" d="M 120 520 H 260 L 380 400 H 470 L 590 520 H 680 L 800 400 H 890 L 1010 520 H 1100 L 1220 400 H 1310 L 1430 520 H 1520"&gt;&lt;/path&gt;
-      &lt;circle class="sys-stn" cx="190" cy="520" r="24" data-df-entrance="pop" style="--df-motion-delay:.46s"&gt;&lt;/circle&gt;
-      &lt;circle class="sys-stn" cx="425" cy="400" r="24" data-df-entrance="pop" style="--df-motion-delay:.83s"&gt;&lt;/circle&gt;
-      &lt;circle class="sys-stn" cx="635" cy="520" r="24" data-df-entrance="pop" style="--df-motion-delay:1.16s"&gt;&lt;/circle&gt;
-      &lt;circle class="sys-stn" cx="845" cy="400" r="24" data-df-entrance="pop" style="--df-motion-delay:1.49s"&gt;&lt;/circle&gt;
-      &lt;circle class="sys-stn" cx="1055" cy="520" r="24" data-df-entrance="pop" style="--df-motion-delay:1.82s"&gt;&lt;/circle&gt;
-      &lt;circle class="sys-stn" cx="1265" cy="400" r="24" data-df-entrance="pop" style="--df-motion-delay:2.15s"&gt;&lt;/circle&gt;
-      &lt;circle class="sys-stn" cx="1475" cy="520" r="24" data-df-entrance="pop" style="--df-motion-delay:2.48s"&gt;&lt;/circle&gt;
-      &lt;text class="sys-stn-lab" x="190" y="596" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:.46s"&gt;Opening&lt;/text&gt;
-      &lt;text class="sys-stn-lab" x="425" y="346" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:.83s"&gt;System&lt;/text&gt;
-      &lt;text class="sys-stn-lab" x="635" y="596" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:1.16s"&gt;Tokens&lt;/text&gt;
-      &lt;text class="sys-stn-lab" x="845" y="346" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:1.49s"&gt;Components&lt;/text&gt;
-      &lt;text class="sys-stn-lab" x="1055" y="596" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:1.82s"&gt;Charts&lt;/text&gt;
-      &lt;text class="sys-stn-lab" x="1265" y="346" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:2.15s"&gt;Quality&lt;/text&gt;
-      &lt;text class="sys-stn-lab" x="1475" y="596" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:2.48s"&gt;Outlook&lt;/text&gt;
+  &lt;!-- 3 · Features - the sidebar's top-level sections (Primitives on) as one line map with a looping train --&gt;
+  &lt;section class="slide" data-slide id="sys-route" data-theme="ink" data-sec="0" aria-label="Features"&gt;
+    &lt;h2 class="abs sys-h-l" data-df-entrance="left" style="--df-motion-delay:.1s; left:120px; top:110px"&gt;Features&lt;/h2&gt;
+    &lt;svg class="sys-fx" viewBox="0 0 1600 900" role="img" aria-label="Line map of the 11 feature areas: Primitives, Actions, Forms &amp; Inputs, Data Display, Charts, Feedback &amp; Status, Overlays, Navigation, Application, Presentations, Marketing"&gt;
+      &lt;path class="sys-route-ghost" d="M 80 540 L 128 540 H 172 L 258 400 H 302 L 388 540 H 432 L 518 400 H 562 L 648 540 H 692 L 778 400 H 822 L 908 540 H 952 L 1038 400 H 1082 L 1168 540 H 1212 L 1298 400 H 1342 L 1428 540 H 1472 L 1520 540"&gt;&lt;/path&gt;
+      &lt;path class="sys-route-path" data-df-draw pathLength="1" style="--df-motion-delay:.3s; --df-motion-duration:2.6s" d="M 80 540 L 128 540 H 172 L 258 400 H 302 L 388 540 H 432 L 518 400 H 562 L 648 540 H 692 L 778 400 H 822 L 908 540 H 952 L 1038 400 H 1082 L 1168 540 H 1212 L 1298 400 H 1342 L 1428 540 H 1472 L 1520 540"&gt;&lt;/path&gt;
+      &lt;circle class="sys-stn" cx="150" cy="540" r="20" data-df-entrance="pop" style="--df-motion-delay:0.46s"&gt;&lt;/circle&gt;
+      &lt;circle class="sys-stn" cx="280" cy="400" r="20" data-df-entrance="pop" style="--df-motion-delay:0.66s"&gt;&lt;/circle&gt;
+      &lt;circle class="sys-stn" cx="410" cy="540" r="20" data-df-entrance="pop" style="--df-motion-delay:0.86s"&gt;&lt;/circle&gt;
+      &lt;circle class="sys-stn" cx="540" cy="400" r="20" data-df-entrance="pop" style="--df-motion-delay:1.06s"&gt;&lt;/circle&gt;
+      &lt;circle class="sys-stn" cx="670" cy="540" r="20" data-df-entrance="pop" style="--df-motion-delay:1.26s"&gt;&lt;/circle&gt;
+      &lt;circle class="sys-stn" cx="800" cy="400" r="20" data-df-entrance="pop" style="--df-motion-delay:1.46s"&gt;&lt;/circle&gt;
+      &lt;circle class="sys-stn" cx="930" cy="540" r="20" data-df-entrance="pop" style="--df-motion-delay:1.66s"&gt;&lt;/circle&gt;
+      &lt;circle class="sys-stn" cx="1060" cy="400" r="20" data-df-entrance="pop" style="--df-motion-delay:1.86s"&gt;&lt;/circle&gt;
+      &lt;circle class="sys-stn" cx="1190" cy="540" r="20" data-df-entrance="pop" style="--df-motion-delay:2.06s"&gt;&lt;/circle&gt;
+      &lt;circle class="sys-stn" cx="1320" cy="400" r="20" data-df-entrance="pop" style="--df-motion-delay:2.26s"&gt;&lt;/circle&gt;
+      &lt;circle class="sys-stn" cx="1450" cy="540" r="20" data-df-entrance="pop" style="--df-motion-delay:2.46s"&gt;&lt;/circle&gt;
+      &lt;text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:0.46s"&gt;&lt;tspan x="150" y="602"&gt;Primitives&lt;/tspan&gt;&lt;/text&gt;
+      &lt;text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:0.66s"&gt;&lt;tspan x="280" y="354"&gt;Actions&lt;/tspan&gt;&lt;/text&gt;
+      &lt;text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:0.86s"&gt;&lt;tspan x="410" y="602"&gt;Forms &amp;amp;&lt;/tspan&gt;&lt;tspan x="410" y="628"&gt;Inputs&lt;/tspan&gt;&lt;/text&gt;
+      &lt;text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:1.06s"&gt;&lt;tspan x="540" y="328"&gt;Data&lt;/tspan&gt;&lt;tspan x="540" y="354"&gt;Display&lt;/tspan&gt;&lt;/text&gt;
+      &lt;text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:1.26s"&gt;&lt;tspan x="670" y="602"&gt;Charts&lt;/tspan&gt;&lt;/text&gt;
+      &lt;text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:1.46s"&gt;&lt;tspan x="800" y="328"&gt;Feedback &amp;amp;&lt;/tspan&gt;&lt;tspan x="800" y="354"&gt;Status&lt;/tspan&gt;&lt;/text&gt;
+      &lt;text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:1.66s"&gt;&lt;tspan x="930" y="602"&gt;Overlays&lt;/tspan&gt;&lt;/text&gt;
+      &lt;text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:1.86s"&gt;&lt;tspan x="1060" y="354"&gt;Navigation&lt;/tspan&gt;&lt;/text&gt;
+      &lt;text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:2.06s"&gt;&lt;tspan x="1190" y="602"&gt;Application&lt;/tspan&gt;&lt;/text&gt;
+      &lt;text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:2.26s"&gt;&lt;tspan x="1320" y="354"&gt;Presentations&lt;/tspan&gt;&lt;/text&gt;
+      &lt;text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:2.46s"&gt;&lt;tspan x="1450" y="602"&gt;Marketing&lt;/tspan&gt;&lt;/text&gt;
     &lt;/svg&gt;
-    &lt;div class="sys-train" style="offset-path:path('M 120 520 H 260 L 380 400 H 470 L 590 520 H 680 L 800 400 H 890 L 1010 520 H 1100 L 1220 400 H 1310 L 1430 520 H 1520')"&gt;&lt;/div&gt;
-    &lt;p class="presentation-note"&gt;Seven stations through the system - the mini-route top right marks the current station on every slide.&lt;/p&gt;
+    &lt;div class="sys-train" style="offset-path:path('M 80 540 L 128 540 H 172 L 258 400 H 302 L 388 540 H 432 L 518 400 H 562 L 648 540 H 692 L 778 400 H 822 L 908 540 H 952 L 1038 400 H 1082 L 1168 540 H 1212 L 1298 400 H 1342 L 1428 540 H 1472 L 1520 540')"&gt;&lt;/div&gt;
+    &lt;p class="presentation-note"&gt;The feature areas, in sidebar order: Primitives, Actions, Forms &amp; Inputs, Data Display, Charts, Feedback &amp; Status, Overlays, Navigation, Application, Presentations, Marketing.&lt;/p&gt;
   &lt;/section&gt;
   &lt;!-- 4 · System - gauge: 56% CSS-only, needle at 55.8% --&gt;
   &lt;section class="slide" data-slide id="sys-barometer" data-theme="paper" data-sec="1" aria-label="Gauge: CSS-only share"&gt;
@@ -378,7 +387,8 @@
       &lt;div class="sys-row hot" data-df-entrance="left" style="--df-motion-delay:.94s"&gt;&lt;span&gt;E2E files&lt;/span&gt;&lt;i style="width:29.5%; --d:.94s"&gt;&lt;/i&gt;&lt;b&gt;83&lt;/b&gt;&lt;/div&gt;
       &lt;div class="sys-row hot" data-df-entrance="left" style="--df-motion-delay:1.06s"&gt;&lt;span&gt;Verify gates&lt;/span&gt;&lt;i style="width:24.9%; --d:1.06s"&gt;&lt;/i&gt;&lt;b&gt;70&lt;/b&gt;&lt;/div&gt;
     &lt;/div&gt;
-    &lt;p class="presentation-note"&gt;The full verification runs in about four minutes: 281 tests, 204 screenshots, 83 e2e files, around 70 verify gates.&lt;/p&gt;
+    &lt;p class="abs" data-df-entrance="fade" style="--df-motion-delay:1.5s; left:792px; top:590px; width:680px; margin:0; font-size:28px; font-weight:500; line-height:1.4; text-wrap:balance"&gt;The agent runs all of them itself, in an automated verification loop - a human reviews the result at the end.&lt;/p&gt;
+    &lt;p class="presentation-note"&gt;The full verification runs in about four minutes: 281 tests, 204 screenshots, 83 e2e files, around 70 verify gates - all executed by the agent in an automated verification loop; the human reviews the result at the end.&lt;/p&gt;
   &lt;/section&gt;
   &lt;!-- 9 · Outlook - four ways in: branching route with 4 trains --&gt;
   &lt;section class="slide" data-slide id="sys-wege" data-theme="ink" data-sec="6" aria-label="Four ways in"&gt;
@@ -409,9 +419,10 @@
   &lt;section class="slide" data-slide id="sys-frage" data-theme="paper" data-sec="6" aria-label="Discussion"&gt;
     &lt;p class="abs sys-eyebrow" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:250px"&gt;Discussion&lt;/p&gt;
     &lt;h2 class="abs sys-h-l" data-df-entrance="skew" style="--df-motion-delay:.3s; left:120px; top:300px; width:720px; font-size:96px"&gt;What will you build with it?&lt;/h2&gt;
+    &lt;p class="abs" data-df-entrance="fade" style="--df-motion-delay:1.4s; left:124px; top:560px; width:680px; margin:0; font-size:32px; font-weight:500; line-height:1.35"&gt;Start building a prototype now.&lt;/p&gt;
     &lt;svg class="sys-fx" viewBox="0 0 1600 900" aria-hidden="true"&gt;&lt;g class="sys-ring" id="sys-ring76"&gt;&lt;/g&gt;&lt;/svg&gt;
     &lt;div class="sys-qm" aria-hidden="true"&gt;?&lt;/div&gt;
-    &lt;p class="presentation-note"&gt;Open discussion: what will you build with it?&lt;/p&gt;
+    &lt;p class="presentation-note"&gt;Open discussion: what will you build with it? Start building a prototype now.&lt;/p&gt;
   &lt;/section&gt;
   &lt;!-- deck chrome: mini-route (7 stations; the 10-slide edit skips
        tokens/charts) + brand - the slide transition is the engine curtain --&gt;
@@ -544,7 +555,7 @@
         }],
         itemStyle: { color: '#0A1E4A' },
         label: {
-          show: true, position: 'insideTop', color: '#FFFFFF', fontSize: 30, fontWeight: 900,
+          show: true, position: 'insideTop', distance: 20, color: '#FFFFFF', fontSize: 30, fontWeight: 900,
           formatter: (p) =&gt; p.value + ' KiB',
         },
       }],
@@ -1468,7 +1479,7 @@ function init(): void {
 
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
-</code></pre></div></section><nav class="page-nav"><a class="page-nav-link page-nav-prev" href="presentations.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><div><span class="page-nav-label">Previous</span><span class="page-nav-title">Deck Gallery</span></div></a><a class="page-nav-link page-nav-next" href="editorial-highlight-bars.html"><div><span class="page-nav-label">Next</span><span class="page-nav-title">Editorial Highlight Bars</span></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></nav><p class="page-edit">Comments, ideas or improvements? <a href="https://github.com/kyr0/defuss-shadcn/blob/main/src/documentation/pages/system-in-numbers.mdx" target="_blank" rel="noopener">Edit this page's source on GitHub</a></p></main><aside class="site-toc"><div class="site-toc-content"><p class="toc-title">On This Page</p><a class="toc-link" href="#toc-design-system-report">Design System Report</a><a class="toc-link" href="#toc-css">CSS</a><a class="toc-link" href="#toc-javascript">JavaScript</a></div></aside></div><script>try {
+</code></pre></div></section><nav class="page-nav"><a class="page-nav-link page-nav-prev" href="presentations.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><div><span class="page-nav-label">Previous</span><span class="page-nav-title">Deck Gallery</span></div></a><a class="page-nav-link page-nav-next" href="editorial-highlight-bars.html"><div><span class="page-nav-label">Next</span><span class="page-nav-title">Editorial Highlight Bars</span></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></nav><p class="page-edit">Comments, ideas or improvements? <a href="https://github.com/kyr0/defuss-shadcn/blob/main/src/documentation/pages/system-in-numbers.mdx" target="_blank" rel="noopener"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>Edit this page's source on GitHub</a></p></main><aside class="site-toc"><div class="site-toc-content"><p class="toc-title">On This Page</p><a class="toc-link" href="#toc-design-system-report">Design System Report</a><a class="toc-link" href="#toc-css">CSS</a><a class="toc-link" href="#toc-javascript">JavaScript</a></div></aside></div><script>try {
   var c = JSON.parse(localStorage.getItem('defuss-shadcn-nav-collapsed') || '{}');
   if (c && typeof c === 'object' && !Array.isArray(c)) {
     for (var h in c) {

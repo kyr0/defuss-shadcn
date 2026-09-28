@@ -22,7 +22,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
       <span style="width:1.625rem;height:1.625rem;border-radius:50%;background:var(--primary);color:var(--primary-foreground);font-size:0.75rem;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</span>
       <h3 style="margin:0;font-size:1rem;font-weight:500;">Add the base: tokens + utilities</h3>
     </div>
-    <pre><code class="language-markup">{"<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/core.css\">\n\n<!-- optional: a theme preset AFTER core overrides the default tokens -->\n<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/bubblegum.css\">"}</code></pre>
+    <CodeBlock lang="markup" code={"<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/core.css\">\n\n<!-- optional: a theme preset AFTER core overrides the default tokens -->\n<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/theme/bubblegum.css\">"} static />
     <p class="text-sm text-muted-foreground mt-2"><code>core.css</code> defines every token for the default light and dark theme plus the sizing, layout and accessibility utilities the examples use (<code>flex</code>, <code>gap-4</code>, <code>stack</code>, <code>sr-only</code> …). To switch themes, load one preset from <code>dist/theme/</code> after it - that's all the theme selector in this documentation site is doing. Compatible with <DocLink href="https://tweakcn.com" target="_blank">tweakcn.com</DocLink> theme exports.</p>
   </div>
   <div>
@@ -30,7 +30,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
       <span style="width:1.625rem;height:1.625rem;border-radius:50%;background:var(--primary);color:var(--primary-foreground);font-size:0.75rem;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</span>
       <h3 style="margin:0;font-size:1rem;font-weight:500;">Add the icons</h3>
     </div>
-    <pre><code class="language-markup">{"<script src=\"https://unpkg.com/lucide@1.8.0\"></script>\n<script>lucide.createIcons();</script>"}</code></pre>
+    <CodeBlock lang="markup" code={"<script src=\"https://unpkg.com/lucide@1.8.0\"></script>\n<script>lucide.createIcons();</script>"} static />
     <p class="text-sm text-muted-foreground mt-2"><DocLink href="https://lucide.dev" target="_blank">Lucide</DocLink> provides ~1,500 icons via CDN. Use <code>&lt;i data-lucide="name"&gt;&lt;/i&gt;</code> anywhere in your HTML. The script replaces each element with an inline SVG on page load. See the <DocLink href="icon.html">Icon</DocLink> page for details.</p>
   </div>
   <div>
@@ -38,7 +38,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
       <span style="width:1.625rem;height:1.625rem;border-radius:50%;background:var(--primary);color:var(--primary-foreground);font-size:0.75rem;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</span>
       <h3 style="margin:0;font-size:1rem;font-weight:500;">Add the components</h3>
     </div>
-    <pre><code class="language-markup">{"<!-- Everything at once: every component's CSS + the bundle (embeds the core runtime) -->\n<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.css\">\n<script type=\"module\" src=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.js\"></script>\n\n<!-- …or only what you need: per-component CSS, then core.js + per-component JS -->\n<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/button/button.css\">\n<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.css\">\n<script type=\"module\" src=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/core.js\"></script>\n<!-- JS - after core, when the component needs it -->\n<script type=\"module\" src=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.js\"></script>"}</code></pre>
+    <CodeBlock lang="markup" code={"<!-- Everything at once: every component's CSS + the bundle (embeds the core runtime) -->\n<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.css\">\n<script type=\"module\" src=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.js\"></script>\n\n<!-- …or only what you need: per-component CSS, then core.js + per-component JS -->\n<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/button/button.css\">\n<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.css\">\n<script type=\"module\" src=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/core.js\"></script>\n<!-- JS - after core, when the component needs it -->\n<script type=\"module\" src=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.js\"></script>"} static />
     <p class="text-sm text-muted-foreground mt-2">Two delivery modes, one implementation: <strong>load core plus the components you use, or load all alone</strong> - both include the <code>df$</code> runtime (defuss-query + defuss-morph) through core; documentation code is separate, and there is no framework or jQuery dependency. <code>all.css</code> / <code>all.js</code> bundle the core runtime plus every component (this documentation site loads exactly these two files). Prefer a smaller payload? Load <code>core.js</code> once, then pick per-component <code>.css</code> + <code>.js</code> files from <code>components/\{name\}/</code> - a component script without core fails fast with one actionable load-order error.</p>
   </div>
   <div>
@@ -46,7 +46,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
       <span style="width:1.625rem;height:1.625rem;border-radius:50%;background:var(--primary);color:var(--primary-foreground);font-size:0.75rem;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</span>
       <h3 style="margin:0;font-size:1rem;font-weight:500;">Read the component skill, write the HTML</h3>
     </div>
-    <pre><code class="language-markup">{"<button class=\"btn\" data-variant=\"default\"\n        data-dialog-trigger=\"confirm\"\n        aria-haspopup=\"dialog\">\n  Open Dialog\n</button>\n\n<dialog id=\"confirm\" class=\"dialog\"\n        role=\"dialog\" aria-modal=\"true\"\n        aria-labelledby=\"confirm-title\">\n  <div class=\"dialog-content\">\n    <div class=\"dialog-header\">\n      <h2 class=\"dialog-title\" id=\"confirm-title\">Are you sure?</h2>\n      <p class=\"dialog-description\">This action cannot be undone.</p>\n    </div>\n    <div class=\"dialog-footer\">\n      <button class=\"btn\" data-variant=\"outline\" data-dialog-close>Cancel</button>\n      <button class=\"btn\" data-variant=\"default\">Confirm</button>\n    </div>\n  </div>\n</dialog>"}</code></pre>
+    <CodeBlock lang="markup" code={"<button class=\"btn\" data-variant=\"default\"\n        data-dialog-trigger=\"confirm\"\n        aria-haspopup=\"dialog\">\n  Open Dialog\n</button>\n\n<dialog id=\"confirm\" class=\"dialog\"\n        role=\"dialog\" aria-modal=\"true\"\n        aria-labelledby=\"confirm-title\">\n  <div class=\"dialog-content\">\n    <div class=\"dialog-header\">\n      <h2 class=\"dialog-title\" id=\"confirm-title\">Are you sure?</h2>\n      <p class=\"dialog-description\">This action cannot be undone.</p>\n    </div>\n    <div class=\"dialog-footer\">\n      <button class=\"btn\" data-variant=\"outline\" data-dialog-close>Cancel</button>\n      <button class=\"btn\" data-variant=\"default\">Confirm</button>\n    </div>\n  </div>\n</dialog>"} static />
     <p class="text-sm text-muted-foreground mt-2">Each component folder has a <code>component-skill.md</code> that documents the exact HTML structure, attributes, variants, and ARIA. Read it, copy the pattern, fill in your content. The CSS and JS handle the rest.</p>
   </div>
   <div>
@@ -61,15 +61,65 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <div style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border);">
   <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.75rem;">With a package manager</h2>
   <p class="text-sm text-muted-foreground mb-3">In a project that already has a package manager and a bundler (Vite, webpack, Rollup, Parcel, esbuild, Bun), install the package and import the same files in the same order - side-effect imports, once, in the app entry. The package ships plain CSS and ES modules; the bundler only resolves the paths.</p>
-  <pre><code class="language-bash">{"npm install defuss-shadcn   # or: bun add / pnpm add / yarn add defuss-shadcn"}</code></pre>
-  <pre><code class="language-javascript">{"// everything: tokens + utilities → all component CSS → runtime + all behavior\nimport 'defuss-shadcn/dist/components/core.css';\nimport 'defuss-shadcn/dist/components/all.css';\nimport 'defuss-shadcn/dist/components/all.js';\n\n// …or only what you need (core.js MUST precede every component .js)\nimport 'defuss-shadcn/dist/components/core.css';\nimport 'defuss-shadcn/dist/components/dialog/dialog.css';\nimport 'defuss-shadcn/dist/components/core.js';\nimport 'defuss-shadcn/dist/components/dialog/dialog.js';"}</code></pre>
-  <p class="text-sm text-muted-foreground mt-2">Icons and charts stay separate packages: <code>npm install lucide</code> (then <code>createIcons(&#123; icons &#125;)</code>) for <code>&lt;i data-lucide&gt;</code>, and <code>npm install echarts</code> assigned to <code>globalThis.echarts</code> before a chart mounts. For AI agents, the package's root <code>SKILL.md</code> condenses both install paths, the rules, and an index of every component skill and documentation page.</p>
+  <CodeBlock lang="bash" code={"npm install defuss-shadcn   # or: bun add / pnpm add / yarn add defuss-shadcn"} static />
+  <CodeBlock lang="javascript" code={"// everything: tokens + utilities → all component CSS → runtime + all behavior\nimport 'defuss-shadcn/dist/components/core.css';\nimport 'defuss-shadcn/dist/components/all.css';\nimport 'defuss-shadcn/dist/components/all.js';\n\n// …or only what you need (core.js MUST precede every component .js)\nimport 'defuss-shadcn/dist/components/core.css';\nimport 'defuss-shadcn/dist/components/dialog/dialog.css';\nimport 'defuss-shadcn/dist/components/core.js';\nimport 'defuss-shadcn/dist/components/dialog/dialog.js';"} static />
+  <p class="text-sm text-muted-foreground mt-2">Icons and charts stay separate packages: <code>npm install lucide</code> (then <code>createIcons(&#123; icons &#125;)</code>) for <code>&lt;i data-lucide&gt;</code>, and <code>npm install echarts</code> assigned to <code>globalThis.echarts</code> before a chart mounts. For AI agents, the package's <code>skills/defuss-shadcn/SKILL.md</code> condenses both install paths, the rules, and an index of every component skill and documentation page - install it into your coding agent with one command (see <DocLink href="#install-as-an-ai-agent-skill">Install as an AI Agent Skill</DocLink> below).</p>
+</div>
+
+<div style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border);">
+  <h2 id="install-as-an-ai-agent-skill" style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.75rem;">Install as an AI Agent Skill</h2>
+  <p class="text-sm text-muted-foreground mb-3"><code>defuss-shadcn</code> can be installed directly into Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot, Windsurf, and other Agent Skills-compatible coding agents. The skill is one file - <DocLink href="https://github.com/kyr0/defuss-shadcn/blob/main/skills/defuss-shadcn/SKILL.md" target="_blank"><code>skills/defuss-shadcn/SKILL.md</code></DocLink> - with the install paths, the rules, a map of every documentation page and an index of every component skill.</p>
+
+  <h3 style="margin:1.75rem 0 0.5rem;font-size:1rem;font-weight:500;">Claude Code</h3>
+  <p class="text-sm text-muted-foreground mb-3">Claude Code can install <code>defuss-shadcn</code> directly from its native plugin marketplace. Inside Claude Code:</p>
+  <CodeBlock lang="text" code={"/plugin marketplace add kyr0/defuss-shadcn\n/plugin install defuss-shadcn@defuss-shadcn"} static />
+  <p class="text-sm text-muted-foreground mt-3 mb-3">Or from your shell:</p>
+  <CodeBlock lang="bash" code={"claude plugin marketplace add kyr0/defuss-shadcn\nclaude plugin install defuss-shadcn@defuss-shadcn"} static />
+  <p class="text-sm text-muted-foreground mt-2">Start a new Claude Code session after installation.</p>
+
+  <h3 style="margin:1.75rem 0 0.5rem;font-size:1rem;font-weight:500;">Codex, Cursor, Gemini CLI, Copilot, Windsurf, and others</h3>
+  <p class="text-sm text-muted-foreground mb-3">The repository also exposes <code>defuss-shadcn</code> as a standard Agent Skill. The simplest cross-agent installation uses the open <DocLink href="https://skills.sh/" target="_blank"><code>skills</code></DocLink> CLI:</p>
+  <CodeBlock lang="bash" code={"npx skills add kyr0/defuss-shadcn --skill defuss-shadcn"} static />
+  <p class="text-sm text-muted-foreground mt-2 mb-3">The installer detects/selects supported coding agents interactively.</p>
+  <p class="text-sm text-muted-foreground mb-3">Install specifically for <strong>Codex</strong>:</p>
+  <CodeBlock lang="bash" code={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent codex"} static />
+  <p class="text-sm text-muted-foreground mt-3 mb-3">For <strong>Claude Code</strong>:</p>
+  <CodeBlock lang="bash" code={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent claude-code"} static />
+  <p class="text-sm text-muted-foreground mt-3 mb-3">For <strong>Cursor</strong>:</p>
+  <CodeBlock lang="bash" code={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent cursor"} static />
+  <p class="text-sm text-muted-foreground mt-3 mb-3">For <strong>Gemini CLI</strong>:</p>
+  <CodeBlock lang="bash" code={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent gemini-cli"} static />
+  <p class="text-sm text-muted-foreground mt-3 mb-3">For <strong>GitHub Copilot</strong>:</p>
+  <CodeBlock lang="bash" code={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent github-copilot"} static />
+  <p class="text-sm text-muted-foreground mt-3 mb-3">For <strong>Windsurf</strong>:</p>
+  <CodeBlock lang="bash" code={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent windsurf"} static />
+  <p class="text-sm text-muted-foreground mt-3 mb-3">Install for several agents at once:</p>
+  <CodeBlock lang="bash" code={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent claude-code \\\n  --agent codex \\\n  --agent cursor \\\n  --agent gemini-cli"} static />
+
+  <h3 style="margin:1.75rem 0 0.5rem;font-size:1rem;font-weight:500;">Global installation</h3>
+  <p class="text-sm text-muted-foreground mb-3">By default, <code>skills</code> installs into the current project. Use <code>--global</code> / <code>-g</code> to make <code>defuss-shadcn</code> available across projects:</p>
+  <CodeBlock lang="bash" code={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent codex \\\n  --global"} static />
+  <p class="text-sm text-muted-foreground mt-3 mb-3">Or interactively choose an agent and global scope:</p>
+  <CodeBlock lang="bash" code={"npx skills add kyr0/defuss-shadcn"} static />
+
+  <h3 style="margin:1.75rem 0 0.5rem;font-size:1rem;font-weight:500;">Non-interactive installation</h3>
+  <p class="text-sm text-muted-foreground mb-3">Useful for bootstrap scripts and development environments:</p>
+  <CodeBlock lang="bash" code={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent codex \\\n  --global \\\n  --yes"} static />
+
+  <h3 style="margin:1.75rem 0 0.5rem;font-size:1rem;font-weight:500;">Update installed skills</h3>
+  <CodeBlock lang="bash" code={"npx skills update"} static />
+  <p class="text-sm text-muted-foreground mt-3 mb-3">For Claude Code's native marketplace:</p>
+  <CodeBlock lang="text" code={"/plugin marketplace update defuss-shadcn"} static />
+
+  <h3 style="margin:1.75rem 0 0.5rem;font-size:1rem;font-weight:500;">Using the skill</h3>
+  <p class="text-sm text-muted-foreground mb-3">Once installed, simply ask the agent to build UI with <code>defuss-shadcn</code>. Codex can also invoke the skill explicitly:</p>
+  <CodeBlock lang="text" code={"$defuss-shadcn build a settings page with a sidebar, tabs and a form"} static />
 </div>
 
 <div style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border);">
   <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.75rem;">Pinning a version</h2>
   <p class="text-sm text-muted-foreground mb-3">Replace <code>@latest</code> with a specific version tag to lock your project to a release:</p>
-  <pre><code class="language-markup">{"<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@v0.1.1/dist/theme/utils/default-semantic-tokens.css\">"}</code></pre>
+  <CodeBlock lang="markup" code={"<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@v0.1.1/dist/theme/utils/default-semantic-tokens.css\">"} static />
   <p class="text-sm text-muted-foreground mt-2">This ensures your project won't break when new versions are published. Check the <DocLink href="https://github.com/kyr0/defuss-shadcn/tags" target="_blank">releases page</DocLink> for available versions.</p>
 </div>
 
@@ -90,10 +140,10 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <div style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border);">
   <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.75rem;">Minified builds &amp; source maps</h2>
   <p class="text-sm text-muted-foreground mb-3">Every component also ships minified twins, generated at build time with <DocLink href="https://oxc.rs" target="_blank">oxc-minify</DocLink> (JS) and <DocLink href="https://lightningcss.dev" target="_blank">Lightning CSS</DocLink> (CSS). Swap the extension to <code>.min.css</code> / <code>.min.js</code> in any URL:</p>
-  <pre><code class="language-markup">{"<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.min.css\">\n<script type=\"module\" src=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.min.js\"></script>"}</code></pre>
+  <CodeBlock lang="markup" code={"<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.min.css\">\n<script type=\"module\" src=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.min.js\"></script>"} static />
   <p class="text-sm text-muted-foreground mt-2">Minification changes no behavior - the State API (<code>el.api.setState()</code>), globals and <code>data-\*</code> attributes work identically. Debugging stays intact: <code>dialog.js.map</code> maps the readable file back to its source and <code>dialog.min.js.map</code> maps the minified file through it; devtools pick both up automatically via <code>sourceMappingURL</code>, so you can set breakpoints in the original source even when loading the <code>.min.js</code>.</p>
   <p class="text-sm text-muted-foreground" style="margin-top:0.75rem;">The bundle ships the same way: <code>all.min.css</code> (+ <code>all.min.css.map</code>) and <code>all.min.js</code> (+ <code>all.min.js.map</code>) are the minified twins of <code>all.css</code> / <code>all.js</code> - swap them in by URL alone:</p>
-  <pre><code class="language-markup">{"<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.min.css\">\n<script type=\"module\" src=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.min.js\"></script>"}</code></pre>
+  <CodeBlock lang="markup" code={"<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.min.css\">\n<script type=\"module\" src=\"https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.min.js\"></script>"} static />
   <p class="text-sm text-muted-foreground" style="margin-top:0.75rem;">Readable and minified files ship from the same source per release, so you can mix them freely - minified in production, readable while developing - and switch back by URL alone.</p>
 </div>
 

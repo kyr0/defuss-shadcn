@@ -14,7 +14,7 @@
     "dist",
     "!dist/documentation",
     "src/documentation/pages",
-    "SKILL.md",
+    "skills",
     "README.md",
     "LICENSE"
   ],

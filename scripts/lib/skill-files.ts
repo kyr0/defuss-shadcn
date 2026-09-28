@@ -74,9 +74,18 @@ export async function buildRootSkillText(root: string): Promise<string> {
     ...e,
     hasJs: existsSync(join(compsDir, e.folder, `${e.folder}.ts`)),
   }));
-  const version = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).version as string;
+  const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
+  const version = pkg.version as string;
+  // raw file URLs on the default branch: the skill installers take the repo
+  // HEAD, so HEAD's files are the ones the skill describes
+  const repo = String(typeof pkg.repository === 'string' ? pkg.repository : pkg.repository?.url ?? '')
+    .replace(/^git\+/, '')
+    .replace(/^git@github\.com:/, 'https://github.com/')
+    .replace(/\.git$/, '');
+  const sourceBase = repo.replace(/^https:\/\/github\.com\//, 'https://raw.githubusercontent.com/') + '/main/';
   return assembleRootSkillText(readFileSync(join(src, ROOT_SKILL_TEMPLATE_FILE), 'utf8'), {
     version,
+    sourceBase,
     total: components.length,
     withJs: components.filter((c) => c.hasJs).length,
     sections: (NAV as { heading: string; items: Nav[] }[]).map((s) => ({ heading: s.heading, pages: s.items.map(toPage) })),

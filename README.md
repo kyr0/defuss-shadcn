@@ -19,7 +19,7 @@ The footprint is measured from the shipped `dist/` files on every build and publ
 
 The set includes 13 marketing blocks (Site Header, Hero, Pricing, Testimonials, Blog, Footer, …) - full-page sections composed from the same tokens and primitives, all CSS-only.
 
-**[Documentation & Live Demos →](https://kyr0.github.io/defuss-shadcn/)** · [Architecture (ARCH.md)](ARCH.md) · [Agent skill (SKILL.md)](SKILL.md)
+**[Documentation & Live Demos →](https://kyr0.github.io/defuss-shadcn/)** · [Architecture (ARCH.md)](ARCH.md) · [Agent skill (SKILL.md)](skills/defuss-shadcn/SKILL.md)
 
 The docs site dogfoods the CDN install: it loads its `all.css` / `all.js` bundle and theme from the jsDelivr CDN, the same URLs as the CDN quick start above - if it renders, the CDN install works.
 
@@ -78,7 +78,20 @@ import 'defuss-shadcn/dist/components/all.js';   // df$ runtime + every componen
 
 ### For AI agents: SKILL.md
 
-[`SKILL.md`](SKILL.md) (repo root, shipped in the npm package) packages the whole project as one agent skill: the exact install steps for both paths (npm or jsDelivr, no TypeScript for standalone HTML), the include order, the rules to follow, a map of every documentation page (guides + live examples, linked as MDX sources) and an index of all component skills with why/when - generated from the sources on every build.
+[`skills/defuss-shadcn/SKILL.md`](skills/defuss-shadcn/SKILL.md) (shipped in the npm package) packages the whole project as one Agent Skill: the exact install steps for both paths (npm or jsDelivr, no TypeScript for standalone HTML), the include order, the rules to follow, a map of every documentation page (guides + live examples, linked as MDX sources) and an index of all component skills with why/when - generated from the sources on every build.
+
+Install it into your coding agent:
+
+```bash
+# Claude Code (native plugin marketplace)
+claude plugin marketplace add kyr0/defuss-shadcn
+claude plugin install defuss-shadcn@defuss-shadcn
+
+# Codex, Cursor, Gemini CLI, GitHub Copilot, Windsurf, … (and Claude Code)
+npx skills add kyr0/defuss-shadcn --skill defuss-shadcn
+```
+
+Per-agent flags, global installs and updates: [Installation → Install as an AI Agent Skill](https://kyr0.github.io/defuss-shadcn/installation.html#install-as-an-ai-agent-skill).
 
 ### Self-hosting
 

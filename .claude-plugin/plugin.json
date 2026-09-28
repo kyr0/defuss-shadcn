@@ -9,6 +9,7 @@
   "homepage": "https://github.com/kyr0/defuss-shadcn",
   "repository": "https://github.com/kyr0/defuss-shadcn",
   "license": "MIT",
+  "skills": "./skills/",
   "keywords": [
     "ui-design",
     "ui-components",

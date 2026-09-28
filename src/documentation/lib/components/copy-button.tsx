@@ -24,14 +24,17 @@ export function CopyButton(_props: Props) {
 }
 
 /** Wraps a <pre><code> block in the relative container + copy button - the
- * pairing site.js's code-collapse keys on. */
+ * pairing site.js's code-collapse keys on. `static`: the block is the
+ * content itself (an install command, a config line), not source behind a
+ * demo - it keeps its Copy button but is never collapsed. */
 export function CodeBlock({
   lang,
   code,
+  static: isStatic,
   children,
-}: Props & { lang: string; code?: string }) {
+}: Props & { lang: string; code?: string; static?: boolean }) {
   return (
-    <div style="position:relative;margin-top:0.5rem;">
+    <div style="position:relative;margin-top:0.5rem;" {...(isStatic ? { 'data-code-static': '' } : {})}>
       <CopyButton />
       <pre>
         <code class={`language-${lang}`}>{code !== undefined ? code : children}</code>

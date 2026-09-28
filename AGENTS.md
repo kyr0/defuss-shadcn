@@ -43,7 +43,8 @@ Never edit `dist/` directly; it is deleted and rebuilt on every build.
 
 ```
 defuss-shadcn/
-├── SKILL.md                           ← the whole project as ONE agent skill (generated from src/SKILL_root_tpl.md + nav.ts + page/skill frontmatter; ships in the npm package; `root SKILL.md ↔ sources` gate)
+├── skills/defuss-shadcn/SKILL.md     ← the whole project as ONE Agent Skill in the cross-harness layout (generated from src/SKILL_root_tpl.md + nav.ts + page/skill frontmatter; links are absolute raw-GitHub URLs because an installed skill is its folder alone; ships in the npm package; `root SKILL.md ↔ sources` gate)
+├── .claude-plugin/                    ← Claude Code marketplace + plugin manifests (source "./", "skills": "./skills/") - `/plugin marketplace add kyr0/defuss-shadcn`; `npx skills add kyr0/defuss-shadcn --skill defuss-shadcn` reads the same skills/ folder for every other harness
 ├── dist/                              ← the distributable (drop into any project)
 │   ├── SKILL.md                       ← agent entry point (generated from src/SKILL_tpl.md + skill frontmatter)
 │   ├── stats.json                     ← generated size/surface summary (counts per type, JS split, byte sizes; `make stats`)

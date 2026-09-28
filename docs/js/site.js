@@ -146,6 +146,9 @@
             var wrapper = btn.parentElement;
             if (!wrapper || wrapper.tagName !== 'DIV' || !wrapper.querySelector('pre'))
                 return;
+            // a static block (install commands …) IS the content: copy, never collapse
+            if (wrapper.hasAttribute('data-code-static'))
+                return;
             // COLLAPSED by default: the demos above each block are the primary
             // content; the source is opt-in reading. Every block starts hidden and
             // the toolbar/per-block toggles start in their "Show" affordance.
