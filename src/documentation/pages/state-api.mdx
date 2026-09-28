@@ -4,7 +4,7 @@ description: "Every interactive component declares its UI states by name and exp
 slug: "state-api"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard, DeclaredStatesTable } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -98,36 +98,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <p class="text-sm text-muted-foreground mb-5"> Every multi-state component, with its declared state names (from each skill's <code>supportedStates</code>). Components with no <code>.js</code> file are pure HTML/CSS - their only state is <code>default</code>, and their variants are markup attributes (<DocLink href="data-attribute-api.html">Data Attribute API</DocLink>), not runtime states. </p>
 
 <TableCard title="declared states per JS component" mb="2.5rem">
-  <table class="mini-table">
-    <thead>
-      <tr>
-        <th>>Component</th>
-        <th>>States</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td>><DocLink href="accordion.html">Accordion</DocLink></td><td>><code>default</code> · <code>all-open</code> · <code>all-closed</code></td></tr>
-      <tr><td>><DocLink href="alert-dialog.html">Alert Dialog</DocLink></td><td>><code>default</code> · <code>open</code></td></tr>
-      <tr><td>><DocLink href="avatar.html">Avatar</DocLink></td><td>><code>default</code> · <code>error</code></td></tr>
-      <tr><td>><DocLink href="combobox.html">Combobox</DocLink></td><td>><code>default</code> · <code>open</code></td></tr>
-      <tr><td>><DocLink href="command.html">Command</DocLink></td><td>><code>default</code> · <code>open</code></td></tr>
-      <tr><td>><DocLink href="context-menu.html">Context Menu</DocLink></td><td>><code>default</code> · <code>open</code></td></tr>
-      <tr><td>><DocLink href="dialog.html">Dialog</DocLink></td><td>><code>default</code> · <code>open</code></td></tr>
-      <tr><td>><DocLink href="dropdown.html">Dropdown Menu</DocLink></td><td>><code>default</code> · <code>open</code></td></tr>
-      <tr><td>><DocLink href="image.html">Image</DocLink></td><td>><code>default</code> · <code>error</code></td></tr>
-      <tr><td>><DocLink href="navigation-menu.html">Navigation Menu</DocLink></td><td>><code>default</code> · <code>open</code></td></tr>
-      <tr><td>><DocLink href="popover.html">Popover</DocLink></td><td>><code>default</code> · <code>open</code></td></tr>
-      <tr><td>><DocLink href="product-showcase.html">Product Showcase</DocLink></td><td>><code>default</code> · <code>playing</code></td></tr>
-      <tr><td>><DocLink href="sheet.html">Sheet</DocLink></td><td>><code>default</code> · <code>open</code></td></tr>
-      <tr><td>><DocLink href="sidebar.html">Sidebar</DocLink></td><td>><code>default</code> · <code>collapsed</code></td></tr>
-      <tr><td>><DocLink href="slider.html">Slider</DocLink></td><td>><code>default</code> · <code>disabled</code></td></tr>
-      <tr><td>><DocLink href="tabs.html">Tabs</DocLink></td><td>><code>default</code> · <code>active</code></td></tr>
-      <tr><td>><DocLink href="toggle-group.html">Toggle Group</DocLink></td><td>><code>default</code> · <code>disabled</code></td></tr>
-      <tr><td>><DocLink href="toggle.html">Toggle</DocLink></td><td>><code>default</code> · <code>pressed</code></td></tr>
-      <tr><td>><DocLink href="tooltip.html">Tooltip</DocLink></td><td>><code>default</code> · <code>visible</code></td></tr>
-      <tr><td>><DocLink href="tree-view.html">Tree View</DocLink></td><td>><code>default</code> · <code>expanded</code></td></tr>
-    </tbody>
-  </table>
+  <DeclaredStatesTable />
 </TableCard>
 
 <H2>Why it exists</H2>

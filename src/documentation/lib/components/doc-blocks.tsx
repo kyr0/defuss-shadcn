@@ -118,13 +118,36 @@ export function CodeCard({
 }
 
 /** Same bordered card with a table body (reference tables in guide pages). */
-export function TableCard({ title, mb, children }: Props & { title: string; mb?: string }) {
+/** A titled card around a table: either children (hand-written <table>) or
+ * `rows` - the first row is the header, `code` lists the column indices
+ * whose cells render as <code>. (`rows` used to be silently ignored: the
+ * DOM Querying guide's mode-selection card rendered empty.) */
+export function TableCard({
+  title,
+  mb,
+  rows,
+  code,
+  children,
+}: Props & { title: string; mb?: string; rows?: string[][]; code?: number[] }) {
+  const cell = (text: string, col: number) => (code?.includes(col) ? <code>{text}</code> : text);
+  const table = rows?.length ? (
+    <table class="mini-table">
+      <thead>
+        <tr>{rows[0].map((h) => <th>{h}</th>)}</tr>
+      </thead>
+      <tbody>
+        {rows.slice(1).map((r) => (
+          <tr>{r.map((c, i) => <td>{cell(c, i)}</td>)}</tr>
+        ))}
+      </tbody>
+    </table>
+  ) : null;
   return (
     <div class="code-card" style={`margin-bottom:${mb ?? '1.5rem'};`}>
       <div class="code-card-head">
         <span class="code-card-title">{title}</span>
       </div>
-      <div style="padding:1rem 1.25rem;font-size:0.8125rem;overflow-x:auto;">{children}</div>
+      <div style="padding:1rem 1.25rem;font-size:0.8125rem;overflow-x:auto;">{table ?? children}</div>
     </div>
   );
 }
