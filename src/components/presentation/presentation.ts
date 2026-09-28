@@ -21,7 +21,7 @@
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/, and
 // the same functions are published under the global `ddf$` alias.
-import { defussGlobals, animateCount, clampIndex, coerceIndex, draw, entrance, anim } from '../../shared/state-api.js';
+import { defussGlobals, animateCount, bindGlobalKeys, clampIndex, coerceIndex, draw, entrance, anim } from '../../shared/state-api.js';
 import type { AnimChannel, AnimDirection, AnimOptions } from '../../shared/anim.js';
 
 const df$ = defussGlobals();
@@ -249,9 +249,10 @@ let keysBound = false;
 function bindKeyboard(): void {
   if (keysBound) return;
   keysBound = true;
-  document.addEventListener('keydown', (e) => {
+  // the shared global-key listener (src/shared/keys.ts) already skips keys
+  // typed into inputs, textareas, selects and contenteditable
+  bindGlobalKeys((e) => {
     const target = e.target as HTMLElement | null;
-    if (target?.closest('input, textarea, select, [contenteditable]')) return;
     const root =
       (target?.closest('.presentation') as Deck | null) ?? document.querySelector<Deck>('.presentation');
     if (!root) return;
@@ -293,7 +294,9 @@ function bindKeyboard(): void {
       default:
         handled = false;
     }
-    if (handled) e.preventDefault();
+    if (!handled) return;
+    e.preventDefault();
+    return true; // this key belonged to the deck - later global handlers skip it
   });
 }
 

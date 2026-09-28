@@ -27,6 +27,7 @@ export const NAV = [
             { label: 'Data Attribute API', href: 'data-attribute-api.html' },
             { label: 'State API', href: 'state-api.html' },
             { label: 'DOM Querying & Morphing', href: 'dom-querying.html' },
+            { label: 'Global Key Commands', href: 'global-keys.html' },
             { label: 'Cascade Layers', href: 'cascade-layers.html' },
             { label: 'JavaScript Modules', href: 'es-modules.html' },
             { label: 'Native Web APIs', href: 'native-web-apis.html' },

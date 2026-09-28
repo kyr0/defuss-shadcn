@@ -6,7 +6,7 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals } from '../../shared/state-api.js';
+import { bindGlobalKeys, defussGlobals } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
 
@@ -136,18 +136,20 @@ init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
 // -- Keyboard shortcut: Cmd+B / Ctrl+B ----------------------
+// Through the shared global-key listener (src/shared/keys.ts): never fires
+// while typing in a field or a contenteditable (where Cmd+B means bold), and
+// only claims the key when there is a sidebar to toggle.
 if (!document.__sidebarKbInit) {
   document.__sidebarKbInit = true;
-  document.addEventListener('keydown', (e) => {
-    if ((e.metaKey || e.ctrlKey) && e.key === 'b') {
-      e.preventDefault();
-      // Toggle the first sidebar found on the page
-      const sidebar = document.querySelector('.app-sidebar');
-      if (sidebar) {
-        sidebar.dataset.state = sidebar.dataset.state === 'collapsed' ? 'expanded' : 'collapsed';
-        // user decision - pins against the auto-collapse heuristic
-        sidebar.dataset.stateName = sidebar.dataset.state === 'collapsed' ? 'collapsed' : 'default';
-      }
-    }
+  bindGlobalKeys((e) => {
+    if (!(e.metaKey || e.ctrlKey) || e.key !== 'b') return;
+    // Toggle the first sidebar found on the page
+    const sidebar = document.querySelector('.app-sidebar');
+    if (!sidebar) return;
+    e.preventDefault();
+    sidebar.dataset.state = sidebar.dataset.state === 'collapsed' ? 'expanded' : 'collapsed';
+    // user decision - pins against the auto-collapse heuristic
+    sidebar.dataset.stateName = sidebar.dataset.state === 'collapsed' ? 'collapsed' : 'default';
+    return true;
   });
 }

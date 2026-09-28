@@ -336,9 +336,9 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
   <section class="slide" data-slide id="sys-treppe" data-theme="paper" data-sec="1" aria-label="Shipped sizes">
     <h2 class="abs sys-h-l" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:106px">The whole system:<br>109.8 KiB.</h2>
     <p class="abs" data-df-entrance="up" style="--df-motion-delay:.4s; left:124px; top:318px; font-size:28px; font-weight:500; margin:0">Minified + gzip - measured from dist/stats.json</p>
-    <div class="chart" id="sys-treppe-chart" role="img" aria-label="Bar chart of shipped sizes: total 109.8 KiB, bundle 76.3 KiB, core 24.1 KiB, 1.4 KiB per component on average" style="position:absolute; left:120px; top:340px; width:1360px; height:440px"></div>
+    <div class="chart" id="sys-treppe-chart" role="img" aria-label="Bar chart of shipped sizes: total 109.8 KiB, bundle 76.2 KiB, core 24.1 KiB, 1.4 KiB per component on average" style="position:absolute; left:120px; top:340px; width:1360px; height:440px"></div>
     <div class="sys-ball" style="offset-path:path('M 320 200 L 320 390 Q 480 290 640 490 Q 800 400 960 615 Q 1120 540 1280 686')"></div>
-    <p class="presentation-note">The whole system weighs 109.8 KiB minified and gzipped - the bundle 76.3, the core 24.1, 1.4 KiB per component on average.</p>
+    <p class="presentation-note">The whole system weighs 109.8 KiB minified and gzipped - the bundle 76.2, the core 24.1, 1.4 KiB per component on average.</p>
   </section>
   <!-- 7 · Components - taxonomy donut in the five class colours -->
   <section class="slide" data-slide id="sys-radar" data-theme="ink" data-sec="3" aria-label="What the system is made of">
@@ -397,7 +397,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     </svg>
     <div class="sys-rows">
       <div class="sys-row top" data-df-entrance="left" style="--df-motion-delay:.7s"><span>Tests</span><i style="width:100%; --d:.7s"></i><b>281</b></div>
-      <div class="sys-row" data-df-entrance="left" style="--df-motion-delay:.82s"><span>Screenshots</span><i style="width:76.3%; --d:.82s"></i><b>204</b></div>
+      <div class="sys-row" data-df-entrance="left" style="--df-motion-delay:.82s"><span>Screenshots</span><i style="width:76.2%; --d:.82s"></i><b>204</b></div>
       <div class="sys-row hot" data-df-entrance="left" style="--df-motion-delay:.94s"><span>E2E files</span><i style="width:29.5%; --d:.94s"></i><b>83</b></div>
       <div class="sys-row hot" data-df-entrance="left" style="--df-motion-delay:1.06s"><span>Verify gates</span><i style="width:24.9%; --d:1.06s"></i><b>70</b></div>
     </div>
@@ -562,7 +562,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
         type: 'bar',
         barWidth: 240,
         barMaxWidth: 240, // the artboard theme caps bars narrower - the ball needs landing room
-        data: [109.8, 76.3, 24.1, {
+        data: [109.8, 76.2, 24.1, {
           value: 1.4,
           // above the ball's final resting place on this tiny bar
           label: { position: 'top', distance: 52, color: '#0A1E4A' },

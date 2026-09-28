@@ -102,6 +102,14 @@ try {
     assert.equal(await page.$eval('#demo-sidebar', (el) => el.dataset.state), 'expanded', 'shortcut expanded it');
   });
 
+  await check('Cmd+B while typing in a field is left alone (bold, not the sidebar)', async () => {
+    await page.focus('#typing-field');
+    await page.keyboard.press('Control+b');
+    await page.waitForTimeout(100);
+    assert.equal(await page.$eval('#demo-sidebar', (el) => el.dataset.state), 'expanded', 'the sidebar did not toggle');
+    await page.evaluate(() => (document.activeElement as HTMLElement)?.blur());
+  });
+
   await check('mobile dialog opens via data-sidebar-mobile and closes (mobile viewport)', async () => {
     // .sidebar-mobile is display:none by design on desktop (the component's
     // mobile-first sheet) - exercise it at a phone viewport, as documented

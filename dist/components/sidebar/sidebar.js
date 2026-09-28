@@ -17,7 +17,7 @@ if (!__df$shared || __df$shared.abi !== '0.9.1') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals } = __df$shared;
+const { bindGlobalKeys, defussGlobals } = __df$shared;
 const df$ = defussGlobals();
 const sidebarStates = ['default', 'collapsed'];
 /**
@@ -135,19 +135,23 @@ if (typeof ResizeObserver !== 'undefined' && !document.__sidebarAutoRo) {
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 // -- Keyboard shortcut: Cmd+B / Ctrl+B ----------------------
+// Through the shared global-key listener (src/shared/keys.ts): never fires
+// while typing in a field or a contenteditable (where Cmd+B means bold), and
+// only claims the key when there is a sidebar to toggle.
 if (!document.__sidebarKbInit) {
     document.__sidebarKbInit = true;
-    document.addEventListener('keydown', (e) => {
-        if ((e.metaKey || e.ctrlKey) && e.key === 'b') {
-            e.preventDefault();
-            // Toggle the first sidebar found on the page
-            const sidebar = document.querySelector('.app-sidebar');
-            if (sidebar) {
-                sidebar.dataset.state = sidebar.dataset.state === 'collapsed' ? 'expanded' : 'collapsed';
-                // user decision - pins against the auto-collapse heuristic
-                sidebar.dataset.stateName = sidebar.dataset.state === 'collapsed' ? 'collapsed' : 'default';
-            }
-        }
+    bindGlobalKeys((e) => {
+        if (!(e.metaKey || e.ctrlKey) || e.key !== 'b')
+            return;
+        // Toggle the first sidebar found on the page
+        const sidebar = document.querySelector('.app-sidebar');
+        if (!sidebar)
+            return;
+        e.preventDefault();
+        sidebar.dataset.state = sidebar.dataset.state === 'collapsed' ? 'expanded' : 'collapsed';
+        // user decision - pins against the auto-collapse heuristic
+        sidebar.dataset.stateName = sidebar.dataset.state === 'collapsed' ? 'collapsed' : 'default';
+        return true;
     });
 }
 //# sourceMappingURL=sidebar.js.map

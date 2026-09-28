@@ -185,6 +185,17 @@ try {
     assert.equal(await page.$eval('#deck', (el) => el.dataset.currentSlide), '0');
   });
 
+  await check('keyboard: keys typed into a field never drive the deck', async () => {
+    await page.focus('#deck');
+    await page.keyboard.press('Home');
+    await page.focus('#typing-field');
+    await page.keyboard.press('ArrowRight');
+    await page.keyboard.type('n f');
+    assert.equal(await page.$eval('#deck', (el) => el.dataset.currentSlide), '0', 'no slide change');
+    assert.equal(await page.$eval('#deck', (el) => el.hasAttribute('data-notes')), false, 'no notes toggle');
+    assert.equal(await page.$eval('#typing-field', (el: any) => el.value), 'n f', 'the letters were typed');
+  });
+
   await check('keyboard: Space advances, N toggles notes, F toggles fullscreen', async () => {
     await page.focus('#deck');
     await page.keyboard.press('Space');

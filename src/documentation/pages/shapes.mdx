@@ -9,7 +9,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <DocPage meta={meta}>
 
 <PageHeader slug="shapes" title="Shapes" introStyle="max-width:38rem;">
-  A catalog of ready-made silhouettes for websites, landing pages and documentation: radius scale, organic and cut corners, clip-path shapes, section edges, a shadow scale plus stylized shadows, frames and background patterns. One opt-in stylesheet, token colors only - so every shape follows the active theme and dark mode. Every code block is the live demo.
+  A catalog of ready-made silhouettes for websites, landing pages and documentation: radius scale, organic and cut corners, clip-path shapes, section edges, stylized shadows, frames and background patterns (the theme's plain shadow scale, <code>shadow-2xs</code> … <code>shadow-2xl</code>, is covered in <DocLink href="theming.html">Theming</DocLink>). One opt-in stylesheet, token colors only - so every shape follows the active theme and dark mode. Every code block is the live demo.
 </PageHeader>
 
 <h2 id="install" class="h2-display">Load the module</h2>
@@ -202,6 +202,21 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </div>
 ```
 
+```html example schema="none" label="More silhouettes" hint="Directions the arrow / chevron / triangle sets were missing, plus a kite, a heptagon, four- and six-point stars and an x."
+<style>.shape-demo { aspect-ratio: 1; background-color: var(--primary); width: 5rem; }</style>
+<div class="flex gap-6 flex-wrap items-center p-2">
+  <div class="shape-demo clip-arrow-up" title="clip-arrow-up"></div>
+  <div class="shape-demo clip-chevron-up" title="clip-chevron-up"></div>
+  <div class="shape-demo clip-triangle-left" title="clip-triangle-left"></div>
+  <div class="shape-demo clip-triangle-right" title="clip-triangle-right"></div>
+  <div class="shape-demo clip-kite" title="clip-kite"></div>
+  <div class="shape-demo clip-heptagon" title="clip-heptagon"></div>
+  <div class="shape-demo clip-star-4" title="clip-star-4"></div>
+  <div class="shape-demo clip-star-6" title="clip-star-6"></div>
+  <div class="shape-demo clip-x" title="clip-x"></div>
+</div>
+```
+
 <div class="sep" />
 
 <h2 id="directional" class="h2-display">Arrows, chevrons, ribbons and bubbles</h2>
@@ -283,23 +298,13 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </div>
 ```
 
-<div class="sep" />
-
-<h2 id="shadow-scale" class="h2-display">Shadow scale</h2>
-
-<DocText><code>shadow-2xs</code> to <code>shadow-2xl</code> use the theme's own shadow tokens (<code>--shadow-*</code>), so a theme with hard offset shadows makes these hard too. <code>shadow-none</code> removes a component's shadow.</DocText>
-
-```html example schema="none"
-<div class="grid grid-cols-auto gap-6 p-2" style="--layout-min:8rem;">
-  <div class="card shadow-none"><div class="card-header"><p class="card-title text-sm">shadow-none</p></div></div>
-  <div class="card shadow-2xs"><div class="card-header"><p class="card-title text-sm">shadow-2xs</p></div></div>
-  <div class="card shadow-xs"><div class="card-header"><p class="card-title text-sm">shadow-xs</p></div></div>
-  <div class="card shadow-sm"><div class="card-header"><p class="card-title text-sm">shadow-sm</p></div></div>
-  <div class="card shadow"><div class="card-header"><p class="card-title text-sm">shadow</p></div></div>
-  <div class="card shadow-md"><div class="card-header"><p class="card-title text-sm">shadow-md</p></div></div>
-  <div class="card shadow-lg"><div class="card-header"><p class="card-title text-sm">shadow-lg</p></div></div>
-  <div class="card shadow-xl"><div class="card-header"><p class="card-title text-sm">shadow-xl</p></div></div>
-  <div class="card shadow-2xl"><div class="card-header"><p class="card-title text-sm">shadow-2xl</p></div></div>
+```html example schema="none" label="More edges" hint="Top twins of the pointed, notched, concave and torn bottom edges, and paint drips running off the bottom. --shape-edge sets the depth."
+<div class="grid grid-cols-auto gap-6 p-2" style="--layout-min:12rem;">
+  <div class="edge-point-top flex items-end justify-center h-24 pb-3 text-sm font-medium" style="background:var(--primary);color:var(--primary-foreground);">edge-point-top</div>
+  <div class="edge-notch-top flex items-end justify-center h-24 pb-3 text-sm font-medium" style="background:var(--primary);color:var(--primary-foreground);">edge-notch-top</div>
+  <div class="edge-concave-top flex items-end justify-center h-24 pb-3 text-sm font-medium" style="background:var(--primary);color:var(--primary-foreground);">edge-concave-top</div>
+  <div class="edge-torn-top flex items-end justify-center h-24 pb-3 text-sm font-medium" style="background:var(--primary);color:var(--primary-foreground);">edge-torn-top</div>
+  <div class="edge-drip-bottom flex items-start justify-center h-24 pt-3 text-sm font-medium" style="background:var(--chart-1);color:#fff;">edge-drip-bottom</div>
 </div>
 ```
 
@@ -311,33 +316,33 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 ```html example schema="none"
 <div class="grid grid-cols-auto gap-8 p-4" style="--layout-min:9rem;">
-  <div class="card shadow-hard-sm"><div class="card-header"><p class="card-title text-sm">shadow-hard-sm</p></div></div>
-  <div class="card shadow-hard"><div class="card-header"><p class="card-title text-sm">shadow-hard</p></div></div>
-  <div class="card shadow-hard-lg"><div class="card-header"><p class="card-title text-sm">shadow-hard-lg</p></div></div>
-  <div class="card shadow-hard" style="--shape-ink:var(--primary);"><div class="card-header"><p class="card-title text-sm">--shape-ink: primary</p></div></div>
-  <div class="card shadow-stack"><div class="card-header"><p class="card-title text-sm">shadow-stack</p></div></div>
-  <div class="card shadow-layered"><div class="card-header"><p class="card-title text-sm">shadow-layered</p></div></div>
-  <div class="card shadow-float"><div class="card-header"><p class="card-title text-sm">shadow-float</p></div></div>
-  <div class="card shadow-inner"><div class="card-header"><p class="card-title text-sm">shadow-inner</p></div></div>
-  <div class="card shadow-glow"><div class="card-header"><p class="card-title text-sm">shadow-glow</p></div></div>
-  <div class="card shadow-ring"><div class="card-header"><p class="card-title text-sm">shadow-ring</p></div></div>
-  <div class="card shadow-edge"><div class="card-header"><p class="card-title text-sm">shadow-edge</p></div></div>
-  <div class="card shadow-long"><div class="card-header"><p class="card-title text-sm">shadow-long</p></div></div>
-  <div class="card shadow-neu" style="background:var(--muted);border-color:transparent;"><div class="card-header"><p class="card-title text-sm">shadow-neu</p></div></div>
-  <div class="card shadow-neu-inset" style="background:var(--muted);border-color:transparent;"><div class="card-header"><p class="card-title text-sm">shadow-neu-inset</p></div></div>
-  <div class="card shadow-lift" tabindex="0"><div class="card-header"><p class="card-title text-sm">shadow-lift</p></div></div>
-  <div class="card shadow-outline-offset"><div class="card-header"><p class="card-title text-sm">shadow-outline-offset</p></div></div>
-  <div class="card shadow-retro"><div class="card-header"><p class="card-title text-sm">shadow-retro</p></div></div>
-  <div class="card shadow-rainbow"><div class="card-header"><p class="card-title text-sm">shadow-rainbow</p></div></div>
-  <div class="card shadow-extrude"><div class="card-header"><p class="card-title text-sm">shadow-extrude</p></div></div>
-  <div class="card shadow-colored" style="--shape-ink:var(--chart-1);"><div class="card-header"><p class="card-title text-sm">shadow-colored</p></div></div>
-  <div class="card shadow-bottom"><div class="card-header"><p class="card-title text-sm">shadow-bottom</p></div></div>
-  <div class="card shadow-hairline"><div class="card-header"><p class="card-title text-sm">shadow-hairline</p></div></div>
-  <div class="card shadow-inner-hard"><div class="card-header"><p class="card-title text-sm">shadow-inner-hard</p></div></div>
-  <div class="card shadow-bevel" style="background:var(--primary);color:var(--primary-foreground);border-color:transparent;"><div class="card-header"><p class="card-title text-sm">shadow-bevel</p></div></div>
-  <div class="card shadow-neon" style="--shape-ink:var(--chart-2);"><div class="card-header"><p class="card-title text-sm">shadow-neon</p></div></div>
-  <div class="card shadow-sticker" style="background:var(--chart-4);color:#fff;border-color:transparent;"><div class="card-header"><p class="card-title text-sm">shadow-sticker</p></div></div>
-  <div class="card shadow-paper-stack"><div class="card-header"><p class="card-title text-sm">shadow-paper-stack</p></div></div>
+  <div class="card shadow-hard-sm flex items-center justify-center text-center h-20 p-3 text-sm font-medium">shadow-hard-sm</div>
+  <div class="card shadow-hard flex items-center justify-center text-center h-20 p-3 text-sm font-medium">shadow-hard</div>
+  <div class="card shadow-hard-lg flex items-center justify-center text-center h-20 p-3 text-sm font-medium">shadow-hard-lg</div>
+  <div class="card shadow-hard flex items-center justify-center text-center h-20 p-3 text-sm font-medium" style="--shape-ink:var(--primary);">--shape-ink: primary</div>
+  <div class="card shadow-stack flex items-center justify-center text-center h-20 p-3 text-sm font-medium">shadow-stack</div>
+  <div class="card shadow-layered flex items-center justify-center text-center h-20 p-3 text-sm font-medium">shadow-layered</div>
+  <div class="card shadow-float flex items-center justify-center text-center h-20 p-3 text-sm font-medium">shadow-float</div>
+  <div class="card shadow-inner flex items-center justify-center text-center h-20 p-3 text-sm font-medium">shadow-inner</div>
+  <div class="card shadow-glow flex items-center justify-center text-center h-20 p-3 text-sm font-medium">shadow-glow</div>
+  <div class="card shadow-ring flex items-center justify-center text-center h-20 p-3 text-sm font-medium">shadow-ring</div>
+  <div class="card shadow-edge flex items-center justify-center text-center h-20 p-3 text-sm font-medium">shadow-edge</div>
+  <div class="card shadow-long flex items-center justify-center text-center h-20 p-3 text-sm font-medium">shadow-long</div>
+  <div class="card shadow-neu flex items-center justify-center text-center h-20 p-3 text-sm font-medium" style="background:var(--muted);border-color:transparent;">shadow-neu</div>
+  <div class="card shadow-neu-inset flex items-center justify-center text-center h-20 p-3 text-sm font-medium" style="background:var(--muted);border-color:transparent;">shadow-neu-inset</div>
+  <div class="card shadow-lift flex items-center justify-center text-center h-20 p-3 text-sm font-medium" tabindex="0">shadow-lift</div>
+  <div class="card shadow-outline-offset flex items-center justify-center text-center h-20 p-3 text-sm font-medium">shadow-outline-offset</div>
+  <div class="card shadow-retro flex items-center justify-center text-center h-20 p-3 text-sm font-medium">shadow-retro</div>
+  <div class="card shadow-rainbow flex items-center justify-center text-center h-20 p-3 text-sm font-medium">shadow-rainbow</div>
+  <div class="card shadow-extrude flex items-center justify-center text-center h-20 p-3 text-sm font-medium">shadow-extrude</div>
+  <div class="card shadow-colored flex items-center justify-center text-center h-20 p-3 text-sm font-medium" style="--shape-ink:var(--chart-1);">shadow-colored</div>
+  <div class="card shadow-bottom flex items-center justify-center text-center h-20 p-3 text-sm font-medium">shadow-bottom</div>
+  <div class="card shadow-hairline flex items-center justify-center text-center h-20 p-3 text-sm font-medium">shadow-hairline</div>
+  <div class="card shadow-inner-hard flex items-center justify-center text-center h-20 p-3 text-sm font-medium">shadow-inner-hard</div>
+  <div class="card shadow-bevel flex items-center justify-center text-center h-20 p-3 text-sm font-medium" style="background:var(--primary);color:var(--primary-foreground);border-color:transparent;">shadow-bevel</div>
+  <div class="card shadow-neon flex items-center justify-center text-center h-20 p-3 text-sm font-medium" style="--shape-ink:var(--chart-2);">shadow-neon</div>
+  <div class="card shadow-sticker flex items-center justify-center text-center h-20 p-3 text-sm font-medium" style="background:var(--chart-4);color:#fff;border-color:transparent;">shadow-sticker</div>
+  <div class="card shadow-paper-stack flex items-center justify-center text-center h-20 p-3 text-sm font-medium">shadow-paper-stack</div>
 </div>
 ```
 
@@ -381,6 +386,15 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <div class="frame-demo frame-window rounded-md" style="background-color:var(--card);">frame-window</div>
   <div class="frame-demo frame-film" style="background-color:var(--muted);">frame-film</div>
   <div class="frame-demo frame-polaroid pattern-mesh" style="min-height:8rem;">frame-polaroid</div>
+</div>
+```
+
+```html example schema="none" label="More frames" hint="A perforated postage-stamp edge (a mask - the element itself is punched), tape strips on the top corners (::before / ::after), a neon-style glow border and ruled notebook paper with a margin line. --shape-ink recolors the tape and the glow."
+<div class="grid grid-cols-auto gap-8 p-6" style="--layout-min:11rem;">
+  <div class="frame-stamp flex items-center justify-center text-center h-28 p-4 text-sm font-medium" style="background:var(--chart-2);color:#fff;">frame-stamp</div>
+  <div class="card frame-tape flex items-center justify-center text-center h-28 p-4 text-sm font-medium">frame-tape</div>
+  <div class="card frame-glow flex items-center justify-center text-center h-28 p-4 text-sm font-medium" style="--shape-ink:var(--chart-2);">frame-glow</div>
+  <div class="card frame-notebook h-28 p-4">frame-notebook<br>ruled lines + margin</div>
 </div>
 ```
 

@@ -9,17 +9,17 @@
   },
   "withJs": 34,
   "withoutJs": 43,
-  "totalSize": 717593,
-  "totalSizeMinified": 317290,
-  "totalSizeGz": 229042,
-  "totalSizeGzMinified": 112476,
+  "totalSize": 717939,
+  "totalSizeMinified": 317213,
+  "totalSizeGz": 229219,
+  "totalSizeGzMinified": 112457,
   "bundle": {
-    "jsSize": 312865,
-    "jsSizeMinified": 171686,
+    "jsSize": 312781,
+    "jsSizeMinified": 171577,
     "cssSize": 331383,
     "cssSizeMinified": 177571,
-    "totalSizeGz": 134178,
-    "totalSizeGzMinified": 78108
+    "totalSizeGz": 134136,
+    "totalSizeGzMinified": 78068
   },
   "core": {
     "jsSize": 87817,
@@ -567,14 +567,14 @@
       "name": "presentation",
       "type": "TPL",
       "withJs": true,
-      "jsSize": 24294,
-      "jsSizeMinified": 7856,
+      "jsSize": 24439,
+      "jsSizeMinified": 7780,
       "cssSize": 13557,
       "cssSizeMinified": 6659,
-      "totalSizeGz": 11634,
-      "totalSizeGzMinified": 4802,
-      "totalSize": 37851,
-      "totalSizeMinified": 14515
+      "totalSizeGz": 11712,
+      "totalSizeGzMinified": 4780,
+      "totalSize": 37996,
+      "totalSizeMinified": 14439
     },
     "pricing": {
       "name": "pricing",
@@ -697,14 +697,14 @@
       "name": "sidebar",
       "type": "ATM",
       "withJs": true,
-      "jsSize": 7707,
-      "jsSizeMinified": 2522,
+      "jsSize": 7908,
+      "jsSizeMinified": 2521,
       "cssSize": 12609,
       "cssSizeMinified": 6397,
-      "totalSizeGz": 5371,
-      "totalSizeGzMinified": 2534,
-      "totalSize": 20316,
-      "totalSizeMinified": 8919
+      "totalSizeGz": 5470,
+      "totalSizeGzMinified": 2537,
+      "totalSize": 20517,
+      "totalSizeMinified": 8918
     },
     "site-footer": {
       "name": "site-footer",

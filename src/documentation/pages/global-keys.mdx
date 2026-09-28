@@ -1,0 +1,92 @@
+---
+title: "Global Key Commands"
+description: "One shared, typing-safe document keydown listener - df$.shadcn.shared.bindGlobalKeys - that components and pages register shortcuts into. Registration order, stop semantics, unbinding, and every shortcut the components ship."
+slug: "global-keys"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="global-keys" title="Global Key Commands" introStyle="max-width:38rem;">
+  Page-wide shortcuts - <kbd>⌘B</kbd> for the sidebar, arrow keys for a deck, your own <kbd>?</kbd> for help - all run through <strong>one</strong> shared <code>keydown</code> listener in the runtime: <code>df$.shadcn.shared.bindGlobalKeys</code>. It never fires while someone is typing in a field, so a shortcut can't eat a letter meant for a form.
+</PageHeader>
+
+<H2>The shared listener</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> <code>bindGlobalKeys(handler)</code> adds a handler to a single document-level <code>keydown</code> listener that <code>core.js</code> installs on the first registration and removes again after the last unbind. Instead of every component hand-rolling its own listener and guard, they all share this one, which means: </p>
+
+<TableCard title="how handlers run" mb="1.5rem" rows={[
+  ['Rule', 'What it means'],
+  ['Typing is never a shortcut', 'Keys aimed at an input, textarea, select or contenteditable element are not dispatched at all'],
+  ['Registration order', 'Handlers run in the order they were bound'],
+  ['return true stops the rest', 'A handler that took the key returns true - later handlers skip that event'],
+  ['Unbind', 'bindGlobalKeys returns its own unbind function; the last unbind removes the document listener'],
+  ['Safe before a document exists', 'Binding outside a browser is a no-op that still returns a working unbind'],
+]} />
+
+<CodeCard title="the API" lang="javascript" mb="2.5rem">{"const { bindGlobalKeys } = df$.shadcn.shared; // installed by core.js / all.js\n\nconst unbind = bindGlobalKeys((event) => {\n  if (event.key !== '?') return;      // not ours - let later handlers see it\n  event.preventDefault();\n  document.getElementById('help').showModal();\n  return true;                          // ours - stop here\n});\n\n// later, e.g. when the view that owns the shortcut goes away\nunbind();"}</CodeCard>
+
+<H2>Your own shortcuts</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> Click into the example first (keyboard focus has to be inside it). <kbd>?</kbd> opens a help dialog, <kbd>/</kbd> jumps into the search field - and while you type in that field, <kbd>?</kbd> and <kbd>/</kbd> are just characters again. </p>
+
+```html example schema="none" label="Help on ?, search on /" hint="Both shortcuts are one bindGlobalKeys handler. Typing into the field never triggers them - the shared listener skips editable targets - so a ? in a search query stays a question mark." height="14"
+<div class="flex flex-col gap-3" style="max-width:24rem;" tabindex="-1" id="keys-demo">
+  <p class="text-sm m-0">Press <kbd>?</kbd> for help or <kbd>/</kbd> to search.</p>
+  <input class="input" type="search" id="keys-search" placeholder="Search… (type ? here - it's just a character)" aria-label="Search" />
+  <p class="text-sm text-muted-foreground m-0">Last shortcut: <output id="keys-last">none</output></p>
+</div>
+<dialog class="dialog" id="keys-help" aria-labelledby="keys-help-title">
+  <div class="dialog-content">
+    <div class="dialog-header">
+      <h2 class="dialog-title" id="keys-help-title">Keyboard shortcuts</h2>
+      <p class="dialog-description"><kbd>?</kbd> this help · <kbd>/</kbd> focus search · <kbd>Esc</kbd> close</p>
+    </div>
+    <div class="dialog-footer">
+      <button class="btn" data-variant="default" data-dialog-close>Got it</button>
+    </div>
+  </div>
+</dialog>
+<script type="module">
+  const last = document.getElementById('keys-last');
+  df$.shadcn.shared.bindGlobalKeys((event) => {
+    if (event.key === '?') {
+      event.preventDefault();
+      document.getElementById('keys-help').showModal();
+      last.value = '? - help';
+      return true;
+    }
+    if (event.key === '/') {
+      event.preventDefault(); // or the "/" would be typed into the field we focus
+      document.getElementById('keys-search').focus();
+      last.value = '/ - search';
+      return true;
+    }
+  });
+  document.getElementById('keys-demo').focus();
+</script>
+```
+
+<H2>Shortcuts the components ship</H2>
+
+<TableCard title="built-in global keys" mb="1.5rem" rows={[
+  ['Component', 'Keys', 'Listener'],
+  ['Sidebar', '⌘B / Ctrl+B - dock / undock the first .app-sidebar', 'shared (bindGlobalKeys)'],
+  ['Presentation', '→ PageDown Space next · ← PageUp previous · Home End first / last · N notes · F fullscreen', 'shared (bindGlobalKeys)'],
+  ['Animation Canvas', '← → ↑ ↓ to the neighbouring slide · O / Esc overview', 'shared (bindGlobalKeys)'],
+  ['Command', '⌘K / Ctrl+K - open / close the command palette', 'its own document listener - on purpose: ⌘K must work while typing in a field'],
+]} />
+
+<p class="text-sm text-muted-foreground mb-5"> Components only take a key when it is theirs - the sidebar only claims <kbd>⌘B</kbd> when the page has a sidebar, a deck only claims arrow keys when it has a slide to go to - so the browser's own shortcuts keep working everywhere else. </p>
+
+<H2>Good shortcuts</H2>
+
+<ul class="text-sm text-muted-foreground mb-5 ps-5">
+  <li>Return <code>true</code> only when you actually handled the key, and call <code>preventDefault()</code> then - never for keys you ignore.</li>
+  <li>Prefer modifier shortcuts (<kbd>⌘</kbd>/<kbd>Ctrl</kbd>+key) for page-wide actions. A single-character shortcut (<kbd>?</kbd>, <kbd>/</kbd>, <kbd>N</kbd>) must be possible to turn off or remap, or only be active while its widget has focus (WCAG 2.1.4, Character Key Shortcuts) - speech-input users otherwise trigger it by accident.</li>
+  <li>List your shortcuts somewhere visible - a help dialog on <kbd>?</kbd> is the common convention.</li>
+  <li>Unbind when the view that owns the shortcut goes away (an SPA route change, a closed panel).</li>
+</ul>
+
+</DocPage>

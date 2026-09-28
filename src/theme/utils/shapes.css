@@ -198,6 +198,16 @@
   :where(.clip-ellipse) { clip-path: ellipse(50% 50%); }
   :where(.clip-triangle) { clip-path: polygon(50% 0, 100% 100%, 0 100%); }
   :where(.clip-triangle-down) { clip-path: polygon(0 0, 100% 0, 50% 100%); }
+  :where(.clip-triangle-left) { clip-path: polygon(100% 0, 100% 100%, 0 50%); }
+  :where(.clip-triangle-right) { clip-path: polygon(0 0, 100% 50%, 0 100%); }
+  :where(.clip-kite) { clip-path: polygon(50% 0, 100% 35%, 50% 100%, 0 35%); }
+  :where(.clip-heptagon) { clip-path: polygon(50% 0, 90% 20%, 100% 62%, 75% 100%, 25% 100%, 0 62%, 10% 20%); }
+  :where(.clip-star-4) { clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); }
+  :where(.clip-star-6) { clip-path: polygon(50% 0, 63% 25%, 93% 25%, 76% 50%, 93% 75%, 63% 75%, 50% 100%, 37% 75%, 7% 75%, 24% 50%, 7% 25%, 37% 25%); }
+  /* a close / multiply mark */
+  :where(.clip-x) {
+    clip-path: polygon(20% 0, 50% 30%, 80% 0, 100% 20%, 70% 50%, 100% 80%, 80% 100%, 50% 70%, 20% 100%, 0 80%, 30% 50%, 0 20%);
+  }
   :where(.clip-diamond) { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
   :where(.clip-pentagon) { clip-path: polygon(50% 0, 100% 38%, 82% 100%, 18% 100%, 0 38%); }
   :where(.clip-hexagon) { clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); }
@@ -273,6 +283,14 @@
   :where(.clip-chevron-down) {
     --_s: var(--shape-slant, 1.5rem);
     clip-path: polygon(0 0, 50% var(--_s), 100% 0, 100% calc(100% - var(--_s)), 50% 100%, 0 calc(100% - var(--_s)));
+  }
+  :where(.clip-arrow-up) {
+    --_s: var(--shape-slant, 1.5rem);
+    clip-path: polygon(50% 0, 100% var(--_s), 100% 100%, 0 100%, 0 var(--_s));
+  }
+  :where(.clip-chevron-up) {
+    --_s: var(--shape-slant, 1.5rem);
+    clip-path: polygon(50% 0, 100% var(--_s), 100% 100%, 50% calc(100% - var(--_s)), 0 100%, 0 var(--_s));
   }
   /* price tag: pointed start with a punched hole */
   :where(.clip-tag) {
@@ -411,6 +429,30 @@
   :where(.edge-slant-bottom) { clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--shape-edge, 2.5rem)), 0 100%); }
   :where(.edge-slant-top) { clip-path: polygon(0 var(--shape-edge, 2.5rem), 100% 0, 100% 100%, 0 100%); }
   :where(.edge-point-bottom) { clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--shape-edge, 2.5rem)), 50% 100%, 0 calc(100% - var(--shape-edge, 2.5rem))); }
+  :where(.edge-point-top) { clip-path: polygon(0 var(--shape-edge, 2.5rem), 50% 0, 100% var(--shape-edge, 2.5rem), 100% 100%, 0 100%); }
+  :where(.edge-notch-top) {
+    --_e: var(--shape-edge, 2.5rem);
+    clip-path: polygon(0 0, calc(50% - var(--_e)) 0, 50% var(--_e), calc(50% + var(--_e)) 0, 100% 0, 100% 100%, 0 100%);
+  }
+  :where(.edge-concave-top) {
+    mask: radial-gradient(60% var(--shape-edge, 2.5rem) at 50% 0, #0000 98%, #000 100%);
+  }
+  :where(.edge-torn-top) {
+    --_e: var(--shape-edge, 2.5rem);
+    clip-path: polygon(0 calc(var(--_e) * 0.6), 4% calc(var(--_e) * 0.3), 8% calc(var(--_e) * 0.9), 13% calc(var(--_e) * 0.2),
+      18% calc(var(--_e) * 0.6), 24% 0, 29% calc(var(--_e) * 0.8), 34% calc(var(--_e) * 0.4), 39% calc(var(--_e) * 0.9),
+      45% calc(var(--_e) * 0.1), 50% calc(var(--_e) * 0.7), 55% calc(var(--_e) * 0.2), 60% calc(var(--_e) * 0.8), 66% 0,
+      71% calc(var(--_e) * 0.6), 76% calc(var(--_e) * 0.3), 81% calc(var(--_e) * 0.9), 86% calc(var(--_e) * 0.2),
+      90% calc(var(--_e) * 0.7), 95% calc(var(--_e) * 0.1), 100% calc(var(--_e) * 0.5), 100% 100%, 0 100%);
+  }
+  /* paint drips running off the bottom edge */
+  :where(.edge-drip-bottom) {
+    --_e: var(--shape-edge, 2.5rem);
+    mask:
+      linear-gradient(#000 0 0) top / 100% calc(100% - var(--_e) + 1px) no-repeat,
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 20' preserveAspectRatio='none'%3E%3Cpath d='M0 0H60V5C57 5 56 7 56 10 56 13 54 14 52 14 50 14 48 13 48 10 48 7 47 5 44 5H32C29 5 28 8 28 13 28 17 26 20 23 20 20 20 18 17 18 13 18 8 17 5 14 5H0Z'/%3E%3C/svg%3E")
+        bottom / calc(3 * var(--_e)) var(--_e) round no-repeat;
+  }
   :where(.edge-curve-bottom) {
     border-end-start-radius: 50% var(--shape-edge, 2.5rem);
     border-end-end-radius: 50% var(--shape-edge, 2.5rem);
@@ -637,6 +679,45 @@
     background-size: 16px 8px, 16px 8px, 100% 16px, 100% 16px;
     background-repeat: repeat-x, repeat-x, no-repeat, no-repeat;
   }
+  /* postage stamp: perforated edge punched through the element itself */
+  :where(.frame-stamp) {
+    --_p: 6px;
+    mask:
+      radial-gradient(circle var(--_p) at center, #0000 96%, #000) calc(var(--_p) * -1) calc(var(--_p) * -1) / calc(var(--_p) * 2) calc(var(--_p) * 2) round,
+      linear-gradient(#000 0 0) var(--_p) var(--_p) / calc(100% - var(--_p) * 2) calc(100% - var(--_p) * 2) no-repeat;
+  }
+  /* two strips of tape across the top corners (::before / ::after - the
+     element becomes a positioning context, and tape overhangs its edge, so
+     overflow stays visible even on components that clip) */
+  :where(.frame-tape) { position: relative; overflow: visible; }
+  :where(.frame-tape)::before,
+  :where(.frame-tape)::after {
+    content: '';
+    position: absolute;
+    top: 0.4rem;
+    width: 5rem;
+    height: 1.25rem;
+    background: color-mix(in oklch, var(--shape-ink, var(--chart-4)) 45%, transparent);
+    pointer-events: none;
+  }
+  :where(.frame-tape)::before { left: -1.4rem; rotate: -40deg; }
+  :where(.frame-tape)::after { right: -1.4rem; rotate: 40deg; }
+  /* neon-style border: a crisp line plus its halo */
+  :where(.frame-glow) {
+    border: 1px solid var(--shape-ink, var(--primary));
+    box-shadow: 0 0 0 1px color-mix(in oklch, var(--shape-ink, var(--primary)) 35%, transparent),
+      0 0 18px color-mix(in oklch, var(--shape-ink, var(--primary)) 45%, transparent);
+  }
+  /* ruled paper with a margin line (background-image only). The rules start
+     at the content box and repeat every line, so text sits on them. */
+  :where(.frame-notebook) {
+    padding-inline-start: 3rem;
+    line-height: 1.5rem;
+    background-image:
+      linear-gradient(90deg, #0000 2.25rem, color-mix(in oklch, var(--destructive) 55%, transparent) 2.25rem 2.35rem, #0000 0),
+      repeating-linear-gradient(#0000 0 1.45rem, color-mix(in oklch, var(--primary) 18%, transparent) 1.45rem 1.5rem);
+    background-origin: border-box, content-box;
+  }
   /* animated dashed border (static under reduced motion) */
   :where(.frame-marching-ants) {
     --_k: var(--shape-ink, var(--foreground));
@@ -811,7 +892,8 @@
       .shadow-glow, .shadow-ring, .shadow-edge, .shadow-long, .shadow-neu, .shadow-neu-inset, .shadow-lift,
       .shadow-outline-offset, .shadow-retro, .shadow-rainbow, .shadow-extrude, .shadow-colored, .shadow-bottom,
       .shadow-hairline, .shadow-inner-hard, .shadow-bevel, .shadow-neon, .shadow-sticker, .shadow-paper-stack,
-      .frame-corners, .frame-gradient, .frame-conic, .frame-inset, .frame-window, .frame-film, .frame-marching-ants) {
+      .frame-corners, .frame-gradient, .frame-conic, .frame-inset, .frame-window, .frame-film, .frame-marching-ants,
+      .frame-glow, .frame-notebook) {
       outline: 1px solid CanvasText;
     }
   }

@@ -23,5 +23,10 @@ push_ref() {
   fi
   echo "↻ ssh push failed - retrying ${ref} over HTTPS with gh credentials"
   git -c credential.helper= -c 'credential.helper=!gh auth git-credential' \
-    push "https://github.com/${slug}.git" "$ref"
+    push "https://github.com/${slug}.git" "$ref" || return 1
+  # a push to a URL leaves refs/remotes/origin/* stale ("ahead N") - move the
+  # tracking ref of a pushed branch to what GitHub now has
+  if git show-ref -q --verify "refs/heads/${ref}"; then
+    git update-ref "refs/remotes/origin/${ref}" "refs/heads/${ref}"
+  fi
 }

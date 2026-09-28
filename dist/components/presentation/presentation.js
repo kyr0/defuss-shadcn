@@ -32,7 +32,7 @@ if (!__df$shared || __df$shared.abi !== '0.9.1') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, animateCount, clampIndex, coerceIndex, draw, entrance, anim } = __df$shared;
+const { defussGlobals, animateCount, bindGlobalKeys, clampIndex, coerceIndex, draw, entrance, anim } = __df$shared;
 const df$ = defussGlobals();
 const presentationStates = ['default', 'notes', 'fullscreen'];
 /** A deck that declares nothing still animates every slide in and out. */
@@ -248,10 +248,10 @@ function bindKeyboard() {
     if (keysBound)
         return;
     keysBound = true;
-    document.addEventListener('keydown', (e) => {
+    // the shared global-key listener (src/shared/keys.ts) already skips keys
+    // typed into inputs, textareas, selects and contenteditable
+    bindGlobalKeys((e) => {
         const target = e.target;
-        if (target?.closest('input, textarea, select, [contenteditable]'))
-            return;
         const root = target?.closest('.presentation') ?? document.querySelector('.presentation');
         if (!root)
             return;
@@ -296,8 +296,10 @@ function bindKeyboard() {
             default:
                 handled = false;
         }
-        if (handled)
-            e.preventDefault();
+        if (!handled)
+            return;
+        e.preventDefault();
+        return true; // this key belonged to the deck - later global handlers skip it
     });
 }
 /** Hash deep-links (#slide-id) and later hashchange navigations move a deck. */

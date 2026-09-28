@@ -6562,10 +6562,8 @@ function bindKeyboard() {
   if (keysBound2)
     return;
   keysBound2 = true;
-  document.addEventListener("keydown", (e) => {
+  bindGlobalKeys((e) => {
     const target = e.target;
-    if (target?.closest("input, textarea, select, [contenteditable]"))
-      return;
     const root = target?.closest(".presentation") ?? document.querySelector(".presentation");
     if (!root)
       return;
@@ -6608,8 +6606,10 @@ function bindKeyboard() {
       default:
         handled = false;
     }
-    if (handled)
-      e.preventDefault();
+    if (!handled)
+      return;
+    e.preventDefault();
+    return true;
   });
 }
 var hashBound = false;
@@ -7309,15 +7309,16 @@ init23();
 new MutationObserver(init23).observe(document, { childList: true, subtree: true });
 if (!document.__sidebarKbInit) {
   document.__sidebarKbInit = true;
-  document.addEventListener("keydown", (e) => {
-    if ((e.metaKey || e.ctrlKey) && e.key === "b") {
-      e.preventDefault();
-      const sidebar = document.querySelector(".app-sidebar");
-      if (sidebar) {
-        sidebar.dataset.state = sidebar.dataset.state === "collapsed" ? "expanded" : "collapsed";
-        sidebar.dataset.stateName = sidebar.dataset.state === "collapsed" ? "collapsed" : "default";
-      }
-    }
+  bindGlobalKeys((e) => {
+    if (!(e.metaKey || e.ctrlKey) || e.key !== "b")
+      return;
+    const sidebar = document.querySelector(".app-sidebar");
+    if (!sidebar)
+      return;
+    e.preventDefault();
+    sidebar.dataset.state = sidebar.dataset.state === "collapsed" ? "expanded" : "collapsed";
+    sidebar.dataset.stateName = sidebar.dataset.state === "collapsed" ? "collapsed" : "default";
+    return true;
   });
 }
 
@@ -8756,6 +8757,6 @@ function init34() {
 init34();
 new MutationObserver(init34).observe(document, { childList: true, subtree: true });
 
-//# debugId=8DA63240E3C8EED264756E2164756E21
+//# debugId=F344EA09707B747264756E2164756E21
 /* defuss-shadcn v0.9.1 runtime provenance: bundles defuss-morph@0.1.1 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.1.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=all.js.map
