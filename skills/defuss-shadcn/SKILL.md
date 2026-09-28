@@ -7,7 +7,7 @@ description: Build UI prototypes and pages with defuss-shadcn - shadcn-style com
      src/documentation/lib/nav.ts, each page's .mdx frontmatter and each component's
      component-skill.md frontmatter) - do not edit by hand; edit a source and rebuild. -->
 
-# defuss-shadcn 0.9.0 - Agent Skill
+# defuss-shadcn 0.9.1 - Agent Skill
 
 77 components (43 CSS-only, 34 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
 
@@ -63,7 +63,7 @@ import 'defuss-shadcn/dist/components/dialog/dialog.js';  // only interactive co
 
 ### Path B - jsDelivr CDN (standalone HTML prototype, no package manager, no TypeScript)
 
-Copy this skeleton and put component markup inside `<body>`. Replace `@latest` with `@0.9.0` to pin the release.
+Copy this skeleton and put component markup inside `<body>`. Replace `@latest` with `@0.9.1` to pin the release.
 
 ```html
 <!doctype html>

@@ -54,7 +54,8 @@
         "feat(combobox): Tier-1 query migration — df$ scalar writes, flag-based filtering keeps node identity",
         "feat(calendar): Tier-1 morph migration — keyed df$(grid).morph() replaces innerHTML",
         "feat(core): df$ runtime artifact — defuss-query + defuss-morph distribution contract"
-      ]
+      ],
+      "hash": "b74d75d"
     },
     {
       "version": "v0.9.0",

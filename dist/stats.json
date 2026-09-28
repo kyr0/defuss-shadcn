@@ -11,22 +11,22 @@
   "withoutJs": 43,
   "totalSize": 717593,
   "totalSizeMinified": 317290,
-  "totalSizeGz": 229038,
-  "totalSizeGzMinified": 112470,
+  "totalSizeGz": 229042,
+  "totalSizeGzMinified": 112476,
   "bundle": {
     "jsSize": 312865,
     "jsSizeMinified": 171686,
     "cssSize": 331383,
     "cssSizeMinified": 177571,
     "totalSizeGz": 134178,
-    "totalSizeGzMinified": 78107
+    "totalSizeGzMinified": 78108
   },
   "core": {
     "jsSize": 87817,
     "jsSizeMinified": 44691,
     "cssSize": 127905,
     "cssSizeMinified": 109216,
-    "totalSizeGz": 33041,
+    "totalSizeGz": 33042,
     "totalSizeGzMinified": 24717
   },
   "components": {
@@ -38,7 +38,7 @@
       "jsSizeMinified": 1808,
       "cssSize": 3036,
       "cssSizeMinified": 1523,
-      "totalSizeGz": 3512,
+      "totalSizeGz": 3513,
       "totalSizeGzMinified": 1477,
       "totalSize": 9548,
       "totalSizeMinified": 3331
@@ -65,7 +65,7 @@
       "cssSize": 4388,
       "cssSizeMinified": 2775,
       "totalSizeGz": 3049,
-      "totalSizeGzMinified": 1522,
+      "totalSizeGzMinified": 1523,
       "totalSize": 8948,
       "totalSizeMinified": 4256
     },
@@ -90,8 +90,8 @@
       "jsSizeMinified": 1337,
       "cssSize": 4949,
       "cssSizeMinified": 2434,
-      "totalSizeGz": 3306,
-      "totalSizeGzMinified": 1434,
+      "totalSizeGz": 3307,
+      "totalSizeGzMinified": 1435,
       "totalSize": 8972,
       "totalSizeMinified": 3771
     },
@@ -324,7 +324,7 @@
       "jsSizeMinified": 1458,
       "cssSize": 3461,
       "cssSizeMinified": 1776,
-      "totalSizeGz": 3043,
+      "totalSizeGz": 3044,
       "totalSizeGzMinified": 1424,
       "totalSize": 8018,
       "totalSizeMinified": 3234
@@ -454,7 +454,7 @@
       "jsSizeMinified": 5339,
       "cssSize": 4783,
       "cssSizeMinified": 2625,
-      "totalSizeGz": 5445,
+      "totalSizeGz": 5444,
       "totalSizeGzMinified": 2820,
       "totalSize": 17226,
       "totalSizeMinified": 7964
@@ -506,7 +506,7 @@
       "jsSizeMinified": 1288,
       "cssSize": 4142,
       "cssSizeMinified": 2748,
-      "totalSizeGz": 3014,
+      "totalSizeGz": 3015,
       "totalSizeGzMinified": 1536,
       "totalSize": 8363,
       "totalSizeMinified": 4036
@@ -545,7 +545,7 @@
       "jsSizeMinified": 3992,
       "cssSize": 4187,
       "cssSizeMinified": 2834,
-      "totalSizeGz": 5171,
+      "totalSizeGz": 5170,
       "totalSizeGzMinified": 2372,
       "totalSize": 15854,
       "totalSizeMinified": 6826
@@ -558,8 +558,8 @@
       "jsSizeMinified": 1238,
       "cssSize": 3021,
       "cssSizeMinified": 1981,
-      "totalSizeGz": 2540,
-      "totalSizeGzMinified": 1287,
+      "totalSizeGz": 2541,
+      "totalSizeGzMinified": 1288,
       "totalSize": 7062,
       "totalSizeMinified": 3219
     },
@@ -597,8 +597,8 @@
       "jsSizeMinified": 1444,
       "cssSize": 2373,
       "cssSizeMinified": 1114,
-      "totalSizeGz": 2736,
-      "totalSizeGzMinified": 1241,
+      "totalSizeGz": 2737,
+      "totalSizeGzMinified": 1242,
       "totalSize": 6768,
       "totalSizeMinified": 2558
     },
@@ -689,7 +689,7 @@
       "cssSize": 7416,
       "cssSizeMinified": 4168,
       "totalSizeGz": 3554,
-      "totalSizeGzMinified": 1814,
+      "totalSizeGzMinified": 1815,
       "totalSize": 11597,
       "totalSizeMinified": 5576
     },
@@ -753,8 +753,8 @@
       "jsSizeMinified": 1247,
       "cssSize": 7393,
       "cssSizeMinified": 4690,
-      "totalSizeGz": 2947,
-      "totalSizeGzMinified": 1625,
+      "totalSizeGz": 2946,
+      "totalSizeGzMinified": 1626,
       "totalSize": 11040,
       "totalSizeMinified": 5937
     },
@@ -948,7 +948,7 @@
       "jsSizeMinified": 1296,
       "cssSize": 2998,
       "cssSizeMinified": 1966,
-      "totalSizeGz": 2323,
+      "totalSizeGz": 2324,
       "totalSizeGzMinified": 1346,
       "totalSize": 6705,
       "totalSizeMinified": 3262
