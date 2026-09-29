@@ -1,0 +1,233 @@
+/* -- Progress component --------------------------------------------- */
+// The bar itself is the native <progress> (CSS paints it). This module adds
+// what HTML can't: live value readouts (every <output class="progress-value"
+// for="id">, as a percent, a fraction "x / n" or a template), the data-level
+// the auto tone reads, linear interpolation toward a new value, the
+// declarative button commands (commandfor + command="--reset" …) and the
+// named State API (AGENTS.md "State API").
+
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
+import { defussGlobals } from '../../shared/state-api.js';
+
+const df$ = defussGlobals();
+
+/** default = determinate at a value (as authored, or config.value);
+ * indeterminate = no value (the moving sweep); complete = value == max. */
+const progressStates = ['default', 'indeterminate', 'complete'];
+
+const SELECTOR = 'progress.progress';
+const reducedMotion = () => globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
+const maxOf = (el) => el.max || 1;
+const clamp = (el, v) => Math.max(0, Math.min(maxOf(el), Number(v) || 0));
+/** Whole numbers stay whole; fractions keep one decimal (a tween passes 42.7). */
+const round = (v) => Math.round(v * 10) / 10;
+
+const pctFmt = new Intl.NumberFormat(undefined, { style: 'percent', maximumFractionDigits: 0 });
+const numFmt = new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 });
+
+/** The readout text for one output (data-format / data-template on the output). */
+function text(out, el) {
+  const v = el.position < 0 ? null : el.value;
+  const max = maxOf(el);
+  if (v == null) return out.dataset.indeterminate ?? '…';
+  const pct = v / max;
+  const tpl = out.dataset.template;
+  if (tpl) {
+    return tpl
+      .replaceAll('{value}', numFmt.format(Math.round(v)))
+      .replaceAll('{max}', numFmt.format(max))
+      .replaceAll('{percent}', pctFmt.format(pct));
+  }
+  switch (out.dataset.format) {
+    case 'fraction': return `${numFmt.format(Math.round(v))} / ${numFmt.format(max)}`;
+    case 'value': return numFmt.format(Math.round(v));
+    default: return pctFmt.format(pct);
+  }
+}
+
+/** Outputs bound to a bar: output[for~=id] anywhere, plus .progress-value in its field. */
+function outputsOf(el) {
+  const outs = new Set();
+  if (el.id) document.querySelectorAll(`output.progress-value[for~="${CSS.escape(el.id)}"]`).forEach((o) => outs.add(o));
+  el.closest('.progress-field')?.querySelectorAll('.progress-value').forEach((o) => {
+    if (!o.htmlFor?.value || (el.id && o.htmlFor.contains(el.id))) outs.add(o);
+  });
+  return [...outs];
+}
+
+/** Paint everything derived from the value: level, complete flag, readouts, aria-valuetext. */
+function paint(el) {
+  const indeterminate = el.position < 0;
+  const pct = indeterminate ? 0 : el.value / maxOf(el);
+  el.dataset.level = pct < 0.34 ? 'low' : pct < 0.67 ? 'mid' : 'high';
+  el.toggleAttribute('data-complete', !indeterminate && el.value >= maxOf(el));
+  let spoken = '';
+  for (const out of outputsOf(el)) {
+    const t = text(out, el);
+    out.value = t;
+    out.dataset.text = t;
+    out.style.setProperty('--progress-pct', `${(pct * 100).toFixed(2)}%`);
+    if (out.dataset.format === 'fraction' || out.dataset.template) spoken ||= t;
+  }
+  // a fraction / template is what the reader means - say it, not the percent
+  if (spoken) el.setAttribute('aria-valuetext', spoken);
+  else el.removeAttribute('aria-valuetext');
+}
+
+function stopTween(el) {
+  if (el._raf) cancelAnimationFrame(el._raf);
+  el._raf = 0;
+}
+
+/** Settle on a value: the state name follows it (max → complete), events fire. */
+function commit(el, v, emit = true) {
+  const before = el.dataset.stateName;
+  el.value = v;
+  paint(el);
+  const done = v >= maxOf(el);
+  el.dataset.stateName = done ? 'complete' : 'default';
+  if (emit) el.dispatchEvent(new CustomEvent('progress:change', { bubbles: true, detail: { value: el.value, max: el.max, percent: el.value / maxOf(el) } }));
+  if (done && before !== 'complete') el.dispatchEvent(new CustomEvent('progress:completed', { bubbles: true }));
+}
+
+/** Linear interpolation from the current value to `to` over `duration` ms
+ * (time-based, so a throttled frame never slows the total). */
+function tween(el, to, duration) {
+  stopTween(el);
+  const from = el.position < 0 ? 0 : el.value;
+  if (!(duration > 0) || reducedMotion() || from === to) return commit(el, to);
+  const t0 = performance.now();
+  el.dataset.stateName = 'default';
+  el.toggleAttribute('data-running', true);
+  const frame = (now) => {
+    const k = Math.min(1, (now - t0) / duration);
+    if (k < 1) {
+      el.value = round(from + (to - from) * k);
+      paint(el);
+      el._raf = requestAnimationFrame(frame);
+    } else {
+      el._raf = 0;
+      el.removeAttribute('data-running');
+      commit(el, to);
+    }
+  };
+  el._raf = requestAnimationFrame(frame);
+}
+
+const stepOf = (el) => parseFloat(el.dataset.step || '') || maxOf(el) / 10;
+const durationOf = (el) => parseFloat(el.dataset.duration || '') || 3000;
+
+function triggerStateChange(el, stateName, config) {
+  switch (stateName) {
+    case 'default': {
+      if (config.max != null) el.max = Number(config.max);
+      const to = config.value != null ? clamp(el, config.value) : clamp(el, el._authored ?? 0);
+      if (config.duration > 0) tween(el, to, config.duration);
+      else { stopTween(el); el.removeAttribute('data-running'); commit(el, to); }
+      break;
+    }
+    case 'indeterminate':
+      stopTween(el);
+      el.removeAttribute('data-running');
+      el.removeAttribute('value');
+      paint(el);
+      el.dataset.stateName = 'indeterminate';
+      break;
+    case 'complete':
+      if (config.duration > 0) tween(el, maxOf(el), config.duration);
+      else { stopTween(el); el.removeAttribute('data-running'); commit(el, maxOf(el)); }
+      break;
+  }
+}
+
+/** Registry-level API; pass the <progress class="progress"> explicitly. Unknown names throw. */
+export const progressApi = {
+  setState(el, stateName, config = {}) {
+    if (!progressStates.includes(stateName)) {
+      throw new Error(`progress: unknown state "${stateName}" (supported: ${progressStates.join(', ')})`);
+    }
+    el._stateConfig = config;
+    triggerStateChange(el, stateName, config);
+  },
+  getState(el) {
+    const indeterminate = el.position < 0;
+    return {
+      name: el.dataset.stateName || 'default',
+      config: { ...el._stateConfig, value: indeterminate ? null : el.value, max: el.max, percent: indeterminate ? null : el.value / maxOf(el) },
+    };
+  },
+};
+
+df$.progressApi = progressApi;
+df$.progressStates = progressStates;
+
+/** The command vocabulary (commandfor="bar-id" command="--…", or an event
+ * progress:<name> dispatched on the bar). */
+function run(el, command) {
+  const now = el.position < 0 ? 0 : el.value;
+  switch (command) {
+    case 'reset': progressApi.setState(el, 'default', { value: 0 }); break;
+    case 'increment': progressApi.setState(el, 'default', { value: now + stepOf(el) }); break;
+    case 'decrement': progressApi.setState(el, 'default', { value: now - stepOf(el) }); break;
+    case 'complete': progressApi.setState(el, 'complete'); break;
+    case 'indeterminate': progressApi.setState(el, 'indeterminate'); break;
+    // linear run from here to max over data-duration (remaining share of it)
+    case 'play': {
+      // a full bar starts over from 0
+      if (now >= maxOf(el)) el.value = 0;
+      const rest = 1 - (el.position < 0 ? 0 : el.value) / maxOf(el);
+      progressApi.setState(el, 'default', { value: maxOf(el), duration: durationOf(el) * rest });
+      break;
+    }
+    case 'pause': stopTween(el); el.removeAttribute('data-running'); commit(el, el.value); break;
+    default: return false;
+  }
+  return true;
+}
+const COMMANDS = ['reset', 'increment', 'decrement', 'complete', 'indeterminate', 'play', 'pause'];
+
+function init() {
+  document.querySelectorAll(`${SELECTOR}:not([data-init])`).forEach((el) => {
+    el.dataset.init = '';
+    el.api = {
+      setState: (stateName, config) => progressApi.setState(el, stateName, config),
+      getState: () => progressApi.getState(el),
+    };
+    el._authored = el.position < 0 ? null : el.value;
+    el.dataset.stateName = el.position < 0 ? 'indeterminate' : el.value >= maxOf(el) ? 'complete' : 'default';
+    // Invoker Commands: <button commandfor="id" command="--reset">
+    el.addEventListener('command', (e) => {
+      const c = String(e.command || '');
+      if (c.startsWith('--')) run(el, c.slice(2));
+    });
+    for (const c of COMMANDS) el.addEventListener(`progress:${c}`, () => run(el, c));
+    paint(el);
+  });
+}
+
+// Browsers without the Invoker Commands API: the same buttons, by click.
+if (!('commandForElement' in HTMLButtonElement.prototype) && !document.__progressCommandInit) {
+  document.__progressCommandInit = true;
+  document.addEventListener('click', (e) => {
+    const btn = e.target instanceof Element ? e.target.closest('button[commandfor][command^="--"]') : null;
+    const el = btn && document.getElementById(btn.getAttribute('commandfor'));
+    if (el?.matches(`${SELECTOR}[data-init]`)) run(el, btn.getAttribute('command').slice(2));
+  });
+}
+
+// A value / max written straight to the element (el.value = 40, or an
+// attribute) repaints the readouts too.
+new MutationObserver((records) => {
+  for (const r of records) {
+    const el = r.target;
+    if (el instanceof HTMLProgressElement && el.matches(`${SELECTOR}[data-init]`) && !el._raf) {
+      paint(el);
+      el.dataset.stateName = el.position < 0 ? 'indeterminate' : el.value >= maxOf(el) ? 'complete' : 'default';
+    }
+  }
+}).observe(document, { attributes: true, subtree: true, attributeFilter: ['value', 'max'] });
+
+init();
+new MutationObserver(init).observe(document, { childList: true, subtree: true });

@@ -10,8 +10,11 @@
         "selector": "progress.progress"
       },
       "mutation": {
-        "kind": "property",
-        "name": "value"
+        "kind": "api",
+        "name": "default",
+        "args": {
+          "value": "@value"
+        }
       },
       "observation": {
         "kind": "property",
@@ -25,9 +28,48 @@
         }
       }
     },
+    "indeterminate": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": "progress.progress"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "indeterminate"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "complete": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": "progress.progress"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "complete"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
     "size": {
       "type": "enum",
       "values": [
+        "xs",
         "sm",
         "md",
         "lg",
@@ -49,7 +91,75 @@
       "editor": {
         "component": "radio"
       }
+    },
+    "tone": {
+      "type": "enum",
+      "values": [
+        "primary",
+        "success",
+        "warning",
+        "info",
+        "destructive",
+        "auto"
+      ],
+      "default": "primary",
+      "target": {
+        "kind": "selector",
+        "selector": "progress.progress"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "data-tone"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-tone"
+      },
+      "editor": {
+        "component": "select"
+      }
     }
   },
-  "actions": {}
+  "actions": {
+    "reset": {
+      "target": {
+        "kind": "selector",
+        "selector": "progress.progress"
+      },
+      "operation": {
+        "kind": "event",
+        "name": "progress:reset"
+      }
+    },
+    "increment": {
+      "target": {
+        "kind": "selector",
+        "selector": "progress.progress"
+      },
+      "operation": {
+        "kind": "event",
+        "name": "progress:increment"
+      }
+    },
+    "play": {
+      "target": {
+        "kind": "selector",
+        "selector": "progress.progress"
+      },
+      "operation": {
+        "kind": "event",
+        "name": "progress:play"
+      }
+    },
+    "pause": {
+      "target": {
+        "kind": "selector",
+        "selector": "progress.progress"
+      },
+      "operation": {
+        "kind": "event",
+        "name": "progress:pause"
+      }
+    }
+  }
 }

@@ -7,19 +7,19 @@
     "BLK": 13,
     "TPL": 2
   },
-  "withJs": 39,
-  "withoutJs": 48,
-  "totalSize": 972803,
-  "totalSizeMinified": 450102,
-  "totalSizeGz": 302972,
-  "totalSizeGzMinified": 151201,
+  "withJs": 40,
+  "withoutJs": 47,
+  "totalSize": 989338,
+  "totalSizeMinified": 458291,
+  "totalSizeGz": 308198,
+  "totalSizeGzMinified": 154045,
   "bundle": {
-    "jsSize": 369599,
-    "jsSizeMinified": 206082,
-    "cssSize": 503433,
-    "cssSizeMinified": 275214,
-    "totalSizeGz": 188997,
-    "totalSizeGzMinified": 106246
+    "jsSize": 377590,
+    "jsSizeMinified": 211161,
+    "cssSize": 508455,
+    "cssSizeMinified": 278167,
+    "totalSizeGz": 192035,
+    "totalSizeGzMinified": 108183
   },
   "core": {
     "jsSize": 88035,
@@ -696,15 +696,15 @@
     "progress": {
       "name": "progress",
       "type": "ATM",
-      "withJs": false,
-      "jsSize": 0,
-      "jsSizeMinified": 0,
-      "cssSize": 2202,
-      "cssSizeMinified": 1334,
-      "totalSizeGz": 804,
-      "totalSizeGzMinified": 469,
-      "totalSize": 2202,
-      "totalSizeMinified": 1334
+      "withJs": true,
+      "jsSize": 11513,
+      "jsSizeMinified": 5345,
+      "cssSize": 7224,
+      "cssSizeMinified": 4178,
+      "totalSizeGz": 6030,
+      "totalSizeGzMinified": 3313,
+      "totalSize": 18737,
+      "totalSizeMinified": 9523
     },
     "radial-progress": {
       "name": "radial-progress",

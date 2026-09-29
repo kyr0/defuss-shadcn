@@ -586,11 +586,11 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 ## Progress
 
 **Type:** ATM
-**Why:** Native <progress value max> - semantics and rendering come free.
-**When:** Completion of a task with a known total; unknown total takes the spinner.
-**Files:** dist/components/progress/progress.css
-**Supported states:** default
-**Screenshots:** screenshots/{light,dark}/progress.png
+**Why:** Native <progress value max> - semantics and rendering come free; <output for> readouts, tones and a small State API make it a live, resettable, animatable bar.
+**When:** Completion of a task with a known total (an unknown total: omit the value, or take the spinner). A percentage that must sit inside a ring takes radial-progress.
+**Files:** dist/components/progress/progress.css + dist/components/progress/progress.js
+**Supported states:** default, indeterminate, complete
+**Screenshots:** screenshots/{light,dark}/progress.png, screenshots/{light,dark}/progress-indeterminate.png, screenshots/{light,dark}/progress-complete.png
 **Skill:** [components/progress/component-skill.md](components/progress/component-skill.md)
 
 ## Radial Progress

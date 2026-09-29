@@ -7680,12 +7680,237 @@ function init24() {
 init24();
 new MutationObserver(init24).observe(document, { childList: true, subtree: true });
 
-// src/components/resizer/resizer.ts
+// src/components/progress/progress.ts
 var df$25 = defussGlobals();
+var progressStates = ["default", "indeterminate", "complete"];
+var SELECTOR = "progress.progress";
+var reducedMotion4 = () => globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+var maxOf = (el) => el.max || 1;
+var clamp = (el, v) => Math.max(0, Math.min(maxOf(el), Number(v) || 0));
+var round = (v) => Math.round(v * 10) / 10;
+var pctFmt = new Intl.NumberFormat(undefined, { style: "percent", maximumFractionDigits: 0 });
+var numFmt = new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 });
+function text(out, el) {
+  const v = el.position < 0 ? null : el.value;
+  const max = maxOf(el);
+  if (v == null)
+    return out.dataset.indeterminate ?? "…";
+  const pct = v / max;
+  const tpl = out.dataset.template;
+  if (tpl) {
+    return tpl.replaceAll("{value}", numFmt.format(Math.round(v))).replaceAll("{max}", numFmt.format(max)).replaceAll("{percent}", pctFmt.format(pct));
+  }
+  switch (out.dataset.format) {
+    case "fraction":
+      return `${numFmt.format(Math.round(v))} / ${numFmt.format(max)}`;
+    case "value":
+      return numFmt.format(Math.round(v));
+    default:
+      return pctFmt.format(pct);
+  }
+}
+function outputsOf(el) {
+  const outs = new Set;
+  if (el.id)
+    document.querySelectorAll(`output.progress-value[for~="${CSS.escape(el.id)}"]`).forEach((o) => outs.add(o));
+  el.closest(".progress-field")?.querySelectorAll(".progress-value").forEach((o) => {
+    if (!o.htmlFor?.value || el.id && o.htmlFor.contains(el.id))
+      outs.add(o);
+  });
+  return [...outs];
+}
+function paint2(el) {
+  const indeterminate = el.position < 0;
+  const pct = indeterminate ? 0 : el.value / maxOf(el);
+  el.dataset.level = pct < 0.34 ? "low" : pct < 0.67 ? "mid" : "high";
+  el.toggleAttribute("data-complete", !indeterminate && el.value >= maxOf(el));
+  let spoken = "";
+  for (const out of outputsOf(el)) {
+    const t = text(out, el);
+    out.value = t;
+    out.dataset.text = t;
+    out.style.setProperty("--progress-pct", `${(pct * 100).toFixed(2)}%`);
+    if (out.dataset.format === "fraction" || out.dataset.template)
+      spoken ||= t;
+  }
+  if (spoken)
+    el.setAttribute("aria-valuetext", spoken);
+  else
+    el.removeAttribute("aria-valuetext");
+}
+function stopTween(el) {
+  if (el._raf)
+    cancelAnimationFrame(el._raf);
+  el._raf = 0;
+}
+function commit(el, v, emit = true) {
+  const before = el.dataset.stateName;
+  el.value = v;
+  paint2(el);
+  const done = v >= maxOf(el);
+  el.dataset.stateName = done ? "complete" : "default";
+  if (emit)
+    el.dispatchEvent(new CustomEvent("progress:change", { bubbles: true, detail: { value: el.value, max: el.max, percent: el.value / maxOf(el) } }));
+  if (done && before !== "complete")
+    el.dispatchEvent(new CustomEvent("progress:completed", { bubbles: true }));
+}
+function tween(el, to, duration) {
+  stopTween(el);
+  const from = el.position < 0 ? 0 : el.value;
+  if (!(duration > 0) || reducedMotion4() || from === to)
+    return commit(el, to);
+  const t0 = performance.now();
+  el.dataset.stateName = "default";
+  el.toggleAttribute("data-running", true);
+  const frame = (now) => {
+    const k = Math.min(1, (now - t0) / duration);
+    if (k < 1) {
+      el.value = round(from + (to - from) * k);
+      paint2(el);
+      el._raf = requestAnimationFrame(frame);
+    } else {
+      el._raf = 0;
+      el.removeAttribute("data-running");
+      commit(el, to);
+    }
+  };
+  el._raf = requestAnimationFrame(frame);
+}
+var stepOf = (el) => parseFloat(el.dataset.step || "") || maxOf(el) / 10;
+var durationOf = (el) => parseFloat(el.dataset.duration || "") || 3000;
+function triggerStateChange25(el, stateName, config) {
+  switch (stateName) {
+    case "default": {
+      if (config.max != null)
+        el.max = Number(config.max);
+      const to = config.value != null ? clamp(el, config.value) : clamp(el, el._authored ?? 0);
+      if (config.duration > 0)
+        tween(el, to, config.duration);
+      else {
+        stopTween(el);
+        el.removeAttribute("data-running");
+        commit(el, to);
+      }
+      break;
+    }
+    case "indeterminate":
+      stopTween(el);
+      el.removeAttribute("data-running");
+      el.removeAttribute("value");
+      paint2(el);
+      el.dataset.stateName = "indeterminate";
+      break;
+    case "complete":
+      if (config.duration > 0)
+        tween(el, maxOf(el), config.duration);
+      else {
+        stopTween(el);
+        el.removeAttribute("data-running");
+        commit(el, maxOf(el));
+      }
+      break;
+  }
+}
+var progressApi = {
+  setState(el, stateName, config = {}) {
+    if (!progressStates.includes(stateName)) {
+      throw new Error(`progress: unknown state "${stateName}" (supported: ${progressStates.join(", ")})`);
+    }
+    el._stateConfig = config;
+    triggerStateChange25(el, stateName, config);
+  },
+  getState(el) {
+    const indeterminate = el.position < 0;
+    return {
+      name: el.dataset.stateName || "default",
+      config: { ...el._stateConfig, value: indeterminate ? null : el.value, max: el.max, percent: indeterminate ? null : el.value / maxOf(el) }
+    };
+  }
+};
+df$25.progressApi = progressApi;
+df$25.progressStates = progressStates;
+function run(el, command) {
+  const now = el.position < 0 ? 0 : el.value;
+  switch (command) {
+    case "reset":
+      progressApi.setState(el, "default", { value: 0 });
+      break;
+    case "increment":
+      progressApi.setState(el, "default", { value: now + stepOf(el) });
+      break;
+    case "decrement":
+      progressApi.setState(el, "default", { value: now - stepOf(el) });
+      break;
+    case "complete":
+      progressApi.setState(el, "complete");
+      break;
+    case "indeterminate":
+      progressApi.setState(el, "indeterminate");
+      break;
+    case "play": {
+      if (now >= maxOf(el))
+        el.value = 0;
+      const rest = 1 - (el.position < 0 ? 0 : el.value) / maxOf(el);
+      progressApi.setState(el, "default", { value: maxOf(el), duration: durationOf(el) * rest });
+      break;
+    }
+    case "pause":
+      stopTween(el);
+      el.removeAttribute("data-running");
+      commit(el, el.value);
+      break;
+    default:
+      return false;
+  }
+  return true;
+}
+var COMMANDS = ["reset", "increment", "decrement", "complete", "indeterminate", "play", "pause"];
+function init25() {
+  document.querySelectorAll(`${SELECTOR}:not([data-init])`).forEach((el) => {
+    el.dataset.init = "";
+    el.api = {
+      setState: (stateName, config) => progressApi.setState(el, stateName, config),
+      getState: () => progressApi.getState(el)
+    };
+    el._authored = el.position < 0 ? null : el.value;
+    el.dataset.stateName = el.position < 0 ? "indeterminate" : el.value >= maxOf(el) ? "complete" : "default";
+    el.addEventListener("command", (e) => {
+      const c = String(e.command || "");
+      if (c.startsWith("--"))
+        run(el, c.slice(2));
+    });
+    for (const c of COMMANDS)
+      el.addEventListener(`progress:${c}`, () => run(el, c));
+    paint2(el);
+  });
+}
+if (!("commandForElement" in HTMLButtonElement.prototype) && !document.__progressCommandInit) {
+  document.__progressCommandInit = true;
+  document.addEventListener("click", (e) => {
+    const btn = e.target instanceof Element ? e.target.closest('button[commandfor][command^="--"]') : null;
+    const el = btn && document.getElementById(btn.getAttribute("commandfor"));
+    if (el?.matches(`${SELECTOR}[data-init]`))
+      run(el, btn.getAttribute("command").slice(2));
+  });
+}
+new MutationObserver((records) => {
+  for (const r of records) {
+    const el = r.target;
+    if (el instanceof HTMLProgressElement && el.matches(`${SELECTOR}[data-init]`) && !el._raf) {
+      paint2(el);
+      el.dataset.stateName = el.position < 0 ? "indeterminate" : el.value >= maxOf(el) ? "complete" : "default";
+    }
+  }
+}).observe(document, { attributes: true, subtree: true, attributeFilter: ["value", "max"] });
+init25();
+new MutationObserver(init25).observe(document, { childList: true, subtree: true });
+
+// src/components/resizer/resizer.ts
+var df$26 = defussGlobals();
 var resizerStates = ["default"];
 var HANDLES = ["n", "e", "s", "w", "ne", "nw", "se", "sw"];
 var CLASS_NUMBERS = Array.from({ length: 81 }, (_, i) => i + 16);
-var clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+var clamp2 = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 var numAttr2 = (el, key, fallback) => {
   const v = parseFloat(el.dataset[key] ?? "");
   return Number.isFinite(v) ? v : fallback;
@@ -7779,7 +8004,7 @@ function applySize(wrapper, axis, px) {
     return;
   const mode = wrapper.dataset.resizeMode || "px";
   const [min, max] = bounds(wrapper, axis);
-  const wanted = clamp(px, min, max);
+  const wanted = clamp2(px, min, max);
   let resolved = wanted;
   if (mode === "classes") {
     const ladder = ladderTokens(wrapper, axis);
@@ -7805,7 +8030,7 @@ function applySize(wrapper, axis, px) {
     }
   }));
 }
-function triggerStateChange25(wrapper, stateName, config = {}) {
+function triggerStateChange26(wrapper, stateName, config = {}) {
   if (stateName !== "default")
     return;
   if (config.width !== undefined || wrapper._defaultSize)
@@ -7818,7 +8043,7 @@ var resizerApi = {
     if (!resizerStates.includes(stateName)) {
       throw new Error(`resizer: unknown state "${stateName}" (supported: ${resizerStates.join(", ")})`);
     }
-    triggerStateChange25(wrapper, stateName, config);
+    triggerStateChange26(wrapper, stateName, config);
     wrapper.dataset.stateName = stateName;
     wrapper._stateConfig = config;
   },
@@ -7834,8 +8059,8 @@ var resizerApi = {
     };
   }
 };
-df$25.resizerApi = resizerApi;
-df$25.resizerStates = resizerStates;
+df$26.resizerApi = resizerApi;
+df$26.resizerStates = resizerStates;
 var HANDLE_LABEL = {
   n: "top edge",
   s: "bottom edge",
@@ -7929,7 +8154,7 @@ function startDrag(wrapper, handle, ev) {
   handle.addEventListener("pointercancel", onUp);
   handle.addEventListener("lostpointercapture", onUp);
 }
-function init25() {
+function init26() {
   document.querySelectorAll(".resizer:not([data-init])").forEach((wrapper) => {
     wrapper.dataset.init = "";
     if (!targetOf(wrapper))
@@ -7957,13 +8182,13 @@ function init25() {
     wrapper.addEventListener("resizer-reset", () => resizerApi.setState(wrapper, "default"));
   });
 }
-init25();
-new MutationObserver(init25).observe(document, { childList: true, subtree: true });
+init26();
+new MutationObserver(init26).observe(document, { childList: true, subtree: true });
 
 // src/components/sheet/sheet.ts
-var df$26 = defussGlobals();
+var df$27 = defussGlobals();
 var sheetStates = ["default", "open"];
-function triggerStateChange26(sheet, stateName, _config) {
+function triggerStateChange27(sheet, stateName, _config) {
   switch (stateName) {
     case "default":
       if (sheet.open)
@@ -7980,7 +8205,7 @@ var sheetApi = {
     if (!sheetStates.includes(stateName)) {
       throw new Error(`sheet: unknown state "${stateName}" (supported: ${sheetStates.join(", ")})`);
     }
-    triggerStateChange26(sheet, stateName, config);
+    triggerStateChange27(sheet, stateName, config);
     sheet.dataset.stateName = stateName;
     sheet._stateConfig = config;
   },
@@ -7988,9 +8213,9 @@ var sheetApi = {
     return { name: sheet.dataset.stateName || "default", config: sheet._stateConfig ?? {} };
   }
 };
-df$26.sheetApi = sheetApi;
-df$26.sheetStates = sheetStates;
-function init26() {
+df$27.sheetApi = sheetApi;
+df$27.sheetStates = sheetStates;
+function init27() {
   document.querySelectorAll("[data-sheet-trigger]:not([data-init])").forEach((trigger2) => {
     trigger2.dataset.init = "";
     const sheet = document.getElementById(trigger2.dataset.sheetTrigger);
@@ -8025,13 +8250,13 @@ function init26() {
     });
   });
 }
-init26();
-new MutationObserver(init26).observe(document, { childList: true, subtree: true });
+init27();
+new MutationObserver(init27).observe(document, { childList: true, subtree: true });
 
 // src/components/sidebar/sidebar.ts
-var df$27 = defussGlobals();
+var df$28 = defussGlobals();
 var sidebarStates = ["default", "collapsed"];
-function triggerStateChange27(sidebar, stateName, _config) {
+function triggerStateChange28(sidebar, stateName, _config) {
   switch (stateName) {
     case "default":
       sidebar.dataset.state = sidebar._defaultState ?? "expanded";
@@ -8046,7 +8271,7 @@ var sidebarApi = {
     if (!sidebarStates.includes(stateName)) {
       throw new Error(`sidebar: unknown state "${stateName}" (supported: ${sidebarStates.join(", ")})`);
     }
-    triggerStateChange27(sidebar, stateName, config);
+    triggerStateChange28(sidebar, stateName, config);
     sidebar.dataset.stateName = stateName;
     sidebar._stateConfig = config;
   },
@@ -8057,9 +8282,9 @@ var sidebarApi = {
     };
   }
 };
-df$27.sidebarApi = sidebarApi;
-df$27.sidebarStates = sidebarStates;
-function init27() {
+df$28.sidebarApi = sidebarApi;
+df$28.sidebarStates = sidebarStates;
+function init28() {
   document.querySelectorAll(".app-sidebar:not([data-init])").forEach((sidebar) => {
     sidebar.dataset.init = "";
     sidebar._defaultState = sidebar.dataset.state || "expanded";
@@ -8115,8 +8340,8 @@ if (typeof ResizeObserver !== "undefined" && !document.__sidebarAutoRo) {
     }
   });
 }
-init27();
-new MutationObserver(init27).observe(document, { childList: true, subtree: true });
+init28();
+new MutationObserver(init28).observe(document, { childList: true, subtree: true });
 if (!document.__sidebarKbInit) {
   document.__sidebarKbInit = true;
   bindGlobalKeys((e) => {
@@ -8133,7 +8358,7 @@ if (!document.__sidebarKbInit) {
 }
 
 // src/components/slider/slider.ts
-var df$28 = defussGlobals();
+var df$29 = defussGlobals();
 var sliderStates = ["default", "disabled"];
 function percentOf(el) {
   const min = parseFloat(el.min || 0);
@@ -8161,7 +8386,7 @@ var hasFormat = (el) => {
   const host = el.closest(".slider-range") ?? el;
   return !!(el.dataset.unit || el.dataset.currency || host.dataset.unit || host.dataset.currency);
 };
-function outputsOf(el) {
+function outputsOf2(el) {
   if (!el.id)
     return [];
   return [...document.querySelectorAll("output[for]")].filter((o) => o.htmlFor.contains(el.id));
@@ -8188,7 +8413,7 @@ function updateSliderValue(el) {
   const fmt2 = hasFormat(el) ? formatterOf(el) : null;
   if (fmt2)
     el.setAttribute("aria-valuetext", fmt2.format(parseFloat(el.value)));
-  for (const out of outputsOf(el)) {
+  for (const out of outputsOf2(el)) {
     const pair = range ? rangeInputs(range) : null;
     const f = fmt2 ?? formatterOf(el);
     if (pair && out.htmlFor.contains(pair[0].id) && out.htmlFor.contains(pair[1].id)) {
@@ -8213,7 +8438,7 @@ function initRange(range) {
   if (!lo || !hi)
     return;
   const gap = parseFloat(range.dataset.minGap || "0");
-  const clamp2 = (moved) => {
+  const clamp3 = (moved) => {
     const a = parseFloat(lo.value);
     const b = parseFloat(hi.value);
     if (b - a < gap || a > b) {
@@ -8227,8 +8452,8 @@ function initRange(range) {
     updateSliderValue(lo);
     updateSliderValue(hi);
   };
-  lo.addEventListener("input", () => clamp2(lo));
-  hi.addEventListener("input", () => clamp2(hi));
+  lo.addEventListener("input", () => clamp3(lo));
+  hi.addEventListener("input", () => clamp3(hi));
   for (const s of [lo, hi])
     s.addEventListener("pointerdown", () => {
       lo.toggleAttribute("data-active", s === lo);
@@ -8236,7 +8461,7 @@ function initRange(range) {
     });
   paintRange(range);
 }
-function triggerStateChange28(el, stateName, config) {
+function triggerStateChange29(el, stateName, config) {
   switch (stateName) {
     case "default":
       el.disabled = el._defaultDisabled ?? false;
@@ -8254,7 +8479,7 @@ var sliderApi = {
     if (!sliderStates.includes(stateName)) {
       throw new Error(`slider: unknown state "${stateName}" (supported: ${sliderStates.join(", ")})`);
     }
-    triggerStateChange28(el, stateName, config);
+    triggerStateChange29(el, stateName, config);
     el.dataset.stateName = stateName;
     el._stateConfig = config;
   },
@@ -8265,9 +8490,9 @@ var sliderApi = {
     };
   }
 };
-df$28.sliderApi = sliderApi;
-df$28.sliderStates = sliderStates;
-function init28() {
+df$29.sliderApi = sliderApi;
+df$29.sliderStates = sliderStates;
+function init29() {
   document.querySelectorAll(".slider-range:not([data-init])").forEach((range) => {
     range.dataset.init = "";
     initRange(range);
@@ -8285,16 +8510,16 @@ function init28() {
     el.addEventListener("input", () => updateSliderValue(el));
   });
 }
-init28();
-new MutationObserver(init28).observe(document, { childList: true, subtree: true });
+init29();
+new MutationObserver(init29).observe(document, { childList: true, subtree: true });
 
 // src/components/sortable/sortable.ts
-var df$29 = defussGlobals();
+var df$30 = defussGlobals();
 var dfDollar8 = defussQuery();
 var sortableStates = ["default"];
 var drag = null;
 var sortableLabels = (list) => dfDollar8(list).find(".sortable-item").map((item) => dfDollar8(item).find("span:not(.sortable-handle):not(.sortable-moves)").text().trim());
-function triggerStateChange29(list, stateName, config) {
+function triggerStateChange30(list, stateName, config) {
   if (stateName !== "default")
     return;
   dfDollar8(list).append(list._defaultOrder ?? []);
@@ -8309,7 +8534,7 @@ var sortableApi = {
     if (!sortableStates.includes(stateName)) {
       throw new Error(`sortable: unknown state "${stateName}" (supported: ${sortableStates.join(", ")})`);
     }
-    triggerStateChange29(list, stateName, config);
+    triggerStateChange30(list, stateName, config);
     list.dataset.stateName = stateName;
     list._stateConfig = config;
   },
@@ -8326,9 +8551,9 @@ var sortableApi = {
     };
   }
 };
-df$29.sortableApi = sortableApi;
-df$29.sortableStates = sortableStates;
-function init29() {
+df$30.sortableApi = sortableApi;
+df$30.sortableStates = sortableStates;
+function init30() {
   document.querySelectorAll(".sortable:not([data-init])").forEach((list) => {
     list.dataset.init = "";
     list.api = {
@@ -8607,11 +8832,11 @@ function init29() {
     });
   });
 }
-init29();
-new MutationObserver(init29).observe(document, { childList: true, subtree: true });
+init30();
+new MutationObserver(init30).observe(document, { childList: true, subtree: true });
 
 // src/components/steps/steps.ts
-var df$30 = defussGlobals();
+var df$31 = defussGlobals();
 var stepsStates = ["default"];
 var numAttr3 = (el, key, fallback) => {
   const v = parseInt(el.dataset[key] ?? "", 10);
@@ -8640,7 +8865,7 @@ function renderSteps(ol) {
       item.removeAttribute("aria-current");
   });
 }
-function triggerStateChange30(ol, stateName, config = {}) {
+function triggerStateChange31(ol, stateName, config = {}) {
   if (stateName !== "default")
     return;
   const a = config.activeStep ?? config.step ?? config.page;
@@ -8661,7 +8886,7 @@ var stepsApi = {
     if (!stepsStates.includes(stateName)) {
       throw new Error(`steps: unknown state "${stateName}" (supported: ${stepsStates.join(", ")})`);
     }
-    triggerStateChange30(ol, stateName, config);
+    triggerStateChange31(ol, stateName, config);
     ol.dataset.stateName = stateName;
     ol._stateConfig = config;
   },
@@ -8678,9 +8903,9 @@ var stepsApi = {
     };
   }
 };
-df$30.stepsApi = stepsApi;
-df$30.stepsStates = stepsStates;
-function init30() {
+df$31.stepsApi = stepsApi;
+df$31.stepsStates = stepsStates;
+function init31() {
   document.querySelectorAll(".steps:not([data-init])").forEach((ol) => {
     ol.dataset.init = "";
     ol.api = {
@@ -8715,11 +8940,11 @@ function init30() {
     });
   });
 }
-init30();
-new MutationObserver(init30).observe(document, { childList: true, subtree: true });
+init31();
+new MutationObserver(init31).observe(document, { childList: true, subtree: true });
 
 // src/components/table/table.ts
-var df$31 = defussGlobals();
+var df$32 = defussGlobals();
 var tableStates = ["default", "sorted", "selected"];
 var bodyOf = (table) => table.tBodies[0];
 var bodyRows = (table) => [...bodyOf(table)?.rows ?? []];
@@ -8871,7 +9096,7 @@ function measureLocks(table) {
   for (let i = 1;i < n; i++)
     table.style.setProperty(`--table-lock-${i}`, `${first.cells[i - 1]?.getBoundingClientRect().width ?? 0}px`);
 }
-function triggerStateChange31(table, stateName, config) {
+function triggerStateChange32(table, stateName, config) {
   switch (stateName) {
     case "default":
       unsort(table);
@@ -8890,7 +9115,7 @@ var tableApi = {
     if (!tableStates.includes(stateName)) {
       throw new Error(`table: unknown state "${stateName}" (supported: ${tableStates.join(", ")})`);
     }
-    triggerStateChange31(table, stateName, config);
+    triggerStateChange32(table, stateName, config);
     table.dataset.stateName = stateName;
     table._stateConfig = config;
   },
@@ -8899,9 +9124,9 @@ var tableApi = {
     return { name: table.dataset.stateName || "default", config: { ...table._stateConfig, sort: table._sort ?? null, selected } };
   }
 };
-df$31.tableApi = tableApi;
-df$31.tableStates = tableStates;
-function init31() {
+df$32.tableApi = tableApi;
+df$32.tableStates = tableStates;
+function init32() {
   document.querySelectorAll("table.table:not([data-init])").forEach((table) => {
     table.dataset.init = "";
     table.dataset.stateName = "default";
@@ -8969,11 +9194,11 @@ function init31() {
     }
   });
 }
-init31();
-new MutationObserver(init31).observe(document, { childList: true, subtree: true });
+init32();
+new MutationObserver(init32).observe(document, { childList: true, subtree: true });
 
 // src/components/tabs/tabs.ts
-var df$32 = defussGlobals();
+var df$33 = defussGlobals();
 var tabsStates = ["default", "active", "disabled"];
 var ICON = ":scope > :is(svg, img, i, .tab-icon)";
 var LUCIDE_NAME = /^[a-z][a-z0-9-]*$/;
@@ -8989,17 +9214,17 @@ var labelOf = (tab) => {
     return label2.textContent.trim();
   return Array.from(tab.childNodes).filter((n) => n.nodeType === Node.TEXT_NODE).map((n) => n.textContent).join("").trim();
 };
-var setLabel = (tab, text) => {
+var setLabel = (tab, text2) => {
   const label2 = tab.querySelector(":scope > .tab-label");
   if (label2) {
-    label2.textContent = text;
+    label2.textContent = text2;
     return;
   }
   Array.from(tab.childNodes).forEach((n) => {
     if (n.nodeType === Node.TEXT_NODE)
       n.remove();
   });
-  tab.append(document.createTextNode(text));
+  tab.append(document.createTextNode(text2));
 };
 var setIcon = (tab, icon) => {
   tab.querySelector(ICON)?.remove();
@@ -9061,7 +9286,7 @@ var restoreTab = (tab) => {
   tab.dataset.stateName = tabName(tab);
 };
 var authoredTab = (triggers) => triggers.find((t) => t._authored.selected) || triggers.find((t) => !t.disabled);
-function triggerStateChange32(el, stateName, config) {
+function triggerStateChange33(el, stateName, config) {
   const triggers = triggersOf(el);
   const isList = el.getAttribute("role") === "tablist";
   const reenter = Object.keys(config).length > 0 && tabsApi.getState(el).name === stateName;
@@ -9137,7 +9362,7 @@ var tabsApi = {
     if (!tabsStates.includes(stateName)) {
       throw new Error(`tabs: unknown state "${stateName}" (supported: ${tabsStates.join(", ")})`);
     }
-    triggerStateChange32(el, stateName, config);
+    triggerStateChange33(el, stateName, config);
     el._stateConfig = { ...el._stateConfig, ...config };
   },
   getState(el) {
@@ -9154,9 +9379,9 @@ var tabsApi = {
     };
   }
 };
-df$32.tabsApi = tabsApi;
-df$32.tabsStates = tabsStates;
-function init32() {
+df$33.tabsApi = tabsApi;
+df$33.tabsStates = tabsStates;
+function init33() {
   document.querySelectorAll('[role="tablist"]:not([data-init])').forEach((tablist) => {
     tablist.dataset.init = "";
     if (!tablist.querySelector(".tab-trigger"))
@@ -9237,11 +9462,11 @@ function init32() {
     });
   });
 }
-init32();
-new MutationObserver(init32).observe(document, { childList: true, subtree: true });
+init33();
+new MutationObserver(init33).observe(document, { childList: true, subtree: true });
 
 // src/components/theme-switcher/theme-switcher.ts
-var df$33 = defussGlobals();
+var df$34 = defussGlobals();
 var dfDollar9 = defussQuery();
 var themeSwitcherStates = ["default", "open"];
 var STORAGE_KEY = "defuss-shadcn-color-theme";
@@ -9316,7 +9541,7 @@ function syncTrigger(root, id) {
     dfDollar9(label2).text(active2?.dataset.themeLabel || "Default");
   root.dataset.themeId = id;
 }
-function triggerStateChange33(menu, stateName, _config) {
+function triggerStateChange34(menu, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -9333,7 +9558,7 @@ var themeSwitcherApi = {
     if (!themeSwitcherStates.includes(stateName)) {
       throw new Error(`theme-switcher: unknown state "${stateName}" (supported: ${themeSwitcherStates.join(", ")})`);
     }
-    triggerStateChange33(menu, stateName, config);
+    triggerStateChange34(menu, stateName, config);
     menu.dataset.stateName = stateName;
     menu._stateConfig = config;
   },
@@ -9347,9 +9572,9 @@ var themeSwitcherApi = {
     applyThemeId(root, id);
   }
 };
-df$33.themeSwitcherApi = themeSwitcherApi;
-df$33.themeSwitcherStates = themeSwitcherStates;
-function init33() {
+df$34.themeSwitcherApi = themeSwitcherApi;
+df$34.themeSwitcherStates = themeSwitcherStates;
+function init34() {
   document.querySelectorAll(".theme-switcher-menu:not([data-init])").forEach((menu) => {
     menu.dataset.init = "";
     const root = menu.closest(".theme-switcher");
@@ -9420,14 +9645,14 @@ document.addEventListener(THEME_EVENT, (e) => {
   const id = e.detail?.id || "default";
   document.querySelectorAll(".theme-switcher").forEach((root) => syncTrigger(root, id));
 });
-init33();
-new MutationObserver(init33).observe(document, { childList: true, subtree: true });
+init34();
+new MutationObserver(init34).observe(document, { childList: true, subtree: true });
 
 // src/components/toast/toast.ts
-var df$34 = defussGlobals();
+var df$35 = defussGlobals();
 var dfDollar10 = defussQuery();
 var toastStates = ["default"];
-function triggerStateChange34(container, stateName, _config) {
+function triggerStateChange35(container, stateName, _config) {
   if (stateName !== "default")
     return;
   container.querySelectorAll(".toast").forEach((el) => toastDismiss(el));
@@ -9437,7 +9662,7 @@ var toastApi = {
     if (!toastStates.includes(stateName)) {
       throw new Error(`toast: unknown state "${stateName}" (supported: ${toastStates.join(", ")})`);
     }
-    triggerStateChange34(container, stateName, config);
+    triggerStateChange35(container, stateName, config);
     container.dataset.stateName = stateName;
     container._stateConfig = config;
   },
@@ -9448,8 +9673,8 @@ var toastApi = {
     };
   }
 };
-df$34.toastApi = toastApi;
-df$34.toastStates = toastStates;
+df$35.toastApi = toastApi;
+df$35.toastStates = toastStates;
 var DURATION = 4000;
 var MAX_VISIBLE = 3;
 var toastCallbacks = new WeakMap;
@@ -9603,7 +9828,7 @@ var toastCreate = (options) => {
     toastDismiss(toasts[0]);
   return el;
 };
-function init34() {
+function init35() {
   document.querySelectorAll("#toast-container:not([data-init])").forEach((container) => {
     container.dataset.init = "";
     container.api = {
@@ -9656,8 +9881,8 @@ function init34() {
     });
   });
 }
-init34();
-new MutationObserver(init34).observe(document.body, { childList: true, subtree: true });
+init35();
+new MutationObserver(init35).observe(document.body, { childList: true, subtree: true });
 var toastConfigure = (opts = {}) => {
   if (opts.stack)
     toastContainer.dataset.stack = opts.stack;
@@ -9666,7 +9891,7 @@ var toastConfigure = (opts = {}) => {
   stackToasts(toastContainer);
   return { stack: toastContainer.dataset.stack || "list", position: toastContainer.dataset.position };
 };
-df$34.toast = {
+df$35.toast = {
   configure: toastConfigure,
   show: toastCreate,
   success: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "success" })),
@@ -9681,9 +9906,9 @@ df$34.toast = {
 };
 
 // src/components/toggle/toggle.ts
-var df$35 = defussGlobals();
+var df$36 = defussGlobals();
 var toggleStates = ["default", "pressed"];
-function triggerStateChange35(toggle, stateName, _config) {
+function triggerStateChange36(toggle, stateName, _config) {
   switch (stateName) {
     case "default":
       toggle.setAttribute("aria-pressed", toggle._defaultPressed ?? "false");
@@ -9698,7 +9923,7 @@ var toggleApi = {
     if (!toggleStates.includes(stateName)) {
       throw new Error(`toggle: unknown state "${stateName}" (supported: ${toggleStates.join(", ")})`);
     }
-    triggerStateChange35(toggle, stateName, config);
+    triggerStateChange36(toggle, stateName, config);
     toggle.dataset.stateName = stateName;
     toggle._stateConfig = config;
   },
@@ -9710,9 +9935,9 @@ var toggleApi = {
     };
   }
 };
-df$35.toggleApi = toggleApi;
-df$35.toggleStates = toggleStates;
-function init35() {
+df$36.toggleApi = toggleApi;
+df$36.toggleStates = toggleStates;
+function init36() {
   document.querySelectorAll(".toggle:not([data-init]):not(.toggle-group .toggle)").forEach((toggle) => {
     toggle.dataset.init = "";
     toggle._defaultPressed = toggle.getAttribute("aria-pressed") || "false";
@@ -9727,13 +9952,13 @@ function init35() {
     });
   });
 }
-init35();
-new MutationObserver(init35).observe(document, { childList: true, subtree: true });
+init36();
+new MutationObserver(init36).observe(document, { childList: true, subtree: true });
 
 // src/components/toggle-group/toggle-group.ts
-var df$36 = defussGlobals();
+var df$37 = defussGlobals();
 var toggleGroupStates = ["default", "disabled"];
-function triggerStateChange36(group, stateName, _config) {
+function triggerStateChange37(group, stateName, _config) {
   switch (stateName) {
     case "default":
       group.removeAttribute("data-disabled");
@@ -9748,7 +9973,7 @@ var toggleGroupApi = {
     if (!toggleGroupStates.includes(stateName)) {
       throw new Error(`toggle-group: unknown state "${stateName}" (supported: ${toggleGroupStates.join(", ")})`);
     }
-    triggerStateChange36(group, stateName, config);
+    triggerStateChange37(group, stateName, config);
     group.dataset.stateName = stateName;
     group._stateConfig = config;
   },
@@ -9759,9 +9984,9 @@ var toggleGroupApi = {
     };
   }
 };
-df$36.toggleGroupApi = toggleGroupApi;
-df$36.toggleGroupStates = toggleGroupStates;
-function init36() {
+df$37.toggleGroupApi = toggleGroupApi;
+df$37.toggleGroupStates = toggleGroupStates;
+function init37() {
   document.querySelectorAll(".toggle-group:not([data-init])").forEach((group) => {
     group.dataset.init = "";
     group.api = {
@@ -9829,13 +10054,13 @@ function init36() {
     });
   });
 }
-init36();
-new MutationObserver(init36).observe(document, { childList: true, subtree: true });
+init37();
+new MutationObserver(init37).observe(document, { childList: true, subtree: true });
 
 // src/components/toolbar/toolbar.ts
-var df$37 = defussGlobals();
+var df$38 = defussGlobals();
 var toolbarStates = ["default"];
-function triggerStateChange37(toolbar, items, stateName, config) {
+function triggerStateChange38(toolbar, items, stateName, config) {
   if (stateName !== "default" || items.length === 0)
     return;
   const target = items[Math.min(Number(config?.focus ?? 0), items.length - 1)] || items[0];
@@ -9849,7 +10074,7 @@ var toolbarApi = {
       throw new Error(`toolbar: unknown state "${stateName}" (supported: ${toolbarStates.join(", ")})`);
     }
     const items = toolbarItems(toolbar);
-    triggerStateChange37(toolbar, items, stateName, config);
+    triggerStateChange38(toolbar, items, stateName, config);
     toolbar.dataset.stateName = stateName;
     toolbar._stateConfig = config;
   },
@@ -9862,10 +10087,10 @@ var toolbarApi = {
     };
   }
 };
-df$37.toolbarApi = toolbarApi;
-df$37.toolbarStates = toolbarStates;
+df$38.toolbarApi = toolbarApi;
+df$38.toolbarStates = toolbarStates;
 var toolbarItems = (toolbar) => Array.from(toolbar.querySelectorAll('button:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])'));
-function init37() {
+function init38() {
   document.querySelectorAll('.toolbar[role="toolbar"]:not([data-init])').forEach((toolbar) => {
     toolbar.dataset.init = "";
     toolbar.api = {
@@ -9907,13 +10132,13 @@ function init37() {
     });
   });
 }
-init37();
-new MutationObserver(init37).observe(document, { childList: true, subtree: true });
+init38();
+new MutationObserver(init38).observe(document, { childList: true, subtree: true });
 
 // src/components/tooltip/tooltip.ts
-var df$38 = defussGlobals();
+var df$39 = defussGlobals();
 var tooltipStates = ["default", "visible"];
-function triggerStateChange38(tip, stateName, _config) {
+function triggerStateChange39(tip, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -9931,7 +10156,7 @@ var tooltipApi = {
     if (!tooltipStates.includes(stateName)) {
       throw new Error(`tooltip: unknown state "${stateName}" (supported: ${tooltipStates.join(", ")})`);
     }
-    triggerStateChange38(tip, stateName, config);
+    triggerStateChange39(tip, stateName, config);
     tip.dataset.stateName = stateName;
     tip._stateConfig = config;
   },
@@ -9939,8 +10164,8 @@ var tooltipApi = {
     return { name: tip.dataset.stateName || "default", config: tip._stateConfig ?? {} };
   }
 };
-df$38.tooltipApi = tooltipApi;
-df$38.tooltipStates = tooltipStates;
+df$39.tooltipApi = tooltipApi;
+df$39.tooltipStates = tooltipStates;
 var DELAY_DEFAULT = 700;
 var CLOSE_DELAY_DEFAULT = 0;
 var GROUP_TIMEOUT = 400;
@@ -9956,7 +10181,7 @@ function scheduleGroupReset() {
     groupOpen = false;
   }, GROUP_TIMEOUT);
 }
-function init38() {
+function init39() {
   document.querySelectorAll("[data-tooltip-trigger]:not([data-init])").forEach((trigger2) => {
     trigger2.dataset.init = "";
     const tip = document.getElementById(trigger2.dataset.tooltipTrigger);
@@ -10004,8 +10229,8 @@ function init38() {
     };
   });
 }
-init38();
-new MutationObserver(init38).observe(document, { childList: true, subtree: true });
+init39();
+new MutationObserver(init39).observe(document, { childList: true, subtree: true });
 if (!document.__tooltipScrollInit) {
   document.__tooltipScrollInit = true;
   document.addEventListener("scroll", () => {
@@ -10018,9 +10243,9 @@ if (!document.__tooltipScrollInit) {
 }
 
 // src/components/tree-view/tree-view.ts
-var df$39 = defussGlobals();
+var df$40 = defussGlobals();
 var treeViewStates = ["default", "expanded"];
-function triggerStateChange39(details, stateName, _config) {
+function triggerStateChange40(details, stateName, _config) {
   switch (stateName) {
     case "default":
       details.open = details._defaultOpen ?? false;
@@ -10035,7 +10260,7 @@ var treeViewApi = {
     if (!treeViewStates.includes(stateName)) {
       throw new Error(`tree-view: unknown state "${stateName}" (supported: ${treeViewStates.join(", ")})`);
     }
-    triggerStateChange39(details, stateName, config);
+    triggerStateChange40(details, stateName, config);
     details.dataset.stateName = stateName;
     details._stateConfig = config;
   },
@@ -10046,8 +10271,8 @@ var treeViewApi = {
     };
   }
 };
-df$39.treeViewApi = treeViewApi;
-df$39.treeViewStates = treeViewStates;
+df$40.treeViewApi = treeViewApi;
+df$40.treeViewStates = treeViewStates;
 var itemOf = (row) => row.closest('[role="treeitem"]');
 var isDisabled = (item) => item?.getAttribute("aria-disabled") === "true";
 function selectItem(tree, item) {
@@ -10219,7 +10444,7 @@ function moveByKey(tree, row, dir) {
   row.focus();
   announceMove2(tree, item);
 }
-function init39() {
+function init40() {
   document.querySelectorAll('.tree[role="tree"]:not([data-init])').forEach((tree) => {
     tree.dataset.init = "";
     const selectable = tree.hasAttribute("data-selectable");
@@ -10341,9 +10566,9 @@ function init39() {
     });
   });
 }
-init39();
-new MutationObserver(init39).observe(document, { childList: true, subtree: true });
+init40();
+new MutationObserver(init40).observe(document, { childList: true, subtree: true });
 
-//# debugId=326E5973CBE7464A64756E2164756E21
+//# debugId=8EC88EB75A732E7264756E2164756E21
 /* defuss-shadcn v0.9.2 runtime provenance: bundles defuss-morph@0.1.1 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.1.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=all.js.map

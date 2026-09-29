@@ -1,5 +1,11 @@
+/* -- Progress component --------------------------------------------- */
+
 @layer components {
+  /* The fill resolves once, here: data-tone (--_c) > the public
+     --progress-color > --primary. Everything below paints from --_fill. */
   .progress {
+    --_fill: var(--_c, var(--progress-color, var(--primary)));
+    --_stripes: none;
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -9,6 +15,8 @@
     border-radius: 9999px;
     overflow: hidden;
     background-color: var(--secondary);
+    accent-color: var(--_fill);
+    vertical-align: middle;
 
     /* -- Sizes: bar thickness scale; default (no attribute) == md. */
     &[data-size="xs"] { height: 0.25rem; }
@@ -16,6 +24,28 @@
     &[data-size="md"] { height: 0.5rem; }
     &[data-size="lg"] { height: 0.75rem; }
     &[data-size="xl"] { height: 1rem; }
+
+    /* -- Tones: success / warning / info / destructive; any other color
+       via style="--progress-color: …". auto follows the value: the
+       runtime (progress.js) sets data-level low (< 34%) / mid / high. */
+    &[data-tone="success"] { --_c: oklch(0.6 0.15 150); }
+    &[data-tone="warning"] { --_c: oklch(0.75 0.16 70); }
+    &[data-tone="info"] { --_c: oklch(0.6 0.16 250); }
+    &[data-tone="destructive"] { --_c: var(--destructive); }
+    &[data-tone="auto"] {
+      &[data-level="low"] { --_c: var(--destructive); }
+      &[data-level="mid"] { --_c: oklch(0.75 0.16 70); }
+      &[data-level="high"] { --_c: oklch(0.6 0.15 150); }
+    }
+
+    /* -- Stripes: diagonal bands over the fill; "animated" moves them */
+    &[data-striped] {
+      --_stripes: repeating-linear-gradient(
+        -45deg,
+        color-mix(in oklch, white 22%, transparent) 0 0.375rem,
+        transparent 0.375rem 0.75rem
+      );
+    }
   }
 
   /* WebKit (Chrome, Safari, Edge) */
@@ -23,17 +53,27 @@
     background-color: var(--secondary);
     border-radius: 9999px;
   }
-
   .progress::-webkit-progress-value {
-    background-color: var(--primary);
+    background: var(--_stripes), var(--_fill);
+    background-size: 1.06rem 1.06rem, auto;
     border-radius: 9999px;
-    transition: width 300ms ease;
+  }
+  .progress[data-striped="animated"]::-webkit-progress-value {
+    animation: progress-stripes 700ms linear infinite;
   }
 
   /* Firefox */
   .progress::-moz-progress-bar {
-    background-color: var(--primary);
+    background: var(--_stripes), var(--_fill);
+    background-size: 1.06rem 1.06rem, auto;
     border-radius: 9999px;
+  }
+  .progress[data-striped="animated"]::-moz-progress-bar {
+    animation: progress-stripes 700ms linear infinite;
+  }
+
+  @keyframes progress-stripes {
+    to { background-position: 1.06rem 0, 0 0; }
   }
 
   /* Indeterminate state */
@@ -41,43 +81,133 @@
     background: linear-gradient(
       90deg,
       var(--secondary) 0%,
-      var(--primary) 50%,
+      var(--_fill) 50%,
       var(--secondary) 100%
     );
     background-size: 200% 100%;
     animation: progress-indeterminate 1.5s linear infinite;
   }
-
-  .progress:indeterminate::-webkit-progress-bar {
-    background-color: transparent;
-  }
-
-  .progress:indeterminate::-moz-progress-bar {
-    background-color: transparent;
-  }
+  .progress:indeterminate::-webkit-progress-bar { background-color: transparent; }
+  .progress:indeterminate::-moz-progress-bar { background-color: transparent; }
 
   @keyframes progress-indeterminate {
     0% { background-position: 200% 0; }
     100% { background-position: -200% 0; }
   }
+
+  /* -- Field: a label + a live value readout with the bar ---------------
+     <div class="progress-field">
+       <div class="progress-header"><span class="progress-label">…</span>
+         <output class="progress-value" for="bar-id"></output></div>
+       <progress class="progress" id="bar-id" …></progress>
+     </div>
+     progress.js writes the value into every output (data-format: percent
+     | fraction | value, or a data-template). */
+  .progress-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    width: 100%;
+  }
+  .progress-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+  .progress-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--foreground);
+  }
+  .progress-value {
+    font-size: 0.875rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted-foreground);
+    white-space: nowrap;
+  }
+  .progress-hint {
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+  }
+
+  /* -- Label inside the bar: data-label="inside" on the field (bar + output
+     only). The output spans the bar; its text reads in the foreground over
+     the track and - through a copy clipped to the filled part (::after,
+     data-text + --progress-pct set by progress.js) - in the fill's own
+     foreground over the fill. */
+  .progress-field[data-label="inside"] {
+    display: grid;
+
+    & > .progress {
+      grid-area: 1 / 1;
+      height: 1.25rem;
+      &[data-size="lg"] { height: 1.5rem; }
+      &[data-size="xl"] { height: 1.75rem; }
+    }
+    & > .progress-value {
+      grid-area: 1 / 1;
+      position: relative;
+      display: grid;
+      place-items: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--foreground);
+      pointer-events: none;
+
+      &::after {
+        content: attr(data-text);
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        color: var(--primary-foreground);
+        clip-path: inset(0 calc(100% - var(--progress-pct, 0%)) 0 0);
+      }
+    }
+  }
+  /* the tones are light fills: dark text reads better on them */
+  .progress-field[data-label="inside"]:has(> .progress:is([data-tone="warning"], [data-tone="auto"][data-level="mid"])) > .progress-value::after {
+    color: oklch(0.25 0.05 70);
+  }
+  .progress-field[data-label="inside"]:has(> .progress:is([data-tone="success"], [data-tone="info"], [data-tone="destructive"], [data-tone="auto"]:not([data-level="mid"]))) > .progress-value::after {
+    color: white;
+  }
+  .progress-field[data-label="inside"]:dir(rtl) > .progress-value::after {
+    clip-path: inset(0 0 0 calc(100% - var(--progress-pct, 0%)));
+  }
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all
    components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
-   `none` keeps transitionend/animationend (and discrete display flips)
-   firing so JS state machines that await them keep working. */
+   `none` keeps transitionend/animationend firing. (progress.js also skips
+   its value tween then - the bar jumps straight to the target.) */
 @media (prefers-reduced-motion: reduce) {
   @layer components {
     .progress,
-    .progress *,
-    .progress::before,
-    .progress::after,
-    .progress *::before,
-    .progress *::after,
-    .progress::backdrop {
+    .progress::-webkit-progress-value,
+    .progress::-moz-progress-bar {
       transition-duration: 0.01ms !important;
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
     }
+  }
+}
+
+@media (prefers-contrast: more) {
+  @layer components {
+    .progress { outline: 1px solid var(--foreground); outline-offset: 1px; }
+    .progress-value { color: var(--foreground); }
+  }
+}
+
+@media (forced-colors: active) {
+  @layer components {
+    .progress { forced-color-adjust: none; background: Canvas; outline: 1px solid CanvasText; }
+    .progress::-webkit-progress-bar { background: Canvas; }
+    .progress::-webkit-progress-value { background: Highlight; }
+    .progress::-moz-progress-bar { background: Highlight; }
+    .progress-field[data-label="inside"] > .progress-value { color: CanvasText; }
+    .progress-field[data-label="inside"] > .progress-value::after { color: HighlightText; }
   }
 }

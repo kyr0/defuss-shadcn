@@ -6,15 +6,68 @@
     <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
     <link rel="stylesheet" href="/dist/components/progress/progress.css" />
   </head>
-  <body style="padding:2rem;">
-    <!-- mirrors the doc page: native <progress> with value + indeterminate -->
+  <body style="padding:2rem;width:420px;">
+    <!-- mirrors the doc page: bars, sizes, tones, readouts (percent /
+         fraction / template / indeterminate), inside label, commands, RTL -->
     <progress class="progress" id="pg-half" value="50" max="100"></progress>
     <progress class="progress" id="pg-empty" value="0" max="100" style="margin-top:1rem;"></progress>
     <progress class="progress" id="pg-indet" style="margin-top:1rem;"></progress>
-      <progress class="progress" id="z-progress-xs" value="60" max="100" data-size="xs"></progress>
+    <progress class="progress" id="z-progress-xs" value="60" max="100" data-size="xs"></progress>
     <progress class="progress" id="z-progress-sm" value="60" max="100" data-size="sm"></progress>
     <progress class="progress" id="z-progress-md" value="60" max="100" data-size="md"></progress>
     <progress class="progress" id="z-progress-lg" value="60" max="100" data-size="lg"></progress>
     <progress class="progress" id="z-progress-xl" value="60" max="100" data-size="xl"></progress>
-</body>
+
+    <!-- tones -->
+    <progress class="progress" id="t-primary" value="60" max="100"></progress>
+    <progress class="progress" id="t-success" data-tone="success" value="60" max="100"></progress>
+    <progress class="progress" id="t-warning" data-tone="warning" value="60" max="100"></progress>
+    <progress class="progress" id="t-info" data-tone="info" value="60" max="100"></progress>
+    <progress class="progress" id="t-destructive" data-tone="destructive" value="60" max="100"></progress>
+    <progress class="progress" id="t-custom" value="60" max="100" style="--progress-color: rgb(200, 0, 200);"></progress>
+    <progress class="progress" id="t-auto" data-tone="auto" value="20" max="100"></progress>
+    <progress class="progress" id="t-striped" data-striped="animated" value="60" max="100"></progress>
+
+    <!-- readouts -->
+    <div class="progress-field">
+      <div class="progress-header"><span class="progress-label">Percent</span><output class="progress-value" id="o-pct" for="f-pct"></output></div>
+      <progress class="progress" id="f-pct" value="66" max="100"></progress>
+    </div>
+    <div class="progress-field">
+      <div class="progress-header"><span class="progress-label">Fraction</span><output class="progress-value" id="o-frac" for="f-frac" data-format="fraction"></output></div>
+      <progress class="progress" id="f-frac" value="3" max="8"></progress>
+    </div>
+    <div class="progress-field">
+      <div class="progress-header"><span class="progress-label">Template</span><output class="progress-value" id="o-tpl" data-template="{value} of {max} files · {percent}"></output></div>
+      <progress class="progress" id="f-tpl" value="12" max="40"></progress>
+    </div>
+    <div class="progress-field">
+      <div class="progress-header"><span class="progress-label">Waiting</span><output class="progress-value" id="o-ind" for="f-ind" data-indeterminate="Waiting…"></output></div>
+      <progress class="progress" id="f-ind" max="100"></progress>
+    </div>
+
+    <!-- inside label -->
+    <div class="progress-field" data-label="inside" id="in-field">
+      <progress class="progress" id="in-bar" value="45" max="100"></progress>
+      <output class="progress-value" id="in-out" for="in-bar"></output>
+    </div>
+
+    <!-- commands: steps + linear -->
+    <progress class="progress" id="cmd" value="30" max="100" data-step="10" data-duration="600"></progress>
+    <output class="progress-value" id="cmd-out" for="cmd"></output>
+    <button id="b-inc" type="button" commandfor="cmd" command="--increment">+</button>
+    <button id="b-dec" type="button" commandfor="cmd" command="--decrement">-</button>
+    <button id="b-reset" type="button" commandfor="cmd" command="--reset">reset</button>
+    <button id="b-play" type="button" commandfor="cmd" command="--play">play</button>
+    <button id="b-pause" type="button" commandfor="cmd" command="--pause">pause</button>
+
+    <!-- RTL inside label -->
+    <div dir="rtl" class="progress-field" data-label="inside">
+      <progress class="progress" id="rtl-bar" value="40" max="100"></progress>
+      <output class="progress-value" id="rtl-out" for="rtl-bar"></output>
+    </div>
+
+    <script type="module" src="/dist/components/core.js"></script>
+    <script type="module" src="/dist/components/progress/progress.js"></script>
+  </body>
 </html>

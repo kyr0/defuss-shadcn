@@ -1,6 +1,6 @@
 ---
 title: "Progress"
-description: "Progress component - native <progress> bars with custom styling."
+description: "Progress component - native <progress> bars in any color, with live percent / x of n labels, a State API, step-by-step or linearly interpolated updates and declarative reset / step / play buttons."
 slug: "progress"
 ---
 
@@ -9,83 +9,206 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <DocPage meta={meta}>
 
 <PageHeader slug="progress" title="Progress" component="progress">
-  A progress bar showing completion percentage. Built on the native <code>&lt;progress&gt;</code> element.
+  A progress bar showing how much of a task is done. Built on the native <code>&lt;progress&gt;</code> element, in any color, with a live readout - a percentage, "x / n" or your own template - above or inside the bar. The value is state: jump it in steps, let it glide there linearly, and reset, step or play it from plain buttons (<code>commandfor</code> + <code>command="--reset"</code>) - no script of your own.
 </PageHeader>
 
 <SkillPanel component="progress">
   <SkillField label="Native basis">
-<SkillText><code>&lt;progress&gt;</code> element with CSS styling for the track and indicator bar.</SkillText>
+<SkillText><code>&lt;progress value max&gt;</code> - semantics and the bar come free; <code>&lt;output for&gt;</code> elements carry the readout. The optional script keeps them in sync, animates values and answers button commands.</SkillText>
   </SkillField>
 
   <SkillField label="Web Platform APIs">
 <SkillRow>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress" title="native HTML progress indicator"><code>&lt;progress&gt;</code></ApiPill>
-    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/::-webkit-progress-bar" title="track pseudo-element (WebKit)"><code>::-webkit-progress-bar</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output" title="the live readout, bound with for"><code>&lt;output for&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Invoker_Commands_API" title="buttons that reset / step / play the bar"><code>commandfor</code> / <code>command</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat" title="locale-aware percent and numbers"><code>Intl.NumberFormat</code></ApiPill>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/::-webkit-progress-value" title="indicator pseudo-element (WebKit)"><code>::-webkit-progress-value</code></ApiPill>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/::-moz-progress-bar" title="indicator pseudo-element (Firefox)"><code>::-moz-progress-bar</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/clip-path" title="the two-color label inside the bar"><code>clip-path</code></ApiPill>
   </SkillRow>
   </SkillField>
 
   <SkillField label="Classes">
 <SkillRow>
     <code>.progress</code>
+    <code>.progress-field</code>
+    <code>.progress-header</code>
+    <code>.progress-label</code>
+    <code>.progress-value</code>
+    <code>.progress-hint</code>
   </SkillRow>
   </SkillField>
 
-  <SkillField label="Accessibility">
-<SkillText dense>• <code>&lt;progress&gt;</code> is natively accessible - screen readers announce the percentage</SkillText>
-  <SkillText dense>• The text content inside <code>&lt;progress&gt;</code> is the fallback for non-supporting browsers</SkillText>
-  <p class="text-muted-foreground m-0">• Use <code>aria-label</code> if the progress bar lacks a visible label</p>
+  <SkillField label="Data attributes">
+<SkillText>On the bar: <code>data-size</code> (<code>xs</code> … <code>xl</code>), <code>data-tone</code> (<code>success</code>, <code>warning</code>, <code>info</code>, <code>destructive</code>, <code>auto</code>), <code>data-striped</code> (<code>animated</code>), <code>data-step</code>, <code>data-duration</code>; on an output: <code>data-format</code> (<code>percent</code>, <code>fraction</code>, <code>value</code>), <code>data-template</code>; on the field: <code>data-label="inside"</code>. Commands: <code>--reset</code>, <code>--increment</code>, <code>--decrement</code>, <code>--play</code>, <code>--pause</code>, <code>--complete</code>, <code>--indeterminate</code>.</SkillText>
   </SkillField>
 </SkillPanel>
 
-```html example label="Determinate" hint="Shows a specific completion percentage."
-<progress class="progress" value="66" max="100">66%</progress>
+```html example label="Determinate" hint="A .progress-field pairs the bar with a label and an <output class='progress-value'> - the script writes the percent into it and keeps it in sync with every change."
+<div class="progress-field" style="max-width:24rem;">
+  <div class="progress-header">
+    <span class="progress-label" id="dl-label">Uploading photos</span>
+    <output class="progress-value" for="dl"></output>
+  </div>
+  <progress class="progress" id="dl" value="66" max="100" aria-labelledby="dl-label">66%</progress>
+</div>
 ```
 
-```html example label="Values" hint="Different completion amounts."
-<progress class="progress" value="10" max="100">10%</progress>
-<progress class="progress" value="40" max="100">40%</progress>
-<progress class="progress" value="75" max="100">75%</progress>
+```html example label="Values" schema="none" hint="Different completion amounts."
+<div class="flex flex-col gap-3 w-full" style="max-width:24rem;">
+  <progress class="progress" value="10" max="100">10%</progress>
+  <progress class="progress" value="40" max="100">40%</progress>
+  <progress class="progress" value="75" max="100">75%</progress>
+</div>
 ```
 
-```html example label="Indeterminate" hint="Animated state when completion amount is unknown. Omit the value attribute."
-<progress class="progress" max="100">Loading...</progress>
+```html example label="Colors" schema="none" hint="data-tone paints the fill: success, warning, info, destructive - any other color through style='--progress-color: …'. data-tone='auto' follows the value: red below a third, amber below two thirds, green above."
+<div class="flex flex-col gap-4 w-full" style="max-width:24rem;">
+  <div class="progress-field">
+    <div class="progress-header"><span class="progress-label">Tests passing</span><output class="progress-value" for="c-ok"></output></div>
+    <progress class="progress" id="c-ok" data-tone="success" value="92" max="100"></progress>
+  </div>
+  <div class="progress-field">
+    <div class="progress-header"><span class="progress-label">Disk space</span><output class="progress-value" for="c-warn"></output></div>
+    <progress class="progress" id="c-warn" data-tone="warning" value="78" max="100"></progress>
+  </div>
+  <div class="progress-field">
+    <div class="progress-header"><span class="progress-label">Sync</span><output class="progress-value" for="c-info"></output></div>
+    <progress class="progress" id="c-info" data-tone="info" value="45" max="100"></progress>
+  </div>
+  <div class="progress-field">
+    <div class="progress-header"><span class="progress-label">Quota</span><output class="progress-value" for="c-bad"></output></div>
+    <progress class="progress" id="c-bad" data-tone="destructive" value="97" max="100"></progress>
+  </div>
+  <div class="progress-field">
+    <div class="progress-header"><span class="progress-label">Brand color</span><output class="progress-value" for="c-custom"></output></div>
+    <progress class="progress" id="c-custom" value="60" max="100" style="--progress-color: oklch(0.62 0.2 300);"></progress>
+  </div>
+  <div class="flex flex-col gap-2">
+    <span class="progress-label">Auto: 20 · 50 · 85</span>
+    <progress class="progress" data-tone="auto" value="20" max="100" aria-label="Auto tone, 20%"></progress>
+    <progress class="progress" data-tone="auto" value="50" max="100" aria-label="Auto tone, 50%"></progress>
+    <progress class="progress" data-tone="auto" value="85" max="100" aria-label="Auto tone, 85%"></progress>
+  </div>
+</div>
 ```
 
-```html example label="In Cards" hint="Progress bars composed with .card and .statistic for a dashboard layout." previewStyle="flex-direction:column;align-items:stretch;"
+```html example label="Labels" schema="none" hint="data-format on the output: percent (default), fraction (x / n) or value; data-template fills in the value, max and percent tokens (in curly braces). A fraction or template also becomes the bar's aria-valuetext, so a screen reader says '3 / 8', not '38%'."
+<div class="flex flex-col gap-4 w-full" style="max-width:24rem;">
+  <div class="progress-field">
+    <div class="progress-header"><span class="progress-label">Percent</span><output class="progress-value" for="l-pct"></output></div>
+    <progress class="progress" id="l-pct" value="38" max="100"></progress>
+  </div>
+  <div class="progress-field">
+    <div class="progress-header"><span class="progress-label">Lessons</span><output class="progress-value" for="l-frac" data-format="fraction"></output></div>
+    <progress class="progress" id="l-frac" value="3" max="8"></progress>
+  </div>
+  <div class="progress-field">
+    <div class="progress-header"><span class="progress-label">Upload</span><output class="progress-value" for="l-tpl" data-template="{value} of {max} files · {percent}"></output></div>
+    <progress class="progress" id="l-tpl" value="12" max="40"></progress>
+    <span class="progress-hint">About 2 minutes left</span>
+  </div>
+</div>
+```
+
+```html example label="Label inside the bar" schema="none" hint="data-label='inside' on the field puts the output in the bar (1.25rem tall). Over the fill the text switches to the fill's own foreground - a copy clipped to the filled part - so it reads on both halves."
+<div class="flex flex-col gap-4 w-full" style="max-width:24rem;">
+  <div class="progress-field" data-label="inside">
+    <progress class="progress" id="in-1" value="45" max="100" aria-label="Import"></progress>
+    <output class="progress-value" for="in-1"></output>
+  </div>
+  <div class="progress-field" data-label="inside">
+    <progress class="progress" id="in-2" data-tone="success" data-size="lg" value="7" max="10" aria-label="Steps"></progress>
+    <output class="progress-value" for="in-2" data-format="fraction"></output>
+  </div>
+  <div class="progress-field" data-label="inside">
+    <progress class="progress" id="in-3" data-tone="warning" data-size="xl" data-striped value="62" max="100" aria-label="Backup"></progress>
+    <output class="progress-value" for="in-3" data-template="Backup {percent}"></output>
+  </div>
+</div>
+```
+
+```html example label="Step by step" schema="none" hint="Jumps: --increment / --decrement move the bar by data-step (10% by default) at once, --reset empties it - plain buttons with commandfor + command, no script. 'Run' steps through a task in 10% jumps via the State API."
+<div class="flex flex-col gap-4 w-full" style="max-width:24rem;">
+  <div class="progress-field">
+    <div class="progress-header"><span class="progress-label">Installing packages</span><output class="progress-value" for="st"></output></div>
+    <progress class="progress" id="st" value="30" max="100" data-step="10" aria-label="Installing packages"></progress>
+  </div>
+  <div class="flex flex-wrap gap-2">
+    <button class="btn" data-variant="outline" data-size="sm" type="button" commandfor="st" command="--decrement">− 10%</button>
+    <button class="btn" data-variant="outline" data-size="sm" type="button" commandfor="st" command="--increment">+ 10%</button>
+    <button class="btn" data-variant="secondary" data-size="sm" type="button" onclick="runSteps()">Run</button>
+    <button class="btn" data-variant="ghost" data-size="sm" type="button" commandfor="st" command="--reset">Reset</button>
+  </div>
+</div>
+<script>
+  function runSteps() {
+    const bar = document.getElementById('st');
+    clearInterval(bar._timer);
+    bar.api.setState('default', { value: 0 });
+    bar._timer = setInterval(() => {
+      const { value, max } = bar.api.getState().config;
+      if (value >= max) return clearInterval(bar._timer);
+      bar.api.setState('default', { value: value + 10 });
+    }, 450);
+  }
+</script>
+```
+
+```html example label="Linear (interpolated)" schema="none" hint="Glides: --play runs the bar to the end linearly over data-duration (ms) - the readout counts every frame; --pause holds it, --reset starts over. setState('default', with value and duration) interpolates to any value."
+<div class="flex flex-col gap-4 w-full" style="max-width:24rem;">
+  <div class="progress-field" data-label="inside">
+    <progress class="progress" id="lin" data-size="lg" data-duration="4000" value="0" max="100" aria-label="Rendering video"></progress>
+    <output class="progress-value" for="lin"></output>
+  </div>
+  <div class="flex flex-wrap gap-2">
+    <button class="btn" data-size="sm" type="button" commandfor="lin" command="--play">Play</button>
+    <button class="btn" data-variant="outline" data-size="sm" type="button" commandfor="lin" command="--pause">Pause</button>
+    <button class="btn" data-variant="outline" data-size="sm" type="button" onclick="document.getElementById('lin').api.setState('default', { value: 75, duration: 1200 })">Glide to 75%</button>
+    <button class="btn" data-variant="ghost" data-size="sm" type="button" commandfor="lin" command="--reset">Reset</button>
+  </div>
+</div>
+```
+
+```html example label="Striped" schema="none" hint="data-striped lays diagonal bands over the fill; data-striped='animated' moves them - a busy task that still has a known value."
+<div class="flex flex-col gap-3 w-full" style="max-width:24rem;">
+  <progress class="progress" data-size="lg" data-striped value="55" max="100" aria-label="Striped"></progress>
+  <progress class="progress" data-size="lg" data-striped="animated" data-tone="info" value="70" max="100" aria-label="Striped, animated"></progress>
+</div>
+```
+
+```html example label="Indeterminate" schema="none" hint="No value attribute: the animated sweep for an unknown amount - the readout shows '…' (or its data-indeterminate text)."
+<div class="progress-field" style="max-width:24rem;">
+  <div class="progress-header"><span class="progress-label">Connecting</span><output class="progress-value" for="ind" data-indeterminate="Waiting…"></output></div>
+  <progress class="progress" id="ind" max="100" aria-label="Connecting">Loading...</progress>
+</div>
+```
+
+```html example label="In cards" schema="none" hint="Progress fields composed with .card for a dashboard - each readout bound to its bar." previewStyle="flex-direction:column;align-items:stretch;"
 <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(12rem, 1fr));gap:1rem;max-width:42rem;">
   <article class="card">
-    <div class="card-content" style="padding:1.5rem;">
-      <div class="statistic" style="margin-bottom:0.75rem;">
-        <p class="statistic-title">Storage</p>
-        <p class="statistic-value" style="font-size:1.25rem;">75%</p>
-      </div>
-      <progress class="progress" value="75" max="100">75%</progress>
+    <div class="card-content progress-field" style="padding:1.5rem;">
+      <div class="progress-header"><span class="progress-label">Storage</span><output class="progress-value" for="k-1" data-template="{value} / {max} GB"></output></div>
+      <progress class="progress" id="k-1" data-tone="auto" value="75" max="100" aria-label="Storage"></progress>
     </div>
   </article>
   <article class="card">
-    <div class="card-content" style="padding:1.5rem;">
-      <div class="statistic" style="margin-bottom:0.75rem;">
-        <p class="statistic-title">Bandwidth</p>
-        <p class="statistic-value" style="font-size:1.25rem;">42%</p>
-      </div>
-      <progress class="progress" value="42" max="100">42%</progress>
+    <div class="card-content progress-field" style="padding:1.5rem;">
+      <div class="progress-header"><span class="progress-label">Bandwidth</span><output class="progress-value" for="k-2"></output></div>
+      <progress class="progress" id="k-2" data-tone="auto" value="42" max="100" aria-label="Bandwidth"></progress>
     </div>
   </article>
   <article class="card">
-    <div class="card-content" style="padding:1.5rem;">
-      <div class="statistic" style="margin-bottom:0.75rem;">
-        <p class="statistic-title">CPU</p>
-        <p class="statistic-value" style="font-size:1.25rem;">91%</p>
-      </div>
-      <progress class="progress" value="91" max="100">91%</progress>
+    <div class="card-content progress-field" style="padding:1.5rem;">
+      <div class="progress-header"><span class="progress-label">Onboarding</span><output class="progress-value" for="k-3" data-format="fraction"></output></div>
+      <progress class="progress" id="k-3" data-tone="success" value="5" max="6" aria-label="Onboarding"></progress>
     </div>
   </article>
 </div>
 ```
 
-```html example label="Sizes" hint="{'Bar thickness scales via '}data-size{' on the '}{''}{' - the default equals '}md."
+```html example label="Sizes" schema="none" hint="{'Bar thickness scales via '}data-size{' on the '}{''}{' - the default equals '}md."
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Extra small</span>
   <progress class="progress flex-1" value="65" max="100" data-size="xs" style="max-width:16rem;"></progress>
@@ -108,20 +231,41 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 ```
 
+```html example label="Right to left" schema="none" hint="The bar fills from the right in dir='rtl', and the two-color inside label clips from the right too."
+<div dir="rtl" lang="ar" class="progress-field" data-label="inside" style="max-width:24rem;">
+  <progress class="progress" id="rtl-p" data-size="lg" value="40" max="100" aria-label="تحميل"></progress>
+  <output class="progress-value" for="rtl-p"></output>
+</div>
+```
+
 <StatesSection>
-  <p class="text-sm text-muted-foreground">Machine contract - verified against <a href="../schemas/progress.schema.json"><code>progress.schema.json</code></a> by <code>bun run verify</code>:</p>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code> (the bar's state name follows its value):</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - determinate: <code>\{ value \}</code> jumps there, <code>\{ value, duration \}</code> glides there linearly (ms), no config restores the authored value; optional <code>\{ max \}</code></li>
+    <li><code>indeterminate</code> - the value removed: the moving sweep for an unknown amount</li>
+    <li><code>complete</code> - value = max (<code>\{ duration \}</code> glides there); <code>progress:completed</code> fires, as it does whenever a value reaches max</li>
+  </ul>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Every change fires <code>progress:change</code> (<code>detail: \{ value, max, percent \}</code>). The same moves are button commands - <code>commandfor="id" command="--reset"</code> (<code>--increment</code>, <code>--decrement</code>, <code>--play</code>, <code>--pause</code>, <code>--complete</code>, <code>--indeterminate</code>) - or <code>progress:&lt;command&gt;</code> events on the bar.</p>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/progress-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a href="../schemas/progress.schema.json"><code>progress.schema.json</code></a> by <code>bun run verify</code>:
 
 ```states
 | State | Type | Values | Default | Description |
 | --- | --- | --- | --- | --- |
-| `value` | `number` | `—` | `66` | Completion percentage (`<progress value>`, 0–max; the bar repaints). |
-| `size` | `enum` | `sm`, `md`, `lg`, `xl` | `"md"` | Bar thickness (display sizes). |
+| `value` | `number` | `—` | `66` | Completion (0–max); set through the State API (`setState('default', { value })`), so the readouts, level and events follow. |
+| `indeterminate` | `boolean` | `true`, `false` | `false` | No value - the moving sweep (`setState('indeterminate')`). |
+| `complete` | `boolean` | `true`, `false` | `false` | Value = max (`setState('complete')`); `progress:completed` fires. |
+| `size` | `enum` | `xs`, `sm`, `md`, `lg`, `xl` | `"md"` | Bar thickness. |
+| `tone` | `enum` | `primary`, `success`, `warning`, `info`, `destructive`, `auto` | `"primary"` | Fill color; `auto` follows the value. |
 ```
 
 </StatesSection>
 
 <SourceFiles component="progress" section="css">
-  <SourceNote for="css">WebKit (Chrome, Safari, Edge)</SourceNote>
+  <SourceNote for="css">WebKit (Chrome, Safari, Edge) and Firefox paint the bar through their own pseudo-elements; both read the same --_fill.</SourceNote>
 </SourceFiles>
+
+<SourceFiles component="progress" section="js" jsTitle="JS" />
 
 </DocPage>
