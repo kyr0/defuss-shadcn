@@ -1,6 +1,6 @@
 ---
 title: "defuss-shadcn - The System in Numbers"
-description: "defuss-shadcn presents itself - the flagship 10-slide deck with the system's real numbers (85 components, 54% CSS-only, 145.5 KiB min+gz): glyph cover, unit dots, gauge, tanks, chart staircase, taxonomy donut, stopwatch, branching route."
+description: "defuss-shadcn presents itself - the flagship 10-slide deck with the system's real numbers (85 components, 54% CSS-only, 145.6 KiB min+gz): glyph cover, unit dots, gauge, tanks, chart staircase, taxonomy donut, stopwatch, branching route."
 slug: "system-in-numbers"
 ---
 
@@ -9,7 +9,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
 <DocPage meta={meta}>
 
 <PageHeader slug="system-in-numbers" title="The System in Numbers" component="presentation">
-  The flagship deck: defuss-shadcn presents itself - 85 components, 54% CSS-only, 145.5 KiB - ten slides with real measurements instead of placeholders.
+  The flagship deck: defuss-shadcn presents itself - 85 components, 54% CSS-only, 145.6 KiB - ten slides with real measurements instead of placeholders.
 </PageHeader>
 
 ```html example label="Design System Report" schema="none" height="26" hint="Ten slides in two-colour discipline (navy / deep blue / white + the five taxonomy data colours). Every slide change is a 14-blade blue curtain from the df$.anim engine (data-anim-in=&quot;blocksIn&quot; on the deck, a colour that shows on navy AND on white), plus a section mini-route, self-drawing SVG glyphs, a typewriter, offset-path trains, liquid tanks, a needle gauge, a taxonomy donut and a stopwatch - slide 6 is the shipped chart component. All numbers are real, measured from dist/stats.json. ← / → to navigate, N for notes, F for fullscreen."
@@ -236,7 +236,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
       <g id="sys-ruler"></g>
     </svg>
     <div class="abs sys-copy">
-      <p class="sys-eyebrow" data-df-entrance="up" style="--df-motion-delay:.2s">defuss-shadcn · v0.9.1</p>
+      <p class="sys-eyebrow" data-df-entrance="up" style="--df-motion-delay:.2s">defuss-shadcn · v0.9.2</p>
       <h1 class="sys-type" id="sys-type">A design system without a framework.</h1>
       <p class="sys-sub" data-df-entrance="up" style="--df-motion-delay:2.3s"><span>The system in numbers</span><b>85 components</b></p>
     </div>
@@ -334,11 +334,11 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
   </section>
   <!-- 6 · System - staircase: the shipped chart component + bouncing ball -->
   <section class="slide" data-slide id="sys-treppe" data-theme="paper" data-sec="1" aria-label="Shipped sizes">
-    <h2 class="abs sys-h-l" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:106px">The whole system:<br>145.5 KiB.</h2>
+    <h2 class="abs sys-h-l" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:106px">The whole system:<br>145.6 KiB.</h2>
     <p class="abs" data-df-entrance="up" style="--df-motion-delay:.4s; left:124px; top:318px; font-size:28px; font-weight:500; margin:0">Minified + gzip - measured from dist/stats.json</p>
-    <div class="chart" id="sys-treppe-chart" role="img" aria-label="Bar chart of shipped sizes: total 145.5 KiB, bundle 102.6 KiB, core 24.2 KiB, 1.7 KiB per component on average" style="position:absolute; left:120px; top:340px; width:1360px; height:440px"></div>
+    <div class="chart" id="sys-treppe-chart" role="img" aria-label="Bar chart of shipped sizes: total 145.6 KiB, bundle 102.6 KiB, core 24.2 KiB, 1.7 KiB per component on average" style="position:absolute; left:120px; top:340px; width:1360px; height:440px"></div>
     <div class="sys-ball" style="offset-path:path('M 320 200 L 320 390 Q 480 290 640 490 Q 800 400 960 615 Q 1120 540 1280 686')"></div>
-    <p class="presentation-note">The whole system weighs 145.5 KiB minified and gzipped - the bundle 102.6, the core 24.2, 1.7 KiB per component on average.</p>
+    <p class="presentation-note">The whole system weighs 145.6 KiB minified and gzipped - the bundle 102.6, the core 24.2, 1.7 KiB per component on average.</p>
   </section>
   <!-- 7 · Components - taxonomy donut in the five class colours -->
   <section class="slide" data-slide id="sys-radar" data-theme="ink" data-sec="3" aria-label="What the system is made of">
@@ -562,7 +562,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
         type: 'bar',
         barWidth: 240,
         barMaxWidth: 240, // the artboard theme caps bars narrower - the ball needs landing room
-        data: [145.5, 102.6, 24.2, {
+        data: [145.6, 102.6, 24.2, {
           value: 1.7,
           // above the ball's final resting place on this tiny bar
           label: { position: 'top', distance: 52, color: '#0A1E4A' },

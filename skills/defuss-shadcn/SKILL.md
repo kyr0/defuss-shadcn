@@ -7,7 +7,7 @@ description: Build UI prototypes and pages with defuss-shadcn - shadcn-style com
      src/documentation/lib/nav.ts, each page's .mdx frontmatter and each component's
      component-skill.md frontmatter) - do not edit by hand; edit a source and rebuild. -->
 
-# defuss-shadcn 0.9.1 - Agent Skill
+# defuss-shadcn 0.9.2 - Agent Skill
 
 85 components (46 CSS-only, 39 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
 
@@ -31,7 +31,7 @@ Everything else in this file is lookup: §2 rules, §3 documentation map (guides
 
 - **Component skills** (markup, variants, sizes, ARIA, states - what every task needs): `references/components/<name>.md`, next to this file in every install. §4 links each one.
 - **Documentation pages** (guides + live examples, MDX) and the shipped **CSS/JS**: two levels up, `../../src/documentation/pages/<page>.mdx` and `../../dist/components/…` - present when the skill came with the package (Claude Code plugin, npm install).
-- **Not there?** (a skills-CLI install copies only this folder): fetch the same path from `https://raw.githubusercontent.com/kyr0/defuss-shadcn/v0.9.1/` + the path without `../../` (this release's tag, raw text), e.g. `https://raw.githubusercontent.com/kyr0/defuss-shadcn/v0.9.1/src/documentation/pages/button.mdx`.
+- **Not there?** (a skills-CLI install copies only this folder): fetch the same path from `https://raw.githubusercontent.com/kyr0/defuss-shadcn/v0.9.2/` + the path without `../../` (this release's tag, raw text), e.g. `https://raw.githubusercontent.com/kyr0/defuss-shadcn/v0.9.2/src/documentation/pages/button.mdx`.
 
 ## 1. Install
 
@@ -67,7 +67,7 @@ import 'defuss-shadcn/dist/components/dialog/dialog.js';  // only interactive co
 
 ### Path B - jsDelivr CDN (standalone HTML prototype, no package manager, no TypeScript)
 
-Copy this skeleton and put component markup inside `<body>`. Replace `@latest` with `@0.9.1` to pin the release.
+Copy this skeleton and put component markup inside `<body>`. Replace `@latest` with `@0.9.2` to pin the release.
 
 ```html
 <!doctype html>
@@ -177,7 +177,7 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
 ### Presentations
 
 - [Deck Gallery](../../src/documentation/pages/presentations.mdx) - 33 presentation decks - the flagship System in Numbers plus 32 ECharts design studies, each a 12-slide English deck on its own topic with its own numbers, animated slide transitions and one morphing chart per deck.
-  - [The System in Numbers](../../src/documentation/pages/system-in-numbers.mdx) - defuss-shadcn presents itself - the flagship 10-slide deck with the system's real numbers (85 components, 54% CSS-only, 145.5 KiB min+gz): glyph cover, unit dots, gauge, tanks, chart staircase, taxonomy donut, stopwatch, branching route.
+  - [The System in Numbers](../../src/documentation/pages/system-in-numbers.mdx) - defuss-shadcn presents itself - the flagship 10-slide deck with the system's real numbers (85 components, 54% CSS-only, 145.6 KiB min+gz): glyph cover, unit dots, gauge, tanks, chart staircase, taxonomy donut, stopwatch, branching route.
   - [Editorial Highlight Bars](../../src/documentation/pages/editorial-highlight-bars.mdx) - Swiss International design language presenting a region’s commuting shift as a 10-slide deck - one highlighted bar, recolored, re-ranked by volume and folded into a mode-share donut on a single morphing chart.
   - [Lollipop Ranking](../../src/documentation/pages/lollipop-ranking.mdx) - Bauhaus Primary Poster design language presenting caffeine by brew method as a 10-slide deck - lollipops that re-rank per 100 ml, burst into a bubble scatter and settle into columns on one morphing chart.
   - [Dumbbell Before/After](../../src/documentation/pages/dumbbell-before-after.mdx) - Financial Broadsheet design language presenting a city’s rent rise 2019–2025 as a 12-slide deck - dumbbells that re-sort by growth, collapse into change bars and split into rent-burden columns on one morphing chart.

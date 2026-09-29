@@ -5,4 +5,4 @@
  * verify's `shared ABI` gate fails the build on drift; bump it with the
  * release whenever the df$.shadcn.shared surface changes incompatibly.
  */
-export const SHARED_ABI = '0.9.1';
+export const SHARED_ABI = '0.9.2';

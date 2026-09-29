@@ -21,7 +21,8 @@
         "feat(shared/keys): { editable } option for global keys + Global Key Commands guide, cleaner focus ring",
         "fix(combobox): aria-expanded mirrors the real popover state after a quick re-open",
         "feat(docs+shared): Global Key Commands guide, shared keys for sidebar/presentation, more shapes"
-      ]
+      ],
+      "hash": "c3db60b"
     },
     {
       "version": "v0.9.1",
