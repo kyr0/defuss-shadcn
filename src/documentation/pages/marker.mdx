@@ -1,0 +1,181 @@
+---
+title: "Marker"
+description: "Marker component - inline status, system notes, bordered rows and labeled separators in a conversation: icons, spinners, a streaming shimmer, tones and link / button markers. CSS only."
+slug: "marker"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="marker" title="Marker" component="marker">
+  The quiet lines between the messages of a conversation: an inline status ("Explored 4 files"), a step in progress with a spinner, streaming "Thinking…" text, a bordered row, or a labeled separator ("Today"). An icon slot and the words - muted, so they never compete with the <DocLink href="bubble.html">bubbles</DocLink>. CSS only, after shadcn/ui's Marker.
+</PageHeader>
+
+<SkillPanel component="marker">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;div class="marker"&gt;</code> - or an <code>&lt;a&gt;</code> / <code>&lt;button&gt;</code> when the row is an action - with a decorative <code>.marker-icon</code> and the <code>.marker-content</code> words; <code>role="status"</code> for progress.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/status_role" title="announced progress"><code>role="status"</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/background-clip" title="the streaming shimmer"><code>background-clip: text</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/::before" title="the separator rules"><code>::before</code> / <code>::after</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="no shimmer sweep"><code>prefers-reduced-motion</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.marker</code>
+    <code>.marker-icon</code>
+    <code>.marker-content</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code> (<code>border</code>, <code>separator</code>), <code>data-orientation="vertical"</code>, <code>data-tone</code> (<code>success</code>, <code>warning</code>, <code>info</code>, <code>destructive</code>, <code>primary</code>), <code>data-size</code> (<code>sm</code>, <code>lg</code>); on the content: <code>data-shimmer</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Marker" schema="none" hint="An icon (decorative - aria-hidden) and the words; muted and sized to its content, so it sits between messages without competing with them."
+<div class="marker">
+  <span class="marker-icon" aria-hidden="true"><i data-lucide="folder-search"></i></span>
+  <span class="marker-content">Explored 4 files</span>
+</div>
+```
+
+```html example label="Variants" schema="none" hint="default - inline; border - a full-width row with a rule under it; separator - a centered label between two rules."
+<div class="flex flex-col gap-4" style="max-width:28rem;">
+  <div class="marker">
+    <span class="marker-icon" aria-hidden="true"><i data-lucide="file-text"></i></span>
+    <span class="marker-content">Read <code>package.json</code></span>
+  </div>
+  <div class="marker" data-variant="border">
+    <span class="marker-icon" aria-hidden="true"><i data-lucide="git-branch"></i></span>
+    <span class="marker-content">Switched to <strong>release-candidate</strong></span>
+  </div>
+  <div class="marker" data-variant="separator"><span class="marker-content">Conversation compacted</span></div>
+</div>
+```
+
+```html example label="Status with a spinner" schema="none" hint="A step in progress: the shipped spinner in the icon slot and role='status', so the change is announced politely."
+<div class="flex flex-col gap-1">
+  <div class="marker" role="status">
+    <span class="marker-icon" aria-hidden="true"><svg class="spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></span>
+    <span class="marker-content">Compacting conversation</span>
+  </div>
+  <div class="marker" role="status">
+    <span class="marker-icon" aria-hidden="true"><svg class="spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></span>
+    <span class="marker-content">Running tests</span>
+  </div>
+</div>
+```
+
+```html example label="Shimmer" schema="none" hint="data-shimmer on the content sweeps a light band across the words - streaming text while a model thinks. Plain muted text under reduced motion."
+<div class="flex flex-col gap-1">
+  <div class="marker" role="status">
+    <span class="marker-icon" aria-hidden="true"><i data-lucide="sparkles"></i></span>
+    <span class="marker-content" data-shimmer>Thinking…</span>
+  </div>
+  <div class="marker" role="status">
+    <span class="marker-icon" aria-hidden="true"><i data-lucide="book-open"></i></span>
+    <span class="marker-content" data-shimmer>Reading 4 files</span>
+  </div>
+</div>
+```
+
+```html example label="Separator" schema="none" hint="A date divider in a thread, with inline status markers under it."
+<div class="flex flex-col gap-2" style="max-width:28rem;">
+  <div class="marker" data-variant="separator"><span class="marker-content">Yesterday</span></div>
+  <div class="marker">
+    <span class="marker-icon" aria-hidden="true"><i data-lucide="check"></i></span>
+    <span class="marker-content">Deployed to staging</span>
+  </div>
+  <div class="marker" data-variant="separator"><span class="marker-content">Today</span></div>
+  <div class="marker">
+    <span class="marker-icon" aria-hidden="true"><i data-lucide="rocket"></i></span>
+    <span class="marker-content">Released <strong>v0.9.3</strong></span>
+  </div>
+</div>
+```
+
+```html example label="Border" schema="none" hint="Bordered rows separate the steps of an agent run - each one full width with a rule under it."
+<div class="flex flex-col" style="max-width:28rem;">
+  <div class="marker" data-variant="border">
+    <span class="marker-icon" aria-hidden="true"><i data-lucide="git-branch"></i></span>
+    <span class="marker-content">Switched to <strong>release-candidate</strong></span>
+  </div>
+  <div class="marker" data-variant="border">
+    <span class="marker-icon" aria-hidden="true"><i data-lucide="file-pen"></i></span>
+    <span class="marker-content">Edited <code>src/routes.ts</code> (+12 −4)</span>
+  </div>
+  <div class="marker" data-variant="border">
+    <span class="marker-icon" aria-hidden="true"><i data-lucide="terminal"></i></span>
+    <span class="marker-content">Ran <code>bun test</code> - 128 passed</span>
+  </div>
+</div>
+```
+
+```html example label="Stacked" schema="none" hint="data-orientation='vertical' puts the icon above the words, centered - an empty state or the start of a thread."
+<div class="marker" data-orientation="vertical" data-size="lg">
+  <span class="marker-icon" aria-hidden="true" style="font-size:1.5rem;"><i data-lucide="messages-square"></i></span>
+  <span class="marker-content">This is the start of your conversation with <strong>Support</strong></span>
+</div>
+```
+
+```html example label="Tones" schema="none" hint="data-tone colors the icon only - success, warning, info, destructive, primary; the words stay quiet and still say what happened."
+<div class="flex flex-col gap-1">
+  <div class="marker" data-tone="success"><span class="marker-icon" aria-hidden="true"><i data-lucide="circle-check"></i></span><span class="marker-content">All checks passed</span></div>
+  <div class="marker" data-tone="warning"><span class="marker-icon" aria-hidden="true"><i data-lucide="triangle-alert"></i></span><span class="marker-content">2 deprecation warnings</span></div>
+  <div class="marker" data-tone="info"><span class="marker-icon" aria-hidden="true"><i data-lucide="info"></i></span><span class="marker-content">Using the cached build</span></div>
+  <div class="marker" data-tone="destructive"><span class="marker-icon" aria-hidden="true"><i data-lucide="circle-x"></i></span><span class="marker-content">Lint failed in 1 file</span></div>
+  <div class="marker" data-tone="primary"><span class="marker-icon" aria-hidden="true"><i data-lucide="star"></i></span><span class="marker-content">Pinned by Olivia</span></div>
+</div>
+```
+
+```html example label="Links and buttons" schema="none" hint="When the marker is an action, render it as a real <a> or <button class='marker'> - focusable, underlined on hover."
+<div class="flex flex-col gap-1">
+  <a class="marker" href="#pull-request">
+    <span class="marker-icon" aria-hidden="true"><i data-lucide="git-pull-request"></i></span>
+    <span class="marker-content">View the pull request</span>
+  </a>
+  <button class="marker" type="button">
+    <span class="marker-icon" aria-hidden="true"><i data-lucide="undo-2"></i></span>
+    <span class="marker-content">Revert this change</span>
+  </button>
+</div>
+```
+
+```html example label="In a conversation" schema="none" hint="Markers between bubbles: the date, what the assistant did, and the reply."
+<div class="flex flex-col gap-3" style="max-width:28rem;">
+  <div class="marker" data-variant="separator"><span class="marker-content">Today</span></div>
+  <div class="bubble" data-align="end"><div class="bubble-content">Can you fix the failing route test?</div></div>
+  <div class="flex flex-col">
+    <div class="marker"><span class="marker-icon" aria-hidden="true"><i data-lucide="folder-search"></i></span><span class="marker-content">Explored 4 files</span></div>
+    <div class="marker"><span class="marker-icon" aria-hidden="true"><i data-lucide="file-pen"></i></span><span class="marker-content">Edited <code>src/routes.ts</code></span></div>
+    <div class="marker" data-tone="success"><span class="marker-icon" aria-hidden="true"><i data-lucide="circle-check"></i></span><span class="marker-content">Tests pass</span></div>
+  </div>
+  <div class="bubble" data-variant="ghost"><div class="bubble-content">Fixed - the route imported a module that was removed. I pointed it at the new one and the suite is green.</div></div>
+</div>
+```
+
+```html example label="Sizes" schema="none" hint="data-size sm · (default) · lg - the icon scales with the words."
+<div class="flex flex-col gap-1">
+  <div class="marker" data-size="sm"><span class="marker-icon" aria-hidden="true"><i data-lucide="clock"></i></span><span class="marker-content">Small - 2 minutes ago</span></div>
+  <div class="marker"><span class="marker-icon" aria-hidden="true"><i data-lucide="clock"></i></span><span class="marker-content">Default - 2 minutes ago</span></div>
+  <div class="marker" data-size="lg"><span class="marker-icon" aria-hidden="true"><i data-lucide="clock"></i></span><span class="marker-content">Large - 2 minutes ago</span></div>
+</div>
+```
+
+```html example label="Right to left" schema="none" hint="Logical throughout - the icon leads on the right in dir='rtl'."
+<div dir="rtl" lang="ar" class="flex flex-col gap-2" style="max-width:28rem;">
+  <div class="marker" data-variant="separator"><span class="marker-content">اليوم</span></div>
+  <div class="marker"><span class="marker-icon" aria-hidden="true"><i data-lucide="check"></i></span><span class="marker-content">تم النشر</span></div>
+</div>
+```
+
+<SourceFiles component="marker" section="css" />
+
+</DocPage>

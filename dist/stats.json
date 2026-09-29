@@ -1,25 +1,25 @@
 {
-  "total": 88,
+  "total": 89,
   "byType": {
-    "ATM": 54,
+    "ATM": 55,
     "MOL": 17,
     "ORG": 2,
     "BLK": 13,
     "TPL": 2
   },
   "withJs": 41,
-  "withoutJs": 47,
-  "totalSize": 1014199,
-  "totalSizeMinified": 472978,
-  "totalSizeGz": 315307,
-  "totalSizeGzMinified": 158502,
+  "withoutJs": 48,
+  "totalSize": 1019077,
+  "totalSizeMinified": 475976,
+  "totalSizeGz": 316858,
+  "totalSizeGzMinified": 159552,
   "bundle": {
     "jsSize": 385887,
     "jsSizeMinified": 216419,
-    "cssSize": 521960,
-    "cssSizeMinified": 287259,
-    "totalSizeGz": 195681,
-    "totalSizeGzMinified": 110461
+    "cssSize": 526888,
+    "cssSizeMinified": 290179,
+    "totalSizeGz": 196695,
+    "totalSizeGzMinified": 110941
   },
   "core": {
     "jsSize": 88008,
@@ -562,6 +562,19 @@
       "totalSizeGzMinified": 353,
       "totalSize": 1609,
       "totalSizeMinified": 734
+    },
+    "marker": {
+      "name": "marker",
+      "type": "ATM",
+      "withJs": false,
+      "jsSize": 0,
+      "jsSizeMinified": 0,
+      "cssSize": 4878,
+      "cssSizeMinified": 2998,
+      "totalSizeGz": 1551,
+      "totalSizeGzMinified": 1050,
+      "totalSize": 4878,
+      "totalSizeMinified": 2998
     },
     "mermaid": {
       "name": "mermaid",

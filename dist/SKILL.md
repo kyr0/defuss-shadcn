@@ -483,6 +483,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/label.png
 **Skill:** [components/label/component-skill.md](components/label/component-skill.md)
 
+## Marker
+
+**Type:** ATM
+**Why:** A small flex row of icon + words is all an inline status needs; separators draw their rules with pseudo-elements, the shimmer is background-clip text, links and buttons are real <a>/<button>.
+**When:** Inline status, system notes and dividers inside a conversation ("Explored 4 files", "Thinking…", "Today", "Conversation compacted"). A message from a person takes bubble; a page-level notice takes alert; a plain rule takes separator.
+**Files:** dist/components/marker/marker.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/marker.png
+**Skill:** [components/marker/component-skill.md](components/marker/component-skill.md)
+
 ## Mermaid
 
 **Type:** ATM

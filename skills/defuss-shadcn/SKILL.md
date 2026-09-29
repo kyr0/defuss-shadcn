@@ -9,7 +9,7 @@ description: Build UI prototypes and pages with defuss-shadcn - shadcn-style com
 
 # defuss-shadcn 0.9.2 - Agent Skill
 
-88 components (47 CSS-only, 41 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
+89 components (48 CSS-only, 41 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
 
 ## 0. Quick start - do exactly this, in this order
 
@@ -178,7 +178,7 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
 ### Presentations
 
 - [Deck Gallery](../../src/documentation/pages/presentations.mdx) - 33 presentation decks - the flagship System in Numbers plus 32 ECharts design studies, each a 12-slide English deck on its own topic with its own numbers, animated slide transitions and one morphing chart per deck.
-  - [The System in Numbers](../../src/documentation/pages/system-in-numbers.mdx) - defuss-shadcn presents itself - the flagship 10-slide deck with the system's real numbers (88 components, 53% CSS-only, 154.8 KiB min+gz): glyph cover, unit dots, gauge, tanks, chart staircase, taxonomy donut, stopwatch, branching route.
+  - [The System in Numbers](../../src/documentation/pages/system-in-numbers.mdx) - defuss-shadcn presents itself - the flagship 10-slide deck with the system's real numbers (89 components, 54% CSS-only, 155.8 KiB min+gz): glyph cover, unit dots, gauge, tanks, chart staircase, taxonomy donut, stopwatch, branching route.
   - [Editorial Highlight Bars](../../src/documentation/pages/editorial-highlight-bars.mdx) - Swiss International design language presenting a region’s commuting shift as a 10-slide deck - one highlighted bar, recolored, re-ranked by volume and folded into a mode-share donut on a single morphing chart.
   - [Lollipop Ranking](../../src/documentation/pages/lollipop-ranking.mdx) - Bauhaus Primary Poster design language presenting caffeine by brew method as a 10-slide deck - lollipops that re-rank per 100 ml, burst into a bubble scatter and settle into columns on one morphing chart.
   - [Dumbbell Before/After](../../src/documentation/pages/dumbbell-before-after.mdx) - Financial Broadsheet design language presenting a city’s rent rise 2019–2025 as a 12-slide deck - dumbbells that re-sort by growth, collapse into change bars and split into rent-burden columns on one morphing chart.
@@ -683,6 +683,12 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **Why:** A chat bubble is a styled block - variants, alignment, groups with tightened corners, tails, overlapped reactions and typing dots are all CSS; interactive bubbles are real `<a>`/`<button>`, collapsible ones a native `<details>`.
 - **When:** The message surface of a chat, assistant reply or comment thread. Avatars, names, timestamps and message actions belong to the message row around it; a system notice across the thread is an alert.
 - **States:** `default` · **Skill:** [references/components/bubble.md](references/components/bubble.md) · **Examples:** [src/documentation/pages/bubble.mdx](../../src/documentation/pages/bubble.mdx)
+
+#### Marker · ATM · CSS
+
+- **Why:** A small flex row of icon + words is all an inline status needs; separators draw their rules with pseudo-elements, the shimmer is background-clip text, links and buttons are real `<a>`/`<button>`.
+- **When:** Inline status, system notes and dividers inside a conversation ("Explored 4 files", "Thinking…", "Today", "Conversation compacted"). A message from a person takes bubble; a page-level notice takes alert; a plain rule takes separator.
+- **States:** `default` · **Skill:** [references/components/marker.md](references/components/marker.md) · **Examples:** [src/documentation/pages/marker.mdx](../../src/documentation/pages/marker.mdx)
 
 ### Presentations
 

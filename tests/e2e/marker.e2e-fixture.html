@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>marker e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/spinner/spinner.css" />
+    <link rel="stylesheet" href="/dist/components/marker/marker.css" />
+  </head>
+  <body style="margin:0;padding:1.5rem;font-family:system-ui;">
+    <!-- mirrors the doc page: default, border, separator, spinner status,
+         shimmer, stacked, tones, link / button, sizes, RTL -->
+    <div id="col" style="width:400px;display:flex;flex-direction:column;">
+      <div class="marker" id="m-default"><span class="marker-icon" id="m-default-i" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24"><circle cx="12" cy="12" r="9"/></svg></span><span class="marker-content" id="m-default-c">Explored 4 files <code id="m-code">a.ts</code></span></div>
+      <div class="marker" id="m-default-explicit" data-variant="default"><span class="marker-content">Explicit default</span></div>
+      <div class="marker" id="m-border" data-variant="border"><span class="marker-content">Switched branch</span></div>
+      <div class="marker" id="m-sep" data-variant="separator"><span class="marker-content" id="m-sep-c">Today</span></div>
+      <div class="marker" id="m-status" role="status"><span class="marker-icon" aria-hidden="true"><svg class="spinner" id="m-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></span><span class="marker-content">Running tests</span></div>
+      <div class="marker" id="m-shimmer"><span class="marker-content" id="m-shimmer-c" data-shimmer>Thinking…</span></div>
+      <div class="marker" id="m-stack" data-orientation="vertical"><span class="marker-icon" id="m-stack-i" aria-hidden="true">★</span><span class="marker-content" id="m-stack-c">Start of the conversation</span></div>
+      <div class="marker" id="t-success" data-tone="success"><span class="marker-icon" aria-hidden="true">●</span><span class="marker-content">ok</span></div>
+      <div class="marker" id="t-warning" data-tone="warning"><span class="marker-icon" aria-hidden="true">●</span><span class="marker-content">warn</span></div>
+      <div class="marker" id="t-info" data-tone="info"><span class="marker-icon" aria-hidden="true">●</span><span class="marker-content">info</span></div>
+      <div class="marker" id="t-destructive" data-tone="destructive"><span class="marker-icon" aria-hidden="true">●</span><span class="marker-content">fail</span></div>
+      <div class="marker" id="t-primary" data-tone="primary"><span class="marker-icon" aria-hidden="true">●</span><span class="marker-content">pinned</span></div>
+      <a class="marker" id="m-link" href="#pr"><span class="marker-content" id="m-link-c">View the pull request</span></a>
+      <button class="marker" id="m-button" type="button"><span class="marker-content">Revert this change</span></button>
+      <div class="marker" id="s-sm" data-size="sm"><span class="marker-content">sm</span></div>
+      <div class="marker" id="s-lg" data-size="lg"><span class="marker-content">lg</span></div>
+    </div>
+    <div dir="rtl" style="width:400px;"><div class="marker" id="m-rtl"><span class="marker-icon" id="m-rtl-i" aria-hidden="true">●</span><span class="marker-content" id="m-rtl-c">اليوم</span></div></div>
+  </body>
+</html>
