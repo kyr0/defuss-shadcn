@@ -1,6 +1,29 @@
 {
   "entries": [
     {
+      "version": "v0.9.2",
+      "date": "September 29, 2026",
+      "commits": [
+        "feat: daisyUI parity wave - Dock, FAB, Diff, Countdown, Text Rotate, Navbar, Indicator, Mermaid + richer tables, trees, toasts, accordions",
+        "feat(dock): new Navigation component - bottom / top / left / right docks, floating pill, badges and dots, raised FAB action with a semicircle speed dial, macOS magnify, autohide, CSS-only card views (.dock-view, card dock-view)",
+        "feat(fab): new Actions component - speed dial up/down/left/right, flower + centered semicircle, extended FAB that shrinks on scroll; X and every action close it",
+        "feat(diff, countdown, text-rotate, indicator, navbar): new components after daisyUI - image/text diff with real photos, CSS countdown digits, rotating words, indicators, responsive navbar with megamenu",
+        "feat(mermaid): diagrams render without a flash of raw markup",
+        "feat(table): sorters, select-all checkboxes, drag-reorderable rows, locked columns + header, cell alignment, action columns (mobile friendly, dropdown), dense layout, empty state",
+        "feat(tree-view): checkboxes and drag &amp; drop re-sorting",
+        "feat(collapsible, accordion): color / bold / icon / emoji / custom-marker variants and sizes",
+        "feat(button): custom colors, frames, aura, emojis, LTR/RTL examples",
+        "feat(typography): Chinese punctuation alignment and Japanese vertical (tate-chu-yoko, ruby) text",
+        "feat(slider, file-input): colors, emoji/icon/unit labels, range slider; drag &amp; drop card, multi-file and type-filtered selection",
+        "feat(image): hover gallery with preloaded, instantly switched images",
+        "feat(toast): pile / list stacks, in / out animations, aura",
+        "feat(breadcrumb, sidebar, docs): icons and emojis per item, activity dots, icons for the docs nav sections",
+        "feat(shared/keys): { editable } option for global keys + Global Key Commands guide, cleaner focus ring",
+        "fix(combobox): aria-expanded mirrors the real popover state after a quick re-open",
+        "feat(docs+shared): Global Key Commands guide, shared keys for sidebar/presentation, more shapes"
+      ]
+    },
+    {
       "version": "v0.9.1",
       "date": "September 28, 2026",
       "commits": [
