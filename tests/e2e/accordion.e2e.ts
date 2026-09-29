@@ -233,6 +233,60 @@ try {
     const val = await page.$eval('#acc-spacious .accordion-trigger', (el) => getComputedStyle(el).paddingTop);
     assert.equal(val, '20px');
   });
+  await check('surfaces: bordered box, separated cards, muted / primary / neutral fills, highlight on open, ghost without dividers', async () => {
+    const r = await page.evaluate(() => {
+      const cs = (s: string) => getComputedStyle(document.querySelector(s)!);
+      return {
+        bordered: [cs('#av-bordered').borderTopWidth, cs('#av-bordered').overflow],
+        sep: [cs('#av-sep').rowGap, cs('#s2').borderTopWidth, cs('#s2').borderTopLeftRadius],
+        fills: ['#m1', '#p1', '#n1'].map((s) => cs(s).backgroundColor),
+        primaryText: [cs('#p1 .accordion-trigger').color, cs('#p1').color],
+        hl: [cs('#h1').backgroundColor, cs('#h2').backgroundColor, cs('#p1').backgroundColor],
+        ghost: cs('#g1').borderBottomColor,
+        pad: cs('#s1 .accordion-trigger').paddingInlineStart,
+      };
+    });
+    assert.deepEqual(r.bordered, ['1px', 'hidden']);
+    assert.equal(r.sep[0], '8px'); assert.equal(r.sep[1], '1px'); assert.notEqual(r.sep[2], '0px');
+    assert.equal(new Set(r.fills).size, 3, r.fills.join(' | '));
+    assert.equal(r.primaryText[0], r.primaryText[1], 'the heading inherits the surface text');
+    assert.equal(r.hl[0], 'rgba(0, 0, 0, 0)'); assert.equal(r.hl[1], r.hl[2], 'the open item is primary');
+    assert.equal(r.ghost, 'rgba(0, 0, 0, 0)');
+    assert.equal(r.pad, '16px', 'boxed variants inset the text');
+  });
+
+  await check('sizes: headings 13 / 15 / 17 semibold / 20px bold; icon box before the text', async () => {
+    const r = await page.evaluate(() => ({
+      sizes: ['sm', 'md', 'lg', 'xl'].map((s) => { const c = getComputedStyle(document.querySelector(`#as-${s} .accordion-trigger`)!); return `${c.fontSize}/${c.fontWeight}`; }),
+      icon: (() => { const i = document.getElementById('acc-icon')!.getBoundingClientRect(); const t = document.getElementById('acc-icon-t')!.getBoundingClientRect(); return [Math.abs(i.width - i.height) < 0.5, Math.round(t.left - i.right)]; })(),
+    }));
+    assert.deepEqual(r.sizes, ['13px/500', '15px/500', '17px/600', '20px/700']);
+    assert.deepEqual(r.icon, [true, 8]);
+  });
+
+  await check('markers: arrow turns (45° → -135°), plus loses its bar when open, start position puts it first', async () => {
+    const r = await page.evaluate(() => {
+      const a = (s: string) => getComputedStyle(document.querySelector(`${s} > .accordion-trigger`)!, '::after');
+      return { arrow: [a('#ar1').rotate, a('#ar2').rotate], plus: [a('#pl1').backgroundSize, a('#pl2').backgroundSize], order: a('#pl1').order };
+    });
+    assert.deepEqual(r.arrow, ['45deg', '-135deg']);
+    assert.ok(r.plus[0].endsWith('2px 100%') && r.plus[1].endsWith('2px 0px'), r.plus.join(' | '));
+    assert.equal(r.order, '-1');
+  });
+
+  await check('custom colors flow into heading and content; swap glyphs; quarter turn; RTL icon on the right', async () => {
+    const r = await page.evaluate(() => {
+      const cs = (s: string) => getComputedStyle(document.querySelector(s)!);
+      const ri = document.getElementById('rtl-icon')!.getBoundingClientRect(); const rt = document.getElementById('rtl-t')!.getBoundingClientRect();
+      return { trig: cs('#cu1 .accordion-trigger').color, content: cs('#cu1 .accordion-content').color, swap: [cs('#sw1 .accordion-when-closed').display, cs('#sw1 .accordion-when-open').display], q: cs('#q-chev').transform, rtl: ri.left > rt.left };
+    });
+    assert.equal(r.trig, 'rgb(200, 220, 240)');
+    assert.notEqual(r.content, r.trig);
+    assert.equal(r.swap[1], 'none'); assert.notEqual(r.swap[0], 'none');
+    assert.equal(r.q, 'matrix(0, 1, -1, 0, 0, 0)');
+    assert.ok(r.rtl);
+  });
+
 } finally {
   await browser.close();
   server.stop();

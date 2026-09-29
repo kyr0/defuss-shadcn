@@ -1,0 +1,263 @@
+/* -- Navbar component --------------------------------------------- */
+
+@layer components {
+  /* An app bar: .navbar-start / .navbar-center / .navbar-end regions (start
+     and end share the free space equally, so the center stays truly
+     centered), a .navbar-brand, a .navbar-menu of links (with <details>
+     submenus), and any component inside - buttons, inputs, dropdowns,
+     avatars, indicators. Responsive collapse is native: the collapsible
+     part is a popover (.navbar-collapse[popover]) shown INLINE from the
+     data-collapse breakpoint up and opened by a .navbar-toggle below it - one
+     menu in the markup, no JavaScript. anchor-scope keeps each navbar's
+     toggle anchor to itself. */
+  .navbar {
+    --_h: 3.5rem;
+    anchor-scope: --navbar-toggle;
+    box-sizing: border-box; /* the size IS the bar height */
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: var(--_h);
+    padding: 0.5rem 1rem;
+    background-color: var(--background);
+    color: var(--foreground);
+    border-bottom: 1px solid var(--border);
+
+    /* -- Sizes -------------------------------------------------------- */
+    &[data-size="sm"] { --_h: 3rem; padding-block: 0.25rem; }
+    &[data-size="md"] { --_h: 3.5rem; }
+    &[data-size="lg"] { --_h: 4.5rem; padding-block: 0.75rem; }
+
+    /* -- Variants ------------------------------------------------------ */
+    &[data-variant="muted"] { background-color: var(--muted); border-color: transparent; }
+    &[data-variant="primary"] { background-color: var(--primary); color: var(--primary-foreground); border-color: transparent; }
+    /* a charcoal bar (like the neutral card): the inverse colors, softened */
+    &[data-variant="neutral"] { background-color: color-mix(in oklch, var(--foreground) 78%, var(--background)); color: var(--background); border-color: transparent; }
+    &[data-variant="ghost"] { background-color: transparent; border-color: transparent; }
+    &[data-variant="glass"] {
+      background-color: color-mix(in oklch, var(--background) 62%, transparent);
+      border-color: color-mix(in oklch, var(--foreground) 12%, transparent);
+      backdrop-filter: blur(14px) saturate(1.4);
+    }
+    /* a floating pill: rounded, bordered all round, a shadow - put it inside
+       a padded container */
+    &[data-variant="floating"] {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-md);
+    }
+
+    /* -- Position ------------------------------------------------------ */
+    &[data-position="sticky"] { position: sticky; top: 0; z-index: 40; }
+
+    /* ghost / link buttons on a colored bar take its text color */
+    &:is([data-variant="primary"], [data-variant="neutral"]) .btn:is([data-variant="ghost"], [data-variant="link"]) {
+      color: inherit;
+
+      &:hover { background-color: color-mix(in oklch, currentColor 16%, transparent); color: inherit; }
+    }
+  }
+
+  .navbar-start,
+  .navbar-end {
+    flex: 1 1 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+  .navbar-end { justify-content: flex-end; }
+  .navbar-center {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* -- Brand ------------------------------------------------------------ */
+  .navbar-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-md);
+    color: inherit;
+    font-size: 1.0625rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    white-space: nowrap;
+
+    & :is(img, svg) { height: 1.5rem; width: auto; }
+    &:is(a):hover { background-color: color-mix(in oklch, currentColor 8%, transparent); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  }
+
+  /* -- Menu ------------------------------------------------------------- */
+  .navbar-menu {
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    & :is(a, summary) {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.375rem 0.75rem;
+      border-radius: var(--radius-md);
+      color: color-mix(in oklch, currentColor 72%, transparent);
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-decoration: none;
+      white-space: nowrap;
+      cursor: pointer;
+      list-style: none;
+
+      &:hover { color: inherit; background-color: color-mix(in oklch, currentColor 8%, transparent); }
+      &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+      & svg { width: 1rem; height: 1rem; }
+    }
+    & :is(a, summary):hover { color: currentColor; }
+    & a[aria-current="page"] {
+      color: inherit;
+      background-color: color-mix(in oklch, currentColor 10%, transparent);
+    }
+
+    /* a submenu: <details><summary>…</summary><ul>…</ul></details> - the
+       chevron turns when open; the list drops below as a small popover-like
+       panel. <details name="…"> keeps one open at a time. */
+    & details { position: relative; }
+    & summary::-webkit-details-marker { display: none; }
+    & summary::after {
+      content: '';
+      width: 0.375rem;
+      height: 0.375rem;
+      margin-inline-start: 0.125rem;
+      border-right: 1.5px solid currentColor;
+      border-bottom: 1.5px solid currentColor;
+      rotate: 45deg;
+      translate: 0 -0.125rem;
+      transition: rotate 150ms ease;
+    }
+    & details[open] > summary::after { rotate: -135deg; translate: 0 0.0625rem; }
+    & details > ul {
+      position: absolute;
+      top: calc(100% + 0.375rem);
+      left: 0;
+      z-index: 50;
+      display: grid;
+      gap: 0.125rem;
+      min-width: 11rem;
+      margin: 0;
+      padding: 0.25rem;
+      list-style: none;
+      background-color: var(--popover);
+      color: var(--popover-foreground);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+    }
+  }
+
+  /* -- Responsive collapse ------------------------------------------------
+     .navbar-collapse[popover] renders INLINE (the UA's popover styles are
+     reset) unless its navbar collapses at the current width - then it is a
+     real popover, anchored under the .navbar-toggle. */
+  .navbar-toggle {
+    anchor-name: --navbar-toggle;
+    display: none;
+  }
+  .navbar-collapse[popover] {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: static;
+    inset: auto;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    border: 0;
+    background: none;
+    color: inherit;
+  }
+
+  /* shared: the collapsed state (inside a media query per breakpoint) */
+  .navbar[data-collapse="always"] {
+    & .navbar-toggle { display: inline-flex; }
+    & .navbar-collapse[popover]:not(:popover-open) { display: none; }
+    & .navbar-collapse[popover]:popover-open {
+      position: fixed;
+      position-anchor: --navbar-toggle;
+      inset: auto;
+      top: anchor(bottom);
+      left: anchor(left);
+      position-try-fallbacks: flip-inline;
+      display: grid;
+      align-items: stretch;
+      min-width: 14rem;
+      margin: 0.5rem 0 0;
+      padding: 0.375rem;
+      background-color: var(--popover);
+      color: var(--popover-foreground);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+
+      & .navbar-menu { flex-direction: column; align-items: stretch; }
+      & .navbar-menu details > ul { position: static; box-shadow: none; border: 0; padding: 0 0 0 0.75rem; }
+    }
+  }
+  @media (max-width: 39.99rem) {
+    .navbar[data-collapse="sm"] {
+      & .navbar-toggle { display: inline-flex; }
+      & .navbar-collapse[popover]:not(:popover-open) { display: none; }
+      & .navbar-collapse[popover]:popover-open {
+        position: fixed; position-anchor: --navbar-toggle; inset: auto; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-inline;
+        display: grid; align-items: stretch; min-width: 14rem; margin: 0.5rem 0 0; padding: 0.375rem;
+        background-color: var(--popover); color: var(--popover-foreground); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+        & .navbar-menu { flex-direction: column; align-items: stretch; }
+        & .navbar-menu details > ul { position: static; box-shadow: none; border: 0; padding: 0 0 0 0.75rem; }
+      }
+    }
+  }
+  @media (max-width: 47.99rem) {
+    .navbar[data-collapse="md"] {
+      & .navbar-toggle { display: inline-flex; }
+      & .navbar-collapse[popover]:not(:popover-open) { display: none; }
+      & .navbar-collapse[popover]:popover-open {
+        position: fixed; position-anchor: --navbar-toggle; inset: auto; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-inline;
+        display: grid; align-items: stretch; min-width: 14rem; margin: 0.5rem 0 0; padding: 0.375rem;
+        background-color: var(--popover); color: var(--popover-foreground); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+        & .navbar-menu { flex-direction: column; align-items: stretch; }
+        & .navbar-menu details > ul { position: static; box-shadow: none; border: 0; padding: 0 0 0 0.75rem; }
+      }
+    }
+  }
+  @media (max-width: 63.99rem) {
+    .navbar[data-collapse="lg"] {
+      & .navbar-toggle { display: inline-flex; }
+      & .navbar-collapse[popover]:not(:popover-open) { display: none; }
+      & .navbar-collapse[popover]:popover-open {
+        position: fixed; position-anchor: --navbar-toggle; inset: auto; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-inline;
+        display: grid; align-items: stretch; min-width: 14rem; margin: 0.5rem 0 0; padding: 0.375rem;
+        background-color: var(--popover); color: var(--popover-foreground); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+        & .navbar-menu { flex-direction: column; align-items: stretch; }
+        & .navbar-menu details > ul { position: static; box-shadow: none; border: 0; padding: 0 0 0 0.75rem; }
+      }
+    }
+  }
+
+  /* -- Accessibility -------------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .navbar-menu summary::after { transition: none; }
+  }
+  @media (forced-colors: active) {
+    .navbar { border-bottom: 1px solid CanvasText; }
+    .navbar-menu a[aria-current="page"] { outline: 1px solid Highlight; }
+  }
+}

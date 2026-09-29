@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>navbar e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/navbar/navbar.css" />
+  </head>
+  <body style="margin:0;padding:1rem;">
+    <!-- mirrors the doc page: regions, brand, menu + submenu, variants, sizes,
+         sticky, responsive collapse (lg) twice (anchor-scope), always -->
+    <nav class="navbar" id="nb" aria-label="Main">
+      <div class="navbar-start" id="nb-start"><a class="navbar-brand" id="nb-brand" href="#a">Acme</a></div>
+      <div class="navbar-center" id="nb-center"><span id="nb-mid">MID</span></div>
+      <div class="navbar-end" id="nb-end"><button id="nb-btn">b</button></div>
+    </nav>
+    <nav class="navbar" id="nb-menu" aria-label="Menu example" style="margin-top:1rem;">
+      <div class="navbar-end">
+        <ul class="navbar-menu">
+          <li><a href="#d" id="nb-current" aria-current="page">Docs</a></li>
+          <li><a href="#p" id="nb-link">Pricing</a></li>
+          <li><details name="nb" id="nb-details"><summary id="nb-summary">Products</summary><ul id="nb-sub"><li><a href="#c">Cloud</a></li></ul></details></li>
+        </ul>
+      </div>
+    </nav>
+    <nav class="navbar" id="nb-muted" data-variant="muted" aria-label="m"><span>m</span></nav>
+    <nav class="navbar" id="nb-primary" data-variant="primary" aria-label="p"><span>p</span><button class="btn" data-variant="link" id="nb-primary-link">More</button></nav>
+    <nav class="navbar" id="nb-neutral" data-variant="neutral" aria-label="n"><span>n</span></nav>
+    <nav class="navbar" id="nb-ghost" data-variant="ghost" aria-label="g"><span>g</span></nav>
+    <nav class="navbar" id="nb-glass" data-variant="glass" aria-label="gl"><span>gl</span></nav>
+    <nav class="navbar" id="nb-floating" data-variant="floating" aria-label="f"><span>f</span></nav>
+    <nav class="navbar" id="nb-sm" data-size="sm" aria-label="s"><span>s</span></nav>
+    <nav class="navbar" id="nb-md" data-size="md" aria-label="md"><span>md</span></nav>
+    <nav class="navbar" id="nb-lg" data-size="lg" aria-label="l"><span>l</span></nav>
+    <div id="nb-scroller" style="height:120px;overflow:auto;margin-top:1rem;">
+      <nav class="navbar" id="nb-sticky" data-position="sticky" aria-label="st"><span>sticky</span></nav>
+      <div style="height:600px;"></div>
+    </div>
+    <nav class="navbar" id="nb-resp" data-collapse="lg" aria-label="Responsive" style="margin-top:1rem;">
+      <div class="navbar-start"><button class="navbar-toggle" id="nb-resp-toggle" popovertarget="nb-resp-menu" aria-label="Menu">≡</button><a class="navbar-brand" href="#r">R</a></div>
+      <div class="navbar-center"><div class="navbar-collapse" id="nb-resp-menu" popover><ul class="navbar-menu" id="nb-resp-list"><li><a href="#1">One</a></li><li><a href="#2">Two</a></li></ul></div></div>
+      <div class="navbar-end"></div>
+    </nav>
+    <nav class="navbar" id="nb-resp2" data-collapse="lg" aria-label="Responsive 2" style="margin-top:6rem;padding-left:18rem;">
+      <div class="navbar-start"><button class="navbar-toggle" id="nb-resp2-toggle" popovertarget="nb-resp2-menu" aria-label="Menu">≡</button></div>
+      <div class="navbar-center"><div class="navbar-collapse" id="nb-resp2-menu" popover><ul class="navbar-menu"><li><a href="#3">Three</a></li></ul></div></div>
+    </nav>
+    <nav class="navbar" id="nb-always" data-collapse="always" aria-label="Always" style="margin-top:6rem;">
+      <button class="navbar-toggle" id="nb-always-toggle" popovertarget="nb-always-menu" aria-label="Menu">≡</button>
+      <div class="navbar-collapse" id="nb-always-menu" popover><ul class="navbar-menu"><li><a href="#4">Four</a></li></ul></div>
+    </nav>
+    <nav class="navbar" id="nb-sm-c" data-collapse="sm" aria-label="c-sm"><button class="navbar-toggle" id="nb-sm-c-t" popovertarget="nb-sm-c-m">≡</button><div class="navbar-collapse" id="nb-sm-c-m" popover>x</div></nav>
+    <nav class="navbar" id="nb-md-c" data-collapse="md" aria-label="c-md"><button class="navbar-toggle" id="nb-md-c-t" popovertarget="nb-md-c-m">≡</button><div class="navbar-collapse" id="nb-md-c-m" popover>x</div></nav>
+  </body>
+</html>

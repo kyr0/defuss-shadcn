@@ -110,9 +110,30 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 ```html example label="With Footer" hint="Table with a summary footer row."
 <table class="table">
-  <caption class="table-caption">Recent invoices</caption>
-  <thead>...</thead>
-  <tbody>...</tbody>
+  <thead>
+    <tr class="table-row">
+      <th class="table-head">Invoice</th>
+      <th class="table-head">Status</th>
+      <th class="table-head" style="text-align:right">Amount</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="table-row">
+      <td class="table-cell">INV001</td>
+      <td class="table-cell">Paid</td>
+      <td class="table-cell" style="text-align:right">$250.00</td>
+    </tr>
+    <tr class="table-row">
+      <td class="table-cell">INV002</td>
+      <td class="table-cell">Pending</td>
+      <td class="table-cell" style="text-align:right">$150.00</td>
+    </tr>
+    <tr class="table-row">
+      <td class="table-cell">INV003</td>
+      <td class="table-cell">Paid</td>
+      <td class="table-cell" style="text-align:right">$350.00</td>
+    </tr>
+  </tbody>
   <tfoot>
     <tr class="table-row">
       <td class="table-cell" colspan="2">Total</td>
@@ -120,6 +141,213 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     </tr>
   </tfoot>
 </table>
+```
+
+```html example label="Empty state" hint="A table with no rows keeps its header and shows one .table-empty cell spanning every column (colspan) - an icon, a line of text, an optional action - instead of an empty box."
+<div class="table-container" style="max-width:44rem;">
+  <table class="table" aria-label="Recent invoices">
+    <thead>
+      <tr class="table-row">
+        <th class="table-head" scope="col">Invoice</th>
+        <th class="table-head" scope="col">Customer</th>
+        <th class="table-head" scope="col">Status</th>
+        <th class="table-head" scope="col" data-numeric>Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="table-row">
+        <td class="table-cell table-empty" colspan="4">
+          <span class="table-empty-icon" aria-hidden="true"><i data-lucide="receipt"></i></span>
+          <strong>No recent invoices</strong>
+          <span class="table-sub">Invoices you send will show up here.</span>
+          <button class="btn" data-size="sm"><i data-lucide="plus"></i> New invoice</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+```
+
+```html example label="Sortable columns" hint="A .table-sort button in a header makes the column sortable: click for ascending, again for descending, a third time for the authored order. aria-sort on the th draws the arrow and tells screen readers. Text sorts with Intl.Collator (numeric: item 2 before item 10); data-sort-value gives formatted cells a raw key (amounts, dates)."
+<div class="table-container" style="max-width:44rem;">
+  <table class="table" data-density="compact" aria-label="Team">
+    <thead><tr class="table-row"><th class="table-head" scope="col"><button class="table-sort" type="button">Name</button></th><th class="table-head" scope="col"><button class="table-sort" type="button">Role</button></th><th class="table-head" scope="col"><button class="table-sort" type="button">Joined</button></th><th class="table-head" scope="col" data-numeric><button class="table-sort" type="button">Spend</button></th></tr></thead>
+    <tbody>
+      <tr class="table-row"><td class="table-cell">Olivia Martin</td><td class="table-cell">Owner</td><td class="table-cell" data-sort-value="2026-03-14">Mar 14, 2026</td><td class="table-cell" data-numeric data-sort-value="1999">€1,999.00</td></tr>
+      <tr class="table-row"><td class="table-cell">Jackson Lee</td><td class="table-cell">Developer</td><td class="table-cell" data-sort-value="2026-05-02">May 2, 2026</td><td class="table-cell" data-numeric data-sort-value="39">€39.00</td></tr>
+      <tr class="table-row"><td class="table-cell">Isabella Nguyen</td><td class="table-cell">Designer</td><td class="table-cell" data-sort-value="2025-11-20">Nov 20, 2025</td><td class="table-cell" data-numeric data-sort-value="299">€299.00</td></tr>
+      <tr class="table-row"><td class="table-cell">William Kim</td><td class="table-cell">Developer</td><td class="table-cell" data-sort-value="2026-01-08">Jan 8, 2026</td><td class="table-cell" data-numeric data-sort-value="99">€99.00</td></tr>
+      <tr class="table-row"><td class="table-cell">Sofia Davis</td><td class="table-cell">Analyst</td><td class="table-cell" data-sort-value="2025-09-30">Sep 30, 2025</td><td class="table-cell" data-numeric data-sort-value="450">€450.00</td></tr>
+    </tbody>
+  </table>
+</div>
+```
+
+```html example label="Selectable rows" hint="A leading .table-select column of checkboxes; the one in the header selects all - it shows the dash when only some rows are chosen. Shift+click selects a range. Selected rows carry aria-selected and a tint; every change fires table-select."
+<div class="table-container" style="max-width:44rem;">
+  <table class="table" id="sel-table" aria-label="Invoices">
+    <thead><tr class="table-row"><th class="table-head table-select" scope="col"><input type="checkbox" class="checkbox" aria-label="Select all"></th><th class="table-head" scope="col">Invoice</th><th class="table-head" scope="col">Customer</th><th class="table-head" scope="col" data-numeric>Amount</th></tr></thead>
+    <tbody>
+      <tr class="table-row"><td class="table-cell table-select"><input type="checkbox" class="checkbox" aria-label="Select INV-001"></td><td class="table-cell"><span class="table-mono">INV-001</span></td><td class="table-cell">Acme Corp</td><td class="table-cell" data-numeric>€1,200.00</td></tr>
+      <tr class="table-row"><td class="table-cell table-select"><input type="checkbox" class="checkbox" aria-label="Select INV-002"></td><td class="table-cell"><span class="table-mono">INV-002</span></td><td class="table-cell">Globex</td><td class="table-cell" data-numeric>€380.00</td></tr>
+      <tr class="table-row"><td class="table-cell table-select"><input type="checkbox" class="checkbox" aria-label="Select INV-003"></td><td class="table-cell"><span class="table-mono">INV-003</span></td><td class="table-cell">Initech</td><td class="table-cell" data-numeric>€2,450.00</td></tr>
+      <tr class="table-row"><td class="table-cell table-select"><input type="checkbox" class="checkbox" aria-label="Select INV-004"></td><td class="table-cell"><span class="table-mono">INV-004</span></td><td class="table-cell">Umbrella</td><td class="table-cell" data-numeric>€90.00</td></tr>
+      <tr class="table-row"><td class="table-cell table-select"><input type="checkbox" class="checkbox" aria-label="Select INV-005"></td><td class="table-cell"><span class="table-mono">INV-005</span></td><td class="table-cell">Hooli</td><td class="table-cell" data-numeric>€760.00</td></tr>
+    </tbody>
+  </table>
+</div>
+<p class="text-sm text-muted-foreground" style="margin:0.75rem 0 0;"><output id="sel-count">0</output> selected</p>
+<script>
+  document.getElementById('sel-table').addEventListener('table-select', (e) => {
+    document.getElementById('sel-count').value = e.detail.count;
+  });
+</script>
+```
+
+```html example label="Reorderable rows" hint="A .table-handle grip column: drag a row by its grip - a line shows where it lands. From the keyboard, Alt+ArrowUp / Alt+ArrowDown moves the focused row. Every move fires table-reorder."
+<div class="table-container" style="max-width:36rem;">
+  <table class="table" id="prio-table" aria-label="Priorities">
+    <thead><tr class="table-row"><th class="table-head table-handle" scope="col"><span class="sr-only">Order</span></th><th class="table-head" scope="col">Priority</th><th class="table-head" scope="col">Owner</th><th class="table-head" scope="col">Due</th></tr></thead>
+    <tbody>
+      <tr class="table-row"><td class="table-cell table-handle"><button type="button" aria-label="Move row (Alt+Arrow keys)"><i data-lucide="grip-vertical"></i></button></td><td class="table-cell">Ship the release</td><td class="table-cell"><span class="table-muted">Olivia</span></td><td class="table-cell">Fri</td></tr>
+      <tr class="table-row"><td class="table-cell table-handle"><button type="button" aria-label="Move row (Alt+Arrow keys)"><i data-lucide="grip-vertical"></i></button></td><td class="table-cell">Fix the login bug</td><td class="table-cell"><span class="table-muted">Jackson</span></td><td class="table-cell">Today</td></tr>
+      <tr class="table-row"><td class="table-cell table-handle"><button type="button" aria-label="Move row (Alt+Arrow keys)"><i data-lucide="grip-vertical"></i></button></td><td class="table-cell">Write the changelog</td><td class="table-cell"><span class="table-muted">Sofia</span></td><td class="table-cell">Thu</td></tr>
+      <tr class="table-row"><td class="table-cell table-handle"><button type="button" aria-label="Move row (Alt+Arrow keys)"><i data-lucide="grip-vertical"></i></button></td><td class="table-cell">Plan the next sprint</td><td class="table-cell"><span class="table-muted">William</span></td><td class="table-cell">Mon</td></tr>
+    </tbody>
+  </table>
+</div>
+<p class="text-sm text-muted-foreground" style="margin:0.75rem 0 0;">Order: <output id="prio-out">Ship the release, Fix the login bug, Write the changelog, Plan the next sprint</output></p>
+<script>
+  document.getElementById('prio-table').addEventListener('table-reorder', (e) => {
+    document.getElementById('prio-out').value = [...e.currentTarget.tBodies[0].rows].map((r) => r.cells[1].textContent).join(', ');
+  });
+</script>
+```
+
+```html example label="Alignment" hint="data-align on a th / td - start, center, end (logical: they flip in RTL); data-numeric right-aligns tabular figures so digits line up; data-valign='top' pins a cell to the top of a tall row."
+<div class="table-container" style="max-width:44rem;">
+  <table class="table" aria-label="Alignment">
+    <thead><tr class="table-row"><th class="table-head" scope="col">Start (default)</th><th class="table-head" scope="col" data-align="center">Center</th><th class="table-head" scope="col" data-align="end">End</th><th class="table-head" scope="col" data-numeric>Numeric</th></tr></thead>
+    <tbody>
+      <tr class="table-row"><td class="table-cell">Wireless headphones<span class="table-sub">Two lines make the row tall</span></td><td class="table-cell" data-align="center"><span class="badge" data-variant="secondary">In stock</span></td><td class="table-cell" data-align="end">2 days</td><td class="table-cell" data-numeric>1,249.00</td></tr>
+      <tr class="table-row"><td class="table-cell">Charging case</td><td class="table-cell" data-align="center"><span class="badge" data-variant="outline">Pre-order</span></td><td class="table-cell" data-align="end">3 weeks</td><td class="table-cell" data-numeric>89.50</td></tr>
+      <tr class="table-row"><td class="table-cell" data-valign="top">Ear tips (top-aligned)</td><td class="table-cell" data-align="center"><span class="badge">New</span></td><td class="table-cell" data-align="end">Tomorrow</td><td class="table-cell" data-numeric>7.99</td></tr>
+    </tbody>
+  </table>
+</div>
+```
+
+```html example label="Locked columns and header" hint="data-lock-start='2' keeps the checkbox and the region in view while the container scrolls sideways; data-lock-end='1' keeps the Actions dropdown (a .table-menu popover per row); data-sticky-header keeps the header while it scrolls down (the container has a max-height). Scroll both ways."
+<div class="table-container" style="max-width:36rem;max-height:15rem;">
+  <table class="table" data-density="compact" data-lock-start="2" data-lock-end="1" data-sticky-header aria-label="Revenue by region">
+    <thead><tr class="table-row"><th class="table-head table-select" scope="col"><input type="checkbox" class="checkbox" aria-label="Select all"></th><th class="table-head" scope="col" data-nowrap>Region</th><th class="table-head" scope="col" data-numeric data-nowrap>Q1</th><th class="table-head" scope="col" data-numeric data-nowrap>Q2</th><th class="table-head" scope="col" data-numeric data-nowrap>Q3</th><th class="table-head" scope="col" data-numeric data-nowrap>Q4</th><th class="table-head" scope="col" data-numeric data-nowrap>Growth</th><th class="table-head" scope="col" data-numeric data-nowrap>Target</th><th class="table-head" scope="col" data-numeric data-nowrap>Owner</th><th class="table-head" scope="col" data-align="end">Actions</th></tr></thead>
+    <tbody>
+      <tr class="table-row"><td class="table-cell table-select"><input type="checkbox" class="checkbox" aria-label="Select Europe"></td><td class="table-cell" data-nowrap>Europe</td><td class="table-cell" data-numeric data-nowrap>120</td><td class="table-cell" data-numeric data-nowrap>134</td><td class="table-cell" data-numeric data-nowrap>151</td><td class="table-cell" data-numeric data-nowrap>170</td><td class="table-cell" data-numeric data-nowrap>+42%</td><td class="table-cell" data-numeric data-nowrap>160</td><td class="table-cell" data-numeric data-nowrap>Olivia</td><td class="table-cell table-actions"><button class="btn" data-variant="outline" data-size="sm" popovertarget="lock-menu-1" aria-label="Actions for Europe">Actions <i data-lucide="chevron-down"></i></button><div class="table-menu" id="lock-menu-1" popover><button class="table-menu-item" popovertarget="lock-menu-1" popovertargetaction="hide"><i data-lucide="eye"></i> View report</button><button class="table-menu-item" popovertarget="lock-menu-1" popovertargetaction="hide"><i data-lucide="download"></i> Export CSV</button><button class="table-menu-item" popovertarget="lock-menu-1" popovertargetaction="hide"><i data-lucide="target"></i> Edit target</button></div></td></tr>
+      <tr class="table-row"><td class="table-cell table-select"><input type="checkbox" class="checkbox" aria-label="Select North America"></td><td class="table-cell" data-nowrap>North America</td><td class="table-cell" data-numeric data-nowrap>210</td><td class="table-cell" data-numeric data-nowrap>198</td><td class="table-cell" data-numeric data-nowrap>225</td><td class="table-cell" data-numeric data-nowrap>240</td><td class="table-cell" data-numeric data-nowrap>+14%</td><td class="table-cell" data-numeric data-nowrap>230</td><td class="table-cell" data-numeric data-nowrap>Jackson</td><td class="table-cell table-actions"><button class="btn" data-variant="outline" data-size="sm" popovertarget="lock-menu-2" aria-label="Actions for North America">Actions <i data-lucide="chevron-down"></i></button><div class="table-menu" id="lock-menu-2" popover><button class="table-menu-item" popovertarget="lock-menu-2" popovertargetaction="hide"><i data-lucide="eye"></i> View report</button><button class="table-menu-item" popovertarget="lock-menu-2" popovertargetaction="hide"><i data-lucide="download"></i> Export CSV</button><button class="table-menu-item" popovertarget="lock-menu-2" popovertargetaction="hide"><i data-lucide="target"></i> Edit target</button></div></td></tr>
+      <tr class="table-row"><td class="table-cell table-select"><input type="checkbox" class="checkbox" aria-label="Select Asia Pacific"></td><td class="table-cell" data-nowrap>Asia Pacific</td><td class="table-cell" data-numeric data-nowrap>90</td><td class="table-cell" data-numeric data-nowrap>110</td><td class="table-cell" data-numeric data-nowrap>140</td><td class="table-cell" data-numeric data-nowrap>165</td><td class="table-cell" data-numeric data-nowrap>+83%</td><td class="table-cell" data-numeric data-nowrap>150</td><td class="table-cell" data-numeric data-nowrap>Isabella</td><td class="table-cell table-actions"><button class="btn" data-variant="outline" data-size="sm" popovertarget="lock-menu-3" aria-label="Actions for Asia Pacific">Actions <i data-lucide="chevron-down"></i></button><div class="table-menu" id="lock-menu-3" popover><button class="table-menu-item" popovertarget="lock-menu-3" popovertargetaction="hide"><i data-lucide="eye"></i> View report</button><button class="table-menu-item" popovertarget="lock-menu-3" popovertargetaction="hide"><i data-lucide="download"></i> Export CSV</button><button class="table-menu-item" popovertarget="lock-menu-3" popovertargetaction="hide"><i data-lucide="target"></i> Edit target</button></div></td></tr>
+      <tr class="table-row"><td class="table-cell table-select"><input type="checkbox" class="checkbox" aria-label="Select Latin America"></td><td class="table-cell" data-nowrap>Latin America</td><td class="table-cell" data-numeric data-nowrap>40</td><td class="table-cell" data-numeric data-nowrap>44</td><td class="table-cell" data-numeric data-nowrap>51</td><td class="table-cell" data-numeric data-nowrap>58</td><td class="table-cell" data-numeric data-nowrap>+45%</td><td class="table-cell" data-numeric data-nowrap>55</td><td class="table-cell" data-numeric data-nowrap>Sofia</td><td class="table-cell table-actions"><button class="btn" data-variant="outline" data-size="sm" popovertarget="lock-menu-4" aria-label="Actions for Latin America">Actions <i data-lucide="chevron-down"></i></button><div class="table-menu" id="lock-menu-4" popover><button class="table-menu-item" popovertarget="lock-menu-4" popovertargetaction="hide"><i data-lucide="eye"></i> View report</button><button class="table-menu-item" popovertarget="lock-menu-4" popovertargetaction="hide"><i data-lucide="download"></i> Export CSV</button><button class="table-menu-item" popovertarget="lock-menu-4" popovertargetaction="hide"><i data-lucide="target"></i> Edit target</button></div></td></tr>
+      <tr class="table-row"><td class="table-cell table-select"><input type="checkbox" class="checkbox" aria-label="Select Africa"></td><td class="table-cell" data-nowrap>Africa</td><td class="table-cell" data-numeric data-nowrap>18</td><td class="table-cell" data-numeric data-nowrap>22</td><td class="table-cell" data-numeric data-nowrap>27</td><td class="table-cell" data-numeric data-nowrap>35</td><td class="table-cell" data-numeric data-nowrap>+94%</td><td class="table-cell" data-numeric data-nowrap>30</td><td class="table-cell" data-numeric data-nowrap>William</td><td class="table-cell table-actions"><button class="btn" data-variant="outline" data-size="sm" popovertarget="lock-menu-5" aria-label="Actions for Africa">Actions <i data-lucide="chevron-down"></i></button><div class="table-menu" id="lock-menu-5" popover><button class="table-menu-item" popovertarget="lock-menu-5" popovertargetaction="hide"><i data-lucide="eye"></i> View report</button><button class="table-menu-item" popovertarget="lock-menu-5" popovertargetaction="hide"><i data-lucide="download"></i> Export CSV</button><button class="table-menu-item" popovertarget="lock-menu-5" popovertargetaction="hide"><i data-lucide="target"></i> Edit target</button></div></td></tr>
+      <tr class="table-row"><td class="table-cell table-select"><input type="checkbox" class="checkbox" aria-label="Select Middle East"></td><td class="table-cell" data-nowrap>Middle East</td><td class="table-cell" data-numeric data-nowrap>30</td><td class="table-cell" data-numeric data-nowrap>31</td><td class="table-cell" data-numeric data-nowrap>36</td><td class="table-cell" data-numeric data-nowrap>41</td><td class="table-cell" data-numeric data-nowrap>+37%</td><td class="table-cell" data-numeric data-nowrap>40</td><td class="table-cell" data-numeric data-nowrap>Olivia</td><td class="table-cell table-actions"><button class="btn" data-variant="outline" data-size="sm" popovertarget="lock-menu-6" aria-label="Actions for Middle East">Actions <i data-lucide="chevron-down"></i></button><div class="table-menu" id="lock-menu-6" popover><button class="table-menu-item" popovertarget="lock-menu-6" popovertargetaction="hide"><i data-lucide="eye"></i> View report</button><button class="table-menu-item" popovertarget="lock-menu-6" popovertargetaction="hide"><i data-lucide="download"></i> Export CSV</button><button class="table-menu-item" popovertarget="lock-menu-6" popovertargetaction="hide"><i data-lucide="target"></i> Edit target</button></div></td></tr>
+      <tr class="table-row"><td class="table-cell table-select"><input type="checkbox" class="checkbox" aria-label="Select Oceania"></td><td class="table-cell" data-nowrap>Oceania</td><td class="table-cell" data-numeric data-nowrap>25</td><td class="table-cell" data-numeric data-nowrap>26</td><td class="table-cell" data-numeric data-nowrap>30</td><td class="table-cell" data-numeric data-nowrap>33</td><td class="table-cell" data-numeric data-nowrap>+32%</td><td class="table-cell" data-numeric data-nowrap>32</td><td class="table-cell" data-numeric data-nowrap>Jackson</td><td class="table-cell table-actions"><button class="btn" data-variant="outline" data-size="sm" popovertarget="lock-menu-7" aria-label="Actions for Oceania">Actions <i data-lucide="chevron-down"></i></button><div class="table-menu" id="lock-menu-7" popover><button class="table-menu-item" popovertarget="lock-menu-7" popovertargetaction="hide"><i data-lucide="eye"></i> View report</button><button class="table-menu-item" popovertarget="lock-menu-7" popovertargetaction="hide"><i data-lucide="download"></i> Export CSV</button><button class="table-menu-item" popovertarget="lock-menu-7" popovertargetaction="hide"><i data-lucide="target"></i> Edit target</button></div></td></tr>
+    </tbody>
+  </table>
+</div>
+```
+
+```html example label="Action column" hint="A .table-actions cell holds the row's buttons, end-aligned and always visible. Mobile: on a narrow table (under 40rem - switch the device toolbar to Phone) the inline buttons (.table-actions-inline) give way to one ⋯ button (.table-actions-menu) opening a native popover menu (.table-menu) - Escape or a pick closes it. On touch screens every action is a 44px target."
+<div class="table-container" style="max-width:44rem;">
+  <table class="table" data-density="compact" aria-label="Documents">
+    <thead><tr class="table-row"><th class="table-head" scope="col">Document</th><th class="table-head" scope="col">Updated</th><th class="table-head" scope="col" data-align="end">Actions</th></tr></thead>
+    <tbody>
+      <tr class="table-row"><td class="table-cell">Q3 report.pdf</td><td class="table-cell"><span class="table-muted">2 hours ago</span></td><td class="table-cell table-actions">
+        <span class="table-actions-inline"><button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Download Q3 report.pdf"><i data-lucide="download"></i></button><button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Share Q3 report.pdf"><i data-lucide="share-2"></i></button><button class="btn" data-variant="outline" data-size="sm">Open</button><button class="btn" data-variant="ghost" data-tone="destructive" data-size="icon-sm" aria-label="Delete Q3 report.pdf"><i data-lucide="trash-2"></i></button></span>
+        <span class="table-actions-menu"><button class="btn" data-variant="ghost" data-size="icon-sm" popovertarget="menu-q3" aria-label="Actions for Q3 report.pdf"><i data-lucide="ellipsis"></i></button></span>
+        <div class="table-menu" id="menu-q3" popover>
+          <button class="table-menu-item" popovertarget="menu-q3" popovertargetaction="hide"><i data-lucide="external-link"></i> Open</button>
+          <button class="table-menu-item" popovertarget="menu-q3" popovertargetaction="hide"><i data-lucide="download"></i> Download</button>
+          <button class="table-menu-item" popovertarget="menu-q3" popovertargetaction="hide"><i data-lucide="share-2"></i> Share</button>
+          <button class="table-menu-item" data-tone="destructive" popovertarget="menu-q3" popovertargetaction="hide"><i data-lucide="trash-2"></i> Delete</button>
+        </div>
+      </td></tr>
+      <tr class="table-row"><td class="table-cell">Brand guidelines.fig</td><td class="table-cell"><span class="table-muted">Yesterday</span></td><td class="table-cell table-actions">
+        <span class="table-actions-inline"><button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Download Brand guidelines.fig"><i data-lucide="download"></i></button><button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Share Brand guidelines.fig"><i data-lucide="share-2"></i></button><button class="btn" data-variant="outline" data-size="sm">Open</button><button class="btn" data-variant="ghost" data-tone="destructive" data-size="icon-sm" aria-label="Delete Brand guidelines.fig"><i data-lucide="trash-2"></i></button></span>
+        <span class="table-actions-menu"><button class="btn" data-variant="ghost" data-size="icon-sm" popovertarget="menu-brand" aria-label="Actions for Brand guidelines.fig"><i data-lucide="ellipsis"></i></button></span>
+        <div class="table-menu" id="menu-brand" popover>
+          <button class="table-menu-item" popovertarget="menu-brand" popovertargetaction="hide"><i data-lucide="external-link"></i> Open</button>
+          <button class="table-menu-item" popovertarget="menu-brand" popovertargetaction="hide"><i data-lucide="download"></i> Download</button>
+          <button class="table-menu-item" popovertarget="menu-brand" popovertargetaction="hide"><i data-lucide="share-2"></i> Share</button>
+          <button class="table-menu-item" data-tone="destructive" popovertarget="menu-brand" popovertargetaction="hide"><i data-lucide="trash-2"></i> Delete</button>
+        </div>
+      </td></tr>
+      <tr class="table-row"><td class="table-cell">Roadmap.md</td><td class="table-cell"><span class="table-muted">Last week</span></td><td class="table-cell table-actions">
+        <span class="table-actions-inline"><button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Download Roadmap.md"><i data-lucide="download"></i></button><button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Share Roadmap.md"><i data-lucide="share-2"></i></button><button class="btn" data-variant="outline" data-size="sm">Open</button><button class="btn" data-variant="ghost" data-tone="destructive" data-size="icon-sm" aria-label="Delete Roadmap.md"><i data-lucide="trash-2"></i></button></span>
+        <span class="table-actions-menu"><button class="btn" data-variant="ghost" data-size="icon-sm" popovertarget="menu-road" aria-label="Actions for Roadmap.md"><i data-lucide="ellipsis"></i></button></span>
+        <div class="table-menu" id="menu-road" popover>
+          <button class="table-menu-item" popovertarget="menu-road" popovertargetaction="hide"><i data-lucide="external-link"></i> Open</button>
+          <button class="table-menu-item" popovertarget="menu-road" popovertargetaction="hide"><i data-lucide="download"></i> Download</button>
+          <button class="table-menu-item" popovertarget="menu-road" popovertargetaction="hide"><i data-lucide="share-2"></i> Share</button>
+          <button class="table-menu-item" data-tone="destructive" popovertarget="menu-road" popovertargetaction="hide"><i data-lucide="trash-2"></i> Delete</button>
+        </div>
+      </td></tr>
+    </tbody>
+  </table>
+</div>
+```
+
+```html example label="Quiet actions" hint="data-actions='quiet' dims the action buttons until the row is hovered or focused - still visible and clickable; touch screens always show them at full strength."
+<div class="table-container" style="max-width:44rem;">
+  <table class="table" data-density="compact" data-actions="quiet" aria-label="Members">
+    <thead><tr class="table-row"><th class="table-head" scope="col">Member</th><th class="table-head" scope="col">Role</th><th class="table-head" scope="col"><span class="sr-only">Actions</span></th></tr></thead>
+    <tbody>
+      <tr class="table-row"><td class="table-cell">Olivia Martin</td><td class="table-cell"><span class="table-muted">Owner</span></td><td class="table-cell table-actions"><button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Edit Olivia Martin"><i data-lucide="pencil"></i></button><button class="btn" data-variant="ghost" data-size="icon-sm" data-tone="destructive" aria-label="Remove Olivia Martin"><i data-lucide="trash-2"></i></button></td></tr>
+      <tr class="table-row"><td class="table-cell">Jackson Lee</td><td class="table-cell"><span class="table-muted">Developer</span></td><td class="table-cell table-actions"><button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Edit Jackson Lee"><i data-lucide="pencil"></i></button><button class="btn" data-variant="ghost" data-size="icon-sm" data-tone="destructive" aria-label="Remove Jackson Lee"><i data-lucide="trash-2"></i></button></td></tr>
+      <tr class="table-row"><td class="table-cell">Sofia Davis</td><td class="table-cell"><span class="table-muted">Analyst</span></td><td class="table-cell table-actions"><button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Edit Sofia Davis"><i data-lucide="pencil"></i></button><button class="btn" data-variant="ghost" data-size="icon-sm" data-tone="destructive" aria-label="Remove Sofia Davis"><i data-lucide="trash-2"></i></button></td></tr>
+    </tbody>
+  </table>
+</div>
+```
+
+```html example label="Text in cells" hint="Ways to render text: a .table-sub second line, a .table-truncate single line with an ellipsis (full text in title), a .table-clamp of two lines, .table-mono for ids and code, .table-muted, plus any component - badges, avatars, links, progress."
+<div class="table-container" style="max-width:44rem;">
+  <table class="table" aria-label="Cell text">
+    <thead><tr class="table-row"><th class="table-head" scope="col">Customer</th><th class="table-head" scope="col">Order</th><th class="table-head" scope="col">Note</th><th class="table-head" scope="col">Status</th><th class="table-head" scope="col">Progress</th></tr></thead>
+    <tbody>
+      <tr class="table-row"><td class="table-cell"><div class="flex items-center gap-3"><span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-square.png" alt=""></span><div><a href="#olivia">Olivia Martin</a><span class="table-sub">olivia@acme.com</span></div></div></td><td class="table-cell"><span class="table-mono">ORD-7F3A-2291</span></td><td class="table-cell"><span class="table-truncate" title="Leave the parcel with the neighbour at number 12 if nobody answers the door">Leave the parcel with the neighbour at number 12 if nobody answers the door</span></td><td class="table-cell"><span class="badge">Paid</span></td><td class="table-cell"><progress class="progress" value="80" max="100" aria-label="80%"></progress></td></tr>
+      <tr class="table-row"><td class="table-cell"><div class="flex items-center gap-3"><span class="avatar" data-size="sm"><span class="avatar-fallback">JL</span></span><div>Jackson Lee<span class="table-sub">jackson@acme.com</span></div></div></td><td class="table-cell"><span class="table-mono">ORD-19BC-0042</span></td><td class="table-cell"><span class="table-clamp">Gift wrap, please. The card should say happy birthday and be signed from the whole team at the office.</span></td><td class="table-cell"><span class="badge" data-variant="outline">Pending</span></td><td class="table-cell"><progress class="progress" value="35" max="100" aria-label="35%"></progress></td></tr>
+      <tr class="table-row"><td class="table-cell"><span class="table-muted">Guest checkout</span></td><td class="table-cell"><span class="table-mono">ORD-0000-7781</span></td><td class="table-cell"><span class="table-muted">-</span></td><td class="table-cell"><span class="badge" data-variant="destructive">Refunded</span></td><td class="table-cell"><progress class="progress" value="100" max="100" aria-label="100%"></progress></td></tr>
+    </tbody>
+  </table>
+</div>
+```
+
+```html example label="Data grid" hint="Everything together: select, sort, reorder and act - a sortable column resets once you drag a row into a manual order."
+<div class="table-container" style="max-width:48rem;">
+  <table class="table" data-density="compact" aria-label="Team members">
+    <thead><tr class="table-row"><th class="table-head table-handle" scope="col"><span class="sr-only">Order</span></th><th class="table-head table-select" scope="col"><input type="checkbox" class="checkbox" aria-label="Select all"></th><th class="table-head" scope="col"><button class="table-sort" type="button">Member</button></th><th class="table-head" scope="col"><button class="table-sort" type="button">Status</button></th><th class="table-head" scope="col" data-numeric><button class="table-sort" type="button">Spend</button></th><th class="table-head" scope="col"><span class="sr-only">Actions</span></th></tr></thead>
+    <tbody>
+      <tr class="table-row"><td class="table-cell table-handle"><button type="button" aria-label="Move row (Alt+Arrow keys)"><i data-lucide="grip-vertical"></i></button></td><td class="table-cell table-select"><input type="checkbox" class="checkbox" aria-label="Select Olivia Martin"></td><td class="table-cell">Olivia Martin<span class="table-sub">olivia@acme.com</span></td><td class="table-cell"><span class="badge" data-variant="default">Active</span></td><td class="table-cell" data-numeric data-sort-value="1999">€1,999.00</td><td class="table-cell table-actions"><button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Edit Olivia Martin"><i data-lucide="pencil"></i></button><button class="btn" data-variant="ghost" data-size="icon-sm" data-tone="destructive" aria-label="Remove Olivia Martin"><i data-lucide="trash-2"></i></button></td></tr>
+      <tr class="table-row"><td class="table-cell table-handle"><button type="button" aria-label="Move row (Alt+Arrow keys)"><i data-lucide="grip-vertical"></i></button></td><td class="table-cell table-select"><input type="checkbox" class="checkbox" aria-label="Select Jackson Lee"></td><td class="table-cell">Jackson Lee<span class="table-sub">jackson@acme.com</span></td><td class="table-cell"><span class="badge" data-variant="secondary">Invited</span></td><td class="table-cell" data-numeric data-sort-value="39">€39.00</td><td class="table-cell table-actions"><button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Edit Jackson Lee"><i data-lucide="pencil"></i></button><button class="btn" data-variant="ghost" data-size="icon-sm" data-tone="destructive" aria-label="Remove Jackson Lee"><i data-lucide="trash-2"></i></button></td></tr>
+      <tr class="table-row"><td class="table-cell table-handle"><button type="button" aria-label="Move row (Alt+Arrow keys)"><i data-lucide="grip-vertical"></i></button></td><td class="table-cell table-select"><input type="checkbox" class="checkbox" aria-label="Select Isabella Nguyen"></td><td class="table-cell">Isabella Nguyen<span class="table-sub">isabella@acme.com</span></td><td class="table-cell"><span class="badge" data-variant="default">Active</span></td><td class="table-cell" data-numeric data-sort-value="299">€299.00</td><td class="table-cell table-actions"><button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Edit Isabella Nguyen"><i data-lucide="pencil"></i></button><button class="btn" data-variant="ghost" data-size="icon-sm" data-tone="destructive" aria-label="Remove Isabella Nguyen"><i data-lucide="trash-2"></i></button></td></tr>
+      <tr class="table-row"><td class="table-cell table-handle"><button type="button" aria-label="Move row (Alt+Arrow keys)"><i data-lucide="grip-vertical"></i></button></td><td class="table-cell table-select"><input type="checkbox" class="checkbox" aria-label="Select William Kim"></td><td class="table-cell">William Kim<span class="table-sub">will@acme.com</span></td><td class="table-cell"><span class="badge" data-variant="destructive">Suspended</span></td><td class="table-cell" data-numeric data-sort-value="99">€99.00</td><td class="table-cell table-actions"><button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Edit William Kim"><i data-lucide="pencil"></i></button><button class="btn" data-variant="ghost" data-size="icon-sm" data-tone="destructive" aria-label="Remove William Kim"><i data-lucide="trash-2"></i></button></td></tr>
+      <tr class="table-row"><td class="table-cell table-handle"><button type="button" aria-label="Move row (Alt+Arrow keys)"><i data-lucide="grip-vertical"></i></button></td><td class="table-cell table-select"><input type="checkbox" class="checkbox" aria-label="Select Sofia Davis"></td><td class="table-cell">Sofia Davis<span class="table-sub">sofia@acme.com</span></td><td class="table-cell"><span class="badge" data-variant="default">Active</span></td><td class="table-cell" data-numeric data-sort-value="450">€450.00</td><td class="table-cell table-actions"><button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Edit Sofia Davis"><i data-lucide="pencil"></i></button><button class="btn" data-variant="ghost" data-size="icon-sm" data-tone="destructive" aria-label="Remove Sofia Davis"><i data-lucide="trash-2"></i></button></td></tr>
+    </tbody>
+  </table>
+</div>
+```
+
+```html example label="Right to left" hint="Alignment, locked columns and the sort arrow are logical - in dir='rtl' start is the right edge."
+<div dir="rtl" lang="ar">
+<div class="table-container" style="max-width:28rem;">
+  <table class="table" data-density="compact" aria-label="الفريق">
+    <thead><tr class="table-row"><th class="table-head table-select" scope="col"><input type="checkbox" class="checkbox" aria-label="تحديد الكل"></th><th class="table-head" scope="col"><button class="table-sort" type="button">الاسم</button></th><th class="table-head" scope="col" data-numeric><button class="table-sort" type="button">المبلغ</button></th></tr></thead>
+    <tbody>
+      <tr class="table-row"><td class="table-cell table-select"><input type="checkbox" class="checkbox" aria-label="Select ليلى"></td><td class="table-cell">ليلى</td><td class="table-cell" data-numeric data-sort-value="1200">١٬٢٠٠</td></tr>
+      <tr class="table-row"><td class="table-cell table-select"><input type="checkbox" class="checkbox" aria-label="Select عمر"></td><td class="table-cell">عمر</td><td class="table-cell" data-numeric data-sort-value="380">٣٨٠</td></tr>
+      <tr class="table-row"><td class="table-cell table-select"><input type="checkbox" class="checkbox" aria-label="Select سارة"></td><td class="table-cell">سارة</td><td class="table-cell" data-numeric data-sort-value="2450">٢٬٤٥٠</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
 ```
 
 ```html example label="Density" hint="Set data-density on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25), typography and fixed dimensions stay identical. comfortable matches the unsized default."
@@ -139,8 +367,30 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 ```
 
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, bound on every <code>table.table</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - as authored: the original row order, no sort, nothing selected</li>
+    <li><code>sorted</code> - by <code>config.column</code> (index) and <code>config.direction</code> (ascending / descending)</li>
+    <li><code>selected</code> - <code>config.rows</code>: row indices or <code>'all'</code></li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/table-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a href="../schemas/table.schema.json"><code>table.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `sorted` | `boolean` | `true`, `false` | `false` | Rows sorted by a column (`setState('sorted', { column, direction })`). |
+| `selected` | `boolean` | `true`, `false` | `false` | Rows selected (`setState('selected', { rows })`). |
+```
+
+</StatesSection>
+
 <SourceFiles component="table" section="css">
   <SourceNote for="css">Styles for the table component. Uses design tokens for colors, spacing, and radius.</SourceNote>
 </SourceFiles>
+
+<SourceFiles component="table" section="js" jsTitle="JS" />
 
 </DocPage>

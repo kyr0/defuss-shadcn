@@ -37,6 +37,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <code>.breadcrumb-separator</code>
     <code>.breadcrumb-page</code>
     <code>.breadcrumb-ellipsis</code>
+    <code>.breadcrumb-icon</code>
   </SkillRow>
   </SkillField>
 </SkillPanel>
@@ -52,13 +53,15 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="Custom separator" hint="Chevron icon separators instead of slashes."
-<li class="breadcrumb-separator" aria-hidden="true">
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-       stroke="currentColor" stroke-width="2"
-       stroke-linecap="round" stroke-linejoin="round">
-    <path d="m9 18 6-6-6-6"></svg>
-  </svg>
-</li>
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <ol class="breadcrumb-list">
+    <li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Home</a></li>
+    <li class="breadcrumb-separator" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></li>
+    <li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Components</a></li>
+    <li class="breadcrumb-separator" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></li>
+    <li class="breadcrumb-item"><span class="breadcrumb-page" aria-current="page">Breadcrumb</span></li>
+  </ol>
+</nav>
 ```
 
 ```html example label="Collapsed" hint="Long trails can collapse middle items into an ellipsis."
@@ -75,6 +78,51 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <li class="breadcrumb-item"><span class="breadcrumb-page" aria-current="page">Breadcrumb</span></li>
   </ol>
 </nav>
+```
+
+```html example label="With icons" hint="Put an icon in front of any crumb - an svg (here lucide) as the first child of .breadcrumb-link / .breadcrumb-page. It is sized to the text (1em) and centered on the label."
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <ol class="breadcrumb-list">
+    <li class="breadcrumb-item"><a class="breadcrumb-link" href="#"><i data-lucide="house"></i>Home</a></li>
+    <li class="breadcrumb-separator" aria-hidden="true">/</li>
+    <li class="breadcrumb-item"><a class="breadcrumb-link" href="#"><i data-lucide="folder"></i>Documents</a></li>
+    <li class="breadcrumb-separator" aria-hidden="true">/</li>
+    <li class="breadcrumb-item"><span class="breadcrumb-page" aria-current="page"><i data-lucide="file-plus"></i>Add document</span></li>
+  </ol>
+</nav>
+```
+
+```html example label="With emojis" hint="An emoji goes in a .breadcrumb-icon span (aria-hidden - the label already names the crumb) so it keeps a square box and lines up like an icon."
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <ol class="breadcrumb-list">
+    <li class="breadcrumb-item"><a class="breadcrumb-link" href="#"><span class="breadcrumb-icon" aria-hidden="true">🏠</span>Home</a></li>
+    <li class="breadcrumb-separator" aria-hidden="true">›</li>
+    <li class="breadcrumb-item"><a class="breadcrumb-link" href="#"><span class="breadcrumb-icon" aria-hidden="true">🛒</span>Shop</a></li>
+    <li class="breadcrumb-separator" aria-hidden="true">›</li>
+    <li class="breadcrumb-item"><a class="breadcrumb-link" href="#"><span class="breadcrumb-icon" aria-hidden="true">🍎</span>Fruit</a></li>
+    <li class="breadcrumb-separator" aria-hidden="true">›</li>
+    <li class="breadcrumb-item"><span class="breadcrumb-page" aria-current="page"><span class="breadcrumb-icon" aria-hidden="true">🍏</span>Granny Smith</span></li>
+  </ol>
+</nav>
+```
+
+```html example label="Icons scale with the size" hint="Icons and emojis are 1em, so data-size grows them with the labels."
+<div class="stack gap-4">
+<nav class="breadcrumb" aria-label="Breadcrumb" data-size="sm">
+  <ol class="breadcrumb-list">
+    <li class="breadcrumb-item"><a class="breadcrumb-link" href="#"><i data-lucide="house"></i>Home</a></li>
+    <li class="breadcrumb-separator" aria-hidden="true">/</li>
+    <li class="breadcrumb-item"><span class="breadcrumb-page" aria-current="page"><span class="breadcrumb-icon" aria-hidden="true">⚙️</span>Settings</span></li>
+  </ol>
+</nav>
+<nav class="breadcrumb" aria-label="Breadcrumb (large)" data-size="xl">
+  <ol class="breadcrumb-list">
+    <li class="breadcrumb-item"><a class="breadcrumb-link" href="#"><i data-lucide="house"></i>Home</a></li>
+    <li class="breadcrumb-separator" aria-hidden="true">/</li>
+    <li class="breadcrumb-item"><span class="breadcrumb-page" aria-current="page"><span class="breadcrumb-icon" aria-hidden="true">⚙️</span>Settings</span></li>
+  </ol>
+</nav>
+</div>
 ```
 
 ```html example label="Sizes" hint="Set data-size on the .breadcrumb nav to scale the trail's type and separators together - the ladder mirrors the shared field sizes (md matches the unsized default)." previewStyle="align-items:flex-start;flex-direction:column;gap:1rem;"

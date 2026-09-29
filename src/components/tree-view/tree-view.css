@@ -105,6 +105,30 @@
       color: var(--muted-foreground);
     }
   }
+  /* -- Checkboxes (data-checkable) ---------------------------------
+     A .tree-check (the checkbox component) sits after the icons, before
+     the label; tree-view.js cascades and rolls it up (indeterminate). */
+  .tree-check {
+    flex-shrink: 0;
+    margin: 0;
+  }
+  .tree[data-checkable] .tree-leaf:has(.tree-check) { cursor: pointer; }
+
+  /* -- Drag & drop (data-sortable) ----------------------------------
+     A dragged item fades; the row under the pointer shows where it lands:
+     a line above / below (before / after) or a tinted frame (into a
+     folder). */
+  .tree[data-sortable] :is(.tree-branch-trigger, .tree-leaf)[draggable="true"] { cursor: grab; }
+  .tree[data-sortable] :is(.tree-branch-trigger, .tree-leaf):active { cursor: grabbing; }
+  .tree [data-dragging] > :is(.tree-leaf, details > .tree-branch-trigger) { opacity: 0.4; }
+  :is(.tree-branch-trigger, .tree-leaf) {
+    &[data-drop="before"] { box-shadow: inset 0 2px 0 var(--primary); }
+    &[data-drop="after"] { box-shadow: inset 0 -2px 0 var(--primary); }
+    &[data-drop="inside"] {
+      background-color: color-mix(in oklch, var(--primary) 12%, transparent);
+      box-shadow: inset 0 0 0 1px var(--primary);
+    }
+  }
   /* -- Labels -----------------------------------------------------
      The label is the trigger's / leaf's last <span>. Deep nesting eats the
      inline space (1.25rem indent per level), so a long label truncates with

@@ -45,6 +45,15 @@
 
   function readMop(el, mop) {
     if (!el) return null;
+    // observe THROUGH the component's own State API: name '@state' reads the
+    // state name, any other name a key of getState().config (tabs label /
+    // icon / index live in the runtime, not in one attribute)
+    if (mop.kind === 'api') {
+      if (!el.api || !el.api.getState) return null;
+      var st = el.api.getState();
+      if (mop.name === '@state') return st.name;
+      return st.config && mop.name in st.config ? st.config[mop.name] : null;
+    }
     if (mop.kind === 'property') {
       var v = el[mop.name];
       return typeof v === 'object' ? String(v) : v; // FileList etc. → not state
@@ -60,6 +69,10 @@
       // states (accordion batch, tabs activation, popover open-with-side-
       // effects) are only expressible through the runtime that owns them.
       if (!el.api || !el.api.setState) return;
+      // name '@current' ⇒ re-enter the element's CURRENT state with the args
+      // as config: the runtime applies just the config (rename a tab without
+      // changing which one is selected)
+      var stateName = mop.name === '@current' && el.api.getState ? el.api.getState().name : mop.name;
       // name '*' ⇒ the editor VALUE is the state name (enum across distinct
       // runtime states, e.g. accordion all-open/all-closed); a falsy value
       // (or a fixed name toggled off) returns to the authored 'default'.
@@ -74,7 +87,7 @@
       if (mop.args) {
         var cfg = {};
         for (var k in mop.args) cfg[k] = mop.args[k] === '@value' ? value : mop.args[k];
-        el.api.setState(mop.name, cfg);
+        el.api.setState(stateName, cfg);
         return;
       }
       if (value === false || value === null || value === undefined) el.api.setState('default');
@@ -147,8 +160,15 @@
       // the value) - honor its own target when declared
       var oel = spec.observation && spec.observation.target ? resolve(spec.observation.target) : el;
       if (!oel) continue;
-      var v = readMop(oel, obs);
+      // an api MUTATION standing in for a missing observation keeps its old
+      // read (a class probe); only a declared api observation reads getState()
+      var v = !spec.observation && obs.kind === 'api' ? oel.classList.contains(obs.name) : readMop(oel, obs);
       if (typeof v === 'string' && /^(true|false)$/.test(v)) v = v === 'true'; // attribute booleans normalize
+      // a boolean read through getState()'s NAME is true exactly in the
+      // runtime state this row drives (tabs 'disabled' ⇄ setState('disabled'))
+      if (spec.type === 'boolean' && spec.observation && obs.kind === 'api' && obs.name === '@state' && typeof v === 'string') {
+        v = v === (spec.mutation && spec.mutation.kind === 'api' ? spec.mutation.name : name);
+      }
       // boolean states read through an ATTRIBUTE observation are true when the
       // attribute exists and is not the literal "false" (data-error="" → true,
       // aria-pressed="false" → false); one keyed on a state-NAME attribute

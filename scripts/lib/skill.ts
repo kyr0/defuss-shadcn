@@ -118,11 +118,27 @@ export interface RootSkillData {
   /** sidebar sections in order - pages AND components, the renderer splits them */
   sections: RootDocSection[];
   components: (SkillEntry & { hasJs: boolean })[];
-  /** Absolute base the links resolve against (e.g. the repo's raw GitHub
-   *  URL). An installed skill is its folder alone - repo-relative links
-   *  would point at nothing - so the generated skill links absolutely; the
-   *  link TEXT stays the repo path (= the path inside an npm install). */
-  sourceBase?: string;
+  /** Prefix that turns a repo path into a link relative to the SKILL.md
+   *  (skills/defuss-shadcn/ -> '../../'). The Claude Code plugin cache and an
+   *  npm install carry the whole package next to the skill, so the docs are
+   *  one relative hop away - no network, no filesystem search. The link TEXT
+   *  stays the repo path. */
+  docsPrefix?: string;
+  /** Raw-file base for installs that copied the skill folder alone (the
+   *  skills CLI) - pinned to this release's tag: {{RAW_BASE}} in the template. */
+  rawBase?: string;
+}
+
+/** Where the per-component skills are copied, relative to the SKILL.md: the
+ *  one lookup every task needs lives INSIDE the skill folder, so it resolves
+ *  in every install mode (plugin cache, npm, skills-CLI copy). */
+export const SKILL_REFERENCES_DIR = 'references/components';
+
+/** A component-skill.md as copied into references/components/<name>.md: the
+ *  skills' sibling links (../button/component-skill.md) become flat
+ *  (button.md). Pure. */
+export function referenceSkillText(text: string): string {
+  return text.replace(/\]\(\.\.\/([a-z0-9-]+)\/component-skill\.md(#[^)]*)?\)/g, (_m, name: string, hash = '') => `](${name}.md${hash})`);
 }
 
 const pagePath = (slug: string): string => `src/documentation/pages/${slug}.mdx`;
@@ -136,16 +152,16 @@ export function mdProse(text: string): string {
     .map((part, i) => (i % 2 ? part : part.replace(/<\/?[a-zA-Z][^<>]*>/g, (tag) => `\`${tag}\``)))
     .join('');
 }
-const skillPath = (folder: string): string => `dist/components/${folder}/component-skill.md`;
-/** [repo path](base + repo path) - the text says where the file lives in the repo / npm package. */
-const link = (base: string | undefined, path: string, text = path): string => `[${text}](${base ?? ''}${path})`;
+const skillPath = (folder: string): string => `${SKILL_REFERENCES_DIR}/${folder}.md`;
+/** [text](prefix + path) */
+const link = (prefix: string | undefined, path: string, text = path): string => `[${text}](${prefix ?? ''}${path})`;
 
 /** Docs map: every sidebar page that is NOT a component page (those live in the index). */
 function renderDocsMap(data: RootSkillData, isComponent: (slug: string) => boolean): string {
   const line = (p: RootDocPage, depth: number): string[] => {
     const own = isComponent(p.slug)
       ? []
-      : [`${'  '.repeat(depth)}- ${link(data.sourceBase, pagePath(p.slug), p.label)}${p.description ? ` - ${mdProse(p.description)}` : ''}`];
+      : [`${'  '.repeat(depth)}- ${link(data.docsPrefix, pagePath(p.slug), p.label)}${p.description ? ` - ${mdProse(p.description)}` : ''}`];
     return [...own, ...p.children.flatMap((c) => line(c, isComponent(p.slug) ? depth : depth + 1))];
   };
   return data.sections
@@ -166,7 +182,7 @@ function renderComponentIndex(data: RootSkillData): string {
       '',
       `- **Why:** ${mdProse(c.why)}`,
       `- **When:** ${mdProse(c.when)}`,
-      `- **States:** ${states} · **Skill:** ${link(data.sourceBase, skillPath(c.folder))} · **Examples:** ${link(data.sourceBase, pagePath(c.folder))}`,
+      `- **States:** ${states} · **Skill:** ${link(undefined, skillPath(c.folder))} · **Examples:** ${link(data.docsPrefix, pagePath(c.folder))}`,
     ].join('\n');
   };
   const collect = (pages: RootDocPage[]): string[] =>
@@ -194,6 +210,7 @@ export function assembleRootSkillText(template: string, data: RootSkillData): st
     .replaceAll('{{TOTAL}}', String(data.total))
     .replaceAll('{{WITH_JS}}', String(data.withJs))
     .replaceAll('{{CSS_ONLY}}', String(data.total - data.withJs))
+    .replaceAll('{{RAW_BASE}}', data.rawBase ?? '')
     // function replacers: rendered text contains `df$` - a string replacement
     // would read "$`" as "insert the text before the match"
     .replace(ROOT_SKILL_DOCS_MARKER, () => renderDocsMap(data, isComponent))

@@ -54,6 +54,18 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillGrid>
   </SkillField>
 
+  <SkillField label="Shape, ring, placement">
+<SkillGrid>
+    <Variant name='data-shape="rounded"' description="Rounded square (--radius-lg) - image, fallback and ring follow" />
+    <Variant name='data-shape="square"' description="Square with a small radius (--radius-sm)" />
+    <Variant name="shape-* on .avatar-image" description="Any silhouette from theme/utils/shapes.css - heart, squircle, hexagon…" />
+    <Variant name="data-ring" description="Ring in --primary with a background gap (secondary / destructive values)" />
+    <Variant name='data-position on .avatar-badge' description="top-start / top-end / bottom-start / bottom-end (default)" />
+    <Variant name='data-variant on .avatar-fallback' description="primary / neutral - letters on a solid plate" />
+    <Variant name='data-overlap on .avatar-group' description="sm / lg - a tighter or looser stack" />
+  </SkillGrid>
+  </SkillField>
+
   <SkillField label="Data attributes">
 <SkillText>• <code>data-error</code></SkillText>
   </SkillField>
@@ -145,6 +157,70 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </ul>
 ```
 
+```html example label="Badge position" hint="data-position on the .avatar-badge puts it on any of the four corners: top-start, top-end, bottom-start or bottom-end (the default). start / end follow the reading direction - in RTL, start is the right."
+<div class="flex flex-wrap items-center gap-8">
+  <span class="avatar" data-size="lg">
+    <img class="avatar-image" src="https://github.com/kyr0.png" alt="Aron Homberg"></img>
+    <span class="avatar-fallback">AH</span>
+    <span class="avatar-badge" data-variant="online" data-position="top-start" role="img" aria-label="Online"></span>
+  </span>
+  <span class="avatar" data-size="lg">
+    <img class="avatar-image" src="https://github.com/kyr0.png" alt="Aron Homberg"></img>
+    <span class="avatar-fallback">AH</span>
+    <span class="avatar-badge" data-variant="busy" data-position="top-end" role="img" aria-label="Busy"></span>
+  </span>
+  <span class="avatar" data-size="lg">
+    <img class="avatar-image" src="https://github.com/kyr0.png" alt="Aron Homberg"></img>
+    <span class="avatar-fallback">AH</span>
+    <span class="avatar-badge" data-variant="away" data-position="bottom-start" role="img" aria-label="Away"></span>
+  </span>
+  <span class="avatar" data-size="lg">
+    <img class="avatar-image" src="https://github.com/kyr0.png" alt="Aron Homberg"></img>
+    <span class="avatar-fallback">AH</span>
+    <span class="avatar-badge" data-variant="offline" data-position="bottom-end" role="img" aria-label="Offline"></span>
+  </span>
+</div>
+```
+
+```html example label="Shapes" hint="data-shape=&quot;rounded&quot; or &quot;square&quot; reshapes the avatar - image, fallback and ring follow. For silhouettes, put a shape-* class from theme/utils/shapes.css on the .avatar-image (here: shape-heart, shape-squircle, shape-hexagon-2, shape-decagon, shape-star-2): only the photo is cut, so a badge still sits on top."
+<div class="flex flex-wrap items-center gap-6">
+  <span class="avatar" data-size="xl" data-shape="rounded"><img class="avatar-image" src="https://github.com/kyr0.png" alt="Aron Homberg"></img><span class="avatar-fallback">AH</span></span>
+  <span class="avatar" data-size="xl" data-shape="square"><img class="avatar-image" src="https://github.com/kyr0.png" alt="Aron Homberg"></img><span class="avatar-fallback">AH</span></span>
+  <span class="avatar" data-size="xl"><img class="avatar-image shape-heart" src="https://github.com/kyr0.png" alt="Aron Homberg"></img><span class="avatar-fallback">AH</span></span>
+  <span class="avatar" data-size="xl"><img class="avatar-image shape-squircle" src="https://github.com/kyr0.png" alt="Aron Homberg"></img><span class="avatar-fallback">AH</span></span>
+  <span class="avatar" data-size="xl"><img class="avatar-image shape-hexagon-2" src="https://github.com/kyr0.png" alt="Aron Homberg"></img><span class="avatar-fallback">AH</span></span>
+  <span class="avatar" data-size="xl"><img class="avatar-image shape-decagon" src="https://github.com/kyr0.png" alt="Aron Homberg"></img><span class="avatar-fallback">AH</span></span>
+  <span class="avatar" data-size="xl"><img class="avatar-image shape-star-2" src="https://github.com/kyr0.png" alt="Aron Homberg"></img><span class="avatar-fallback">AH</span></span>
+  <span class="avatar" data-size="xl"><img class="avatar-image shape-squircle" src="https://github.com/kyr0.png" alt="Aron Homberg"></img><span class="avatar-fallback">AH</span><span class="avatar-badge" data-variant="online" role="img" aria-label="Online"></span></span>
+</div>
+```
+
+```html example label="Custom sizes" hint="Beyond the xs–xl scale, the sizing utilities set any size: w-32 h-32 is 8rem. The badge keeps its size; set data-size for a matching one."
+<div class="flex flex-wrap items-end gap-6">
+  <span class="avatar w-32 h-32"><img class="avatar-image" src="https://github.com/kyr0.png" alt="Aron Homberg"></img><span class="avatar-fallback">AH</span></span>
+  <span class="avatar w-24 h-24" data-shape="rounded"><img class="avatar-image" src="https://github.com/kyr0.png" alt="Aron Homberg"></img><span class="avatar-fallback">AH</span></span>
+  <span class="avatar w-16 h-16"><img class="avatar-image" src="https://github.com/kyr0.png" alt="Aron Homberg"></img><span class="avatar-fallback">AH</span></span>
+  <span class="avatar w-8 h-8"><img class="avatar-image" src="https://github.com/kyr0.png" alt="Aron Homberg"></img><span class="avatar-fallback">AH</span></span>
+</div>
+```
+
+```html example label="Ring" hint="data-ring draws a ring with a background-colored gap - --primary by default, data-ring=&quot;secondary&quot; or &quot;destructive&quot; for the others. It follows data-shape."
+<div class="flex flex-wrap items-center gap-8 p-2">
+  <span class="avatar" data-size="xl" data-ring><img class="avatar-image" src="https://github.com/kyr0.png" alt="Aron Homberg"></img><span class="avatar-fallback">AH</span></span>
+  <span class="avatar" data-size="xl" data-ring="secondary" data-shape="rounded"><img class="avatar-image" src="https://github.com/kyr0.png" alt="Aron Homberg"></img><span class="avatar-fallback">AH</span></span>
+  <span class="avatar" data-size="xl" data-ring="destructive"><span class="avatar-fallback">JD</span></span>
+</div>
+```
+
+```html example label="Placeholder" hint="Without an image the .avatar-fallback letters are the avatar. data-variant=&quot;primary&quot; or &quot;neutral&quot; puts them on a solid plate; the letters scale with data-size."
+<div class="flex flex-wrap items-center gap-4">
+  <span class="avatar" data-size="xl"><span class="avatar-fallback" data-variant="neutral">D</span></span>
+  <span class="avatar" data-size="lg"><span class="avatar-fallback" data-variant="primary">AI</span></span>
+  <span class="avatar" data-size="md"><span class="avatar-fallback">SY</span></span>
+  <span class="avatar" data-size="sm"><span class="avatar-fallback" data-variant="neutral">UI</span></span>
+</div>
+```
+
 ```html example label="Avatar Group" hint="Overlapping avatars with an optional count."
 <div class="avatar-group">
   <span class="avatar">
@@ -160,6 +236,16 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <span class="avatar-fallback">ER</span>
   </span>
   <span class="avatar-group-count">+3</span>
+</div>
+```
+
+```html example label="Group overlap and counter" hint="data-overlap=&quot;lg&quot; stacks the avatars tighter (&quot;sm&quot; looser); the .avatar-group-count closes the row with how many are left."
+<div class="avatar-group" data-overlap="lg">
+  <span class="avatar" data-size="lg"><img class="avatar-image" src="https://github.com/kyr0.png" alt="Aron Homberg"></img><span class="avatar-fallback">AH</span></span>
+  <span class="avatar" data-size="lg"><span class="avatar-fallback">JD</span></span>
+  <span class="avatar" data-size="lg"><span class="avatar-fallback" data-variant="primary">MR</span></span>
+  <span class="avatar" data-size="lg"><span class="avatar-fallback">AK</span></span>
+  <span class="avatar-group-count w-12 h-12">+99</span>
 </div>
 ```
 

@@ -64,10 +64,16 @@ export function parseStatesTable(body: string): Array<{ name: string; type: stri
   });
 }
 
-/** Parse `key="value"` attributes out of a fence meta string. */
-function fenceAttrs(meta: string): Record<string, string> {
+/**
+ * Parse `key="value"` attributes out of a fence meta string. CommonMark decodes
+ * character references in the info string, so an authored `&quot;` reaches us
+ * as a bare `"` - a value therefore ends only at a quote followed by the next
+ * `key="` or the end of the meta (a `[^"]*` value cut hints off at the first
+ * embedded quote: `hint="data-variant=&quot;…` rendered as "data-variant=").
+ */
+export function fenceAttrs(meta: string): Record<string, string> {
   const out: Record<string, string> = {};
-  for (const m of meta.matchAll(/([a-zA-Z-]+)="([^"]*)"/g)) out[m[1]] = m[2];
+  for (const m of meta.matchAll(/([a-zA-Z-]+)="(.*?)"(?=\s+[a-zA-Z-]+="|\s*$)/g)) out[m[1]] = m[2];
   return out;
 }
 
@@ -123,11 +129,10 @@ function statesTableNode(node: CodeNode): unknown {
 }
 
 /** One hoisted `import { CodeExample, StatesTable } from '../lib/components/code-example'`. */
-function importNode(): unknown {
-  const names = ['CodeExample', 'StatesTable'];
+function importNode(names = ['CodeExample', 'StatesTable'], from = '../lib/components/code-example'): unknown {
   return {
     type: 'mdxjsEsm',
-    value: `import { ${names.join(', ')} } from '../lib/components/code-example';`,
+    value: `import { ${names.join(', ')} } from '${from}';`,
     data: {
       estree: {
         type: 'Program',
@@ -140,7 +145,7 @@ function importNode(): unknown {
               imported: { type: 'Identifier', name: n },
               local: { type: 'Identifier', name: n },
             })),
-            source: { type: 'Literal', value: '../lib/components/code-example' },
+            source: { type: 'Literal', value: from },
           },
         ],
         comments: [],
@@ -149,9 +154,23 @@ function importNode(): unknown {
   };
 }
 
+/**
+ * A ```mermaid fence (no `example` directive) → <MermaidDiagram>: the
+ * shipped Mermaid component's markup, rendered to SVG by mermaid.js at
+ * runtime. Meta: label="…" (accessible name), caption="…" (figcaption).
+ */
+function mermaidNode(node: CodeNode): unknown {
+  const attrs = fenceAttrs(node.meta ?? '');
+  const attributes = [jsxAttr('source', node.value)];
+  if (attrs.label) attributes.push(jsxAttr('label', attrs.label));
+  if (attrs.caption) attributes.push(jsxAttr('caption', attrs.caption));
+  return { type: 'mdxJsxFlowElement', name: 'MermaidDiagram', attributes, children: [] };
+}
+
 /** True once the page contains at least one transformed fence (import injected once). */
 function transform(tree: MdastParent, pageComponent: string): boolean {
   let used = false;
+  let mermaid = false;
   const visit = (node: MdastParent) => {
     if (!Array.isArray(node.children)) return;
     for (let i = 0; i < node.children.length; i++) {
@@ -169,6 +188,11 @@ function transform(tree: MdastParent, pageComponent: string): boolean {
           used = true;
           continue;
         }
+        if (lang === 'mermaid') {
+          node.children[i] = mermaidNode(child);
+          mermaid = true;
+          continue;
+        }
       } else if (child.children) {
         visit(child);
       }
@@ -176,10 +200,11 @@ function transform(tree: MdastParent, pageComponent: string): boolean {
   };
   visit(tree);
   if (used) tree.children.unshift(importNode());
-  return used;
+  if (mermaid) tree.children.unshift(importNode(['MermaidDiagram'], '../lib/components/mermaid-diagram'));
+  return used || mermaid;
 }
 
-/** remark plugin: ```… example / ```states fences → CodeExample / StatesTable. */
+/** remark plugin: ```… example / ```states / ```mermaid fences → CodeExample / StatesTable / MermaidDiagram. */
 export function remarkDocExamples() {
   return (tree: MdastParent, file: { basename?: string }) => {
     // pages/{name}.mdx → the page's own component (plan §23)

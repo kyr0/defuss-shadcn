@@ -9,10 +9,10 @@
 [![TypeScript definitions](https://img.shields.io/npm/types/defuss-shadcn.svg)](https://www.npmjs.com/package/defuss-shadcn)
 [![Socket Badge](https://badge.socket.dev/npm/package/defuss-shadcn/latest)](https://socket.dev/npm/package/defuss-shadcn)
 
-**A UI component system that scales with _local_ AI.** Themeable components built on semantic HTML, modern CSS, and vanilla JavaScript. No framework. No build step for consumers - `dist/` is committed and ready to use as-is. The simplest possible foundation for AI-driven prototyping.
+**A UI component system that scales with _(local)_ AI.** Themeable components built on semantic HTML, modern CSS, and vanilla JavaScript. No framework. No build step for consumers - `dist/` is committed and ready to use as-is. The simplest possible foundation for AI-driven prototyping.
 
-**77 components - 34 with JavaScript, 43 CSS-only - 109.8 KiB minified + compressed - 76.2 KiB as the all.css/all.js bundle.**
-43 of 77 components need no JavaScript - native HTML and modern CSS cover them entirely.
+**85 components - 39 with JavaScript, 46 CSS-only - 145.5 KiB minified + compressed - 102.6 KiB as the all.css/all.js bundle.**
+46 of 85 components need no JavaScript - native HTML and modern CSS cover them entirely.
 <!-- parity anchor: README ↔ index (AGENTS.md) - the footprint sentence and pillar set must match src/documentation/pages/index.mdx; commit both files together -->
 The footprint is measured from the shipped `dist/` files on every build and published as
 [`dist/stats.json`](dist/stats.json); `verify` fails the build if this sentence and that file disagree.
@@ -78,7 +78,7 @@ import 'defuss-shadcn/dist/components/all.js';   // df$ runtime + every componen
 
 ### For AI agents: SKILL.md
 
-[`skills/defuss-shadcn/SKILL.md`](skills/defuss-shadcn/SKILL.md) (shipped in the npm package) packages the whole project as one Agent Skill: the exact install steps for both paths (npm or jsDelivr, no TypeScript for standalone HTML), the include order, the rules to follow, a map of every documentation page (guides + live examples, linked as MDX sources) and an index of all component skills with why/when - generated from the sources on every build.
+[`skills/defuss-shadcn/SKILL.md`](skills/defuss-shadcn/SKILL.md) (shipped in the npm package) packages the whole project as one Agent Skill: the exact install steps for both paths (npm or jsDelivr, no TypeScript for standalone HTML), the include order, the rules to follow, a map of every documentation page (guides + live examples, linked as MDX sources) and an index of all component skills with why/when - generated from the sources on every build. Every component skill is copied into the skill folder itself (`skills/defuss-shadcn/references/components/`), so an agent reads them right next to the SKILL.md in any install - Claude Code plugin, npm, or a skills-CLI copy - instead of searching for them.
 
 Install it into your coding agent:
 

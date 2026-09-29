@@ -113,6 +113,74 @@
       &:hover { text-decoration: underline; }
     }
 
+    /* soft: a tint of the color, text in the color */
+    &[data-variant="soft"] {
+      background-color: color-mix(in oklch, var(--primary) 12%, transparent);
+      color: color-mix(in oklch, var(--primary) 80%, var(--foreground));
+
+      &:hover { background-color: color-mix(in oklch, var(--primary) 20%, transparent); }
+    }
+
+    /* dashed: a drop-zone / "add" look */
+    &[data-variant="dashed"] {
+      background-color: transparent;
+      color: var(--foreground);
+      border: 1px dashed color-mix(in oklch, var(--foreground) 35%, transparent);
+
+      &:hover {
+        background-color: var(--accent);
+        color: var(--accent-foreground);
+        border-style: solid;
+      }
+    }
+
+    /* -- Tones: any variant in another color -------------------
+       data-tone="success" / "warning" / "info" / "destructive" - or
+       data-tone="custom" with style="--btn-color: …; --btn-color-fg: …"
+       (the text on a solid fill, default white). Solid buttons fill with the
+       tone; outline / ghost / soft / dashed / link write in it, mixed toward
+       the foreground so a light tone (amber) stays readable. */
+    &[data-tone] {
+      --_tone: var(--btn-color, var(--primary));
+      --_tone-fg: var(--btn-color-fg, #fff);
+      --_tone-ink: color-mix(in oklch, var(--_tone) 78%, var(--foreground));
+    }
+    &[data-tone="success"] { --_tone: oklch(0.6 0.15 150); }
+    &[data-tone="warning"] { --_tone: oklch(0.8 0.16 80); --_tone-fg: oklch(0.28 0.06 60); }
+    &[data-tone="info"] { --_tone: oklch(0.6 0.16 250); }
+    &[data-tone="destructive"] { --_tone: var(--destructive); --_tone-fg: var(--destructive-foreground, #fff); }
+
+    &[data-tone]:is(:not([data-variant]), [data-variant="default"]) {
+      background-color: var(--_tone);
+      color: var(--_tone-fg);
+
+      &:hover { opacity: 0.9; }
+    }
+    &[data-tone][data-variant="outline"] {
+      background-color: transparent;
+      color: var(--_tone-ink);
+      border-color: var(--_tone);
+
+      &:hover { background-color: color-mix(in oklch, var(--_tone) 12%, transparent); color: var(--_tone-ink); }
+    }
+    &[data-tone]:is([data-variant="ghost"], [data-variant="dashed"]) {
+      color: var(--_tone-ink);
+
+      &:hover { background-color: color-mix(in oklch, var(--_tone) 14%, transparent); color: var(--_tone-ink); }
+    }
+    &[data-tone][data-variant="dashed"] { border-color: var(--_tone); }
+    &[data-tone][data-variant="soft"] {
+      background-color: color-mix(in oklch, var(--_tone) 16%, transparent);
+      color: var(--_tone-ink);
+
+      &:hover { background-color: color-mix(in oklch, var(--_tone) 26%, transparent); }
+    }
+    &[data-tone][data-variant="link"] { color: var(--_tone-ink); }
+
+    /* -- RTL: arrows and other directional icons mirror ----------
+       mark them data-rtl-flip; symmetric icons stay as they are */
+    &:dir(rtl) [data-rtl-flip] { scale: -1 1; }
+
     /* -- Sizes ----------------------------------------------- */
     &[data-size="xs"]      { height: 1.75rem; padding: 0 0.5rem;  font-size: 0.75rem; border-radius: var(--radius-sm); }
     &[data-size="sm"]      { height: 2rem;    padding: 0 0.75rem; font-size: 0.8125rem; }

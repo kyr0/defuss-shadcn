@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "name": "diff",
+  "states": {
+    "position": {
+      "type": "number",
+      "default": 50,
+      "target": {
+        "kind": "selector",
+        "selector": ".diff"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "default",
+        "args": {
+          "position": "@value"
+        }
+      },
+      "observation": {
+        "kind": "property",
+        "name": "value",
+        "target": {
+          "kind": "selector",
+          "selector": ".diff-range"
+        }
+      },
+      "editor": {
+        "component": "number"
+      }
+    },
+    "before": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".diff"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "before"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "after": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".diff"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "after"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

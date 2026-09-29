@@ -106,6 +106,36 @@ is required. For multi-open, pure HTML with no JS works.
 
 ---
 
+## Surfaces, colors, sizes, icons, markers
+
+```html
+<div class="accordion" data-variant="separated" data-marker="plus" data-size="lg">
+  <details class="accordion-item" open>
+    <summary class="accordion-trigger"><span class="accordion-icon" aria-hidden="true">🎨</span><span>Appearance</span></summary>
+    <div class="accordion-content"><p>…</p></div>
+  </details>
+</div>
+```
+
+| On the `.accordion` | Values | Effect |
+| --- | --- | --- |
+| `data-variant` | `bordered` | One box, items divided |
+|  | `separated` | Every item its own card (gap between) |
+|  | `muted` / `primary` / `neutral` | Separated items on that surface |
+|  | `highlight` | Separated; the open item turns primary |
+|  | `ghost` | No dividers |
+| `data-size` | `sm` / `md` / `lg` / `xl` | Heading scale (lg semibold, xl bold) |
+| `data-marker` | `arrow` / `plus` | A CSS-drawn open/close sign for every item (no icon markup) |
+| `data-marker-position` | `start` | The sign before the heading |
+
+- Boxed variants inset the text and tint the row on hover instead of the underline.
+- Custom colors: `background` + `color` on an item - the hover tint (7%),
+  marker (65%) and content text (72%) mix from its text color.
+- `.accordion-icon` - an svg or emoji in front of a heading (fixed box).
+- Own glyphs: `.accordion-chevron` turns 180° (`data-turn="quarter"`: 90°,
+  mirrored in RTL), or swap `.accordion-when-closed` / `.accordion-when-open`.
+- Everything is logical - it mirrors in `dir="rtl"`.
+
 ## Density
 
 Set `data-density` on the `.accordion` root; trigger and panel padding scale.

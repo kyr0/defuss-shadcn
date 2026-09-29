@@ -57,6 +57,45 @@ supportedStates: default, open
 ---
 
 
+## Megamenu
+
+A panel can be a whole page of navigation - still one native popover per
+trigger:
+
+```html
+<div class="nav-menu-content" id="products" data-width="wide" popover>
+  <div class="nav-menu-grid" data-columns="3">
+    <div class="nav-menu-section">
+      <p class="nav-menu-heading">Build</p>
+      <a class="nav-menu-content-link" href="…">
+        <span class="nav-menu-icon"><svg>…</svg></span>
+        <strong>Components</strong>
+        <p>Tokens-first UI parts</p>
+      </a>
+    </div>
+    …
+    <a class="nav-menu-feature" href="…"><img src="…" alt=""><strong>Case study</strong><p>…</p></a>
+    <div class="nav-menu-footer"><span>New: …</span><a href="…">What's new →</a></div>
+  </div>
+</div>
+```
+
+| Part / attribute | Effect |
+| --- | --- |
+| `data-width="wide"` (panel) | the panel takes the whole `.nav-menu`'s width (anchor-scoped, CSS only) |
+| `data-width="full"` (panel) | the panel spans the page; its content stays within 72rem |
+| `.nav-menu-grid` | columns: auto-fit (min 12rem) or `data-columns="2"` / `"3"` / `"4"` |
+| `.nav-menu-section` + `.nav-menu-heading` | a column with an uppercase heading |
+| `.nav-menu-icon` in a `.nav-menu-content-link` | icon │ title over description |
+| `.nav-menu-feature` | a promo block (optional image, title, text) |
+| `.nav-menu-footer` | a full-width row under the columns |
+| `data-orientation="vertical"` (nav) | a side menu - panels fly out to the right, below the trigger when there is no room |
+| `data-orientation="responsive"` (nav) | vertical below 48rem, horizontal above; fixed columns collapse to one |
+
+The open trigger stays highlighted; `aria-current="page"` marks the page's
+link. Arrowless triggers: leave the chevron svg out. In a `navbar`, put the
+`.nav-menu` in `.navbar-center` and use `data-width="full"` panels.
+
 ## Density
 
 Set `data-density` on the `.nav-menu` nav. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25); typography and fixed dimensions stay identical. `comfortable` matches the unsized default.

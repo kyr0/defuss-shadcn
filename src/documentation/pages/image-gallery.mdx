@@ -9,7 +9,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
 <DocPage meta={meta}>
 
 <PageHeader slug="image-gallery" title="Image Gallery" component="image">
-  A composition pattern on top of the Image component: a crossfading, auto-advancing gallery where each slide declares its own dwell time in markup (<code>data-duration</code>) and a small defuss-query controller owns selection, state attributes, and the timer - no raw <code>querySelector</code>/<code>classList</code> anywhere.
+  Compositions on top of the Image component: a hover gallery that shows the next photo as the pointer crosses it (CSS only), and a crossfading, auto-advancing gallery where each slide declares its own dwell time in markup (<code>data-duration</code>) and a small defuss-query controller owns selection, state attributes, and the timer - no raw <code>querySelector</code>/<code>classList</code> anywhere.
 </PageHeader>
 
 ```html example label="Auto-advancing gallery" schema="none" height="26" hint="Five figure.image slides crossfade on a re-armed setTimeout chain: each slide's data-duration is its dwell (the last slide has none and falls back to the Default dwell field). Prev/next reschedule the timer, the toggle pauses it - and every DOM read/write in the controller goes through df$ (defuss-query)."
@@ -116,6 +116,85 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
 ```
 
 <p class="text-sm text-muted-foreground m-0 mb-3">The pattern: <code>df$</code> (defuss-query) drives every DOM touch - selection (<code>find</code> / <code>children</code> / <code>eq</code>), attribute reads and writes (<code>data</code> / <code>attr</code>), label text (<code>text</code>), control values (<code>val</code>) and events (<code>on</code>) - while the crossfade itself is pure CSS keyed on the <code>data-active</code> attribute. Auto-advance is one re-armed <code>setTimeout</code> instead of a fixed interval: each slide's dwell is its own <code>data-duration</code>, falling back to the "Default dwell" field, and every manual navigation, pause, or config edit clears and re-arms the timer - user control always wins over the schedule.</p>
+
+<h2 id="hover-gallery" class="h2-display">Hover gallery</h2>
+
+<p class="text-sm text-muted-foreground m-0 mb-3">daisyUI's hover gallery, CSS only: a <code>.hover-gallery</code> holds 2 - 10 images in one frame. The first shows; moving the pointer across the frame shows the others - the frame is sliced into as many invisible strips as there are images. Typical for product cards: glance through the photos without clicking. On touch screens (no hover) the same markup becomes a swipeable strip.</p>
+
+```html example label="Hover gallery" schema="none" height="24" hint="Move the pointer from left to right across the picture - each fourth of the frame shows the next photo; back at the left edge the first returns."
+<figure class="hover-gallery" style="max-width:24rem;margin:0;">
+  <img src="https://picsum.photos/id/1015/800/600" alt="A fjord between steep cliffs">
+  <img src="https://picsum.photos/id/1016/800/600" alt="A red canyon at sunset">
+  <img src="https://picsum.photos/id/1018/800/600" alt="Green hills under clouds">
+  <img src="https://picsum.photos/id/1050/800/600" alt="Sea stacks off a rocky coast">
+</figure>
+```
+
+```html example label="Product card" schema="none" height="30" hint="Inside a link card: the gallery previews the product, the whole card stays one link. data-indicator draws the position bar on hover."
+<a class="card" href="#product" style="max-width:18rem;">
+  <figure class="hover-gallery" data-indicator data-ratio="1/1" style="margin:0;border-radius:0;">
+  <img src="https://picsum.photos/id/0/600/600" alt="The notebook open on a wooden desk">
+  <img src="https://picsum.photos/id/2/600/600" alt="The notebook next to a coffee cup">
+  <img src="https://picsum.photos/id/48/600/600" alt="The notebook lid, closed">
+  <img src="https://picsum.photos/id/201/600/600" alt="The notebook with glasses and a mouse">
+  </figure>
+  <div class="card-header">
+    <h3 class="card-title">Notebook Air 13″</h3>
+    <p class="card-description">Silver · 3 colors</p>
+  </div>
+  <div class="card-footer"><strong>€1,199</strong></div>
+</a>
+```
+
+```html example label="Position bar" schema="none" height="24" hint="data-indicator shows n segments on hover (the bright one is the photo in view); data-indicator='always' keeps them visible - a hint that there is more to see."
+<div class="grid gap-4" style="grid-template-columns:repeat(2, minmax(0, 18rem));">
+  <figure class="hover-gallery" data-indicator style="margin:0;">
+  <img src="https://picsum.photos/id/30/800/600" alt="A patterned red mug">
+  <img src="https://picsum.photos/id/42/800/600" alt="A café table by the window">
+  <img src="https://picsum.photos/id/431/800/600" alt="A cappuccino with latte art">
+  <img src="https://picsum.photos/id/1/800/600" alt="Coffee beside a laptop at work">
+  </figure>
+  <figure class="hover-gallery" data-indicator="always" style="margin:0;">
+  <img src="https://picsum.photos/id/1025/800/600" alt="A pug wrapped in a blanket">
+  <img src="https://picsum.photos/id/1062/800/600" alt="A pug under a blanket on a bed">
+  <img src="https://picsum.photos/id/1074/800/600" alt="A lioness looking into the camera">
+  <img src="https://picsum.photos/id/1084/800/600" alt="Walruses resting on a beach">
+  </figure>
+</div>
+```
+
+```html example label="Zoom" schema="none" height="24" hint="data-effect='zoom' eases the photo in view slightly larger - a livelier preview. Reduced motion turns it off."
+<figure class="hover-gallery" data-effect="zoom" data-indicator style="max-width:24rem;margin:0;">
+  <img src="https://picsum.photos/id/1035/800/600" alt="A waterfall with a rainbow">
+  <img src="https://picsum.photos/id/1039/800/600" alt="A waterfall in a green forest">
+  <img src="https://picsum.photos/id/1043/800/600" alt="Pines below granite cliffs">
+  <img src="https://picsum.photos/id/1036/800/600" alt="Snowy mountains in winter">
+</figure>
+```
+
+```html example label="Vertical zones" schema="none" height="30" hint="data-direction='vertical' slices the frame into rows instead of columns - for tall portraits, move the pointer top to bottom."
+<figure class="hover-gallery" data-direction="vertical" data-ratio="3/4" style="max-width:14rem;margin:0;">
+  <img src="https://picsum.photos/id/64/600/800" alt="A woman with sunglasses in a field">
+  <img src="https://picsum.photos/id/65/600/800" alt="Hair lit by the evening sun">
+  <img src="https://picsum.photos/id/823/600/800" alt="A photographer in a red beanie">
+  <img src="https://picsum.photos/id/338/600/800" alt="A hooded figure at the shore">
+</figure>
+```
+
+```html example label="Up to ten images" schema="none" height="24" hint="Ten photos, ten strips - the frame adapts to the count by itself (:has() counts the children)."
+<figure class="hover-gallery" data-indicator="always" data-ratio="16/9" style="max-width:32rem;margin:0;">
+  <img src="https://picsum.photos/id/20/960/540" alt="A desk with notebooks and a phone">
+  <img src="https://picsum.photos/id/26/960/540" alt="Travel gear laid out on grey">
+  <img src="https://picsum.photos/id/30/960/540" alt="A patterned red mug">
+  <img src="https://picsum.photos/id/96/960/540" alt="A game controller on a table">
+  <img src="https://picsum.photos/id/160/960/540" alt="A phone on a desk, close up">
+  <img src="https://picsum.photos/id/250/960/540" alt="A vintage camera on piano keys">
+  <img src="https://picsum.photos/id/367/960/540" alt="An e-reader held in the grass">
+  <img src="https://picsum.photos/id/403/960/540" alt="The keys of an old typewriter">
+  <img src="https://picsum.photos/id/431/960/540" alt="A cappuccino with latte art">
+  <img src="https://picsum.photos/id/91/960/540" alt="A man holding a twin-lens camera">
+</figure>
+```
 
 <SourceFiles component="image" />
 

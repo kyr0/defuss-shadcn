@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { clickSelector, openDocPage, waitFor } from './helpers';
-import { normalizeFenceHtml } from '../src/documentation/lib/mdx-example';
+import { fenceAttrs, normalizeFenceHtml, remarkDocExamples } from '../src/documentation/lib/mdx-example';
+import { archBodyHtml } from '../src/documentation/lib/arch-md';
 
 /**
  * Why: the executable-example mechanism (plans/cmp-schemas-and-codeexample.md
@@ -416,5 +417,49 @@ describe('normalizeFenceHtml (fence self-closing → HTML-valid)', () => {
   it('leaves explicit close tags alone', () => {
     const src = '<div class="x">hi</div>';
     expect(normalizeFenceHtml(src)).toBe(src);
+  });
+});
+
+describe('fenceAttrs (fence meta → CodeExample props)', () => {
+  // CommonMark decodes `&quot;` in the info string, so the plugin sees bare
+  // quotes inside a value - the "Tabs hint reads just data-variant=" bug.
+  it('keeps quotes embedded in a value', () => {
+    const meta = 'html example label="Attached" hint="data-variant="attached" on the list, "quoted" text." height="16"';
+    expect(fenceAttrs(meta)).toEqual({ label: 'Attached', hint: 'data-variant="attached" on the list, "quoted" text.', height: '16' });
+  });
+  it('parses plain attributes', () => {
+    expect(fenceAttrs('html example label="A" hint="B"')).toEqual({ label: 'A', hint: 'B' });
+  });
+});
+
+describe('```mermaid fences (docs MDX + ARCH.md) → the Mermaid component', () => {
+  it('an MDX mermaid fence becomes <MermaidDiagram> with its label / caption, imported once', () => {
+    const source = 'flowchart LR\n  A["a<br/>b"] --> B';
+    const tree = {
+      type: 'root',
+      children: [
+        { type: 'code', lang: 'mermaid', meta: 'label="Flow" caption="From A to B"', value: source },
+        { type: 'code', lang: 'mermaid', meta: '', value: 'flowchart LR\n  C --> D' },
+      ],
+    } as unknown as Parameters<ReturnType<typeof remarkDocExamples>>[0];
+    remarkDocExamples()(tree, { basename: 'guide.mdx' });
+    const kids = (tree as unknown as { children: Array<Record<string, unknown>> }).children;
+    const imports = kids.filter((k) => k.type === 'mdxjsEsm').map((k) => String(k.value));
+    expect(imports).toEqual(["import { MermaidDiagram } from '../lib/components/mermaid-diagram';"]);
+    const diagrams = kids.filter((k) => k.name === 'MermaidDiagram');
+    expect(diagrams).toHaveLength(2);
+    const attr = (node: Record<string, unknown>, name: string) =>
+      (node.attributes as Array<{ name: string; value: { data: { estree: { body: Array<{ expression: { value: unknown } }> } } } }>)
+        .find((a) => a.name === name)?.value.data.estree.body[0].expression.value;
+    expect(attr(diagrams[0], 'source')).toBe(source);
+    expect(attr(diagrams[0], 'label')).toBe('Flow');
+    expect(attr(diagrams[0], 'caption')).toBe('From A to B');
+    expect(attr(diagrams[1], 'label')).toBeUndefined();
+  });
+
+  it('ARCH.md: a mermaid fence renders as the component figure, source escaped (readable without JS)', () => {
+    const html = archBodyHtml('## Loop\n\n```mermaid\nflowchart TD\n  A["x<br/>y"] --> B\n```\n\n```ts\nconst a = 1;\n```\n');
+    expect(html).toContain('<figure class="mermaid-diagram"><pre class="mermaid">flowchart TD\n  A["x&lt;br/&gt;y"] --&gt; B</pre></figure>');
+    expect(html).toContain('<pre><code class="language-ts">const a = 1;</code></pre>');
   });
 });

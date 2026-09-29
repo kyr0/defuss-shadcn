@@ -20,5 +20,41 @@
       <hr class="separator" id="sep-vertical" data-orientation="vertical" />
       <span>right</span>
     </div>
+
+    <!-- text on the line, positions, colors, sizes, gaps, vertical text, responsive -->
+    <div style="width:400px;margin-top:2rem;display:grid;gap:1rem;">
+      <div class="separator" id="sep-text">OR</div>
+      <div class="separator" id="sep-start" data-align="start">Start</div>
+      <div class="separator" id="sep-end" data-align="end">End</div>
+      <div class="separator" id="sep-c-neutral" data-variant="neutral">neutral</div>
+      <div class="separator" id="sep-c-primary" data-variant="primary">primary</div>
+      <div class="separator" id="sep-c-secondary" data-variant="secondary">secondary</div>
+      <div class="separator" id="sep-c-accent" data-variant="accent">accent</div>
+      <div class="separator" id="sep-c-info" data-variant="info">info</div>
+      <div class="separator" id="sep-c-success" data-variant="success">success</div>
+      <div class="separator" id="sep-c-warning" data-variant="warning">warning</div>
+      <div class="separator" id="sep-c-destructive" data-variant="destructive">destructive</div>
+      <div class="separator" id="sep-c-error" data-variant="error">error</div>
+      <div class="separator" id="sep-s-sm" data-size="sm">sm</div>
+      <div class="separator" id="sep-s-md" data-size="md">md</div>
+      <div class="separator" id="sep-s-lg" data-size="lg">lg</div>
+      <div class="separator" id="sep-s-xl" data-size="xl">xl</div>
+      <hr class="separator" id="sep-hr-lg" data-size="lg" />
+      <div class="separator" id="sep-g-none" data-gap="none">gap</div>
+      <div class="separator" id="sep-g-sm" data-gap="sm">gap</div>
+      <div class="separator" id="sep-g-md" data-gap="md">gap</div>
+      <div class="separator" id="sep-g-lg" data-gap="lg">gap</div>
+      <div class="separator" id="sep-g-xl" data-gap="xl">gap</div>
+    </div>
+    <div style="display:flex;height:8rem;margin-top:1rem;gap:1rem;">
+      <div class="separator" id="sep-vtext" data-orientation="vertical">OR</div>
+      <div class="separator" id="sep-vstart" data-orientation="vertical" data-align="start">S</div>
+    </div>
+    <style>.sep-row { display: flex; flex-direction: column; gap: 1rem; } @media (min-width: 64rem) { .sep-row { flex-direction: row; height: 6rem; } }</style>
+    <div class="sep-row" style="margin-top:1rem;width:600px;">
+      <div style="flex:1;">a</div>
+      <div class="separator" id="sep-resp" data-orientation-lg="vertical">OR</div>
+      <div style="flex:1;">b</div>
+    </div>
   </body>
 </html>

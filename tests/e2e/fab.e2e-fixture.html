@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>fab e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/fab/fab.css" />
+  </head>
+  <body style="margin:0;min-height:100vh;">
+    <!-- mirrors the doc page: speed dial with labels, main action, icon swap,
+         flower, corners + directions, text actions, sizes, container attach,
+         backdrop, extended + shrink, RTL -->
+    <div class="fab" id="f-dial">
+      <button class="btn fab-trigger" id="f-dial-t" popovertarget="m-dial" aria-label="Actions"><span class="fab-icon" aria-hidden="true">+</span></button>
+      <div class="fab-menu" id="m-dial" popover>
+        <button class="fab-action" id="a1" popovertarget="m-dial" popovertargetaction="hide">A<span class="fab-label">Camera</span></button>
+        <button class="fab-action" id="a2" popovertarget="m-dial" popovertargetaction="hide">B<span class="fab-label">Photos</span></button>
+        <button class="fab-action" id="a3" popovertarget="m-dial" popovertargetaction="hide">C<span class="fab-label">Voice</span></button>
+      </div>
+    </div>
+    <div class="fab" id="f-main" data-position="bottom-start" data-backdrop>
+      <button class="btn fab-trigger" id="f-main-t" popovertarget="m-main" aria-label="Actions"><span class="fab-icon fab-icon-closed" aria-hidden="true">+</span><span class="fab-icon fab-icon-open" aria-hidden="true">x</span></button>
+      <div class="fab-menu" id="m-main" popover>
+        <button class="fab-action fab-main" id="main" aria-label="New">N</button>
+        <button class="fab-action" id="b1">1<span class="fab-label">Group</span></button>
+      </div>
+    </div>
+    <div class="fab" id="f-flower" data-position="top-end" data-layout="flower" data-size="lg">
+      <button class="btn fab-trigger" id="f-flower-t" popovertarget="m-flower" aria-label="Actions">+</button>
+      <div class="fab-menu" id="m-flower" popover>
+        <button class="fab-action" id="p1">1<span class="fab-label">One</span></button>
+        <button class="fab-action" id="p2">2<span class="fab-label">Two</span></button>
+        <button class="fab-action" id="p3">3<span class="fab-label">Three</span></button>
+      </div>
+    </div>
+    <div class="fab" id="f-down" data-position="top-start" data-direction="down" data-size="sm">
+      <button class="btn fab-trigger" id="f-down-t" popovertarget="m-down" aria-label="Actions">+</button>
+      <div class="fab-menu" id="m-down" popover><button class="fab-action" id="d1" aria-label="d">d</button></div>
+    </div>
+    <div class="fab" id="f-left" data-position="bottom-center" data-direction="left">
+      <button class="btn fab-trigger" id="f-left-t" popovertarget="m-left" aria-label="Actions">+</button>
+      <div class="fab-menu" id="m-left" popover><button class="fab-action" id="l1">l<span class="fab-label">Left</span></button></div>
+    </div>
+    <div class="fab" id="f-md" data-size="md" data-position="top-end" style="inset-block-start:8rem;">
+      <button class="btn fab-trigger" id="f-md-t" popovertarget="m-text" aria-label="Actions" data-tone="success">+</button>
+      <div class="fab-menu" id="m-text" popover><button class="fab-action" id="tx1">i<span class="fab-text">Upload a long file name</span></button></div>
+    </div>
+    <div class="fab" data-direction="right" data-position="top-start" style="inset-block-start:8rem;">
+      <button class="btn fab-trigger" id="f-right-t" popovertarget="m-right" aria-label="Actions">+</button>
+      <div class="fab-menu" id="m-right" popover><button class="fab-action" id="r1" aria-label="r">r</button></div>
+    </div>
+    <div id="box" style="position:relative;width:300px;height:200px;margin:20rem auto 0;border:1px solid;">
+      <div class="fab" id="f-box" data-attach="container"><button class="btn fab-trigger" aria-label="Add">+</button></div>
+    </div>
+    <div id="wrap" style="position:relative;height:150px;width:300px;margin:1rem auto;timeline-scope:--list;">
+      <div id="scroller" style="height:100%;overflow-y:auto;scroll-timeline:--list;"><div style="height:1200px"></div></div>
+      <div class="fab" id="f-ext" data-attach="container" data-shrink="scroll" style="--fab-timeline: --list;"><button class="btn fab-trigger" id="f-ext-t" aria-label="Compose"><span class="fab-icon" aria-hidden="true">+</span><span class="fab-text">Compose</span></button></div>
+    </div>
+    <div dir="rtl" id="rtl-wrap"><div class="fab" id="f-rtl" style="inset-block-end:8rem;"><button class="btn fab-trigger" aria-label="rtl">+</button></div></div>
+  </body>
+</html>

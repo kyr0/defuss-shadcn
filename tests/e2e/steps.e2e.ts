@@ -8,6 +8,65 @@ import { cssSmoke } from './lib/css-smoke.ts';
  */
 await cssSmoke('steps', [
   {
+    label: 'data-variant on the list: nine distinct colors of done + current steps; error = destructive',
+    run: async (page) => {
+      const r = await page.evaluate(() => ["primary","secondary","accent","info","success","warning","neutral","destructive","error"].map((v) => {
+        const done = document.querySelector(`#sc-${v} .step[data-status="complete"] .step-indicator`)!;
+        const cur = document.querySelector(`#sc-${v} .step[data-status="current"] .step-indicator`)!;
+        const line = getComputedStyle(document.querySelector(`#sc-${v} .step[data-status="complete"]`)!, '::after').backgroundColor;
+        return { bg: getComputedStyle(done).backgroundColor, cur: getComputedStyle(cur).borderTopColor, line };
+      }));
+      const bgs = r.map((x) => x.bg);
+      assert.equal(new Set(bgs.slice(0, 8)).size, 8, bgs.join(' | '));
+      assert.equal(bgs[8], bgs[7], 'error is an alias of destructive');
+      for (const x of r) { assert.equal(x.cur, x.bg, 'current ring = done fill'); assert.equal(x.line, x.bg, 'connector follows'); }
+    },
+  },
+  {
+    label: 'data-variant on one .step overrides the list color',
+    run: async (page) => {
+      const r = await page.evaluate(() => [
+        getComputedStyle(document.querySelector('#sc-per-step .step:first-child .step-indicator')!).backgroundColor,
+        getComputedStyle(document.querySelector('#sc-per-step-2 .step-indicator')!).backgroundColor,
+        getComputedStyle(document.querySelector('#sc-info .step[data-status="complete"] .step-indicator')!).backgroundColor,
+        getComputedStyle(document.querySelector('#sc-warning .step[data-status="complete"] .step-indicator')!).backgroundColor,
+      ]);
+      assert.equal(r[0], r[2], 'list color (info)');
+      assert.equal(r[1], r[3], 'step color (warning)');
+    },
+  },
+  {
+    label: '.step-icon is a size up (1.5em); plain drops the circle and takes the accent color when current',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const ind = document.querySelector('#si .step-indicator')!;
+        const plain = getComputedStyle(document.getElementById('si-plain')!);
+        return {
+          icon: parseFloat(getComputedStyle(document.getElementById('si-emoji')!).fontSize) / parseFloat(getComputedStyle(ind).fontSize),
+          border: plain.borderTopColor, bg: plain.backgroundColor, color: plain.color,
+          accent: getComputedStyle(document.querySelector('#sc-primary .step[data-status="current"] .step-indicator')!).color,
+          pending: getComputedStyle(document.getElementById('si-plain-pending')!).backgroundColor,
+        };
+      });
+      assert.equal(r.icon, 1.5);
+      assert.deepEqual([r.border, r.bg, r.pending], ['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0)']);
+      assert.equal(r.color, r.accent, 'a current plain glyph takes the accent');
+    },
+  },
+  {
+    label: 'data-orientation="responsive": a row from 48rem, a column below',
+    run: async (page) => {
+      const dir = () => page.$eval('#sr', (el) => getComputedStyle(el).flexDirection);
+      await page.setViewportSize({ width: 1280, height: 900 });
+      assert.equal(await dir(), 'row');
+      await page.setViewportSize({ width: 600, height: 900 });
+      assert.equal(await dir(), 'column');
+      const line = await page.$eval('#sr .step:first-child', (el) => { const a = getComputedStyle(el, '::after'); return [a.width, a.left]; });
+      assert.deepEqual(line, ['2px', '15px'], 'a vertical connector under the indicator');
+      await page.setViewportSize({ width: 1280, height: 900 });
+    },
+  },
+  {
     label: '.steps is an equal-flex row with no list markers',
     selector: '#st-horizontal',
     css: { display: 'flex', gap: '8px', 'list-style-type': 'none', padding: '0px' },

@@ -61,7 +61,12 @@ export function archBodyHtml(md: string): string {
       const body: string[] = [];
       i++;
       while (i < lines.length && !lines[i].startsWith('```')) body.push(lines[i++]);
-      // the mermaid flowchart renders as its source text - no runtime needed
+      // a mermaid fence becomes the shipped Mermaid component's markup: the
+      // source stays readable without JavaScript, mermaid.js renders the SVG
+      if (lang === 'mermaid') {
+        out.push(`<figure class="mermaid-diagram"><pre class="mermaid">${esc(body.join('\n'))}</pre></figure>`);
+        continue;
+      }
       out.push(`<pre><code class="language-${lang}">${esc(body.join('\n'))}</code></pre>`);
       continue;
     }

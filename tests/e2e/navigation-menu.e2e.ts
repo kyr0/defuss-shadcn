@@ -153,6 +153,65 @@ try {
     assert.equal(val, '18px');
   });
 
+  const rect = (id: string) => page.$eval(`#${id}`, (el) => { const r = el.getBoundingClientRect(); return { l: Math.round(r.left), r: Math.round(r.right), t: Math.round(r.top), b: Math.round(r.bottom) }; });
+
+  await check('megamenu: a wide panel spans the menu edge to edge, under its trigger', async () => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.click('#mm-wide-t');
+    await page.waitForTimeout(250);
+    const nav = await rect('mm-nav'), p = await rect('mm-wide'), t = await rect('mm-wide-t');
+    assert.deepEqual([p.l, p.r], [nav.l, nav.r]);
+    assert.ok(p.t >= t.b && p.t - t.b < 10, 'below the trigger');
+    const hl = await page.$eval('#mm-wide-t', (el) => getComputedStyle(el).backgroundColor);
+    assert.notEqual(hl, 'rgba(0, 0, 0, 0)', 'the open trigger is highlighted');
+  });
+
+  await check('megamenu: 3 grid columns, heading, icon │ text links, feature block, full-width footer', async () => {
+    const r = await page.evaluate(() => {
+      const cs = (id: string) => getComputedStyle(document.getElementById(id)!);
+      const icon = document.getElementById('mm-icon')!.getBoundingClientRect(), title = document.getElementById('mm-icon-title')!.getBoundingClientRect();
+      const grid = document.getElementById('mm-grid')!.getBoundingClientRect(), foot = document.getElementById('mm-footer')!.getBoundingClientRect();
+      return {
+        cols: cs('mm-grid').gridTemplateColumns.split(' ').length,
+        heading: cs('mm-heading').textTransform,
+        beside: title.left >= icon.right,
+        iconSize: [Math.round(icon.width), Math.round(icon.height)],
+        feature: cs('mm-feature').backgroundImage.startsWith('linear-gradient'),
+        footer: Math.abs(foot.width - grid.width) < 1,
+      };
+    });
+    assert.deepEqual(r, { cols: 3, heading: 'uppercase', beside: true, iconSize: [32, 32], feature: true, footer: true });
+    await page.keyboard.press('Escape');
+  });
+
+  await check('megamenu: a full panel spans the page; aria-current marks a link', async () => {
+    await page.click('#mm-full-t');
+    const p = await rect('mm-full');
+    const vw = await page.evaluate(() => document.documentElement.clientWidth);
+    assert.deepEqual([p.l, p.r], [0, vw]);
+    await page.keyboard.press('Escape');
+    const cur = await page.$eval('#mm-current', (el) => getComputedStyle(el).backgroundColor);
+    assert.notEqual(cur, 'rgba(0, 0, 0, 0)');
+  });
+
+  await check('vertical: the list stacks and a panel flies out to the right of its trigger', async () => {
+    await page.click('#mm-v-t');
+    await page.waitForTimeout(250); // the entrance transition slides the panel in from 4px above
+    const t = await rect('mm-v-t'), p = await rect('mm-v');
+    assert.ok(p.l >= t.r && p.l - t.r < 10, `right of the trigger (${t.r} → ${p.l})`);
+    assert.ok(Math.abs(p.t - t.t) < 2, 'top-aligned');
+    assert.equal(await page.$eval('#mm-vert .nav-menu-list', (el) => getComputedStyle(el).flexDirection), 'column');
+    await page.keyboard.press('Escape');
+  });
+
+  await check('responsive: a row from 48rem, a column below', async () => {
+    const dir = () => page.$eval('#mm-resp-list', (el) => getComputedStyle(el).flexDirection);
+    assert.equal(await dir(), 'row');
+    await page.setViewportSize({ width: 600, height: 900 });
+    assert.equal(await dir(), 'column');
+    await page.setViewportSize({ width: 1280, height: 900 });
+  });
+
 } finally {
   await browser.close();
   server.stop();

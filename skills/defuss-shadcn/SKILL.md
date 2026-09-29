@@ -9,7 +9,7 @@ description: Build UI prototypes and pages with defuss-shadcn - shadcn-style com
 
 # defuss-shadcn 0.9.1 - Agent Skill
 
-77 components (43 CSS-only, 34 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
+85 components (46 CSS-only, 39 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
 
 ## 0. Quick start - do exactly this, in this order
 
@@ -27,7 +27,11 @@ description: Build UI prototypes and pages with defuss-shadcn - shadcn-style com
 
 Everything else in this file is lookup: §2 rules, §3 documentation map (guides + examples), §4 component index (why/when + links).
 
-**Links** open the file on GitHub (the repository's `main` branch, raw text - fetch it). The link text is the file's path in the repository, which is also its path inside an npm install (`node_modules/defuss-shadcn/<path>`): read it locally when the package is installed.
+**Where the files are - read them, do not search the filesystem.** All paths are relative to the folder of this SKILL.md:
+
+- **Component skills** (markup, variants, sizes, ARIA, states - what every task needs): `references/components/<name>.md`, next to this file in every install. §4 links each one.
+- **Documentation pages** (guides + live examples, MDX) and the shipped **CSS/JS**: two levels up, `../../src/documentation/pages/<page>.mdx` and `../../dist/components/…` - present when the skill came with the package (Claude Code plugin, npm install).
+- **Not there?** (a skills-CLI install copies only this folder): fetch the same path from `https://raw.githubusercontent.com/kyr0/defuss-shadcn/v0.9.1/` + the path without `../../` (this release's tag, raw text), e.g. `https://raw.githubusercontent.com/kyr0/defuss-shadcn/v0.9.1/src/documentation/pages/button.mdx`.
 
 ## 1. Install
 
@@ -57,7 +61,7 @@ import 'defuss-shadcn/dist/components/dialog/dialog.js';  // only interactive co
 
 - The package ships plain `.css` and ESM `.js` - no framework plugin, no typings, no build config. The bundler only resolves the paths.
 - `all.js` already contains `core.js`: never import both.
-- Optional opt-in stylesheet: `defuss-shadcn/dist/theme/utils/shapes.css` (corners, clip shapes, section edges, stylized shadows, frames, patterns).
+- Optional opt-in stylesheet: `defuss-shadcn/dist/theme/utils/shapes.css` (corners, `shape-*` silhouettes - every DaisyUI `mask-*` shape under the same name as `shape-*` - section edges, stylized shadows, frames, patterns).
 - Charts need Apache ECharts on `globalThis.echarts` before a chart mounts (`npm install echarts`, then `import * as echarts from 'echarts'; globalThis.echarts = echarts;`).
 - Icons: only if you use `<i data-lucide="name">` - `npm install lucide`, then `import { createIcons, icons } from 'lucide'; createIcons({ icons });`.
 
@@ -112,100 +116,100 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
 
 ### Introduction
 
-- [Getting Started](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/index.mdx) - A UI component system built with semantic HTML, shadcn design tokens, and plain CSS. No frameworks, no build step - just native web platform.
-- [Installation](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/installation.mdx) - Install defuss-shadcn - straight from the jsDelivr CDN into plain HTML, or with npm into a bundled project. No framework, no build step for the CDN path.
-- [How to Use](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/how-to-use.mdx) - Built on five layers: semantic tokens, a component skill, CSS, HTML, and vanilla JavaScript - each a plain file you copy or link.
-- [Component Skills](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/component-skills.mdx) - Component skill files are structured references that teach AI assistants and humans how to build each component's HTML correctly.
-- [Verified Agentic Engineering (VAE)](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/architecture.mdx) - How defuss-shadcn scales with AI: AGENTS.md teaches, a deterministic verifier enforces, screenshots prove, humans review before release.
-- [Changelog](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/changelog.mdx) - Release history and changelog for defuss-shadcn.
+- [Getting Started](../../src/documentation/pages/index.mdx) - A UI component system built with semantic HTML, shadcn design tokens, and plain CSS. No frameworks, no build step - just native web platform.
+- [Installation](../../src/documentation/pages/installation.mdx) - Install defuss-shadcn - straight from the jsDelivr CDN into plain HTML, or with npm into a bundled project. No framework, no build step for the CDN path.
+- [How to Use](../../src/documentation/pages/how-to-use.mdx) - Built on five layers: semantic tokens, a component skill, CSS, HTML, and vanilla JavaScript - each a plain file you copy or link.
+- [Component Skills](../../src/documentation/pages/component-skills.mdx) - Component skill files are structured references that teach AI assistants and humans how to build each component's HTML correctly.
+- [Verified Agentic Engineering (VAE)](../../src/documentation/pages/architecture.mdx) - How defuss-shadcn scales with AI: AGENTS.md teaches, a deterministic verifier enforces, screenshots prove, humans review before release.
+- [Changelog](../../src/documentation/pages/changelog.mdx) - Release history and changelog for defuss-shadcn.
 
 ### Guides
 
-- [Theming](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/theming.mdx) - Customize defuss-shadcn with CSS custom properties. Drop in any tweakcn.com theme for instant restyling.
-- [Dark Mode](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/dark-mode.mdx) - How dark mode works in defuss-shadcn: token pairs, system preference detection, persistence, and implementation.
-- [Data Attribute API](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/data-attribute-api.mdx) - Use data attributes to configure component variants, sizes, and states directly in HTML markup.
-- [State API](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/state-api.mdx) - Every interactive component declares its UI states by name and exposes them per element - el.api.setState('open') / el.api.getState() - for agents, tests, and code.
-- [DOM Querying & Morphing](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/dom-querying.mdx) - The df$ runtime shipped in core.js - defuss-query for selection, traversal, scalar writes and events; defuss-morph for key-aware DOM reconciliation. One callable, no framework.
-- [Global Key Commands](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/global-keys.mdx) - One shared, typing-safe document keydown listener - df$.shadcn.shared.bindGlobalKeys - that components and pages register shortcuts into. Registration order, stop semantics, unbinding, and every shortcut the components ship.
-- [Cascade Layers](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/cascade-layers.mdx) - How defuss-shadcn uses CSS @layer to keep component styles predictable and easy to override.
-- [JavaScript Modules](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/es-modules.mdx) - How interactive components ship as native ES modules on one runtime - core.js installs df$ (defuss-query + defuss-morph), components bind to it. No bundler needed.
-- [Native Web APIs](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/native-web-apis.mdx) - defuss-shadcn uses 50+ native browser APIs - Popover, Anchor Positioning, Dialog, Invoker Commands, oklch(), View Transitions, Scroll-Driven Animations, @starting-style - instead of JavaScript libraries.
-- [Animations](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/animations.mdx) - CSS-only enter and exit animations using @starting-style, allow-discrete transitions, and ::details-content.
-  - [Fade](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/anim-fade.mdx) - The fade animation channel: a pure opacity cross-fade with paired fadeIn/fadeOut variants, driven imperatively by df$.anim.
-  - [Slide Up](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/anim-up.mdx) - The imperative slide-up entrance/exit pair - df$.anim.slideIn / df$.anim.slideOut - with direction, distance, duration and easing as runtime config, plus scroll-bound progress.
-  - [Slide Down](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/anim-down.mdx) - The slide animation in depth - slideIn/slideOut channels with direction, distance, duration and easing, driven imperatively by df$.anim and bindable to scroll.
-  - [Slide Left](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/anim-left.mdx) - The imperative slide-left entrance/exit pair - df$.anim.slideIn / df$.anim.slideOut - with direction, distance, duration and easing as runtime config, plus scroll-bound progress.
-  - [Slide Right](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/anim-right.mdx) - The slide animation in depth - the target starts at the west edge and glides right into place (slideIn) or exits toward a named edge (slideOut), driven by df$.anim.
-  - [Zoom](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/anim-zoom.mdx) - The zoom channel of the df$.anim engine - scale-and-fade entrances and exits with a configurable transform origin, driven imperatively or bound to scroll.
-  - [Zoom Out](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/anim-zoom-out.mdx) - The shrink-in entrance and grow-away exit of the df$.anim zoom pair - driven imperatively via the zoomIn / zoomOut channels.
-  - [Pop](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/anim-pop.mdx) - The springy overshoot scale animation - popIn grows the element from 0.65 through a 1.07 overshoot back to 1, popOut reverses it - driven imperatively by df$.anim.popIn / df$.anim.popOut.
-  - [Spin](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/anim-spin.mdx) - The spin channel of the df$.anim engine - a rotational entrance and exit driven imperatively via df$.anim.spinIn / spinOut.
-  - [Flip](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/anim-flip.mdx) - The flipIn / flipOut animation channels - a 3D perspective turn around rotateX (north/south) or rotateY (west/east), driven by df$.anim.
-  - [Skew](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/anim-skew.mdx) - The skewIn/skewOut animation channels: a directional shear entrance and exit driven imperatively by df$.anim, with full lifecycle control and scroll binding.
-  - [Blur](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/anim-blur.mdx) - The blur channel in depth - a focus pull with paired blurIn/blurOut variants, driven imperatively by df$.anim with duration and easing config plus scroll binding.
-  - [Wipe](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/anim-wipe.mdx) - The clip-path wipe channels of the df$.anim engine - a directional reveal (or exit) from one edge, with full lifecycle control and scroll binding.
-  - [Wipe Up](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/anim-wipe-up.mdx) - The clip-path wipe entrance/exit - reveal from the bottom edge, driven imperatively by df$.anim.wipeIn / wipeOut with direction, duration and easing config.
-  - [Iris](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/anim-iris.mdx) - The iris reveal: a clip-path circle that opens or closes around a configurable origin, driven by the df$.anim engine.
-- [Sizing](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/sizing.mdx) - A single geometric scale, explicit density, and independent interaction targets. Familiar classes, native CSS, no Tailwind dependency.
-  - [Width & Height](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/width-height.mdx) - Arithmetic dimensions, fractions, content and viewport sizing, and explicit constraints. Density does not change geometric sizes.
-  - [Spacing](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/spacing.mdx) - One arithmetic spacing scale for gaps, padding and margins, with optional density and direction-aware helpers.
-  - [Density](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/density.mdx) - Compactness is an explicit whitespace policy—not a global zoom factor. Keep typography, geometry and target sizes independent.
-- [Layout](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/layout.mdx) - Native Grid, Flexbox and container queries with a small, optional class API. Compose layouts without a compiler or runtime.
-  - [Container](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/container.mdx) - Centered, bounded content with logical gutters. Query containment remains a separate, explicit choice.
-  - [Flex](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/flex.mdx) - Direction, wrapping, alignment and flexible sizing using native Flexbox. No implicit gap and no visual reordering helpers.
-  - [Grid](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/grid.mdx) - Intrinsic card grids, explicit tracks and aligned subgrids. Responsive to available space without a breakpoint utility generator.
-- [Shapes](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/shapes.mdx) - A catalog of reusable silhouettes to mix a design up: radius scale, organic and cut corners, clip-path shapes, section edges, shadows, frames and patterns - one opt-in stylesheet.
-- [Accessibility](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/accessibility.mdx) - Accessibility patterns in defuss-shadcn: ARIA roles, keyboard navigation, focus management, and screen reader support.
+- [Theming](../../src/documentation/pages/theming.mdx) - Customize defuss-shadcn with CSS custom properties. Drop in any tweakcn.com theme for instant restyling.
+- [Dark Mode](../../src/documentation/pages/dark-mode.mdx) - How dark mode works in defuss-shadcn: token pairs, system preference detection, persistence, and implementation.
+- [Data Attribute API](../../src/documentation/pages/data-attribute-api.mdx) - Use data attributes to configure component variants, sizes, and states directly in HTML markup.
+- [State API](../../src/documentation/pages/state-api.mdx) - Every interactive component declares its UI states by name and exposes them per element - el.api.setState('open') / el.api.getState() - for agents, tests, and code.
+- [DOM Querying & Morphing](../../src/documentation/pages/dom-querying.mdx) - The df$ runtime shipped in core.js - defuss-query for selection, traversal, scalar writes and events; defuss-morph for key-aware DOM reconciliation. One callable, no framework.
+- [Global Key Commands](../../src/documentation/pages/global-keys.mdx) - One shared, typing-safe document keydown listener - df$.shadcn.shared.bindGlobalKeys - that components and pages register shortcuts into. Registration order, stop semantics, unbinding, and every shortcut the components ship.
+- [Cascade Layers](../../src/documentation/pages/cascade-layers.mdx) - How defuss-shadcn uses CSS @layer to keep component styles predictable and easy to override.
+- [JavaScript Modules](../../src/documentation/pages/es-modules.mdx) - How interactive components ship as native ES modules on one runtime - core.js installs df$ (defuss-query + defuss-morph), components bind to it. No bundler needed.
+- [Native Web APIs](../../src/documentation/pages/native-web-apis.mdx) - defuss-shadcn uses 50+ native browser APIs - Popover, Anchor Positioning, Dialog, Invoker Commands, oklch(), View Transitions, Scroll-Driven Animations, @starting-style - instead of JavaScript libraries.
+- [Animations](../../src/documentation/pages/animations.mdx) - CSS-only enter and exit animations using @starting-style, allow-discrete transitions, and ::details-content.
+  - [Fade](../../src/documentation/pages/anim-fade.mdx) - The fade animation channel: a pure opacity cross-fade with paired fadeIn/fadeOut variants, driven imperatively by df$.anim.
+  - [Slide Up](../../src/documentation/pages/anim-up.mdx) - The imperative slide-up entrance/exit pair - df$.anim.slideIn / df$.anim.slideOut - with direction, distance, duration and easing as runtime config, plus scroll-bound progress.
+  - [Slide Down](../../src/documentation/pages/anim-down.mdx) - The slide animation in depth - slideIn/slideOut channels with direction, distance, duration and easing, driven imperatively by df$.anim and bindable to scroll.
+  - [Slide Left](../../src/documentation/pages/anim-left.mdx) - The imperative slide-left entrance/exit pair - df$.anim.slideIn / df$.anim.slideOut - with direction, distance, duration and easing as runtime config, plus scroll-bound progress.
+  - [Slide Right](../../src/documentation/pages/anim-right.mdx) - The slide animation in depth - the target starts at the west edge and glides right into place (slideIn) or exits toward a named edge (slideOut), driven by df$.anim.
+  - [Zoom](../../src/documentation/pages/anim-zoom.mdx) - The zoom channel of the df$.anim engine - scale-and-fade entrances and exits with a configurable transform origin, driven imperatively or bound to scroll.
+  - [Zoom Out](../../src/documentation/pages/anim-zoom-out.mdx) - The shrink-in entrance and grow-away exit of the df$.anim zoom pair - driven imperatively via the zoomIn / zoomOut channels.
+  - [Pop](../../src/documentation/pages/anim-pop.mdx) - The springy overshoot scale animation - popIn grows the element from 0.65 through a 1.07 overshoot back to 1, popOut reverses it - driven imperatively by df$.anim.popIn / df$.anim.popOut.
+  - [Spin](../../src/documentation/pages/anim-spin.mdx) - The spin channel of the df$.anim engine - a rotational entrance and exit driven imperatively via df$.anim.spinIn / spinOut.
+  - [Flip](../../src/documentation/pages/anim-flip.mdx) - The flipIn / flipOut animation channels - a 3D perspective turn around rotateX (north/south) or rotateY (west/east), driven by df$.anim.
+  - [Skew](../../src/documentation/pages/anim-skew.mdx) - The skewIn/skewOut animation channels: a directional shear entrance and exit driven imperatively by df$.anim, with full lifecycle control and scroll binding.
+  - [Blur](../../src/documentation/pages/anim-blur.mdx) - The blur channel in depth - a focus pull with paired blurIn/blurOut variants, driven imperatively by df$.anim with duration and easing config plus scroll binding.
+  - [Wipe](../../src/documentation/pages/anim-wipe.mdx) - The clip-path wipe channels of the df$.anim engine - a directional reveal (or exit) from one edge, with full lifecycle control and scroll binding.
+  - [Wipe Up](../../src/documentation/pages/anim-wipe-up.mdx) - The clip-path wipe entrance/exit - reveal from the bottom edge, driven imperatively by df$.anim.wipeIn / wipeOut with direction, duration and easing config.
+  - [Iris](../../src/documentation/pages/anim-iris.mdx) - The iris reveal: a clip-path circle that opens or closes around a configurable origin, driven by the df$.anim engine.
+- [Sizing](../../src/documentation/pages/sizing.mdx) - A single geometric scale, explicit density, and independent interaction targets. Familiar classes, native CSS, no Tailwind dependency.
+  - [Width & Height](../../src/documentation/pages/width-height.mdx) - Arithmetic dimensions, fractions, content and viewport sizing, and explicit constraints. Density does not change geometric sizes.
+  - [Spacing](../../src/documentation/pages/spacing.mdx) - One arithmetic spacing scale for gaps, padding and margins, with optional density and direction-aware helpers.
+  - [Density](../../src/documentation/pages/density.mdx) - Compactness is an explicit whitespace policy—not a global zoom factor. Keep typography, geometry and target sizes independent.
+- [Layout](../../src/documentation/pages/layout.mdx) - Native Grid, Flexbox and container queries with a small, optional class API. Compose layouts without a compiler or runtime.
+  - [Container](../../src/documentation/pages/container.mdx) - Centered, bounded content with logical gutters. Query containment remains a separate, explicit choice.
+  - [Flex](../../src/documentation/pages/flex.mdx) - Direction, wrapping, alignment and flexible sizing using native Flexbox. No implicit gap and no visual reordering helpers.
+  - [Grid](../../src/documentation/pages/grid.mdx) - Intrinsic card grids, explicit tracks and aligned subgrids. Responsive to available space without a breakpoint utility generator.
+- [Shapes](../../src/documentation/pages/shapes.mdx) - A catalog of reusable silhouettes to mix a design up: radius scale, organic and cut corners, shape-* silhouettes, section edges, shadows, frames and patterns - one opt-in stylesheet.
+- [Accessibility](../../src/documentation/pages/accessibility.mdx) - Accessibility patterns in defuss-shadcn: ARIA roles, keyboard navigation, focus management, and screen reader support.
 
 ### Data Display
 
-- [Image Gallery](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/image-gallery.mdx) - Auto-advancing image gallery composed from figure.image slides - per-slide data-duration dwell times, an abortable setTimeout chain, and every DOM touch routed through defuss-query (df$).
+- [Image Gallery](../../src/documentation/pages/image-gallery.mdx) - Auto-advancing image gallery composed from figure.image slides - per-slide data-duration dwell times, an abortable setTimeout chain, and every DOM touch routed through defuss-query (df$).
 
 ### Charts
 
-- [Comparison](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/charts-comparison.mdx) - Comparison chart patterns on the chart component - highlight bars, lollipop ranking, dumbbell before/after, slopegraph, and diverging bars, all themed by the token adapter.
-- [Change over time](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/charts-change.mdx) - Change-over-time chart patterns on the chart component - waterfall decomposition, normalized stacked bars, bump ranking, and annotated time series, all themed by the token adapter.
-- [Distribution](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/charts-distribution.mdx) - Distribution and density chart patterns with the chart component: confidence bands, quadrant scatter, jittered strips, matrix and calendar heatmaps, boxplots, and a custom-series violin - all themed from the design tokens.
-- [Composition](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/charts-composition.mdx) - Composition chart patterns on the chart component - small multiples, theme river, treemap, sunburst, sankey, chord and waffle dot matrix, themed from the design tokens.
-- [Election](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/charts-election.mdx) - Election-night chart patterns on the chart component - editorial gauge, parliament hemicycle, majority bar, hex cartogram and swing arrows, themed from the design tokens.
-- [Narrative](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/charts-narrative.mdx) - Data storytelling with the chart component - a chartStory state machine (baseline → comparison → composition), universalTransition morphs across chart forms, an animated bar race, and a custom-series vector field.
+- [Comparison](../../src/documentation/pages/charts-comparison.mdx) - Comparison chart patterns on the chart component - highlight bars, lollipop ranking, dumbbell before/after, slopegraph, and diverging bars, all themed by the token adapter.
+- [Change over time](../../src/documentation/pages/charts-change.mdx) - Change-over-time chart patterns on the chart component - waterfall decomposition, normalized stacked bars, bump ranking, and annotated time series, all themed by the token adapter.
+- [Distribution](../../src/documentation/pages/charts-distribution.mdx) - Distribution and density chart patterns with the chart component: confidence bands, quadrant scatter, jittered strips, matrix and calendar heatmaps, boxplots, and a custom-series violin - all themed from the design tokens.
+- [Composition](../../src/documentation/pages/charts-composition.mdx) - Composition chart patterns on the chart component - small multiples, theme river, treemap, sunburst, sankey, chord and waffle dot matrix, themed from the design tokens.
+- [Election](../../src/documentation/pages/charts-election.mdx) - Election-night chart patterns on the chart component - editorial gauge, parliament hemicycle, majority bar, hex cartogram and swing arrows, themed from the design tokens.
+- [Narrative](../../src/documentation/pages/charts-narrative.mdx) - Data storytelling with the chart component - a chartStory state machine (baseline → comparison → composition), universalTransition morphs across chart forms, an animated bar race, and a custom-series vector field.
 
 ### Presentations
 
-- [Deck Gallery](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/presentations.mdx) - 33 presentation decks - the flagship System in Numbers plus 32 ECharts design studies, each a 12-slide English deck on its own topic with its own numbers, animated slide transitions and one morphing chart per deck.
-  - [The System in Numbers](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/system-in-numbers.mdx) - defuss-shadcn presents itself - the flagship 10-slide deck with the system's real numbers (77 components, 56% CSS-only, 109.8 KiB min+gz): glyph cover, unit dots, gauge, tanks, chart staircase, taxonomy donut, stopwatch, branching route.
-  - [Editorial Highlight Bars](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/editorial-highlight-bars.mdx) - Swiss International design language presenting a region’s commuting shift as a 10-slide deck - one highlighted bar, recolored, re-ranked by volume and folded into a mode-share donut on a single morphing chart.
-  - [Lollipop Ranking](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/lollipop-ranking.mdx) - Bauhaus Primary Poster design language presenting caffeine by brew method as a 10-slide deck - lollipops that re-rank per 100 ml, burst into a bubble scatter and settle into columns on one morphing chart.
-  - [Dumbbell Before/After](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/dumbbell-before-after.mdx) - Financial Broadsheet design language presenting a city’s rent rise 2019–2025 as a 12-slide deck - dumbbells that re-sort by growth, collapse into change bars and split into rent-burden columns on one morphing chart.
-  - [Slopegraph](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/slopegraph.mdx) - Terminal Data Noir design language presenting the shift in programming languages asked for in job ads, 2020–2025, as a 12-slide deck - slopes that isolate the risers, then morph from change bars into the 2025 ranking.
-  - [Diverging Bars](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/diverging-bars.mdx) - Neo-Brutalist Zine design language presenting support for a four-day work week by industry as a 12-slide deck - net bars that split into support vs oppose, scatter against remote work and land on pilot results, one morphing chart.
-  - [Waterfall](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/waterfall.mdx) - Art Deco Night design language presenting a cinema chain’s revenue bridge as a 12-slide deck - one chart morphing from waterfall to running total, ranked movers and a revenue donut.
-  - [Normalized Stack](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/normalized-stack.mdx) - Engineering Blueprint design language presenting a decade of electricity generation mix as a 12-slide deck - 100% columns that flow into areas, collapse into fossil vs low-carbon and close as a 2025 donut, one morphing chart.
-  - [Bump Ranking](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/bump-ranking.mdx) - Neo Tokyo Neon design language presenting seven years of music-genre rankings on a streaming platform as a 12-slide deck - a bump chart that isolates the climbers, then morphs into 2025 streams and growth bars.
-  - [Bar Race](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/bar-race.mdx) - Sports Broadcast design language presenting a fictional league’s golden-boot race as a 12-slide deck - a live bar race that runs while its slide is on air, then morphs into the final table, efficiency ranking and season lines.
-  - [Confidence Band](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/confidence-band.mdx) - Scientific Journal design language presenting a flu-season hospital forecast as a 12-slide deck - observed weeks grow a median forecast, nested 50% and 90% bands and finally the realized values, on one morphing chart.
-  - [Annotated Time Series](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/annotated-timeseries.mdx) - Sunday Magazine design language presenting the first year of a new tram line as a 12-slide deck - a ridership line that gains its annotations, zooms into the fare cut and folds into a weekday profile, one morphing chart.
-  - [Small Multiples](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/small-multiples.mdx) - 1960s Modernist Grid design language presenting rooftop solar yield by roof orientation as a 12-slide deck - six panels that collapse into one overlay, sum into annual bars and end on a summer-day profile, one morphing chart.
-  - [Scatter Quadrants](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/scatter-quadrants.mdx) - Annual Report Corporate design language presenting a software portfolio (growth × net revenue retention × ARR) as a 12-slide deck - a quadrant map that isolates the stars, collapses into ARR bars and moves to the 2026 plan, one morphing chart.
-  - [Jittered Distribution](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/jittered-distribution.mdx) - Organic Data Garden design language presenting raspberry yield per plant under four growing methods as a 12-slide deck - every plant as a dot, then groups collapsing into mean bars and boxplots, one morphing chart.
-  - [Heatmap Matrix](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/heatmap-matrix.mdx) - Cyber Matrix design language presenting one week of security alerts as a 12-slide deck - a 7 × 24 heatmap that exposes a 3 a.m. burst, re-cuts by alert type and collapses into an hourly profile, one morphing chart.
-  - [Calendar Heatmap](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/calendar-heatmap.mdx) - Pastel Stationery design language presenting a runner’s training year as a 12-slide deck - a calendar heatmap of 365 days that folds into months, weekdays and the 16-week marathon build, one morphing chart.
-  - [Theme River](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/theme-river.mdx) - Aurora Gradient design language presenting three years of loans at a city library as a 12-slide deck — a theme river of four lending formats that isolates audiobooks, then re-reads the same streams as yearly stacks and growth bars, one continuous chart.
-  - [Treemap](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/treemap.mdx) - Mondrian Composition design language presenting a city’s €2.4 billion budget as a 12-slide deck — a treemap of departments and programmes that isolates transport, morphs into a sunburst of the same hierarchy, then into change since 2020, one continuous chart.
-  - [Sunburst](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/sunburst.mdx) - Celestial Observatory design language presenting one year of telescope time as a 12-slide deck — a sunburst of science fields and programmes that isolates exoplanets, morphs into a treemap of the same hierarchy, then into oversubscription bars, one continuous chart.
-  - [Sankey](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/sankey.mdx) - Industrial Schematic design language presenting a year of a city’s waste as a 12-slide deck — a Sankey from sources through material streams to outcomes that isolates plastics, then re-reads the flow as outcome and recovery-rate bars, one continuous chart.
-  - [Chord](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/chord.mdx) - Glass Hologram design language presenting air-passenger flows between six world regions as a 12-slide deck — a chord ring that isolates Europe, then morphs into regional totals and growth bars, one continuous chart.
-  - [Editorial Gauge](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/editorial-gauge.mdx) - Aviation Cockpit design language presenting an airport’s on-time departure rate as a 12-slide deck - a gauge whose needle swings from last summer to this one, then morphs into delay causes and a monthly trend, one continuous chart.
-  - [Parliament Hemicycle](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/parliament-hemicycle.mdx) - Civic Parchment design language presenting a fictional national assembly as a 12-slide deck - 400 seats on an arc that light up a coalition, merge into party bars and end on seat changes, one morphing chart.
-  - [Election Majority Bar](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/election-majority-bar.mdx) - Live News Election Desk design language presenting a fictional city-council election as a 12-slide deck - one stacked seat bar that moves from the early projection to the result, splits into coalition options and ends on votes versus seats.
-  - [Election Hex Cartogram](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/election-hex-cartogram.mdx) - Election Night Newspaper design language presenting a fictional county’s rail-link referendum as a 12-slide deck - 64 equal hexagons that recolour by margin, fly into a distance scatter and merge into band averages, one morphing chart.
-  - [Election Shift Arrows](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/election-shift-arrows.mdx) - Transit Infographic design language presenting the change in turnout across twelve city districts as a 12-slide deck - arrows along a metro line that re-rank, grow into turnout levels and fly into an age scatter, one morphing chart.
-  - [Universal Transition](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/universal-transition.mdx) - Kinetic Typography design language presenting a music festival’s 120,000 tickets by sales channel as a 12-slide deck - the same five channels morph from bars to donut to dots to revenue bars on one continuous chart.
-  - [Waffle Dot Matrix](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/waffle-dot-matrix.mdx) - Pixel Arcade design language presenting how players split across gaming platforms as a 12-slide deck - a 10 × 10 pixel waffle that re-colours from 2020 to 2025, merges into bars and re-sorts by play time, one morphing chart.
-  - [Boxplot](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/boxplot.mdx) - Academic Monograph design language presenting a study of reading scores under five teaching methods as a 12-slide deck - boxplots that collapse into means, open into spreads and end on learning gains, one morphing chart.
-  - [Violin - Custom Series](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/violin-custom.mdx) - Fashion Editorial design language presenting resale price premiums for sneakers as a 12-slide deck - custom-series violins that isolate the collaborations, then give way to medians and market share, one continuous stage.
-  - [Custom Wind Vectors](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/custom-wind-vectors.mdx) - Meteorological Radar design language presenting a coastal storm as a 12-slide deck - a custom-series wind field whose arrows turn and grow as the storm crosses between 06:00, 12:00 and 18:00, then gust curves at three stations.
-  - [Story State Machine](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/story-state-machine.mdx) - Cinematic Presentation design language presenting five fictional streaming services as a 12-slide deck of claims - baseline, comparison, composition and churn, each claim a state of one chart that morphs into the next.
+- [Deck Gallery](../../src/documentation/pages/presentations.mdx) - 33 presentation decks - the flagship System in Numbers plus 32 ECharts design studies, each a 12-slide English deck on its own topic with its own numbers, animated slide transitions and one morphing chart per deck.
+  - [The System in Numbers](../../src/documentation/pages/system-in-numbers.mdx) - defuss-shadcn presents itself - the flagship 10-slide deck with the system's real numbers (85 components, 54% CSS-only, 145.5 KiB min+gz): glyph cover, unit dots, gauge, tanks, chart staircase, taxonomy donut, stopwatch, branching route.
+  - [Editorial Highlight Bars](../../src/documentation/pages/editorial-highlight-bars.mdx) - Swiss International design language presenting a region’s commuting shift as a 10-slide deck - one highlighted bar, recolored, re-ranked by volume and folded into a mode-share donut on a single morphing chart.
+  - [Lollipop Ranking](../../src/documentation/pages/lollipop-ranking.mdx) - Bauhaus Primary Poster design language presenting caffeine by brew method as a 10-slide deck - lollipops that re-rank per 100 ml, burst into a bubble scatter and settle into columns on one morphing chart.
+  - [Dumbbell Before/After](../../src/documentation/pages/dumbbell-before-after.mdx) - Financial Broadsheet design language presenting a city’s rent rise 2019–2025 as a 12-slide deck - dumbbells that re-sort by growth, collapse into change bars and split into rent-burden columns on one morphing chart.
+  - [Slopegraph](../../src/documentation/pages/slopegraph.mdx) - Terminal Data Noir design language presenting the shift in programming languages asked for in job ads, 2020–2025, as a 12-slide deck - slopes that isolate the risers, then morph from change bars into the 2025 ranking.
+  - [Diverging Bars](../../src/documentation/pages/diverging-bars.mdx) - Neo-Brutalist Zine design language presenting support for a four-day work week by industry as a 12-slide deck - net bars that split into support vs oppose, scatter against remote work and land on pilot results, one morphing chart.
+  - [Waterfall](../../src/documentation/pages/waterfall.mdx) - Art Deco Night design language presenting a cinema chain’s revenue bridge as a 12-slide deck - one chart morphing from waterfall to running total, ranked movers and a revenue donut.
+  - [Normalized Stack](../../src/documentation/pages/normalized-stack.mdx) - Engineering Blueprint design language presenting a decade of electricity generation mix as a 12-slide deck - 100% columns that flow into areas, collapse into fossil vs low-carbon and close as a 2025 donut, one morphing chart.
+  - [Bump Ranking](../../src/documentation/pages/bump-ranking.mdx) - Neo Tokyo Neon design language presenting seven years of music-genre rankings on a streaming platform as a 12-slide deck - a bump chart that isolates the climbers, then morphs into 2025 streams and growth bars.
+  - [Bar Race](../../src/documentation/pages/bar-race.mdx) - Sports Broadcast design language presenting a fictional league’s golden-boot race as a 12-slide deck - a live bar race that runs while its slide is on air, then morphs into the final table, efficiency ranking and season lines.
+  - [Confidence Band](../../src/documentation/pages/confidence-band.mdx) - Scientific Journal design language presenting a flu-season hospital forecast as a 12-slide deck - observed weeks grow a median forecast, nested 50% and 90% bands and finally the realized values, on one morphing chart.
+  - [Annotated Time Series](../../src/documentation/pages/annotated-timeseries.mdx) - Sunday Magazine design language presenting the first year of a new tram line as a 12-slide deck - a ridership line that gains its annotations, zooms into the fare cut and folds into a weekday profile, one morphing chart.
+  - [Small Multiples](../../src/documentation/pages/small-multiples.mdx) - 1960s Modernist Grid design language presenting rooftop solar yield by roof orientation as a 12-slide deck - six panels that collapse into one overlay, sum into annual bars and end on a summer-day profile, one morphing chart.
+  - [Scatter Quadrants](../../src/documentation/pages/scatter-quadrants.mdx) - Annual Report Corporate design language presenting a software portfolio (growth × net revenue retention × ARR) as a 12-slide deck - a quadrant map that isolates the stars, collapses into ARR bars and moves to the 2026 plan, one morphing chart.
+  - [Jittered Distribution](../../src/documentation/pages/jittered-distribution.mdx) - Organic Data Garden design language presenting raspberry yield per plant under four growing methods as a 12-slide deck - every plant as a dot, then groups collapsing into mean bars and boxplots, one morphing chart.
+  - [Heatmap Matrix](../../src/documentation/pages/heatmap-matrix.mdx) - Cyber Matrix design language presenting one week of security alerts as a 12-slide deck - a 7 × 24 heatmap that exposes a 3 a.m. burst, re-cuts by alert type and collapses into an hourly profile, one morphing chart.
+  - [Calendar Heatmap](../../src/documentation/pages/calendar-heatmap.mdx) - Pastel Stationery design language presenting a runner’s training year as a 12-slide deck - a calendar heatmap of 365 days that folds into months, weekdays and the 16-week marathon build, one morphing chart.
+  - [Theme River](../../src/documentation/pages/theme-river.mdx) - Aurora Gradient design language presenting three years of loans at a city library as a 12-slide deck — a theme river of four lending formats that isolates audiobooks, then re-reads the same streams as yearly stacks and growth bars, one continuous chart.
+  - [Treemap](../../src/documentation/pages/treemap.mdx) - Mondrian Composition design language presenting a city’s €2.4 billion budget as a 12-slide deck — a treemap of departments and programmes that isolates transport, morphs into a sunburst of the same hierarchy, then into change since 2020, one continuous chart.
+  - [Sunburst](../../src/documentation/pages/sunburst.mdx) - Celestial Observatory design language presenting one year of telescope time as a 12-slide deck — a sunburst of science fields and programmes that isolates exoplanets, morphs into a treemap of the same hierarchy, then into oversubscription bars, one continuous chart.
+  - [Sankey](../../src/documentation/pages/sankey.mdx) - Industrial Schematic design language presenting a year of a city’s waste as a 12-slide deck — a Sankey from sources through material streams to outcomes that isolates plastics, then re-reads the flow as outcome and recovery-rate bars, one continuous chart.
+  - [Chord](../../src/documentation/pages/chord.mdx) - Glass Hologram design language presenting air-passenger flows between six world regions as a 12-slide deck — a chord ring that isolates Europe, then morphs into regional totals and growth bars, one continuous chart.
+  - [Editorial Gauge](../../src/documentation/pages/editorial-gauge.mdx) - Aviation Cockpit design language presenting an airport’s on-time departure rate as a 12-slide deck - a gauge whose needle swings from last summer to this one, then morphs into delay causes and a monthly trend, one continuous chart.
+  - [Parliament Hemicycle](../../src/documentation/pages/parliament-hemicycle.mdx) - Civic Parchment design language presenting a fictional national assembly as a 12-slide deck - 400 seats on an arc that light up a coalition, merge into party bars and end on seat changes, one morphing chart.
+  - [Election Majority Bar](../../src/documentation/pages/election-majority-bar.mdx) - Live News Election Desk design language presenting a fictional city-council election as a 12-slide deck - one stacked seat bar that moves from the early projection to the result, splits into coalition options and ends on votes versus seats.
+  - [Election Hex Cartogram](../../src/documentation/pages/election-hex-cartogram.mdx) - Election Night Newspaper design language presenting a fictional county’s rail-link referendum as a 12-slide deck - 64 equal hexagons that recolour by margin, fly into a distance scatter and merge into band averages, one morphing chart.
+  - [Election Shift Arrows](../../src/documentation/pages/election-shift-arrows.mdx) - Transit Infographic design language presenting the change in turnout across twelve city districts as a 12-slide deck - arrows along a metro line that re-rank, grow into turnout levels and fly into an age scatter, one morphing chart.
+  - [Universal Transition](../../src/documentation/pages/universal-transition.mdx) - Kinetic Typography design language presenting a music festival’s 120,000 tickets by sales channel as a 12-slide deck - the same five channels morph from bars to donut to dots to revenue bars on one continuous chart.
+  - [Waffle Dot Matrix](../../src/documentation/pages/waffle-dot-matrix.mdx) - Pixel Arcade design language presenting how players split across gaming platforms as a 12-slide deck - a 10 × 10 pixel waffle that re-colours from 2020 to 2025, merges into bars and re-sorts by play time, one morphing chart.
+  - [Boxplot](../../src/documentation/pages/boxplot.mdx) - Academic Monograph design language presenting a study of reading scores under five teaching methods as a 12-slide deck - boxplots that collapse into means, open into spreads and end on learning gains, one morphing chart.
+  - [Violin - Custom Series](../../src/documentation/pages/violin-custom.mdx) - Fashion Editorial design language presenting resale price premiums for sneakers as a 12-slide deck - custom-series violins that isolate the collaborations, then give way to medians and market share, one continuous stage.
+  - [Custom Wind Vectors](../../src/documentation/pages/custom-wind-vectors.mdx) - Meteorological Radar design language presenting a coastal storm as a 12-slide deck - a custom-series wind field whose arrows turn and grow as the storm crosses between 06:00, 12:00 and 18:00, then gust curves at three stations.
+  - [Story State Machine](../../src/documentation/pages/story-state-machine.mdx) - Cinematic Presentation design language presenting five fictional streaming services as a 12-slide deck of claims - baseline, comparison, composition and churn, each claim a state of one chart that morphs into the next.
 
 ## 4. Component index
 
@@ -217,13 +221,13 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** CSS @keyframes are the single source of truth for the entrance vocabulary; animation-composition:add keeps pre-existing transforms intact, and animations (unlike transitions) fire deterministically on first application.
 - **When:** Entrance/draw-in animations for ANY element - decks (presentation), cards, lists, dialogs - not just slides. Reach for it before writing bespoke keyframes.
-- **States:** `default` · **Skill:** [dist/components/motion/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/motion/component-skill.md) · **Examples:** [src/documentation/pages/motion.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/motion.mdx)
+- **States:** `default` · **Skill:** [references/components/motion.md](references/components/motion.md) · **Examples:** [src/documentation/pages/motion.mdx](../../src/documentation/pages/motion.mdx)
 
 #### Animation Canvas · TPL · JS
 
 - **Why:** One board, slides side by side like a chess board - the viewport pan is one WAAPI transform and only the arriving slide animates, through the shared df$.anim engine (data-attribute declared) plus the shared motion entrances for its content; no canvas-private animation exists.
 - **When:** Spatial slide boards and zoomable story maps with directional navigation + an at-a-glance overview - not linear decks (use Presentation) and not scrollable pages.
-- **States:** `default`, `overview` · **Skill:** [dist/components/anim-canvas/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/anim-canvas/component-skill.md) · **Examples:** [src/documentation/pages/anim-canvas.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/anim-canvas.mdx)
+- **States:** `default`, `overview` · **Skill:** [references/components/anim-canvas.md](references/components/anim-canvas.md) · **Examples:** [src/documentation/pages/anim-canvas.mdx](../../src/documentation/pages/anim-canvas.mdx)
 
 ### Primitives
 
@@ -231,25 +235,31 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** Type styling for raw content elements - headings, lists, blockquotes, code.
 - **When:** Rendering markdown or CMS output where you cannot add classes.
-- **States:** `default` · **Skill:** [dist/components/typography/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/typography/component-skill.md) · **Examples:** [src/documentation/pages/typography.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/typography.mdx)
+- **States:** `default` · **Skill:** [references/components/typography.md](references/components/typography.md) · **Examples:** [src/documentation/pages/typography.mdx](../../src/documentation/pages/typography.mdx)
+
+#### Text Rotate · ATM · CSS
+
+- **Why:** One line at a time from a short list, rolling on an infinite CSS loop - a one-line window (1lh) and keyframes picked by the line count (:has()); no JavaScript, pauses on hover, readable by assistive tech as the full list.
+- **When:** A headline or sentence whose key word cycles ("Build faster / safer / together"), rotating taglines, a live-looking status word. For content the user must read at their own pace use a carousel or a list; for a number that counts use countdown.
+- **States:** `default` · **Skill:** [references/components/text-rotate.md](references/components/text-rotate.md) · **Examples:** [src/documentation/pages/text-rotate.mdx](../../src/documentation/pages/text-rotate.mdx)
 
 #### Separator · ATM · CSS
 
 - **Why:** An `<hr>` (or role=separator with aria-orientation) - semantic and free.
 - **When:** Dividing content groups visually and semantically.
-- **States:** `default` · **Skill:** [dist/components/separator/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/separator/component-skill.md) · **Examples:** [src/documentation/pages/separator.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/separator.mdx)
+- **States:** `default` · **Skill:** [references/components/separator.md](references/components/separator.md) · **Examples:** [src/documentation/pages/separator.mdx](../../src/documentation/pages/separator.mdx)
 
 #### Icon · ATM · CSS
 
 - **Why:** Consistent 24px stroke wrappers around lucide icons, sized via data-size.
 - **When:** Any icon anywhere in the system - keeps size and stroke uniform across components.
-- **States:** `default` · **Skill:** [dist/components/icon/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/icon/component-skill.md) · **Examples:** [src/documentation/pages/icon.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/icon.mdx)
+- **States:** `default` · **Skill:** [references/components/icon.md](references/components/icon.md) · **Examples:** [src/documentation/pages/icon.mdx](../../src/documentation/pages/icon.mdx)
 
 #### Heading Anchor · ATM · CSS
 
 - **Why:** A quiet § permalink on any heading - a visible, copyable deep link with zero JavaScript.
 - **When:** Section permalinks in docs/blogs/specs - before or after the heading text.
-- **States:** `default` · **Skill:** [dist/components/heading-anchor/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/heading-anchor/component-skill.md) · **Examples:** [src/documentation/pages/heading-anchor.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/heading-anchor.mdx)
+- **States:** `default` · **Skill:** [references/components/heading-anchor.md](references/components/heading-anchor.md) · **Examples:** [src/documentation/pages/heading-anchor.mdx](../../src/documentation/pages/heading-anchor.mdx)
 
 ### Actions
 
@@ -257,31 +267,37 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** Native `<button>` styled through data-variant/data-size - disabled, form submission, and focus are browser-provided.
 - **When:** Every single action trigger - forms, dialogs, toolbars.
-- **States:** `default` · **Skill:** [dist/components/button/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/button/component-skill.md) · **Examples:** [src/documentation/pages/button.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/button.mdx)
+- **States:** `default` · **Skill:** [references/components/button.md](references/components/button.md) · **Examples:** [src/documentation/pages/button.mdx](../../src/documentation/pages/button.mdx)
+
+#### FAB · MOL · CSS
+
+- **Why:** A floating action button whose speed dial is a native popover - toggle, Escape, outside-click close and aria-expanded come from the browser; anchor positioning stacks the actions, no JavaScript.
+- **When:** The one primary action of a screen (compose, add, new) that stays in reach while scrolling - with a speed dial when 2-6 related actions share it. For a bar of actions use toolbar; for an ordinary menu use dropdown-menu.
+- **States:** `default` · **Skill:** [references/components/fab.md](references/components/fab.md) · **Examples:** [src/documentation/pages/fab.mdx](../../src/documentation/pages/fab.mdx)
 
 #### Toggle · ATM · JS
 
 - **Why:** Two-state button carrying aria-pressed - activation is native.
 - **When:** A single on/off action: mute, bold, favorite.
-- **States:** `default`, `pressed` · **Skill:** [dist/components/toggle/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/toggle/component-skill.md) · **Examples:** [src/documentation/pages/toggle.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/toggle.mdx)
+- **States:** `default`, `pressed` · **Skill:** [references/components/toggle.md](references/components/toggle.md) · **Examples:** [src/documentation/pages/toggle.mdx](../../src/documentation/pages/toggle.mdx)
 
 #### Toggle Group · MOL · JS
 
 - **Why:** Grouped toggle buttons with roving focus and single or multiple selection.
 - **When:** Sets of on/off options like text formatting (bold/italic/underline).
-- **States:** `default`, `disabled` · **Skill:** [dist/components/toggle-group/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/toggle-group/component-skill.md) · **Examples:** [src/documentation/pages/toggle-group.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/toggle-group.mdx)
+- **States:** `default`, `disabled` · **Skill:** [references/components/toggle-group.md](references/components/toggle-group.md) · **Examples:** [src/documentation/pages/toggle-group.mdx](../../src/documentation/pages/toggle-group.mdx)
 
 #### Button Group · MOL · CSS
 
 - **Why:** Adjacent buttons fused into one visual unit via border collapse on first/last children.
 - **When:** Tightly related actions (Save + Cancel, split buttons, icon actions) that belong together.
-- **States:** `default` · **Skill:** [dist/components/button-group/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/button-group/component-skill.md) · **Examples:** [src/documentation/pages/button-group.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/button-group.mdx)
+- **States:** `default` · **Skill:** [references/components/button-group.md](references/components/button-group.md) · **Examples:** [src/documentation/pages/button-group.mdx](../../src/documentation/pages/button-group.mdx)
 
 #### Toolbar · ORG · JS
 
 - **Why:** role=toolbar with arrow-key focus management across a button cluster.
 - **When:** Editor-style action bars above a content region.
-- **States:** `default` · **Skill:** [dist/components/toolbar/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/toolbar/component-skill.md) · **Examples:** [src/documentation/pages/toolbar.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/toolbar.mdx)
+- **States:** `default` · **Skill:** [references/components/toolbar.md](references/components/toolbar.md) · **Examples:** [src/documentation/pages/toolbar.mdx](../../src/documentation/pages/toolbar.mdx)
 
 ### Forms & Inputs
 
@@ -289,85 +305,85 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** Native `<label for>` association - click-to-focus and announcement are free.
 - **When:** Every form control, always - never a placeholder standing in for a label.
-- **States:** `default` · **Skill:** [dist/components/label/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/label/component-skill.md) · **Examples:** [src/documentation/pages/label.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/label.mdx)
+- **States:** `default` · **Skill:** [references/components/label.md](references/components/label.md) · **Examples:** [src/documentation/pages/label.mdx](../../src/documentation/pages/label.mdx)
 
 #### Input · ATM · CSS
 
 - **Why:** Native text inputs - validation via :user-invalid, autofill and keyboards via inputmode/autocomplete.
 - **When:** Short single-line text; multi-line text takes textarea instead.
-- **States:** `default` · **Skill:** [dist/components/input/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/input/component-skill.md) · **Examples:** [src/documentation/pages/input.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/input.mdx)
+- **States:** `default` · **Skill:** [references/components/input.md](references/components/input.md) · **Examples:** [src/documentation/pages/input.mdx](../../src/documentation/pages/input.mdx)
 
 #### Textarea · ATM · CSS
 
 - **Why:** Native textarea with field-sizing: content - auto-grows with zero JavaScript.
 - **When:** Multi-line text input.
-- **States:** `default` · **Skill:** [dist/components/textarea/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/textarea/component-skill.md) · **Examples:** [src/documentation/pages/textarea.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/textarea.mdx)
+- **States:** `default` · **Skill:** [references/components/textarea.md](references/components/textarea.md) · **Examples:** [src/documentation/pages/textarea.mdx](../../src/documentation/pages/textarea.mdx)
 
 #### Checkbox · ATM · CSS
 
 - **Why:** Native input[type=checkbox] including the indeterminate state - themed with accent-color, no custom widget.
 - **When:** Independent on/off selections in a form, one or many at once.
-- **States:** `default` · **Skill:** [dist/components/checkbox/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/checkbox/component-skill.md) · **Examples:** [src/documentation/pages/checkbox.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/checkbox.mdx)
+- **States:** `default` · **Skill:** [references/components/checkbox.md](references/components/checkbox.md) · **Examples:** [src/documentation/pages/checkbox.mdx](../../src/documentation/pages/checkbox.mdx)
 
 #### Radio Group · MOL · CSS
 
 - **Why:** Native radio group with arrow-key grouping and accent-color theming.
 - **When:** A mutually exclusive choice among a short, visible set of options.
-- **States:** `default` · **Skill:** [dist/components/radio/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/radio/component-skill.md) · **Examples:** [src/documentation/pages/radio.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/radio.mdx)
+- **States:** `default` · **Skill:** [references/components/radio.md](references/components/radio.md) · **Examples:** [src/documentation/pages/radio.mdx](../../src/documentation/pages/radio.mdx)
 
 #### Switch · ATM · CSS
 
 - **Why:** Native checkbox styled as a sliding toggle - Space/Enter toggling is native.
 - **When:** Settings that apply immediately; a checkbox + submit fits explicit forms better.
-- **States:** `default` · **Skill:** [dist/components/switch/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/switch/component-skill.md) · **Examples:** [src/documentation/pages/switch.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/switch.mdx)
+- **States:** `default` · **Skill:** [references/components/switch.md](references/components/switch.md) · **Examples:** [src/documentation/pages/switch.mdx](../../src/documentation/pages/switch.mdx)
 
 #### Slider · ATM · JS
 
 - **Why:** Native range input with styled track and thumb - keyboard and announcement are built in.
 - **When:** Continuous numeric values or ranges - volume, price bounds.
-- **States:** `default`, `disabled` · **Skill:** [dist/components/slider/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/slider/component-skill.md) · **Examples:** [src/documentation/pages/slider.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/slider.mdx)
+- **States:** `default`, `disabled` · **Skill:** [references/components/slider.md](references/components/slider.md) · **Examples:** [src/documentation/pages/slider.mdx](../../src/documentation/pages/slider.mdx)
 
 #### Select · ATM · CSS
 
 - **Why:** Native `<select>` - the OS renders the options list, fully accessible on every platform.
 - **When:** Pick one value from a list; prefer it over custom listboxes and comboboxes. Several values from a short fixed list: select[multiple]; tags / people / long lists: combobox data-multiple; a handful of options: checkboxes.
-- **States:** `default` · **Skill:** [dist/components/select/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/select/component-skill.md) · **Examples:** [src/documentation/pages/select.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/select.mdx)
+- **States:** `default` · **Skill:** [references/components/select.md](references/components/select.md) · **Examples:** [src/documentation/pages/select.mdx](../../src/documentation/pages/select.mdx)
 
 #### Number Input · ATM · JS
 
 - **Why:** Input plus stepper buttons bound to native min/max/step and arrow-key behavior.
 - **When:** Numeric values where nudging, a bounded range, a unit or fixed decimals matter - quantity, temperature (19.0 °C), percent, weight, duration - and money with a locale-aware currency mask (data-currency + data-locale: separators, symbol side, minor unit via Intl). For a free-form range pick use slider.
-- **States:** `default` · **Skill:** [dist/components/number-input/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/number-input/component-skill.md) · **Examples:** [src/documentation/pages/number-input.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/number-input.mdx)
+- **States:** `default` · **Skill:** [references/components/number-input.md](references/components/number-input.md) · **Examples:** [src/documentation/pages/number-input.mdx](../../src/documentation/pages/number-input.mdx)
 
-#### File Input · ATM · CSS
+#### File Input · ATM · JS
 
-- **Why:** A `<label>` wrapping the native file input with styled drag-over and filled states.
-- **When:** Uploads that need a clear drop-target affordance beyond a bare file field.
-- **States:** `default` · **Skill:** [dist/components/file-input/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/file-input/component-skill.md) · **Examples:** [src/documentation/pages/file-input.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/file-input.mdx)
+- **Why:** The native file input - styled, and as a drag & drop card whose invisible input takes the click AND the drop natively; the script filters, appends and lists the files.
+- **When:** Uploads - a compact field in forms, a drop zone card when files are the main task. Filter by type with accept, by size / count with data-max-size / data-max-files.
+- **States:** `default`, `dragover`, `selected`, `error` · **Skill:** [references/components/file-input.md](references/components/file-input.md) · **Examples:** [src/documentation/pages/file-input.mdx](../../src/documentation/pages/file-input.mdx)
 
 #### Color Picker · ATM · JS
 
 - **Why:** Native `<input type=color>` plus a swatch popover - the browser owns the picking itself; the value shows (and submits) in the notation you need - hex, rgb, hsl or oklch.
 - **When:** A form field where the user chooses a color; use the bare native input when a popover is overkill.
-- **States:** `default` · **Skill:** [dist/components/color-picker/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/color-picker/component-skill.md) · **Examples:** [src/documentation/pages/color-picker.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/color-picker.mdx)
+- **States:** `default` · **Skill:** [references/components/color-picker.md](references/components/color-picker.md) · **Examples:** [src/documentation/pages/color-picker.mdx](../../src/documentation/pages/color-picker.mdx)
 
 #### Date Picker · ATM · CSS
 
 - **Why:** Text field plus calendar in a popover, wired declaratively with command/commandfor attributes.
 - **When:** A form field where users type or pick a date - for a start-end date RANGE use the calendar's range mode (one span, one answer) instead of two separate fields.
-- **States:** `default` · **Skill:** [dist/components/date-picker/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/date-picker/component-skill.md) · **Examples:** [src/documentation/pages/date-picker.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/date-picker.mdx)
+- **States:** `default` · **Skill:** [references/components/date-picker.md](references/components/date-picker.md) · **Examples:** [src/documentation/pages/date-picker.mdx](../../src/documentation/pages/date-picker.mdx)
 
 #### Combobox · MOL · JS
 
 - **Why:** Text input filtering an anchored list with the aria-activedescendant keyboard model.
 - **When:** Choosing from a long list the user narrows by typing - states, tags, users; data-multiple picks SEVERAL (tags, countries you ship to, people to invite, filter categories) with checkboxes + removable tags. For one value from a short list use select; for a handful of options checkboxes.
-- **States:** `default`, `open` · **Skill:** [dist/components/combobox/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/combobox/component-skill.md) · **Examples:** [src/documentation/pages/combobox.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/combobox.mdx)
+- **States:** `default`, `open` · **Skill:** [references/components/combobox.md](references/components/combobox.md) · **Examples:** [src/documentation/pages/combobox.mdx](../../src/documentation/pages/combobox.mdx)
 
 #### Form · MOL · CSS
 
 - **Why:** Layout conventions - label/control/error slots and :user-invalid validation styling - around native form semantics.
 - **When:** Composing multiple inputs into one labeled, validated submit.
-- **States:** `default` · **Skill:** [dist/components/form/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/form/component-skill.md) · **Examples:** [src/documentation/pages/form.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/form.mdx)
+- **States:** `default` · **Skill:** [references/components/form.md](references/components/form.md) · **Examples:** [src/documentation/pages/form.mdx](../../src/documentation/pages/form.mdx)
 
 ### Data Display
 
@@ -375,85 +391,103 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** Pure-CSS `<span>` chip with emphasis variants - nothing to wire up.
 - **When:** Short status, version, or count labels next to content - not for actions.
-- **States:** `default` · **Skill:** [dist/components/badge/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/badge/component-skill.md) · **Examples:** [src/documentation/pages/badge.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/badge.mdx)
+- **States:** `default` · **Skill:** [references/components/badge.md](references/components/badge.md) · **Examples:** [src/documentation/pages/badge.mdx](../../src/documentation/pages/badge.mdx)
 
 #### Type Badge · ATM · CSS
 
 - **Why:** A mono chip marking a component's atomic-design type - one color identity per type, in both schemes.
 - **When:** Tag components by taxonomy in docs, inventories, or design reviews (ATM/MOL/ORG/BLK/TPL).
-- **States:** `default` · **Skill:** [dist/components/type-badge/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/type-badge/component-skill.md) · **Examples:** [src/documentation/pages/type-badge.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/type-badge.mdx)
+- **States:** `default` · **Skill:** [references/components/type-badge.md](references/components/type-badge.md) · **Examples:** [src/documentation/pages/type-badge.mdx](../../src/documentation/pages/type-badge.mdx)
 
 #### Avatar · ATM · JS
 
 - **Why:** Circular image with an initials fallback and an error state exposed through the State API.
 - **When:** Representing a person or entity - alone, stacked in a group, or beside a name.
-- **States:** `default`, `error` · **Skill:** [dist/components/avatar/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/avatar/component-skill.md) · **Examples:** [src/documentation/pages/avatar.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/avatar.mdx)
+- **States:** `default`, `error` · **Skill:** [references/components/avatar.md](references/components/avatar.md) · **Examples:** [src/documentation/pages/avatar.mdx](../../src/documentation/pages/avatar.mdx)
+
+#### Indicator · MOL · CSS
+
+- **Why:** A positioned wrapper - pins badges, status dots or buttons to any of nine points of an element with CSS only.
+- **When:** A count on a button or tab, a status dot on an avatar or card, a "New" / "Required" tag on a box or input - for presence ON an avatar prefer .avatar-badge.
+- **States:** `default` · **Skill:** [references/components/indicator.md](references/components/indicator.md) · **Examples:** [src/documentation/pages/indicator.mdx](../../src/documentation/pages/indicator.mdx)
+
+#### Diff · ATM · JS
+
+- **Why:** Two stacked layers split by a native `<input type="range">` - drag anywhere, arrow keys, touch and a screen-reader value come from the platform; a clip-path does the reveal.
+- **When:** Before / after comparisons - photo edits, redesigns, old vs new screenshots, rendered vs source text. For side-by-side panels the user resizes use resizer.
+- **States:** `default`, `before`, `after` · **Skill:** [references/components/diff.md](references/components/diff.md) · **Examples:** [src/documentation/pages/diff.mdx](../../src/documentation/pages/diff.mdx)
+
+#### Countdown · ATM · JS
+
+- **Why:** Numbers that roll to a new value with CSS alone - set --value, the digits turn like an odometer (mod() / round() pick each digit column); the optional script makes it a live, accessible timer.
+- **When:** Launch / sale / event countdowns, timers, clocks, animated counters (0-999 per value). For a progress fraction use progress; for a static figure use statistic.
+- **States:** `default`, `running`, `paused`, `finished` · **Skill:** [references/components/countdown.md](references/components/countdown.md) · **Examples:** [src/documentation/pages/countdown.mdx](../../src/documentation/pages/countdown.mdx)
 
 #### Card · MOL · CSS
 
 - **Why:** Token-backed surface with header/content/footer slots - one container for anything boxed.
 - **When:** Grouping related content and actions on a page - dashboards, lists, modal bodies.
-- **States:** `default` · **Skill:** [dist/components/card/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/card/component-skill.md) · **Examples:** [src/documentation/pages/card.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/card.mdx)
+- **States:** `default` · **Skill:** [references/components/card.md](references/components/card.md) · **Examples:** [src/documentation/pages/card.mdx](../../src/documentation/pages/card.mdx)
 
 #### Image · ATM · JS
 
 - **Why:** Content image with lazy loading, aspect-ratio control, and an error-state fallback via the State API.
 - **When:** Remote images whose loading or failure must be visually controlled.
-- **States:** `default`, `error` · **Skill:** [dist/components/image/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/image/component-skill.md) · **Examples:** [src/documentation/pages/image.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/image.mdx)
+- **States:** `default`, `error` · **Skill:** [references/components/image.md](references/components/image.md) · **Examples:** [src/documentation/pages/image.mdx](../../src/documentation/pages/image.mdx)
 
 #### Statistic · ATM · CSS
 
 - **Why:** Labelled metric with a delta indicator - tokens and plain text only.
 - **When:** Dashboards showing one value and its trend.
-- **States:** `default` · **Skill:** [dist/components/statistic/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/statistic/component-skill.md) · **Examples:** [src/documentation/pages/statistic.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/statistic.mdx)
+- **States:** `default` · **Skill:** [references/components/statistic.md](references/components/statistic.md) · **Examples:** [src/documentation/pages/statistic.mdx](../../src/documentation/pages/statistic.mdx)
 
-#### Table · ATM · CSS
+#### Table · ATM · JS
 
-- **Why:** Semantic `<table>` - headers, captions, and sort state stay accessible.
-- **When:** Tabular data in rows and columns; never div grids.
-- **States:** `default` · **Skill:** [dist/components/table/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/table/component-skill.md) · **Examples:** [src/documentation/pages/table.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/table.mdx)
+- **Why:** Semantic `<table>` - headers, captions and sort state stay accessible; table.js adds sorting (aria-sort, Intl.Collator), row selection, drag reordering and locked-column offsets on top.
+- **When:** Tabular data in rows and columns - from a plain list to a data grid with sort, select, reorder and actions; never div grids.
+- **States:** `default`, `sorted`, `selected` · **Skill:** [references/components/table.md](references/components/table.md) · **Examples:** [src/documentation/pages/table.mdx](../../src/documentation/pages/table.mdx)
 
 #### Collapsible · ATM · CSS
 
 - **Why:** A single `<details>` disclosure with smooth height animation via interpolate-size.
 - **When:** Revealing or hiding one content region - an accordion of exactly one item, e.g. advanced options.
-- **States:** `default` · **Skill:** [dist/components/collapsible/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/collapsible/component-skill.md) · **Examples:** [src/documentation/pages/collapsible.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/collapsible.mdx)
+- **States:** `default` · **Skill:** [references/components/collapsible.md](references/components/collapsible.md) · **Examples:** [src/documentation/pages/collapsible.mdx](../../src/documentation/pages/collapsible.mdx)
 
 #### Timeline · ATM · CSS
 
-- **Why:** Ordered list laid out on a vertical rail - the `<ol>` keeps the chronological semantics.
-- **When:** Event history: activity logs, order tracking, changelog-style lists.
-- **States:** `default` · **Skill:** [dist/components/timeline/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/timeline/component-skill.md) · **Examples:** [src/documentation/pages/timeline.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/timeline.mdx)
+- **Why:** Ordered list laid out on a vertical or horizontal rail - the `<ol>` keeps the chronological semantics.
+- **When:** Event history: activity logs, order tracking, changelog-style lists, roadmaps and release lines (horizontal) - for a process the user moves through, use steps.
+- **States:** `default` · **Skill:** [references/components/timeline.md](references/components/timeline.md) · **Examples:** [src/documentation/pages/timeline.mdx](../../src/documentation/pages/timeline.mdx)
 
 #### Tree View · ATM · JS
 
 - **Why:** role=tree with expandable nodes and the full arrow-key interaction model.
-- **When:** Any hierarchy the user browses or picks from - file explorers, product categories, org charts, docs navigation menus (links as leaves); single selection and disabled items built in. For one flat level use a list; for show/hide sections use accordion.
-- **States:** `default`, `expanded` · **Skill:** [dist/components/tree-view/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/tree-view/component-skill.md) · **Examples:** [src/documentation/pages/tree-view.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/tree-view.mdx)
+- **When:** Any hierarchy the user browses or picks from - file explorers, product categories, org charts, docs navigation menus (links as leaves); single selection, checkboxes (tri-state cascade), drag & drop reordering and disabled items built in. For one flat level use a list; for show/hide sections use accordion.
+- **States:** `default`, `expanded` · **Skill:** [references/components/tree-view.md](references/components/tree-view.md) · **Examples:** [src/documentation/pages/tree-view.mdx](../../src/documentation/pages/tree-view.mdx)
 
 #### Calendar · ATM · JS
 
 - **Why:** Month grid with keyboard navigation and selection state via the State API - a single date or a start-end range (one span across one or several months).
 - **When:** Picking a day, or a date RANGE as one answer (a stay, a report period, a holiday request, a filter) - data-mode="range" or a two-month .calendar-range; pair with a popover for a full picker. For a plain native date field use date-picker.
-- **States:** `default` · **Skill:** [dist/components/calendar/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/calendar/component-skill.md) · **Examples:** [src/documentation/pages/calendar.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/calendar.mdx)
+- **States:** `default` · **Skill:** [references/components/calendar.md](references/components/calendar.md) · **Examples:** [src/documentation/pages/calendar.mdx](../../src/documentation/pages/calendar.mdx)
 
 #### Carousel · ATM · JS
 
 - **Why:** Native scroll-snap track with prev/next controls - scrolling, swiping, and snapping stay browser features.
 - **When:** Presenting a finite set of large items (hero slides, galleries) one or a few at a time.
-- **States:** `default` · **Skill:** [dist/components/carousel/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/carousel/component-skill.md) · **Examples:** [src/documentation/pages/carousel.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/carousel.mdx)
+- **States:** `default` · **Skill:** [references/components/carousel.md](references/components/carousel.md) · **Examples:** [src/documentation/pages/carousel.mdx](../../src/documentation/pages/carousel.mdx)
 
 #### Scroll Area · ATM · CSS
 
 - **Why:** Overflow container with styled scrollbars and edge fade - pure CSS.
 - **When:** Fixed-height regions that scroll: menu bodies, sidebars, code panes.
-- **States:** `default` · **Skill:** [dist/components/scroll-area/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/scroll-area/component-skill.md) · **Examples:** [src/documentation/pages/scroll-area.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/scroll-area.mdx)
+- **States:** `default` · **Skill:** [references/components/scroll-area.md](references/components/scroll-area.md) · **Examples:** [src/documentation/pages/scroll-area.mdx](../../src/documentation/pages/scroll-area.mdx)
 
 #### Sortable · ATM · JS
 
 - **Why:** Native HTML drag-and-drop reordering with a handle and a drop indicator.
 - **When:** Lists whose order the user controls - todo lists, table row ordering.
-- **States:** `default` · **Skill:** [dist/components/sortable/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/sortable/component-skill.md) · **Examples:** [src/documentation/pages/sortable.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/sortable.mdx)
+- **States:** `default` · **Skill:** [references/components/sortable.md](references/components/sortable.md) · **Examples:** [src/documentation/pages/sortable.mdx](../../src/documentation/pages/sortable.mdx)
 
 ### Charts
 
@@ -461,7 +495,15 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** Apache ECharts does the drawing; the component is the thin token bridge - the tokens become an ECharts theme (resolved to sRGB), options may name tokens as var(--x), and theme or dark-mode switches re-theme live.
 - **When:** Any data visualization (bar/line/pie/scatter…) - declarative via data-chart JSON, imperative via df$.chart.mount(), storytelling via df$.chartStory(), one morphing chart per presentation via df$.chart.deck(). Not for single values (progress/meter) or sparkline-less stat tiles.
-- **States:** `default` · **Skill:** [dist/components/chart/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/chart/component-skill.md) · **Examples:** [src/documentation/pages/chart.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/chart.mdx)
+- **States:** `default` · **Skill:** [references/components/chart.md](references/components/chart.md) · **Examples:** [src/documentation/pages/chart.mdx](../../src/documentation/pages/chart.mdx)
+
+### Diagrams
+
+#### Mermaid · ATM · JS
+
+- **Why:** Mermaid's own `<pre class="mermaid">` text becomes a token-themed SVG - the official renderer, lazy-loaded, locked to strict security; readable source without JavaScript.
+- **When:** Flowcharts, sequence, class, state, ER, Gantt and other text-defined diagrams in docs and apps - for data charts use chart (ECharts).
+- **States:** `default`, `rendered`, `error` · **Skill:** [references/components/mermaid.md](references/components/mermaid.md) · **Examples:** [src/documentation/pages/mermaid.mdx](../../src/documentation/pages/mermaid.mdx)
 
 ### Feedback & Status
 
@@ -469,37 +511,37 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** Animated indicator with role=status announcing "loading".
 - **When:** Unbounded waits where the total is unknown; known total takes progress.
-- **States:** `default` · **Skill:** [dist/components/spinner/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/spinner/component-skill.md) · **Examples:** [src/documentation/pages/spinner.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/spinner.mdx)
+- **States:** `default` · **Skill:** [references/components/spinner.md](references/components/spinner.md) · **Examples:** [src/documentation/pages/spinner.mdx](../../src/documentation/pages/spinner.mdx)
 
 #### Skeleton · ATM · CSS
 
 - **Why:** Shimmering placeholder blocks shaped like the content that will arrive.
 - **When:** Loading known layout without layout shift; unknown layout takes the spinner.
-- **States:** `default` · **Skill:** [dist/components/skeleton/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/skeleton/component-skill.md) · **Examples:** [src/documentation/pages/skeleton.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/skeleton.mdx)
+- **States:** `default` · **Skill:** [references/components/skeleton.md](references/components/skeleton.md) · **Examples:** [src/documentation/pages/skeleton.mdx](../../src/documentation/pages/skeleton.mdx)
 
 #### Progress · ATM · CSS
 
 - **Why:** Native `<progress value max>` - semantics and rendering come free.
 - **When:** Completion of a task with a known total; unknown total takes the spinner.
-- **States:** `default` · **Skill:** [dist/components/progress/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/progress/component-skill.md) · **Examples:** [src/documentation/pages/progress.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/progress.mdx)
+- **States:** `default` · **Skill:** [references/components/progress.md](references/components/progress.md) · **Examples:** [src/documentation/pages/progress.mdx](../../src/documentation/pages/progress.mdx)
 
 #### Alert · MOL · CSS
 
 - **Why:** Styled container using role=status/aria-live so the message is announced inline - no modal logic involved.
 - **When:** Inline, non-blocking notices (error, warning, info) tied to surrounding content.
-- **States:** `default` · **Skill:** [dist/components/alert/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/alert/component-skill.md) · **Examples:** [src/documentation/pages/alert.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/alert.mdx)
+- **States:** `default` · **Skill:** [references/components/alert.md](references/components/alert.md) · **Examples:** [src/documentation/pages/alert.mdx](../../src/documentation/pages/alert.mdx)
 
 #### Alert Dialog · MOL · JS
 
 - **Why:** A `<dialog>` that demands an answer - Escape and backdrop clicks deliberately do not dismiss it, forcing an explicit confirm or cancel.
 - **When:** Destructive or irreversible actions (delete, discard) that must be confirmed.
-- **States:** `default`, `open` · **Skill:** [dist/components/alert-dialog/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/alert-dialog/component-skill.md) · **Examples:** [src/documentation/pages/alert-dialog.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/alert-dialog.mdx)
+- **States:** `default`, `open` · **Skill:** [references/components/alert-dialog.md](references/components/alert-dialog.md) · **Examples:** [src/documentation/pages/alert-dialog.mdx](../../src/documentation/pages/alert-dialog.mdx)
 
 #### Toast · MOL · JS
 
 - **Why:** Transient notification via the Popover API plus the df$.shadcn.toast factory - auto-dismisses.
 - **When:** Post-action feedback that must not interrupt the user.
-- **States:** `default` · **Skill:** [dist/components/toast/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/toast/component-skill.md) · **Examples:** [src/documentation/pages/toast.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/toast.mdx)
+- **States:** `default` · **Skill:** [references/components/toast.md](references/components/toast.md) · **Examples:** [src/documentation/pages/toast.mdx](../../src/documentation/pages/toast.mdx)
 
 ### Overlays
 
@@ -507,93 +549,105 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** Native Popover API with CSS anchor positioning - show, dismiss, and placement owned by the browser.
 - **When:** Lightweight panel anchored to a trigger - info, mini-forms, menus.
-- **States:** `default`, `open` · **Skill:** [dist/components/popover/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/popover/component-skill.md) · **Examples:** [src/documentation/pages/popover.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/popover.mdx)
+- **States:** `default`, `open` · **Skill:** [references/components/popover.md](references/components/popover.md) · **Examples:** [src/documentation/pages/popover.mdx](../../src/documentation/pages/popover.mdx)
 
 #### Tooltip · ATM · JS
 
 - **Why:** popover="hint" anchored label - shows on hover/focus without stealing dismissals from other popovers.
 - **When:** Brief clarifying text for icon-only controls; never for essential information.
-- **States:** `default`, `visible` · **Skill:** [dist/components/tooltip/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/tooltip/component-skill.md) · **Examples:** [src/documentation/pages/tooltip.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/tooltip.mdx)
+- **States:** `default`, `visible` · **Skill:** [references/components/tooltip.md](references/components/tooltip.md) · **Examples:** [src/documentation/pages/tooltip.mdx](../../src/documentation/pages/tooltip.mdx)
 
 #### Context Menu · ATM · JS
 
 - **Why:** Popover anchored to the pointer position on contextmenu - no positioning library involved.
 - **When:** Secondary per-item actions invoked with right-click or long-press.
-- **States:** `default`, `open` · **Skill:** [dist/components/context-menu/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/context-menu/component-skill.md) · **Examples:** [src/documentation/pages/context-menu.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/context-menu.mdx)
+- **States:** `default`, `open` · **Skill:** [references/components/context-menu.md](references/components/context-menu.md) · **Examples:** [src/documentation/pages/context-menu.mdx](../../src/documentation/pages/context-menu.mdx)
 
 #### Dialog · MOL · JS
 
 - **Why:** Native `<dialog>` + showModal(): focus trap, Escape-to-close, ::backdrop, and inert background all come from the browser.
 - **When:** Modals for forms, detail views, or previews - unless the answer is mandatory (then alert-dialog).
-- **States:** `default`, `open` · **Skill:** [dist/components/dialog/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/dialog/component-skill.md) · **Examples:** [src/documentation/pages/dialog.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/dialog.mdx)
+- **States:** `default`, `open` · **Skill:** [references/components/dialog.md](references/components/dialog.md) · **Examples:** [src/documentation/pages/dialog.mdx](../../src/documentation/pages/dialog.mdx)
 
 #### Sheet · MOL · JS
 
 - **Why:** A `<dialog>` variant that slides in from an edge - native modal semantics with transform-only animation.
 - **When:** Off-canvas panels: mobile menus, filter drawers, detail side panels.
-- **States:** `default`, `open` · **Skill:** [dist/components/sheet/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/sheet/component-skill.md) · **Examples:** [src/documentation/pages/sheet.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/sheet.mdx)
+- **States:** `default`, `open` · **Skill:** [references/components/sheet.md](references/components/sheet.md) · **Examples:** [src/documentation/pages/sheet.mdx](../../src/documentation/pages/sheet.mdx)
 
 #### Accordion · ATM · JS
 
 - **Why:** Native `<details>`/`<summary>` disclosure - the browser owns open/close, and `<details name="group">` gives exclusive (single-open) behavior with zero JS.
 - **When:** Grouped content sections on one page (FAQs, settings, progressive disclosure) that expand independently or mutually exclusively.
-- **States:** `default`, `all-open`, `all-closed` · **Skill:** [dist/components/accordion/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/accordion/component-skill.md) · **Examples:** [src/documentation/pages/accordion.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/accordion.mdx)
+- **States:** `default`, `all-open`, `all-closed` · **Skill:** [references/components/accordion.md](references/components/accordion.md) · **Examples:** [src/documentation/pages/accordion.mdx](../../src/documentation/pages/accordion.mdx)
 
 #### Command Palette · ATM · JS
 
 - **Why:** A `<dialog class="command">` palette - filtering and keyboard navigation are the only JS; the modal is native.
 - **When:** ⌘K-style search or command surface across app features or documentation pages.
-- **States:** `default`, `open` · **Skill:** [dist/components/command/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/command/component-skill.md) · **Examples:** [src/documentation/pages/command.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/command.mdx)
+- **States:** `default`, `open` · **Skill:** [references/components/command.md](references/components/command.md) · **Examples:** [src/documentation/pages/command.mdx](../../src/documentation/pages/command.mdx)
 
 ### Navigation
+
+#### Navbar · ORG · CSS
+
+- **Why:** A `<nav>` app bar with start / center / end regions; the responsive menu is ONE popover shown inline on wide screens and opened by a toggle on narrow ones - no JavaScript.
+- **When:** The top bar of an app or site - brand, primary links, search, account menu. For a marketing page header block use site-header; for mega-menus use navigation-menu.
+- **States:** `default` · **Skill:** [references/components/navbar.md](references/components/navbar.md) · **Examples:** [src/documentation/pages/navbar.mdx](../../src/documentation/pages/navbar.mdx)
+
+#### Dock · ATM · CSS
+
+- **Why:** A navigation bar of links / buttons with icons and labels - on the bottom (above the device's safe area), top, left or right edge; the active item is plain ARIA (aria-current / aria-pressed) or a checked radio, so a radio dock switches items AND the card content they own with no JavaScript.
+- **When:** The 3 - 5 top-level destinations of a mobile app or app-like page (Home, Search, Inbox, Profile). For a desktop app bar use navbar, for a side menu use sidebar, for one floating action use fab.
+- **States:** `default` · **Skill:** [references/components/dock.md](references/components/dock.md) · **Examples:** [src/documentation/pages/dock.mdx](../../src/documentation/pages/dock.mdx)
 
 #### Breadcrumb · ATM · CSS
 
 - **Why:** nav > ol markup with aria-current="page" - the accessibility comes free with the markup, not from JS.
 - **When:** Showing hierarchy in multi-level sites/apps so users know where they are and can jump up.
-- **States:** `default` · **Skill:** [dist/components/breadcrumb/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/breadcrumb/component-skill.md) · **Examples:** [src/documentation/pages/breadcrumb.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/breadcrumb.mdx)
+- **States:** `default` · **Skill:** [references/components/breadcrumb.md](references/components/breadcrumb.md) · **Examples:** [src/documentation/pages/breadcrumb.mdx](../../src/documentation/pages/breadcrumb.mdx)
 
 #### Table of Contents · MOL · CSS
 
 - **Why:** A section-nav block of heading links with active-section tracking classes - pure markup, the observer is the host's.
 - **When:** Docs/blog/spec pages with in-page sections that deserve a persistent rail.
-- **States:** `default` · **Skill:** [dist/components/toc/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/toc/component-skill.md) · **Examples:** [src/documentation/pages/toc.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/toc.mdx)
+- **States:** `default` · **Skill:** [references/components/toc.md](references/components/toc.md) · **Examples:** [src/documentation/pages/toc.mdx](../../src/documentation/pages/toc.mdx)
 
 #### Pagination · MOL · JS
 
 - **Why:** Numbered page links in a nav > ol with aria-current="page" on the active page - a composition of button atoms (page/prev/next).
 - **When:** Splitting long lists or tables across pages.
-- **States:** `default` · **Skill:** [dist/components/pagination/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/pagination/component-skill.md) · **Examples:** [src/documentation/pages/pagination.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/pagination.mdx)
+- **States:** `default` · **Skill:** [references/components/pagination.md](references/components/pagination.md) · **Examples:** [src/documentation/pages/pagination.mdx](../../src/documentation/pages/pagination.mdx)
 
 #### Steps · ATM · JS
 
 - **Why:** Ordered list of process steps with aria-current="step" on the active one.
 - **When:** Multi-step flows: wizards, checkout, onboarding progress.
-- **States:** `default` · **Skill:** [dist/components/steps/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/steps/component-skill.md) · **Examples:** [src/documentation/pages/steps.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/steps.mdx)
+- **States:** `default` · **Skill:** [references/components/steps.md](references/components/steps.md) · **Examples:** [src/documentation/pages/steps.mdx](../../src/documentation/pages/steps.mdx)
 
 #### Tabs · ATM · JS
 
 - **Why:** role=tablist with arrow-key roving focus; panels toggle via data-state.
 - **When:** Switching views within one context without navigating away.
-- **States:** `default`, `active` · **Skill:** [dist/components/tabs/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/tabs/component-skill.md) · **Examples:** [src/documentation/pages/tabs.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/tabs.mdx)
+- **States:** `default`, `active`, `disabled` · **Skill:** [references/components/tabs.md](references/components/tabs.md) · **Examples:** [src/documentation/pages/tabs.mdx](../../src/documentation/pages/tabs.mdx)
 
 #### Dropdown Menu · ATM · JS
 
 - **Why:** Button-triggered menu as a Popover positioned by CSS anchor positioning - dismiss and placement are browser-owned.
 - **When:** The go-to menu of actions or options anchored to a trigger button.
-- **States:** `default`, `open` · **Skill:** [dist/components/dropdown/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/dropdown/component-skill.md) · **Examples:** [src/documentation/pages/dropdown.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/dropdown.mdx)
+- **States:** `default`, `open` · **Skill:** [references/components/dropdown.md](references/components/dropdown.md) · **Examples:** [src/documentation/pages/dropdown.mdx](../../src/documentation/pages/dropdown.mdx)
 
 #### Navigation Menu · ATM · JS
 
 - **Why:** Primary site/app menu with hover/focus-triggered popover panels.
 - **When:** Top-level navigation, optionally with mega-menu panels per item.
-- **States:** `default`, `open` · **Skill:** [dist/components/navigation-menu/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/navigation-menu/component-skill.md) · **Examples:** [src/documentation/pages/navigation-menu.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/navigation-menu.mdx)
+- **States:** `default`, `open` · **Skill:** [references/components/navigation-menu.md](references/components/navigation-menu.md) · **Examples:** [src/documentation/pages/navigation-menu.mdx](../../src/documentation/pages/navigation-menu.mdx)
 
 #### Theme Switcher · MOL · JS
 
 - **Why:** Switches the color theme by loading/unloading ONE generated stylesheet (`<link id="theme-css">`) - tokens stay static, no JS token objects, dark mode needs no re-apply because each theme file carries :root + .dark.
 - **When:** Live theme pickers for docs sites, previews, or settings pages - unless the theme is fixed at deploy time (then just link the file directly).
-- **States:** `default`, `open` · **Skill:** [dist/components/theme-switcher/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/theme-switcher/component-skill.md) · **Examples:** [src/documentation/pages/theme-switcher.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/theme-switcher.mdx)
+- **States:** `default`, `open` · **Skill:** [references/components/theme-switcher.md](references/components/theme-switcher.md) · **Examples:** [src/documentation/pages/theme-switcher.mdx](../../src/documentation/pages/theme-switcher.mdx)
 
 ### Application
 
@@ -601,13 +655,13 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** App-shell navigation rail with a collapsible state (State API) and a mobile overlay mode.
 - **When:** Persistent primary navigation beside the app content.
-- **States:** `default`, `collapsed` · **Skill:** [dist/components/sidebar/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/sidebar/component-skill.md) · **Examples:** [src/documentation/pages/sidebar.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/sidebar.mdx)
+- **States:** `default`, `collapsed` · **Skill:** [references/components/sidebar.md](references/components/sidebar.md) · **Examples:** [src/documentation/pages/sidebar.mdx](../../src/documentation/pages/sidebar.mdx)
 
 #### Resizer · ATM · JS
 
 - **Why:** Pointer capture + box geometry give edge/corner drag handles for any single container - with a classes mode that keeps sizing declarative (the sizing.css ladder stays the source of truth).
 - **When:** When a demo surface, canvas, or panel must be user-resizable on more than the native CSS `resize` corner - or when the size should stay expressed as w-/h- classes instead of inline px.
-- **States:** `default` · **Skill:** [dist/components/resizer/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/resizer/component-skill.md) · **Examples:** [src/documentation/pages/resizer.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/resizer.mdx)
+- **States:** `default` · **Skill:** [references/components/resizer.md](references/components/resizer.md) · **Examples:** [src/documentation/pages/resizer.mdx](../../src/documentation/pages/resizer.mdx)
 
 ### Presentations
 
@@ -615,7 +669,7 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** Fixed artboard slides + df$.anim slide transitions + the shared Motion entrance vocabulary + native `<progress>` - the deck engine needs no presentation library.
 - **When:** Slide decks and keynotes on a fixed coordinate canvas (1600×900 default) - not scrollable content (that is a page, use blocks).
-- **States:** `default`, `notes`, `fullscreen` · **Skill:** [dist/components/presentation/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/presentation/component-skill.md) · **Examples:** [src/documentation/pages/presentation.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/presentation.mdx)
+- **States:** `default`, `notes`, `fullscreen` · **Skill:** [references/components/presentation.md](references/components/presentation.md) · **Examples:** [src/documentation/pages/presentation.mdx](../../src/documentation/pages/presentation.mdx)
 
 ### Marketing
 
@@ -623,76 +677,76 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** A marketing page header is pure layout - flexbox + a container query replace any JS show/hide of the nav.
 - **When:** Top of a marketing/landing page - for the doc site's own chrome use `<site-header>` instead.
-- **States:** `default` · **Skill:** [dist/components/site-header/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/site-header/component-skill.md) · **Examples:** [src/documentation/pages/site-header.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/site-header.mdx)
+- **States:** `default` · **Skill:** [references/components/site-header.md](references/components/site-header.md) · **Examples:** [src/documentation/pages/site-header.mdx](../../src/documentation/pages/site-header.mdx)
 
 #### Hero · BLK · CSS
 
 - **Why:** Headline, description and CTAs in one centered copy block - native flow layout and container queries, nothing to script.
 - **When:** First section of a marketing page; pair with the Product Showcase block when you need a video.
-- **States:** `default` · **Skill:** [dist/components/hero/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/hero/component-skill.md) · **Examples:** [src/documentation/pages/hero.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/hero.mdx)
+- **States:** `default` · **Skill:** [references/components/hero.md](references/components/hero.md) · **Examples:** [src/documentation/pages/hero.mdx](../../src/documentation/pages/hero.mdx)
 
 #### Product Showcase · BLK · JS
 
 - **Why:** A poster frame + one real `<button>` starts a native `<video controls>` - the browser draws every playback affordance once the video is visible.
 - **When:** Hero pairing or standalone product video; a static screenshot needs only the poster `<img>` (drop the video and button).
-- **States:** `default`, `playing` · **Skill:** [dist/components/product-showcase/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/product-showcase/component-skill.md) · **Examples:** [src/documentation/pages/product-showcase.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/product-showcase.mdx)
+- **States:** `default`, `playing` · **Skill:** [references/components/product-showcase.md](references/components/product-showcase.md) · **Examples:** [src/documentation/pages/product-showcase.mdx](../../src/documentation/pages/product-showcase.mdx)
 
 #### Brand Logos · BLK · CSS
 
 - **Why:** Logos as currentColor SVGs recolor with the theme automatically - a row of marks needs zero behavior.
 - **When:** "Trusted by" social proof band under a Hero - not for user-uploaded arbitrary images.
-- **States:** `default` · **Skill:** [dist/components/brand-logos/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/brand-logos/component-skill.md) · **Examples:** [src/documentation/pages/brand-logos.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/brand-logos.mdx)
+- **States:** `default` · **Skill:** [references/components/brand-logos.md](references/components/brand-logos.md) · **Examples:** [src/documentation/pages/brand-logos.mdx](../../src/documentation/pages/brand-logos.mdx)
 
 #### Feature Details · BLK · CSS
 
 - **Why:** Two-image feature split with a rule between - a grid with an auto-stretched divider column, no JS.
 - **When:** "Benefits" section of a marketing page; for a feature list without imagery use cards instead.
-- **States:** `default` · **Skill:** [dist/components/feature-details/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/feature-details/component-skill.md) · **Examples:** [src/documentation/pages/feature-details.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/feature-details.mdx)
+- **States:** `default` · **Skill:** [references/components/feature-details.md](references/components/feature-details.md) · **Examples:** [src/documentation/pages/feature-details.mdx](../../src/documentation/pages/feature-details.mdx)
 
 #### Testimonials · BLK · CSS
 
 - **Why:** A pull-quote plus photo cards with floating review overlays - backdrop-filter and stacking replace any JS layering.
 - **When:** Social-proof band on a marketing page; for short quotes without photos a plain blockquote is enough.
-- **States:** `default` · **Skill:** [dist/components/testimonials/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/testimonials/component-skill.md) · **Examples:** [src/documentation/pages/testimonials.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/testimonials.mdx)
+- **States:** `default` · **Skill:** [references/components/testimonials.md](references/components/testimonials.md) · **Examples:** [src/documentation/pages/testimonials.mdx](../../src/documentation/pages/testimonials.mdx)
 
 #### Stats · BLK · CSS
 
 - **Why:** Metric band = a grid of rule-led numbers; text alignment and tabular-nums do what a chart library would.
 - **When:** "Trusted by teams everywhere" social proof with hard numbers; not a data dashboard.
-- **States:** `default` · **Skill:** [dist/components/stats/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/stats/component-skill.md) · **Examples:** [src/documentation/pages/stats.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/stats.mdx)
+- **States:** `default` · **Skill:** [references/components/stats.md](references/components/stats.md) · **Examples:** [src/documentation/pages/stats.mdx](../../src/documentation/pages/stats.mdx)
 
 #### Pricing · BLK · CSS
 
 - **Why:** Plan cards are a stretch-aligned grid; the billing toggle is native radios plus :has(), so one checked input flips every plan with zero JS.
 - **When:** Plans/tiers section of a marketing page; a single plan needs no grid - one card suffices.
-- **States:** `default` · **Skill:** [dist/components/pricing/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/pricing/component-skill.md) · **Examples:** [src/documentation/pages/pricing.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/pricing.mdx)
+- **States:** `default` · **Skill:** [references/components/pricing.md](references/components/pricing.md) · **Examples:** [src/documentation/pages/pricing.mdx](../../src/documentation/pages/pricing.mdx)
 
 #### Blog · BLK · CSS
 
 - **Why:** Post cards are `<a>` + `<img>` + clamped text - line-clamp and aspect-ratio give the editorial layout for free.
 - **When:** Insights/news teasers on a marketing page; the full article list is a table or card grid instead.
-- **States:** `default` · **Skill:** [dist/components/blog/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/blog/component-skill.md) · **Examples:** [src/documentation/pages/blog.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/blog.mdx)
+- **States:** `default` · **Skill:** [references/components/blog.md](references/components/blog.md) · **Examples:** [src/documentation/pages/blog.mdx](../../src/documentation/pages/blog.mdx)
 
 #### FAQ · BLK · CSS
 
 - **Why:** Icon-card answers stay visible - no disclosure widget to wire, so screen readers and crawlers see every answer.
 - **When:** Support section on a marketing page; for many long Q&As use the Accordion (native `<details>`) instead.
-- **States:** `default` · **Skill:** [dist/components/faq/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/faq/component-skill.md) · **Examples:** [src/documentation/pages/faq.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/faq.mdx)
+- **States:** `default` · **Skill:** [references/components/faq.md](references/components/faq.md) · **Examples:** [src/documentation/pages/faq.mdx](../../src/documentation/pages/faq.mdx)
 
 #### Get In Touch · BLK · CSS
 
 - **Why:** A bordered contact CTA card - avatar overlap is negative margins + outline, not positioning math.
 - **When:** End-of-page "want to know more?" band; for an actual contact form use Form + Input components.
-- **States:** `default` · **Skill:** [dist/components/get-in-touch/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/get-in-touch/component-skill.md) · **Examples:** [src/documentation/pages/get-in-touch.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/get-in-touch.mdx)
+- **States:** `default` · **Skill:** [references/components/get-in-touch.md](references/components/get-in-touch.md) · **Examples:** [src/documentation/pages/get-in-touch.mdx](../../src/documentation/pages/get-in-touch.mdx)
 
 #### Newsletter · BLK · CSS
 
 - **Why:** A real `<form>` with `<input type="email">` - native validation, keyboard, and autofill come free.
 - **When:** Sign-up band on a marketing page; for multi-field sign-up use the Form component.
-- **States:** `default` · **Skill:** [dist/components/newsletter/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/newsletter/component-skill.md) · **Examples:** [src/documentation/pages/newsletter.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/newsletter.mdx)
+- **States:** `default` · **Skill:** [references/components/newsletter.md](references/components/newsletter.md) · **Examples:** [src/documentation/pages/newsletter.mdx](../../src/documentation/pages/newsletter.mdx)
 
 #### Site Footer · BLK · CSS
 
 - **Why:** Link columns + social row is pure grid/flex markup in a `<footer>` landmark - no behavior to script.
 - **When:** Bottom of marketing pages; the doc site's own footer is separate chrome (`<footer>` in layout.js).
-- **States:** `default` · **Skill:** [dist/components/site-footer/component-skill.md](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/dist/components/site-footer/component-skill.md) · **Examples:** [src/documentation/pages/site-footer.mdx](https://raw.githubusercontent.com/kyr0/defuss-shadcn/main/src/documentation/pages/site-footer.mdx)
+- **States:** `default` · **Skill:** [references/components/site-footer.md](references/components/site-footer.md) · **Examples:** [src/documentation/pages/site-footer.mdx](../../src/documentation/pages/site-footer.mdx)

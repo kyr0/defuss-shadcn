@@ -72,4 +72,23 @@ await cssSmoke('breadcrumb', [
       assert.deepEqual(sizes, ['12px', '13px', '14px', '16px', '18px'], `sizes, got ${sizes.join('/')}`);
     },
   },
+  {
+    label: "icons / emojis in front of a crumb: inline-flex, 1em, centered on the label",
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const link = document.querySelector("#bc-icons .breadcrumb-link")!;
+        const svg = link.querySelector("svg")!;
+        const page = document.querySelector("#bc-icons .breadcrumb-page")!;
+        const emo = page.querySelector(".breadcrumb-icon")!;
+        const c = (el: Element) => { const b = el.getBoundingClientRect(); return b.top + b.height / 2; };
+        const text = (el: Element) => { const rg = document.createRange(); rg.selectNodeContents(el.lastChild!); return c(rg as unknown as Element); };
+        return { disp: getComputedStyle(link).display, pdisp: getComputedStyle(page).display, w: svg.getBoundingClientRect().width, gap: getComputedStyle(link).columnGap, off1: Math.abs(c(svg) - text(link)), off2: Math.abs(c(emo) - text(page)) };
+      });
+      // inline-flex is blockified to flex inside the .breadcrumb-item flex row
+      assert.equal(r.disp, "flex"); assert.equal(r.pdisp, "flex");
+      assert.equal(r.w, 16, `svg 1em at lg (16px), got ${r.w}`);
+      assert.equal(r.gap, "6px");
+      assert.ok(r.off1 <= 1.5 && r.off2 <= 1.5, `icons centered on labels (${r.off1}, ${r.off2})`);
+    },
+  },
 ]);

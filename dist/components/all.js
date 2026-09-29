@@ -1767,19 +1767,21 @@ function debounce(fn, wait2) {
   return wrapped;
 }
 // src/shared/keys.ts
-var handlers = new Set;
+var handlers = new Map;
 var listening = false;
 var isEditable = (target) => target instanceof HTMLElement && (target.isContentEditable || target.closest('input, textarea, select, [contenteditable="true"]') !== null);
+var isEditableTarget = (event) => isEditable(event.target);
 function onKeydown(event) {
-  if (isEditable(event.target))
-    return;
-  for (const handler of handlers) {
+  const editable = isEditable(event.target);
+  for (const [handler, opts] of handlers) {
+    if (editable && !opts.editable)
+      continue;
     if (handler(event) === true)
       break;
   }
 }
-function bindGlobalKeys(handler) {
-  handlers.add(handler);
+function bindGlobalKeys(handler, options = {}) {
+  handlers.set(handler, { ...options });
   if (!listening && typeof document !== "undefined") {
     listening = true;
     document.addEventListener("keydown", onKeydown);
@@ -2522,6 +2524,7 @@ shadcn.shared = {
   draw,
   anim,
   bindGlobalKeys,
+  isEditableTarget,
   loadTheme
 };
 Reflect.set(df, "anim", anim);
@@ -2539,6 +2542,7 @@ installDdf({
   draw,
   anim,
   bindGlobalKeys,
+  isEditableTarget,
   loadTheme,
   clampIndex,
   coerceIndex
@@ -4815,9 +4819,8 @@ function initTags(wrapper) {
   const visible = () => [...options(), ...createRow ? [createRow] : []].filter((o) => !o.hidden && o.getAttribute("aria-disabled") !== "true");
   const isOpen = () => popover.matches(":popover-open");
   const open = () => {
-    if (isOpen())
-      return;
-    safeShowPopover(popover);
+    if (!isOpen())
+      safeShowPopover(popover);
     dfDollar4(input).attr("aria-expanded", "true");
   };
   const close = () => {
@@ -4825,6 +4828,15 @@ function initTags(wrapper) {
       popover.hidePopover();
     dfDollar4(input).attr("aria-expanded", "false");
     highlight(null);
+  };
+  popover._open = () => {
+    open();
+    filter();
+  };
+  popover._close = close;
+  popover.api = {
+    setState: (stateName, config) => comboboxApi.setState(popover, stateName, config),
+    getState: () => comboboxApi.getState(popover)
   };
   const filter = () => {
     const text = input.value.trim();
@@ -4985,9 +4997,8 @@ function initTags(wrapper) {
     if (!wrapper.contains(e.relatedTarget) && !popover.contains(e.relatedTarget))
       close();
   });
-  popover.addEventListener("toggle", (e) => {
-    if (e.newState === "closed")
-      dfDollar4(input).attr("aria-expanded", "false");
+  popover.addEventListener("toggle", () => {
+    dfDollar4(input).attr("aria-expanded", String(isOpen()));
   });
 }
 function init9() {
@@ -5217,11 +5228,11 @@ function init9() {
         doHighlight(items.indexOf(item));
       }
     });
-    popover.addEventListener("toggle", (e) => {
-      if (e.newState === "closed") {
-        $trigger.attr("aria-expanded", "false");
+    popover.addEventListener("toggle", () => {
+      const nowOpen = popover.matches(":popover-open");
+      $trigger.attr("aria-expanded", String(nowOpen));
+      if (!nowOpen)
         clearHighlight();
-      }
     });
   });
 }
@@ -5483,10 +5494,180 @@ function init11() {
 init11();
 new MutationObserver(init11).observe(document, { childList: true, subtree: true });
 
-// src/components/dialog/dialog.ts
+// src/components/countdown/countdown.ts
 var df$12 = defussGlobals();
+var countdownStates = ["default", "running", "paused", "finished"];
+var UNITS = [
+  ["days", 86400],
+  ["hours", 3600],
+  ["minutes", 60],
+  ["seconds", 1]
+];
+var isTimer = (el) => el.hasAttribute("data-until") || el.hasAttribute("data-duration");
+function writeValue(span, n) {
+  const v = Math.max(0, Math.min(999, Math.round(n)));
+  span.style.setProperty("--value", String(v));
+  span.textContent = String(v);
+}
+var valuesOf = (el) => el.classList.contains("countdown") ? [...el.querySelectorAll(":scope > span")] : [...el.querySelectorAll(".countdown > span")];
+function split(seconds, spans) {
+  let rest = Math.max(0, Math.floor(seconds));
+  const out = new Map;
+  for (const [unit, size] of UNITS) {
+    const span = spans.find((s) => s.dataset.unit === unit);
+    if (!span)
+      continue;
+    const v = Math.floor(rest / size);
+    out.set(span, v);
+    rest -= v * size;
+  }
+  return out;
+}
+var fmt = (() => {
+  const DF = Intl.DurationFormat;
+  return DF ? new DF(undefined, { style: "long" }) : null;
+})();
+function label(el, parts) {
+  if (el._authorLabel)
+    return;
+  const d = {};
+  for (const [span, v] of parts)
+    d[span.dataset.unit] = v;
+  const text = fmt ? fmt.format(d) : Object.entries(d).map(([u, v]) => `${v} ${u}`).join(", ");
+  el.setAttribute("aria-label", text || "0");
+}
+function remaining(el) {
+  if (el._paused != null)
+    return el._paused;
+  return Math.max(0, (el._deadline - Date.now()) / 1000);
+}
+function render(el) {
+  const left = remaining(el);
+  const parts = split(Math.ceil(left - 0.001), valuesOf(el));
+  for (const [span, v] of parts)
+    writeValue(span, v);
+  label(el, parts);
+  if (left <= 0 && el.dataset.stateName !== "finished")
+    finish(el);
+}
+function stop(el) {
+  clearTimeout(el._tick);
+  el._tick = 0;
+}
+function schedule(el) {
+  stop(el);
+  render(el);
+  if (el.dataset.stateName !== "running")
+    return;
+  const ms = ((el._deadline - Date.now()) % 1000 + 1000) % 1000 || 1000;
+  el._tick = setTimeout(() => schedule(el), ms + 5);
+}
+function finish(el) {
+  stop(el);
+  el._paused = 0;
+  el.dataset.stateName = "finished";
+  for (const [span, v] of split(0, valuesOf(el)))
+    writeValue(span, v);
+  el.dispatchEvent(new CustomEvent("countdown:finished", { bubbles: true }));
+}
+function authoredDeadline(el) {
+  if (el.dataset.until)
+    return Date.parse(el.dataset.until);
+  return Date.now() + parseFloat(el.dataset.duration || "0") * 1000;
+}
+function triggerStateChange12(el, stateName, config) {
+  switch (stateName) {
+    case "default":
+      if (isTimer(el)) {
+        el._deadline = authoredDeadline(el);
+        el._paused = el.hasAttribute("data-paused") ? (el._deadline - Date.now()) / 1000 : null;
+        el.dataset.stateName = el._paused != null ? "paused" : "running";
+        schedule(el);
+      } else {
+        const spans = valuesOf(el);
+        if (config?.value !== undefined && spans[0])
+          writeValue(spans[0], config.value);
+        if (config?.values) {
+          for (const s of spans)
+            if (s.dataset.unit in config.values)
+              writeValue(s, config.values[s.dataset.unit]);
+        }
+        if (config?.value === undefined && !config?.values)
+          el._authored?.forEach((v, s) => writeValue(s, v));
+        el.dataset.stateName = "default";
+      }
+      break;
+    case "running": {
+      if (config?.until)
+        el._deadline = Date.parse(config.until);
+      else if (config?.duration != null)
+        el._deadline = Date.now() + config.duration * 1000;
+      else if (el._paused != null)
+        el._deadline = Date.now() + el._paused * 1000;
+      el._paused = null;
+      el.dataset.stateName = "running";
+      schedule(el);
+      break;
+    }
+    case "paused":
+      el._paused = remaining(el);
+      el.dataset.stateName = "paused";
+      stop(el);
+      render(el);
+      break;
+    case "finished":
+      finish(el);
+      break;
+  }
+}
+var countdownApi = {
+  setState(el, stateName, config = {}) {
+    if (!countdownStates.includes(stateName)) {
+      throw new Error(`countdown: unknown state "${stateName}" (supported: ${countdownStates.join(", ")})`);
+    }
+    el._stateConfig = config;
+    triggerStateChange12(el, stateName, config);
+  },
+  getState(el) {
+    const values = {};
+    valuesOf(el).forEach((s, i) => values[s.dataset.unit || i] = parseFloat(s.style.getPropertyValue("--value")) || 0);
+    const config = { ...el._stateConfig, values };
+    if (isTimer(el))
+      config.remaining = Math.round(remaining(el));
+    return { name: el.dataset.stateName || "default", config };
+  }
+};
+df$12.countdownApi = countdownApi;
+df$12.countdownStates = countdownStates;
+function init12() {
+  document.querySelectorAll(".countdown-group:not([data-init]), .countdown:not([data-init])").forEach((el) => {
+    if (el.classList.contains("countdown") && !isTimer(el) && el.parentElement?.closest(".countdown-group[data-until], .countdown-group[data-duration]"))
+      return;
+    if (el.classList.contains("countdown-group") && !isTimer(el))
+      return;
+    el.dataset.init = "";
+    el.api = {
+      setState: (stateName, config) => countdownApi.setState(el, stateName, config),
+      getState: () => countdownApi.getState(el)
+    };
+    el._authored = new Map(valuesOf(el).map((s) => [s, parseFloat(s.style.getPropertyValue("--value")) || 0]));
+    if (isTimer(el)) {
+      el._authorLabel = el.hasAttribute("aria-label");
+      if (!el.hasAttribute("role"))
+        el.setAttribute("role", "timer");
+      triggerStateChange12(el, "default", {});
+    } else {
+      el.dataset.stateName = "default";
+    }
+  });
+}
+init12();
+new MutationObserver(init12).observe(document, { childList: true, subtree: true });
+
+// src/components/dialog/dialog.ts
+var df$13 = defussGlobals();
 var dialogStates = ["default", "open"];
-function triggerStateChange12(dialog, stateName, _config) {
+function triggerStateChange13(dialog, stateName, _config) {
   switch (stateName) {
     case "default":
       if (dialog.open)
@@ -5503,7 +5684,7 @@ var dialogApi = {
     if (!dialogStates.includes(stateName)) {
       throw new Error(`dialog: unknown state "${stateName}" (supported: ${dialogStates.join(", ")})`);
     }
-    triggerStateChange12(dialog, stateName, config);
+    triggerStateChange13(dialog, stateName, config);
     dialog.dataset.stateName = stateName;
     dialog._stateConfig = config;
   },
@@ -5511,9 +5692,9 @@ var dialogApi = {
     return { name: dialog.dataset.stateName || "default", config: dialog._stateConfig ?? {} };
   }
 };
-df$12.dialogApi = dialogApi;
-df$12.dialogStates = dialogStates;
-function init12() {
+df$13.dialogApi = dialogApi;
+df$13.dialogStates = dialogStates;
+function init13() {
   document.querySelectorAll("[data-dialog-trigger]:not([data-init])").forEach((trigger2) => {
     trigger2.dataset.init = "";
     const dialog = document.getElementById(trigger2.dataset.dialogTrigger);
@@ -5548,13 +5729,128 @@ function init12() {
     });
   });
 }
-init12();
-new MutationObserver(init12).observe(document, { childList: true, subtree: true });
+init13();
+new MutationObserver(init13).observe(document, { childList: true, subtree: true });
+
+// src/components/diff/diff.ts
+var df$14 = defussGlobals();
+var diffStates = ["default", "before", "after"];
+var rangeOf = (el) => el.querySelector(":scope > .diff-range");
+function paint(el) {
+  const range = rangeOf(el);
+  if (!range)
+    return;
+  const min = parseFloat(range.min || "0");
+  const max = parseFloat(range.max || "100");
+  const pct = max === min ? 50 : (parseFloat(range.value) - min) / (max - min) * 100;
+  el.style.setProperty("--diff-pos", `${pct}%`);
+  el.dataset.stateName = pct >= 100 ? "before" : pct <= 0 ? "after" : "default";
+}
+function setPosition(el, pct) {
+  const range = rangeOf(el);
+  if (!range)
+    return;
+  const min = parseFloat(range.min || "0");
+  const max = parseFloat(range.max || "100");
+  const value = min + Math.min(100, Math.max(0, pct)) / 100 * (max - min);
+  range.value = String(value);
+  paint(el);
+  range.dispatchEvent(new Event("input", { bubbles: true }));
+}
+function pointerPct(el, e) {
+  const r = el.getBoundingClientRect();
+  if (el.dataset.orientation === "vertical")
+    return (e.clientY - r.top) / r.height * 100;
+  const x = (e.clientX - r.left) / r.width * 100;
+  return getComputedStyle(el).direction === "rtl" ? 100 - x : x;
+}
+function triggerStateChange14(el, stateName, config) {
+  switch (stateName) {
+    case "default":
+      setPosition(el, config?.position ?? el._defaultPosition ?? 50);
+      break;
+    case "before":
+      setPosition(el, 100);
+      break;
+    case "after":
+      setPosition(el, 0);
+      break;
+  }
+}
+var diffApi = {
+  setState(el, stateName, config = {}) {
+    if (!diffStates.includes(stateName)) {
+      throw new Error(`diff: unknown state "${stateName}" (supported: ${diffStates.join(", ")})`);
+    }
+    triggerStateChange14(el, stateName, config);
+    el.dataset.stateName = stateName;
+    el._stateConfig = config;
+  },
+  getState(el) {
+    const pct = parseFloat(el.style.getPropertyValue("--diff-pos")) || 0;
+    const name = pct >= 100 ? "before" : pct <= 0 ? "after" : "default";
+    return { name, config: { ...el._stateConfig, position: Math.round(pct * 100) / 100 } };
+  }
+};
+df$14.diffApi = diffApi;
+df$14.diffStates = diffStates;
+function init14() {
+  document.querySelectorAll(".diff:not([data-init])").forEach((el) => {
+    el.dataset.init = "";
+    const range = rangeOf(el);
+    if (!range)
+      return;
+    paint(el);
+    el._defaultPosition = parseFloat(el.style.getPropertyValue("--diff-pos")) || 50;
+    el.api = {
+      setState: (stateName, config) => diffApi.setState(el, stateName, config),
+      getState: () => diffApi.getState(el)
+    };
+    range.addEventListener("input", () => paint(el));
+    range.addEventListener("keydown", (e) => {
+      const big = e.shiftKey ? 10 : 1;
+      const deltas = { ArrowRight: big, ArrowUp: big, ArrowLeft: -big, ArrowDown: -big, PageUp: 10, PageDown: -10 };
+      let d = deltas[e.key];
+      if (d === undefined)
+        return;
+      e.preventDefault();
+      const pct = parseFloat(el.style.getPropertyValue("--diff-pos")) || 0;
+      if (el.dataset.orientation === "vertical" && (e.key === "ArrowUp" || e.key === "ArrowDown"))
+        d = -d;
+      if (el.dataset.orientation !== "vertical" && getComputedStyle(el).direction === "rtl" && e.key.startsWith("Arrow"))
+        d = -d;
+      setPosition(el, pct + d);
+    });
+    el.addEventListener("pointerdown", (e) => {
+      if (e.button !== 0 || e.target === range)
+        return;
+      e.preventDefault();
+      el.setPointerCapture(e.pointerId);
+      el.dataset.dragging = "";
+      setPosition(el, pointerPct(el, e));
+      range.focus({ preventScroll: true });
+    });
+    el.addEventListener("pointermove", (e) => {
+      if (el.hasPointerCapture(e.pointerId) || el.dataset.follow === "hover" && e.pointerType === "mouse") {
+        setPosition(el, pointerPct(el, e));
+      }
+    });
+    const end = (e) => {
+      if (el.hasPointerCapture(e.pointerId))
+        el.releasePointerCapture(e.pointerId);
+      delete el.dataset.dragging;
+    };
+    el.addEventListener("pointerup", end);
+    el.addEventListener("pointercancel", end);
+  });
+}
+init14();
+new MutationObserver(init14).observe(document, { childList: true, subtree: true });
 
 // src/components/dropdown/dropdown.ts
-var df$13 = defussGlobals();
+var df$15 = defussGlobals();
 var dropdownStates = ["default", "open"];
-function triggerStateChange13(menu, stateName, _config) {
+function triggerStateChange15(menu, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -5571,7 +5867,7 @@ var dropdownApi = {
     if (!dropdownStates.includes(stateName)) {
       throw new Error(`dropdown: unknown state "${stateName}" (supported: ${dropdownStates.join(", ")})`);
     }
-    triggerStateChange13(menu, stateName, config);
+    triggerStateChange15(menu, stateName, config);
     menu.dataset.stateName = stateName;
     menu._stateConfig = config;
   },
@@ -5579,9 +5875,9 @@ var dropdownApi = {
     return { name: menu.dataset.stateName || "default", config: menu._stateConfig ?? {} };
   }
 };
-df$13.dropdownApi = dropdownApi;
-df$13.dropdownStates = dropdownStates;
-function init13() {
+df$15.dropdownApi = dropdownApi;
+df$15.dropdownStates = dropdownStates;
+function init15() {
   document.querySelectorAll("[data-dropdown-trigger]:not([data-init])").forEach((trigger2) => {
     trigger2.dataset.init = "";
     const menu = document.getElementById(trigger2.dataset.dropdownTrigger);
@@ -5689,14 +5985,216 @@ function init13() {
     };
   });
 }
-init13();
-new MutationObserver(init13).observe(document, { childList: true, subtree: true });
+init15();
+new MutationObserver(init15).observe(document, { childList: true, subtree: true });
+
+// src/components/file-input/file-input.ts
+var df$16 = defussGlobals();
+var fileInputStates = ["default", "dragover", "selected", "error"];
+var inputOf = (el) => el.querySelector(".file-drop-input");
+function accepts(input, file) {
+  const list = (input.accept || "").split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
+  if (!list.length)
+    return true;
+  const name = file.name.toLowerCase();
+  const type = (file.type || "").toLowerCase();
+  return list.some((a) => a.startsWith(".") ? name.endsWith(a) : a.endsWith("/*") ? type.startsWith(a.slice(0, -1)) : type === a);
+}
+var lang = (el) => el.closest("[lang]")?.lang || undefined;
+function formatSize(el, bytes) {
+  const units = ["byte", "kilobyte", "megabyte", "gigabyte"];
+  let i = 0;
+  let n = bytes;
+  while (n >= 1000 && i < units.length - 1) {
+    n /= 1000;
+    i++;
+  }
+  return new Intl.NumberFormat(lang(el), { style: "unit", unit: units[i], unitDisplay: "short", maximumFractionDigits: i ? 1 : 0 }).format(n);
+}
+var ICON_X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+function setFiles(input, files) {
+  const dt = new DataTransfer;
+  for (const f of files)
+    dt.items.add(f);
+  input.files = dt.files;
+}
+function renderList(el) {
+  const input = inputOf(el);
+  const list = el.querySelector(".file-drop-list");
+  if (!list)
+    return;
+  (el._urls || []).forEach((u) => URL.revokeObjectURL(u));
+  el._urls = [];
+  list.replaceChildren(...[...input.files].map((file, i) => {
+    const li = document.createElement("li");
+    li.className = "file-drop-item";
+    const thumb = document.createElement("span");
+    thumb.className = "file-drop-thumb";
+    thumb.setAttribute("aria-hidden", "true");
+    if (file.type.startsWith("image/")) {
+      const img = document.createElement("img");
+      img.alt = "";
+      img.src = URL.createObjectURL(file);
+      el._urls.push(img.src);
+      thumb.append(img);
+    } else {
+      thumb.textContent = (file.name.split(".").pop() || "file").slice(0, 4);
+    }
+    const name = document.createElement("div");
+    name.className = "file-drop-name";
+    name.textContent = file.name;
+    const meta = document.createElement("span");
+    meta.className = "file-drop-meta";
+    meta.textContent = formatSize(el, file.size);
+    name.append(meta);
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "file-drop-remove";
+    remove.innerHTML = ICON_X;
+    remove.setAttribute("aria-label", `Remove ${file.name}`);
+    remove.addEventListener("click", () => {
+      setFiles(input, [...input.files].filter((_, k) => k !== i));
+      el._kept = [...input.files];
+      apply(el, [], true);
+      el._removing = true;
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+      el._removing = false;
+    });
+    li.append(thumb, name, remove);
+    return li;
+  }));
+}
+function apply(el, rejected, quiet = false) {
+  const input = inputOf(el);
+  const err = el.querySelector(".file-drop-error");
+  const message = rejected.length ? `Not added: ${rejected.map((r) => `${r.file.name} (${r.why})`).join(", ")}` : "";
+  if (err) {
+    err.textContent = message;
+    err.setAttribute("role", "alert");
+  }
+  el.dataset.stateName = rejected.length ? "error" : input.files.length ? "selected" : "default";
+  renderList(el);
+  if (!quiet && rejected.length)
+    el.dispatchEvent(new CustomEvent("file-drop:rejected", { bubbles: true, detail: { files: rejected.map((r) => r.file), message } }));
+}
+function onPick(el) {
+  const input = inputOf(el);
+  const incoming = [...input.files];
+  const kept = input.multiple ? el._kept || [] : [];
+  const maxSize = parseFloat(el.dataset.maxSize || "Infinity");
+  const maxFiles = input.multiple ? parseFloat(el.dataset.maxFiles || "Infinity") : 1;
+  const key = (f) => `${f.name}|${f.size}|${f.lastModified}`;
+  const seen = new Set(kept.map(key));
+  const out = [...kept];
+  const rejected = [];
+  for (const file of incoming) {
+    if (seen.has(key(file)))
+      continue;
+    if (!accepts(input, file))
+      rejected.push({ file, why: "type" });
+    else if (file.size > maxSize)
+      rejected.push({ file, why: `over ${formatSize(el, maxSize)}` });
+    else if (out.length >= maxFiles)
+      rejected.push({ file, why: `max ${maxFiles}` });
+    else {
+      out.push(file);
+      seen.add(key(file));
+    }
+  }
+  setFiles(input, out);
+  el._kept = out;
+  apply(el, rejected);
+}
+function triggerStateChange16(el, stateName, config) {
+  const input = inputOf(el);
+  switch (stateName) {
+    case "default":
+      setFiles(input, []);
+      el._kept = [];
+      apply(el, [], true);
+      break;
+    case "dragover":
+      el.dataset.stateName = "dragover";
+      break;
+    case "selected": {
+      const files = (config?.files || [{ name: "report.pdf", size: 248000, type: "application/pdf" }]).map((f) => new File([new Uint8Array(Math.min(f.size ?? 0, 5000000))], f.name, { type: f.type || "" }));
+      setFiles(input, files);
+      el._kept = [...input.files];
+      apply(el, [], true);
+      break;
+    }
+    case "error": {
+      const err = el.querySelector(".file-drop-error");
+      if (err)
+        err.textContent = config?.message || "Not added: archive.zip (type)";
+      el.dataset.stateName = "error";
+      break;
+    }
+  }
+}
+var fileInputApi = {
+  setState(el, stateName, config = {}) {
+    if (!fileInputStates.includes(stateName)) {
+      throw new Error(`file-input: unknown state "${stateName}" (supported: ${fileInputStates.join(", ")})`);
+    }
+    el._stateConfig = config;
+    triggerStateChange16(el, stateName, config);
+  },
+  getState(el) {
+    const input = inputOf(el);
+    return {
+      name: el.dataset.stateName || "default",
+      config: { ...el._stateConfig, count: input.files.length, files: [...input.files].map((f) => f.name) }
+    };
+  }
+};
+df$16.fileInputApi = fileInputApi;
+df$16.fileInputStates = fileInputStates;
+function init16() {
+  document.querySelectorAll(".file-drop:not([data-init])").forEach((el) => {
+    const input = inputOf(el);
+    if (!input)
+      return;
+    el.dataset.init = "";
+    el.dataset.stateName = "default";
+    el._kept = [];
+    el.api = {
+      setState: (stateName, config) => fileInputApi.setState(el, stateName, config),
+      getState: () => fileInputApi.getState(el)
+    };
+    const zone = el.querySelector(".file-drop-zone") || el;
+    let depth = 0;
+    zone.addEventListener("dragenter", (e) => {
+      if (!e.dataTransfer?.types.includes("Files") || input.disabled)
+        return;
+      depth++;
+      el._before = el.dataset.stateName === "dragover" ? el._before : el.dataset.stateName;
+      el.dataset.stateName = "dragover";
+    });
+    zone.addEventListener("dragleave", () => {
+      depth = Math.max(0, depth - 1);
+      if (!depth && el.dataset.stateName === "dragover")
+        el.dataset.stateName = el._before || "default";
+    });
+    zone.addEventListener("drop", () => {
+      depth = 0;
+      if (el.dataset.stateName === "dragover")
+        el.dataset.stateName = el._before || "default";
+    });
+    input.addEventListener("change", () => {
+      if (!el._removing)
+        onPick(el);
+    });
+  });
+}
+init16();
+new MutationObserver(init16).observe(document, { childList: true, subtree: true });
 
 // src/components/image/image.ts
-var df$14 = defussGlobals();
+var df$17 = defussGlobals();
 var dfDollar6 = defussQuery();
 var imageStates = ["default", "error"];
-function triggerStateChange14(figure, stateName, _config) {
+function triggerStateChange17(figure, stateName, _config) {
   const img = dfDollar6(figure).find("img")[0];
   if (!img)
     return;
@@ -5714,7 +6212,7 @@ var imageApi = {
     if (!imageStates.includes(stateName)) {
       throw new Error(`image: unknown state "${stateName}" (supported: ${imageStates.join(", ")})`);
     }
-    triggerStateChange14(figure, stateName, config);
+    triggerStateChange17(figure, stateName, config);
     figure.dataset.stateName = stateName;
     figure._stateConfig = config;
   },
@@ -5726,9 +6224,41 @@ var imageApi = {
     };
   }
 };
-df$14.imageApi = imageApi;
-df$14.imageStates = imageStates;
-function init14() {
+df$17.imageApi = imageApi;
+df$17.imageStates = imageStates;
+var galleryIO = typeof IntersectionObserver === "function" ? new IntersectionObserver((entries) => {
+  for (const e of entries) {
+    if (!e.isIntersecting)
+      continue;
+    galleryIO.unobserve(e.target);
+    readyGallery(e.target);
+  }
+}, { rootMargin: "300px" }) : null;
+function readyGallery(gallery) {
+  const imgs = [...gallery.querySelectorAll(":scope > img, :scope > picture img")];
+  Promise.all(imgs.map((img) => (img.decode ? img.decode() : Promise.resolve()).catch(() => {
+    return;
+  }))).then(() => {
+    gallery.dataset.ready = "";
+  });
+}
+function initHoverGalleries() {
+  document.querySelectorAll(".hover-gallery:not([data-init])").forEach((gallery) => {
+    gallery.dataset.init = "";
+    gallery.querySelectorAll(":scope > img, :scope > picture img").forEach((img, i) => {
+      if (img.loading === "lazy")
+        img.loading = "eager";
+      if (i > 0 && !img.hasAttribute("fetchpriority"))
+        img.fetchPriority = "low";
+    });
+    if (galleryIO)
+      galleryIO.observe(gallery);
+    else
+      readyGallery(gallery);
+  });
+}
+function init17() {
+  initHoverGalleries();
   document.querySelectorAll(".image:not([data-init])").forEach((figure) => {
     figure.dataset.init = "";
     figure.api = {
@@ -5771,8 +6301,8 @@ function init14() {
     }
   });
 }
-init14();
-new MutationObserver(init14).observe(document, { childList: true, subtree: true });
+init17();
+new MutationObserver(init17).observe(document, { childList: true, subtree: true });
 var lightbox = null;
 var lightboxImg = null;
 var lightboxFigure = null;
@@ -5894,10 +6424,290 @@ if (!document.__imagePreviewInit) {
   });
 }
 
+// src/components/mermaid/mermaid.ts
+var df$18 = defussGlobals();
+var mermaidStates = ["default", "rendered", "error"];
+var MERMAID_URL = "https://cdn.jsdelivr.net/npm/mermaid@12.0.0/dist/mermaid.esm.min.mjs";
+var modulePromise = null;
+var moduleUrl = "";
+function load(url) {
+  const vendorUrl = url || document.querySelector('meta[name="mermaid-module"]')?.content || MERMAID_URL;
+  if (modulePromise && vendorUrl === moduleUrl)
+    return modulePromise;
+  moduleUrl = vendorUrl;
+  const pending = import(vendorUrl).then((m) => m.default ?? m);
+  pending.catch(() => {
+    if (modulePromise === pending)
+      modulePromise = null;
+  });
+  modulePromise = pending;
+  return pending;
+}
+var probe2 = null;
+function toHex(css) {
+  if (!css || css === "none")
+    return "";
+  probe2 ??= document.createElement("canvas").getContext("2d", { willReadFrequently: true });
+  if (!probe2)
+    return "";
+  probe2.clearRect(0, 0, 1, 1);
+  probe2.fillStyle = "rgba(1, 2, 3, 0.5)";
+  probe2.fillStyle = css;
+  if (probe2.fillStyle === "rgba(1, 2, 3, 0.5)")
+    return "";
+  probe2.fillRect(0, 0, 1, 1);
+  const [r, g, b, a] = probe2.getImageData(0, 0, 1, 1).data;
+  const hex = (n) => n.toString(16).padStart(2, "0");
+  return `#${hex(r)}${hex(g)}${hex(b)}${a < 255 ? hex(a) : ""}`;
+}
+function mermaidTheme(el) {
+  const cs = getComputedStyle(el);
+  const tok = (name, fallback) => toHex(cs.getPropertyValue(name).trim()) || fallback;
+  const background = tok("--background", "#ffffff");
+  const foreground = tok("--foreground", "#0a0a0a");
+  const card = tok("--card", background);
+  const cardFg = tok("--card-foreground", foreground);
+  const muted = tok("--muted", "#f5f5f5");
+  const mutedFg = tok("--muted-foreground", "#737373");
+  const border = tok("--border", "#e5e5e5");
+  const primary = tok("--primary", foreground);
+  const primaryFg = tok("--primary-foreground", background);
+  const secondary = tok("--secondary", muted);
+  const accent = tok("--accent", muted);
+  const accentFg = tok("--accent-foreground", foreground);
+  const destructive = tok("--destructive", "#dc2626");
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(background.slice(i, i + 2), 16));
+  const dark = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 < 0.5;
+  return {
+    darkMode: dark,
+    background,
+    fontFamily: cs.fontFamily || "system-ui, sans-serif",
+    fontSize: "14px",
+    textColor: foreground,
+    primaryColor: card,
+    primaryTextColor: cardFg,
+    primaryBorderColor: mutedFg,
+    mainBkg: card,
+    nodeBorder: mutedFg,
+    nodeTextColor: cardFg,
+    secondaryColor: secondary,
+    secondaryTextColor: foreground,
+    secondaryBorderColor: border,
+    tertiaryColor: muted,
+    tertiaryTextColor: foreground,
+    tertiaryBorderColor: border,
+    lineColor: mutedFg,
+    defaultLinkColor: mutedFg,
+    edgeLabelBackground: background,
+    titleColor: foreground,
+    clusterBkg: muted,
+    clusterBorder: border,
+    actorBkg: card,
+    actorBorder: mutedFg,
+    actorTextColor: cardFg,
+    actorLineColor: border,
+    signalColor: foreground,
+    signalTextColor: foreground,
+    labelBoxBkgColor: muted,
+    labelBoxBorderColor: border,
+    labelTextColor: foreground,
+    loopTextColor: foreground,
+    activationBkgColor: muted,
+    activationBorderColor: mutedFg,
+    sequenceNumberColor: primaryFg,
+    noteBkgColor: accent,
+    noteTextColor: accentFg,
+    noteBorderColor: border,
+    classText: cardFg,
+    labelColor: cardFg,
+    altBackground: muted,
+    stateBkg: card,
+    stateLabelColor: cardFg,
+    compositeBackground: muted,
+    compositeTitleBackground: muted,
+    innerEndBackground: foreground,
+    specialStateColor: foreground,
+    pie1: primary,
+    errorBkgColor: destructive,
+    errorTextColor: primaryFg
+  };
+}
+function sourceOf(fig) {
+  const pre = fig.querySelector(":scope > pre.mermaid");
+  if (!pre)
+    return "";
+  const decode = document.createElement("textarea");
+  decode.innerHTML = pre.innerHTML;
+  return decode.value.replace(/^\n+|\s+$/g, "");
+}
+function outputOf(fig) {
+  let out = fig.querySelector(":scope > .mermaid-output");
+  if (!out) {
+    out = document.createElement("div");
+    out.className = "mermaid-output";
+    out.setAttribute("data-ce-chrome", "");
+    fig.querySelector(":scope > pre.mermaid")?.after(out);
+  }
+  return out;
+}
+function clearError(fig) {
+  fig.querySelector(":scope > .mermaid-error")?.remove();
+}
+function showError(fig, message) {
+  clearError(fig);
+  fig.querySelector(":scope > .mermaid-output")?.remove();
+  const out = document.createElement("output");
+  out.className = "mermaid-error";
+  out.setAttribute("role", "alert");
+  out.setAttribute("data-ce-chrome", "");
+  out.textContent = message;
+  fig.querySelector(":scope > pre.mermaid")?.after(out);
+  fig.dataset.state = "error";
+  fig.dataset.stateName = "error";
+}
+var seq = 0;
+var queue = Promise.resolve();
+function render2(fig) {
+  if (fig.dataset.state !== "rendered")
+    fig.dataset.state = "pending";
+  const job = queue.then(async () => {
+    const source = sourceOf(fig);
+    if (!fig.isConnected || !source) {
+      if (fig.dataset.state === "pending")
+        delete fig.dataset.state;
+      return false;
+    }
+    let mermaid;
+    try {
+      mermaid = await load();
+    } catch {
+      showError(fig, `Mermaid could not be loaded from ${moduleUrl} - the diagram source is shown instead.`);
+      return false;
+    }
+    const theme = mermaidTheme(fig);
+    mermaid.initialize({
+      startOnLoad: false,
+      securityLevel: "strict",
+      suppressErrorRendering: true,
+      theme: "base",
+      themeVariables: theme
+    });
+    try {
+      const { svg, bindFunctions } = await mermaid.render(`defuss-mermaid-${++seq}`, source);
+      if (!fig.isConnected)
+        return false;
+      clearError(fig);
+      const out = outputOf(fig);
+      out.innerHTML = svg;
+      const el = out.querySelector("svg");
+      const label2 = fig.getAttribute("aria-label");
+      if (el) {
+        el.removeAttribute("height");
+        el.style.maxWidth = "";
+        el.setAttribute("role", "img");
+        if (label2 && !el.querySelector(":scope > title"))
+          el.setAttribute("aria-label", label2);
+      }
+      bindFunctions?.(out);
+      fig.dataset.state = "rendered";
+      fig.dataset.stateName = "rendered";
+      fig._mermaidTheme = JSON.stringify(theme);
+      return true;
+    } catch (err) {
+      const text = err instanceof Error ? err.message : String(err);
+      showError(fig, `This diagram could not be rendered.
+${text.split(`
+`).slice(0, 4).join(`
+`)}`);
+      return false;
+    }
+  });
+  queue = job.catch(() => {
+    return;
+  });
+  return job;
+}
+function renderAll() {
+  return Promise.all([...document.querySelectorAll(".mermaid-diagram[data-init]")].map(render2));
+}
+function triggerStateChange18(fig, stateName, config) {
+  switch (stateName) {
+    case "default":
+      clearError(fig);
+      fig.querySelector(":scope > .mermaid-output")?.remove();
+      delete fig.dataset.state;
+      fig.dataset.stateName = "default";
+      return;
+    case "rendered":
+      return render2(fig);
+    case "error":
+      showError(fig, typeof config.message === "string" ? config.message : "This diagram could not be rendered.");
+      return;
+  }
+}
+var mermaidApi = {
+  setState(fig, stateName, config = {}) {
+    if (!mermaidStates.includes(stateName)) {
+      throw new Error(`mermaid: unknown state "${stateName}" (supported: ${mermaidStates.join(", ")})`);
+    }
+    fig._stateConfig = config;
+    return triggerStateChange18(fig, stateName, config);
+  },
+  getState(fig) {
+    return { name: fig.dataset.stateName || "default", config: fig._stateConfig ?? {} };
+  }
+};
+df$18.mermaidApi = mermaidApi;
+df$18.mermaidStates = mermaidStates;
+df$18.mermaid = { load, render: render2, renderAll, theme: mermaidTheme, url: MERMAID_URL };
+var themeWatched2 = false;
+function watchTheme2() {
+  if (themeWatched2)
+    return;
+  themeWatched2 = true;
+  let timer = 0;
+  const schedule2 = () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      document.querySelectorAll('.mermaid-diagram[data-state="rendered"]').forEach((fig) => {
+        if (JSON.stringify(mermaidTheme(fig)) !== fig._mermaidTheme)
+          render2(fig);
+      });
+    }, 80);
+  };
+  const mo = new MutationObserver(schedule2);
+  mo.observe(document.documentElement, { attributes: true, attributeFilter: ["class", "style", "data-theme"] });
+  if (document.head)
+    mo.observe(document.head, { childList: true, subtree: true, characterData: true });
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", schedule2);
+}
+function init18() {
+  document.querySelectorAll("pre.mermaid:not(.mermaid-diagram > pre)").forEach((pre) => {
+    const fig = document.createElement("figure");
+    fig.className = "mermaid-diagram";
+    pre.before(fig);
+    fig.append(pre);
+  });
+  document.querySelectorAll(".mermaid-diagram:not([data-init])").forEach((fig) => {
+    fig.dataset.init = "";
+    if (!fig.querySelector(":scope > pre.mermaid"))
+      return;
+    fig.dataset.stateName = "default";
+    fig.api = {
+      setState: (stateName, config) => mermaidApi.setState(fig, stateName, config),
+      getState: () => mermaidApi.getState(fig)
+    };
+    watchTheme2();
+    render2(fig);
+  });
+}
+init18();
+new MutationObserver(init18).observe(document, { childList: true, subtree: true });
+
 // src/components/navigation-menu/navigation-menu.ts
-var df$15 = defussGlobals();
+var df$19 = defussGlobals();
 var navigationMenuStates = ["default", "open"];
-function triggerStateChange15(content, stateName, _config) {
+function triggerStateChange19(content, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -5914,7 +6724,7 @@ var navigationMenuApi = {
     if (!navigationMenuStates.includes(stateName)) {
       throw new Error(`navigation-menu: unknown state "${stateName}" (supported: ${navigationMenuStates.join(", ")})`);
     }
-    triggerStateChange15(content, stateName, config);
+    triggerStateChange19(content, stateName, config);
     content.dataset.stateName = stateName;
     content._stateConfig = config;
   },
@@ -5922,9 +6732,9 @@ var navigationMenuApi = {
     return { name: content.dataset.stateName || "default", config: content._stateConfig ?? {} };
   }
 };
-df$15.navigationMenuApi = navigationMenuApi;
-df$15.navigationMenuStates = navigationMenuStates;
-function init15() {
+df$19.navigationMenuApi = navigationMenuApi;
+df$19.navigationMenuStates = navigationMenuStates;
+function init19() {
   document.querySelectorAll(".nav-menu-trigger[popovertarget]:not([data-init])").forEach((trigger2) => {
     trigger2.dataset.init = "";
     const content = document.getElementById(trigger2.getAttribute("popovertarget"));
@@ -5942,11 +6752,11 @@ function init15() {
     };
   });
 }
-init15();
-new MutationObserver(init15).observe(document, { childList: true, subtree: true });
+init19();
+new MutationObserver(init19).observe(document, { childList: true, subtree: true });
 
 // src/components/number-input/number-input.ts
-var df$16 = defussGlobals();
+var df$20 = defussGlobals();
 var numberInputStates = ["default"];
 var getInput2 = (wrapper) => wrapper.querySelector('input:not([type="hidden"])');
 function currencyConfig(wrapper) {
@@ -6067,7 +6877,7 @@ function formatDecimals(wrapper, input) {
   if (input.value !== fixed)
     input.value = fixed;
 }
-function triggerStateChange16(wrapper, config) {
+function triggerStateChange20(wrapper, config) {
   const input = getInput2(wrapper);
   if (!input || config?.value === undefined)
     return;
@@ -6087,7 +6897,7 @@ var numberInputApi = {
     if (!numberInputStates.includes(stateName)) {
       throw new Error(`number-input: unknown state "${stateName}" (supported: ${numberInputStates.join(", ")})`);
     }
-    triggerStateChange16(wrapper, config);
+    triggerStateChange20(wrapper, config);
     wrapper.dataset.stateName = stateName;
     wrapper._stateConfig = config;
   },
@@ -6103,9 +6913,9 @@ var numberInputApi = {
     };
   }
 };
-df$16.numberInputApi = numberInputApi;
-df$16.numberInputStates = numberInputStates;
-function init16() {
+df$20.numberInputApi = numberInputApi;
+df$20.numberInputStates = numberInputStates;
+function init20() {
   document.querySelectorAll(".number-input:not([data-init])").forEach((wrapper) => {
     wrapper.dataset.init = "";
     wrapper.api = {
@@ -6181,11 +6991,11 @@ function init16() {
       });
   });
 }
-init16();
-new MutationObserver(init16).observe(document, { childList: true, subtree: true });
+init20();
+new MutationObserver(init20).observe(document, { childList: true, subtree: true });
 
 // src/components/pagination/pagination.ts
-var df$17 = defussGlobals();
+var df$21 = defussGlobals();
 var dfDollar7 = defussQuery();
 var paginationStates = ["default"];
 var numAttr = (el, key, fallback) => {
@@ -6277,7 +7087,7 @@ function setPage(nav, page) {
   nav.dataset.activePage = String(next);
   nav.dispatchEvent(new CustomEvent("pagination-change", { bubbles: true, detail: { page: next } }));
 }
-function triggerStateChange17(nav, stateName, config = {}) {
+function triggerStateChange21(nav, stateName, config = {}) {
   if (stateName !== "default")
     return;
   const a = config.activePage ?? config.page;
@@ -6296,7 +7106,7 @@ var paginationApi = {
     if (!paginationStates.includes(stateName)) {
       throw new Error(`pagination: unknown state "${stateName}" (supported: ${paginationStates.join(", ")})`);
     }
-    triggerStateChange17(nav, stateName, config);
+    triggerStateChange21(nav, stateName, config);
     nav.dataset.stateName = stateName;
     nav._stateConfig = config;
   },
@@ -6313,9 +7123,9 @@ var paginationApi = {
     };
   }
 };
-df$17.paginationApi = paginationApi;
-df$17.paginationStates = paginationStates;
-function init17() {
+df$21.paginationApi = paginationApi;
+df$21.paginationStates = paginationStates;
+function init21() {
   document.querySelectorAll(".pagination:not([data-init])").forEach((nav) => {
     nav.dataset.init = "";
     nav.api = {
@@ -6348,13 +7158,13 @@ function init17() {
     nav.addEventListener("pagination-prev", () => setPage(nav, numAttr(nav, "activePage", 1) - 1));
   });
 }
-init17();
-new MutationObserver(init17).observe(document, { childList: true, subtree: true });
+init21();
+new MutationObserver(init21).observe(document, { childList: true, subtree: true });
 
 // src/components/popover/popover.ts
-var df$18 = defussGlobals();
+var df$22 = defussGlobals();
 var popoverStates = ["default", "open"];
-function triggerStateChange18(popover, stateName, _config) {
+function triggerStateChange22(popover, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -6371,7 +7181,7 @@ var popoverApi = {
     if (!popoverStates.includes(stateName)) {
       throw new Error(`popover: unknown state "${stateName}" (supported: ${popoverStates.join(", ")})`);
     }
-    triggerStateChange18(popover, stateName, config);
+    triggerStateChange22(popover, stateName, config);
     popover.dataset.stateName = stateName;
     popover._stateConfig = config;
   },
@@ -6379,9 +7189,9 @@ var popoverApi = {
     return { name: popover.dataset.stateName || "default", config: popover._stateConfig ?? {} };
   }
 };
-df$18.popoverApi = popoverApi;
-df$18.popoverStates = popoverStates;
-function init18() {
+df$22.popoverApi = popoverApi;
+df$22.popoverStates = popoverStates;
+function init22() {
   document.querySelectorAll("[popovertarget]:not([data-init])").forEach((trigger2) => {
     const id = trigger2.getAttribute("popovertarget");
     const popover = document.getElementById(id);
@@ -6400,11 +7210,11 @@ function init18() {
     };
   });
 }
-init18();
-new MutationObserver(init18).observe(document, { childList: true, subtree: true });
+init22();
+new MutationObserver(init22).observe(document, { childList: true, subtree: true });
 
 // src/components/presentation/presentation.ts
-var df$19 = defussGlobals();
+var df$23 = defussGlobals();
 var presentationStates = ["default", "notes", "fullscreen"];
 var DEFAULT_IN = "fadeIn";
 var DEFAULT_OUT = "fadeOut";
@@ -6441,20 +7251,20 @@ function animSpec(root, slide, phase, forward) {
     opts.color = pick("Color");
   return { name: pick() || (phase === "in" ? DEFAULT_IN : DEFAULT_OUT), opts };
 }
-var probe2 = null;
+var probe3 = null;
 function rgbOf(css) {
   if (!css || typeof document === "undefined")
     return null;
-  probe2 ??= document.createElement("canvas").getContext("2d", { willReadFrequently: true });
-  if (!probe2)
+  probe3 ??= document.createElement("canvas").getContext("2d", { willReadFrequently: true });
+  if (!probe3)
     return null;
-  probe2.clearRect(0, 0, 1, 1);
-  probe2.fillStyle = "rgba(1, 2, 3, 0.5)";
-  probe2.fillStyle = css;
-  if (probe2.fillStyle === "rgba(1, 2, 3, 0.5)")
+  probe3.clearRect(0, 0, 1, 1);
+  probe3.fillStyle = "rgba(1, 2, 3, 0.5)";
+  probe3.fillStyle = css;
+  if (probe3.fillStyle === "rgba(1, 2, 3, 0.5)")
     return null;
-  probe2.fillRect(0, 0, 1, 1);
-  const [r, g, b, a] = probe2.getImageData(0, 0, 1, 1).data;
+  probe3.fillRect(0, 0, 1, 1);
+  const [r, g, b, a] = probe3.getImageData(0, 0, 1, 1).data;
   return [r, g, b, a / 255];
 }
 function contrast(a, b) {
@@ -6515,7 +7325,7 @@ function exitFullscreen(root) {
   if (nativeDeck === root)
     nativeDeck = null;
 }
-function triggerStateChange19(root, stateName, config = {}) {
+function triggerStateChange23(root, stateName, config = {}) {
   if (!presentationStates.includes(stateName)) {
     throw new Error(`presentation: unknown state "${stateName}" (supported: ${presentationStates.join(", ")})`);
   }
@@ -6539,7 +7349,7 @@ function triggerStateChange19(root, stateName, config = {}) {
 }
 var presentationApi = {
   setState(root, stateName, config = {}) {
-    triggerStateChange19(root, stateName, config);
+    triggerStateChange23(root, stateName, config);
     root.dataset.stateName = stateName;
     root._stateConfig = config;
   },
@@ -6555,8 +7365,8 @@ var presentationApi = {
     };
   }
 };
-df$19.presentationApi = presentationApi;
-df$19.presentationStates = presentationStates;
+df$23.presentationApi = presentationApi;
+df$23.presentationStates = presentationStates;
 var keysBound2 = false;
 function bindKeyboard() {
   if (keysBound2)
@@ -6601,7 +7411,7 @@ function bindKeyboard() {
         break;
       case "f":
       case "F":
-        triggerStateChange19(root, "fullscreen", { value: !root.hasAttribute("data-fullscreen") });
+        triggerStateChange23(root, "fullscreen", { value: !root.hasAttribute("data-fullscreen") });
         break;
       default:
         handled = false;
@@ -6642,7 +7452,7 @@ function bindFullscreen() {
     }
   });
 }
-function init19() {
+function init23() {
   document.querySelectorAll(".presentation:not([data-init])").forEach((root) => {
     root.dataset.init = "";
     root.api = {
@@ -6793,7 +7603,7 @@ function init19() {
           root.toggleAttribute("data-notes");
           break;
         case "fullscreen":
-          triggerStateChange19(root, "fullscreen", { value: !root.hasAttribute("data-fullscreen") });
+          triggerStateChange23(root, "fullscreen", { value: !root.hasAttribute("data-fullscreen") });
           break;
       }
     });
@@ -6806,13 +7616,13 @@ function init19() {
     applyScale();
   });
 }
-init19();
-new MutationObserver(init19).observe(document, { childList: true, subtree: true });
+init23();
+new MutationObserver(init23).observe(document, { childList: true, subtree: true });
 
 // src/components/product-showcase/product-showcase.ts
-var df$20 = defussGlobals();
+var df$24 = defussGlobals();
 var productShowcaseStates = ["default", "playing"];
-function triggerStateChange20(showcase, stateName, _config) {
+function triggerStateChange24(showcase, stateName, _config) {
   const video = showcase.querySelector("video");
   switch (stateName) {
     case "default":
@@ -6836,7 +7646,7 @@ var productShowcaseApi = {
     if (!productShowcaseStates.includes(stateName)) {
       throw new Error(`product-showcase: unknown state "${stateName}" (supported: ${productShowcaseStates.join(", ")})`);
     }
-    triggerStateChange20(showcase, stateName, config);
+    triggerStateChange24(showcase, stateName, config);
     showcase.dataset.stateName = stateName;
     showcase._stateConfig = config;
   },
@@ -6848,9 +7658,9 @@ var productShowcaseApi = {
     };
   }
 };
-df$20.productShowcaseApi = productShowcaseApi;
-df$20.productShowcaseStates = productShowcaseStates;
-function init20() {
+df$24.productShowcaseApi = productShowcaseApi;
+df$24.productShowcaseStates = productShowcaseStates;
+function init24() {
   document.querySelectorAll(".mk-showcase:not([data-init])").forEach((showcase) => {
     showcase.dataset.init = "";
     showcase.dataset.state = "default";
@@ -6867,11 +7677,11 @@ function init20() {
     });
   });
 }
-init20();
-new MutationObserver(init20).observe(document, { childList: true, subtree: true });
+init24();
+new MutationObserver(init24).observe(document, { childList: true, subtree: true });
 
 // src/components/resizer/resizer.ts
-var df$21 = defussGlobals();
+var df$25 = defussGlobals();
 var resizerStates = ["default"];
 var HANDLES = ["n", "e", "s", "w", "ne", "nw", "se", "sw"];
 var CLASS_NUMBERS = Array.from({ length: 81 }, (_, i) => i + 16);
@@ -6995,7 +7805,7 @@ function applySize(wrapper, axis, px) {
     }
   }));
 }
-function triggerStateChange21(wrapper, stateName, config = {}) {
+function triggerStateChange25(wrapper, stateName, config = {}) {
   if (stateName !== "default")
     return;
   if (config.width !== undefined || wrapper._defaultSize)
@@ -7008,7 +7818,7 @@ var resizerApi = {
     if (!resizerStates.includes(stateName)) {
       throw new Error(`resizer: unknown state "${stateName}" (supported: ${resizerStates.join(", ")})`);
     }
-    triggerStateChange21(wrapper, stateName, config);
+    triggerStateChange25(wrapper, stateName, config);
     wrapper.dataset.stateName = stateName;
     wrapper._stateConfig = config;
   },
@@ -7024,8 +7834,8 @@ var resizerApi = {
     };
   }
 };
-df$21.resizerApi = resizerApi;
-df$21.resizerStates = resizerStates;
+df$25.resizerApi = resizerApi;
+df$25.resizerStates = resizerStates;
 var HANDLE_LABEL = {
   n: "top edge",
   s: "bottom edge",
@@ -7070,15 +7880,15 @@ function handleKeys(wrapper, handle, ev) {
     return;
   ev.preventDefault();
   const step = (numAttr2(wrapper, "stepKey", 10) || 10) * (ev.shiftKey ? 10 : 1);
-  const apply = (axis) => {
+  const apply2 = (axis) => {
     const [min, max] = bounds(wrapper, axis);
     const cur = currentPx(wrapper, axis);
     applySize(wrapper, axis, ev.key === "Home" ? min : ev.key === "End" ? max : cur + dir * step);
   };
   if (sides.includes("e") || sides.includes("w"))
-    apply("w");
+    apply2("w");
   if (sides.includes("n") || sides.includes("s"))
-    apply("h");
+    apply2("h");
 }
 function startDrag(wrapper, handle, ev) {
   if (ev.button !== 0)
@@ -7119,7 +7929,7 @@ function startDrag(wrapper, handle, ev) {
   handle.addEventListener("pointercancel", onUp);
   handle.addEventListener("lostpointercapture", onUp);
 }
-function init21() {
+function init25() {
   document.querySelectorAll(".resizer:not([data-init])").forEach((wrapper) => {
     wrapper.dataset.init = "";
     if (!targetOf(wrapper))
@@ -7147,13 +7957,13 @@ function init21() {
     wrapper.addEventListener("resizer-reset", () => resizerApi.setState(wrapper, "default"));
   });
 }
-init21();
-new MutationObserver(init21).observe(document, { childList: true, subtree: true });
+init25();
+new MutationObserver(init25).observe(document, { childList: true, subtree: true });
 
 // src/components/sheet/sheet.ts
-var df$22 = defussGlobals();
+var df$26 = defussGlobals();
 var sheetStates = ["default", "open"];
-function triggerStateChange22(sheet, stateName, _config) {
+function triggerStateChange26(sheet, stateName, _config) {
   switch (stateName) {
     case "default":
       if (sheet.open)
@@ -7170,7 +7980,7 @@ var sheetApi = {
     if (!sheetStates.includes(stateName)) {
       throw new Error(`sheet: unknown state "${stateName}" (supported: ${sheetStates.join(", ")})`);
     }
-    triggerStateChange22(sheet, stateName, config);
+    triggerStateChange26(sheet, stateName, config);
     sheet.dataset.stateName = stateName;
     sheet._stateConfig = config;
   },
@@ -7178,9 +7988,9 @@ var sheetApi = {
     return { name: sheet.dataset.stateName || "default", config: sheet._stateConfig ?? {} };
   }
 };
-df$22.sheetApi = sheetApi;
-df$22.sheetStates = sheetStates;
-function init22() {
+df$26.sheetApi = sheetApi;
+df$26.sheetStates = sheetStates;
+function init26() {
   document.querySelectorAll("[data-sheet-trigger]:not([data-init])").forEach((trigger2) => {
     trigger2.dataset.init = "";
     const sheet = document.getElementById(trigger2.dataset.sheetTrigger);
@@ -7215,13 +8025,13 @@ function init22() {
     });
   });
 }
-init22();
-new MutationObserver(init22).observe(document, { childList: true, subtree: true });
+init26();
+new MutationObserver(init26).observe(document, { childList: true, subtree: true });
 
 // src/components/sidebar/sidebar.ts
-var df$23 = defussGlobals();
+var df$27 = defussGlobals();
 var sidebarStates = ["default", "collapsed"];
-function triggerStateChange23(sidebar, stateName, _config) {
+function triggerStateChange27(sidebar, stateName, _config) {
   switch (stateName) {
     case "default":
       sidebar.dataset.state = sidebar._defaultState ?? "expanded";
@@ -7236,7 +8046,7 @@ var sidebarApi = {
     if (!sidebarStates.includes(stateName)) {
       throw new Error(`sidebar: unknown state "${stateName}" (supported: ${sidebarStates.join(", ")})`);
     }
-    triggerStateChange23(sidebar, stateName, config);
+    triggerStateChange27(sidebar, stateName, config);
     sidebar.dataset.stateName = stateName;
     sidebar._stateConfig = config;
   },
@@ -7247,9 +8057,9 @@ var sidebarApi = {
     };
   }
 };
-df$23.sidebarApi = sidebarApi;
-df$23.sidebarStates = sidebarStates;
-function init23() {
+df$27.sidebarApi = sidebarApi;
+df$27.sidebarStates = sidebarStates;
+function init27() {
   document.querySelectorAll(".app-sidebar:not([data-init])").forEach((sidebar) => {
     sidebar.dataset.init = "";
     sidebar._defaultState = sidebar.dataset.state || "expanded";
@@ -7305,8 +8115,8 @@ if (typeof ResizeObserver !== "undefined" && !document.__sidebarAutoRo) {
     }
   });
 }
-init23();
-new MutationObserver(init23).observe(document, { childList: true, subtree: true });
+init27();
+new MutationObserver(init27).observe(document, { childList: true, subtree: true });
 if (!document.__sidebarKbInit) {
   document.__sidebarKbInit = true;
   bindGlobalKeys((e) => {
@@ -7323,16 +8133,110 @@ if (!document.__sidebarKbInit) {
 }
 
 // src/components/slider/slider.ts
-var df$24 = defussGlobals();
+var df$28 = defussGlobals();
 var sliderStates = ["default", "disabled"];
-function updateSliderValue(el) {
+function percentOf(el) {
   const min = parseFloat(el.min || 0);
   const max = parseFloat(el.max || 100);
-  const value = parseFloat(el.value);
-  const percent = max === min ? 0 : (value - min) / (max - min) * 100;
-  el.style.setProperty("--slider-value", `${percent}%`);
+  return max === min ? 0 : (parseFloat(el.value) - min) / (max - min) * 100;
 }
-function triggerStateChange24(el, stateName, config) {
+function formatterOf(el) {
+  const host = el.closest(".slider-range") ?? el;
+  const d = { ...host.dataset, ...el.dataset };
+  const step = el.step && el.step !== "any" ? el.step : "1";
+  const digits = step.includes(".") ? step.split(".")[1].length : 0;
+  const opts = { maximumFractionDigits: digits, minimumFractionDigits: 0 };
+  if (d.currency)
+    Object.assign(opts, { style: "currency", currency: d.currency });
+  else if (d.unit)
+    Object.assign(opts, { style: "unit", unit: d.unit, unitDisplay: d.unitDisplay || "short" });
+  const lang2 = el.closest("[lang]")?.lang || undefined;
+  try {
+    return new Intl.NumberFormat(lang2, opts);
+  } catch {
+    return new Intl.NumberFormat(lang2, { maximumFractionDigits: digits });
+  }
+}
+var hasFormat = (el) => {
+  const host = el.closest(".slider-range") ?? el;
+  return !!(el.dataset.unit || el.dataset.currency || host.dataset.unit || host.dataset.currency);
+};
+function outputsOf(el) {
+  if (!el.id)
+    return [];
+  return [...document.querySelectorAll("output[for]")].filter((o) => o.htmlFor.contains(el.id));
+}
+function emojiThumb(el) {
+  const list = (el.dataset.thumbEmoji || "").trim().split(/\s+/).filter(Boolean);
+  if (!list.length)
+    return;
+  const i = Math.min(list.length - 1, Math.floor(percentOf(el) / 100 * list.length));
+  const emoji = list[i];
+  if (el._emoji === emoji)
+    return;
+  el._emoji = emoji;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><text x="16" y="17" font-size="26" text-anchor="middle" dominant-baseline="central">${emoji}</text></svg>`;
+  el.style.setProperty("--slider-thumb-image", `url("data:image/svg+xml,${encodeURIComponent(svg)}")`);
+}
+function updateSliderValue(el) {
+  el.style.setProperty("--slider-value", `${percentOf(el)}%`);
+  if (el.dataset.thumbEmoji)
+    emojiThumb(el);
+  const range = el.closest(".slider-range");
+  if (range)
+    paintRange(range);
+  const fmt2 = hasFormat(el) ? formatterOf(el) : null;
+  if (fmt2)
+    el.setAttribute("aria-valuetext", fmt2.format(parseFloat(el.value)));
+  for (const out of outputsOf(el)) {
+    const pair = range ? rangeInputs(range) : null;
+    const f = fmt2 ?? formatterOf(el);
+    if (pair && out.htmlFor.contains(pair[0].id) && out.htmlFor.contains(pair[1].id)) {
+      const a = parseFloat(pair[0].value);
+      const b = parseFloat(pair[1].value);
+      out.value = a === b ? f.format(a) : f.formatRange(a, b);
+    } else {
+      out.value = f.format(parseFloat(el.value));
+    }
+  }
+}
+var rangeInputs = (range) => [...range.querySelectorAll(":scope > .slider")].slice(0, 2);
+function paintRange(range) {
+  const [lo, hi] = rangeInputs(range);
+  if (!lo || !hi)
+    return;
+  range.style.setProperty("--range-from", `${percentOf(lo)}%`);
+  range.style.setProperty("--range-to", `${percentOf(hi)}%`);
+}
+function initRange(range) {
+  const [lo, hi] = rangeInputs(range);
+  if (!lo || !hi)
+    return;
+  const gap = parseFloat(range.dataset.minGap || "0");
+  const clamp2 = (moved) => {
+    const a = parseFloat(lo.value);
+    const b = parseFloat(hi.value);
+    if (b - a < gap || a > b) {
+      if (moved === lo)
+        lo.value = String(b - gap);
+      else
+        hi.value = String(a + gap);
+    }
+    lo.toggleAttribute("data-active", moved === lo);
+    hi.toggleAttribute("data-active", moved === hi);
+    updateSliderValue(lo);
+    updateSliderValue(hi);
+  };
+  lo.addEventListener("input", () => clamp2(lo));
+  hi.addEventListener("input", () => clamp2(hi));
+  for (const s of [lo, hi])
+    s.addEventListener("pointerdown", () => {
+      lo.toggleAttribute("data-active", s === lo);
+      hi.toggleAttribute("data-active", s === hi);
+    });
+  paintRange(range);
+}
+function triggerStateChange28(el, stateName, config) {
   switch (stateName) {
     case "default":
       el.disabled = el._defaultDisabled ?? false;
@@ -7350,7 +8254,7 @@ var sliderApi = {
     if (!sliderStates.includes(stateName)) {
       throw new Error(`slider: unknown state "${stateName}" (supported: ${sliderStates.join(", ")})`);
     }
-    triggerStateChange24(el, stateName, config);
+    triggerStateChange28(el, stateName, config);
     el.dataset.stateName = stateName;
     el._stateConfig = config;
   },
@@ -7361,9 +8265,13 @@ var sliderApi = {
     };
   }
 };
-df$24.sliderApi = sliderApi;
-df$24.sliderStates = sliderStates;
-function init24() {
+df$28.sliderApi = sliderApi;
+df$28.sliderStates = sliderStates;
+function init28() {
+  document.querySelectorAll(".slider-range:not([data-init])").forEach((range) => {
+    range.dataset.init = "";
+    initRange(range);
+  });
   document.querySelectorAll(".slider:not([data-init])").forEach((el) => {
     el.dataset.init = "";
     el._defaultDisabled = el.disabled;
@@ -7371,20 +8279,22 @@ function init24() {
       setState: (stateName, config) => sliderApi.setState(el, stateName, config),
       getState: () => sliderApi.getState(el)
     };
+    if (el.dataset.thumbEmoji && !el.dataset.thumb)
+      el.dataset.thumb = "emoji";
     updateSliderValue(el);
     el.addEventListener("input", () => updateSliderValue(el));
   });
 }
-init24();
-new MutationObserver(init24).observe(document, { childList: true, subtree: true });
+init28();
+new MutationObserver(init28).observe(document, { childList: true, subtree: true });
 
 // src/components/sortable/sortable.ts
-var df$25 = defussGlobals();
+var df$29 = defussGlobals();
 var dfDollar8 = defussQuery();
 var sortableStates = ["default"];
 var drag = null;
 var sortableLabels = (list) => dfDollar8(list).find(".sortable-item").map((item) => dfDollar8(item).find("span:not(.sortable-handle):not(.sortable-moves)").text().trim());
-function triggerStateChange25(list, stateName, config) {
+function triggerStateChange29(list, stateName, config) {
   if (stateName !== "default")
     return;
   dfDollar8(list).append(list._defaultOrder ?? []);
@@ -7399,7 +8309,7 @@ var sortableApi = {
     if (!sortableStates.includes(stateName)) {
       throw new Error(`sortable: unknown state "${stateName}" (supported: ${sortableStates.join(", ")})`);
     }
-    triggerStateChange25(list, stateName, config);
+    triggerStateChange29(list, stateName, config);
     list.dataset.stateName = stateName;
     list._stateConfig = config;
   },
@@ -7416,9 +8326,9 @@ var sortableApi = {
     };
   }
 };
-df$25.sortableApi = sortableApi;
-df$25.sortableStates = sortableStates;
-function init25() {
+df$29.sortableApi = sortableApi;
+df$29.sortableStates = sortableStates;
+function init29() {
   document.querySelectorAll(".sortable:not([data-init])").forEach((list) => {
     list.dataset.init = "";
     list.api = {
@@ -7480,13 +8390,13 @@ function init25() {
       const all = getAllItems();
       const free = all.map((el) => !isLocked(el));
       all.forEach((item, i) => {
-        const label = getItemLabel(item);
+        const label2 = getItemLabel(item);
         dfDollar8(item).find(".sortable-move").each(function() {
           const up = this.dataset.move === "up";
           const room = up ? free.slice(0, i).some(Boolean) : free.slice(i + 1).some(Boolean);
           dfDollar8(this).prop("disabled", isLocked(item) || !room);
           if (!this.hasAttribute("aria-label") || this.dataset.autoLabel !== undefined) {
-            dfDollar8(this).attr("aria-label", `Move ${label} ${up ? "up" : "down"}`).data("autoLabel", "");
+            dfDollar8(this).attr("aria-label", `Move ${label2} ${up ? "up" : "down"}`).data("autoLabel", "");
           }
         });
       });
@@ -7565,7 +8475,7 @@ function init25() {
       dfDollar8(item).attr("tabindex", i === 0 ? "0" : "-1");
     });
     syncMoves();
-    const accepts = () => !!drag && (drag.from === list || !!list.dataset.group && list.dataset.group === drag.from.dataset.group);
+    const accepts2 = () => !!drag && (drag.from === list || !!list.dataset.group && list.dataset.group === drag.from.dataset.group);
     const clearOver = () => {
       dfDollar8(list).find("[data-over]").data("over", null);
       dfDollar8(list).data("over", null);
@@ -7589,7 +8499,7 @@ function init25() {
       drag = null;
     });
     list.addEventListener("dragover", (e) => {
-      if (!accepts())
+      if (!accepts2())
         return;
       e.preventDefault();
       e.dataTransfer.dropEffect = "move";
@@ -7611,7 +8521,7 @@ function init25() {
         clearOver();
     });
     list.addEventListener("drop", (e) => {
-      if (!accepts())
+      if (!accepts2())
         return;
       e.preventDefault();
       const target = dfDollar8(list).find(".sortable-item[data-over]")[0];
@@ -7697,11 +8607,11 @@ function init25() {
     });
   });
 }
-init25();
-new MutationObserver(init25).observe(document, { childList: true, subtree: true });
+init29();
+new MutationObserver(init29).observe(document, { childList: true, subtree: true });
 
 // src/components/steps/steps.ts
-var df$26 = defussGlobals();
+var df$30 = defussGlobals();
 var stepsStates = ["default"];
 var numAttr3 = (el, key, fallback) => {
   const v = parseInt(el.dataset[key] ?? "", 10);
@@ -7730,7 +8640,7 @@ function renderSteps(ol) {
       item.removeAttribute("aria-current");
   });
 }
-function triggerStateChange26(ol, stateName, config = {}) {
+function triggerStateChange30(ol, stateName, config = {}) {
   if (stateName !== "default")
     return;
   const a = config.activeStep ?? config.step ?? config.page;
@@ -7751,7 +8661,7 @@ var stepsApi = {
     if (!stepsStates.includes(stateName)) {
       throw new Error(`steps: unknown state "${stateName}" (supported: ${stepsStates.join(", ")})`);
     }
-    triggerStateChange26(ol, stateName, config);
+    triggerStateChange30(ol, stateName, config);
     ol.dataset.stateName = stateName;
     ol._stateConfig = config;
   },
@@ -7768,9 +8678,9 @@ var stepsApi = {
     };
   }
 };
-df$26.stepsApi = stepsApi;
-df$26.stepsStates = stepsStates;
-function init26() {
+df$30.stepsApi = stepsApi;
+df$30.stepsStates = stepsStates;
+function init30() {
   document.querySelectorAll(".steps:not([data-init])").forEach((ol) => {
     ol.dataset.init = "";
     ol.api = {
@@ -7805,17 +8715,322 @@ function init26() {
     });
   });
 }
-init26();
-new MutationObserver(init26).observe(document, { childList: true, subtree: true });
+init30();
+new MutationObserver(init30).observe(document, { childList: true, subtree: true });
+
+// src/components/table/table.ts
+var df$31 = defussGlobals();
+var tableStates = ["default", "sorted", "selected"];
+var bodyOf = (table) => table.tBodies[0];
+var bodyRows = (table) => [...bodyOf(table)?.rows ?? []];
+var rowBox = (row) => row.querySelector(':scope > .table-select input[type="checkbox"]');
+var headBox = (table) => table.tHead?.querySelector('.table-select input[type="checkbox"]');
+function cellValue(row, col) {
+  const cell = row.cells[col];
+  if (!cell)
+    return "";
+  return cell.dataset.sortValue ?? cell.textContent.trim();
+}
+function sortBy(table, col, direction) {
+  const body = bodyOf(table);
+  if (!body)
+    return;
+  const lang2 = table.closest("[lang]")?.lang || undefined;
+  const collator = new Intl.Collator(lang2, { numeric: true, sensitivity: "base" });
+  const dir = direction === "descending" ? -1 : 1;
+  const rows = bodyRows(table);
+  rows.sort((a, b) => {
+    const x = cellValue(a, col);
+    const y = cellValue(b, col);
+    const nx = Number(x);
+    const ny = Number(y);
+    const c = x !== "" && y !== "" && Number.isFinite(nx) && Number.isFinite(ny) ? nx - ny : collator.compare(x, y);
+    return c * dir;
+  });
+  body.append(...rows);
+  [...table.tHead?.rows[0]?.cells ?? []].forEach((th, i) => {
+    if (th.querySelector(".table-sort"))
+      th.setAttribute("aria-sort", i === col ? direction : "none");
+  });
+  table._sort = { column: col, direction };
+}
+function unsort(table) {
+  const body = bodyOf(table);
+  if (body && table._original)
+    body.append(...table._original.filter((r) => r.parentElement === body));
+  table.tHead?.querySelectorAll("[aria-sort]").forEach((th) => th.setAttribute("aria-sort", "none"));
+  table._sort = null;
+}
+function syncSelection(table, announce = true) {
+  const rows = bodyRows(table);
+  const boxes = rows.map(rowBox).filter(Boolean);
+  rows.forEach((row) => {
+    const box = rowBox(row);
+    if (box)
+      row.setAttribute("aria-selected", String(box.checked));
+  });
+  const head = headBox(table);
+  if (head) {
+    const on = boxes.filter((b) => b.checked).length;
+    head.checked = boxes.length > 0 && on === boxes.length;
+    head.indeterminate = on > 0 && on < boxes.length;
+  }
+  if (announce) {
+    const selected = rows.filter((r) => r.getAttribute("aria-selected") === "true");
+    table.dispatchEvent(new CustomEvent("table-select", { bubbles: true, detail: { rows: selected, count: selected.length } }));
+  }
+}
+function selectRows(table, which) {
+  const rows = bodyRows(table);
+  rows.forEach((row, i) => {
+    const on = which === "all" || Array.isArray(which) && which.includes(i);
+    const box = rowBox(row);
+    if (box)
+      box.checked = on;
+    row.setAttribute("aria-selected", String(on));
+  });
+  syncSelection(table);
+}
+function announceMove(table, row) {
+  table.dispatchEvent(new CustomEvent("table-reorder", { bubbles: true, detail: { row, index: bodyRows(table).indexOf(row) } }));
+}
+function moved(table, row) {
+  table.tHead?.querySelectorAll("[aria-sort]").forEach((th) => th.setAttribute("aria-sort", "none"));
+  table._sort = null;
+  announceMove(table, row);
+}
+function initReorder(table) {
+  let dragged = null;
+  const clear = () => table.querySelectorAll("[data-drop]").forEach((r) => r.removeAttribute("data-drop"));
+  table.addEventListener("pointerdown", (e) => {
+    const handle = e.target.closest?.(".table-handle");
+    if (handle)
+      handle.closest("tr").draggable = true;
+  });
+  table.addEventListener("dragstart", (e) => {
+    const row = e.target.closest?.("tbody > tr");
+    if (!row || !row.draggable)
+      return;
+    dragged = row;
+    row.dataset.dragging = "";
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", row.cells[1]?.textContent.trim() ?? "");
+  });
+  table.addEventListener("dragover", (e) => {
+    const row = e.target.closest?.("tbody > tr");
+    if (!dragged || !row || row === dragged)
+      return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    const r = row.getBoundingClientRect();
+    const where = e.clientY - r.top < r.height / 2 ? "before" : "after";
+    if (row.dataset.drop !== where) {
+      clear();
+      row.dataset.drop = where;
+    }
+  });
+  table.addEventListener("drop", (e) => {
+    const row = table.querySelector("tbody > tr[data-drop]");
+    if (!dragged || !row)
+      return;
+    e.preventDefault();
+    row.parentElement.insertBefore(dragged, row.dataset.drop === "before" ? row : row.nextSibling);
+    clear();
+    moved(table, dragged);
+  });
+  table.addEventListener("dragend", () => {
+    if (dragged) {
+      delete dragged.dataset.dragging;
+      dragged.draggable = false;
+    }
+    dragged = null;
+    clear();
+  });
+  table.addEventListener("keydown", (e) => {
+    if (!e.altKey || e.key !== "ArrowUp" && e.key !== "ArrowDown")
+      return;
+    const row = e.target.closest?.("tbody > tr");
+    if (!row)
+      return;
+    e.preventDefault();
+    const sib = e.key === "ArrowUp" ? row.previousElementSibling : row.nextElementSibling;
+    if (!sib)
+      return;
+    row.parentElement.insertBefore(row, e.key === "ArrowUp" ? sib : sib.nextSibling);
+    e.target.focus();
+    moved(table, row);
+  });
+}
+function measureLocks(table) {
+  const n = parseInt(table.dataset.lockStart || "0", 10);
+  if (n < 2)
+    return;
+  const first = table.rows[0];
+  if (!first)
+    return;
+  for (let i = 1;i < n; i++)
+    table.style.setProperty(`--table-lock-${i}`, `${first.cells[i - 1]?.getBoundingClientRect().width ?? 0}px`);
+}
+function triggerStateChange31(table, stateName, config) {
+  switch (stateName) {
+    case "default":
+      unsort(table);
+      selectRows(table, []);
+      break;
+    case "sorted":
+      sortBy(table, config?.column ?? 0, config?.direction === "descending" ? "descending" : "ascending");
+      break;
+    case "selected":
+      selectRows(table, config?.rows ?? [0]);
+      break;
+  }
+}
+var tableApi = {
+  setState(table, stateName, config = {}) {
+    if (!tableStates.includes(stateName)) {
+      throw new Error(`table: unknown state "${stateName}" (supported: ${tableStates.join(", ")})`);
+    }
+    triggerStateChange31(table, stateName, config);
+    table.dataset.stateName = stateName;
+    table._stateConfig = config;
+  },
+  getState(table) {
+    const selected = bodyRows(table).flatMap((r, i) => r.getAttribute("aria-selected") === "true" ? [i] : []);
+    return { name: table.dataset.stateName || "default", config: { ...table._stateConfig, sort: table._sort ?? null, selected } };
+  }
+};
+df$31.tableApi = tableApi;
+df$31.tableStates = tableStates;
+function init31() {
+  document.querySelectorAll("table.table:not([data-init])").forEach((table) => {
+    table.dataset.init = "";
+    table.dataset.stateName = "default";
+    table._original = bodyRows(table);
+    table._sort = null;
+    table.api = {
+      setState: (stateName, config) => tableApi.setState(table, stateName, config),
+      getState: () => tableApi.getState(table)
+    };
+    table.tHead?.querySelectorAll(".table-sort").forEach((btn) => {
+      const th = btn.closest("th");
+      if (!th.hasAttribute("aria-sort"))
+        th.setAttribute("aria-sort", "none");
+      btn.addEventListener("click", () => {
+        const col = th.cellIndex;
+        const now = th.getAttribute("aria-sort");
+        const next = now === "ascending" ? "descending" : now === "descending" ? "none" : "ascending";
+        if (next === "none")
+          unsort(table);
+        else
+          sortBy(table, col, next);
+        table.dataset.stateName = next === "none" ? "default" : "sorted";
+        table.dispatchEvent(new CustomEvent("table-sort", { bubbles: true, detail: { column: col, direction: next } }));
+      });
+    });
+    const pre = table.tHead?.querySelector('th[aria-sort="ascending"], th[aria-sort="descending"]');
+    if (pre)
+      sortBy(table, pre.cellIndex, pre.getAttribute("aria-sort"));
+    if (table.querySelector('.table-select input[type="checkbox"]')) {
+      let last = null;
+      table.addEventListener("click", (e) => {
+        const box = e.target.closest?.('.table-select input[type="checkbox"]');
+        if (!box)
+          return;
+        if (box === headBox(table)) {
+          const on = box.checked;
+          bodyRows(table).forEach((r) => {
+            const b = rowBox(r);
+            if (b && !b.disabled)
+              b.checked = on;
+          });
+        } else {
+          const rows = bodyRows(table);
+          const row = box.closest("tr");
+          if (e.shiftKey && last && rows.includes(last)) {
+            const [a, b] = [rows.indexOf(last), rows.indexOf(row)].sort((x, y) => x - y);
+            rows.slice(a, b + 1).forEach((r) => {
+              const rb = rowBox(r);
+              if (rb && !rb.disabled)
+                rb.checked = box.checked;
+            });
+          }
+          last = row;
+        }
+        syncSelection(table);
+        table.dataset.stateName = bodyRows(table).some((r) => r.getAttribute("aria-selected") === "true") ? "selected" : "default";
+      });
+      syncSelection(table, false);
+    }
+    if (table.querySelector(".table-handle"))
+      initReorder(table);
+    if (table.dataset.lockStart) {
+      measureLocks(table);
+      new ResizeObserver(() => measureLocks(table)).observe(table);
+    }
+  });
+}
+init31();
+new MutationObserver(init31).observe(document, { childList: true, subtree: true });
 
 // src/components/tabs/tabs.ts
-var df$27 = defussGlobals();
-var tabsStates = ["default", "active"];
+var df$32 = defussGlobals();
+var tabsStates = ["default", "active", "disabled"];
+var ICON = ":scope > :is(svg, img, i, .tab-icon)";
+var LUCIDE_NAME = /^[a-z][a-z0-9-]*$/;
+var iconOf = (tab) => {
+  const icon = tab.querySelector(ICON);
+  if (!icon)
+    return "";
+  return icon.getAttribute("data-lucide") ?? icon.textContent.trim();
+};
+var labelOf = (tab) => {
+  const label2 = tab.querySelector(":scope > .tab-label");
+  if (label2)
+    return label2.textContent.trim();
+  return Array.from(tab.childNodes).filter((n) => n.nodeType === Node.TEXT_NODE).map((n) => n.textContent).join("").trim();
+};
+var setLabel = (tab, text) => {
+  const label2 = tab.querySelector(":scope > .tab-label");
+  if (label2) {
+    label2.textContent = text;
+    return;
+  }
+  Array.from(tab.childNodes).forEach((n) => {
+    if (n.nodeType === Node.TEXT_NODE)
+      n.remove();
+  });
+  tab.append(document.createTextNode(text));
+};
+var setIcon = (tab, icon) => {
+  tab.querySelector(ICON)?.remove();
+  if (!icon)
+    return;
+  const el = document.createElement(LUCIDE_NAME.test(icon) ? "i" : "span");
+  el.className = "tab-icon";
+  el.setAttribute("aria-hidden", "true");
+  if (el.tagName === "I")
+    el.setAttribute("data-lucide", icon);
+  else
+    el.textContent = icon;
+  tab.prepend(el);
+  if (el.tagName === "I")
+    globalThis.lucide?.createIcons?.();
+};
+var applyContent = (tab, config) => {
+  if (typeof config.label === "string")
+    setLabel(tab, config.label);
+  if (typeof config.icon === "string")
+    setIcon(tab, config.icon);
+};
+var triggersOf = (el) => {
+  const list = el.getAttribute("role") === "tablist" ? el : el.closest('[role="tablist"]');
+  return Array.from(list.querySelectorAll('[role="tab"]'));
+};
 var activateTab = (tab, triggers) => {
   triggers.forEach((t) => {
     t.setAttribute("aria-selected", "false");
     t.setAttribute("tabindex", "-1");
-    t.dataset.stateName = "default";
+    t.dataset.stateName = t.disabled ? "disabled" : "default";
     const panel2 = document.getElementById(t.getAttribute("aria-controls"));
     if (panel2)
       panel2.hidden = true;
@@ -7827,52 +9042,154 @@ var activateTab = (tab, triggers) => {
   if (panel)
     panel.hidden = false;
 };
-function triggerStateChange27(tab, triggers, stateName, _config) {
-  switch (stateName) {
-    case "default":
-      if (tab._defaultSelected)
-        activateTab(tab, triggers);
-      else
-        activateTab(triggers.find((t) => t._defaultSelected) || triggers[0], triggers);
-      break;
-    case "active":
-      if (!tab.disabled)
-        activateTab(tab, triggers);
-      break;
+var nextEnabled = (from, triggers) => {
+  const i = triggers.indexOf(from);
+  for (let k = 1;k <= triggers.length; k++) {
+    const c = triggers[(i + k) % triggers.length];
+    if (!c.disabled && c !== from)
+      return c;
   }
+  return null;
+};
+var tabName = (tab) => tab.disabled ? "disabled" : tab.getAttribute("aria-selected") === "true" ? "active" : "default";
+var restoreTab = (tab) => {
+  tab.disabled = tab._authored.disabled;
+  if (labelOf(tab) !== tab._authored.label)
+    setLabel(tab, tab._authored.label);
+  if (iconOf(tab) !== tab._authored.icon)
+    setIcon(tab, tab._authored.icon);
+  tab.dataset.stateName = tabName(tab);
+};
+var authoredTab = (triggers) => triggers.find((t) => t._authored.selected) || triggers.find((t) => !t.disabled);
+function triggerStateChange32(el, stateName, config) {
+  const triggers = triggersOf(el);
+  const isList = el.getAttribute("role") === "tablist";
+  const reenter = Object.keys(config).length > 0 && tabsApi.getState(el).name === stateName;
+  if (isList) {
+    if (!reenter) {
+      switch (stateName) {
+        case "default": {
+          triggers.forEach(restoreTab);
+          const tab2 = authoredTab(triggers);
+          if (tab2)
+            activateTab(tab2, triggers);
+          break;
+        }
+        case "active":
+          triggers.forEach((t) => {
+            if (t.disabled && !t._authored.disabled)
+              t.disabled = false;
+          });
+          break;
+        case "disabled":
+          triggers.forEach((t) => {
+            t.disabled = true;
+            t.dataset.stateName = "disabled";
+          });
+          break;
+      }
+    }
+    const pick = typeof config.index === "number" ? triggers[config.index] : typeof config.id === "string" ? triggers.find((t) => t.id === config.id) : null;
+    if (pick && !pick.disabled)
+      activateTab(pick, triggers);
+    return;
+  }
+  const tab = el;
+  if (!reenter) {
+    switch (stateName) {
+      case "default": {
+        const wasSelected = tab.getAttribute("aria-selected") === "true";
+        tab.disabled = false;
+        if (tab._authored.selected)
+          activateTab(tab, triggers);
+        else if (wasSelected) {
+          const other = authoredTab(triggers.filter((t) => t !== tab)) || nextEnabled(tab, triggers);
+          if (other && other !== tab)
+            activateTab(other, triggers);
+          else
+            tab.setAttribute("aria-selected", "false");
+        }
+        tab.dataset.stateName = tabName(tab);
+        break;
+      }
+      case "active":
+        if (!tab.disabled)
+          activateTab(tab, triggers);
+        break;
+      case "disabled": {
+        const wasSelected = tab.getAttribute("aria-selected") === "true";
+        tab.disabled = true;
+        tab.dataset.stateName = "disabled";
+        if (wasSelected) {
+          const other = nextEnabled(tab, triggers);
+          if (other)
+            activateTab(other, triggers);
+          tab.dataset.stateName = "disabled";
+        }
+        break;
+      }
+    }
+  }
+  applyContent(tab, config);
 }
 var tabsApi = {
-  setState(tab, stateName, config = {}) {
+  setState(el, stateName, config = {}) {
     if (!tabsStates.includes(stateName)) {
       throw new Error(`tabs: unknown state "${stateName}" (supported: ${tabsStates.join(", ")})`);
     }
-    const triggers = Array.from(tab.closest('[role="tablist"]').querySelectorAll('[role="tab"]'));
-    triggerStateChange27(tab, triggers, stateName, config);
-    tab._stateConfig = config;
+    triggerStateChange32(el, stateName, config);
+    el._stateConfig = { ...el._stateConfig, ...config };
   },
-  getState(tab) {
+  getState(el) {
+    if (el.getAttribute("role") === "tablist") {
+      const triggers = triggersOf(el);
+      const selected = triggers.findIndex((t) => t.getAttribute("aria-selected") === "true");
+      const authored = triggers.findIndex((t) => t._authored?.selected);
+      const name = triggers.every((t) => t.disabled) ? "disabled" : selected === authored || authored < 0 && selected <= 0 ? "default" : "active";
+      return { name, config: { ...el._stateConfig, index: selected, id: triggers[selected]?.id ?? "" } };
+    }
     return {
-      name: tab.getAttribute("aria-selected") === "true" ? "active" : "default",
-      config: tab._stateConfig ?? {}
+      name: tabName(el),
+      config: { ...el._stateConfig, label: labelOf(el), icon: iconOf(el) }
     };
   }
 };
-df$27.tabsApi = tabsApi;
-df$27.tabsStates = tabsStates;
-function init27() {
+df$32.tabsApi = tabsApi;
+df$32.tabsStates = tabsStates;
+function init32() {
   document.querySelectorAll('[role="tablist"]:not([data-init])').forEach((tablist) => {
     tablist.dataset.init = "";
     if (!tablist.querySelector(".tab-trigger"))
       return;
     const triggers = Array.from(tablist.querySelectorAll('[role="tab"]'));
     triggers.forEach((t) => {
-      t._defaultSelected = t.getAttribute("aria-selected") === "true";
+      t._authored = {
+        selected: t.getAttribute("aria-selected") === "true",
+        disabled: t.disabled,
+        label: labelOf(t),
+        icon: iconOf(t)
+      };
       t.api = {
         setState: (stateName, config) => tabsApi.setState(t, stateName, config),
         getState: () => tabsApi.getState(t)
       };
     });
-    const orientation = tablist.getAttribute("aria-orientation") || "horizontal";
+    tablist.api = {
+      setState: (stateName, config) => tabsApi.setState(tablist, stateName, config),
+      getState: () => tabsApi.getState(tablist)
+    };
+    const side = tablist.closest(".tabs")?.getAttribute("data-side");
+    if ((side === "left" || side === "right") && !tablist.hasAttribute("aria-orientation")) {
+      tablist.setAttribute("aria-orientation", "vertical");
+    }
+    const vertical = () => {
+      const now = tablist.closest(".tabs")?.getAttribute("data-side");
+      if (now === "left" || now === "right")
+        return true;
+      if (now === "top" || now === "bottom")
+        return false;
+      return tablist.getAttribute("aria-orientation") === "vertical";
+    };
     triggers.forEach((trigger2) => {
       trigger2.addEventListener("click", () => {
         activateTab(trigger2, triggers);
@@ -7880,8 +9197,8 @@ function init27() {
       trigger2.addEventListener("keydown", (e) => {
         const current = triggers.indexOf(trigger2);
         let next;
-        const forward = orientation === "horizontal" ? "ArrowRight" : "ArrowDown";
-        const backward = orientation === "horizontal" ? "ArrowLeft" : "ArrowUp";
+        const forward = vertical() ? "ArrowDown" : "ArrowRight";
+        const backward = vertical() ? "ArrowUp" : "ArrowLeft";
         switch (e.key) {
           case forward:
             e.preventDefault();
@@ -7920,11 +9237,11 @@ function init27() {
     });
   });
 }
-init27();
-new MutationObserver(init27).observe(document, { childList: true, subtree: true });
+init32();
+new MutationObserver(init32).observe(document, { childList: true, subtree: true });
 
 // src/components/theme-switcher/theme-switcher.ts
-var df$28 = defussGlobals();
+var df$33 = defussGlobals();
 var dfDollar9 = defussQuery();
 var themeSwitcherStates = ["default", "open"];
 var STORAGE_KEY = "defuss-shadcn-color-theme";
@@ -7991,15 +9308,15 @@ function syncTrigger(root, id) {
   if (!trigger2)
     return;
   const dot = dfDollar9(trigger2).find(".theme-switcher-dot")[0];
-  const label = dfDollar9(trigger2).find(".theme-switcher-label")[0];
+  const label2 = dfDollar9(trigger2).find(".theme-switcher-label")[0];
   const first = active2?.dataset.themeColors?.split(",")[0]?.trim();
   if (dot)
     dfDollar9(dot).css("background", first || "");
-  if (label && (active2 || id === "default"))
-    dfDollar9(label).text(active2?.dataset.themeLabel || "Default");
+  if (label2 && (active2 || id === "default"))
+    dfDollar9(label2).text(active2?.dataset.themeLabel || "Default");
   root.dataset.themeId = id;
 }
-function triggerStateChange28(menu, stateName, _config) {
+function triggerStateChange33(menu, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -8016,7 +9333,7 @@ var themeSwitcherApi = {
     if (!themeSwitcherStates.includes(stateName)) {
       throw new Error(`theme-switcher: unknown state "${stateName}" (supported: ${themeSwitcherStates.join(", ")})`);
     }
-    triggerStateChange28(menu, stateName, config);
+    triggerStateChange33(menu, stateName, config);
     menu.dataset.stateName = stateName;
     menu._stateConfig = config;
   },
@@ -8030,9 +9347,9 @@ var themeSwitcherApi = {
     applyThemeId(root, id);
   }
 };
-df$28.themeSwitcherApi = themeSwitcherApi;
-df$28.themeSwitcherStates = themeSwitcherStates;
-function init28() {
+df$33.themeSwitcherApi = themeSwitcherApi;
+df$33.themeSwitcherStates = themeSwitcherStates;
+function init33() {
   document.querySelectorAll(".theme-switcher-menu:not([data-init])").forEach((menu) => {
     menu.dataset.init = "";
     const root = menu.closest(".theme-switcher");
@@ -8103,14 +9420,14 @@ document.addEventListener(THEME_EVENT, (e) => {
   const id = e.detail?.id || "default";
   document.querySelectorAll(".theme-switcher").forEach((root) => syncTrigger(root, id));
 });
-init28();
-new MutationObserver(init28).observe(document, { childList: true, subtree: true });
+init33();
+new MutationObserver(init33).observe(document, { childList: true, subtree: true });
 
 // src/components/toast/toast.ts
-var df$29 = defussGlobals();
+var df$34 = defussGlobals();
 var dfDollar10 = defussQuery();
 var toastStates = ["default"];
-function triggerStateChange29(container, stateName, _config) {
+function triggerStateChange34(container, stateName, _config) {
   if (stateName !== "default")
     return;
   container.querySelectorAll(".toast").forEach((el) => toastDismiss(el));
@@ -8120,7 +9437,7 @@ var toastApi = {
     if (!toastStates.includes(stateName)) {
       throw new Error(`toast: unknown state "${stateName}" (supported: ${toastStates.join(", ")})`);
     }
-    triggerStateChange29(container, stateName, config);
+    triggerStateChange34(container, stateName, config);
     container.dataset.stateName = stateName;
     container._stateConfig = config;
   },
@@ -8131,8 +9448,8 @@ var toastApi = {
     };
   }
 };
-df$29.toastApi = toastApi;
-df$29.toastStates = toastStates;
+df$34.toastApi = toastApi;
+df$34.toastStates = toastStates;
 var DURATION = 4000;
 var MAX_VISIBLE = 3;
 var toastCallbacks = new WeakMap;
@@ -8146,16 +9463,44 @@ if (!toastContainer) {
   dfDollar10(document.body).append(toastContainer);
 }
 var stackToasts = (container) => {
+  const toasts = [...container.querySelectorAll(".toast:not([data-leaving])")];
+  const piled = container.dataset.stack === "pile" && !container.hasAttribute("data-expanded") && toasts.length > 1;
+  const top = (container.dataset.position || "").startsWith("top");
+  const sheets = top ? "stack-bottom" : "stack-top";
   let offset = 0;
-  for (const t of container.querySelectorAll(".toast")) {
-    t.style.setProperty("--toast-stack", `${offset}px`);
-    offset += t.getBoundingClientRect().height + 8;
-  }
+  const order = container.dataset.stack === "pile" ? [...toasts].reverse() : toasts;
+  order.forEach((t, i) => {
+    const newest = i === 0;
+    t.style.setProperty("--toast-stack", `${piled ? 0 : offset}px`);
+    t.toggleAttribute("data-piled", piled && !newest);
+    t.classList.toggle(sheets, piled && newest);
+    if (piled && newest)
+      t.dataset.more = String(toasts.length - 1);
+    else
+      delete t.dataset.more;
+    if (!piled)
+      offset += t.getBoundingClientRect().height + 8;
+  });
 };
 var toastDismiss = (el, callback) => {
-  if (!el || !el.parentNode)
+  if (!el || !el.parentNode || el.hasAttribute("data-leaving"))
     return;
   const container = el.parentNode;
+  const out = el._animation?.out;
+  if (out && anim[out]) {
+    el.setAttribute("data-leaving", "");
+    stackToasts(container);
+    anim[out].play(el, { duration: el._animation.duration ?? 350, direction: el._animation.direction }).finished.then(() => {
+      try {
+        el.hidePopover();
+      } catch {}
+      dfDollar10(el).remove();
+      stackToasts(container);
+      if (callback)
+        callback();
+    });
+    return;
+  }
   el.animate([{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(0.5rem)" }], { duration: 200, easing: "ease", fill: "forwards" }).finished.then(() => {
     try {
       el.hidePopover();
@@ -8168,7 +9513,7 @@ var toastDismiss = (el, callback) => {
 };
 var toastCreate = (options) => {
   const o = typeof options === "string" ? { title: options } : options;
-  const { title, description, variant, action, onDismiss, size, density } = o;
+  const { title, description, variant, action, onDismiss, size, density, animation, aura } = o;
   const duration = o.duration != null ? o.duration : DURATION;
   const el = document.createElement("div");
   el.className = "toast";
@@ -8214,7 +9559,18 @@ var toastCreate = (options) => {
   closeBtn.dataset.toastClose = "";
   dfDollar10(closeBtn).html('<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>');
   dfDollar10(contentEl).append(closeBtn);
-  dfDollar10(el).append(contentEl);
+  let host = el;
+  if (aura) {
+    const style = aura === true ? "" : String(aura);
+    el.classList.add("aura", "aura-md");
+    if (style)
+      el.classList.add(`aura-${style}`);
+    el.dataset.aura = style || "default";
+    host = document.createElement("div");
+    host.className = "toast-surface";
+    dfDollar10(el).append(host);
+  }
+  dfDollar10(host).append(contentEl);
   if (action) {
     const actionsDiv = document.createElement("div");
     actionsDiv.className = "toast-actions";
@@ -8225,28 +9581,64 @@ var toastCreate = (options) => {
     actionBtn.dataset.toastAction = "";
     dfDollar10(actionBtn).text(action.label);
     dfDollar10(actionsDiv).append(actionBtn);
-    dfDollar10(el).append(actionsDiv);
+    dfDollar10(host).append(actionsDiv);
+  }
+  if (animation) {
+    el._animation = typeof animation === "string" ? { in: animation } : animation;
+    el.dataset.anim = "";
   }
   dfDollar10(toastContainer).append(el);
   el.showPopover();
   stackToasts(toastContainer);
+  const inName = el._animation?.in;
+  if (inName && anim[inName])
+    anim[inName].play(el, { duration: el._animation.duration ?? 450, direction: el._animation.direction });
   toastCallbacks.set(el, { onDismiss, action });
   if (duration !== Infinity)
     setTimeout(() => {
       toastDismiss(el, onDismiss);
     }, duration);
   const toasts = toastContainer.querySelectorAll(".toast");
-  if (toasts.length > MAX_VISIBLE)
+  if (toasts.length > (toastContainer.dataset.stack === "pile" ? 6 : MAX_VISIBLE))
     toastDismiss(toasts[0]);
   return el;
 };
-function init29() {
+function init34() {
   document.querySelectorAll("#toast-container:not([data-init])").forEach((container) => {
     container.dataset.init = "";
     container.api = {
       setState: (stateName, config) => toastApi.setState(container, stateName, config),
       getState: () => toastApi.getState(container)
     };
+    const expand = (on) => {
+      if (container.dataset.stack !== "pile")
+        return;
+      clearTimeout(container._collapse);
+      if (on) {
+        if (!container.hasAttribute("data-expanded")) {
+          container.setAttribute("data-expanded", "");
+          stackToasts(container);
+        }
+      } else {
+        container._collapse = setTimeout(() => {
+          container.removeAttribute("data-expanded");
+          stackToasts(container);
+        }, 250);
+      }
+    };
+    container.addEventListener("pointerover", (e) => {
+      if (e.target.closest(".toast"))
+        expand(true);
+    });
+    container.addEventListener("pointerout", (e) => {
+      if (!e.relatedTarget?.closest?.(".toast"))
+        expand(false);
+    });
+    container.addEventListener("focusin", () => expand(true));
+    container.addEventListener("focusout", (e) => {
+      if (!e.relatedTarget?.closest?.(".toast"))
+        expand(false);
+    });
     container.addEventListener("click", (e) => {
       const btn = e.target.closest("[data-toast-close],[data-toast-action]");
       if (!btn)
@@ -8264,9 +9656,18 @@ function init29() {
     });
   });
 }
-init29();
-new MutationObserver(init29).observe(document.body, { childList: true, subtree: true });
-df$29.toast = {
+init34();
+new MutationObserver(init34).observe(document.body, { childList: true, subtree: true });
+var toastConfigure = (opts = {}) => {
+  if (opts.stack)
+    toastContainer.dataset.stack = opts.stack;
+  if (opts.position)
+    toastContainer.setAttribute("data-position", opts.position);
+  stackToasts(toastContainer);
+  return { stack: toastContainer.dataset.stack || "list", position: toastContainer.dataset.position };
+};
+df$34.toast = {
+  configure: toastConfigure,
   show: toastCreate,
   success: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "success" })),
   warning: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "warning" })),
@@ -8280,9 +9681,9 @@ df$29.toast = {
 };
 
 // src/components/toggle/toggle.ts
-var df$30 = defussGlobals();
+var df$35 = defussGlobals();
 var toggleStates = ["default", "pressed"];
-function triggerStateChange30(toggle, stateName, _config) {
+function triggerStateChange35(toggle, stateName, _config) {
   switch (stateName) {
     case "default":
       toggle.setAttribute("aria-pressed", toggle._defaultPressed ?? "false");
@@ -8297,7 +9698,7 @@ var toggleApi = {
     if (!toggleStates.includes(stateName)) {
       throw new Error(`toggle: unknown state "${stateName}" (supported: ${toggleStates.join(", ")})`);
     }
-    triggerStateChange30(toggle, stateName, config);
+    triggerStateChange35(toggle, stateName, config);
     toggle.dataset.stateName = stateName;
     toggle._stateConfig = config;
   },
@@ -8309,9 +9710,9 @@ var toggleApi = {
     };
   }
 };
-df$30.toggleApi = toggleApi;
-df$30.toggleStates = toggleStates;
-function init30() {
+df$35.toggleApi = toggleApi;
+df$35.toggleStates = toggleStates;
+function init35() {
   document.querySelectorAll(".toggle:not([data-init]):not(.toggle-group .toggle)").forEach((toggle) => {
     toggle.dataset.init = "";
     toggle._defaultPressed = toggle.getAttribute("aria-pressed") || "false";
@@ -8326,13 +9727,13 @@ function init30() {
     });
   });
 }
-init30();
-new MutationObserver(init30).observe(document, { childList: true, subtree: true });
+init35();
+new MutationObserver(init35).observe(document, { childList: true, subtree: true });
 
 // src/components/toggle-group/toggle-group.ts
-var df$31 = defussGlobals();
+var df$36 = defussGlobals();
 var toggleGroupStates = ["default", "disabled"];
-function triggerStateChange31(group, stateName, _config) {
+function triggerStateChange36(group, stateName, _config) {
   switch (stateName) {
     case "default":
       group.removeAttribute("data-disabled");
@@ -8347,7 +9748,7 @@ var toggleGroupApi = {
     if (!toggleGroupStates.includes(stateName)) {
       throw new Error(`toggle-group: unknown state "${stateName}" (supported: ${toggleGroupStates.join(", ")})`);
     }
-    triggerStateChange31(group, stateName, config);
+    triggerStateChange36(group, stateName, config);
     group.dataset.stateName = stateName;
     group._stateConfig = config;
   },
@@ -8358,9 +9759,9 @@ var toggleGroupApi = {
     };
   }
 };
-df$31.toggleGroupApi = toggleGroupApi;
-df$31.toggleGroupStates = toggleGroupStates;
-function init31() {
+df$36.toggleGroupApi = toggleGroupApi;
+df$36.toggleGroupStates = toggleGroupStates;
+function init36() {
   document.querySelectorAll(".toggle-group:not([data-init])").forEach((group) => {
     group.dataset.init = "";
     group.api = {
@@ -8428,13 +9829,13 @@ function init31() {
     });
   });
 }
-init31();
-new MutationObserver(init31).observe(document, { childList: true, subtree: true });
+init36();
+new MutationObserver(init36).observe(document, { childList: true, subtree: true });
 
 // src/components/toolbar/toolbar.ts
-var df$32 = defussGlobals();
+var df$37 = defussGlobals();
 var toolbarStates = ["default"];
-function triggerStateChange32(toolbar, items, stateName, config) {
+function triggerStateChange37(toolbar, items, stateName, config) {
   if (stateName !== "default" || items.length === 0)
     return;
   const target = items[Math.min(Number(config?.focus ?? 0), items.length - 1)] || items[0];
@@ -8448,7 +9849,7 @@ var toolbarApi = {
       throw new Error(`toolbar: unknown state "${stateName}" (supported: ${toolbarStates.join(", ")})`);
     }
     const items = toolbarItems(toolbar);
-    triggerStateChange32(toolbar, items, stateName, config);
+    triggerStateChange37(toolbar, items, stateName, config);
     toolbar.dataset.stateName = stateName;
     toolbar._stateConfig = config;
   },
@@ -8461,10 +9862,10 @@ var toolbarApi = {
     };
   }
 };
-df$32.toolbarApi = toolbarApi;
-df$32.toolbarStates = toolbarStates;
+df$37.toolbarApi = toolbarApi;
+df$37.toolbarStates = toolbarStates;
 var toolbarItems = (toolbar) => Array.from(toolbar.querySelectorAll('button:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])'));
-function init32() {
+function init37() {
   document.querySelectorAll('.toolbar[role="toolbar"]:not([data-init])').forEach((toolbar) => {
     toolbar.dataset.init = "";
     toolbar.api = {
@@ -8506,13 +9907,13 @@ function init32() {
     });
   });
 }
-init32();
-new MutationObserver(init32).observe(document, { childList: true, subtree: true });
+init37();
+new MutationObserver(init37).observe(document, { childList: true, subtree: true });
 
 // src/components/tooltip/tooltip.ts
-var df$33 = defussGlobals();
+var df$38 = defussGlobals();
 var tooltipStates = ["default", "visible"];
-function triggerStateChange33(tip, stateName, _config) {
+function triggerStateChange38(tip, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -8530,7 +9931,7 @@ var tooltipApi = {
     if (!tooltipStates.includes(stateName)) {
       throw new Error(`tooltip: unknown state "${stateName}" (supported: ${tooltipStates.join(", ")})`);
     }
-    triggerStateChange33(tip, stateName, config);
+    triggerStateChange38(tip, stateName, config);
     tip.dataset.stateName = stateName;
     tip._stateConfig = config;
   },
@@ -8538,8 +9939,8 @@ var tooltipApi = {
     return { name: tip.dataset.stateName || "default", config: tip._stateConfig ?? {} };
   }
 };
-df$33.tooltipApi = tooltipApi;
-df$33.tooltipStates = tooltipStates;
+df$38.tooltipApi = tooltipApi;
+df$38.tooltipStates = tooltipStates;
 var DELAY_DEFAULT = 700;
 var CLOSE_DELAY_DEFAULT = 0;
 var GROUP_TIMEOUT = 400;
@@ -8555,7 +9956,7 @@ function scheduleGroupReset() {
     groupOpen = false;
   }, GROUP_TIMEOUT);
 }
-function init33() {
+function init38() {
   document.querySelectorAll("[data-tooltip-trigger]:not([data-init])").forEach((trigger2) => {
     trigger2.dataset.init = "";
     const tip = document.getElementById(trigger2.dataset.tooltipTrigger);
@@ -8603,8 +10004,8 @@ function init33() {
     };
   });
 }
-init33();
-new MutationObserver(init33).observe(document, { childList: true, subtree: true });
+init38();
+new MutationObserver(init38).observe(document, { childList: true, subtree: true });
 if (!document.__tooltipScrollInit) {
   document.__tooltipScrollInit = true;
   document.addEventListener("scroll", () => {
@@ -8617,9 +10018,9 @@ if (!document.__tooltipScrollInit) {
 }
 
 // src/components/tree-view/tree-view.ts
-var df$34 = defussGlobals();
+var df$39 = defussGlobals();
 var treeViewStates = ["default", "expanded"];
-function triggerStateChange34(details, stateName, _config) {
+function triggerStateChange39(details, stateName, _config) {
   switch (stateName) {
     case "default":
       details.open = details._defaultOpen ?? false;
@@ -8634,7 +10035,7 @@ var treeViewApi = {
     if (!treeViewStates.includes(stateName)) {
       throw new Error(`tree-view: unknown state "${stateName}" (supported: ${treeViewStates.join(", ")})`);
     }
-    triggerStateChange34(details, stateName, config);
+    triggerStateChange39(details, stateName, config);
     details.dataset.stateName = stateName;
     details._stateConfig = config;
   },
@@ -8645,8 +10046,8 @@ var treeViewApi = {
     };
   }
 };
-df$34.treeViewApi = treeViewApi;
-df$34.treeViewStates = treeViewStates;
+df$39.treeViewApi = treeViewApi;
+df$39.treeViewStates = treeViewStates;
 var itemOf = (row) => row.closest('[role="treeitem"]');
 var isDisabled = (item) => item?.getAttribute("aria-disabled") === "true";
 function selectItem(tree, item) {
@@ -8656,7 +10057,169 @@ function selectItem(tree, item) {
   item.setAttribute("aria-selected", "true");
   tree.dispatchEvent(new CustomEvent("tree-select", { bubbles: true, detail: { item } }));
 }
-function init34() {
+var checkOf = (item) => item?.querySelector(":scope > .tree-leaf > .tree-check, :scope > details > .tree-branch-trigger > .tree-check");
+var childItems = (item) => [...item.querySelector(":scope > details > .tree-group")?.children ?? []].filter((li) => li.matches('[role="treeitem"]'));
+var cascades = (tree) => tree.dataset.checkable !== "independent";
+function checkDown(item, checked) {
+  for (const child of childItems(item)) {
+    const box = checkOf(child);
+    if (box && !box.disabled) {
+      box.checked = checked;
+      box.indeterminate = false;
+    }
+    checkDown(child, checked);
+  }
+}
+function rollUp(tree, item) {
+  let parent = item.parentElement?.closest('[role="treeitem"]');
+  while (parent && tree.contains(parent)) {
+    const box = checkOf(parent);
+    if (box) {
+      const kids = childItems(parent).map(checkOf).filter(Boolean);
+      const on = kids.filter((k) => k.checked && !k.indeterminate).length;
+      const mixed = kids.some((k) => k.indeterminate);
+      box.checked = kids.length > 0 && on === kids.length;
+      box.indeterminate = mixed || on > 0 && on < kids.length;
+    }
+    parent = parent.parentElement?.closest('[role="treeitem"]');
+  }
+}
+function syncAria(tree) {
+  tree.querySelectorAll('[role="treeitem"]').forEach((item) => {
+    const box = checkOf(item);
+    if (box)
+      item.setAttribute("aria-checked", box.indeterminate ? "mixed" : String(box.checked));
+  });
+}
+function checkedValues(tree) {
+  return [...tree.querySelectorAll(".tree-check")].filter((b) => b.checked && !b.indeterminate).map((b) => b.value !== "on" ? b.value : b.closest('[role="treeitem"]').querySelector(":scope > * > span:last-child, :scope > details > summary > span:last-child")?.textContent ?? "");
+}
+function onCheck(tree, item) {
+  const box = checkOf(item);
+  if (!box)
+    return;
+  box.indeterminate = false;
+  if (cascades(tree)) {
+    checkDown(item, box.checked);
+    rollUp(tree, item);
+  }
+  syncAria(tree);
+  tree.dispatchEvent(new CustomEvent("tree-check", { bubbles: true, detail: { item, checked: box.checked, values: checkedValues(tree) } }));
+}
+function initChecks(tree) {
+  let n = 0;
+  tree.querySelectorAll(".tree-check").forEach((box) => {
+    if (!box.hasAttribute("aria-label") && !box.hasAttribute("aria-labelledby")) {
+      const label2 = box.parentElement.querySelector(":scope > span:last-child");
+      if (label2) {
+        label2.id ||= `${tree.id || "tree"}-lbl-${n++}-${Math.random().toString(36).slice(2, 7)}`;
+        box.setAttribute("aria-labelledby", label2.id);
+      }
+    }
+  });
+  if (cascades(tree)) {
+    tree.querySelectorAll('[role="treeitem"]').forEach((item) => {
+      const b = checkOf(item);
+      if (b?.checked)
+        checkDown(item, true);
+    });
+    const leaves = [...tree.querySelectorAll('[role="treeitem"]')].filter((i) => !childItems(i).length);
+    leaves.forEach((leaf) => rollUp(tree, leaf));
+  }
+  syncAria(tree);
+  tree.addEventListener("change", (e) => {
+    if (!e.target.matches?.(".tree-check"))
+      return;
+    onCheck(tree, itemOf(e.target));
+  });
+}
+function clearDrop(tree) {
+  tree.querySelectorAll("[data-drop]").forEach((r) => r.removeAttribute("data-drop"));
+}
+function announceMove2(tree, item) {
+  const parentItem = item.parentElement.closest('[role="treeitem"]');
+  const index = [...item.parentElement.children].indexOf(item);
+  tree.dispatchEvent(new CustomEvent("tree-reorder", { bubbles: true, detail: { item, parent: parentItem ?? tree, index } }));
+}
+function initSortable(tree) {
+  let dragged = null;
+  const rows = () => tree.querySelectorAll(".tree-branch-trigger, .tree-leaf");
+  rows().forEach((row) => {
+    if (!isDisabled(itemOf(row)))
+      row.draggable = true;
+  });
+  tree.addEventListener("dragstart", (e) => {
+    const row = e.target.closest?.(".tree-branch-trigger, .tree-leaf");
+    if (!row)
+      return;
+    dragged = itemOf(row);
+    dragged.dataset.dragging = "";
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", row.textContent.trim());
+  });
+  tree.addEventListener("dragover", (e) => {
+    const row = e.target.closest?.(".tree-branch-trigger, .tree-leaf");
+    if (!dragged || !row)
+      return;
+    const target = itemOf(row);
+    if (target === dragged || dragged.contains(target))
+      return clearDrop(tree);
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    const r = row.getBoundingClientRect();
+    const y = (e.clientY - r.top) / r.height;
+    const isBranch = row.matches(".tree-branch-trigger");
+    const where = isBranch ? y < 0.25 ? "before" : y > 0.75 ? "after" : "inside" : y < 0.5 ? "before" : "after";
+    if (row.dataset.drop !== where) {
+      clearDrop(tree);
+      row.dataset.drop = where;
+    }
+  });
+  tree.addEventListener("dragleave", (e) => {
+    if (!tree.contains(e.relatedTarget))
+      clearDrop(tree);
+  });
+  tree.addEventListener("drop", (e) => {
+    const row = tree.querySelector("[data-drop]");
+    if (!dragged || !row)
+      return;
+    e.preventDefault();
+    const target = itemOf(row);
+    const where = row.dataset.drop;
+    if (where === "inside") {
+      const details = target.querySelector(":scope > details");
+      details.open = true;
+      details.querySelector(":scope > .tree-group").append(dragged);
+    } else {
+      target.parentElement.insertBefore(dragged, where === "before" ? target : target.nextSibling);
+    }
+    clearDrop(tree);
+    announceMove2(tree, dragged);
+    if (tree.hasAttribute("data-checkable") && cascades(tree)) {
+      tree.querySelectorAll('[role="treeitem"]').forEach((i) => {
+        if (!childItems(i).length)
+          rollUp(tree, i);
+      });
+      syncAria(tree);
+    }
+  });
+  tree.addEventListener("dragend", () => {
+    if (dragged)
+      delete dragged.dataset.dragging;
+    dragged = null;
+    clearDrop(tree);
+  });
+}
+function moveByKey(tree, row, dir) {
+  const item = itemOf(row);
+  const sib = dir < 0 ? item.previousElementSibling : item.nextElementSibling;
+  if (!sib)
+    return;
+  item.parentElement.insertBefore(item, dir < 0 ? sib : sib.nextSibling);
+  row.focus();
+  announceMove2(tree, item);
+}
+function init39() {
   document.querySelectorAll('.tree[role="tree"]:not([data-init])').forEach((tree) => {
     tree.dataset.init = "";
     const selectable = tree.hasAttribute("data-selectable");
@@ -8666,6 +10229,11 @@ function init34() {
           item.setAttribute("aria-selected", "false");
       });
     }
+    if (tree.hasAttribute("data-checkable"))
+      initChecks(tree);
+    if (tree.hasAttribute("data-sortable"))
+      initSortable(tree);
+    const checkable = tree.hasAttribute("data-checkable");
     tree.addEventListener("click", (e) => {
       const row = e.target.closest(".tree-branch-trigger, .tree-leaf");
       if (!row || !tree.contains(row))
@@ -8677,6 +10245,11 @@ function init34() {
       }
       if (selectable)
         selectItem(tree, item);
+      const box = checkOf(item);
+      if (checkable && !selectable && box && row.matches(".tree-leaf") && e.target !== box && !box.disabled) {
+        box.checked = !box.checked;
+        onCheck(tree, item);
+      }
     });
     tree.querySelectorAll(".tree-branch").forEach((details) => {
       const treeitem = details.closest('[role="treeitem"]');
@@ -8699,6 +10272,20 @@ function init34() {
       const allItems = Array.from(tree.querySelectorAll(".tree-branch-trigger, .tree-leaf"));
       const visibleItems = allItems.filter((item) => item.checkVisibility());
       const index = visibleItems.indexOf(target);
+      if (e.altKey && tree.hasAttribute("data-sortable") && (e.key === "ArrowUp" || e.key === "ArrowDown")) {
+        e.preventDefault();
+        moveByKey(tree, target, e.key === "ArrowUp" ? -1 : 1);
+        return;
+      }
+      if (e.key === " " && checkable) {
+        const box = checkOf(itemOf(target));
+        if (box && !box.disabled && !isDisabled(itemOf(target))) {
+          e.preventDefault();
+          box.checked = !box.checked;
+          onCheck(tree, itemOf(target));
+          return;
+        }
+      }
       switch (e.key) {
         case "ArrowDown":
           e.preventDefault();
@@ -8754,9 +10341,9 @@ function init34() {
     });
   });
 }
-init34();
-new MutationObserver(init34).observe(document, { childList: true, subtree: true });
+init39();
+new MutationObserver(init39).observe(document, { childList: true, subtree: true });
 
-//# debugId=F344EA09707B747264756E2164756E21
+//# debugId=A3C5A595CB0D4BE064756E2164756E21
 /* defuss-shadcn v0.9.1 runtime provenance: bundles defuss-morph@0.1.1 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.1.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=all.js.map

@@ -2,6 +2,31 @@
   "schemaVersion": 1,
   "name": "tabs",
   "states": {
+    "selected": {
+      "type": "number",
+      "default": 0,
+      "target": {
+        "kind": "selector",
+        "selector": ".tab-list"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "active",
+        "args": {
+          "index": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "index"
+      },
+      "editor": {
+        "component": "number",
+        "props": {
+          "min": 0
+        }
+      }
+    },
     "active": {
       "type": "boolean",
       "default": false,
@@ -23,6 +48,67 @@
       },
       "editor": {
         "component": "checkbox"
+      }
+    },
+    "disabled": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".tab-list .tab-trigger:nth-of-type(2)"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "disabled"
+      },
+      "observation": {
+        "kind": "api",
+        "name": "@state"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "label": {
+      "type": "string",
+      "target": {
+        "kind": "selector",
+        "selector": ".tab-list .tab-trigger:nth-of-type(2)"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "label": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "label"
+      },
+      "editor": {
+        "component": "text"
+      }
+    },
+    "icon": {
+      "type": "string",
+      "target": {
+        "kind": "selector",
+        "selector": ".tab-list .tab-trigger:nth-of-type(2)"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "icon": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "icon"
+      },
+      "editor": {
+        "component": "text"
       }
     }
   },

@@ -167,6 +167,22 @@ try {
     assert.deepEqual(reg.states, ['default', 'visible']);
     assert.ok(reg.dollarWorks, 'globalThis.$ query alias missing');
   });
+  await check('data-align start / end: the tooltip shares the trigger\'s start / end edge, above it', async () => {
+    for (const [id, edge] of [['tt-align-start', 'left'], ['tt-align-end', 'right']] as const) {
+      await page.hover('#' + id + '-btn'); // like a user: the trigger anchors its tooltip
+      await page.waitForFunction((id) => document.getElementById(id)!.matches(':popover-open'), id, { timeout: 3000 });
+      await page.waitForTimeout(250);
+      const r = await page.evaluate(([id, edge]) => {
+        const trigger = document.getElementById(id + '-btn')!.getBoundingClientRect();
+        const tip = document.getElementById(id)!.getBoundingClientRect();
+        return { diff: Math.round(Math.abs(tip[edge as 'left' | 'right'] - trigger[edge as 'left' | 'right'])), above: tip.bottom <= trigger.top + 1 };
+      }, [id, edge]);
+      assert.deepEqual(r, { diff: 0, above: true }, id);
+      await page.mouse.move(0, 0);
+      await page.waitForTimeout(300);
+    }
+  });
+
 } finally {
   await browser.close();
   server.stop();

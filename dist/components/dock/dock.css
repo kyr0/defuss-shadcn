@@ -1,0 +1,414 @@
+/* -- Dock component ------------------------------------------------ */
+
+@layer components {
+  /* A bottom navigation bar (daisyUI's dock, plus): a <nav class="dock"> of
+     .dock-item links / buttons / labels, each an icon (.dock-icon - an svg
+     or an emoji, optionally with a .dock-badge or .dock-dot) over a
+     .dock-label. Fixed to the bottom of the viewport by default, clear of
+     the device's safe area. The active item is aria-current="page" (links),
+     aria-pressed="true" (buttons) or a checked radio inside a <label> - the
+     radio form switches the active item with no JavaScript at all.
+     data-indicator: bar (default) / pill / dot. CSS only. */
+  .dock {
+    --_h: 4rem;
+    box-sizing: border-box; /* the size IS the bar height, border included */
+    --_icon: 1.375rem;
+    --_label: 0.6875rem;
+    --_accent: var(--primary);
+    position: fixed;
+    z-index: 40;
+    inset-inline: 0;
+    bottom: 0;
+    display: flex;
+    align-items: stretch;
+    justify-content: space-around;
+    height: calc(var(--_h) + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-inline: 0.25rem;
+    border-top: 1px solid var(--border);
+    background-color: var(--background);
+    color: var(--muted-foreground);
+
+    /* -- Placement ------------------------------------------------------- */
+    &[data-position="static"] { position: static; height: var(--_h); padding-bottom: 0; }
+    &[data-position="top"] { bottom: auto; top: 0; border-top: 0; border-bottom: 1px solid var(--border); padding-bottom: 0; height: var(--_h); }
+    &[data-attach="container"] { position: absolute; }
+    /* side docks: a column down the left / right edge */
+    &:is([data-position="left"], [data-position="right"]) {
+      inset: 0 auto 0 0;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.25rem;
+      width: calc(var(--_h) + 0.5rem);
+      height: auto;
+      padding: 0.5rem 0.25rem;
+      border-top: 0;
+      border-inline-end: 1px solid var(--border);
+
+      & .dock-item { flex: 0 0 auto; padding-block: 0.625rem; }
+    }
+    &[data-position="right"] { inset: 0 0 0 auto; border-inline-end: 0; border-inline-start: 1px solid var(--border); }
+
+    /* -- Sizes ------------------------------------------------------------ */
+    &[data-size="xs"] { --_h: 2.75rem; --_icon: 1.125rem; --_label: 0.625rem; }
+    &[data-size="sm"] { --_h: 3.375rem; --_icon: 1.25rem; --_label: 0.625rem; }
+    &[data-size="md"] { --_h: 4rem; --_icon: 1.375rem; --_label: 0.6875rem; }
+    &[data-size="lg"] { --_h: 4.75rem; --_icon: 1.625rem; --_label: 0.75rem; }
+    &[data-size="xl"] { --_h: 5.5rem; --_icon: 1.875rem; --_label: 0.8125rem; }
+
+    /* -- Surfaces --------------------------------------------------------- */
+    &[data-variant="muted"] { background-color: var(--muted); border-color: transparent; }
+    &[data-variant="primary"] {
+      --_accent: var(--primary-foreground);
+      background-color: var(--primary);
+      color: color-mix(in oklch, var(--primary-foreground) 65%, transparent);
+      border-color: transparent;
+    }
+    &[data-variant="neutral"] {
+      --_accent: var(--background);
+      background-color: color-mix(in oklch, var(--foreground) 82%, var(--background));
+      color: color-mix(in oklch, var(--background) 62%, transparent);
+      border-color: transparent;
+    }
+    &[data-variant="glass"] {
+      background-color: color-mix(in oklch, var(--background) 60%, transparent);
+      backdrop-filter: blur(16px) saturate(1.5);
+      border-color: color-mix(in oklch, var(--foreground) 12%, transparent);
+    }
+    /* floating: a rounded bar hovering above the bottom edge */
+    &[data-variant="floating"] {
+      inset-inline: 1rem;
+      bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+      height: var(--_h);
+      padding: 0 0.375rem;
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      box-shadow: var(--shadow-lg);
+      max-width: 32rem;
+      margin-inline: auto;
+    }
+    &[data-variant="floating"][data-position="static"] { margin-block: 0.5rem; }
+    &[data-variant="floating"]:is([data-position="left"], [data-position="right"]) {
+      inset-block: 0;
+      height: fit-content;
+      max-height: calc(100% - 2rem);
+      margin-block: auto;
+      margin-inline: 0;
+      padding: 0.375rem 0.25rem;
+      border: 1px solid var(--border);
+    }
+    &[data-variant="floating"][data-position="left"] { left: 1rem; }
+    &[data-variant="floating"][data-position="right"] { right: 1rem; left: auto; }
+    &[data-variant="floating"][data-position="top"] { top: 1rem; bottom: auto; }
+  }
+
+  /* -- Items ------------------------------------------------------------ */
+  .dock-item {
+    position: relative;
+    display: flex;
+    flex: 1 1 0;
+    min-width: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: color 150ms ease, scale 180ms ease, translate 180ms ease;
+
+    &:hover { color: var(--foreground); }
+    .dock:is([data-variant="primary"], [data-variant="neutral"]) &:hover { color: var(--_accent); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: -4px; border-radius: var(--radius-lg); }
+    &:has(> input:focus-visible) { outline: 2px solid var(--ring); outline-offset: -4px; border-radius: var(--radius-lg); }
+    &:is(:disabled, [aria-disabled="true"]) { opacity: 0.45; pointer-events: none; }
+
+    /* the radio form: the input is invisible, the label is the item */
+    & > input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+  .dock-icon {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: calc(var(--_icon) + 1.5rem);
+    height: calc(var(--_icon) + 0.375rem);
+    border-radius: 9999px;
+    font-size: var(--_icon);
+    line-height: 1;
+    transition: background-color 180ms ease, color 180ms ease;
+
+    & svg { width: var(--_icon); height: var(--_icon); }
+  }
+  .dock-label {
+    max-width: 100%;
+    overflow: hidden;
+    font-size: var(--_label);
+    font-weight: 500;
+    line-height: 1.2;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* -- Active item ------------------------------------------------------ */
+  .dock-item:is([aria-current="page"], [aria-current="true"], [aria-pressed="true"], [data-active], :has(> input:checked)) {
+    color: var(--_accent);
+
+    & .dock-label { font-weight: 600; }
+  }
+  /* bar (default): a short line on the top edge (bottom edge for a top dock) */
+  .dock:not([data-indicator]) .dock-item::before,
+  .dock[data-indicator="bar"] .dock-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 0;
+    height: 3px;
+    translate: -50% 0;
+    border-radius: 0 0 3px 3px;
+    background-color: var(--_accent);
+    transition: width 200ms ease;
+  }
+  .dock[data-position="top"] .dock-item::before { top: auto; bottom: 0; border-radius: 3px 3px 0 0; }
+  .dock:is([data-position="left"], [data-position="right"]) .dock-item::before {
+    top: 50%;
+    left: 0;
+    width: 3px;
+    height: 0;
+    translate: 0 -50%;
+    border-radius: 0 3px 3px 0;
+    transition: height 200ms ease;
+  }
+  .dock[data-position="right"] .dock-item::before { left: auto; right: 0; border-radius: 3px 0 0 3px; }
+  .dock:is([data-position="left"], [data-position="right"]):is(:not([data-indicator]), [data-indicator="bar"]) .dock-item:is([aria-current="page"], [aria-current="true"], [aria-pressed="true"], [data-active], :has(> input:checked))::before {
+    width: 3px;
+    height: 2.25rem;
+  }
+  .dock:is(:not([data-indicator]), [data-indicator="bar"]) .dock-item:is([aria-current="page"], [aria-current="true"], [aria-pressed="true"], [data-active], :has(> input:checked))::before {
+    width: 2.25rem;
+  }
+  .dock[data-variant="floating"]:not([data-indicator]) .dock-item::before { display: none; }
+  .dock[data-variant="floating"]:not([data-indicator]) .dock-item:is([aria-current="page"], [aria-current="true"], [aria-pressed="true"], [data-active], :has(> input:checked)) .dock-icon,
+  /* pill: a tinted capsule behind the active icon (Material 3) */
+  .dock[data-indicator="pill"] .dock-item:is([aria-current="page"], [aria-current="true"], [aria-pressed="true"], [data-active], :has(> input:checked)) .dock-icon {
+    background-color: color-mix(in oklch, var(--_accent) 16%, transparent);
+  }
+  /* dot: a small dot under the label */
+  .dock[data-indicator="dot"] .dock-item::after {
+    content: '';
+    position: absolute;
+    bottom: 0.3rem;
+    left: 50%;
+    width: 4px;
+    height: 4px;
+    translate: -50% 0;
+    border-radius: 9999px;
+    background-color: var(--_accent);
+    scale: 0;
+    transition: scale 180ms ease;
+  }
+  .dock[data-indicator="dot"] .dock-item:is([aria-current="page"], [aria-current="true"], [aria-pressed="true"], [data-active], :has(> input:checked))::after { scale: 1; }
+
+  /* -- Labels: always (default), only for the active item, or none ------ */
+  .dock[data-labels="active"] .dock-item:not([aria-current="page"], [aria-current="true"], [aria-pressed="true"], [data-active], :has(> input:checked)) .dock-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .dock[data-labels="none"] .dock-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  /* -- Badges and dots on an icon ---------------------------------------- */
+  .dock-badge {
+    position: absolute;
+    top: -0.3rem;
+    inset-inline-start: calc(50% + 0.35rem);
+    min-width: 1.125rem;
+    height: 1.125rem;
+    padding-inline: 0.3rem;
+    border-radius: 9999px;
+    background-color: var(--destructive);
+    color: var(--destructive-foreground, #fff);
+    box-shadow: 0 0 0 2px var(--background);
+    font-size: 0.625rem;
+    font-weight: 700;
+    line-height: 1.125rem;
+    text-align: center;
+  }
+  .dock-dot {
+    position: absolute;
+    top: 0;
+    inset-inline-start: calc(50% + 0.45rem);
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    background-color: var(--_c, var(--primary));
+    box-shadow: 0 0 0 2px var(--background);
+
+    &[data-tone="success"] { --_c: oklch(0.65 0.17 150); }
+    &[data-tone="warning"] { --_c: oklch(0.78 0.16 75); }
+    &[data-tone="destructive"] { --_c: var(--destructive); }
+    &[data-animate="ping"]::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background-color: inherit;
+      animation: dock-ping 1.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+    }
+  }
+  @keyframes dock-ping { 75%, 100% { scale: 2.4; opacity: 0; } }
+
+  /* -- Raised center action (data-raised on an item) --------------------- */
+  .dock-item[data-raised],
+  .dock-item[data-raised]:is([aria-current], [aria-pressed="true"], [data-active], :has(> input:checked)) {
+    /* always the primary-foreground glyph - the accent color of an active
+       item is --primary, the raised disc's own color */
+    color: var(--primary-foreground);
+
+    & .dock-icon {
+      width: calc(var(--_h) - 0.75rem);
+      height: calc(var(--_h) - 0.75rem);
+      /* lifted with a margin, not a transform: a FAB menu anchored to this
+         icon (anchor positioning ignores transforms) lands where it shows */
+      margin-block-start: calc((var(--_h) - 0.75rem) * -0.7);
+      padding: 0;
+      border: 0;
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+      box-shadow: var(--shadow-lg), 0 0 0 4px var(--background);
+      cursor: pointer;
+    }
+    & .dock-icon:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
+    & .dock-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+    &::before, &::after { display: none; }
+    &:hover { color: var(--primary-foreground); }
+    &:hover .dock-icon { background-color: color-mix(in oklch, var(--primary) 88%, var(--primary-foreground)); }
+  }
+  /* a FAB as the raised item: <div class="dock-item fab" data-raised
+     data-layout="flower" data-position="bottom-center"> with a
+     .fab-trigger.dock-icon button and a .fab-menu popover - the dial fans
+     out over the dock (fab.css: a semicircle from the center) */
+  .dock .fab.dock-item {
+    position: relative;
+    inset: auto;
+    z-index: auto;
+    justify-content: center;
+    pointer-events: auto;
+  }
+  .dock .fab.dock-item > .fab-trigger { box-shadow: var(--shadow-lg), 0 0 0 4px var(--background); }
+
+  /* -- Magnify (macOS): the hovered item grows, its neighbours a little -- */
+  .dock[data-effect="magnify"] {
+    overflow: visible;
+    align-items: center;
+    border: 0;
+
+    & .dock-item { transform-origin: 50% 100%; }
+    & .dock-item:hover { scale: 1.35; translate: 0 -0.35rem; z-index: 1; }
+    & .dock-item:has(+ .dock-item:hover),
+    & .dock-item:hover + .dock-item { scale: 1.15; translate: 0 -0.15rem; }
+    &[data-position="top"] .dock-item { transform-origin: 50% 0; }
+    &[data-position="top"] .dock-item:hover { translate: 0 0.35rem; }
+    &[data-position="top"] :is(.dock-item:has(+ .dock-item:hover), .dock-item:hover + .dock-item) { translate: 0 0.15rem; }
+    &[data-position="left"] .dock-item { transform-origin: 0 50%; }
+    &[data-position="left"] .dock-item:hover { translate: 0.35rem 0; }
+    &[data-position="left"] :is(.dock-item:has(+ .dock-item:hover), .dock-item:hover + .dock-item) { translate: 0.15rem 0; }
+    &[data-position="right"] .dock-item { transform-origin: 100% 50%; }
+    &[data-position="right"] .dock-item:hover { translate: -0.35rem 0; }
+    &[data-position="right"] :is(.dock-item:has(+ .dock-item:hover), .dock-item:hover + .dock-item) { translate: -0.15rem 0; }
+  }
+
+  /* -- Autohide: tucked away at its edge, it slides in when the pointer
+     comes close (a strip of it stays reachable, plus a hit zone past it)
+     or when focus enters - the macOS dock. data-autohide on the .dock. */
+  .dock[data-autohide] {
+    --_peek: 6px;
+    transition: translate 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    translate: 0 calc(100% - var(--_peek));
+
+    &[data-variant="floating"] { translate: 0 calc(100% + 1rem - var(--_peek)); }
+    &[data-position="top"] { translate: 0 calc(-100% + var(--_peek)); }
+    &[data-position="top"][data-variant="floating"] { translate: 0 calc(-100% - 1rem + var(--_peek)); }
+    &[data-position="left"] { translate: calc(-100% + var(--_peek)) 0; }
+    &[data-position="left"][data-variant="floating"] { translate: calc(-100% - 1rem + var(--_peek)) 0; }
+    &[data-position="right"] { translate: calc(100% - var(--_peek)) 0; }
+    &[data-position="right"][data-variant="floating"] { translate: calc(100% + 1rem - var(--_peek)) 0; }
+    &:is(:hover, :focus-within) { translate: 0 0; }
+
+    /* reach: an invisible zone beyond the tucked edge */
+    &::after {
+      content: '';
+      position: absolute;
+      inset-inline: 0;
+      bottom: 100%;
+      height: 1.5rem;
+    }
+    &[data-position="top"]::after { bottom: auto; top: 100%; }
+    &[data-position="left"]::after { inset: 0 auto 0 100%; width: 1.5rem; height: auto; }
+    &[data-position="right"]::after { inset: 0 100% 0 auto; width: 1.5rem; height: auto; }
+  }
+
+  /* -- Views: the dock switches a card's content, CSS only --------------
+     A .dock-view holds the radio .dock and a .dock-panels of .dock-panel
+     elements in the same order as the items: the panel at position k shows
+     while item k's radio is checked. (An item without a radio - the raised
+     action - keeps its place with an empty panel.) */
+  .dock-panel { display: none; }
+  /* a card that closes with its dock: <div class="card dock-view"> holds the
+     .dock-panels and an in-flow dock as its footer - the dock drops its own
+     edges and the card's rounded corners clip it (one frame, no square
+     border under a round corner) */
+  .card.dock-view {
+    display: flex;
+    flex-direction: column;
+
+    & > .dock-panels { flex: 1 1 auto; }
+    & > .dock[data-position="static"] {
+      border-inline: 0;
+      border-bottom: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+  }
+  .dock-view:has(.dock > .dock-item:nth-child(1) > input:checked) .dock-panels > .dock-panel:nth-child(1),
+  .dock-view:has(.dock > .dock-item:nth-child(2) > input:checked) .dock-panels > .dock-panel:nth-child(2),
+  .dock-view:has(.dock > .dock-item:nth-child(3) > input:checked) .dock-panels > .dock-panel:nth-child(3),
+  .dock-view:has(.dock > .dock-item:nth-child(4) > input:checked) .dock-panels > .dock-panel:nth-child(4),
+  .dock-view:has(.dock > .dock-item:nth-child(5) > input:checked) .dock-panels > .dock-panel:nth-child(5),
+  .dock-view:has(.dock > .dock-item:nth-child(6) > input:checked) .dock-panels > .dock-panel:nth-child(6),
+  .dock-view:has(.dock > .dock-item:nth-child(7) > input:checked) .dock-panels > .dock-panel:nth-child(7) {
+    display: block;
+    animation: dock-panel-in 220ms ease both;
+  }
+  @keyframes dock-panel-in { from { opacity: 0; translate: 0 6px; } }
+
+  /* -- Accessibility ------------------------------------------------------ */
+  @media (prefers-reduced-motion: reduce) {
+    .dock-item, .dock-icon, .dock-item::before, .dock-item::after { transition: none; }
+    .dock[data-effect="magnify"] .dock-item { scale: none !important; translate: none !important; }
+    .dock-dot[data-animate]::after { animation: none; }
+    .dock-panel { animation: none !important; }
+    .dock[data-autohide] { transition: none; }
+  }
+  @media (forced-colors: active) {
+    .dock { border-top: 1px solid CanvasText; }
+    .dock-item:is([aria-current="page"], [aria-pressed="true"], [data-active], :has(> input:checked)) { outline: 2px solid Highlight; outline-offset: -4px; }
+  }
+}

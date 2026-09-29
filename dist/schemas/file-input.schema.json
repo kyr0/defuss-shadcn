@@ -44,6 +44,63 @@
       "editor": {
         "component": "radio"
       }
+    },
+    "dragover": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".file-drop"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "dragover"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "selected": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".file-drop"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "selected"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "error": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".file-drop"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "error"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
     }
   },
   "actions": {}

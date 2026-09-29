@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "name": "countdown",
+  "states": {
+    "remaining": {
+      "type": "number",
+      "default": 0,
+      "target": {
+        "kind": "selector",
+        "selector": ".countdown-group"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "running",
+        "args": {
+          "duration": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "remaining"
+      },
+      "editor": {
+        "component": "number",
+        "props": {
+          "min": 0
+        }
+      }
+    },
+    "running": {
+      "type": "boolean",
+      "default": true,
+      "target": {
+        "kind": "selector",
+        "selector": ".countdown-group"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "running"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "paused": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".countdown-group"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "paused"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "finished": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".countdown-group"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "finished"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>dock e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/dock/dock.css" />
+    <link rel="stylesheet" href="/dist/components/card/card.css" />
+    <link rel="stylesheet" href="/dist/components/fab/fab.css" />
+  </head>
+  <body style="margin:0;min-height:100vh;padding:1rem 1rem 6rem;font-family:system-ui;">
+    <!-- mirrors the doc page: fixed link dock, radio docks (indicators,
+         labels, sizes, variants, floating, raised, badges), magnify, RTL, card views, side / top docks, autohide, a FAB raised action -->
+    <nav class="dock" id="d-fixed" aria-label="Main">
+      <a class="dock-item" id="l-home" href="#home" aria-current="page"><span class="dock-icon" aria-hidden="true">H</span><span class="dock-label">Home</span></a>
+      <a class="dock-item" id="l-inbox" href="#inbox"><span class="dock-icon" aria-hidden="true">I<span class="dock-badge" id="badge">3</span></span><span class="dock-label">Inbox</span></a>
+      <button class="dock-item" id="b-pressed" aria-pressed="true"><span class="dock-icon" aria-hidden="true">B</span><span class="dock-label">Btn</span></button>
+    </nav>
+    <nav class="dock" id="d-radio" data-position="static" data-indicator="pill" aria-label="Views">
+      <label class="dock-item" id="r1"><input type="radio" name="v" checked><span class="dock-icon" aria-hidden="true">1</span><span class="dock-label">One</span></label>
+      <label class="dock-item" id="r2"><input type="radio" name="v"><span class="dock-icon" aria-hidden="true">2</span><span class="dock-label">Two</span></label>
+      <label class="dock-item" id="r3"><input type="radio" name="v"><span class="dock-icon" aria-hidden="true">3</span><span class="dock-label">Three</span></label>
+    </nav>
+    <nav class="dock" id="d-dot" data-position="static" data-indicator="dot" data-labels="none" aria-label="Dot">
+      <label class="dock-item" id="dot1"><input type="radio" name="d" checked><span class="dock-icon">a</span><span class="dock-label">A</span></label>
+      <label class="dock-item" id="dot2"><input type="radio" name="d"><span class="dock-icon">b</span><span class="dock-label">B</span></label>
+    </nav>
+    <nav class="dock" id="d-active-labels" data-position="static" data-labels="active" aria-label="Active labels">
+      <label class="dock-item" id="al1"><input type="radio" name="al" checked><span class="dock-icon">a</span><span class="dock-label">A</span></label>
+      <label class="dock-item" id="al2"><input type="radio" name="al"><span class="dock-icon">b</span><span class="dock-label">B</span></label>
+    </nav>
+    <div id="sizes">
+      <nav class="dock" id="s-xs" data-position="static" data-size="xs" aria-label="xs"><a class="dock-item" href="#"><span class="dock-icon">x</span><span class="dock-label">x</span></a></nav>
+      <nav class="dock" id="s-sm" data-position="static" data-size="sm" aria-label="sm"><a class="dock-item" href="#"><span class="dock-icon">x</span><span class="dock-label">x</span></a></nav>
+      <nav class="dock" id="s-md" data-position="static" data-size="md" aria-label="md"><a class="dock-item" href="#"><span class="dock-icon">x</span><span class="dock-label">x</span></a></nav>
+      <nav class="dock" id="s-lg" data-position="static" data-size="lg" aria-label="lg"><a class="dock-item" href="#"><span class="dock-icon">x</span><span class="dock-label">x</span></a></nav>
+      <nav class="dock" id="s-xl" data-position="static" data-size="xl" aria-label="xl"><a class="dock-item" href="#"><span class="dock-icon">x</span><span class="dock-label">x</span></a></nav>
+    </div>
+    <nav class="dock" id="v-muted" data-position="static" data-variant="muted" aria-label="m"><a class="dock-item" href="#" aria-current="page"><span class="dock-icon">x</span></a></nav>
+    <nav class="dock" id="v-primary" data-position="static" data-variant="primary" aria-label="p"><a class="dock-item" id="vp-a" href="#" aria-current="page"><span class="dock-icon">x</span></a><a class="dock-item" id="vp-b" href="#"><span class="dock-icon">y</span></a></nav>
+    <nav class="dock" id="v-neutral" data-position="static" data-variant="neutral" aria-label="n"><a class="dock-item" href="#"><span class="dock-icon">x</span></a></nav>
+    <nav class="dock" id="v-glass" data-position="static" data-variant="glass" aria-label="g"><a class="dock-item" href="#"><span class="dock-icon">x</span></a></nav>
+    <div id="phone" style="position:relative;width:320px;height:200px;border:1px solid;">
+      <nav class="dock" id="v-float" data-variant="floating" data-attach="container" aria-label="f">
+        <a class="dock-item" id="f-a" href="#" aria-current="page"><span class="dock-icon">a</span><span class="dock-label">A</span></a>
+        <a class="dock-item" id="raised" href="#" data-raised><span class="dock-icon" id="raised-icon">+</span><span class="dock-label">New</span></a>
+        <a class="dock-item" href="#"><span class="dock-icon">c</span><span class="dock-label">C</span><span class="dock-dot" id="dot-ping" data-animate="ping"></span></a>
+      </nav>
+    </div>
+    <nav class="dock" id="d-mag" data-position="static" data-effect="magnify" data-labels="none" aria-label="Magnify" style="margin-top:3rem;">
+      <a class="dock-item" id="m1" href="#"><span class="dock-icon">1</span><span class="dock-label">1</span></a>
+      <a class="dock-item" id="m2" href="#"><span class="dock-icon">2</span><span class="dock-label">2</span></a>
+      <a class="dock-item" id="m3" href="#"><span class="dock-icon">3</span><span class="dock-label">3</span></a>
+    </nav>
+    <div dir="rtl"><nav class="dock" id="d-rtl" data-position="static" aria-label="rtl"><a class="dock-item" id="rtl1" href="#"><span class="dock-icon">1</span><span class="dock-label">1</span></a><a class="dock-item" id="rtl2" href="#"><span class="dock-icon">2</span><span class="dock-label">2</span></a></nav></div>
+    <div class="dock-view" id="view">
+      <div class="dock-panels">
+        <div class="dock-panel" id="p1">One</div>
+        <div class="dock-panel" id="p2">Two</div>
+        <div class="dock-panel"></div>
+        <div class="dock-panel" id="p4">Four</div>
+      </div>
+      <nav class="dock" data-position="static" aria-label="Views">
+        <label class="dock-item" id="pv1"><input type="radio" name="pv" checked><span class="dock-icon">1</span><span class="dock-label">One</span></label>
+        <label class="dock-item" id="pv2"><input type="radio" name="pv"><span class="dock-icon">2</span><span class="dock-label">Two</span></label>
+        <div class="dock-item fab" id="fab" data-raised data-layout="flower" data-position="bottom-center">
+          <button class="fab-trigger dock-icon" id="fab-trigger" popovertarget="fab-menu" aria-label="New"><span class="fab-icon" aria-hidden="true">+</span></button>
+          <span class="dock-label">New</span>
+          <div class="fab-menu" id="fab-menu" popover>
+            <button class="fab-action" id="fa1" popovertarget="fab-menu" popovertargetaction="hide" aria-label="A">A</button>
+            <button class="fab-action" popovertarget="fab-menu" popovertargetaction="hide" aria-label="B">B</button>
+            <button class="fab-action" popovertarget="fab-menu" popovertargetaction="hide" aria-label="C">C</button>
+            <button class="fab-action" id="fa4" popovertarget="fab-menu" popovertargetaction="hide" aria-label="D">D</button>
+          </div>
+        </div>
+        <label class="dock-item" id="pv4"><input type="radio" name="pv"><span class="dock-icon">4</span><span class="dock-label">Four</span></label>
+      </nav>
+    </div>
+    <div id="frame" style="position:relative;width:480px;height:320px;border:1px solid;margin-top:12rem;overflow:hidden;">
+      <nav class="dock" id="d-left" data-position="left" data-attach="container" aria-label="Left">
+        <label class="dock-item" id="sl1"><input type="radio" name="sl" checked><span class="dock-icon">1</span><span class="dock-label">1</span></label>
+        <label class="dock-item" id="sl2"><input type="radio" name="sl"><span class="dock-icon">2</span><span class="dock-label">2</span></label>
+      </nav>
+      <nav class="dock" id="d-right" data-position="right" data-variant="floating" data-attach="container" aria-label="Right">
+        <label class="dock-item" id="sr1"><input type="radio" name="sr" checked><span class="dock-icon">1</span><span class="dock-label">1</span></label>
+        <label class="dock-item"><input type="radio" name="sr"><span class="dock-icon">2</span><span class="dock-label">2</span></label>
+      </nav>
+      <nav class="dock" id="d-top" data-position="top" data-attach="container" aria-label="Top" style="inset-inline:5rem;width:auto;">
+        <a class="dock-item" href="#" aria-current="page"><span class="dock-icon">t</span><span class="dock-label">T</span></a>
+      </nav>
+    </div>
+    <div id="frame2" style="position:relative;width:480px;height:240px;border:1px solid;overflow:hidden;">
+      <nav class="dock" id="d-auto" data-variant="floating" data-attach="container" data-autohide data-effect="magnify" data-labels="none" aria-label="Autohide">
+        <a class="dock-item" href="#"><span class="dock-icon">1</span><span class="dock-label">1</span></a>
+        <a class="dock-item" href="#"><span class="dock-icon">2</span><span class="dock-label">2</span></a>
+      </nav>
+    </div>
+    <div class="card dock-view" id="cardview" style="width:360px;">
+      <div class="dock-panels">
+        <div class="dock-panel">One</div>
+        <div class="dock-panel">Two</div>
+      </div>
+      <nav class="dock" id="d-card" data-position="static" aria-label="In card">
+        <label class="dock-item"><input type="radio" name="cv" checked><span class="dock-icon">1</span><span class="dock-label">1</span></label>
+        <label class="dock-item"><input type="radio" name="cv"><span class="dock-icon">2</span><span class="dock-label">2</span></label>
+      </nav>
+    </div>
+  </body>
+</html>

@@ -1,27 +1,36 @@
 /* -- Slider component ------------------------------------------- */
 
 @layer components {
+  /* Everything runs through a few private variables so a .slider-range
+     wrapper (two thumbs) can hand its size and color down to both inputs:
+     --_track / --_thumb (set by data-size, on the slider or on the range),
+     --_c (set by data-tone) and the public --slider-color for any color.
+     --_fill resolves them once, here, on the input. */
   .slider {
     --slider-value: 50%;
+    --_fill: var(--_c, var(--slider-color, var(--primary)));
+    --_t: var(--_track, 0.5rem);
+    --_d: var(--_thumb, 1.25rem);
+    --_dir: to right;
     -webkit-appearance: none;
     appearance: none;
     width: 100%;
-    height: 0.5rem;
+    height: var(--_t);
     border-radius: 9999px;
     background: var(--secondary);
     cursor: pointer;
     outline: none;
     border: none;
-    accent-color: var(--primary);
+    accent-color: var(--_fill);
 
     /* Track - WebKit (filled via gradient) */
     &::-webkit-slider-runnable-track {
-      height: 0.5rem;
+      height: var(--_t);
       border-radius: 9999px;
       background: linear-gradient(
-        to right,
-        var(--primary) 0%,
-        var(--primary) var(--slider-value),
+        var(--_dir),
+        var(--_fill) 0%,
+        var(--_fill) var(--slider-value),
         var(--secondary) var(--slider-value),
         var(--secondary) 100%
       );
@@ -29,7 +38,7 @@
 
     /* Track - Firefox */
     &::-moz-range-track {
-      height: 0.5rem;
+      height: var(--_t);
       border-radius: 9999px;
       background: var(--secondary);
       border: none;
@@ -37,42 +46,43 @@
 
     /* Filled portion - Firefox */
     &::-moz-range-progress {
-      height: 0.5rem;
+      height: var(--_t);
       border-radius: 9999px;
-      background: var(--primary);
+      background: var(--_fill);
     }
 
-    /* Thumb - WebKit */
+    /* Thumb - WebKit (re-centered on the track: (track - thumb) / 2).
+       --slider-thumb-image paints a picture (an emoji, see data-thumb) */
     &::-webkit-slider-thumb {
       -webkit-appearance: none;
-      width: 1.25rem;
-      height: 1.25rem;
+      width: var(--_d);
+      height: var(--_d);
       border-radius: 50%;
-      background: var(--background);
-      border: 2px solid var(--primary);
-      margin-top: -0.375rem;
+      background: var(--slider-thumb-image, none) center / 100% no-repeat, var(--background);
+      border: 2px solid var(--_fill);
+      margin-top: calc((var(--_t) - var(--_d)) / 2);
       cursor: pointer;
-      transition: box-shadow 150ms, transform 150ms;
+      transition: box-shadow 150ms, scale 150ms;
     }
 
     /* Thumb - Firefox */
     &::-moz-range-thumb {
-      width: 1.25rem;
-      height: 1.25rem;
+      width: var(--_d);
+      height: var(--_d);
       border-radius: 50%;
-      background: var(--background);
-      border: 2px solid var(--primary);
+      background: var(--slider-thumb-image, none) center / 100% no-repeat, var(--background);
+      border: 2px solid var(--_fill);
       cursor: pointer;
-      transition: box-shadow 150ms, transform 150ms;
+      transition: box-shadow 150ms, scale 150ms;
     }
 
     /* Hover */
     &:hover:not(:disabled) {
       &::-webkit-slider-thumb {
-        box-shadow: 0 0 0 4px color-mix(in oklch, var(--primary) 15%, transparent);
+        box-shadow: 0 0 0 4px color-mix(in oklch, var(--_fill) 15%, transparent);
       }
       &::-moz-range-thumb {
-        box-shadow: 0 0 0 4px color-mix(in oklch, var(--primary) 15%, transparent);
+        box-shadow: 0 0 0 4px color-mix(in oklch, var(--_fill) 15%, transparent);
       }
     }
 
@@ -97,104 +107,146 @@
       &::-moz-range-thumb { cursor: not-allowed; }
     }
 
+    /* RTL: the range runs right to left, so does the fill */
+    &:dir(rtl) { --_dir: to left; }
+
     /* Vertical orientation */
     &[data-orientation="vertical"] {
+      --_dir: to top;
       writing-mode: vertical-lr;
       direction: rtl;
-      width: 0.5rem;
+      width: var(--_t);
       height: 12rem;
 
-      &::-webkit-slider-runnable-track {
-        width: 0.5rem;
-        background: linear-gradient(
-          to top,
-          var(--primary) 0%,
-          var(--primary) var(--slider-value),
-          var(--secondary) var(--slider-value),
-          var(--secondary) 100%
-        );
-      }
-
+      &::-webkit-slider-runnable-track { width: var(--_t); height: auto; }
       &::-webkit-slider-thumb {
         margin-top: 0;
-        margin-left: -0.375rem;
+        margin-left: calc((var(--_t) - var(--_d)) / 2);
       }
     }
 
-    /* -- Sizes -------------------------------------------------
-       Track thickness + thumb diameter scale together; the WebKit thumb
-       margin-top (and the vertical margin-left) re-centers it for each
-       size: (track − thumb) / 2. md == the default (md explicitly
-       selectable so demos/e2e can pin it like the other four). */
-    &[data-size="xs"] {
-      height: 0.25rem;
-      &::-webkit-slider-runnable-track { height: 0.25rem; }
-      &::-moz-range-track { height: 0.25rem; }
-      &::-moz-range-progress { height: 0.25rem; }
-      &::-webkit-slider-thumb { width: 0.75rem; height: 0.75rem; margin-top: -0.25rem; }
-      &::-moz-range-thumb { width: 0.75rem; height: 0.75rem; }
-      &[data-orientation="vertical"] {
-        width: 0.25rem;
-        &::-webkit-slider-runnable-track { width: 0.25rem; }
-        &::-webkit-slider-thumb { margin-top: 0; margin-left: -0.25rem; }
-      }
-    }
+    /* -- Emoji thumb: data-thumb="emoji" (slider.js draws the emoji from
+       data-thumb-emoji into --slider-thumb-image) - no ring, no fill disc,
+       a bit larger than the plain thumb. */
+    &[data-thumb="emoji"] {
+      --_d: var(--_thumb, 2rem);
 
-    &[data-size="sm"] {
-      height: 0.375rem;
-      &::-webkit-slider-runnable-track { height: 0.375rem; }
-      &::-moz-range-track { height: 0.375rem; }
-      &::-moz-range-progress { height: 0.375rem; }
-      &::-webkit-slider-thumb { width: 1rem; height: 1rem; margin-top: -0.3125rem; }
-      &::-moz-range-thumb { width: 1rem; height: 1rem; }
-      &[data-orientation="vertical"] {
-        width: 0.375rem;
-        &::-webkit-slider-runnable-track { width: 0.375rem; }
-        &::-webkit-slider-thumb { margin-top: 0; margin-left: -0.3125rem; }
-      }
+      &::-webkit-slider-thumb { border: 0; background-color: transparent; }
+      &::-moz-range-thumb { border: 0; background-color: transparent; }
+      &:active::-webkit-slider-thumb { scale: 1.15; }
+      &:active::-moz-range-thumb { scale: 1.15; }
     }
+  }
 
-    &[data-size="md"] {
-      height: 0.5rem;
-      &::-webkit-slider-runnable-track { height: 0.5rem; }
-      &::-moz-range-track { height: 0.5rem; }
-      &::-moz-range-progress { height: 0.5rem; }
-      &::-webkit-slider-thumb { width: 1.25rem; height: 1.25rem; margin-top: -0.375rem; }
-      &::-moz-range-thumb { width: 1.25rem; height: 1.25rem; }
-      &[data-orientation="vertical"] {
-        width: 0.5rem;
-        &::-webkit-slider-runnable-track { width: 0.5rem; }
-        &::-webkit-slider-thumb { margin-top: 0; margin-left: -0.375rem; }
-      }
-    }
+  /* -- Sizes: track thickness + thumb diameter (md == the default) ----
+     On a .slider or on a .slider-range (both inputs inherit). */
+  :is(.slider, .slider-range) {
+    &[data-size="xs"] { --_track: 0.25rem; --_thumb: 0.75rem; }
+    &[data-size="sm"] { --_track: 0.375rem; --_thumb: 1rem; }
+    &[data-size="md"] { --_track: 0.5rem; --_thumb: 1.25rem; }
+    &[data-size="lg"] { --_track: 0.625rem; --_thumb: 1.5rem; }
+    &[data-size="xl"] { --_track: 0.75rem; --_thumb: 1.75rem; }
 
-    &[data-size="lg"] {
-      height: 0.625rem;
-      &::-webkit-slider-runnable-track { height: 0.625rem; }
-      &::-moz-range-track { height: 0.625rem; }
-      &::-moz-range-progress { height: 0.625rem; }
-      &::-webkit-slider-thumb { width: 1.5rem; height: 1.5rem; margin-top: -0.4375rem; }
-      &::-moz-range-thumb { width: 1.5rem; height: 1.5rem; }
-      &[data-orientation="vertical"] {
-        width: 0.625rem;
-        &::-webkit-slider-runnable-track { width: 0.625rem; }
-        &::-webkit-slider-thumb { margin-top: 0; margin-left: -0.4375rem; }
-      }
-    }
+    /* -- Tones: success / warning / info / destructive; any other color
+       via style="--slider-color: …" */
+    &[data-tone="success"] { --_c: oklch(0.6 0.15 150); }
+    &[data-tone="warning"] { --_c: oklch(0.78 0.16 75); }
+    &[data-tone="info"] { --_c: oklch(0.6 0.16 250); }
+    &[data-tone="destructive"] { --_c: var(--destructive); }
+  }
 
-    &[data-size="xl"] {
-      height: 0.75rem;
-      &::-webkit-slider-runnable-track { height: 0.75rem; }
-      &::-moz-range-track { height: 0.75rem; }
-      &::-moz-range-progress { height: 0.75rem; }
-      &::-webkit-slider-thumb { width: 1.75rem; height: 1.75rem; margin-top: -0.5rem; }
-      &::-moz-range-thumb { width: 1.75rem; height: 1.75rem; }
-      &[data-orientation="vertical"] {
-        width: 0.75rem;
-        &::-webkit-slider-runnable-track { width: 0.75rem; }
-        &::-webkit-slider-thumb { margin-top: 0; margin-left: -0.5rem; }
-      }
+  /* -- Range: two thumbs on one track ---------------------------------
+     Two .slider inputs stacked in a .slider-range; only their thumbs take
+     the pointer, the wrapper paints one track with the span between the
+     thumbs filled (slider.js keeps --range-from / --range-to in sync and
+     the low value <= the high one). Each input keeps its own keyboard,
+     label and State API. */
+  .slider-range {
+    --range-from: 25%;
+    --range-to: 75%;
+    --_fill: var(--_c, var(--slider-color, var(--primary)));
+    --_dir: to right;
+    position: relative;
+    display: block;
+    width: 100%;
+    height: var(--_thumb, 1.25rem);
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset-inline: 0;
+      top: 50%;
+      height: var(--_track, 0.5rem);
+      translate: 0 -50%;
+      border-radius: 9999px;
+      background: linear-gradient(
+        var(--_dir),
+        var(--secondary) var(--range-from),
+        var(--_fill) var(--range-from),
+        var(--_fill) var(--range-to),
+        var(--secondary) var(--range-to)
+      );
     }
+    &:dir(rtl) { --_dir: to left; }
+
+    & > .slider {
+      position: absolute;
+      inset-inline: 0;
+      top: 50%;
+      translate: 0 -50%;
+      margin: 0;
+      background: none;
+      pointer-events: none;
+
+      &::-webkit-slider-runnable-track { background: none; }
+      &::-moz-range-track { background: none; }
+      &::-moz-range-progress { background: none; }
+      &::-webkit-slider-thumb { pointer-events: auto; }
+      &::-moz-range-thumb { pointer-events: auto; }
+    }
+    /* the thumb last moved stays on top (both can reach the same value) */
+    & > .slider[data-active] { z-index: 1; }
+
+    &:has(.slider:disabled) { opacity: 0.5; }
+  }
+
+  /* -- Field: icons, emojis and values around a slider ----------------- */
+  .slider-field {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+
+    & > :is(.slider, .slider-range) { flex: 1 1 auto; min-width: 0; }
+  }
+  .slider-icon {
+    display: inline-grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    font-size: 1.125rem;
+    line-height: 1;
+    color: var(--muted-foreground);
+
+    & svg { width: 1.125rem; height: 1.25rem; }
+  }
+  .slider-value {
+    flex-shrink: 0;
+    min-width: 3.5em;
+    text-align: end;
+    font-size: 0.875rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--foreground);
+  }
+  /* a scale under the track: the first and last labels align to the ends */
+  .slider-scale {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.375rem;
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted-foreground);
   }
 
   /* Reduced motion */
@@ -249,5 +301,6 @@
         }
       }
     }
+    .slider-range::before { background: Highlight; }
   }
 }

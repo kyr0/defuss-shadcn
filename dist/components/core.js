@@ -1767,19 +1767,21 @@ function debounce(fn, wait2) {
   return wrapped;
 }
 // src/shared/keys.ts
-var handlers = new Set;
+var handlers = new Map;
 var listening = false;
 var isEditable = (target) => target instanceof HTMLElement && (target.isContentEditable || target.closest('input, textarea, select, [contenteditable="true"]') !== null);
+var isEditableTarget = (event) => isEditable(event.target);
 function onKeydown(event) {
-  if (isEditable(event.target))
-    return;
-  for (const handler of handlers) {
+  const editable = isEditable(event.target);
+  for (const [handler, opts] of handlers) {
+    if (editable && !opts.editable)
+      continue;
     if (handler(event) === true)
       break;
   }
 }
-function bindGlobalKeys(handler) {
-  handlers.add(handler);
+function bindGlobalKeys(handler, options = {}) {
+  handlers.set(handler, { ...options });
   if (!listening && typeof document !== "undefined") {
     listening = true;
     document.addEventListener("keydown", onKeydown);
@@ -2522,6 +2524,7 @@ shadcn.shared = {
   draw,
   anim,
   bindGlobalKeys,
+  isEditableTarget,
   loadTheme
 };
 Reflect.set(df, "anim", anim);
@@ -2539,11 +2542,12 @@ installDdf({
   draw,
   anim,
   bindGlobalKeys,
+  isEditableTarget,
   loadTheme,
   clampIndex,
   coerceIndex
 });
 
-//# debugId=7968D996FAE502F864756E2164756E21
+//# debugId=780ADA0F706D384164756E2164756E21
 /* defuss-shadcn v0.9.1 runtime provenance: bundles defuss-morph@0.1.1 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.1.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=core.js.map

@@ -30,14 +30,14 @@ import { readmeCssOnlyProblems } from './lib/readme.ts';
 import { ariaDescribedByProblems, fieldDescriptionOwnerProblems, fieldFeatureProblems } from './lib/fields.ts';
 import { parseThemes, defaultTokenModes, sidebarContrastProblems, radiusConsistencyProblems } from './lib/contrast.ts';
 import { themeCssText, themeFileName, themeJsonText, themeJsonFileName } from './lib/theme-css.ts';
-import { buildRootSkillText, buildSkillText } from './lib/skill-files.ts';
+import { buildRootSkillText, buildSkillReferences, buildSkillText } from './lib/skill-files.ts';
 import { archBodyHtml } from '../src/documentation/lib/arch-md.ts';
 import { typeBadgeHtml, type ComponentType } from './lib/taxonomy.ts';
 import { docsDistToSrc, isDocsSsgAuthoringSrc, STANDALONE_DECKS, standaloneDeckFile } from './lib/docs-ssg.ts';
 import { markdownLinkProblems, type MdDoc } from './lib/links.ts';
 import { versionDrift } from './lib/version-sites.ts';
 import {
-  exampleFences,
+  exampleFences, exampleFragment, examplePlaceholders,
   findStatesTable,
   isSchemaArtifact,
   parseComponentSchemaText,
@@ -430,13 +430,42 @@ check(
 // rewritten into the generated df$.shadcn.shared bindings (build.ts +
 // scripts/templates/component-shared-binding.js). If someone edits dist/ or
 // breaks the post-pass, the registry globals silently vanish at runtime.
+// Vendor imports: the ONLY dynamic import() shipped JS may contain is a
+// component loading its official third-party renderer on demand from a
+// pinned URL (the lazy twin of chart's vendor <script>). That is vendor code,
+// never part of our payload - the "no runtime import" rules below stay about
+// OUR modules. Exact call sites, reasoned; a stale entry (call site gone) or a
+// missing / unpinned vendor URL fails too.
+const VENDOR_IMPORTS: Record<string, { site: RegExp; pinned: string; reason: string }> = {
+  mermaid: {
+    site: /import\((?:\/\*[^*]*\*\/\s*)?vendorUrl\)/g,
+    pinned: 'https://cdn.jsdelivr.net/npm/mermaid@12.0.0/dist/mermaid.esm.min.mjs',
+    reason: 'loads the official Mermaid renderer on the first diagram (pinned jsDelivr ESM, or a self-hosted copy)',
+  },
+};
+const vendorProblems: string[] = [];
+/** `src` with the allow-listed vendor import call sites of `names` removed. */
+function withoutVendorImports(src: string, names: string[], where: string): string {
+  let out = src;
+  for (const name of names) {
+    const v = VENDOR_IMPORTS[name];
+    if (!v) continue;
+    if (!v.site.test(out)) vendorProblems.push(`${where}: VENDOR_IMPORTS["${name}"] is stale - its call site is gone; remove the entry`);
+    v.site.lastIndex = 0;
+    if (!out.includes(v.pinned)) vendorProblems.push(`${where}: ${name}'s vendor URL is not the pinned ${v.pinned}`);
+    if (/mermaid@latest/.test(out)) vendorProblems.push(`${where}: ${name} must pin its vendor version, never @latest`);
+    out = out.replace(v.site, '/* vendor import */');
+  }
+  return out;
+}
+
 const inlineProblems: string[] = [];
 for (const name of componentDirs) {
   const tsFile = join(COMPS, name, `${name}.ts`);
   if (!existsSync(tsFile) || !readFileSync(tsFile, 'utf8').includes('defussGlobals()')) continue;
   const distJs = join(DIST, 'components', name, `${name}.js`);
   if (!existsSync(distJs)) continue; // already reported by dist 1:1
-  const shipped = readFileSync(distJs, 'utf8');
+  const shipped = withoutVendorImports(readFileSync(distJs, 'utf8'), [name], `${name}.js`);
   if (!shipped.includes('__df$shared')) {
     inlineProblems.push(`${name}.js missing the df$.shadcn.shared binding guard - run \`bun run build\``);
   } else if (/(^|\n)\s*import[\s({]|import\(/.test(shipped)) {
@@ -459,7 +488,7 @@ check(
   const readDist = (rel: string): string =>
     existsSync(join(DIST, rel)) ? readFileSync(join(DIST, rel), 'utf8') : '';
   const coreJs = readDist('components/core.js');
-  const allJs = readDist('components/all.js');
+  const allJs = withoutVendorImports(readDist('components/all.js'), Object.keys(VENDOR_IMPORTS), 'all.js');
   /** component identifiers are camelCased (number-input → numberInputStates) */
   const camel = (c: string): string => c.replace(/-([a-z])/g, (_m, ch: string) => ch.toUpperCase());
 
@@ -497,6 +526,11 @@ check(
     'run `bun run build` - core = morph+query+shared only; all = core first + every shipping component, both import-free (see plans/defuss-query-morph-integration.md §2.3)',
   );
 }
+check(
+  'vendor imports (pinned, allow-listed)',
+  vendorProblems,
+  'a component may import only its official renderer, from the pinned URL in VENDOR_IMPORTS (scripts/verify.ts) - update the entry with the component, never widen it to our own modules',
+);
 
 // 10g. legacy runtime namespace: the pre-migration registry name must be gone
 // from every authored surface (plans §2.1 - the namespace is df$.shadcn).
@@ -1405,6 +1439,20 @@ check(
       if (!existsSync(join(ROOT, ROOT_SKILL_OUTPUT_FILE))) rootProblems.push(`${ROOT_SKILL_OUTPUT_FILE} missing at the repo root`);
       else if (readFileSync(join(ROOT, ROOT_SKILL_OUTPUT_FILE), 'utf8') !== fresh)
         rootProblems.push(`${ROOT_SKILL_OUTPUT_FILE} is stale vs src/${ROOT_SKILL_TEMPLATE_FILE} + nav.ts + page/skill frontmatter`);
+      // its references/components/ copies: one per component skill, current, no extras
+      const skillDir = dirname(join(ROOT, ROOT_SKILL_OUTPUT_FILE));
+      const refs = buildSkillReferences(ROOT);
+      for (const [rel, text] of refs) {
+        const abs = join(skillDir, rel);
+        if (!existsSync(abs)) rootProblems.push(`${relative(ROOT, abs)} missing`);
+        else if (readFileSync(abs, 'utf8') !== text) rootProblems.push(`${relative(ROOT, abs)} is stale vs its component-skill.md`);
+      }
+      const refDir = join(skillDir, 'references', 'components');
+      if (existsSync(refDir)) {
+        for (const f of readdirSync(refDir)) {
+          if (!refs.has(`references/components/${f}`)) rootProblems.push(`${relative(ROOT, join(refDir, f))} has no component-skill.md source`);
+        }
+      }
     } catch (e) {
       rootProblems.push(`${(e as Error).message.split(' - ')[0]} - ${ROOT_SKILL_OUTPUT_FILE} cannot be generated`);
     }
@@ -1634,6 +1682,11 @@ check(
       const page = file.replace(/\.mdx$/, '');
       for (const ex of exampleFences(mdx)) {
         if (ex.body.trim() === '') problems.push(`pages/${file}:${ex.line} empty example fence (plan §21)`);
+        const orphan = exampleFragment(ex.body);
+        if (orphan)
+          problems.push(`pages/${file}:${ex.line} example starts with ${orphan} - it needs its container (a list / table / select) to render, the fence runs on its own`);
+        for (const ph of examplePlaceholders(ex.body))
+          problems.push(`pages/${file}:${ex.line} placeholder element in an executable example - it renders nothing: ${ph}`);
         // schema="none": guide-page utility demos (layout/sizing/sizing-scale…)
         // demonstrate the optional modules, not a component - no contract to bind
         if (ex.schema === 'none') continue;
@@ -1651,7 +1704,7 @@ check(
     check(
       'example fences',
       problems,
-      'one source per example: fix the fence/props on the flagged page (plan §21/§22); empty examples and dual-source props are rejected',
+      'one source per example: fix the fence/props on the flagged page (plan §21/§22); empty examples, placeholder elements ("...") and dual-source props are rejected - an example fence is executed verbatim',
     );
   }
 

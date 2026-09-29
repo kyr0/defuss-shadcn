@@ -447,6 +447,27 @@ export interface ExampleFence {
 
 const FENCE = /(^|\n)(`{3,}|~{3,})([^\n]*)\n([\s\S]*?)\n\2(?=\n|$)/g;
 
+/** Why: an example fence is EXECUTED verbatim - an abbreviated element
+ * (`<svg class="spinner">...</svg>`, `<thead>...</thead>`) is not a shortened
+ * sample there, it is a broken demo that renders nothing. The fences-migration
+ * once left eleven of them (spinner sizes, a loading button, collapsible,
+ * table, statistic) and every gate stayed green. Returns each element whose
+ * whole content is the ASCII placeholder "..." (a real ellipsis "…", e.g. a
+ * pagination gap, is content and stays allowed). Pure. */
+export function exampleFragment(body: string): string | null {
+  // Why: a fence is executed on its own - an example that starts with a
+  // <li>/<tr>/<td>/<option>/<dt>/<dd> has no list, table or select around it,
+  // so the component's layout has no container (the Steps connector ran off
+  // to infinity; a breadcrumb separator stood alone). Returns the orphaned
+  // opening tag, or null. Pure.
+  const first = body.replace(/^\s*(<!--[\s\S]*?-->\s*)*/, '').match(/^<(li|tr|td|th|thead|tbody|tfoot|option|optgroup|dt|dd)\b[^>]*>/);
+  return first ? first[0].slice(0, 80) : null;
+}
+
+export function examplePlaceholders(body: string): string[] {
+  return [...body.matchAll(/<([a-zA-Z][\w-]*)\b[^<>]*>\s*\.\.\.\s*<\/\1>/g)].map((m) => m[0].replace(/\s+/g, ' ').slice(0, 80));
+}
+
 /** Every fenced block whose meta contains the `example` directive, with the
  * exact body bytes (fence → CodeExample.source verbatim, plan §7). */
 export function exampleFences(mdx: string): ExampleFence[] {

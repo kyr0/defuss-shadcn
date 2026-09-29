@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>countdown e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/countdown/countdown.css" />
+  </head>
+  <body style="padding:2rem;display:grid;gap:1rem;justify-items:start;font-family:system-ui;">
+    <!-- mirrors the doc page: plain values (digits none/2/3, sizes, speeds),
+         a clock, timers (group with boxes, inline labels without days,
+         authored-paused, already-past until) -->
+    <span class="countdown" id="v42" data-size="xl"><span style="--value:42">42</span></span>
+    <span class="countdown" id="v7"><span style="--value:7">7</span></span>
+    <span class="countdown" id="v7-2" data-digits="2"><span style="--value:7">7</span></span>
+    <span class="countdown" id="v7-3" data-digits="3"><span style="--value:7">7</span></span>
+    <span class="countdown" id="v123" data-size="lg"><span style="--value:123">123</span></span>
+    <span class="countdown" id="s-sm" data-size="sm"><span style="--value:1">1</span></span>
+    <span class="countdown" id="s-md" data-size="md"><span style="--value:1">1</span></span>
+    <span class="countdown" id="s-2xl" data-size="2xl"><span style="--value:1">1</span></span>
+    <span class="countdown" id="s-3xl" data-size="3xl"><span style="--value:1">1</span></span>
+    <span class="countdown" id="fast" data-speed="fast"><span style="--value:1">1</span></span>
+    <span class="countdown" id="slow" data-speed="slow"><span style="--value:1">1</span></span>
+    <span class="countdown" id="clock" data-digits="2">
+      <span data-unit="hours" style="--value:10">10</span>:<span data-unit="minutes" style="--value:24">24</span>:<span data-unit="seconds" style="--value:59">59</span>
+    </span>
+
+    <div class="countdown-group" id="t-group" data-duration="90061">
+      <div class="countdown-unit" data-variant="muted"><span class="countdown" data-size="xl"><span data-unit="days" style="--value:0">0</span></span><span class="countdown-label">days</span></div>
+      <div class="countdown-unit" data-variant="primary"><span class="countdown" data-size="xl" data-digits="2"><span data-unit="hours" style="--value:0">0</span></span><span class="countdown-label">hours</span></div>
+      <div class="countdown-unit" data-variant="outline"><span class="countdown" data-size="xl" data-digits="2"><span data-unit="minutes" style="--value:0">0</span></span><span class="countdown-label">min</span></div>
+      <div class="countdown-unit"><span class="countdown" data-size="xl" data-digits="2"><span data-unit="seconds" style="--value:0">0</span></span><span class="countdown-label">sec</span></div>
+    </div>
+    <p class="countdown-group" id="t-inline" data-duration="93784" aria-label="Sale ends">
+      <span class="countdown"><span data-unit="hours" style="--value:0">0</span></span> hours
+      <span class="countdown" data-digits="2"><span data-unit="minutes" style="--value:0">0</span></span> min
+      <span class="countdown" data-digits="2"><span data-unit="seconds" style="--value:0">0</span></span> sec
+    </p>
+    <span class="countdown" id="t-single" data-duration="90" data-paused data-digits="2"><span data-unit="minutes" style="--value:1">1</span>:<span data-unit="seconds" style="--value:30">30</span></span>
+    <span class="countdown" id="t-past" data-until="2000-01-01T00:00:00Z"><span data-unit="seconds" style="--value:5">5</span></span>
+    <script type="module" src="/dist/components/core.js"></script>
+    <script type="module" src="/dist/components/countdown/countdown.js"></script>
+  </body>
+</html>

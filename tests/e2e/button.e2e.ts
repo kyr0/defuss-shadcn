@@ -108,4 +108,66 @@ await cssSmoke('button', [
       assert.deepEqual(outline, { width: '2px', style: 'solid', offset: '2px' });
     },
   },
+  {
+    label: 'soft: a 12% tint of --primary; dashed: a dashed 1px border',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const cs = (id: string) => getComputedStyle(document.getElementById(id)!);
+        return { soft: cs('bt-soft').backgroundColor, dashed: [cs('bt-dashed').borderTopStyle, cs('bt-dashed').borderTopWidth, cs('bt-dashed').backgroundColor] };
+      });
+      assert.ok(/oklch|color\(|rgba/.test(r.soft) && !/rgba\(0, 0, 0, 0\)/.test(r.soft), `soft tint (${r.soft})`);
+      assert.deepEqual(r.dashed, ['dashed', '1px', 'rgba(0, 0, 0, 0)']);
+    },
+  },
+  {
+    label: 'tones: four distinct solid fills; warning uses dark text',
+    distinct: [
+      { selector: '#bt-success', prop: 'background-color' },
+      { selector: '#bt-warning', prop: 'background-color' },
+      { selector: '#bt-info', prop: 'background-color' },
+      { selector: '#bt-tone-destructive', prop: 'background-color' },
+    ],
+  },
+  {
+    label: 'tone styles: outline border = the tone, soft / ghost / dashed / link write in it',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const cs = (id: string) => getComputedStyle(document.getElementById(id)!);
+        const solid = cs('bt-success').backgroundColor;
+        return {
+          solid,
+          outlineBorder: cs('bt-success-outline').borderTopColor,
+          outlineBg: cs('bt-success-outline').backgroundColor,
+          dashedBorder: [cs('bt-success-dashed').borderTopColor, cs('bt-success-dashed').borderTopStyle],
+          inks: ['bt-success-outline', 'bt-success-soft', 'bt-success-ghost', 'bt-success-dashed', 'bt-success-link'].map((id) => cs(id).color),
+          plainGhostInk: getComputedStyle(document.body).color,
+          warnFg: cs('bt-warning').color,
+          infoFg: cs('bt-info').color,
+        };
+      });
+      assert.equal(r.outlineBorder, r.solid);
+      assert.equal(r.outlineBg, 'rgba(0, 0, 0, 0)');
+      assert.deepEqual(r.dashedBorder, [r.solid, 'dashed']);
+      assert.equal(new Set(r.inks).size, 1, `one ink for every text style (${r.inks.join(' | ')})`);
+      assert.notEqual(r.inks[0], r.solid, 'ink is mixed toward the foreground');
+      assert.notEqual(r.warnFg, r.infoFg, 'warning text is dark, info text white');
+    },
+  },
+  {
+    label: 'custom tone: --btn-color fills, --btn-color-fg writes; outline borders in it',
+    selector: '#bt-custom',
+    css: { 'background-color': 'rgb(120, 40, 200)', color: 'rgb(255, 255, 0)' },
+  },
+  {
+    label: 'custom tone outline border',
+    selector: '#bt-custom-outline',
+    css: { 'border-top-color': 'rgb(120, 40, 200)' },
+  },
+  {
+    label: 'RTL: data-rtl-flip icons mirror, symmetric icons and LTR stay',
+    run: async (page) => {
+      const r = await page.evaluate(() => ['bt-rtl-arrow', 'bt-rtl-sym', 'bt-ltr-arrow'].map((id) => getComputedStyle(document.getElementById(id)!).scale));
+      assert.deepEqual(r, ['-1 1', 'none', 'none']);
+    },
+  },
 ]);

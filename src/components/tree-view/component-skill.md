@@ -2,7 +2,7 @@
 name: Tree View
 type: ATM
 why: role=tree with expandable nodes and the full arrow-key interaction model.
-when: Any hierarchy the user browses or picks from - file explorers, product categories, org charts, docs navigation menus (links as leaves); single selection and disabled items built in. For one flat level use a list; for show/hide sections use accordion.
+when: Any hierarchy the user browses or picks from - file explorers, product categories, org charts, docs navigation menus (links as leaves); single selection, checkboxes (tri-state cascade), drag & drop reordering and disabled items built in. For one flat level use a list; for show/hide sections use accordion.
 where: dist/components/tree-view/tree-view.css + dist/components/tree-view/tree-view.js
 supportedStates: default, expanded
 ---
@@ -15,6 +15,8 @@ Nested `<ul>` elements with `role="tree"` / `role="treeitem"` ARIA pattern for h
 
 ## Native Web APIs
 
+- [HTML Drag and Drop API](https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API) - drag & drop reordering (data-sortable)
+- [`:indeterminate`](https://developer.mozilla.org/en-US/docs/Web/CSS/:indeterminate) - a folder whose children are partly checked
 - [`<ul>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul) - nested list structure
 - [Tree View WAI-ARIA pattern](https://www.w3.org/WAI/ARIA/apg/patterns/treeview/) - ARIA tree roles and keyboard navigation
 - [`<details>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details) - native expand/collapse for branches
@@ -70,6 +72,48 @@ Nested `<ul>` elements with `role="tree"` / `role="treeitem"` ARIA pattern for h
   </li>
 </ul>
 ```
+
+## Checkboxes (data-checkable)
+
+```html
+<ul class="tree" role="tree" aria-label="Files" data-checkable>
+  <li class="tree-item" role="treeitem" aria-expanded="true">
+    <details class="tree-branch" open>
+      <summary class="tree-branch-trigger" tabindex="0">
+        <svg><!-- chevron --></svg><svg><!-- folder --></svg>
+        <input type="checkbox" class="checkbox tree-check" name="files" value="src">
+        <span>src</span>
+      </summary>
+      <ul class="tree-group" role="group">
+        <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg>…</svg><input type="checkbox" class="checkbox tree-check" name="files" value="index"><span>index.ts</span></span></li>
+      </ul>
+    </details>
+  </li>
+</ul>
+```
+
+- A `.tree-check` checkbox goes after the icons, before the label span; the
+  label names it (`aria-labelledby` is wired automatically).
+- Cascade: checking a folder checks its subtree; a folder's box derives from
+  its children (checked / unchecked / indeterminate) and the treeitem mirrors
+  it as `aria-checked` (`true` / `false` / `mixed`). Authored `checked`
+  folders cascade down on load. `data-checkable="independent"` turns the
+  cascade off.
+- A click on the box never toggles the folder; Space on a focused row ticks
+  its box; a click on a file's name ticks it too.
+- The inputs are real form controls (`name` / `value` submit). Every change
+  fires `tree-check` (`{ item, checked, values }`).
+
+## Drag and drop (data-sortable)
+
+- Rows become draggable (native Drag and Drop API). Dropping on the upper /
+  lower part of a row places the item before / after it; on the middle of a
+  folder, inside it (the folder opens). A folder can't move into itself.
+- Keyboard: Alt+ArrowUp / Alt+ArrowDown moves the focused item among its
+  siblings (focus stays on it).
+- Every move fires `tree-reorder` (`{ item, parent, index }`); checkable
+  trees re-derive their folders' boxes after a move.
+- Combine freely with `data-checkable` / `data-selectable`.
 
 ## Variants
 

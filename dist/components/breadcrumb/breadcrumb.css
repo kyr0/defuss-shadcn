@@ -42,6 +42,28 @@
     [dir="rtl"] & svg { scale: -1 1; }
   }
   .breadcrumb-page { color: var(--foreground); font-weight: 400; }
+
+  /* -- Icons / emoji in front of a crumb ---------------------------
+     An <svg> or a <span class="breadcrumb-icon"> (emoji) before the label:
+     link and page line them up on the label's center and size them to the
+     text (1em - so data-size scales them too). */
+  .breadcrumb-link, .breadcrumb-page {
+    &:has(> :is(svg, .breadcrumb-icon)) {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375em;
+    }
+    & > svg { width: 1em; height: 1em; flex-shrink: 0; }
+  }
+  .breadcrumb-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 1.15em;
+    height: 1.15em;
+    flex-shrink: 0;
+    line-height: 1;
+    font-style: normal;
+  }
   .breadcrumb-ellipsis {
     display: flex; align-items: center; justify-content: center;
     width: 1.5rem; height: 1.5rem; color: var(--muted-foreground);

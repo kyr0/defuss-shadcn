@@ -1,7 +1,7 @@
 /* defuss-shadcn - optional shape utilities.
  * A catalog of reusable silhouettes to mix a design up: radius scale,
  * organic + asymmetric corners, cut/notch/scoop corners (native
- * corner-shape where supported, clip-path/mask fallback), clip-path
+ * corner-shape where supported, clip-path/mask fallback), shape-*
  * silhouettes, section edges, a shadow scale plus stylized shadows,
  * frames and background patterns.
  *
@@ -18,6 +18,12 @@
  *   --shape-tail    speech-bubble tail height           (default 0.75rem)
  *   --shape-ink     shadow / frame / pattern color      (per family)
  *   --shape-pattern pattern tile size                   (default 16px)
+ *   --shape-duration one aura turn                      (default 4s)
+ *
+ * Silhouettes are shape-* (the names follow DaisyUI's mask-* set where it
+ * has one: shape-hexagon is pointy-top, shape-hexagon-2 flat-top,
+ * shape-triangle-2/-3/-4 point down/left/right). The v0.9 clip-* names stay
+ * as aliases of the same rules - clip-hexagon is shape-hexagon-2.
  *
  * Clip-path and mask cut the element's own box-shadow and border: pair a
  * clipped shape with drop-shadow-* on a WRAPPER element.
@@ -194,129 +200,137 @@
   }
 
   /* ── Clip-path silhouettes ─────────────────────────────────── */
-  :where(.clip-circle) { clip-path: circle(50%); }
-  :where(.clip-ellipse) { clip-path: ellipse(50% 50%); }
-  :where(.clip-triangle) { clip-path: polygon(50% 0, 100% 100%, 0 100%); }
-  :where(.clip-triangle-down) { clip-path: polygon(0 0, 100% 0, 50% 100%); }
-  :where(.clip-triangle-left) { clip-path: polygon(100% 0, 100% 100%, 0 50%); }
-  :where(.clip-triangle-right) { clip-path: polygon(0 0, 100% 50%, 0 100%); }
-  :where(.clip-kite) { clip-path: polygon(50% 0, 100% 35%, 50% 100%, 0 35%); }
-  :where(.clip-heptagon) { clip-path: polygon(50% 0, 90% 20%, 100% 62%, 75% 100%, 25% 100%, 0 62%, 10% 20%); }
-  :where(.clip-star-4) { clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); }
-  :where(.clip-star-6) { clip-path: polygon(50% 0, 63% 25%, 93% 25%, 76% 50%, 93% 75%, 63% 75%, 50% 100%, 37% 75%, 7% 75%, 24% 50%, 7% 25%, 37% 25%); }
+  /* a true squircle silhouette (superellipse), not rounded corners */
+  :where(.shape-squircle) {
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cpath d='M100 0C20 0 0 20 0 100s20 100 100 100 100-20 100-100S180 0 100 0Z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  }
+  :where(.shape-hexagon) { clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); }
+  :where(.shape-decagon) { clip-path: polygon(50% 0, 79.39% 9.55%, 97.55% 34.55%, 97.55% 65.45%, 79.39% 90.45%, 50% 100%, 20.61% 90.45%, 2.45% 65.45%, 2.45% 34.55%, 20.61% 9.55%); }
+  /* bold five-point star: a fuller inner radius than shape-star */
+  :where(.shape-star-2) { clip-path: polygon(50% 0, 65.87% 28.16%, 97.55% 34.55%, 75.68% 58.34%, 79.39% 90.45%, 50% 77%, 20.61% 90.45%, 24.32% 58.34%, 2.45% 34.55%, 34.13% 28.16%); }
+  :where(.shape-circle, .clip-circle) { clip-path: circle(50%); }
+  :where(.shape-ellipse, .clip-ellipse) { clip-path: ellipse(50% 50%); }
+  :where(.shape-triangle, .clip-triangle) { clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+  :where(.shape-triangle-down, .shape-triangle-2, .clip-triangle-down) { clip-path: polygon(0 0, 100% 0, 50% 100%); }
+  :where(.shape-triangle-left, .shape-triangle-3, .clip-triangle-left) { clip-path: polygon(100% 0, 100% 100%, 0 50%); }
+  :where(.shape-triangle-right, .shape-triangle-4, .clip-triangle-right) { clip-path: polygon(0 0, 100% 50%, 0 100%); }
+  :where(.shape-kite, .clip-kite) { clip-path: polygon(50% 0, 100% 35%, 50% 100%, 0 35%); }
+  :where(.shape-heptagon, .clip-heptagon) { clip-path: polygon(50% 0, 90% 20%, 100% 62%, 75% 100%, 25% 100%, 0 62%, 10% 20%); }
+  :where(.shape-star-4, .clip-star-4) { clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); }
+  :where(.shape-star-6, .clip-star-6) { clip-path: polygon(50% 0, 63% 25%, 93% 25%, 76% 50%, 93% 75%, 63% 75%, 50% 100%, 37% 75%, 7% 75%, 24% 50%, 7% 25%, 37% 25%); }
   /* a close / multiply mark */
-  :where(.clip-x) {
+  :where(.shape-x, .clip-x) {
     clip-path: polygon(20% 0, 50% 30%, 80% 0, 100% 20%, 70% 50%, 100% 80%, 80% 100%, 50% 70%, 20% 100%, 0 80%, 30% 50%, 0 20%);
   }
-  :where(.clip-diamond) { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
-  :where(.clip-pentagon) { clip-path: polygon(50% 0, 100% 38%, 82% 100%, 18% 100%, 0 38%); }
-  :where(.clip-hexagon) { clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); }
-  :where(.clip-octagon) { clip-path: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%); }
-  :where(.clip-star) { clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
-  :where(.clip-burst) {
+  :where(.shape-diamond, .clip-diamond) { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+  :where(.shape-pentagon, .clip-pentagon) { clip-path: polygon(50% 0, 100% 38%, 82% 100%, 18% 100%, 0 38%); }
+  :where(.shape-hexagon-2, .clip-hexagon) { clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); }
+  :where(.shape-octagon, .clip-octagon) { clip-path: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%); }
+  :where(.shape-star, .clip-star) { clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
+  :where(.shape-burst, .clip-burst) {
     clip-path: polygon(50% 0, 59% 17%, 75% 7%, 76% 25%, 93% 25%, 83% 41%, 100% 50%, 83% 59%, 93% 75%, 76% 75%,
       75% 93%, 59% 83%, 50% 100%, 41% 83%, 25% 93%, 24% 75%, 7% 75%, 17% 59%, 0 50%, 17% 41%, 7% 25%, 24% 25%, 25% 7%, 41% 17%);
   }
-  :where(.clip-cross) { clip-path: polygon(35% 0, 65% 0, 65% 35%, 100% 35%, 100% 65%, 65% 65%, 65% 100%, 35% 100%, 35% 65%, 0 65%, 0 35%, 35% 35%); }
-  :where(.clip-shield) { clip-path: polygon(50% 0, 100% 14%, 100% 52%, 50% 100%, 0 52%, 0 14%); }
-  :where(.clip-parallelogram) {
+  :where(.shape-cross, .clip-cross) { clip-path: polygon(35% 0, 65% 0, 65% 35%, 100% 35%, 100% 65%, 65% 65%, 65% 100%, 35% 100%, 35% 65%, 0 65%, 0 35%, 35% 35%); }
+  :where(.shape-shield, .clip-shield) { clip-path: polygon(50% 0, 100% 14%, 100% 52%, 50% 100%, 0 52%, 0 14%); }
+  :where(.shape-parallelogram, .clip-parallelogram) {
     --_s: var(--shape-slant, 1.5rem);
     clip-path: polygon(var(--_s) 0, 100% 0, calc(100% - var(--_s)) 100%, 0 100%);
   }
-  :where(.clip-trapezoid) {
+  :where(.shape-trapezoid, .clip-trapezoid) {
     --_s: var(--shape-slant, 1.5rem);
     clip-path: polygon(var(--_s) 0, calc(100% - var(--_s)) 0, 100% 100%, 0 100%);
   }
-  :where(.clip-arrow) {
+  :where(.shape-arrow, .clip-arrow) {
     --_s: var(--shape-slant, 1.5rem);
     clip-path: polygon(0 0, calc(100% - var(--_s)) 0, 100% 50%, calc(100% - var(--_s)) 100%, 0 100%);
   }
-  :where(.clip-chevron) {
+  :where(.shape-chevron, .clip-chevron) {
     --_s: var(--shape-slant, 1.5rem);
     clip-path: polygon(0 0, calc(100% - var(--_s)) 0, 100% 50%, calc(100% - var(--_s)) 100%, 0 100%, var(--_s) 50%);
   }
-  :where(.clip-ribbon) {
+  :where(.shape-ribbon, .clip-ribbon) {
     --_s: var(--shape-slant, 1.5rem);
     clip-path: polygon(0 0, 100% 0, calc(100% - var(--_s)) 50%, 100% 100%, 0 100%);
   }
   /* speech bubble: the transparent bottom border reserves the tail's room
      (the background still paints under it), clip-path draws the tail */
-  :where(.clip-message) {
+  :where(.shape-message, .clip-message) {
     --_t: var(--shape-tail, 0.75rem);
     border-block-end: var(--_t) solid transparent;
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--_t)), calc(1.5rem + var(--_t)) calc(100% - var(--_t)),
       1.25rem 100%, 1.25rem calc(100% - var(--_t)), 0 calc(100% - var(--_t)));
   }
-  :where(.clip-message-end) {
+  :where(.shape-message-end, .clip-message-end) {
     --_t: var(--shape-tail, 0.75rem);
     border-block-end: var(--_t) solid transparent;
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--_t)), calc(100% - 1.25rem) calc(100% - var(--_t)),
       calc(100% - 1.25rem) 100%, calc(100% - 1.5rem - var(--_t)) calc(100% - var(--_t)), 0 calc(100% - var(--_t)));
   }
-  :where(.clip-message-top) {
+  :where(.shape-message-top, .clip-message-top) {
     --_t: var(--shape-tail, 0.75rem);
     border-block-start: var(--_t) solid transparent;
     clip-path: polygon(0 var(--_t), 1.25rem var(--_t), 1.25rem 0, calc(1.5rem + var(--_t)) var(--_t), 100% var(--_t), 100% 100%, 0 100%);
   }
   /* callout pointing left (at the vertical middle) */
-  :where(.clip-callout-left) {
+  :where(.shape-callout-left, .clip-callout-left) {
     --_t: var(--shape-tail, 0.75rem);
     border-left: var(--_t) solid transparent;
     clip-path: polygon(var(--_t) 0, 100% 0, 100% 100%, var(--_t) 100%, var(--_t) calc(50% + var(--_t)), 0 50%, var(--_t) calc(50% - var(--_t)));
   }
-  :where(.clip-arrow-left) {
+  :where(.shape-arrow-left, .clip-arrow-left) {
     --_s: var(--shape-slant, 1.5rem);
     clip-path: polygon(var(--_s) 0, 100% 0, 100% 100%, var(--_s) 100%, 0 50%);
   }
-  :where(.clip-chevron-left) {
+  :where(.shape-chevron-left, .clip-chevron-left) {
     --_s: var(--shape-slant, 1.5rem);
     clip-path: polygon(var(--_s) 0, 100% 0, calc(100% - var(--_s)) 50%, 100% 100%, var(--_s) 100%, 0 50%);
   }
-  :where(.clip-arrow-both) {
+  :where(.shape-arrow-both, .clip-arrow-both) {
     --_s: var(--shape-slant, 1.5rem);
     clip-path: polygon(var(--_s) 0, calc(100% - var(--_s)) 0, 100% 50%, calc(100% - var(--_s)) 100%, var(--_s) 100%, 0 50%);
   }
-  :where(.clip-arrow-down) {
+  :where(.shape-arrow-down, .clip-arrow-down) {
     --_s: var(--shape-slant, 1.5rem);
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--_s)), 50% 100%, 0 calc(100% - var(--_s)));
   }
-  :where(.clip-chevron-down) {
+  :where(.shape-chevron-down, .clip-chevron-down) {
     --_s: var(--shape-slant, 1.5rem);
     clip-path: polygon(0 0, 50% var(--_s), 100% 0, 100% calc(100% - var(--_s)), 50% 100%, 0 calc(100% - var(--_s)));
   }
-  :where(.clip-arrow-up) {
+  :where(.shape-arrow-up, .clip-arrow-up) {
     --_s: var(--shape-slant, 1.5rem);
     clip-path: polygon(50% 0, 100% var(--_s), 100% 100%, 0 100%, 0 var(--_s));
   }
-  :where(.clip-chevron-up) {
+  :where(.shape-chevron-up, .clip-chevron-up) {
     --_s: var(--shape-slant, 1.5rem);
     clip-path: polygon(50% 0, 100% var(--_s), 100% 100%, 50% calc(100% - var(--_s)), 0 100%, 0 var(--_s));
   }
   /* price tag: pointed start with a punched hole */
-  :where(.clip-tag) {
+  :where(.shape-tag, .clip-tag) {
     --_s: var(--shape-slant, 1.5rem);
     clip-path: polygon(var(--_s) 0, 100% 0, 100% 100%, var(--_s) 100%, 0 50%);
     mask: radial-gradient(circle at calc(var(--_s) * 0.8) 50%, #0000 0.2rem, #000 calc(0.2rem + 0.5px));
   }
   /* swallowtail at both ends */
-  :where(.clip-banner) {
+  :where(.shape-banner, .clip-banner) {
     --_s: var(--shape-slant, 1.5rem);
     clip-path: polygon(0 0, 100% 0, calc(100% - var(--_s)) 50%, 100% 100%, 0 100%, var(--_s) 50%);
   }
-  :where(.clip-bookmark) {
+  :where(.shape-bookmark, .clip-bookmark) {
     --_s: var(--shape-slant, 1.5rem);
     clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - var(--_s)), 0 100%);
   }
-  :where(.clip-pennant) { clip-path: polygon(0 0, 100% 50%, 0 100%); }
+  :where(.shape-pennant, .clip-pennant) { clip-path: polygon(0 0, 100% 50%, 0 100%); }
 
   /* ── More silhouettes ────────────────────────────────────────── */
-  :where(.clip-house) { clip-path: polygon(50% 0, 100% 42%, 100% 100%, 0 100%, 0 42%); }
-  :where(.clip-bolt) { clip-path: polygon(62% 0, 14% 58%, 44% 58%, 34% 100%, 86% 38%, 56% 38%, 72% 0); }
-  :where(.clip-frame) {
+  :where(.shape-house, .clip-house) { clip-path: polygon(50% 0, 100% 42%, 100% 100%, 0 100%, 0 42%); }
+  :where(.shape-bolt, .clip-bolt) { clip-path: polygon(62% 0, 14% 58%, 44% 58%, 34% 100%, 86% 38%, 56% 38%, 72% 0); }
+  :where(.shape-frame, .clip-frame) {
     clip-path: polygon(evenodd, 0 0, 100% 0, 100% 100%, 0 100%, 0 0, 22% 22%, 22% 78%, 78% 78%, 78% 22%, 22% 22%);
   }
-  :where(.clip-donut) { mask: radial-gradient(closest-side, #0000 52%, #000 53% 98%, #0000 100%); }
-  :where(.clip-moon) {
+  :where(.shape-donut, .clip-donut) { mask: radial-gradient(closest-side, #0000 52%, #000 53% 98%, #0000 100%); }
+  :where(.shape-moon, .clip-moon) {
     clip-path: circle(50%);
     mask: radial-gradient(circle at 72% 30%, #0000 36%, #000 36.5%);
   }
@@ -325,33 +339,33 @@
         background-image over YOUR background-color (set the color with
         background-color, not the background shorthand). Designed for a
         square box. ──────────────────────────────────────────────── */
-  :where(.clip-cube) {
+  :where(.shape-cube, .clip-cube) {
     clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
     background-image: conic-gradient(from -63.43deg at 50% 50%,
       rgb(255 255 255 / 0.32) 0 126.87deg, rgb(0 0 0 / 0.3) 0 243.43deg, rgb(0 0 0 / 0.08) 0);
   }
-  :where(.clip-pyramid) {
+  :where(.shape-pyramid, .clip-pyramid) {
     clip-path: polygon(50% 0, 100% 100%, 0 100%);
     background-image: linear-gradient(90deg, rgb(255 255 255 / 0.22) 50%, rgb(0 0 0 / 0.28) 50%);
   }
-  :where(.clip-diamond-3d) {
+  :where(.shape-diamond-3d, .clip-diamond-3d) {
     clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
     background-image: conic-gradient(rgb(255 255 255 / 0.12) 0 90deg, rgb(0 0 0 / 0.32) 0 180deg,
       rgb(0 0 0 / 0.15) 0 270deg, rgb(255 255 255 / 0.3) 0);
   }
-  :where(.clip-hexagon-3d) {
+  :where(.shape-hexagon-3d, .clip-hexagon-3d) {
     clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
     background-image: conic-gradient(from -26.57deg at 50% 50%,
       rgb(255 255 255 / 0.32) 0 53.13deg, rgb(255 255 255 / 0.1) 0 116.57deg, rgb(0 0 0 / 0.2) 0 180deg,
       rgb(0 0 0 / 0.34) 0 233.13deg, rgb(0 0 0 / 0.14) 0 296.57deg, rgb(255 255 255 / 0.2) 0);
   }
   /* each point: one lit half, one shaded half */
-  :where(.clip-star-3d) {
+  :where(.shape-star-3d, .clip-star-3d) {
     clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
     background-image: repeating-conic-gradient(from 0deg at 50% 51%, rgb(255 255 255 / 0.28) 0 36deg, rgb(0 0 0 / 0.24) 0 72deg);
   }
   /* cut gem: lit crown band over a faceted pavilion */
-  :where(.clip-gem) {
+  :where(.shape-gem, .clip-gem) {
     clip-path: polygon(22% 0, 78% 0, 100% 32%, 50% 100%, 0 32%);
     background-image:
       linear-gradient(90deg, rgb(255 255 255 / 0.22) 0 22%, rgb(255 255 255 / 0.45) 22% 50%, rgb(255 255 255 / 0.3) 50% 78%, rgb(255 255 255 / 0.1) 78%),
@@ -360,19 +374,19 @@
     background-size: 100% 32%, 100% 100%;
     background-repeat: no-repeat;
   }
-  :where(.clip-sphere) {
+  :where(.shape-sphere, .clip-sphere) {
     clip-path: circle(50%);
     background-image:
       radial-gradient(circle at 32% 28%, rgb(255 255 255 / 0.75), rgb(255 255 255 / 0) 28%),
       radial-gradient(circle at 50% 50%, rgb(0 0 0 / 0) 40%, rgb(0 0 0 / 0.45) 72%);
   }
-  :where(.clip-cylinder) {
+  :where(.shape-cylinder, .clip-cylinder) {
     border-radius: 50% / 14%;
     background-image:
       radial-gradient(50% 14% at 50% 14%, rgb(255 255 255 / 0.3) 98%, #0000 100%),
       linear-gradient(90deg, rgb(0 0 0 / 0.3), rgb(255 255 255 / 0.25) 30%, rgb(0 0 0 / 0.05) 55%, rgb(0 0 0 / 0.38));
   }
-  :where(.clip-coin) {
+  :where(.shape-coin, .clip-coin) {
     clip-path: circle(50%);
     background-image:
       radial-gradient(closest-side, #0000 76%, rgb(0 0 0 / 0.2) 77% 81%, #0000 82%),
@@ -600,6 +614,122 @@
     box-shadow: 0 1px 1px var(--_k), 0 10px 0 -5px var(--background), 0 10px 1px -4px var(--_k),
       0 20px 0 -10px var(--background), 0 20px 1px -9px var(--_k);
   }
+
+  /* ── Stacks: sheets behind an element ───────────────────────────
+     Three sheets drawn as box-shadows (so they follow the element's radius
+     and need no extra markup), each one step further out. The direction
+     class picks where they peek out: stack-top / -bottom / -left / -right
+     are CENTERED and TAPER (each sheet narrower - the toast pile),
+     stack-top-left / -top-right / -bottom-left / -bottom-right offset
+     diagonally. Modifiers: stack-tight / stack-loose (step 4 / 14px,
+     default 8px), stack-outline (hollow sheets, strong edge) /
+     stack-filled (solid sheets, no edge; the default is card sheets with a
+     border), stack-fade (each sheet further out fades toward --background -
+     opaque, so the pile never shows through itself). --shape-ink colors the
+     edge (outline) or the sheets (filled). A stack IS the box-shadow: it
+     replaces a shadow-* on the same element; leave room around it. Not to
+     be confused with the layout module's .stack (a flex column). */
+  :where(.stack-top, .stack-bottom, .stack-left, .stack-right, .stack-top-left, .stack-top-right, .stack-bottom-left, .stack-bottom-right) {
+    --_sx: 0;
+    --_sy: 1;
+    --_st: 0;
+    --_sk: 1;
+    --_sd: 8px;
+    --_sf: var(--card);
+    --_se: var(--shape-ink, var(--border));
+    --_sa: 0%;
+    box-shadow:
+      calc(var(--_sx) * var(--_sk) * var(--_sd) * 1) calc(var(--_sy) * var(--_sk) * var(--_sd) * 1) 0 calc(calc(var(--_st) * var(--_sd) * -1) - 1px) color-mix(in oklch, var(--_sf) calc(100% - var(--_sa) * 1), var(--background)),
+      calc(var(--_sx) * var(--_sk) * var(--_sd) * 1) calc(var(--_sy) * var(--_sk) * var(--_sd) * 1) 0 calc(var(--_st) * var(--_sd) * -1) color-mix(in oklch, var(--_se) calc(100% - var(--_sa) * 1), var(--background)),
+      calc(var(--_sx) * var(--_sk) * var(--_sd) * 2) calc(var(--_sy) * var(--_sk) * var(--_sd) * 2) 0 calc(calc(var(--_st) * var(--_sd) * -2) - 1px) color-mix(in oklch, var(--_sf) calc(100% - var(--_sa) * 2), var(--background)),
+      calc(var(--_sx) * var(--_sk) * var(--_sd) * 2) calc(var(--_sy) * var(--_sk) * var(--_sd) * 2) 0 calc(var(--_st) * var(--_sd) * -2) color-mix(in oklch, var(--_se) calc(100% - var(--_sa) * 2), var(--background)),
+      calc(var(--_sx) * var(--_sk) * var(--_sd) * 3) calc(var(--_sy) * var(--_sk) * var(--_sd) * 3) 0 calc(calc(var(--_st) * var(--_sd) * -3) - 1px) color-mix(in oklch, var(--_sf) calc(100% - var(--_sa) * 3), var(--background)),
+      calc(var(--_sx) * var(--_sk) * var(--_sd) * 3) calc(var(--_sy) * var(--_sk) * var(--_sd) * 3) 0 calc(var(--_st) * var(--_sd) * -3) color-mix(in oklch, var(--_se) calc(100% - var(--_sa) * 3), var(--background));
+  }
+  /* centered + tapered: every sheet shrinks by half a step per side and
+     moves 1.5 steps out - so it still peeks out one full step */
+  :where(.stack-bottom) { --_sx: 0; --_sy: 1; --_st: 0.5; --_sk: 1.5; }
+  :where(.stack-top) { --_sx: 0; --_sy: -1; --_st: 0.5; --_sk: 1.5; }
+  :where(.stack-right) { --_sx: 1; --_sy: 0; --_st: 0.5; --_sk: 1.5; }
+  :where(.stack-left) { --_sx: -1; --_sy: 0; --_st: 0.5; --_sk: 1.5; }
+  /* diagonal: full-size sheets, offset toward the corner */
+  :where(.stack-bottom-right) { --_sx: 1; --_sy: 1; --_st: 0; }
+  :where(.stack-bottom-left) { --_sx: -1; --_sy: 1; --_st: 0; }
+  :where(.stack-top-right) { --_sx: 1; --_sy: -1; --_st: 0; }
+  :where(.stack-top-left) { --_sx: -1; --_sy: -1; --_st: 0; }
+  /* density */
+  :where(.stack-tight) { --_sd: 4px; }
+  :where(.stack-loose) { --_sd: 14px; }
+  /* fill */
+  :where(.stack-outline) { --_sf: var(--background); --_se: var(--shape-ink, var(--foreground)); }
+  :where(.stack-filled) { --_sf: var(--shape-ink, var(--muted-foreground)); --_se: var(--shape-ink, var(--muted-foreground)); }
+  /* diminishing toward the outside: 28% more background per sheet */
+  :where(.stack-fade) { --_sa: 28%; }
+
+  /* ── Aura: animated light around an element ───────────────────
+     A WRAPPER (DaisyUI's aura, same class names): its background is the
+     light - a conic gradient turning on the typed @property angle below -
+     and the wrapped element covers the middle, so a ring of light shows
+     through the wrapper's padding. aura-glow blurs the same light into a
+     halo BEHIND the element instead of a ring. Styles swap the light,
+     sizes the ring width. Knobs: --shape-ink (the light for aura / dual /
+     glow, default --primary), --shape-round (the wrapped element's radius,
+     default --radius-xl - set --radius-md around a button), --shape-duration
+     (one turn, default 4s). Rainbow, holo, gold and silver are materials:
+     fixed colors, the same in every theme. */
+  :where(.aura) {
+    --_aura-w: 3px;
+    --_aura-light: conic-gradient(from var(--shape-aura-angle), transparent 0 55%, color-mix(in oklch, var(--shape-ink, var(--primary)) 60%, transparent) 72%, var(--shape-ink, var(--primary)) 86%, transparent 100%);
+    --_aura-track: color-mix(in oklch, var(--shape-ink, var(--primary)) 16%, transparent);
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    padding: var(--_aura-w);
+    border-radius: calc(var(--shape-round, var(--radius-xl)) + var(--_aura-w));
+    background: var(--_aura-light), linear-gradient(var(--_aura-track) 0 0);
+    animation: shape-aura-spin var(--shape-duration, 4s) linear infinite;
+  }
+  :where(.aura-dual) {
+    --_aura-light: conic-gradient(from var(--shape-aura-angle), transparent 0 15%, var(--shape-ink, var(--primary)) 35%, transparent 50% 65%, var(--shape-ink, var(--primary)) 85%, transparent 100%);
+  }
+  :where(.aura-rainbow) {
+    --_aura-light: conic-gradient(from var(--shape-aura-angle), oklch(0.68 0.22 25), oklch(0.78 0.17 70), oklch(0.88 0.18 105), oklch(0.75 0.2 145), oklch(0.72 0.14 200), oklch(0.6 0.2 260), oklch(0.58 0.24 305), oklch(0.68 0.22 25));
+    --_aura-track: transparent;
+  }
+  :where(.aura-holo) {
+    --_aura-light: conic-gradient(from var(--shape-aura-angle), oklch(0.86 0.1 350), oklch(0.88 0.08 300), oklch(0.88 0.09 230), oklch(0.9 0.1 175), oklch(0.93 0.1 110), oklch(0.88 0.09 50), oklch(0.86 0.1 350));
+    --_aura-track: transparent;
+  }
+  :where(.aura-gold) {
+    --_aura-light: conic-gradient(from var(--shape-aura-angle), oklch(0.62 0.12 65), oklch(0.86 0.13 90), oklch(0.97 0.06 98), oklch(0.78 0.14 82), oklch(0.56 0.11 60), oklch(0.84 0.13 88), oklch(0.62 0.12 65));
+    --_aura-track: transparent;
+  }
+  :where(.aura-silver) {
+    --_aura-light: conic-gradient(from var(--shape-aura-angle), oklch(0.62 0.01 250), oklch(0.86 0.005 250), oklch(0.99 0 0), oklch(0.74 0.01 250), oklch(0.55 0.015 250), oklch(0.9 0.005 250), oklch(0.62 0.01 250));
+    --_aura-track: transparent;
+  }
+  /* the halo: no ring - the light, blurred, turns behind the element */
+  :where(.aura-glow) {
+    padding: 0;
+    border-radius: var(--shape-round, var(--radius-xl));
+    background: none;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: calc(var(--_aura-w) * -1);
+      z-index: -1;
+      border-radius: inherit;
+      background: var(--_aura-light);
+      filter: blur(calc(var(--_aura-w) * 4));
+      opacity: 0.9;
+    }
+  }
+  :where(.aura-xs) { --_aura-w: 1px; }
+  :where(.aura-sm) { --_aura-w: 2px; }
+  :where(.aura-md) { --_aura-w: 3px; }
+  :where(.aura-lg) { --_aura-w: 5px; }
+  :where(.aura-xl) { --_aura-w: 8px; }
 
   /* ── Frames ───────────────────────────────────────────────── */
   :where(.frame-double) { border: 4px double var(--shape-ink, var(--foreground)); }
@@ -869,6 +999,16 @@
   }
 }
 
+/* the aura's turning angle: typed, so the conic gradient animates */
+@property --shape-aura-angle {
+  syntax: '<angle>';
+  inherits: true;
+  initial-value: 0deg;
+}
+@keyframes shape-aura-spin {
+  to { --shape-aura-angle: 360deg; }
+}
+
 @keyframes shape-march {
   to { background-position: 12px 0, -12px 100%, 0 -12px, 100% 12px; }
 }
@@ -881,6 +1021,8 @@
     :where(.shadow-lift):focus-visible,
     :where(.shadow-lift):focus-within { translate: none; }
     :where(.frame-marching-ants) { animation: none; }
+    /* the aura stays - a still light, no turning */
+    :where(.aura) { animation: none; }
   }
 }
 
@@ -893,7 +1035,8 @@
       .shadow-outline-offset, .shadow-retro, .shadow-rainbow, .shadow-extrude, .shadow-colored, .shadow-bottom,
       .shadow-hairline, .shadow-inner-hard, .shadow-bevel, .shadow-neon, .shadow-sticker, .shadow-paper-stack,
       .frame-corners, .frame-gradient, .frame-conic, .frame-inset, .frame-window, .frame-film, .frame-marching-ants,
-      .frame-glow, .frame-notebook) {
+      .frame-glow, .frame-notebook, .aura,
+      .stack-top, .stack-bottom, .stack-left, .stack-right, .stack-top-left, .stack-top-right, .stack-bottom-left, .stack-bottom-right) {
       outline: 1px solid CanvasText;
     }
   }

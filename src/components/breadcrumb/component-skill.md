@@ -86,6 +86,22 @@ supportedStates: default
 
 ---
 
+### With icons or emojis
+
+```html
+<li class="breadcrumb-item"><a class="breadcrumb-link" href="/"><svg aria-hidden="true">…</svg>Home</a></li>
+<li class="breadcrumb-separator" aria-hidden="true">/</li>
+<li class="breadcrumb-item"><span class="breadcrumb-page" aria-current="page"><span class="breadcrumb-icon" aria-hidden="true">🍏</span>Granny Smith</span></li>
+```
+
+- An `<svg>` as a direct child of `.breadcrumb-link` / `.breadcrumb-page`
+  turns the crumb into an inline-flex row: the icon is `1em` (it scales with
+  `data-size`) and centered on the label.
+- Emojis go in a `.breadcrumb-icon` span (a square `1.15em` box) so they line
+  up like icons. Mark both decorative (`aria-hidden="true"`) - the label names
+  the crumb.
+
+---
 
 ## Sizes
 
@@ -107,6 +123,7 @@ Set `data-size` on the `.breadcrumb` nav.
 | `aria-current="page"` | Current page `<span>` | Identifies the current page in the trail |
 | `aria-hidden="true"` | Separator `<li>` | Hides decorative separators from screen readers |
 | `aria-hidden="true"` | Ellipsis `<span>` | Hides decorative ellipsis from screen readers |
+| `aria-hidden="true"` | Icon `<svg>` / `.breadcrumb-icon` | Decorative - the label already names the crumb |
 
 ---
 

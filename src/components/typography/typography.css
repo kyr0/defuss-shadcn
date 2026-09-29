@@ -30,10 +30,10 @@
     line-height: 1.25;
     text-wrap: balance;
     color: var(--foreground);
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 0.5rem;
+    border-block-end: 1px solid var(--border);
+    padding-block-end: 0.5rem;
 
-    &:first-child { margin-top: 0; }
+    &:first-child { margin-block-start: 0; }
   }
 
   .h3 {
@@ -62,7 +62,7 @@
     text-wrap: pretty;
     color: var(--foreground);
 
-    &:not(:first-child) { margin-top: 1.5rem; }
+    &:not(:first-child) { margin-block-start: 1.5rem; }
   }
 
   /* -- Lead --------------------------------------------------- */
@@ -96,7 +96,7 @@
 
   /* -- Blockquote --------------------------------------------- */
   .blockquote {
-    margin-top: 1.5rem;
+    margin-block-start: 1.5rem;
     border-inline-start: 2px solid var(--border);
     padding-inline-start: 1.5rem;
     font-style: italic;
@@ -116,6 +116,78 @@
     font-size: 0.875em;
     font-weight: 600;
     color: var(--foreground);
+  }
+
+  /* -- CJK: Chinese, Japanese, Korean ------------------------------
+     Keyed on the lang attribute, so one set of classes serves every script.
+     Latin tuning is undone (negative tracking, faux italics); paragraphs
+     justify between characters with strict line breaking (kinsoku: no 。
+     or ， at a line start), and sentence-end punctuation may hang past the
+     edge (Safari: hanging-punctuation) or trims to half width
+     (Chromium: text-spacing-trim) so the justified edge stays straight.
+     text-autospace adds the thin gap between CJK and Latin /
+     digits that authors used to type by hand. */
+  :is(.h1, .h2, .h3, .h4, .lead, .large):is(:lang(zh), :lang(ja), :lang(ko)),
+  :is(:lang(zh), :lang(ja), :lang(ko)) :is(.h1, .h2, .h3, .h4, .lead, .large) {
+    letter-spacing: 0;
+  }
+  /* Japanese headings break between phrases (bunsetsu), not mid-word */
+  :is(.h1, .h2, .h3, .h4, .lead):lang(ja),
+  :lang(ja) :is(.h1, .h2, .h3, .h4, .lead) {
+    word-break: auto-phrase;
+  }
+  :is(.p, .lead, .blockquote):is(:lang(zh), :lang(ja), :lang(ko)),
+  :is(:lang(zh), :lang(ja), :lang(ko)) :is(.p, .lead, .blockquote) {
+    line-height: 1.9;
+    line-break: strict;
+    text-autospace: normal;
+  }
+  :is(.p, .blockquote):is(:lang(zh), :lang(ja)),
+  :is(:lang(zh), :lang(ja)) :is(.p, .blockquote) {
+    text-align: justify;
+    text-justify: inter-character;
+    /* the line-end 。，: Safari hangs it past the edge; Chromium trims the
+       fullwidth glyph's blank half (text-spacing-trim) - either way the
+       justified edge stays straight */
+    hanging-punctuation: allow-end;
+    text-spacing-trim: normal;
+  }
+  /* CJK has no italics - a slanted Han character is a synthetic oblique */
+  .blockquote:is(:lang(zh), :lang(ja), :lang(ko)),
+  :is(:lang(zh), :lang(ja), :lang(ko)) .blockquote {
+    font-style: normal;
+  }
+
+  /* -- Vertical text (tategaki / 直排) ----------------------------------
+     .text-vertical sets top-to-bottom lines flowing right to left. Latin
+     runs lie sideways (text-orientation: mixed); .text-upright stands a
+     short run (a two-digit number) upright in one cell - tate-chu-yoko.
+     The spacing above uses logical properties, so headings, paragraphs and
+     the blockquote rule turn with the text. Give the block a height. */
+  .text-vertical {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+  }
+  .text-upright {
+    text-combine-upright: all;
+  }
+
+  /* -- Emphasis marks (圈点 / 傍点) ---------------------------------------
+     Dots beside each character instead of italics: over the text in
+     Japanese (right of it when vertical), under it in Chinese. */
+  .text-emphasis {
+    font-style: normal;
+    text-emphasis: filled dot;
+    text-emphasis-position: over right;
+  }
+  .text-emphasis:lang(ja) { text-emphasis-style: filled sesame; }
+  .text-emphasis:lang(zh) { text-emphasis-position: under right; }
+
+  /* ruby annotations (furigana, pinyin, zhuyin) read as small, muted type */
+  :is(.p, .lead, .blockquote, .h1, .h2, .h3, .h4) rt {
+    font-size: 0.5em;
+    color: var(--muted-foreground);
+    letter-spacing: 0;
   }
 
   /* -- Accessibility ------------------------------------------ */

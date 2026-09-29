@@ -1,7 +1,18 @@
 /* -- Card component -------------------------------------------- */
 
 @layer components {
+  /* Spacing runs through one private variable: --_pad (section padding) =
+     --_base (the SIZE's padding, md 1.5rem) × --_k (the DENSITY factor), and
+     --_hf (the header→footer gap when no content sits between them) =
+     --_hfb × --_kh. Size and density therefore combine instead of fighting.
+     --_title / --_desc carry the size's type scale. All private. */
   .card {
+    --_base: 1.5rem;
+    --_hfb: 1rem;
+    --_k: 1;
+    --_kh: 1;
+    --_pad: calc(var(--_base) * var(--_k));
+    --_hf: calc(var(--_hfb) * var(--_kh));
     background-color: var(--card);
     color: var(--card-foreground);
     border: 1px solid var(--border);
@@ -14,12 +25,12 @@
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-    padding: 1.5rem;
+    padding: var(--_pad, 1.5rem);
     padding-bottom: 0;
   }
 
   .card-title {
-    font-size: 1.25rem;
+    font-size: var(--_title, 1.25rem);
     font-weight: 600;
     line-height: 1.25;
     letter-spacing: -0.01em;
@@ -27,28 +38,71 @@
   }
 
   .card-description {
-    font-size: 0.875rem;
+    font-size: var(--_desc, 0.875rem);
     color: var(--muted-foreground);
     margin: 0;
     line-height: 1.6;
   }
 
   .card-content {
-    padding: 1.5rem;
+    padding: var(--_pad, 1.5rem);
   }
 
   .card-footer {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 1.5rem;
+    padding: var(--_pad, 1.5rem);
     padding-top: 0;
   }
 
   /* Header + footer with no .card-content between: the zeroed paddings would
      glue them together - restore the gap for that composition only. */
   .card-header + .card-footer {
-    padding-top: 1rem;
+    padding-top: var(--_hf, 1rem);
+  }
+
+  /* A header-only card (a title + description panel): the header is the last
+     section, so it keeps its bottom padding instead of sitting on the edge. */
+  .card-header:last-child {
+    padding-bottom: var(--_pad, 1.5rem);
+  }
+
+  /* -- Body: an optional wrapper around header / content / footer.
+     Needed for the side and overlay layouts (media | body); in a column it
+     pushes the footer to the bottom, so a row of cards lines up its actions. */
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+
+    & > .card-footer { margin-top: auto; }
+  }
+
+  /* -- Media: a figure (img / video / picture / svg) edge to edge - first
+     child for an image on top, last child for one at the bottom. 16:9 unless
+     the author sets an aspect-ratio. data-inset pads and rounds it instead
+     (the centered-content look). */
+  .card-media {
+    display: block;
+    margin: 0;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+
+    & > :is(img, video, picture, svg) {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    &[data-inset] {
+      margin: var(--_pad) var(--_pad) 0;
+      border-radius: var(--radius-lg);
+    }
+    &[data-inset]:last-child {
+      margin: 0 var(--_pad) var(--_pad);
+    }
   }
 
   /* -- Density --------------------------------------------------
@@ -56,30 +110,145 @@
      Scale matches sizing.css data-density (0.75 / 1 / 1.25): comfortable is
      the unsized default (1.5rem), compact 1rem, spacious 2rem; the
      header+footer-only gap (1rem base) follows the ratio (0.75 / 1 / 1.5). */
-  .card:where([data-density="compact"]) {
-    & .card-header { padding: 1rem; padding-bottom: 0; }
-    & .card-content { padding: 1rem; }
-    & .card-footer { padding: 1rem; padding-top: 0; }
-    & .card-header + .card-footer { padding-top: 0.75rem; }
-  }
-  .card:where([data-density="comfortable"]) {
-    & .card-header { padding: 1.5rem; padding-bottom: 0; }
-    & .card-content { padding: 1.5rem; }
-    & .card-footer { padding: 1.5rem; padding-top: 0; }
-    & .card-header + .card-footer { padding-top: 1rem; }
-  }
-  .card:where([data-density="spacious"]) {
-    & .card-header { padding: 2rem; padding-bottom: 0; }
-    & .card-content { padding: 2rem; }
-    & .card-footer { padding: 2rem; padding-top: 0; }
-    & .card-header + .card-footer { padding-top: 1.5rem; }
+  .card:where([data-density="compact"]) { --_k: calc(2 / 3); --_kh: 0.75; }
+  .card:where([data-density="comfortable"]) { --_k: 1; --_kh: 1; }
+  .card:where([data-density="spacious"]) { --_k: calc(4 / 3); --_kh: 1.5; }
+
+  .card {
+    /* -- Sizes: padding + type scale together (md == the default) ----- */
+    &[data-size="xs"] { --_base: 0.75rem; --_hfb: 0.5rem; --_title: 0.875rem; --_desc: 0.75rem; }
+    &[data-size="sm"] { --_base: 1rem; --_hfb: 0.75rem; --_title: 1rem; --_desc: 0.8125rem; }
+    &[data-size="md"] { --_base: 1.5rem; --_hfb: 1rem; --_title: 1.25rem; --_desc: 0.875rem; }
+    &[data-size="lg"] { --_base: 2rem; --_hfb: 1.25rem; --_title: 1.5rem; --_desc: 1rem; }
+    &[data-size="xl"] { --_base: 2.5rem; --_hfb: 1.5rem; --_title: 1.875rem; --_desc: 1.0625rem; }
+
+    /* -- Variants -------------------------------------------------- */
+    &[data-variant="outline"] { background-color: transparent; }
+    &[data-variant="dashed"] { border-style: dashed; border-width: 2px; }
+    &[data-variant="ghost"] { background-color: transparent; border-color: transparent; }
+    &[data-variant="muted"] { background-color: var(--muted); border-color: transparent; }
+    &[data-variant="elevated"] { border-color: transparent; box-shadow: var(--shadow-lg); }
+    &[data-variant="primary"] {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+      border-color: transparent;
+
+      & .card-description { color: color-mix(in oklch, var(--primary-foreground) 78%, transparent); }
+    }
+    /* a charcoal surface: the inverse colors, softened (78%) so it stays
+       apart from --primary - in the default theme primary IS near-black */
+    &[data-variant="neutral"] {
+      background-color: color-mix(in oklch, var(--foreground) 78%, var(--background));
+      color: var(--background);
+      border-color: transparent;
+
+      & .card-description { color: color-mix(in oklch, var(--background) 72%, transparent); }
+    }
+    /* ghost / link buttons on a colored surface take its text color and a
+       hover tint made from it (the default hover - the pale --accent - would
+       put near-white text on near-white) */
+    &:is([data-variant="primary"], [data-variant="neutral"], [data-layout="overlay"]) .btn:is([data-variant="ghost"], [data-variant="link"]) {
+      color: inherit;
+
+      &:hover { background-color: color-mix(in oklch, currentColor 16%, transparent); color: inherit; }
+    }
+    /* frosted: translucent card over whatever is behind it */
+    &[data-variant="glass"] {
+      background-color: color-mix(in oklch, var(--card) 55%, transparent);
+      border-color: color-mix(in oklch, var(--foreground) 14%, transparent);
+      backdrop-filter: blur(16px) saturate(1.4);
+      box-shadow: 0 8px 32px -8px color-mix(in oklch, var(--foreground) 22%, transparent);
+    }
+
+    /* -- Centered content ------------------------------------------ */
+    &[data-align="center"] {
+      text-align: center;
+
+      & .card-header { align-items: center; }
+      & .card-footer { justify-content: center; }
+    }
+
+    /* -- Layouts ---------------------------------------------------
+       side: media | body in one row, always (media after the body = image
+       on the right). auto: side by side while the CARD is wide enough,
+       stacked when it is not - the flex-wrap switch follows the card's own
+       width, not the viewport, so the same card works in a sidebar and in a
+       wide column. overlay: the media is the background, the body sits on
+       a scrim at the bottom. */
+    &[data-layout="side"] {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+
+      & > .card-media { aspect-ratio: auto; min-height: 100%; }
+    }
+    &[data-layout="side"]:has(> .card-body:first-child) {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    }
+    &[data-layout="auto"] {
+      display: flex;
+      flex-wrap: wrap;
+
+      & > .card-media { flex: 1 1 12rem; aspect-ratio: auto; min-height: 10rem; }
+      & > .card-body { flex: 999 1 18rem; }
+    }
+    &[data-layout="overlay"] {
+      display: grid;
+      color: #fff;
+      border-color: transparent;
+
+      & > * { grid-area: 1 / 1; }
+      & > .card-media { aspect-ratio: auto; min-height: 14rem; }
+      & > .card-body {
+        z-index: 1;
+        align-self: end;
+        background: linear-gradient(to top, oklch(0 0 0 / 0.78), oklch(0 0 0 / 0.35) 65%, transparent);
+        padding-top: 3rem;
+      }
+      & .card-description { color: oklch(1 0 0 / 0.82); }
+    }
+
+    /* -- Interactive: a link (or [data-interactive]) card lifts on hover
+       and shows a focus ring on keyboard focus ------------------------ */
+    &:is(a, [data-interactive]) {
+      display: block;
+      text-decoration: none;
+      transition: translate 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+
+      &:hover { translate: 0 -2px; box-shadow: var(--shadow-md); border-color: color-mix(in oklch, var(--foreground) 22%, var(--border)); }
+      &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+    }
+    &:is(a, [data-interactive])[data-layout="auto"] { display: flex; }
+    &:is(a, [data-interactive]):is([data-layout="side"], [data-layout="overlay"]) { display: grid; }
+
+    /* -- Selectable: a <label class="card"> around a checkbox / radio -
+       the checked card takes a primary ring; keyboard focus shows too */
+    &:is(label) {
+      display: block;
+      cursor: pointer;
+      transition: border-color 150ms ease, box-shadow 150ms ease;
+
+      &:has(:is(input[type="checkbox"], input[type="radio"]):checked) {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 1px var(--primary);
+      }
+      &:has(input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
+      &:has(input:disabled) { cursor: not-allowed; opacity: 0.55; }
+    }
   }
 
-  /* -- Container query: compact card in narrow containers -- */
+  /* -- Container query: compact card in narrow containers - unless the
+     card asks for a size (an explicit data-size wins) -- */
   @container (max-width: 280px) {
-    .card-header { padding: 1rem; padding-bottom: 0; }
-    .card-content { padding: 1rem; }
-    .card-footer { padding: 1rem; padding-top: 0; }
-    .card-title { font-size: 1rem; }
+    .card:not([data-size]) :is(.card-header, .card-content, .card-footer) { --_pad: 1rem; }
+    .card:not([data-size]) .card-title { font-size: 1rem; }
+  }
+
+  /* -- Accessibility ------------------------------------------ */
+  @media (prefers-reduced-motion: reduce) {
+    .card:is(a, [data-interactive]) { transition: none; }
+    .card:is(a, [data-interactive]):hover { translate: none; }
+  }
+  @media (forced-colors: active) {
+    .card:is(label):has(:is(input[type="checkbox"], input[type="radio"]):checked) { border: 2px solid Highlight; }
   }
 }

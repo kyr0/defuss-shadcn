@@ -256,6 +256,52 @@ try {
     const val = await page.$eval('#sb-spacious .sidebar-link', (el) => getComputedStyle(el).paddingTop);
     assert.equal(val, '10px');
   });
+  await check('icons: .sidebar-icon is a 16px box (14px in a group heading); labels line up', async () => {
+    const r = await page.evaluate(() => {
+      const box = (s: string) => { const b = document.querySelector(s)!.getBoundingClientRect(); return [Math.round(b.width), Math.round(b.height)]; };
+      const label = (s: string) => document.querySelector(`${s} > span:not(.sidebar-icon)`)!.getBoundingClientRect().left;
+      const chev = document.querySelector('#sb-icons .sidebar-group > summary > svg:last-child')!;
+      const icoSvg = document.querySelector('#sb-icons .sidebar-group > summary .sidebar-icon svg')!;
+      return { svg: box('#link-svg .sidebar-icon'), emoji: box('#link-emoji .sidebar-icon'), head: box('#sb-icons summary .sidebar-icon'),
+        align: Math.abs(label('#link-svg') - label('#link-emoji')), iconRot: getComputedStyle(icoSvg).rotate, iconMl: getComputedStyle(icoSvg).marginLeft, chevMl: getComputedStyle(chev).marginLeft };
+    });
+    assert.deepEqual(r.svg, [16, 16]); assert.deepEqual(r.emoji, [16, 16]); assert.deepEqual(r.head, [14, 14]);
+    assert.ok(r.align < 0.5, `labels line up (${r.align}px)`);
+    // the heading icon is not the chevron: never pushed right nor rotated
+    assert.equal(r.iconRot, 'none'); assert.equal(r.iconMl, '0px');
+    assert.equal(r.chevMl, '0px', 'dot takes the pushed-right slot, the chevron follows it');
+  });
+
+  await check('dots: 8px circles, pushed right, five distinct colors, ping ring', async () => {
+    const r = await page.evaluate(() => {
+      const ids = ['dot-plain', 'dot-info', 'dot-success', 'dot-warning', 'dot-destructive'];
+      const cs = (id: string) => getComputedStyle(document.getElementById(id)!);
+      const link = document.getElementById('link-emoji')!.getBoundingClientRect();
+      const dot = document.getElementById('dot-success')!.getBoundingClientRect();
+      return { colors: ids.map((i) => cs(i).backgroundColor), w: dot.width, h: dot.height, radius: cs('dot-plain').borderRadius,
+        right: Math.round(link.right - dot.right), ping: getComputedStyle(document.getElementById('dot-info')!, '::after').animationName,
+        still: getComputedStyle(document.getElementById('dot-plain')!, '::after').content };
+    });
+    assert.equal(new Set(r.colors).size, 5, `distinct colors: ${r.colors.join(' | ')}`);
+    assert.equal(r.w, 8); assert.equal(r.h, 8);
+    assert.equal(r.right, 12, 'dot sits at the row end (link padding 12px)');
+    assert.equal(r.ping, 'sidebar-dot-ping'); assert.equal(r.still, 'none');
+  });
+
+  await check('collapsed rail: icon + dot stay visible, dot on the icon corner', async () => {
+    const r = await page.evaluate(() => {
+      const link = document.getElementById('rail-link')!;
+      const vis = (s: string) => getComputedStyle(link.querySelector(s)!).display;
+      const ico = link.querySelector('.sidebar-icon')!.getBoundingClientRect();
+      const dot = link.querySelector('.sidebar-dot')!.getBoundingClientRect();
+      return { icon: vis('.sidebar-icon'), dot: vis('.sidebar-dot'), label: vis('span:not(.sidebar-icon):not(.sidebar-dot)'),
+        pos: getComputedStyle(link.querySelector('.sidebar-dot')!).position, dx: dot.left + dot.width / 2 - ico.right, dy: dot.top + dot.height / 2 - ico.top };
+    });
+    assert.notEqual(r.icon, 'none'); assert.notEqual(r.dot, 'none'); assert.equal(r.label, 'none');
+    assert.equal(r.pos, 'absolute');
+    assert.ok(Math.abs(r.dx) <= 6 && Math.abs(r.dy) <= 6, `dot near the icon's top-right (${r.dx.toFixed(1)}, ${r.dy.toFixed(1)})`);
+  });
+
 } finally {
   await browser.close();
   server.stop();

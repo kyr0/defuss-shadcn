@@ -15,5 +15,21 @@
     <input type="file" class="file-input" id="z-fileinput-md" data-size="md" style="margin-top:0.5rem;" />
     <input type="file" class="file-input" id="z-fileinput-lg" data-size="lg" style="margin-top:0.5rem;" />
     <input type="file" class="file-input" id="z-fileinput-xl" data-size="xl" style="margin-top:0.5rem;" />
+  <div class="file-drop" id="fd" data-max-size="2000" data-max-files="3" style="width:420px;margin-top:1rem;">
+    <label class="file-drop-zone"><input class="file-drop-input" id="fd-input" type="file" multiple accept="image/*,.pdf"><span class="file-drop-icon" aria-hidden="true">⬆</span><span class="file-drop-title">Drop files here or <span class="file-drop-browse">browse</span></span><span class="file-drop-hint">Images or PDF</span></label>
+    <p class="file-drop-error"></p>
+    <ul class="file-drop-list" aria-live="polite"></ul>
+  </div>
+  <div class="file-drop" id="fd-one" style="width:420px;margin-top:1rem;">
+    <label class="file-drop-zone"><input class="file-drop-input" id="fd-one-input" type="file" accept=".pdf"><span class="file-drop-title">One PDF</span></label>
+    <p class="file-drop-error"></p>
+    <ul class="file-drop-list"></ul>
+  </div>
+  <div class="file-drop" id="fd-sm" data-size="sm" style="width:420px;margin-top:1rem;">
+    <label class="file-drop-zone"><input class="file-drop-input" type="file" multiple><span class="file-drop-icon" aria-hidden="true">📎</span><span class="file-drop-title">Attach</span><span class="file-drop-hint">Drop or click</span></label>
+    <ul class="file-drop-list"></ul>
+  </div>
+  <script type="module" src="/dist/components/core.js"></script>
+  <script type="module" src="/dist/components/file-input/file-input.js"></script>
 </body>
 </html>

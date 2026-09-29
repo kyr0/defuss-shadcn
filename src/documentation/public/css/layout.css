@@ -42,9 +42,23 @@ main .h1, main .h2, main .h3, main .h4 { scroll-margin-top: 0; }
   color: var(--foreground);
   white-space: nowrap;
 }
-.header-version {
+/* the logo with the version badge centered under it (tucked up against
+   the image, small enough to stay clear of the name beside it) */
+.header-brand-mark {
+  display: grid;
+  justify-items: center;
+  flex-shrink: 0;
+}
+.header-brand .header-version {
+  position: relative;
+  margin-top: -0.3125rem;
+  padding: 0.0625rem 0.3125rem;
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  line-height: 1;
+  letter-spacing: 0;
   white-space: nowrap;
-  align-self: center;
+  background: var(--background);
 }
 /* vertical separators in the actions nav: the component's `align-self:
    stretch` would span the whole 2.25rem row - constrain to a hairline */
@@ -55,7 +69,7 @@ main .h1, main .h2, main .h3, main .h4 { scroll-margin-top: 0; }
 }
 .header-brand-logo {
   width: auto;
-  height: 32px;
+  height: 30px;
 }
 
 /* -- Site sidebar ------------------------------------------
@@ -199,6 +213,11 @@ main {
   flex: 0 1 16rem;
   min-width: 0;
   position: relative;
+  container-type: inline-size;
+}
+/* squeezed down to its icon (phones): no half-cut placeholder beside it */
+@container (max-width: 4.5rem) {
+  .header-search .header-search-input::placeholder { color: transparent; }
 }
 /* the magnifier in front of the placeholder - decorative, clicks pass to the input */
 .header-search-icon {
@@ -252,6 +271,8 @@ main {
 }
 /* Sidebar keeps the right-aligned slot the old PREVIEW marker had. */
 .nav-link .type-badge { margin-left: auto; }
+/* a "new page" dot sits right after the label; the type badge keeps the right edge */
+.nav-link > .sidebar-dot { margin-left: 0; }
 /* Palette rows use flex space-between already; nudge badge off the label. */
 .command-item .type-badge { margin-inline-start: auto; }
 
@@ -267,7 +288,7 @@ a.built-with-pill:hover {
 }
 
 /* -- Details chevron rotation ------------------------------ */
-details[open] > summary svg:first-child {
+details[open] > summary svg:first-child:not(.sidebar-icon > svg) {
   transform: rotate(90deg);
 }
 
@@ -449,8 +470,12 @@ html.dark pre.shiki span {
 }
 .dim { color: var(--muted-foreground); }
 
-/* -- Doc tabs (preview/pattern/html switcher) -------------- */
-.tab-list {
+/* -- Doc tabs (preview/pattern/html switcher) --------------
+   .doc-tablist, never .tab-list: this sheet is unlayered, so a .tab-list rule
+   here overrode the shipped Tabs component on every docs page and in every
+   example sandbox (muted fill, padding and a 1rem bottom margin on each
+   variant - the attached tabs never met their card). */
+.doc-tablist {
   display: inline-flex;
   background: var(--muted);
   border-radius: var(--radius-md);
@@ -771,6 +796,35 @@ html.dark pre.shiki span {
   .site-toc { display: none; }
 }
 
+/* -- Inline table of contents ------------------------------
+   The same links, written by the toc plugin right after the page header
+   (lib/plugins.ts). Hidden while the right-hand ToC shows; below 72rem, where
+   that one is hidden, it takes over at the top of the page - open, and
+   collapsible. */
+.page-toc { display: none; }
+@media (max-width: 72rem) {
+  .page-toc {
+    display: block;
+    margin: 0 0 1.5rem;
+    padding: 0.5rem 0.875rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--background);
+  }
+  .page-toc > summary {
+    cursor: pointer;
+    padding: 0.25rem 0;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--foreground);
+  }
+  .page-toc-links {
+    display: grid;
+    gap: 0.125rem;
+    padding: 0.25rem 0 0.375rem;
+  }
+}
+
 /* -- Mobile responsive ------------------------------------- */
 
 /* Sidebar dock toggle - panel-left glyph (lucide), sits in the header right
@@ -845,36 +899,36 @@ html.dark pre.shiki span {
     padding-right: 1rem !important;
   }
 
-  /* Search shrinks hard on small screens but stays usable */
+  /* Search: a compact trigger on phones (it opens the full palette) - the
+     one item that gives way, down to its icon */
   .header-search {
-    flex: 1 1 auto;
-    min-width: 4rem;
+    flex: 0 1 7rem;
+    min-width: 2.25rem;
   }
 
   /* Reduce header padding */
   .site-header {
-    padding: 0 0.75rem;
+    padding: 0 0.5rem;
     gap: 0.375rem;
   }
 
-  /* Stack brand name + version vertically, shrink */
+  /* Brand stays one row (logo + version | name), just tighter - and never
+     shrinks: a squeezed brand would push its name under the toggle */
   .header-brand {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0;
-    min-width: 0;
+    gap: 0.375rem;
+    flex-shrink: 0;
   }
+  .header-brand-logo { height: 26px; }
   .header-brand-name {
-    font-size: 0.9375rem;
+    font-size: 0.875rem;
     line-height: 1.2;
   }
-  .header-version {
-    font-size: 0.5625rem;
-    padding: 0 0.25rem;
-    line-height: 1.4;
-  }
-  /* the actions nav gets cramped on phones - drop the separators and the
-     version badge, keep icon buttons reachable */
+  .sidebar-toggle { width: 2rem; height: 2rem; }
+  .header-action:not(.theme-toggle-btn) { padding: 0.375rem; }
+  /* the GitHub star count is desktop chrome - the icon stays */
+  .header-action .github-stars { display: none; }
+  /* the actions nav gets cramped on phones - drop the separators, keep the
+     icon buttons reachable */
   .site-header .separator[data-orientation="vertical"] {
     display: none;
   }
@@ -906,8 +960,11 @@ html.dark pre.shiki span {
     grid-template-columns: 1fr;
   }
 
-  /* Sticky page header: reduce top offset for mobile */
+  /* The page header scrolls away on phones - a sticky title block eats
+     too much of a small screen (layout.ts then leaves it out of the anchor
+     clearance, --anchor-pad) */
   .page-header {
+    position: static;
     padding: 0.75rem 0;
   }
 

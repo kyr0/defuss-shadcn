@@ -1,0 +1,368 @@
+---
+title: "Dock"
+description: "Dock component - a bottom navigation bar with icons, labels, badges and an active indicator; switches without JavaScript."
+slug: "dock"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="dock" title="Dock" component="dock">
+  A bottom navigation bar for the few top-level places of an app - an icon over a label per item, the active one highlighted. Fixed to the bottom and clear of the phone's home indicator by default; links mark the active page with <code>aria-current</code>, and a dock of radio labels switches with no JavaScript at all. daisyUI's dock, plus colors, a floating pill, badges, a raised action, label modes and a magnify effect.
+</PageHeader>
+
+<SkillPanel component="dock">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;nav&gt;</code> of links, buttons or radio labels; the active item is <code>aria-current</code> / <code>aria-pressed</code> / a checked radio (<code>:has()</code>).</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current" title="the active link"><code>aria-current</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="a checked radio makes its item active"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/env" title="clear of the home indicator"><code>env(safe-area-inset-bottom)</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter" title="the glass surface"><code>backdrop-filter</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.dock</code>
+    <code>.dock-item</code>
+    <code>.dock-icon</code>
+    <code>.dock-label</code>
+    <code>.dock-badge</code>
+    <code>.dock-dot</code>
+    <code>.dock-view</code>
+    <code>.dock-panels</code>
+    <code>.dock-panel</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code> (muted, primary, neutral, glass, floating), <code>data-size</code> (xs … xl), <code>data-indicator</code> (bar, pill, dot), <code>data-labels</code> (active, none), <code>data-position</code> (top, left, right, static), <code>data-attach="container"</code>, <code>data-effect="magnify"</code>, <code>data-autohide</code>, <code>data-raised</code> on an item (a FAB there opens a semicircle dial).</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Dock" schema="none" height="22" hint="A bottom navigation bar that switches the view above it: the items are <label>s with a hidden radio, the .dock-view shows the .dock-panel at the checked item's position - a click or the arrow keys, no JavaScript. Fixed to the bottom (here: of the example frame), clear of the phone's home indicator. For real page links use <a class='dock-item' aria-current='page'>."
+<div style="padding-bottom:5rem;">
+<div class="dock-view">
+<div class="dock-panels">
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">Home</h3><p class="card-description">Your feed - 3 new posts since yesterday.</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">Search</h3><p class="card-description">Find people, posts and places.</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">Inbox</h3><p class="card-description">2 unread messages from Sofia and Jackson.</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">Profile</h3><p class="card-description">Olivia Martin · 128 followers.</p></div></div>
+</div>
+<nav class="dock" aria-label="Main">
+  <label class="dock-item"><input type="radio" name="d1" checked><span class="dock-icon" aria-hidden="true"><i data-lucide="house"></i></span><span class="dock-label">Home</span></label>
+  <label class="dock-item"><input type="radio" name="d1"><span class="dock-icon" aria-hidden="true"><i data-lucide="search"></i></span><span class="dock-label">Search</span></label>
+  <label class="dock-item"><input type="radio" name="d1"><span class="dock-icon" aria-hidden="true"><i data-lucide="inbox"></i></span><span class="dock-label">Inbox</span></label>
+  <label class="dock-item"><input type="radio" name="d1"><span class="dock-icon" aria-hidden="true"><i data-lucide="user"></i></span><span class="dock-label">Profile</span></label>
+</nav>
+</div>
+</div>
+```
+
+```html example label="Floating" schema="none" height="28" hint="data-variant='floating' - a rounded pill hovering above the bottom edge (the pill indicator by default), here pinned inside a phone frame with data-attach='container'."
+<div style="position:relative;max-width:22rem;height:22rem;margin-inline:auto;border:1px solid var(--border);border-radius:1.75rem;overflow:hidden;background:var(--card);">
+  <div style="padding:1rem 1rem 5.5rem;">
+    <div class="dock-view">
+    <div class="dock-panels">
+      <div class="dock-panel"><div class="card-header"><h3 class="card-title">Home</h3><p class="card-description">Good morning - 2 meetings today.</p></div></div>
+      <div class="dock-panel"><div class="card-header"><h3 class="card-title">Plan</h3><p class="card-description">Mon: standup · Wed: review · Fri: demo.</p></div></div>
+      <div class="dock-panel"><div class="card-header"><h3 class="card-title">Stats</h3><p class="card-description">Focus time +18% this week.</p></div></div>
+      <div class="dock-panel"><div class="card-header"><h3 class="card-title">Settings</h3><p class="card-description">Notifications, theme and account.</p></div></div>
+    </div>
+    <nav class="dock" data-variant="floating" data-attach="container" aria-label="Main">
+      <label class="dock-item"><input type="radio" name="float" checked><span class="dock-icon" aria-hidden="true"><i data-lucide="house"></i></span><span class="dock-label">Home</span></label>
+      <label class="dock-item"><input type="radio" name="float"><span class="dock-icon" aria-hidden="true"><i data-lucide="calendar"></i></span><span class="dock-label">Plan</span></label>
+      <label class="dock-item"><input type="radio" name="float"><span class="dock-icon" aria-hidden="true"><i data-lucide="chart-column"></i></span><span class="dock-label">Stats</span></label>
+      <label class="dock-item"><input type="radio" name="float"><span class="dock-icon" aria-hidden="true"><i data-lucide="settings"></i></span><span class="dock-label">Settings</span></label>
+    </nav>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="Badges and dots" schema="none" height="22" hint="A .dock-badge (a count) or a .dock-dot (tones, data-animate='ping') inside the icon marks news on an item. The card closes with the dock: class='card dock-view' makes the in-flow dock the card's footer, clipped by its rounded corners."
+<div class="card dock-view">
+<div class="dock-panels">
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">Home</h3><p class="card-description">All caught up.</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">Chats</h3><p class="card-description">12 unread chats - Sofia: "see you at 6?"</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">Alerts</h3><p class="card-description">Deploy to production finished.</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">Cart</h3><p class="card-description">3 items · €84.50</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">Profile</h3><p class="card-description">You are online.</p></div></div>
+</div>
+<nav class="dock" data-position="static" aria-label="Main">
+  <label class="dock-item"><input type="radio" name="badges" checked><span class="dock-icon" aria-hidden="true"><i data-lucide="house"></i></span><span class="dock-label">Home</span></label>
+  <label class="dock-item"><input type="radio" name="badges"><span class="dock-icon" aria-hidden="true"><i data-lucide="message-circle"></i><span class="dock-badge">12</span></span><span class="dock-label">Chats</span></label>
+  <label class="dock-item"><input type="radio" name="badges"><span class="dock-icon" aria-hidden="true"><i data-lucide="bell"></i><span class="dock-dot" data-animate="ping"></span></span><span class="dock-label">Alerts</span></label>
+  <label class="dock-item"><input type="radio" name="badges"><span class="dock-icon" aria-hidden="true"><i data-lucide="shopping-cart"></i><span class="dock-badge">3</span></span><span class="dock-label">Cart</span></label>
+  <label class="dock-item"><input type="radio" name="badges"><span class="dock-icon" aria-hidden="true"><i data-lucide="user"></i><span class="dock-dot" data-tone="success"></span></span><span class="dock-label">Profile</span></label>
+</nav>
+</div>
+```
+
+```html example label="Emojis" schema="none" height="24" hint="Any glyph works in .dock-icon - emojis size with the icon scale."
+<div class="card dock-view">
+<div class="dock-panels">
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">🏠 Home</h3><p class="card-description">Welcome back!</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">🔥 Trending</h3><p class="card-description">What everyone is talking about.</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">🎵 Music</h3><p class="card-description">New release from your favorite band.</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">⭐ Favorites</h3><p class="card-description">24 saved items.</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">🙂 Me</h3><p class="card-description">Your profile and settings.</p></div></div>
+</div>
+<nav class="dock" data-position="static" data-indicator="pill" data-size="lg" aria-label="Main">
+  <label class="dock-item"><input type="radio" name="emoji" checked><span class="dock-icon" aria-hidden="true">🏠</span><span class="dock-label">Home</span></label>
+  <label class="dock-item"><input type="radio" name="emoji"><span class="dock-icon" aria-hidden="true">🔥</span><span class="dock-label">Trending</span></label>
+  <label class="dock-item"><input type="radio" name="emoji"><span class="dock-icon" aria-hidden="true">🎵<span class="dock-dot"></span></span><span class="dock-label">Music</span></label>
+  <label class="dock-item"><input type="radio" name="emoji"><span class="dock-icon" aria-hidden="true">⭐</span><span class="dock-label">Favorites</span></label>
+  <label class="dock-item"><input type="radio" name="emoji"><span class="dock-icon" aria-hidden="true">🙂</span><span class="dock-label">Me</span></label>
+</nav>
+</div>
+```
+
+```html example label="Raised center action" schema="none" height="30" hint="The middle item is a FAB (class='dock-item fab' data-raised data-layout='flower' data-position='bottom-center'): the raised + opens a semicircle of actions over the dock; the × closes it, an action closes it too. The other items switch the view (the raised item keeps its place with an empty panel)."
+<div style="position:relative;max-width:22rem;height:22rem;margin-inline:auto;border:1px solid var(--border);border-radius:1.75rem;overflow:hidden;background:var(--card);">
+  <div style="padding:1rem 1rem 5.5rem;">
+    <div class="dock-view">
+    <div class="dock-panels">
+      <div class="dock-panel"><div class="card-header"><h3 class="card-title">Home</h3><p class="card-description">Your feed.</p></div></div>
+      <div class="dock-panel"><div class="card-header"><h3 class="card-title">Search</h3><p class="card-description">Find anything.</p></div></div>
+      <div class="dock-panel"></div>
+      <div class="dock-panel"><div class="card-header"><h3 class="card-title">Alerts</h3><p class="card-description">2 new followers.</p></div></div>
+      <div class="dock-panel"><div class="card-header"><h3 class="card-title">Profile</h3><p class="card-description">Olivia Martin.</p></div></div>
+    </div>
+    <nav class="dock" data-attach="container" aria-label="Main">
+      <label class="dock-item"><input type="radio" name="raised" checked><span class="dock-icon" aria-hidden="true"><i data-lucide="house"></i></span><span class="dock-label">Home</span></label>
+      <label class="dock-item"><input type="radio" name="raised"><span class="dock-icon" aria-hidden="true"><i data-lucide="search"></i></span><span class="dock-label">Search</span></label>
+      <div class="dock-item fab" data-raised data-layout="flower" data-position="bottom-center">
+        <button class="fab-trigger dock-icon" popovertarget="dock-new" aria-label="New"><span class="fab-icon" aria-hidden="true"><i data-lucide="plus"></i></span></button>
+        <span class="dock-label">New</span>
+        <div class="fab-menu" id="dock-new" popover>
+          <button class="fab-action" popovertarget="dock-new" popovertargetaction="hide" aria-label="Photo">📷</button>
+          <button class="fab-action" popovertarget="dock-new" popovertargetaction="hide" aria-label="Video">🎬</button>
+          <button class="fab-action" popovertarget="dock-new" popovertargetaction="hide" aria-label="Note">📝</button>
+          <button class="fab-action" popovertarget="dock-new" popovertargetaction="hide" aria-label="Poll">📊</button>
+        </div>
+      </div>
+      <label class="dock-item"><input type="radio" name="raised"><span class="dock-icon" aria-hidden="true"><i data-lucide="bell"></i><span class="dock-badge">2</span></span><span class="dock-label">Alerts</span></label>
+      <label class="dock-item"><input type="radio" name="raised"><span class="dock-icon" aria-hidden="true"><i data-lucide="user"></i></span><span class="dock-label">Profile</span></label>
+    </nav>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="Top dock" schema="none" height="22" hint="data-position='top' - fixed to the top edge, the bar indicator on its lower edge."
+<div style="padding-top:5rem;">
+<div class="dock-view">
+<div class="dock-panels">
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">Home</h3><p class="card-description">Your feed - 3 new posts since yesterday.</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">Search</h3><p class="card-description">Find people, posts and places.</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">Inbox</h3><p class="card-description">2 unread messages from Sofia and Jackson.</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">Profile</h3><p class="card-description">Olivia Martin · 128 followers.</p></div></div>
+</div>
+<nav class="dock" data-position="top" aria-label="Main">
+  <label class="dock-item"><input type="radio" name="top" checked><span class="dock-icon" aria-hidden="true"><i data-lucide="house"></i></span><span class="dock-label">Home</span></label>
+  <label class="dock-item"><input type="radio" name="top"><span class="dock-icon" aria-hidden="true"><i data-lucide="search"></i></span><span class="dock-label">Search</span></label>
+  <label class="dock-item"><input type="radio" name="top"><span class="dock-icon" aria-hidden="true"><i data-lucide="inbox"></i></span><span class="dock-label">Inbox</span></label>
+  <label class="dock-item"><input type="radio" name="top"><span class="dock-icon" aria-hidden="true"><i data-lucide="user"></i></span><span class="dock-label">Profile</span></label>
+</nav>
+</div>
+</div>
+```
+
+```html example label="Side docks" schema="none" height="36" hint="data-position='left' / 'right' - a column down the edge (the bar on the outer side); with data-variant='floating' a vertical pill, centered. Both pinned inside frames here (data-attach='container')."
+<div class="grid gap-4" style="grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));">
+<div style="position:relative;height:23rem;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;background:var(--muted);"><div style="padding:1rem 1rem 1rem 6rem;">
+<div class="dock-view">
+<div class="card dock-panels">
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">Board</h3><p class="card-description">12 tasks in progress.</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">Calendar</h3><p class="card-description">Next: design review at 14:00.</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">Files</h3><p class="card-description">248 files · 3.1 GB.</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">Settings</h3><p class="card-description">Workspace preferences.</p></div></div>
+</div>
+<nav class="dock" data-position="left" data-attach="container" aria-label="West">
+  <label class="dock-item"><input type="radio" name="west" checked><span class="dock-icon" aria-hidden="true"><i data-lucide="layout-dashboard"></i></span><span class="dock-label">Board</span></label>
+  <label class="dock-item"><input type="radio" name="west"><span class="dock-icon" aria-hidden="true"><i data-lucide="calendar"></i></span><span class="dock-label">Calendar</span></label>
+  <label class="dock-item"><input type="radio" name="west"><span class="dock-icon" aria-hidden="true"><i data-lucide="folder"></i></span><span class="dock-label">Files</span></label>
+  <label class="dock-item"><input type="radio" name="west"><span class="dock-icon" aria-hidden="true"><i data-lucide="settings"></i></span><span class="dock-label">Settings</span></label>
+</nav>
+</div>
+</div></div>
+<div style="position:relative;height:23rem;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;background:var(--muted);"><div style="padding:1rem 6.5rem 1rem 1rem;">
+<div class="dock-view">
+<div class="card dock-panels">
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">Board</h3><p class="card-description">12 tasks in progress.</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">Calendar</h3><p class="card-description">Next: design review at 14:00.</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">Files</h3><p class="card-description">248 files · 3.1 GB.</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">Settings</h3><p class="card-description">Workspace preferences.</p></div></div>
+</div>
+<nav class="dock" data-position="right" data-variant="floating" data-attach="container" aria-label="East">
+  <label class="dock-item"><input type="radio" name="east" checked><span class="dock-icon" aria-hidden="true"><i data-lucide="layout-dashboard"></i></span><span class="dock-label">Board</span></label>
+  <label class="dock-item"><input type="radio" name="east"><span class="dock-icon" aria-hidden="true"><i data-lucide="calendar"></i></span><span class="dock-label">Calendar</span></label>
+  <label class="dock-item"><input type="radio" name="east"><span class="dock-icon" aria-hidden="true"><i data-lucide="folder"></i></span><span class="dock-label">Files</span></label>
+  <label class="dock-item"><input type="radio" name="east"><span class="dock-icon" aria-hidden="true"><i data-lucide="settings"></i></span><span class="dock-label">Settings</span></label>
+</nav>
+</div>
+</div></div>
+</div>
+```
+
+```html example label="Magnify" schema="none" height="26" hint="data-effect='magnify': the hovered item grows and its neighbours a little - the macOS dock, borderless (off for reduced motion)."
+<div class="dock-view">
+<div class="card dock-panels">
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">📁 Files</h3><p class="card-description">Documents, Downloads, Desktop.</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">🌐 Browser</h3><p class="card-description">3 tabs open.</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">✉️ Mail</h3><p class="card-description">4 new messages.</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">🎵 Music</h3><p class="card-description">Now playing: Night Drive.</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">📷 Photos</h3><p class="card-description">1,204 photos.</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">⚙️ Settings</h3><p class="card-description">System settings.</p></div></div>
+</div>
+<div style="padding-top:2rem;">
+<nav class="dock" data-position="static" data-variant="floating" data-effect="magnify" data-labels="none" data-size="lg" aria-label="Apps">
+  <label class="dock-item"><input type="radio" name="mag"><span class="dock-icon" aria-hidden="true">📁</span><span class="dock-label">Files</span></label>
+  <label class="dock-item"><input type="radio" name="mag" checked><span class="dock-icon" aria-hidden="true">🌐</span><span class="dock-label">Browser</span></label>
+  <label class="dock-item"><input type="radio" name="mag"><span class="dock-icon" aria-hidden="true">✉️<span class="dock-badge">4</span></span><span class="dock-label">Mail</span></label>
+  <label class="dock-item"><input type="radio" name="mag"><span class="dock-icon" aria-hidden="true">🎵</span><span class="dock-label">Music</span></label>
+  <label class="dock-item"><input type="radio" name="mag"><span class="dock-icon" aria-hidden="true">📷</span><span class="dock-label">Photos</span></label>
+  <label class="dock-item"><input type="radio" name="mag"><span class="dock-icon" aria-hidden="true">⚙️</span><span class="dock-label">Settings</span></label>
+</nav>
+</div>
+</div>
+```
+
+```html example label="Autohide" schema="none" height="30" hint="data-autohide tucks the dock away at its edge - only a sliver shows; bring the pointer close to the bottom of the frame (or tab into it) and it slides in. With magnify, the macOS dock."
+<div style="position:relative;height:18rem;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;background:url(https://picsum.photos/id/1036/900/500) center/cover;"><div style="padding:1rem;">
+<div class="dock-view">
+<div class="card dock-panels">
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">📁 Files</h3><p class="card-description">Move the pointer to the bottom edge - the dock appears.</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">🌐 Browser</h3><p class="card-description">3 tabs open.</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">✉️ Mail</h3><p class="card-description">4 new messages.</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">🎵 Music</h3><p class="card-description">Now playing: Night Drive.</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">⚙️ Settings</h3><p class="card-description">System settings.</p></div></div>
+</div>
+<nav class="dock" data-variant="floating" data-attach="container" data-effect="magnify" data-autohide data-labels="none" data-size="lg" aria-label="Apps">
+  <label class="dock-item"><input type="radio" name="hide" checked><span class="dock-icon" aria-hidden="true">📁</span><span class="dock-label">Files</span></label>
+  <label class="dock-item"><input type="radio" name="hide"><span class="dock-icon" aria-hidden="true">🌐</span><span class="dock-label">Browser</span></label>
+  <label class="dock-item"><input type="radio" name="hide"><span class="dock-icon" aria-hidden="true">✉️</span><span class="dock-label">Mail</span></label>
+  <label class="dock-item"><input type="radio" name="hide"><span class="dock-icon" aria-hidden="true">🎵</span><span class="dock-label">Music</span></label>
+  <label class="dock-item"><input type="radio" name="hide"><span class="dock-icon" aria-hidden="true">⚙️</span><span class="dock-label">Settings</span></label>
+</nav>
+</div>
+</div></div>
+```
+
+```html example label="Right to left" schema="none" height="22" hint="Logical throughout - in dir='rtl' the first item sits on the right, badges hug the other side."
+<div dir="rtl" lang="ar">
+<div class="card dock-view">
+<div class="dock-panels">
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">الرئيسية</h3><p class="card-description">مرحبا بعودتك.</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">بحث</h3><p class="card-description">ابحث عن أي شيء.</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">الوارد</h3><p class="card-description">خمس رسائل جديدة.</p></div></div>
+  <div class="dock-panel"><div class="card-header"><h3 class="card-title">حسابي</h3><p class="card-description">الملف الشخصي والإعدادات.</p></div></div>
+</div>
+<nav class="dock" data-position="static" aria-label="Main">
+  <label class="dock-item"><input type="radio" name="rtl" checked><span class="dock-icon" aria-hidden="true"><i data-lucide="house"></i></span><span class="dock-label">الرئيسية</span></label>
+  <label class="dock-item"><input type="radio" name="rtl"><span class="dock-icon" aria-hidden="true"><i data-lucide="search"></i></span><span class="dock-label">بحث</span></label>
+  <label class="dock-item"><input type="radio" name="rtl"><span class="dock-icon" aria-hidden="true"><i data-lucide="inbox"></i><span class="dock-badge">5</span></span><span class="dock-label">الوارد</span></label>
+  <label class="dock-item"><input type="radio" name="rtl"><span class="dock-icon" aria-hidden="true"><i data-lucide="user"></i></span><span class="dock-label">حسابي</span></label>
+</nav>
+</div>
+</div>
+```
+
+```html example label="Sizes" schema="none" height="44" hint="data-size xs · sm · md (default) · lg · xl - height, icon and label scale together."
+<div class="stack gap-4">
+<nav class="dock" data-position="static" data-size="xs" style="border:1px solid var(--border);border-radius:var(--radius-lg);" aria-label="Main">
+  <label class="dock-item"><input type="radio" name="size-xs" checked><span class="dock-icon" aria-hidden="true"><i data-lucide="house"></i></span><span class="dock-label">Home</span></label>
+  <label class="dock-item"><input type="radio" name="size-xs"><span class="dock-icon" aria-hidden="true"><i data-lucide="search"></i></span><span class="dock-label">Search</span></label>
+  <label class="dock-item"><input type="radio" name="size-xs"><span class="dock-icon" aria-hidden="true"><i data-lucide="inbox"></i></span><span class="dock-label">Inbox</span></label>
+  <label class="dock-item"><input type="radio" name="size-xs"><span class="dock-icon" aria-hidden="true"><i data-lucide="user"></i></span><span class="dock-label">Profile</span></label>
+</nav>
+<nav class="dock" data-position="static" data-size="sm" style="border:1px solid var(--border);border-radius:var(--radius-lg);" aria-label="Main">
+  <label class="dock-item"><input type="radio" name="size-sm" checked><span class="dock-icon" aria-hidden="true"><i data-lucide="house"></i></span><span class="dock-label">Home</span></label>
+  <label class="dock-item"><input type="radio" name="size-sm"><span class="dock-icon" aria-hidden="true"><i data-lucide="search"></i></span><span class="dock-label">Search</span></label>
+  <label class="dock-item"><input type="radio" name="size-sm"><span class="dock-icon" aria-hidden="true"><i data-lucide="inbox"></i></span><span class="dock-label">Inbox</span></label>
+  <label class="dock-item"><input type="radio" name="size-sm"><span class="dock-icon" aria-hidden="true"><i data-lucide="user"></i></span><span class="dock-label">Profile</span></label>
+</nav>
+<nav class="dock" data-position="static" data-size="md" style="border:1px solid var(--border);border-radius:var(--radius-lg);" aria-label="Main">
+  <label class="dock-item"><input type="radio" name="size-md" checked><span class="dock-icon" aria-hidden="true"><i data-lucide="house"></i></span><span class="dock-label">Home</span></label>
+  <label class="dock-item"><input type="radio" name="size-md"><span class="dock-icon" aria-hidden="true"><i data-lucide="search"></i></span><span class="dock-label">Search</span></label>
+  <label class="dock-item"><input type="radio" name="size-md"><span class="dock-icon" aria-hidden="true"><i data-lucide="inbox"></i></span><span class="dock-label">Inbox</span></label>
+  <label class="dock-item"><input type="radio" name="size-md"><span class="dock-icon" aria-hidden="true"><i data-lucide="user"></i></span><span class="dock-label">Profile</span></label>
+</nav>
+<nav class="dock" data-position="static" data-size="lg" style="border:1px solid var(--border);border-radius:var(--radius-lg);" aria-label="Main">
+  <label class="dock-item"><input type="radio" name="size-lg" checked><span class="dock-icon" aria-hidden="true"><i data-lucide="house"></i></span><span class="dock-label">Home</span></label>
+  <label class="dock-item"><input type="radio" name="size-lg"><span class="dock-icon" aria-hidden="true"><i data-lucide="search"></i></span><span class="dock-label">Search</span></label>
+  <label class="dock-item"><input type="radio" name="size-lg"><span class="dock-icon" aria-hidden="true"><i data-lucide="inbox"></i></span><span class="dock-label">Inbox</span></label>
+  <label class="dock-item"><input type="radio" name="size-lg"><span class="dock-icon" aria-hidden="true"><i data-lucide="user"></i></span><span class="dock-label">Profile</span></label>
+</nav>
+<nav class="dock" data-position="static" data-size="xl" style="border:1px solid var(--border);border-radius:var(--radius-lg);" aria-label="Main">
+  <label class="dock-item"><input type="radio" name="size-xl" checked><span class="dock-icon" aria-hidden="true"><i data-lucide="house"></i></span><span class="dock-label">Home</span></label>
+  <label class="dock-item"><input type="radio" name="size-xl"><span class="dock-icon" aria-hidden="true"><i data-lucide="search"></i></span><span class="dock-label">Search</span></label>
+  <label class="dock-item"><input type="radio" name="size-xl"><span class="dock-icon" aria-hidden="true"><i data-lucide="inbox"></i></span><span class="dock-label">Inbox</span></label>
+  <label class="dock-item"><input type="radio" name="size-xl"><span class="dock-icon" aria-hidden="true"><i data-lucide="user"></i></span><span class="dock-label">Profile</span></label>
+</nav>
+</div>
+```
+
+```html example label="Colors" schema="none" height="40" hint="data-variant: muted, primary, neutral, glass (over an image) - the active item takes the surface's strong color."
+<div class="stack gap-4">
+<nav class="dock" data-position="static" data-variant="muted" style="border-radius:var(--radius-lg);" aria-label="Main">
+  <label class="dock-item"><input type="radio" name="color-muted" checked><span class="dock-icon" aria-hidden="true"><i data-lucide="house"></i></span><span class="dock-label">Home</span></label>
+  <label class="dock-item"><input type="radio" name="color-muted"><span class="dock-icon" aria-hidden="true"><i data-lucide="search"></i></span><span class="dock-label">Search</span></label>
+  <label class="dock-item"><input type="radio" name="color-muted"><span class="dock-icon" aria-hidden="true"><i data-lucide="inbox"></i></span><span class="dock-label">Inbox</span></label>
+  <label class="dock-item"><input type="radio" name="color-muted"><span class="dock-icon" aria-hidden="true"><i data-lucide="user"></i></span><span class="dock-label">Profile</span></label>
+</nav>
+<nav class="dock" data-position="static" data-variant="primary" style="border-radius:var(--radius-lg);" aria-label="Main">
+  <label class="dock-item"><input type="radio" name="color-primary" checked><span class="dock-icon" aria-hidden="true"><i data-lucide="house"></i></span><span class="dock-label">Home</span></label>
+  <label class="dock-item"><input type="radio" name="color-primary"><span class="dock-icon" aria-hidden="true"><i data-lucide="search"></i></span><span class="dock-label">Search</span></label>
+  <label class="dock-item"><input type="radio" name="color-primary"><span class="dock-icon" aria-hidden="true"><i data-lucide="inbox"></i></span><span class="dock-label">Inbox</span></label>
+  <label class="dock-item"><input type="radio" name="color-primary"><span class="dock-icon" aria-hidden="true"><i data-lucide="user"></i></span><span class="dock-label">Profile</span></label>
+</nav>
+<nav class="dock" data-position="static" data-variant="neutral" style="border-radius:var(--radius-lg);" aria-label="Main">
+  <label class="dock-item"><input type="radio" name="color-neutral" checked><span class="dock-icon" aria-hidden="true"><i data-lucide="house"></i></span><span class="dock-label">Home</span></label>
+  <label class="dock-item"><input type="radio" name="color-neutral"><span class="dock-icon" aria-hidden="true"><i data-lucide="search"></i></span><span class="dock-label">Search</span></label>
+  <label class="dock-item"><input type="radio" name="color-neutral"><span class="dock-icon" aria-hidden="true"><i data-lucide="inbox"></i></span><span class="dock-label">Inbox</span></label>
+  <label class="dock-item"><input type="radio" name="color-neutral"><span class="dock-icon" aria-hidden="true"><i data-lucide="user"></i></span><span class="dock-label">Profile</span></label>
+</nav>
+<div style="position:relative;height:8rem;border-radius:var(--radius-lg);overflow:hidden;background:url(https://picsum.photos/id/1015/900/300) center/cover;">
+<nav class="dock" data-attach="container" data-variant="glass" aria-label="Main">
+  <label class="dock-item"><input type="radio" name="color-glass" checked><span class="dock-icon" aria-hidden="true"><i data-lucide="house"></i></span><span class="dock-label">Home</span></label>
+  <label class="dock-item"><input type="radio" name="color-glass"><span class="dock-icon" aria-hidden="true"><i data-lucide="search"></i></span><span class="dock-label">Search</span></label>
+  <label class="dock-item"><input type="radio" name="color-glass"><span class="dock-icon" aria-hidden="true"><i data-lucide="inbox"></i></span><span class="dock-label">Inbox</span></label>
+  <label class="dock-item"><input type="radio" name="color-glass"><span class="dock-icon" aria-hidden="true"><i data-lucide="user"></i></span><span class="dock-label">Profile</span></label>
+</nav>
+</div>
+</div>
+```
+
+```html example label="Labels and indicators" schema="none" height="30" hint="data-labels='active' shows only the active label, 'none' icons only (labels remain the names); data-indicator bar (default), pill or dot."
+<div class="stack gap-4">
+<nav class="dock" data-position="static" data-labels="active" data-indicator="pill" style="border:1px solid var(--border);border-radius:var(--radius-lg);" aria-label="Main">
+  <label class="dock-item"><input type="radio" name="lab-active" checked><span class="dock-icon" aria-hidden="true"><i data-lucide="house"></i></span><span class="dock-label">Home</span></label>
+  <label class="dock-item"><input type="radio" name="lab-active"><span class="dock-icon" aria-hidden="true"><i data-lucide="search"></i></span><span class="dock-label">Search</span></label>
+  <label class="dock-item"><input type="radio" name="lab-active"><span class="dock-icon" aria-hidden="true"><i data-lucide="inbox"></i></span><span class="dock-label">Inbox</span></label>
+  <label class="dock-item"><input type="radio" name="lab-active"><span class="dock-icon" aria-hidden="true"><i data-lucide="user"></i></span><span class="dock-label">Profile</span></label>
+</nav>
+<nav class="dock" data-position="static" data-labels="none" data-indicator="dot" style="border:1px solid var(--border);border-radius:var(--radius-lg);" aria-label="Main">
+  <label class="dock-item"><input type="radio" name="lab-none" checked><span class="dock-icon" aria-hidden="true"><i data-lucide="house"></i></span><span class="dock-label">Home</span></label>
+  <label class="dock-item"><input type="radio" name="lab-none"><span class="dock-icon" aria-hidden="true"><i data-lucide="search"></i></span><span class="dock-label">Search</span></label>
+  <label class="dock-item"><input type="radio" name="lab-none"><span class="dock-icon" aria-hidden="true"><i data-lucide="inbox"></i></span><span class="dock-label">Inbox</span></label>
+  <label class="dock-item"><input type="radio" name="lab-none"><span class="dock-icon" aria-hidden="true"><i data-lucide="user"></i></span><span class="dock-label">Profile</span></label>
+</nav>
+<nav class="dock" data-position="static" data-indicator="bar" style="border:1px solid var(--border);border-radius:var(--radius-lg);" aria-label="Main">
+  <label class="dock-item"><input type="radio" name="lab-bar" checked><span class="dock-icon" aria-hidden="true"><i data-lucide="house"></i></span><span class="dock-label">Home</span></label>
+  <label class="dock-item"><input type="radio" name="lab-bar"><span class="dock-icon" aria-hidden="true"><i data-lucide="search"></i></span><span class="dock-label">Search</span></label>
+  <label class="dock-item"><input type="radio" name="lab-bar"><span class="dock-icon" aria-hidden="true"><i data-lucide="inbox"></i></span><span class="dock-label">Inbox</span></label>
+  <label class="dock-item"><input type="radio" name="lab-bar"><span class="dock-icon" aria-hidden="true"><i data-lucide="user"></i></span><span class="dock-label">Profile</span></label>
+</nav>
+</div>
+```
+
+<SourceFiles component="dock" section="css" />
+
+</DocPage>

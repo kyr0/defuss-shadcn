@@ -35,7 +35,17 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <code>.step-content</code>
     <code>.step-title</code>
     <code>.step-description</code>
+    <code>.step-icon</code>
   </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillGrid>
+    <Variant name="data-variant (on .steps or one .step)" description="primary (default), secondary, accent, info, success, warning, neutral, destructive / error - the color of done and current steps" />
+    <Variant name='.step-indicator[data-variant="plain"]' description="no circle - just the glyph (an emoji step)" />
+    <Variant name='data-orientation="vertical" / "responsive"' description="stacked; or stacked below 48rem and in a row above" />
+    <Variant name="data-active-step / data-error-step" description="statuses derived by steps.js" />
+  </SkillGrid>
   </SkillField>
 </SkillPanel>
 
@@ -169,19 +179,407 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </ol>
 ```
 
-```html example label="Error State" hint="Add data-status='error' and aria-invalid='true' to mark a step with a validation error."
-<li class="step" data-status="error" aria-invalid="true">
-  <div class="step-indicator">
-    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24"
-         fill="none" stroke="currentColor" stroke-width="3">
-      <path d="M18 6 6 18M6 6l12 12"></path>
-    </svg>
-  </div>
-  <div class="step-content">
-    <p class="step-title">Profile</p>
-    <p class="step-description">Please fix the errors</p>
-  </div>
-</li>
+```html example label="Error State" hint="data-error-step on the list marks a step as failed - here the active step 2 - and the script renders it with data-status='error'. Keep data-status='error' and aria-invalid='true' on the item too, so the error also shows without JavaScript."
+<ol class="steps" data-active-step="2" data-error-step="2">
+  <li class="step" data-status="complete">
+    <div class="step-indicator">1</div>
+    <div class="step-content"><p class="step-title">Account</p></div>
+  </li>
+  <li class="step" data-status="error" aria-invalid="true" aria-current="step">
+    <div class="step-indicator">
+      <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="3">
+        <path d="M18 6 6 18M6 6l12 12"></path>
+      </svg>
+    </div>
+    <div class="step-content">
+      <p class="step-title">Profile</p>
+      <p class="step-description">Please fix the errors</p>
+    </div>
+  </li>
+  <li class="step">
+    <div class="step-indicator">3</div>
+    <div class="step-content"><p class="step-title">Complete</p></div>
+  </li>
+</ol>
+```
+
+```html example label="Colors" hint="data-variant on the list colors its done and current steps: primary (the default), secondary, accent, info, success, warning, neutral, destructive (alias error). Secondary and accent take the theme's chart colors; success, warning and info are fixed colors."
+<div class="stack gap-8">
+<ol class="steps" data-variant="primary" data-active-step="3">
+  <li class="step" data-status="complete">
+    <div class="step-indicator">1</div>
+    <div class="step-content"><p class="step-title">Register</p></div>
+  </li>
+  <li class="step" data-status="complete">
+    <div class="step-indicator">2</div>
+    <div class="step-content"><p class="step-title">Choose plan</p></div>
+  </li>
+  <li class="step" data-status="current" aria-current="step">
+    <div class="step-indicator">3</div>
+    <div class="step-content"><p class="step-title">Purchase</p></div>
+  </li>
+  <li class="step">
+    <div class="step-indicator">4</div>
+    <div class="step-content"><p class="step-title">Receive product</p></div>
+  </li>
+</ol>
+<ol class="steps" data-variant="secondary" data-active-step="3">
+  <li class="step" data-status="complete">
+    <div class="step-indicator">1</div>
+    <div class="step-content"><p class="step-title">Register</p></div>
+  </li>
+  <li class="step" data-status="complete">
+    <div class="step-indicator">2</div>
+    <div class="step-content"><p class="step-title">Choose plan</p></div>
+  </li>
+  <li class="step" data-status="current" aria-current="step">
+    <div class="step-indicator">3</div>
+    <div class="step-content"><p class="step-title">Purchase</p></div>
+  </li>
+  <li class="step">
+    <div class="step-indicator">4</div>
+    <div class="step-content"><p class="step-title">Receive product</p></div>
+  </li>
+</ol>
+<ol class="steps" data-variant="accent" data-active-step="3">
+  <li class="step" data-status="complete">
+    <div class="step-indicator">1</div>
+    <div class="step-content"><p class="step-title">Register</p></div>
+  </li>
+  <li class="step" data-status="complete">
+    <div class="step-indicator">2</div>
+    <div class="step-content"><p class="step-title">Choose plan</p></div>
+  </li>
+  <li class="step" data-status="current" aria-current="step">
+    <div class="step-indicator">3</div>
+    <div class="step-content"><p class="step-title">Purchase</p></div>
+  </li>
+  <li class="step">
+    <div class="step-indicator">4</div>
+    <div class="step-content"><p class="step-title">Receive product</p></div>
+  </li>
+</ol>
+<ol class="steps" data-variant="info" data-active-step="3">
+  <li class="step" data-status="complete">
+    <div class="step-indicator">1</div>
+    <div class="step-content"><p class="step-title">Register</p></div>
+  </li>
+  <li class="step" data-status="complete">
+    <div class="step-indicator">2</div>
+    <div class="step-content"><p class="step-title">Choose plan</p></div>
+  </li>
+  <li class="step" data-status="current" aria-current="step">
+    <div class="step-indicator">3</div>
+    <div class="step-content"><p class="step-title">Purchase</p></div>
+  </li>
+  <li class="step">
+    <div class="step-indicator">4</div>
+    <div class="step-content"><p class="step-title">Receive product</p></div>
+  </li>
+</ol>
+<ol class="steps" data-variant="success" data-active-step="3">
+  <li class="step" data-status="complete">
+    <div class="step-indicator">1</div>
+    <div class="step-content"><p class="step-title">Register</p></div>
+  </li>
+  <li class="step" data-status="complete">
+    <div class="step-indicator">2</div>
+    <div class="step-content"><p class="step-title">Choose plan</p></div>
+  </li>
+  <li class="step" data-status="current" aria-current="step">
+    <div class="step-indicator">3</div>
+    <div class="step-content"><p class="step-title">Purchase</p></div>
+  </li>
+  <li class="step">
+    <div class="step-indicator">4</div>
+    <div class="step-content"><p class="step-title">Receive product</p></div>
+  </li>
+</ol>
+<ol class="steps" data-variant="warning" data-active-step="3">
+  <li class="step" data-status="complete">
+    <div class="step-indicator">1</div>
+    <div class="step-content"><p class="step-title">Register</p></div>
+  </li>
+  <li class="step" data-status="complete">
+    <div class="step-indicator">2</div>
+    <div class="step-content"><p class="step-title">Choose plan</p></div>
+  </li>
+  <li class="step" data-status="current" aria-current="step">
+    <div class="step-indicator">3</div>
+    <div class="step-content"><p class="step-title">Purchase</p></div>
+  </li>
+  <li class="step">
+    <div class="step-indicator">4</div>
+    <div class="step-content"><p class="step-title">Receive product</p></div>
+  </li>
+</ol>
+<ol class="steps" data-variant="neutral" data-active-step="3">
+  <li class="step" data-status="complete">
+    <div class="step-indicator">1</div>
+    <div class="step-content"><p class="step-title">Register</p></div>
+  </li>
+  <li class="step" data-status="complete">
+    <div class="step-indicator">2</div>
+    <div class="step-content"><p class="step-title">Choose plan</p></div>
+  </li>
+  <li class="step" data-status="current" aria-current="step">
+    <div class="step-indicator">3</div>
+    <div class="step-content"><p class="step-title">Purchase</p></div>
+  </li>
+  <li class="step">
+    <div class="step-indicator">4</div>
+    <div class="step-content"><p class="step-title">Receive product</p></div>
+  </li>
+</ol>
+<ol class="steps" data-variant="destructive" data-active-step="3">
+  <li class="step" data-status="complete">
+    <div class="step-indicator">1</div>
+    <div class="step-content"><p class="step-title">Register</p></div>
+  </li>
+  <li class="step" data-status="complete">
+    <div class="step-indicator">2</div>
+    <div class="step-content"><p class="step-title">Choose plan</p></div>
+  </li>
+  <li class="step" data-status="current" aria-current="step">
+    <div class="step-indicator">3</div>
+    <div class="step-content"><p class="step-title">Purchase</p></div>
+  </li>
+  <li class="step">
+    <div class="step-indicator">4</div>
+    <div class="step-content"><p class="step-title">Receive product</p></div>
+  </li>
+</ol>
+</div>
+```
+
+```html example label="A color per step" hint="data-variant on a single .step overrides the list's color - here three info steps and a failed last step (data-error-step) showing a question mark."
+<ol class="steps" data-active-step="4" data-error-step="4">
+  <li class="step" data-variant="info" data-status="complete">
+    <div class="step-indicator">1</div>
+    <div class="step-content"><p class="step-title">Upload</p></div>
+  </li>
+  <li class="step" data-variant="info" data-status="complete">
+    <div class="step-indicator">2</div>
+    <div class="step-content"><p class="step-title">Validate</p></div>
+  </li>
+  <li class="step" data-variant="info" data-status="complete">
+    <div class="step-indicator">3</div>
+    <div class="step-content"><p class="step-title">Transform</p></div>
+  </li>
+  <li class="step" data-status="error" aria-invalid="true">
+    <div class="step-indicator">?</div>
+    <div class="step-content"><p class="step-title">Publish</p></div>
+  </li>
+</ol>
+```
+
+```html example label="Symbols" hint="The indicator holds whatever you put in it - a number, a symbol, nothing. Here ?, !, ✓, ✕, ★, an empty one and a dot, all on neutral."
+<ol class="steps" data-variant="neutral" data-active-step="8">
+  <li class="step" data-status="complete">
+    <div class="step-indicator">?</div>
+    <div class="step-content"><p class="step-title">Step 1</p></div>
+  </li>
+  <li class="step" data-status="complete">
+    <div class="step-indicator">!</div>
+    <div class="step-content"><p class="step-title">Step 2</p></div>
+  </li>
+  <li class="step" data-status="complete">
+    <div class="step-indicator">✓</div>
+    <div class="step-content"><p class="step-title">Step 3</p></div>
+  </li>
+  <li class="step" data-status="complete">
+    <div class="step-indicator">✕</div>
+    <div class="step-content"><p class="step-title">Step 4</p></div>
+  </li>
+  <li class="step" data-status="complete">
+    <div class="step-indicator">★</div>
+    <div class="step-content"><p class="step-title">Step 5</p></div>
+  </li>
+  <li class="step" data-status="complete">
+    <div class="step-indicator"></div>
+    <div class="step-content"><p class="step-title">Step 6</p></div>
+  </li>
+  <li class="step" data-status="complete">
+    <div class="step-indicator">●</div>
+    <div class="step-content"><p class="step-title">Step 7</p></div>
+  </li>
+</ol>
+```
+
+```html example label="Emoji and icons" hint="Wrap an emoji or an icon in a .step-icon for a glyph a size up from the numbers. data-variant=&quot;plain&quot; on the indicator drops the circle - just the emoji (a symbol or icon there takes the step's color)."
+<div class="stack gap-10">
+<ol class="steps" data-variant="neutral" data-active-step="4">
+  <li class="step" data-status="complete">
+    <div class="step-indicator"><span class="step-icon">😕</span></div>
+    <div class="step-content"><p class="step-title">Confused</p></div>
+  </li>
+  <li class="step" data-status="complete">
+    <div class="step-indicator"><span class="step-icon">😃</span></div>
+    <div class="step-content"><p class="step-title">Getting it</p></div>
+  </li>
+  <li class="step" data-status="complete">
+    <div class="step-indicator"><span class="step-icon">😍</span></div>
+    <div class="step-content"><p class="step-title">Loving it</p></div>
+  </li>
+</ol>
+<ol class="steps" data-active-step="3">
+  <li class="step" data-status="complete">
+    <div class="step-indicator" data-variant="plain"><span class="step-icon">😢</span></div>
+    <div class="step-content"><p class="step-title">Sad</p></div>
+  </li>
+  <li class="step" data-status="complete">
+    <div class="step-indicator" data-variant="plain"><span class="step-icon">🙂</span></div>
+    <div class="step-content"><p class="step-title">Okay</p></div>
+  </li>
+  <li class="step" data-status="current" aria-current="step">
+    <div class="step-indicator" data-variant="plain"><span class="step-icon">🤩</span></div>
+    <div class="step-content"><p class="step-title">Happy</p></div>
+  </li>
+</ol>
+<ol class="steps" data-variant="success" data-active-step="3">
+  <li class="step" data-status="complete">
+    <div class="step-indicator"><span class="step-icon"><i data-lucide="user"></i></span></div>
+    <div class="step-content"><p class="step-title">Account</p></div>
+  </li>
+  <li class="step" data-status="complete">
+    <div class="step-indicator"><span class="step-icon"><i data-lucide="credit-card"></i></span></div>
+    <div class="step-content"><p class="step-title">Payment</p></div>
+  </li>
+  <li class="step" data-status="current" aria-current="step">
+    <div class="step-indicator"><span class="step-icon"><i data-lucide="truck"></i></span></div>
+    <div class="step-content"><p class="step-title">Shipping</p></div>
+  </li>
+  <li class="step">
+    <div class="step-indicator"><span class="step-icon"><i data-lucide="party-popper"></i></span></div>
+    <div class="step-content"><p class="step-title">Done</p></div>
+  </li>
+</ol>
+</div>
+```
+
+```html example label="Responsive" hint="data-orientation=&quot;responsive&quot;: stacked vertically below 48rem, in a row from there up. Try the device sizes in the toolbar."
+<ol class="steps" data-orientation="responsive" data-active-step="2">
+  <li class="step" data-status="complete">
+    <div class="step-indicator">1</div>
+    <div class="step-content"><p class="step-title">Register</p></div>
+  </li>
+  <li class="step" data-status="current" aria-current="step">
+    <div class="step-indicator">2</div>
+    <div class="step-content"><p class="step-title">Choose plan</p></div>
+  </li>
+  <li class="step">
+    <div class="step-indicator">3</div>
+    <div class="step-content"><p class="step-title">Purchase</p></div>
+  </li>
+  <li class="step">
+    <div class="step-indicator">4</div>
+    <div class="step-content"><p class="step-title">Receive product</p></div>
+  </li>
+</ol>
+```
+
+```html example label="Scrollable" hint="Many steps in a narrow space: an overflow-x-auto wrapper and a minimum width on the list - the row scrolls instead of squeezing. Mixed per-step colors."
+<div class="overflow-x-auto">
+<ol class="steps" style="min-width:72rem;" data-active-step="14">
+  <li class="step" data-variant="secondary" data-status="complete">
+    <div class="step-indicator">✓</div>
+    <div class="step-content"><p class="step-title">1</p></div>
+  </li>
+  <li class="step" data-variant="accent" data-status="complete">
+    <div class="step-indicator">✓</div>
+    <div class="step-content"><p class="step-title">2</p></div>
+  </li>
+  <li class="step" data-variant="info" data-status="complete">
+    <div class="step-indicator">✓</div>
+    <div class="step-content"><p class="step-title">3</p></div>
+  </li>
+  <li class="step" data-variant="success" data-status="complete">
+    <div class="step-indicator">✓</div>
+    <div class="step-content"><p class="step-title">4</p></div>
+  </li>
+  <li class="step" data-variant="warning" data-status="complete">
+    <div class="step-indicator">✓</div>
+    <div class="step-content"><p class="step-title">5</p></div>
+  </li>
+  <li class="step" data-variant="neutral" data-status="complete">
+    <div class="step-indicator">✓</div>
+    <div class="step-content"><p class="step-title">6</p></div>
+  </li>
+  <li class="step" data-variant="destructive" data-status="complete">
+    <div class="step-indicator">✓</div>
+    <div class="step-content"><p class="step-title">7</p></div>
+  </li>
+  <li class="step" data-variant="secondary" data-status="complete">
+    <div class="step-indicator">✓</div>
+    <div class="step-content"><p class="step-title">8</p></div>
+  </li>
+  <li class="step" data-variant="accent" data-status="complete">
+    <div class="step-indicator">✓</div>
+    <div class="step-content"><p class="step-title">9</p></div>
+  </li>
+  <li class="step" data-variant="info" data-status="complete">
+    <div class="step-indicator">✓</div>
+    <div class="step-content"><p class="step-title">10</p></div>
+  </li>
+  <li class="step" data-variant="success" data-status="complete">
+    <div class="step-indicator">✓</div>
+    <div class="step-content"><p class="step-title">11</p></div>
+  </li>
+  <li class="step" data-variant="warning" data-status="complete">
+    <div class="step-indicator">✓</div>
+    <div class="step-content"><p class="step-title">12</p></div>
+  </li>
+  <li class="step" data-variant="neutral" data-status="complete">
+    <div class="step-indicator">✓</div>
+    <div class="step-content"><p class="step-title">13</p></div>
+  </li>
+  <li class="step" data-status="current" aria-current="step">
+    <div class="step-indicator">14</div>
+    <div class="step-content"><p class="step-title">14</p></div>
+  </li>
+  <li class="step">
+    <div class="step-indicator">15</div>
+    <div class="step-content"><p class="step-title">15</p></div>
+  </li>
+  <li class="step">
+    <div class="step-indicator">16</div>
+    <div class="step-content"><p class="step-title">16</p></div>
+  </li>
+  <li class="step">
+    <div class="step-indicator">17</div>
+    <div class="step-content"><p class="step-title">17</p></div>
+  </li>
+  <li class="step">
+    <div class="step-indicator">18</div>
+    <div class="step-content"><p class="step-title">18</p></div>
+  </li>
+  <li class="step">
+    <div class="step-indicator">19</div>
+    <div class="step-content"><p class="step-title">19</p></div>
+  </li>
+  <li class="step">
+    <div class="step-indicator">20</div>
+    <div class="step-content"><p class="step-title">20</p></div>
+  </li>
+  <li class="step">
+    <div class="step-indicator">21</div>
+    <div class="step-content"><p class="step-title">21</p></div>
+  </li>
+  <li class="step">
+    <div class="step-indicator">22</div>
+    <div class="step-content"><p class="step-title">22</p></div>
+  </li>
+  <li class="step">
+    <div class="step-indicator">23</div>
+    <div class="step-content"><p class="step-title">23</p></div>
+  </li>
+  <li class="step">
+    <div class="step-indicator">24</div>
+    <div class="step-content"><p class="step-title">24</p></div>
+  </li>
+</ol>
+</div>
 ```
 
 ```html example label="Sizes" hint="The full five-step scale via data-size on .steps - the default equals md."
@@ -273,11 +671,22 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="Clickable Steps" hint="Add data-clickable to individual .step elements to show a pointer cursor and hover affordance on the indicator. Wire up navigation with your own JavaScript."
-<li class="step" data-status="complete" data-clickable>
-  <div class="step-indicator" role="button" tabindex="0"
-       aria-label="Go to step 1: Account">1</div>
-  <div class="step-content"><p class="step-title">Account</p></div>
-</li>
+<ol class="steps" data-active-step="3">
+  <li class="step" data-status="complete" data-clickable>
+    <div class="step-indicator" role="button" tabindex="0"
+         aria-label="Go to step 1: Account">1</div>
+    <div class="step-content"><p class="step-title">Account</p></div>
+  </li>
+  <li class="step" data-status="complete" data-clickable>
+    <div class="step-indicator" role="button" tabindex="0"
+         aria-label="Go to step 2: Profile">2</div>
+    <div class="step-content"><p class="step-title">Profile</p></div>
+  </li>
+  <li class="step" data-status="current" aria-current="step">
+    <div class="step-indicator">3</div>
+    <div class="step-content"><p class="step-title">Complete</p></div>
+  </li>
+</ol>
 ```
 
 ```html example label="Density" hint="Set data-density on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25), typography and fixed dimensions stay identical. comfortable matches the unsized default."

@@ -1,20 +1,32 @@
 /* -- Separator component ---------------------------------------- */
 
 @layer components {
+  /* One element, three looks:
+     - empty: a plain line (1px, --border) - horizontal, or vertical with
+       data-orientation="vertical" (inside a flex row)
+     - with text inside: the text sits ON the line - two pseudo-element lines
+       left and right of it (above and below when vertical)
+     Knobs: data-variant (line color), data-size (thickness), data-gap (space
+     between text and lines), data-align="start|end" (text position),
+     data-orientation-md / -lg="vertical" (switch to a vertical line from
+     48 / 64rem). --_line / --_thick / --_gap are private. */
   .separator {
+    --_line: var(--border);
+    --_thick: 1px;
+    --_gap: 0.75rem;
     border: none;
     margin: 0;
     flex-shrink: 0;
-    background: var(--border);
+    background: var(--_line);
 
     /* Horizontal (default) */
-    height: 1px;
+    height: var(--_thick);
     width: 100%;
 
     /* Vertical */
     &[data-orientation="vertical"] {
       height: auto;
-      width: 1px;
+      width: var(--_thick);
       align-self: stretch;
     }
 
@@ -23,9 +35,109 @@
     &[role="none"] {
       /* No visual change - purely semantic */
     }
+
+    /* -- Text on the line ------------------------------------ */
+    &:not(:empty) {
+      display: flex;
+      align-items: center;
+      gap: var(--_gap);
+      height: auto;
+      background: none;
+      font-size: 0.75rem;
+      font-weight: 500;
+      line-height: 1.25rem;
+      letter-spacing: 0.02em;
+      color: var(--muted-foreground);
+      white-space: nowrap;
+
+      &::before,
+      &::after {
+        content: '';
+        flex: 1 1 0;
+        height: var(--_thick);
+        background: var(--_line);
+      }
+
+      /* text position along the line */
+      &[data-align="start"]::before { display: none; }
+      &[data-align="end"]::after { display: none; }
+
+      &[data-orientation="vertical"] {
+        flex-direction: column;
+        width: auto;
+        align-self: stretch;
+
+        &::before,
+        &::after {
+          width: var(--_thick);
+          height: auto;
+          min-height: 0.5rem;
+        }
+      }
+    }
+
+    /* -- Colors (the line; the text stays muted) -------------- */
+    &[data-variant="neutral"] { --_line: var(--foreground); }
+    &[data-variant="primary"] { --_line: var(--primary); }
+    /* the tweakcn --secondary / --accent are pale surfaces, too faint for a
+       line: the theme's vivid chart colors instead (like the status dot) */
+    &[data-variant="secondary"] { --_line: var(--chart-2); }
+    &[data-variant="accent"] { --_line: var(--chart-4); }
+    &[data-variant="destructive"],
+    &[data-variant="error"] { --_line: var(--destructive); }
+    /* success / warning / info: literals - the token set has no such pairs */
+    &[data-variant="success"] { --_line: #16a34a; }
+    &[data-variant="warning"] { --_line: #f59e0b; }
+    &[data-variant="info"] { --_line: #0ea5e9; }
+
+    /* -- Thickness -------------------------------------------- */
+    &[data-size="sm"] { --_thick: 1px; }
+    &[data-size="md"] { --_thick: 2px; }
+    &[data-size="lg"] { --_thick: 4px; }
+    &[data-size="xl"] { --_thick: 8px; }
+
+    /* -- Gap between the text and the lines ------------------- */
+    &[data-gap="none"] { --_gap: 0; }
+    &[data-gap="sm"] { --_gap: 0.375rem; }
+    &[data-gap="md"] { --_gap: 0.75rem; }
+    &[data-gap="lg"] { --_gap: 1.5rem; }
+    &[data-gap="xl"] { --_gap: 2.5rem; }
+
+    /* -- Responsive: a vertical line from a breakpoint up (DaisyUI's
+       lg:divider-horizontal). The PARENT must turn into a row at the
+       same width - the separator only follows it. */
+    @media (min-width: 48rem) {
+      &[data-orientation-md="vertical"] {
+        height: auto;
+        width: var(--_thick);
+        align-self: stretch;
+
+        &:not(:empty) {
+          flex-direction: column;
+          width: auto;
+
+          &::before, &::after { width: var(--_thick); height: auto; min-height: 0.5rem; }
+        }
+      }
+    }
+    @media (min-width: 64rem) {
+      &[data-orientation-lg="vertical"] {
+        height: auto;
+        width: var(--_thick);
+        align-self: stretch;
+
+        &:not(:empty) {
+          flex-direction: column;
+          width: auto;
+
+          &::before, &::after { width: var(--_thick); height: auto; min-height: 0.5rem; }
+        }
+      }
+    }
   }
 
-  /* -- Labeled separator ------------------------------------- */
+  /* -- Labeled separator (the older wrapper form) --------------
+     Still supported; text inside .separator itself is the simpler form. */
   .separator-label {
     display: flex;
     align-items: center;
@@ -46,20 +158,16 @@
 
   /* -- Accessibility ----------------------------------------- */
   @media (forced-colors: active) {
+    /* system colors would erase the line (a background) - keep it */
     .separator {
-      background: CanvasText;
+      forced-color-adjust: none;
+      --_line: CanvasText;
+      color: CanvasText;
     }
   }
 
   @media (prefers-contrast: more) {
-    .separator {
-      background: var(--foreground);
-      height: 2px;
-
-      &[data-orientation="vertical"] {
-        width: 2px;
-        height: auto;
-      }
-    }
+    .separator:not([data-variant]) { --_line: var(--foreground); }
+    .separator:not([data-size]) { --_thick: 2px; }
   }
 }

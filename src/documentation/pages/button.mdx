@@ -164,6 +164,102 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 ```
 
+```html example label="Soft and dashed" hint="Two more styles: soft is a tint of the color with the text in it; dashed reads as 'add something here'."
+<div class="flex flex-wrap items-center gap-3">
+  <button class="btn" data-variant="soft">Soft</button>
+  <button class="btn" data-variant="dashed"><i data-lucide="plus"></i> Add item</button>
+</div>
+```
+
+```html example label="Colors" hint="data-tone paints any style in success, warning, info or destructive - solid fills with the color, the other styles write in it (mixed toward the text color, so amber stays readable)."
+<div class="grid gap-3" style="grid-template-columns:repeat(6,max-content);align-items:center;justify-content:center;">
+  <button class="btn" data-tone="success">Solid</button>
+  <button class="btn" data-tone="success" data-variant="soft">Soft</button>
+  <button class="btn" data-tone="success" data-variant="outline">Outline</button>
+  <button class="btn" data-tone="success" data-variant="ghost">Ghost</button>
+  <button class="btn" data-tone="success" data-variant="dashed">Dashed</button>
+  <button class="btn" data-tone="success" data-variant="link">Link</button>
+  <button class="btn" data-tone="warning">Solid</button>
+  <button class="btn" data-tone="warning" data-variant="soft">Soft</button>
+  <button class="btn" data-tone="warning" data-variant="outline">Outline</button>
+  <button class="btn" data-tone="warning" data-variant="ghost">Ghost</button>
+  <button class="btn" data-tone="warning" data-variant="dashed">Dashed</button>
+  <button class="btn" data-tone="warning" data-variant="link">Link</button>
+  <button class="btn" data-tone="info">Solid</button>
+  <button class="btn" data-tone="info" data-variant="soft">Soft</button>
+  <button class="btn" data-tone="info" data-variant="outline">Outline</button>
+  <button class="btn" data-tone="info" data-variant="ghost">Ghost</button>
+  <button class="btn" data-tone="info" data-variant="dashed">Dashed</button>
+  <button class="btn" data-tone="info" data-variant="link">Link</button>
+  <button class="btn" data-tone="destructive">Solid</button>
+  <button class="btn" data-tone="destructive" data-variant="soft">Soft</button>
+  <button class="btn" data-tone="destructive" data-variant="outline">Outline</button>
+  <button class="btn" data-tone="destructive" data-variant="ghost">Ghost</button>
+  <button class="btn" data-tone="destructive" data-variant="dashed">Dashed</button>
+  <button class="btn" data-tone="destructive" data-variant="link">Link</button>
+</div>
+```
+
+```html example label="Custom colors" hint="data-tone='custom' takes your own color from --btn-color (and the text on a solid fill from --btn-color-fg) - every style follows it."
+<div class="stack gap-3" style="align-items:center;">
+  <div class="flex flex-wrap items-center gap-3">
+    <button class="btn" data-tone="custom" style="--btn-color: oklch(0.55 0.22 300);">Violet</button>
+    <button class="btn" data-tone="custom" data-variant="soft" style="--btn-color: oklch(0.55 0.22 300);">Violet soft</button>
+    <button class="btn" data-tone="custom" data-variant="outline" style="--btn-color: oklch(0.55 0.22 300);">Violet outline</button>
+  </div>
+  <div class="flex flex-wrap items-center gap-3">
+    <button class="btn" data-tone="custom" style="--btn-color: oklch(0.85 0.17 180); --btn-color-fg: oklch(0.25 0.05 200);">Mint</button>
+    <button class="btn" data-tone="custom" style="--btn-color: #ff5a5f;">Coral</button>
+    <button class="btn" data-tone="custom" data-variant="dashed" style="--btn-color: #0ea5e9;">Sky dashed</button>
+  </div>
+</div>
+```
+
+```html example label="Emojis" hint="An emoji is text - it sits in the label like an icon. For an emoji-only button, hide the glyph and name the button with aria-label."
+<div class="flex flex-wrap items-center gap-3">
+  <button class="btn"><span aria-hidden="true">🚀</span> Launch</button>
+  <button class="btn" data-variant="outline"><span aria-hidden="true">🎉</span> Celebrate</button>
+  <button class="btn" data-variant="soft">Save <span aria-hidden="true">💾</span></button>
+  <button class="btn" data-variant="ghost" data-size="icon" aria-label="Like"><span aria-hidden="true" style="font-size:1.125rem;">👍</span></button>
+  <button class="btn" data-variant="outline" data-size="icon-lg" aria-label="Favorite" style="border-radius:9999px;"><span aria-hidden="true" style="font-size:1.25rem;">⭐</span></button>
+</div>
+```
+
+```html example label="Frames" hint="The frame-* classes from shapes.css replace the button's border - double, offset, corners, sketch, gradient, stitched."
+<div class="flex flex-wrap items-center gap-4">
+  <button class="btn frame-double" data-variant="outline">Double</button>
+  <button class="btn frame-offset" data-variant="outline">Offset</button>
+  <button class="btn frame-corners" data-variant="ghost">Corners</button>
+  <button class="btn frame-sketch" data-variant="outline">Sketch</button>
+  <button class="btn frame-gradient" data-variant="outline">Gradient</button>
+  <button class="btn frame-stitched">Stitched</button>
+</div>
+```
+
+```html example label="Aura" hint="Wrap a button in an .aura (shapes.css) for an animated light around it - set --shape-round to the button's radius and display:inline-grid so it hugs the button."
+<div class="flex flex-wrap items-center gap-5">
+  <span class="aura" style="display:inline-grid;--shape-round:var(--radius-md);"><button class="btn" data-variant="outline">Aura</button></span>
+  <span class="aura aura-rainbow" style="display:inline-grid;--shape-round:var(--radius-md);"><button class="btn" data-variant="outline">Rainbow</button></span>
+  <span class="aura aura-gold aura-lg" style="display:inline-grid;--shape-round:9999px;"><button class="btn" style="border-radius:9999px;">Gold</button></span>
+  <span class="aura aura-glow aura-lg" style="display:inline-grid;--shape-round:var(--radius-md);"><button class="btn"><span aria-hidden="true">✨</span> Glow</button></span>
+</div>
+```
+
+```html example label="Left-to-right and right-to-left" hint="Buttons are logical: an icon before the label leads in either direction. Mark directional icons (arrows, chevrons) data-rtl-flip and they mirror under dir='rtl'; symmetric icons stay put."
+<div class="stack gap-4" style="align-items:center;">
+  <div class="flex flex-wrap items-center gap-3" dir="ltr">
+    <button class="btn" data-variant="outline"><i data-lucide="arrow-left" data-rtl-flip></i> Back</button>
+    <button class="btn">Next <i data-lucide="arrow-right" data-rtl-flip></i></button>
+    <button class="btn" data-variant="soft"><i data-lucide="search"></i> Search</button>
+  </div>
+  <div class="flex flex-wrap items-center gap-3" dir="rtl" lang="ar">
+    <button class="btn" data-variant="outline"><i data-lucide="arrow-left" data-rtl-flip></i> رجوع</button>
+    <button class="btn">التالي <i data-lucide="arrow-right" data-rtl-flip></i></button>
+    <button class="btn" data-variant="soft"><i data-lucide="search"></i> بحث</button>
+  </div>
+</div>
+```
+
 <SourceFiles component="button" section="css" />
 
 </DocPage>

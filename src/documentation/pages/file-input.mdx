@@ -9,7 +9,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <DocPage meta={meta}>
 
 <PageHeader slug="file-input" title="File Input" component="file-input">
-  A styled file picker. Built on native <code>&lt;input type="file"&gt;</code> with custom <code>::file-selector-button</code> styling.
+  A styled file picker - as a compact field, or as a drag &amp; drop card. Built on native <code>&lt;input type="file"&gt;</code>: in the card the invisible input takes both the click and the drop, and a small script filters, appends and lists the files.
 </PageHeader>
 
 <SkillPanel component="file-input">
@@ -21,12 +21,23 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <SkillRow>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file" title="native file picker with drag-and-drop support"><code>&lt;input type="file"&gt;</code></ApiPill>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/::file-selector-button" title="styles the native Choose File button"><code>::file-selector-button</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer" title="rebuilds input.files: append, remove, filter"><code>DataTransfer</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API" title="the drag highlight"><code>Drag and Drop</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL_static" title="image previews"><code>createObjectURL()</code></ApiPill>
   </SkillRow>
   </SkillField>
 
   <SkillField label="Classes">
 <SkillRow>
     <code>.file-input</code>
+    <code>.file-drop</code>
+    <code>.file-drop-zone</code>
+    <code>.file-drop-input</code>
+    <code>.file-drop-icon</code>
+    <code>.file-drop-title</code>
+    <code>.file-drop-hint</code>
+    <code>.file-drop-error</code>
+    <code>.file-drop-list</code>
   </SkillRow>
   </SkillField>
 
@@ -37,19 +48,70 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 </SkillPanel>
 
+```html example label="Drag and drop" hint="A card to drop files on - or click it. The native input covers the card, so the drop lands on it and forms submit it as usual; the script highlights the drag, keeps only images and PDFs up to 10 MB (a drop bypasses accept), appends to the selection and lists the files with previews and remove buttons." height="30"
+<div class="file-drop" data-max-size="10000000" style="max-width:32rem;">
+  <label class="file-drop-zone">
+    <input class="file-drop-input" type="file" name="files" multiple accept="image/*,.pdf">
+    <span class="file-drop-icon" aria-hidden="true"><i data-lucide="cloud-upload"></i></span>
+    <span class="file-drop-title">Drop files here or <span class="file-drop-browse">browse</span></span>
+    <span class="file-drop-hint">PNG, JPG, GIF or PDF · up to 10 MB each</span>
+  </label>
+  <p class="file-drop-error"></p>
+  <ul class="file-drop-list" aria-live="polite"></ul>
+</div>
+```
+
+```html example label="Several images, nothing else" hint="multiple + accept='image/*' + data-max-files='4': the picker shows images only, and dropped PDFs or a fifth image are named in the error line instead of being added." height="30"
+<div class="file-drop" data-max-files="4" style="max-width:32rem;">
+  <label class="file-drop-zone">
+    <input class="file-drop-input" type="file" name="photos" multiple accept="image/*">
+    <span class="file-drop-icon" aria-hidden="true">🖼️</span>
+    <span class="file-drop-title">Add up to 4 photos</span>
+    <span class="file-drop-hint">Any image format - drag several at once</span>
+  </label>
+  <p class="file-drop-error"></p>
+  <ul class="file-drop-list" aria-live="polite"></ul>
+</div>
+```
+
+```html example label="One document" hint="Without multiple a new pick replaces the old one; accept lists extensions (.pdf, .doc, .docx) and MIME types alike." height="22"
+<div class="file-drop" data-max-size="5000000" style="max-width:32rem;">
+  <label class="file-drop-zone">
+    <input class="file-drop-input" type="file" name="cv" accept=".pdf,.doc,.docx,application/pdf">
+    <span class="file-drop-icon" aria-hidden="true"><i data-lucide="file-text"></i></span>
+    <span class="file-drop-title">Upload your CV</span>
+    <span class="file-drop-hint">PDF or Word · max. 5 MB</span>
+  </label>
+  <p class="file-drop-error"></p>
+  <ul class="file-drop-list" aria-live="polite"></ul>
+</div>
+```
+
+```html example label="Compact drop zone" hint="data-size='sm' - one row, for forms. It is still the whole drop target." height="16"
+<div class="file-drop" data-size="sm" style="max-width:32rem;">
+  <label class="file-drop-zone">
+    <input class="file-drop-input" type="file" name="attachments" multiple>
+    <span class="file-drop-icon" aria-hidden="true"><i data-lucide="paperclip"></i></span>
+    <span class="file-drop-title">Attach files</span>
+    <span class="file-drop-hint">Drop them here or click to choose</span>
+  </label>
+  <ul class="file-drop-list" aria-live="polite"></ul>
+</div>
+```
+
 ```html example label="Default" hint="Single file selection." previewStyle="margin:1.25rem;"
 <div style="max-width:40rem;">
 <input class="file-input" type="file" id="avatar">
 </div>
 ```
 
-```html example label="Multiple files" previewStyle="margin:1.25rem;"
+```html example label="Multiple files" hint="The native multiple attribute - the picker allows several files; the field names the count." previewStyle="margin:1.25rem;"
 <div style="max-width:40rem;">
 <input class="file-input" type="file" multiple>
 </div>
 ```
 
-```html example label="Accept filter" previewStyle="margin:1.25rem;"
+```html example label="Accept filter" hint="accept limits the picker to types - here images; list extensions and MIME types comma-separated (.pdf,image/*)." previewStyle="margin:1.25rem;"
 <div style="max-width:40rem;">
 <input class="file-input" type="file" accept="image/*">
 </div>
@@ -79,6 +141,14 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 <StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states of the drop zone, bound on each <code>.file-drop</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - no files (setState clears the selection)</li>
+    <li><code>dragover</code> - files are dragged over the zone</li>
+    <li><code>selected</code> - files chosen (<code>config.files</code> sets placeholders)</li>
+    <li><code>error</code> - some files were rejected (<code>config.message</code>)</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/file-input-\{state\}.png</code>.</p>
   <p class="text-sm text-muted-foreground">Machine contract - verified against <a href="../schemas/file-input.schema.json"><code>file-input.schema.json</code></a> by <code>bun run verify</code>:</p>
 
 ```states
@@ -86,10 +156,15 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 | --- | --- | --- | --- | --- |
 | `disabled` | `boolean` | `true`, `false` | `false` | Picker off (native `disabled` attribute). |
 | `size` | `enum` | `sm`, `md`, `lg` | `"md"` | Control scale (display sizes). |
+| `dragover` | `boolean` | `true`, `false` | `false` | Drop zone: files hover it. |
+| `selected` | `boolean` | `true`, `false` | `false` | Drop zone: files chosen. |
+| `error` | `boolean` | `true`, `false` | `false` | Drop zone: some files rejected. |
 ```
 
 </StatesSection>
 
 <SourceFiles component="file-input" section="css" />
+
+<SourceFiles component="file-input" section="js" jsTitle="JS" />
 
 </DocPage>

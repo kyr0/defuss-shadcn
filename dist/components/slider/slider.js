@@ -1,5 +1,7 @@
 /* -- Slider component ------------------------------------------- */
-// Fill-track painting for native range inputs, plus the named-state API so
+// Fill-track painting for native range inputs, two-thumb ranges, Intl-
+// formatted values (data-unit / data-currency → <output> + aria-valuetext),
+// emoji thumbs, plus the named-state API so
 // agents/tests can enable/disable (and preset) a slider by name (AGENTS.md
 // "State API").
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
@@ -19,12 +21,113 @@ if (!__df$shared || __df$shared.abi !== '0.9.1') {
 const { defussGlobals } = __df$shared;
 const df$ = defussGlobals();
 const sliderStates = ['default', 'disabled'];
-function updateSliderValue(el) {
+/** 0..100 - where the value sits between min and max. */
+function percentOf(el) {
     const min = parseFloat(el.min || 0);
     const max = parseFloat(el.max || 100);
-    const value = parseFloat(el.value);
-    const percent = max === min ? 0 : ((value - min) / (max - min)) * 100;
-    el.style.setProperty('--slider-value', `${percent}%`);
+    return max === min ? 0 : ((parseFloat(el.value) - min) / (max - min)) * 100;
+}
+/** Intl number format from data-currency / data-unit (on the slider or its
+ * .slider-range), fraction digits from the step. */
+function formatterOf(el) {
+    const host = el.closest('.slider-range') ?? el;
+    const d = { ...host.dataset, ...el.dataset };
+    const step = el.step && el.step !== 'any' ? el.step : '1';
+    const digits = step.includes('.') ? step.split('.')[1].length : 0;
+    const opts = { maximumFractionDigits: digits, minimumFractionDigits: 0 };
+    if (d.currency)
+        Object.assign(opts, { style: 'currency', currency: d.currency });
+    else if (d.unit)
+        Object.assign(opts, { style: 'unit', unit: d.unit, unitDisplay: d.unitDisplay || 'short' });
+    const lang = el.closest('[lang]')?.lang || undefined;
+    try {
+        return new Intl.NumberFormat(lang, opts);
+    }
+    catch {
+        return new Intl.NumberFormat(lang, { maximumFractionDigits: digits });
+    }
+}
+const hasFormat = (el) => {
+    const host = el.closest('.slider-range') ?? el;
+    return !!(el.dataset.unit || el.dataset.currency || host.dataset.unit || host.dataset.currency);
+};
+/** <output for="id …"> elements that show this slider (a range pair: both ids). */
+function outputsOf(el) {
+    if (!el.id)
+        return [];
+    return [...document.querySelectorAll('output[for]')].filter((o) => o.htmlFor.contains(el.id));
+}
+/** An emoji as an image (data-thumb-emoji: one, or a space-separated list
+ * picked by the value - "😞 😐 🙂 😄"). */
+function emojiThumb(el) {
+    const list = (el.dataset.thumbEmoji || '').trim().split(/\s+/).filter(Boolean);
+    if (!list.length)
+        return;
+    const i = Math.min(list.length - 1, Math.floor((percentOf(el) / 100) * list.length));
+    const emoji = list[i];
+    if (el._emoji === emoji)
+        return;
+    el._emoji = emoji;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><text x="16" y="17" font-size="26" text-anchor="middle" dominant-baseline="central">${emoji}</text></svg>`;
+    el.style.setProperty('--slider-thumb-image', `url("data:image/svg+xml,${encodeURIComponent(svg)}")`);
+}
+function updateSliderValue(el) {
+    el.style.setProperty('--slider-value', `${percentOf(el)}%`);
+    if (el.dataset.thumbEmoji)
+        emojiThumb(el);
+    const range = el.closest('.slider-range');
+    if (range)
+        paintRange(range);
+    const fmt = hasFormat(el) ? formatterOf(el) : null;
+    // a spoken value with its unit ("20 °C", "€250") instead of a bare number
+    if (fmt)
+        el.setAttribute('aria-valuetext', fmt.format(parseFloat(el.value)));
+    for (const out of outputsOf(el)) {
+        const pair = range ? rangeInputs(range) : null;
+        const f = fmt ?? formatterOf(el);
+        if (pair && out.htmlFor.contains(pair[0].id) && out.htmlFor.contains(pair[1].id)) {
+            const a = parseFloat(pair[0].value);
+            const b = parseFloat(pair[1].value);
+            out.value = a === b ? f.format(a) : f.formatRange(a, b);
+        }
+        else {
+            out.value = f.format(parseFloat(el.value));
+        }
+    }
+}
+/* -- Range: two sliders, low <= high ------------------------------- */
+const rangeInputs = (range) => [...range.querySelectorAll(':scope > .slider')].slice(0, 2);
+function paintRange(range) {
+    const [lo, hi] = rangeInputs(range);
+    if (!lo || !hi)
+        return;
+    range.style.setProperty('--range-from', `${percentOf(lo)}%`);
+    range.style.setProperty('--range-to', `${percentOf(hi)}%`);
+}
+function initRange(range) {
+    const [lo, hi] = rangeInputs(range);
+    if (!lo || !hi)
+        return;
+    const gap = parseFloat(range.dataset.minGap || '0');
+    const clamp = (moved) => {
+        const a = parseFloat(lo.value);
+        const b = parseFloat(hi.value);
+        if (b - a < gap || a > b) {
+            if (moved === lo)
+                lo.value = String(b - gap);
+            else
+                hi.value = String(a + gap);
+        }
+        lo.toggleAttribute('data-active', moved === lo);
+        hi.toggleAttribute('data-active', moved === hi);
+        updateSliderValue(lo);
+        updateSliderValue(hi);
+    };
+    lo.addEventListener('input', () => clamp(lo));
+    hi.addEventListener('input', () => clamp(hi));
+    for (const s of [lo, hi])
+        s.addEventListener('pointerdown', () => { lo.toggleAttribute('data-active', s === lo); hi.toggleAttribute('data-active', s === hi); });
+    paintRange(range);
 }
 /**
  * UI side of setState: 'default' restores the authored enabled state and
@@ -66,6 +169,10 @@ export const sliderApi = {
 df$.sliderApi = sliderApi;
 df$.sliderStates = sliderStates;
 function init() {
+    document.querySelectorAll('.slider-range:not([data-init])').forEach((range) => {
+        range.dataset.init = '';
+        initRange(range);
+    });
     document.querySelectorAll('.slider:not([data-init])').forEach((el) => {
         el.dataset.init = '';
         // remember the authored disabled state so setState('default') restores it
@@ -75,6 +182,8 @@ function init() {
             setState: (stateName, config) => sliderApi.setState(el, stateName, config),
             getState: () => sliderApi.getState(el),
         };
+        if (el.dataset.thumbEmoji && !el.dataset.thumb)
+            el.dataset.thumb = 'emoji';
         updateSliderValue(el);
         el.addEventListener('input', () => updateSliderValue(el));
     });

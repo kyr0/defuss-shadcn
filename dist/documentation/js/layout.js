@@ -586,8 +586,11 @@
     function updateAnchorPad() {
         var hdr = document.querySelector('.site-header');
         var ph = document.querySelector('.page-header');
+        // only a STICKY page header covers scrolled-to content (on phones it
+        // scrolls away - layout.css - and must not add to the clearance)
+        var phSticky = ph && getComputedStyle(ph).position === 'sticky';
         var h = (hdr ? hdr.getBoundingClientRect().height : 0) +
-            (ph ? ph.getBoundingClientRect().height : 0) + 8;
+            (phSticky ? ph.getBoundingClientRect().height : 0) + 8;
         document.documentElement.style.setProperty('--anchor-pad', Math.round(h) + 'px');
     }
     /* Re-created per SPA navigation: .page-header is a fresh element per page. */

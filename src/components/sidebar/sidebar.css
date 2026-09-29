@@ -38,7 +38,7 @@
     &[data-state="collapsed"] {
       width: var(--sidebar-width-collapsed, 3.5rem);
 
-      & .sidebar-link span,
+      & .sidebar-link span:not(.sidebar-icon, .sidebar-dot),
       & .sidebar-section-title,
       & .sidebar-group-action,
       & .sidebar-badge,
@@ -48,8 +48,8 @@
       & .sidebar-link { justify-content: center; padding: 0.5rem; gap: 0; }
       & .sidebar-header { justify-content: center; padding: 0.75rem 0.5rem; }
       & .sidebar-group > summary { justify-content: center; }
-      & .sidebar-group > summary span { display: none; }
-      & .sidebar-group > summary svg:last-child { display: none; }
+      & .sidebar-group > summary span:not(.sidebar-icon, .sidebar-dot) { display: none; }
+      & .sidebar-group > summary > svg:last-child { display: none; }
 
       /* The nested-nav indent (0.75rem) would offset submenu icons from the
          rail column - drop it while collapsed. */
@@ -59,8 +59,8 @@
          the same centering or its icon drifts off the icon column. Expanded
          submenu items have no icons, so the nav stays hidden while collapsed. */
       & .sidebar-submenu > summary { justify-content: center; padding: 0.5rem; gap: 0; }
-      & .sidebar-submenu > summary span { display: none; }
-      & .sidebar-submenu > summary svg:last-child { display: none; }
+      & .sidebar-submenu > summary span:not(.sidebar-icon, .sidebar-dot) { display: none; }
+      & .sidebar-submenu > summary > svg:last-child { display: none; }
       & .sidebar-submenu > .sidebar-nav { display: none; }
     }
 
@@ -159,6 +159,68 @@
     line-height: 1;
   }
 
+  /* ── Leading icon / emoji ─────────────────────────────────── */
+  /* <span class="sidebar-icon"> in front of a link, submenu or group label:
+     holds an <svg> or an emoji in a fixed 1rem box, so labels line up and
+     the collapsed rail keeps showing it. */
+  .sidebar-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    font-size: 0.9375rem;
+    font-style: normal;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: 0;
+
+    & svg { width: 1rem; height: 1rem; }
+  }
+  .sidebar-group > summary .sidebar-icon { width: 0.875rem; height: 0.875rem; font-size: 0.8125rem; }
+  .sidebar-group > summary .sidebar-icon svg { width: 0.875rem; height: 0.875rem; }
+
+  /* ── Activity dot ─────────────────────────────────────────── */
+  /* <span class="sidebar-dot"> at the end of a link / summary marks news or
+     activity (name it: role="img" aria-label="New"). Colors via data-variant,
+     a ping via data-animate="ping"; on the collapsed rail it sits on the
+     icon's corner. */
+  .sidebar-dot {
+    --_c: var(--sidebar-primary);
+    position: relative;
+    width: 0.5rem;
+    height: 0.5rem;
+    flex-shrink: 0;
+    margin-left: auto;
+    border-radius: 999px;
+    background-color: var(--_c);
+
+    &[data-variant="destructive"] { --_c: var(--destructive); }
+    &[data-variant="success"] { --_c: oklch(0.65 0.17 150); }
+    &[data-variant="warning"] { --_c: oklch(0.78 0.16 75); }
+    &[data-variant="info"] { --_c: oklch(0.62 0.17 250); }
+
+    &[data-animate="ping"]::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background-color: var(--_c);
+      animation: sidebar-dot-ping 1.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+    }
+  }
+  @keyframes sidebar-dot-ping {
+    75%, 100% { scale: 2.4; opacity: 0; }
+  }
+  /* dot + badge / dot + chevron share the pushed-right slot */
+  .sidebar-badge + .sidebar-dot,
+  .sidebar-dot + .sidebar-badge,
+  :is(.sidebar-group, .sidebar-submenu) > summary > .sidebar-dot ~ svg:last-child { margin-left: 0; }
+  .app-sidebar[data-state="collapsed"] {
+    & :is(.sidebar-group, .sidebar-submenu) > summary { position: relative; }
+    & .sidebar-dot { position: absolute; top: 0.3125rem; right: 0.3125rem; margin: 0; width: 0.4375rem; height: 0.4375rem; }
+  }
+
   /* ── Section title ────────────────────────────────────────── */
   .sidebar-section-title {
     padding: 0.75rem 0.75rem 0.375rem;
@@ -189,7 +251,7 @@
       &:hover { background-color: var(--sidebar-accent); }
       &::-webkit-details-marker { display: none; }
 
-      & svg:last-child {
+      & > svg:last-child {
         width: 0.875rem;
         height: 0.875rem;
         margin-left: auto;
@@ -197,7 +259,7 @@
       }
     }
 
-    &[open] > summary svg:last-child { rotate: 90deg; }
+    &[open] > summary > svg:last-child { rotate: 90deg; }
     & > .sidebar-nav { padding: 0.25rem 0 0.25rem 0.75rem; }
   }
 
@@ -217,7 +279,7 @@
 
       /* leading icon matches .sidebar-link's 1rem - otherwise lucide's
          24px default renders the cog larger than the nav icons */
-      & svg:first-child { width: 1rem; height: 1rem; flex-shrink: 0; }
+      & > svg:first-child { width: 1rem; height: 1rem; flex-shrink: 0; }
 
       &:hover {
         background-color: var(--sidebar-accent);
@@ -225,7 +287,7 @@
       }
       &::-webkit-details-marker { display: none; }
 
-      & svg:last-child {
+      & > svg:last-child {
         width: 0.875rem;
         height: 0.875rem;
         margin-left: auto;
@@ -233,7 +295,7 @@
       }
     }
 
-    &[open] > summary svg:last-child { rotate: 90deg; }
+    &[open] > summary > svg:last-child { rotate: 90deg; }
 
     & > .sidebar-nav {
       padding: 0.25rem 0 0.25rem 1.5rem;
@@ -368,8 +430,9 @@
   @media (prefers-reduced-motion: reduce) {
     .app-sidebar { transition: none; }
     .sidebar-link { transition: none; }
-    .sidebar-group > summary svg:last-child { transition: none; }
-    .sidebar-submenu > summary svg:last-child { transition: none; }
+    .sidebar-group > summary > svg:last-child { transition: none; }
+    .sidebar-submenu > summary > svg:last-child { transition: none; }
+    .sidebar-dot[data-animate]::after { animation: none; }
     .sidebar-mobile { transition: none; }
     .sidebar-mobile::backdrop { transition: none; }
   }

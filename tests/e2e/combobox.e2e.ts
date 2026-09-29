@@ -529,6 +529,19 @@ try {
     assert.equal(st.input, 'purple', 'unknown text stays - nothing was created');
   });
 
+  await check("tag input: the State API opens and closes the list (setState('open' | 'default'))", async () => {
+    const pop = '#cb-tags-list';
+    const popover = await page.$eval(pop, (l) => l.closest('.combobox-content')!.id);
+    await page.$eval('#' + popover, (p: any) => p.api.setState('open'));
+    // wait for the state, not a fixed delay: under full-suite load 100ms was
+    // not always enough (a flaky failure, never a wrong result)
+    await page.waitForFunction((id) => document.getElementById(id)!.matches(':popover-open')
+      && document.getElementById('cb-tags-input')!.getAttribute('aria-expanded') === 'true', popover, { timeout: 5000 });
+    assert.equal(await page.$eval('#' + popover, (p: any) => p.api.getState().name), 'open');
+    await page.$eval('#' + popover, (p: any) => p.api.setState('default'));
+    await page.waitForFunction((id) => !document.getElementById(id)!.matches(':popover-open'), popover, { timeout: 5000 });
+  });
+
 } finally {
   await browser.close();
   server.stop();

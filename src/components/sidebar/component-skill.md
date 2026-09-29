@@ -82,6 +82,47 @@ supportedStates: default, collapsed
 </div>
 ```
 
+### Icons, emojis and activity dots
+
+```html
+<details class="sidebar-group" open>
+  <summary>
+    <span class="sidebar-icon" aria-hidden="true"><svg>…</svg></span>
+    <span>Mail</span>
+    <span class="sidebar-dot" role="img" aria-label="New activity"></span>
+    <i data-lucide="chevron-right"></i>
+  </summary>
+  <nav class="sidebar-nav">
+    <a class="sidebar-link" href="#">
+      <span class="sidebar-icon" aria-hidden="true">📥</span>
+      <span>Inbox</span>
+      <span class="sidebar-dot" data-variant="info" data-animate="ping" role="img" aria-label="New mail"></span>
+      <span class="sidebar-badge">12</span>
+    </a>
+  </nav>
+</details>
+```
+
+- `.sidebar-icon` - a fixed 1rem box (0.875rem in a group heading) in front
+  of a label: an `<svg>` or an emoji. Labels line up whatever the glyph, and
+  the icon stays visible on the collapsed rail (a group heading keeps its
+  icon there too).
+- `.sidebar-dot` - an activity / "new" marker at the end of a link, submenu
+  summary or group summary (a dot on a group tells a collapsed section has
+  news). It takes the right edge (before the chevron); next to a
+  `.sidebar-badge` they share it. On the collapsed rail it moves onto the
+  icon's top-right corner. Always name it (`role="img"` + `aria-label`).
+
+## Activity dot (`.sidebar-dot`)
+
+| Attribute | Values | Effect |
+| --- | --- | --- |
+| `data-variant` | *(none)* | `--sidebar-primary` |
+|  | `success` / `warning` / `info` | Green / amber / blue status colors |
+|  | `destructive` | `--destructive` |
+| `data-animate` | `ping` | An expanding ring (off under `prefers-reduced-motion`) |
+
+
 ## Variants
 
 | `data-state`   | Width    | Behavior                              |
@@ -142,6 +183,8 @@ The registry global is `df$.shadcn.sidebarApi` / `df$.shadcn.sidebarStates`.
 - **Collapsible groups**: `<details class="sidebar-group">` - native toggle, no JS.
 - **Submenus**: `<details class="sidebar-submenu">` for nested nav with left border.
 - **Badges**: `<span class="sidebar-badge">` for notification counts.
+- **Icons / emojis**: `<span class="sidebar-icon">` in front of any label (links, submenus, group headings).
+- **Activity dots**: `<span class="sidebar-dot">` marks news / activity; stays visible on the collapsed rail.
 - **Collapsed state**: Labels, titles, badges, footer, logo text hidden - icons remain. Submenu summaries (e.g. a Settings cog) center their icon in the rail too, and the nested nav stays hidden until expanded.
 - **Sidebar tokens**: Uses `--sidebar-*` token group.
 # Sidebar

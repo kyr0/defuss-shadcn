@@ -130,6 +130,41 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 ```
 
+```html example label="Chinese" hint="lang='zh-Hans' switches the paragraph to CJK rules: justified between characters, strict line breaks (no 。or ， at a line start) and a line-end 。 or ， kept inside a straight right edge (Safari hangs it, Chromium trims its blank half). Latin words and digits get their thin gap automatically (text-autospace); headings drop the Latin tracking, emphasis uses dots under the characters instead of italics." previewStyle="justify-content:flex-start;text-align:left;"
+<article lang="zh-Hans" style="max-width:22em;">
+  <h3 class="h3">排版的细节</h3>
+  <p class="p">好的中文排版，讲究的是节奏与留白。标点不能出现在行首，句末的句号和逗号可以悬挂在行外，让每一行的右边缘保持整齐。使用 CSS 3 与 HTML 5，这些规则都由浏览器完成，<em class="text-emphasis">无需任何脚本</em>。</p>
+  <blockquote class="blockquote"><p>「设计不只是外观和感觉，设计是它如何运作。」</p></blockquote>
+</article>
+```
+
+```html example label="Chinese: aligning the line ends" hint="The same paragraph twice in a narrow column. Left: start-aligned, the lines end ragged and a comma may be pushed to the next line's start. Right: the .p rules - justified, strict breaking, the line-end 。/， hung (Safari) or half-width (Chromium) - a straight edge." previewStyle="justify-content:flex-start;text-align:left;"
+<div class="grid gap-6" style="grid-template-columns:repeat(2, 13em);" lang="zh-Hans">
+  <div>
+    <p class="demo-label">text-align: start</p>
+    <p style="line-height:1.9;border-inline-end:1px dashed var(--border);">中文段落在窄栏中排版时，如果只是左对齐，每行的结尾参差不齐，逗号、句号有时还会落到下一行的开头，看起来很不整齐。</p>
+  </div>
+  <div>
+    <p class="demo-label">.p (CJK rules)</p>
+    <p class="p" style="border-inline-end:1px dashed var(--border);">中文段落在窄栏中排版时，如果只是左对齐，每行的结尾参差不齐，逗号、句号有时还会落到下一行的开头，看起来很不整齐。</p>
+  </div>
+</div>
+```
+
+```html example label="Japanese, top to bottom" hint="text-vertical sets tategaki: columns run top to bottom, right to left. Ruby (furigana) sits beside the kanji, .text-upright stands a two-digit number upright in one cell (tate-chu-yoko), emphasis marks become sesame dots, and the heading, paragraph gap and blockquote rule turn with the text - they are logical properties." height="30" previewStyle="justify-content:center;"
+<article class="text-vertical" lang="ja" style="block-size:auto;inline-size:18em;">
+  <h3 class="h3">縦書きの<ruby>美<rt>うつく</rt></ruby>しさ</h3>
+  <p class="p">日本語は、上から下へ、右から左へと読み進めます。<span class="text-upright">12</span>月<span class="text-upright">24</span>日のような数字は、一文字分の幅に収めて立てて組みます。<em class="text-emphasis">傍点</em>は斜体の代わりです。</p>
+  <blockquote class="blockquote"><p>「書くことは、考えることである。」</p></blockquote>
+</article>
+```
+
+```html example label="Traditional Chinese, vertical" hint="The same vertical rules for zh-Hant: punctuation takes its vertical form (。、「」 rotate or reposition), bopomofo / pinyin ruby sits to the right." height="26" previewStyle="justify-content:center;"
+<p class="p text-vertical" lang="zh-Hant" style="inline-size:14em;">
+  <ruby>書<rt>ㄕㄨ</rt></ruby><ruby>法<rt>ㄈㄚˇ</rt></ruby>是中國傳統藝術之一，講究筆畫、結構與章法。「字如其人」，一筆一畫都見性情。
+</p>
+```
+
 <SourceFiles component="typography" section="css" />
 
 </DocPage>

@@ -56,7 +56,7 @@ try {
           .find((t) => t.includes('::-webkit-slider-runnable-track') && t.includes('linear-gradient')) ?? '',
     );
     assert.ok(rule, 'runnable-track gradient rule shipped');
-    assert.match(rule, /var\(--primary\)\s*var\(--slider-value\)/, 'fill stops at the value');
+    assert.match(rule, /var\(--_fill\)\s*var\(--slider-value\)/, 'fill stops at the value');
   });
 
   await check('keyboard arrows step the value and repaint the fill', async () => {
@@ -166,6 +166,78 @@ try {
   await check('slider: data-size="xl" → height 12px', async () => {
     const val = await page.$eval('#z-slider-xl', (el) => String(el.getBoundingClientRect().height) + 'px');
     assert.equal(val, '12px');
+  });
+
+  await check('tones + custom color: --_fill resolves to five distinct colors (custom = --slider-color)', async () => {
+    const r = await page.evaluate(() => ['t-success', 't-warning', 't-info', 't-destructive', 't-custom'].map((id) => getComputedStyle(document.getElementById(id)!).accentColor));
+    assert.equal(new Set(r).size, 5, r.join(' | '));
+    assert.equal(r[4], 'rgb(120, 40, 200)');
+  });
+
+  await check('units: data-unit / data-currency format every output[for] and aria-valuetext (Intl)', async () => {
+    const r = await page.evaluate(() => ({
+      pct: [document.getElementById('u-pct-out')!.textContent, document.getElementById('u-pct')!.getAttribute('aria-valuetext')],
+      temp: document.getElementById('u-temp-out')!.textContent,
+      eur: document.getElementById('u-eur-out')!.textContent,
+      plain: document.getElementById('s-default')!.getAttribute('aria-valuetext'),
+    }));
+    assert.deepEqual(r.pct, ['40%', '40%']);
+    assert.equal(r.temp, '21.5°C');
+    assert.equal(r.eur, '€5');
+    assert.equal(r.plain, null, 'no unit, no valuetext override');
+    await page.focus('#u-temp');
+    await page.keyboard.press('ArrowRight');
+    assert.equal(await page.textContent('#u-temp-out'), '22°C');
+  });
+
+  await check('field: icons at both ends, the slider flexes between them; scale spreads its labels', async () => {
+    const r = await page.evaluate(() => {
+      const icons = [...document.querySelectorAll('#sf .slider-icon')].map((e) => e.getBoundingClientRect());
+      const s = document.getElementById('u-pct')!.getBoundingClientRect();
+      const scale = [...document.querySelectorAll('#scale span')].map((e) => e.getBoundingClientRect());
+      const sc = document.getElementById('scale')!.getBoundingClientRect();
+      return { order: icons[0].right <= s.left && s.right <= icons[1].left, wide: s.width > 200, ends: Math.round(scale[0].left - sc.left) === 0 && Math.round(sc.right - scale[1].right) === 0 };
+    });
+    assert.ok(r.order && r.wide && r.ends, JSON.stringify(r));
+  });
+
+  await check('emoji thumb: data-thumb-emoji → data-thumb="emoji" + an SVG image that follows the value', async () => {
+    const img = () => page.$eval('#emo', (e) => decodeURIComponent((e as HTMLElement).style.getPropertyValue('--slider-thumb-image')));
+    assert.equal(await page.getAttribute('#emo', 'data-thumb'), 'emoji');
+    assert.ok((await img()).includes('😫'), 'low value → first emoji');
+    await page.$eval('#emo', (e) => (e as unknown as { api: { setState(n: string, c: object): void } }).api.setState('default', { value: 95 }));
+    assert.ok((await img()).includes('😄'), 'high value → last emoji');
+  });
+
+  await check('range: two thumbs paint one span (--range-from/-to), sizes + tone inherited', async () => {
+    const r = await page.evaluate(() => {
+      const rg = document.getElementById('rg')!;
+      return { from: rg.style.getPropertyValue('--range-from'), to: rg.style.getPropertyValue('--range-to'), h: rg.getBoundingClientRect().height,
+        track: getComputedStyle(document.getElementById('rg-lo')!).height, pe: getComputedStyle(document.getElementById('rg-lo')!).pointerEvents,
+        tone: getComputedStyle(document.getElementById('rg-lo')!).accentColor === getComputedStyle(document.getElementById('t-info')!).accentColor,
+        out: document.getElementById('rg-out')!.textContent };
+    });
+    assert.equal(r.from, '20%'); assert.equal(r.to, '80%');
+    assert.equal(r.h, 24, 'lg thumb height'); assert.equal(r.track, '10px', 'lg track inherited');
+    assert.equal(r.pe, 'none', 'only thumbs take the pointer');
+    assert.ok(r.tone, 'tone inherited');
+    assert.equal(r.out, '€200 – €800', 'Intl formatRange');
+  });
+
+  await check('range: the low thumb cannot pass the high one (data-min-gap 50); the moved thumb stays on top', async () => {
+    await page.$eval('#rg-lo', (e) => { (e as HTMLInputElement).value = '900'; e.dispatchEvent(new Event('input', { bubbles: true })); });
+    let r = await page.evaluate(() => ({ lo: (document.getElementById('rg-lo') as HTMLInputElement).value, active: document.getElementById('rg-lo')!.hasAttribute('data-active'), z: getComputedStyle(document.getElementById('rg-lo')!).zIndex }));
+    assert.deepEqual(r, { lo: '750', active: true, z: '1' });
+    await page.focus('#rg-hi');
+    for (let i = 0; i < 30; i++) await page.keyboard.press('ArrowLeft');
+    r = await page.evaluate(() => ({ lo: (document.getElementById('rg-hi') as HTMLInputElement).value, active: document.getElementById('rg-hi')!.hasAttribute('data-active'), z: '' }));
+    assert.equal(r.lo, '800', 'high stops at low + gap');
+    assert.equal(await page.textContent('#rg-out'), '€750 – €800');
+  });
+
+  await check('RTL: the fill runs right to left', async () => {
+    const d = await page.$eval('#rtl', (e) => getComputedStyle(e).getPropertyValue('--_dir').trim());
+    assert.equal(d, 'to left');
   });
 
 } finally {

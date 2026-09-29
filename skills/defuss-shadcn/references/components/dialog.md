@@ -1,0 +1,132 @@
+---
+name: Dialog
+type: MOL
+why: Native <dialog> + showModal(): focus trap, Escape-to-close, ::backdrop, and inert background all come from the browser.
+when: Modals for forms, detail views, or previews - unless the answer is mandatory (then alert-dialog).
+where: dist/components/dialog/dialog.css + dist/components/dialog/dialog.js
+supportedStates: default, open
+---
+
+# Pattern: Dialog
+
+## States
+Named states via the shared State API (AGENTS.md "State API"), bound per instance:
+`default` (closed) and `open` (modal shown).
+
+```js
+document.querySelector('#my-dialog').api.setState('open');
+document.querySelector('#my-dialog').api.getState(); // { name: 'open', config: {} }
+```
+
+Unknown state names throw. `globalThis.df$.shadcn.dialogStates` lists them.
+
+## Native basis
+`<dialog>` element + `showModal()`. The browser provides:
+- Focus trap (automatically)
+- Escape key to close (automatically)
+- `::backdrop` for overlay
+- `aria-modal` behavior when opened with `showModal()`
+
+Requires minimal JavaScript - only for trigger wiring and backdrop-click-to-close.
+
+---
+
+## Native Web APIs
+- [`<dialog>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog) - native modal element with built-in focus trap and Escape-to-close
+- [`HTMLDialogElement.showModal()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal) - opens dialog as modal in the top layer with backdrop
+- [`::backdrop`](https://developer.mozilla.org/en-US/docs/Web/CSS/::backdrop) - pseudo-element for the overlay behind the modal
+- [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) - defines entry animation starting values
+
+---
+
+## Structure
+
+```html
+<!-- Trigger -->
+<button class="btn" data-variant="default"
+        data-dialog-trigger="my-dialog"
+        aria-haspopup="dialog">
+  Open
+</button>
+
+<!-- Dialog -->
+<dialog id="my-dialog"
+        class="dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="my-dialog-title">
+
+  <div class="dialog-content">
+    <div class="dialog-header">
+      <h2 class="dialog-title" id="my-dialog-title">Dialog Title</h2>
+      <p class="dialog-description">Supporting description.</p>
+    </div>
+
+    <div class="dialog-body">
+      <!-- Content goes here -->
+    </div>
+
+    <div class="dialog-footer">
+      <button class="btn" data-variant="outline" data-dialog-close>
+        Cancel
+      </button>
+      <button class="btn" data-variant="default">
+        Confirm
+      </button>
+    </div>
+  </div>
+</dialog>
+```
+
+---
+
+
+## Density
+
+Set `data-density` on the `.dialog` root. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25); typography and fixed dimensions stay identical. `comfortable` matches the unsized default.
+
+| Value | Effect |
+| --- | --- |
+| `compact` | content padding 1rem |
+| `comfortable` | content padding 1.5rem - identical to the unsized default |
+| `spacious` | content padding 2rem |
+
+## Sizes
+
+| `data-size` | Max width  | Use case                         |
+|-------------|------------|----------------------------------|
+| `sm`        | `24rem`    | Confirmations, simple alerts     |
+| `md`        | `28rem`    | Standard forms, content (default)|
+| *(default)* | `28rem`    | Standard forms, content          |
+| `lg`        | `32rem`    | Complex forms, rich content      |
+| `xl`        | `40rem`    | Data-heavy, multi-column layouts |
+| `full`      | `calc(100vw - 2rem)` | Full-screen modal        |
+
+---
+
+## ARIA
+
+| Attribute            | Element     | Value                |
+|----------------------|-------------|----------------------|
+| `role="dialog"`      | `<dialog>`  | Identifies as dialog |
+| `aria-modal="true"`  | `<dialog>`  | Content behind is inert |
+| `aria-labelledby`    | `<dialog>`  | Points to title `id` |
+| `aria-haspopup="dialog"` | trigger | Indicates dialog will open |
+
+---
+
+## Wiring conventions
+
+- `data-dialog-trigger="[id]"` on any element → opens that dialog
+- `data-dialog-close` on any element inside → closes the dialog
+- Click on backdrop → closes (click lands on `<dialog>` itself)
+- Place `<dialog>` elements as direct children of `<body>`
+
+---
+
+## Notes
+
+- Animation uses CSS-only enter via `@starting-style` and exit via `transition` + `allow-discrete`.
+- While the dialog is modal, `html:has(dialog.dialog:modal)` sets `overflow: hidden` + `scrollbar-gutter: stable` - the page behind cannot scroll and its position is preserved for when the dialog closes (no JS scroll-lock).
+- The selector is `dialog.dialog` (element + class) to avoid styling native `<dialog>` elements used elsewhere.
+- For forms inside dialogs, use the `dialog-body` wrapper for the form content.

@@ -1,0 +1,120 @@
+---
+title: "Text Rotate"
+description: "Text Rotate component - one line at a time from a short list, rolling on an infinite CSS loop."
+slug: "text-rotate"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="text-rotate" title="Text Rotate" component="text-rotate">
+  Shows one line at a time from a short list and rolls on to the next - an infinite loop that pauses while hovered. Put it inline in a sentence or use it as a headline; it takes the font, size, color and line height of the text around it. CSS only, the same markup as daisyUI's text-rotate.
+</PageHeader>
+
+<SkillPanel component="text-rotate">
+  <SkillField label="Native basis">
+<SkillText>A one-line window (<code>height: 1lh; overflow: hidden</code>) around a stack of 2 - 6 lines; a CSS animation picked by the line count (<code>:has()</code>) moves the stack.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/length#lh" title="a window exactly one line tall"><code>lh</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="picks the keyframes by line count"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/animation-play-state" title="pauses on hover / focus"><code>animation-play-state</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="the first line stays"><code>prefers-reduced-motion</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.text-rotate</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-direction="down"</code>, <code>data-effect="fade"</code>, <code>data-align</code> (<code>center</code>, <code>end</code>), <code>data-pause="none"</code>; the duration of one round: <code>--text-rotate-duration</code> (default 10s).</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" schema="none" height="14" hint="Three lines in a big headline: each holds for its share of the 10s round, then rolls up to the next; after the last it rolls back to the first. Hover to pause."
+<span class="text-rotate" style="font-size:3.75rem;font-weight:800;">
+  <span>
+    <span>ONE</span>
+    <span>TWO</span>
+    <span>THREE</span>
+  </span>
+</span>
+```
+
+```html example label="In a sentence" schema="none" height="12" hint="Inline in running text - the window takes the sentence's font and sits on its baseline; each line can have its own color. The window is as wide as its longest line, so the rotating word reads best at the end of a sentence."
+<p class="h2" style="border:0;margin:0;">
+  Components that are
+  <span class="text-rotate">
+    <span>
+      <span style="color:var(--primary);">native.</span>
+      <span style="color:oklch(0.6 0.16 250);">accessible.</span>
+      <span style="color:oklch(0.62 0.17 150);">themeable.</span>
+      <span style="color:oklch(0.65 0.2 25);">yours.</span>
+    </span>
+  </span>
+</p>
+```
+
+```html example label="Centered headline" schema="none" height="16" hint="data-align='center' centers shorter lines in the window; emojis are just text."
+<div style="text-align:center;">
+  <p class="text-sm text-muted-foreground" style="margin:0 0 0.5rem;">Made for</p>
+  <span class="text-rotate" data-align="center" style="font-size:3rem;font-weight:800;letter-spacing:-0.03em;">
+    <span>
+      <span>🎨 Designers</span>
+      <span>🧑‍💻 Developers</span>
+      <span>🤖 AI agents</span>
+      <span>🚀 Founders</span>
+    </span>
+  </span>
+</div>
+```
+
+```html example label="Duration" schema="none" height="12" hint="--text-rotate-duration is one full round through all lines (default 10s): here 4s and 16s."
+<div class="grid gap-6" style="grid-template-columns:auto 1fr;align-items:center;font-size:1.75rem;font-weight:700;">
+  <span class="text-sm text-muted-foreground">4s</span>
+  <span class="text-rotate" style="--text-rotate-duration:4s;"><span><span>Quick</span><span>Snappy</span><span>Brisk</span></span></span>
+  <span class="text-sm text-muted-foreground">16s</span>
+  <span class="text-rotate" style="--text-rotate-duration:16s;"><span><span>Calm</span><span>Slow</span><span>Patient</span></span></span>
+</div>
+```
+
+```html example label="Direction and fade" schema="none" height="14" hint="data-direction='down' drops each next line in from above (same reading order); data-effect='fade' crossfades in place with a small drift."
+<div class="grid gap-6" style="grid-template-columns:repeat(3,auto);justify-content:start;font-size:2rem;font-weight:700;">
+  <div><p class="text-sm text-muted-foreground" style="margin:0;">up (default)</p><span class="text-rotate"><span><span>Morning</span><span>Noon</span><span>Evening</span></span></span></div>
+  <div><p class="text-sm text-muted-foreground" style="margin:0;">down</p><span class="text-rotate" data-direction="down"><span><span>Morning</span><span>Noon</span><span>Evening</span></span></span></div>
+  <div><p class="text-sm text-muted-foreground" style="margin:0;">fade</p><span class="text-rotate" data-effect="fade"><span><span>Morning</span><span>Noon</span><span>Evening</span></span></span></div>
+</div>
+```
+
+```html example label="Line height" schema="none" height="16" hint="The window is 1lh - one line of whatever line-height the text has, so a loose line-height gives each line more room. Keep it at 1.2 or more: tighter than the glyphs themselves, the edges of the neighbouring lines peek into the window."
+<div class="grid gap-6" style="grid-template-columns:repeat(2,auto);justify-content:start;font-size:2rem;font-weight:700;">
+  <div><p class="text-sm text-muted-foreground" style="margin:0;">line-height 1.25</p><span class="text-rotate" style="line-height:1.25;"><span><span>Snug</span><span>Close</span></span></span></div>
+  <div><p class="text-sm text-muted-foreground" style="margin:0;">line-height 2.2</p><span class="text-rotate" style="line-height:2.2;background:var(--muted);border-radius:var(--radius-md);padding-inline:0.5rem;"><span><span>Airy</span><span>Loose</span></span></span></div>
+</div>
+```
+
+```html example label="Six lines, never pausing" schema="none" height="12" hint="Up to six lines; data-pause='none' keeps it rolling under the pointer (a ticker)."
+<p style="font-size:1.5rem;font-weight:600;margin:0;">
+  Status:
+  <span class="text-rotate" data-pause="none" style="--text-rotate-duration:9s;">
+    <span>
+      <span>✅ Build passed</span>
+      <span>🧪 Tests green</span>
+      <span>📦 Bundle ready</span>
+      <span>🔍 Verify ok</span>
+      <span>🚀 Deployed</span>
+      <span>☕ Coffee time</span>
+    </span>
+  </span>
+</p>
+```
+
+<SourceFiles component="text-rotate" section="css" />
+
+</DocPage>

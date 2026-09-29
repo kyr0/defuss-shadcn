@@ -45,6 +45,38 @@
     &[data-variant="active"] {
       background-color: var(--primary);
     }
+    &[data-variant="destructive"] {
+      background-color: var(--destructive);
+    }
+    /* a hollow ring: planned / upcoming */
+    &[data-variant="outline"] {
+      background-color: var(--background);
+      box-shadow: inset 0 0 0 2px var(--primary);
+    }
+
+    /* an icon inside the dot (svg / img / lucide <i data-lucide>) turns it
+       into a 1.5rem badge; the connector re-centers on it (below) */
+    &:has(> :is(svg, img)) {
+      display: grid;
+      place-items: center;
+      width: 1.5rem;
+      height: 1.5rem;
+      margin-top: -0.125rem;
+      background-color: var(--muted);
+      color: var(--foreground);
+
+      & > :is(svg, img) { width: 0.875rem; height: 0.875rem; }
+      &[data-variant="active"] { background-color: var(--primary); color: var(--primary-foreground); }
+      &[data-variant="destructive"] { background-color: var(--destructive); color: var(--destructive-foreground); }
+      &[data-variant="outline"] { background-color: var(--background); color: var(--foreground); box-shadow: inset 0 0 0 1px var(--border); }
+    }
+  }
+
+  /* vertical connector under an icon dot: centered on the 1.5rem badge */
+  .timeline-item:has(> .timeline-dot > :is(svg, img))::before {
+    left: calc(0.75rem - 0.5px);
+    top: 1.75rem;
+    bottom: 0.5rem;
   }
 
   .timeline-content {
@@ -94,4 +126,86 @@
     & .timeline-item:not(:last-child) { padding-bottom: 1.875rem; }
   }
 
+  /* -- Horizontal ---------------------------------------------------
+     data-orientation="horizontal": one equal column per item (at least
+     10rem - more items scroll sideways, snapping to each), the dot on top,
+     the content below. The rows are a SUBGRID across all items, so every
+     dot sits on one line even when contents differ in height. The
+     connector is the item's ::before as a GRID ITEM in the dot's row: it
+     starts 0.375rem after the dot and runs through the item's trailing
+     padding to 0.375rem before the next dot. data-align="center" centers
+     dot and text in the column; data-alternate puts every second item's
+     content ABOVE the line. The item gap (density-scaled) spaces dot and
+     content. Declared after the density rules, which it overrides where
+     they meet (padding). */
+  .timeline[data-orientation="horizontal"] {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(10rem, 1fr);
+    grid-template-rows: auto auto;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+
+    & > .timeline-item {
+      display: grid;
+      grid-row: span 2;
+      grid-template-rows: subgrid;
+      grid-template-columns: minmax(0, 1fr);
+      column-gap: 0;
+      padding: 0;
+      padding-inline-end: 1.5rem;
+      scroll-snap-align: start;
+
+      & > .timeline-dot { grid-row: 1; grid-column: 1; margin: 0; justify-self: start; align-self: center; }
+      & > .timeline-content { grid-row: 2; grid-column: 1; }
+
+      &::before {
+        position: static;
+        grid-row: 1;
+        grid-column: 1;
+        align-self: center;
+        width: auto;
+        height: 1px;
+        margin-inline: 1rem -1.125rem;
+      }
+      &:has(> .timeline-dot > :is(svg, img))::before { margin-inline: 1.875rem -1.125rem; }
+      &:last-child { padding-inline-end: 0; }
+    }
+
+    &[data-align="center"] > .timeline-item {
+      text-align: center;
+
+      & > .timeline-dot { justify-self: center; }
+      & > .timeline-content { align-items: center; }
+      /* percentages resolve against the column: from just past this dot's
+         center to just before the next one's */
+      &::before { margin-inline: calc(50% + 0.6875rem) calc(-50% - 0.8125rem); }
+      &:has(> .timeline-dot > :is(svg, img))::before { margin-inline: calc(50% + 1.125rem) calc(-50% - 0.375rem); }
+    }
+
+    &[data-alternate] {
+      grid-template-rows: auto auto auto;
+
+      & > .timeline-item {
+        grid-row: span 3;
+
+        & > .timeline-dot, &::before { grid-row: 2; }
+        & > .timeline-content { grid-row: 3; }
+        &:nth-child(even) > .timeline-content { grid-row: 1; align-self: end; }
+      }
+    }
+  }
+
+
+  /* -- Accessibility ------------------------------------------
+     forced colors drop background colors: keep the dots and the
+     connector visible in system colors */
+  @media (forced-colors: active) {
+    .timeline-dot { forced-color-adjust: none; background-color: CanvasText; color: Canvas; }
+    .timeline-dot[data-variant="active"] { background-color: Highlight; color: HighlightText; }
+    .timeline-dot[data-variant="outline"] { background-color: Canvas; box-shadow: inset 0 0 0 2px CanvasText; color: CanvasText; }
+    .timeline-item::before { forced-color-adjust: none; background-color: CanvasText; }
+  }
 }

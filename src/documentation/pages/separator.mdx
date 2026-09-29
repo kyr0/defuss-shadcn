@@ -34,7 +34,14 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 
   <SkillField label="Data attributes">
-<SkillText>• <code>data-orientation</code> - values: <code>vertical</code></SkillText>
+<SkillGrid>
+    <Variant name="data-orientation" description="vertical - the line runs top to bottom (parent: a flex row)" />
+    <Variant name="data-variant" description="neutral, primary, secondary, accent, info, success, warning, destructive (alias error) - the line color" />
+    <Variant name="data-align" description="start / end - the text's position along the line (default center)" />
+    <Variant name="data-size" description="sm 1px (default), md 2px, lg 4px, xl 8px - the thickness" />
+    <Variant name="data-gap" description="none, sm, md (default), lg, xl - space between text and lines" />
+    <Variant name="data-orientation-md / -lg" description="vertical from 48 / 64rem up (the parent turns into a row at the same width)" />
+  </SkillGrid>
   </SkillField>
 
   <SkillField label="Variants">
@@ -61,10 +68,12 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
   <SkillField label="Notes">
 <SkillText dense>• The vertical separator requires the parent to be a flex container.</SkillText>
-  <SkillText dense>• The labeled separator uses a flex layout with two <code>&lt;hr&gt;</code> elements flanking the label text.</SkillText>
+  <SkillText dense>• Text inside a <code>&lt;div class="separator"&gt;</code> sits on the line (two pseudo-element lines flank it). An empty separator must be truly empty - even a space turns it into a text separator.</SkillText>
+  <SkillText dense>• With meaningful text ("or"), leave <code>role="separator"</code> off - that role hides its text from screen readers - or name it with <code>aria-label</code>.</SkillText>
+  <SkillText dense>• The older <code>.separator-label</code> wrapper (two <code>&lt;hr&gt;</code> around a span) keeps working.</SkillText>
   <SkillText dense>• Decorative separators should use <code>role="none"</code> or <code>aria-hidden="true"</code>.</SkillText>
   <SkillText dense>• In <code>forced-colors</code> mode, the separator uses <code>CanvasText</code> system color.</SkillText>
-  <SkillText dense>• In <code>prefers-contrast: more</code> mode, thickness doubles to 2px.</SkillText>
+  <SkillText dense>• In <code>prefers-contrast: more</code> mode, an unsized separator is 2px thick and an uncolored one takes <code>--foreground</code>.</SkillText>
   <p class="text-muted-foreground m-0">• Separators are purely visual - no JavaScript required.</p>
   </SkillField>
 </SkillPanel>
@@ -83,7 +92,85 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 ```
 
-```html example label="With Label" hint="A separator with centered text label."
+```html example label="With text" hint="Text inside the separator sits on the line - the lines draw themselves left and right of it. Meaningful text keeps role=&quot;separator&quot; off, so screen readers read it."
+<div class="stack gap-4" style="max-width:24rem;">
+  <div class="grid place-items-center rounded-lg" style="height:5rem;background:var(--muted);color:var(--muted-foreground);font-size:0.875rem;">Sign in with a passkey</div>
+  <div class="separator">OR</div>
+  <div class="grid place-items-center rounded-lg" style="height:5rem;background:var(--muted);color:var(--muted-foreground);font-size:0.875rem;">Sign in with email</div>
+</div>
+```
+
+```html example label="Side by side" hint="data-orientation=&quot;vertical&quot; in a flex row: the text sits on a vertical line between the two blocks (DaisyUI calls this divider-horizontal - it divides horizontally placed items)."
+<div class="flex gap-4" style="max-width:32rem;">
+  <div class="grid place-items-center rounded-lg" style="flex:1;height:8rem;background:var(--muted);color:var(--muted-foreground);font-size:0.875rem;">Free</div>
+  <div class="separator" data-orientation="vertical">OR</div>
+  <div class="grid place-items-center rounded-lg" style="flex:1;height:8rem;background:var(--muted);color:var(--muted-foreground);font-size:0.875rem;">Pro</div>
+</div>
+```
+
+```html example label="Responsive" hint="data-orientation-lg=&quot;vertical&quot;: stacked with a horizontal line on small screens, side by side with a vertical one from 64rem - the parent switches to a row at the same width. Try the device sizes in the toolbar."
+<style>
+  .sep-demo-row { display: flex; flex-direction: column; gap: 1rem; }
+  @media (min-width: 64rem) { .sep-demo-row { flex-direction: row; } }
+</style>
+<div class="sep-demo-row">
+  <div class="grid place-items-center rounded-lg" style="flex:1 1 auto;min-height:6rem;background:var(--muted);color:var(--muted-foreground);font-size:0.875rem;">Content</div>
+  <div class="separator" data-orientation-lg="vertical">OR</div>
+  <div class="grid place-items-center rounded-lg" style="flex:1 1 auto;min-height:6rem;background:var(--muted);color:var(--muted-foreground);font-size:0.875rem;">Content</div>
+</div>
+```
+
+```html example label="Colors" hint="data-variant colors the line (the text stays muted): neutral, primary, secondary, accent, info, success, warning and destructive (alias error). Secondary and accent take the theme's chart colors - its --secondary / --accent are pale surfaces; success, warning and info are fixed colors."
+<div class="stack gap-3" style="max-width:28rem;">
+  <div class="separator">Default</div>
+  <div class="separator" data-variant="neutral">Neutral</div>
+  <div class="separator" data-variant="primary">Primary</div>
+  <div class="separator" data-variant="secondary">Secondary</div>
+  <div class="separator" data-variant="accent">Accent</div>
+  <div class="separator" data-variant="info">Info</div>
+  <div class="separator" data-variant="success">Success</div>
+  <div class="separator" data-variant="warning">Warning</div>
+  <div class="separator" data-variant="destructive">Destructive</div>
+</div>
+```
+
+```html example label="Text position" hint="data-align=&quot;start&quot; or &quot;end&quot; moves the text to the start or end of the line (default: centered)."
+<div class="stack gap-4" style="max-width:28rem;">
+  <div class="separator" data-align="start">Start</div>
+  <div class="separator">Center</div>
+  <div class="separator" data-align="end">End</div>
+</div>
+```
+
+```html example label="Text position (vertical)" hint="The same on a vertical line: start is the top, end the bottom."
+<div class="flex gap-8" style="height:10rem;">
+  <div class="separator" data-orientation="vertical" data-align="start">Start</div>
+  <div class="separator" data-orientation="vertical">Center</div>
+  <div class="separator" data-orientation="vertical" data-align="end">End</div>
+</div>
+```
+
+```html example label="Sizes" hint="data-size sets the thickness: sm 1px (the default), md 2px, lg 4px, xl 8px - with or without text."
+<div class="stack gap-5" style="max-width:28rem;">
+  <div class="separator" data-size="sm" data-variant="primary">sm</div>
+  <div class="separator" data-size="md" data-variant="primary">md</div>
+  <div class="separator" data-size="lg" data-variant="primary">lg</div>
+  <div class="separator" data-size="xl" data-variant="primary">xl</div>
+  <hr class="separator" data-size="lg" data-variant="neutral">
+</div>
+```
+
+```html example label="Gaps" hint="data-gap sets the space between the text and the lines: none, sm, md (the default), lg, xl. For space around a separator, use the margin utilities (my-4, my-8 …)."
+<div class="stack gap-4" style="max-width:28rem;">
+  <div class="separator" data-gap="none">gap none</div>
+  <div class="separator" data-gap="sm">gap sm</div>
+  <div class="separator" data-gap="md">gap md</div>
+  <div class="separator" data-gap="lg">gap lg</div>
+  <div class="separator" data-gap="xl">gap xl</div>
+</div>
+```
+
+```html example label="With Label" hint="The older wrapper form - two separators around a span - still works; text inside the separator itself (above) is simpler."
 <div class="separator-label">
   <hr class="separator">
   <span>or continue with</span>

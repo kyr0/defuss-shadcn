@@ -134,9 +134,8 @@ function initTags(wrapper) {
     const visible = () => [...options(), ...(createRow ? [createRow] : [])].filter((o) => !o.hidden && o.getAttribute('aria-disabled') !== 'true');
     const isOpen = () => popover.matches(':popover-open');
     const open = () => {
-        if (isOpen())
-            return;
-        safeShowPopover(popover);
+        if (!isOpen())
+            safeShowPopover(popover);
         dfDollar(input).attr('aria-expanded', 'true');
     };
     const close = () => {
@@ -144,6 +143,15 @@ function initTags(wrapper) {
             popover.hidePopover();
         dfDollar(input).attr('aria-expanded', 'false');
         highlight(null);
+    };
+    // the State API, like every other combobox: setState('open' | 'default')
+    // drives the list (the tag path returns before the main init binds it -
+    // without this the docs' State "open" switch did nothing on a tag input)
+    popover._open = () => { open(); filter(); };
+    popover._close = close;
+    popover.api = {
+        setState: (stateName, config) => comboboxApi.setState(popover, stateName, config),
+        getState: () => comboboxApi.getState(popover),
     };
     /** Filter by the typed text; auto-highlight the exact match, else the create row. */
     const filter = () => {
@@ -313,8 +321,9 @@ function initTags(wrapper) {
         if (!wrapper.contains(e.relatedTarget) && !popover.contains(e.relatedTarget))
             close();
     });
-    popover.addEventListener('toggle', (e) => { if (e.newState === 'closed')
-        dfDollar(input).attr('aria-expanded', 'false'); });
+    // toggle events are queued: a close fired just before a re-open arrives after
+    // it - mirror the popover's REAL state instead of assuming "closed"
+    popover.addEventListener('toggle', () => { dfDollar(input).attr('aria-expanded', String(isOpen())); });
 }
 function init() {
     document.querySelectorAll('.combobox:not([data-init])').forEach((wrapper) => {
@@ -565,10 +574,13 @@ function init() {
             const items = getVisibleItems();
             doHighlight(items.indexOf(item));
         } });
-        popover.addEventListener('toggle', (e) => { if (e.newState === 'closed') {
-            $trigger.attr('aria-expanded', 'false');
-            clearHighlight();
-        } });
+        popover.addEventListener('toggle', () => {
+            // queued toggle events may arrive after a re-open - mirror the real state
+            const nowOpen = popover.matches(':popover-open');
+            $trigger.attr('aria-expanded', String(nowOpen));
+            if (!nowOpen)
+                clearHighlight();
+        });
     });
 }
 init();

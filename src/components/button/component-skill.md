@@ -57,6 +57,37 @@ supportedStates: default
 | `ghost`         | transparent          | `--foreground`           | `--accent` bg                  |
 | `destructive`   | `--destructive`      | `--destructive-foreground` | `opacity: 0.9`              |
 | `link`          | transparent          | `--primary`              | underline                      |
+| `soft`          | `--primary` at 12%   | `--primary` mixed toward `--foreground` | 20% tint     |
+| `dashed`        | transparent + dashed border | `--foreground`    | `--accent` bg, solid border    |
+
+## Tones (`data-tone`)
+
+A color for any variant: `success`, `warning`, `info`, `destructive` - or
+`custom`, which reads `--btn-color` (and `--btn-color-fg`, the text on a
+solid fill, default white) from the button's `style`. Solid (no variant or
+`default`) fills with the tone; `outline` / `ghost` / `soft` / `dashed` /
+`link` write in it, mixed 78% toward `--foreground` so light tones stay
+readable.
+
+```html
+<button class="btn" data-tone="success">Save</button>
+<button class="btn" data-tone="warning" data-variant="soft">Review</button>
+<button class="btn" data-tone="custom" data-variant="outline" style="--btn-color: oklch(0.55 0.22 300);">Violet</button>
+```
+
+### Emojis, frames, aura
+
+- Emoji: plain text in the label (`<span aria-hidden="true">🚀</span> Launch`);
+  an emoji-only button needs `aria-label`.
+- Frames: any `frame-*` class from `shapes.css` replaces the border
+  (`<button class="btn frame-double" data-variant="outline">`).
+- Aura: wrap it - `<span class="aura" style="display:inline-grid;--shape-round:var(--radius-md)"><button class="btn">…</button></span>`.
+
+### Right-to-left
+
+The layout is logical (the icon before the label leads in both directions).
+Mark directional icons `data-rtl-flip` - they mirror under `dir="rtl"`:
+`<button class="btn">Next <svg data-rtl-flip …></svg></button>`.
 
 ---
 

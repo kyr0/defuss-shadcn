@@ -1,0 +1,225 @@
+---
+title: "Indicator"
+description: "Indicator component - pin badges, status dots and buttons to any of nine points of an element, plus animated status dots. CSS only."
+slug: "indicator"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="indicator" title="Indicator" component="indicator">
+  Pins a badge, a status dot or a button to any of nine points of an element - a count on a button, a dot on a card, a "Required" tag on an input. <code>.indicator</code> wraps the element, <code>.indicator-item</code> sits centered on its anchor point, and <code>.indicator-dot</code> is the status dot, with ping, bounce and pulse animations. No JavaScript.
+</PageHeader>
+
+<SkillPanel component="indicator">
+  <SkillField label="Native basis">
+<SkillText>A <code>position: relative</code> wrapper; each item is <code>position: absolute</code>, centered on its anchor point with <code>translate</code>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/translate" title="centers the item on its anchor point"><code>translate</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:dir" title="start / end flip in RTL"><code>:dir()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="animated dots stand still"><code>prefers-reduced-motion</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.indicator</code>
+    <code>.indicator-item</code>
+    <code>.indicator-dot</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Placement (data-position on .indicator-item)">
+<SkillGrid>
+    <Variant name="top-start / top-center / top-end" description="Top edge - top-end is the default" />
+    <Variant name="middle-start / middle-center / middle-end" description="Vertical middle" />
+    <Variant name="bottom-start / bottom-center / bottom-end" description="Bottom edge" />
+    <Variant name="data-position-sm / -md / -lg / -xl" description="The same values from 40 / 48 / 64 / 80rem up" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Status dot (.indicator-dot)">
+<SkillGrid>
+    <Variant name="data-variant" description="neutral, primary, secondary, accent, success, warning, info, destructive" />
+    <Variant name="data-size" description="xs, sm, md (default), lg, xl" />
+    <Variant name="data-animate" description="ping, bounce, pulse" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• A status dot needs <code>role="img"</code> + <code>aria-label</code></SkillText>
+  <SkillText dense>• Put a badge's count in the button's accessible name too</SkillText>
+  <SkillText dense>• Animations stop under <code>prefers-reduced-motion: reduce</code></SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Status indicator" hint="A status dot pinned to the top-end corner (the default) of a box."
+<div class="indicator">
+  <span class="indicator-item indicator-dot" data-variant="success" role="img" aria-label="Online"></span>
+  <div class="grid place-items-center rounded-lg" style="width:8rem;height:5rem;background:var(--muted);color:var(--muted-foreground);font-size:0.75rem;">content</div>
+</div>
+```
+
+```html example label="Badge as indicator" hint="Any badge becomes an indicator with .indicator-item."
+<div class="indicator">
+  <span class="indicator-item badge" data-variant="default">New</span>
+  <div class="grid place-items-center rounded-lg" style="width:8rem;height:5rem;background:var(--muted);color:var(--muted-foreground);font-size:0.75rem;">content</div>
+</div>
+```
+
+```html example label="For a button" hint="An unread count on a button - put the count into the button's accessible name as well."
+<div class="indicator">
+  <span class="indicator-item badge" data-variant="secondary" aria-hidden="true">12</span>
+  <button class="btn" data-variant="outline" aria-label="Inbox, 12 unread">Inbox</button>
+</div>
+```
+
+```html example label="For a tab" hint="Wrap the tab trigger: the tablist keeps working, the count rides on the tab."
+<div class="tabs">
+  <div class="tab-list" role="tablist" aria-label="Mail">
+    <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="ind-p0" id="ind-t0" tabindex="-1">Drafts</button>
+    <span class="indicator"><span class="indicator-item badge" data-variant="default" data-size="xs" aria-hidden="true">8</span><button class="tab-trigger" role="tab" aria-selected="true" aria-controls="ind-p1" id="ind-t1" aria-label="Messages, 8 new">Messages</button></span>
+    <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="ind-p2" id="ind-t2" tabindex="-1">Archive</button>
+  </div>
+  <div class="tab-content" role="tabpanel" id="ind-p0" aria-labelledby="ind-t0" tabindex="0" hidden>Drafts</div>
+  <div class="tab-content" role="tabpanel" id="ind-p1" aria-labelledby="ind-t1" tabindex="0">8 new messages.</div>
+  <div class="tab-content" role="tabpanel" id="ind-p2" aria-labelledby="ind-t2" tabindex="0" hidden>Archive</div>
+</div>
+```
+
+```html example label="For an avatar" hint="A named badge on a profile picture - for presence, the avatar's own .avatar-badge has shaped states."
+<div class="indicator">
+  <span class="indicator-item badge" data-variant="secondary">Justice</span>
+  <span class="avatar w-24 h-24" data-shape="rounded"><img class="avatar-image" src="https://github.com/kyr0.png" alt="Aron Homberg"></img><span class="avatar-fallback">AH</span></span>
+</div>
+```
+
+```html example label="For an input" hint="A &quot;Required&quot; tag on a field - the input keeps its own required attribute for the real contract."
+<div class="indicator">
+  <span class="indicator-item badge" data-variant="default" aria-hidden="true">Required</span>
+  <input class="input" type="text" placeholder="Your email address" required aria-label="Email (required)">
+</div>
+```
+
+```html example label="A button as an indicator" hint="Items can be interactive: an Apply button on a job card, pinned to the bottom-end corner. The wrapper is inline-sized - w-full stretches it."
+<div class="indicator w-full" style="max-width:26rem;">
+  <div class="indicator-item" data-position="bottom-end"><button class="btn" data-size="sm">Apply</button></div>
+  <div class="card w-full">
+    <div class="card-header">
+      <h3 class="card-title" style="font-size:1rem;">Job title</h3>
+      <p class="card-description">Rerum reiciendis beatae tenetur excepturi aut pariatur est eos. Sit sit necessitatibus.</p>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="In the center of an image" hint="data-position=&quot;middle-center&quot; lays the item over the middle of the element."
+<div class="indicator">
+  <span class="indicator-item badge" data-variant="default" data-position="middle-center">Only available for Pro users</span>
+  <img src="images/mk-wide.png" alt="" class="rounded-lg" style="width:20rem;height:auto;display:block;">
+</div>
+```
+
+```html example label="Placement" hint="Nine anchor points: vertical top / middle / bottom joined with horizontal start / center / end. top-end is the default."
+<div class="grid grid-cols-3 gap-10 p-4" style="width:fit-content;">
+  <div class="indicator"><span class="indicator-item badge" data-variant="default" data-position="top-start">top-start</span><div class="grid place-items-center rounded-lg" style="width:8rem;height:5rem;background:var(--muted);color:var(--muted-foreground);font-size:0.75rem;"></div></div>
+  <div class="indicator"><span class="indicator-item badge" data-variant="default" data-position="top-center">top-center</span><div class="grid place-items-center rounded-lg" style="width:8rem;height:5rem;background:var(--muted);color:var(--muted-foreground);font-size:0.75rem;"></div></div>
+  <div class="indicator"><span class="indicator-item badge" data-variant="default" data-position="top-end">top-end</span><div class="grid place-items-center rounded-lg" style="width:8rem;height:5rem;background:var(--muted);color:var(--muted-foreground);font-size:0.75rem;"></div></div>
+  <div class="indicator"><span class="indicator-item badge" data-variant="default" data-position="middle-start">middle-start</span><div class="grid place-items-center rounded-lg" style="width:8rem;height:5rem;background:var(--muted);color:var(--muted-foreground);font-size:0.75rem;"></div></div>
+  <div class="indicator"><span class="indicator-item badge" data-variant="default" data-position="middle-center">middle-center</span><div class="grid place-items-center rounded-lg" style="width:8rem;height:5rem;background:var(--muted);color:var(--muted-foreground);font-size:0.75rem;"></div></div>
+  <div class="indicator"><span class="indicator-item badge" data-variant="default" data-position="middle-end">middle-end</span><div class="grid place-items-center rounded-lg" style="width:8rem;height:5rem;background:var(--muted);color:var(--muted-foreground);font-size:0.75rem;"></div></div>
+  <div class="indicator"><span class="indicator-item badge" data-variant="default" data-position="bottom-start">bottom-start</span><div class="grid place-items-center rounded-lg" style="width:8rem;height:5rem;background:var(--muted);color:var(--muted-foreground);font-size:0.75rem;"></div></div>
+  <div class="indicator"><span class="indicator-item badge" data-variant="default" data-position="bottom-center">bottom-center</span><div class="grid place-items-center rounded-lg" style="width:8rem;height:5rem;background:var(--muted);color:var(--muted-foreground);font-size:0.75rem;"></div></div>
+  <div class="indicator"><span class="indicator-item badge" data-variant="default" data-position="bottom-end">bottom-end</span><div class="grid place-items-center rounded-lg" style="width:8rem;height:5rem;background:var(--muted);color:var(--muted-foreground);font-size:0.75rem;"></div></div>
+</div>
+```
+
+```html example label="Multiple indicators" hint="One wrapper, nine items - one per anchor point."
+<div class="indicator m-4">
+  <span class="indicator-item badge" data-variant="secondary" data-position="top-start" aria-hidden="true">↖︎</span>
+  <span class="indicator-item badge" data-variant="secondary" data-position="top-center" aria-hidden="true">↑</span>
+  <span class="indicator-item badge" data-variant="secondary" data-position="top-end" aria-hidden="true">↗︎</span>
+  <span class="indicator-item badge" data-variant="secondary" data-position="middle-start" aria-hidden="true">←</span>
+  <span class="indicator-item badge" data-variant="default" data-position="middle-center" aria-hidden="true">●</span>
+  <span class="indicator-item badge" data-variant="secondary" data-position="middle-end" aria-hidden="true">→</span>
+  <span class="indicator-item badge" data-variant="secondary" data-position="bottom-start" aria-hidden="true">↙︎</span>
+  <span class="indicator-item badge" data-variant="secondary" data-position="bottom-center" aria-hidden="true">↓</span>
+  <span class="indicator-item badge" data-variant="secondary" data-position="bottom-end" aria-hidden="true">↘︎</span>
+  <div class="grid place-items-center rounded-lg" style="width:16rem;height:8rem;background:var(--muted);"></div>
+</div>
+```
+
+```html example label="Responsive" hint="data-position-sm / -md / -lg / -xl take effect from 40 / 48 / 64 / 80rem wide: this badge moves start → center → end → start → end. Try the device sizes in the toolbar."
+<div class="indicator">
+  <span class="indicator-item badge" data-variant="default" data-position="start" data-position-sm="center" data-position-md="end" data-position-lg="start" data-position-xl="end">Responsive</span>
+  <div class="grid place-items-center rounded-lg" style="width:16rem;height:6rem;background:var(--muted);"></div>
+</div>
+```
+
+<h2 id="status" class="h2-display">Status dots</h2>
+
+<DocText><code>.indicator-dot</code> is a small colored dot for presence and state - inline next to a label, or pinned as an <code>.indicator-item</code>. Give it <code>role="img"</code> and an <code>aria-label</code>, and pair it with text where there is room: color alone is not a message.</DocText>
+
+```html example label="Status" hint="An inline dot next to its label."
+<p class="m-0 flex items-center gap-2 text-sm"><span class="indicator-dot" data-variant="success" role="img" aria-label="Online"></span> All systems operational</p>
+```
+
+```html example label="Status sizes" hint="data-size: xs · sm · md (default) · lg · xl."
+<div class="flex items-center gap-4">
+  <span class="indicator-dot" data-size="xs" data-variant="primary" role="img" aria-label="xs"></span>
+  <span class="indicator-dot" data-size="sm" data-variant="primary" role="img" aria-label="sm"></span>
+  <span class="indicator-dot" data-size="md" data-variant="primary" role="img" aria-label="md"></span>
+  <span class="indicator-dot" data-size="lg" data-variant="primary" role="img" aria-label="lg"></span>
+  <span class="indicator-dot" data-size="xl" data-variant="primary" role="img" aria-label="xl"></span>
+</div>
+```
+
+```html example label="Status colors" hint="neutral, primary, secondary, accent, info, success, warning and destructive (alias error). Secondary and accent take the theme's chart colors (--chart-2, --chart-4) - its --secondary / --accent are pale surfaces; success, warning and info are fixed colors - the theme tokens have no such pairs."
+<div class="flex flex-wrap items-center gap-5 text-sm">
+  <span class="flex items-center gap-2"><span class="indicator-dot" data-size="lg" data-variant="neutral" role="img" aria-label="neutral"></span>neutral</span>
+  <span class="flex items-center gap-2"><span class="indicator-dot" data-size="lg" data-variant="primary" role="img" aria-label="primary"></span>primary</span>
+  <span class="flex items-center gap-2"><span class="indicator-dot" data-size="lg" data-variant="secondary" role="img" aria-label="secondary"></span>secondary</span>
+  <span class="flex items-center gap-2"><span class="indicator-dot" data-size="lg" data-variant="accent" role="img" aria-label="accent"></span>accent</span>
+  <span class="flex items-center gap-2"><span class="indicator-dot" data-size="lg" data-variant="info" role="img" aria-label="info"></span>info</span>
+  <span class="flex items-center gap-2"><span class="indicator-dot" data-size="lg" data-variant="success" role="img" aria-label="success"></span>success</span>
+  <span class="flex items-center gap-2"><span class="indicator-dot" data-size="lg" data-variant="warning" role="img" aria-label="warning"></span>warning</span>
+  <span class="flex items-center gap-2"><span class="indicator-dot" data-size="lg" data-variant="destructive" role="img" aria-label="destructive"></span>destructive</span>
+</div>
+```
+
+```html example label="Ping" hint="data-animate=&quot;ping&quot;: a ring pulses out of the dot - for something that needs attention now, like a server going down."
+<div class="flex items-center gap-2 text-sm">
+  <span class="indicator-dot" data-variant="destructive" data-animate="ping" role="img" aria-label="Down"></span> Server is down
+</div>
+```
+
+```html example label="Bounce" hint="data-animate=&quot;bounce&quot;: the dot hops - unread messages waiting."
+<div class="flex items-center gap-2 text-sm">
+  <span class="indicator-dot" data-variant="info" data-animate="bounce" role="img" aria-label="Unread"></span> Unread messages
+</div>
+```
+
+```html example label="Animated indicators" hint="An animated dot works as an indicator item too - a pulse on a button, a ping on an avatar, a bounce on a card. Under reduced motion every one stands still."
+<div class="flex flex-wrap items-center gap-10 p-4">
+  <div class="indicator">
+    <span class="indicator-item indicator-dot" data-variant="success" data-size="lg" data-animate="pulse" role="img" aria-label="Deploying"></span>
+    <button class="btn" data-variant="outline">Deploy</button>
+  </div>
+  <div class="indicator">
+    <span class="indicator-item indicator-dot" data-position="bottom-end" data-variant="success" data-size="lg" data-animate="ping" role="img" aria-label="Online"></span>
+    <span class="avatar" data-size="xl"><img class="avatar-image" src="https://github.com/kyr0.png" alt="Aron Homberg"></img><span class="avatar-fallback">AH</span></span>
+  </div>
+  <div class="indicator">
+    <span class="indicator-item indicator-dot" data-variant="destructive" data-size="lg" data-animate="bounce" role="img" aria-label="New alerts"></span>
+    <div class="grid place-items-center rounded-lg" style="width:8rem;height:5rem;background:var(--muted);color:var(--muted-foreground);font-size:0.75rem;">Alerts</div>
+  </div>
+</div>
+```
+
+<SourceFiles component="indicator" section="css" />
+
+</DocPage>

@@ -4,7 +4,7 @@
 
 # defuss-shadcn - Agent Skill
 
-**A UI component system that scales with _local_ AI.** Themeable components built on semantic HTML, modern CSS, and vanilla JavaScript. No framework, zero dependencies - `dist/` is committed and ready to use as-is. This file is the entry point for an AI agent integrating the library: read it once, then read only the component skills you need.
+**A UI component system that scales with _(local)_ AI.** Themeable components built on semantic HTML, modern CSS, and vanilla JavaScript. No framework, zero dependencies - `dist/` is committed and ready to use as-is. This file is the entry point for an AI agent integrating the library: read it once, then read only the component skills you need.
 
 ## Integrate
 
@@ -283,6 +283,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/context-menu.png, screenshots/{light,dark}/context-menu-open.png
 **Skill:** [components/context-menu/component-skill.md](components/context-menu/component-skill.md)
 
+## Countdown
+
+**Type:** ATM
+**Why:** Numbers that roll to a new value with CSS alone - set --value, the digits turn like an odometer (mod() / round() pick each digit column); the optional script makes it a live, accessible timer.
+**When:** Launch / sale / event countdowns, timers, clocks, animated counters (0-999 per value). For a progress fraction use progress; for a static figure use statistic.
+**Files:** dist/components/countdown/countdown.css + dist/components/countdown/countdown.js
+**Supported states:** default, running, paused, finished
+**Screenshots:** screenshots/{light,dark}/countdown.png, screenshots/{light,dark}/countdown-running.png, screenshots/{light,dark}/countdown-paused.png, screenshots/{light,dark}/countdown-finished.png
+**Skill:** [components/countdown/component-skill.md](components/countdown/component-skill.md)
+
 ## Date Picker
 
 **Type:** ATM
@@ -303,6 +313,26 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/dialog.png, screenshots/{light,dark}/dialog-open.png
 **Skill:** [components/dialog/component-skill.md](components/dialog/component-skill.md)
 
+## Diff
+
+**Type:** ATM
+**Why:** Two stacked layers split by a native <input type="range"> - drag anywhere, arrow keys, touch and a screen-reader value come from the platform; a clip-path does the reveal.
+**When:** Before / after comparisons - photo edits, redesigns, old vs new screenshots, rendered vs source text. For side-by-side panels the user resizes use resizer.
+**Files:** dist/components/diff/diff.css + dist/components/diff/diff.js
+**Supported states:** default, before, after
+**Screenshots:** screenshots/{light,dark}/diff.png, screenshots/{light,dark}/diff-before.png, screenshots/{light,dark}/diff-after.png
+**Skill:** [components/diff/component-skill.md](components/diff/component-skill.md)
+
+## Dock
+
+**Type:** ATM
+**Why:** A navigation bar of links / buttons with icons and labels - on the bottom (above the device's safe area), top, left or right edge; the active item is plain ARIA (aria-current / aria-pressed) or a checked radio, so a radio dock switches items AND the card content they own with no JavaScript.
+**When:** The 3 - 5 top-level destinations of a mobile app or app-like page (Home, Search, Inbox, Profile). For a desktop app bar use navbar, for a side menu use sidebar, for one floating action use fab.
+**Files:** dist/components/dock/dock.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/dock.png
+**Skill:** [components/dock/component-skill.md](components/dock/component-skill.md)
+
 ## Dropdown Menu
 
 **Type:** ATM
@@ -312,6 +342,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default, open
 **Screenshots:** screenshots/{light,dark}/dropdown.png, screenshots/{light,dark}/dropdown-open.png
 **Skill:** [components/dropdown/component-skill.md](components/dropdown/component-skill.md)
+
+## FAB
+
+**Type:** MOL
+**Why:** A floating action button whose speed dial is a native popover - toggle, Escape, outside-click close and aria-expanded come from the browser; anchor positioning stacks the actions, no JavaScript.
+**When:** The one primary action of a screen (compose, add, new) that stays in reach while scrolling - with a speed dial when 2-6 related actions share it. For a bar of actions use toolbar; for an ordinary menu use dropdown-menu.
+**Files:** dist/components/fab/fab.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/fab.png
+**Skill:** [components/fab/component-skill.md](components/fab/component-skill.md)
 
 ## FAQ
 
@@ -336,11 +376,11 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 ## File Input
 
 **Type:** ATM
-**Why:** A <label> wrapping the native file input with styled drag-over and filled states.
-**When:** Uploads that need a clear drop-target affordance beyond a bare file field.
-**Files:** dist/components/file-input/file-input.css
-**Supported states:** default
-**Screenshots:** screenshots/{light,dark}/file-input.png
+**Why:** The native file input - styled, and as a drag & drop card whose invisible input takes the click AND the drop natively; the script filters, appends and lists the files.
+**When:** Uploads - a compact field in forms, a drop zone card when files are the main task. Filter by type with accept, by size / count with data-max-size / data-max-files.
+**Files:** dist/components/file-input/file-input.css + dist/components/file-input/file-input.js
+**Supported states:** default, dragover, selected, error
+**Screenshots:** screenshots/{light,dark}/file-input.png, screenshots/{light,dark}/file-input-dragover.png, screenshots/{light,dark}/file-input-selected.png, screenshots/{light,dark}/file-input-error.png
 **Skill:** [components/file-input/component-skill.md](components/file-input/component-skill.md)
 
 ## Form
@@ -403,6 +443,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/image.png, screenshots/{light,dark}/image-error.png
 **Skill:** [components/image/component-skill.md](components/image/component-skill.md)
 
+## Indicator
+
+**Type:** MOL
+**Why:** A positioned wrapper - pins badges, status dots or buttons to any of nine points of an element with CSS only.
+**When:** A count on a button or tab, a status dot on an avatar or card, a "New" / "Required" tag on a box or input - for presence ON an avatar prefer .avatar-badge.
+**Files:** dist/components/indicator/indicator.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/indicator.png
+**Skill:** [components/indicator/component-skill.md](components/indicator/component-skill.md)
+
 ## Input
 
 **Type:** ATM
@@ -423,6 +473,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/label.png
 **Skill:** [components/label/component-skill.md](components/label/component-skill.md)
 
+## Mermaid
+
+**Type:** ATM
+**Why:** Mermaid's own <pre class="mermaid"> text becomes a token-themed SVG - the official renderer, lazy-loaded, locked to strict security; readable source without JavaScript.
+**When:** Flowcharts, sequence, class, state, ER, Gantt and other text-defined diagrams in docs and apps - for data charts use chart (ECharts).
+**Files:** dist/components/mermaid/mermaid.css + dist/components/mermaid/mermaid.js
+**Supported states:** default, rendered, error
+**Screenshots:** screenshots/{light,dark}/mermaid.png, screenshots/{light,dark}/mermaid-rendered.png, screenshots/{light,dark}/mermaid-error.png
+**Skill:** [components/mermaid/component-skill.md](components/mermaid/component-skill.md)
+
 ## Motion
 
 **Type:** ATM
@@ -432,6 +492,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/motion.png
 **Skill:** [components/motion/component-skill.md](components/motion/component-skill.md)
+
+## Navbar
+
+**Type:** ORG
+**Why:** A <nav> app bar with start / center / end regions; the responsive menu is ONE popover shown inline on wide screens and opened by a toggle on narrow ones - no JavaScript.
+**When:** The top bar of an app or site - brand, primary links, search, account menu. For a marketing page header block use site-header; for mega-menus use navigation-menu.
+**Files:** dist/components/navbar/navbar.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/navbar.png
+**Skill:** [components/navbar/component-skill.md](components/navbar/component-skill.md)
 
 ## Navigation Menu
 
@@ -696,11 +766,11 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 ## Table
 
 **Type:** ATM
-**Why:** Semantic <table> - headers, captions, and sort state stay accessible.
-**When:** Tabular data in rows and columns; never div grids.
-**Files:** dist/components/table/table.css
-**Supported states:** default
-**Screenshots:** screenshots/{light,dark}/table.png
+**Why:** Semantic <table> - headers, captions and sort state stay accessible; table.js adds sorting (aria-sort, Intl.Collator), row selection, drag reordering and locked-column offsets on top.
+**When:** Tabular data in rows and columns - from a plain list to a data grid with sort, select, reorder and actions; never div grids.
+**Files:** dist/components/table/table.css + dist/components/table/table.js
+**Supported states:** default, sorted, selected
+**Screenshots:** screenshots/{light,dark}/table.png, screenshots/{light,dark}/table-sorted.png, screenshots/{light,dark}/table-selected.png
 **Skill:** [components/table/component-skill.md](components/table/component-skill.md)
 
 ## Tabs
@@ -709,8 +779,8 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Why:** role=tablist with arrow-key roving focus; panels toggle via data-state.
 **When:** Switching views within one context without navigating away.
 **Files:** dist/components/tabs/tabs.css + dist/components/tabs/tabs.js
-**Supported states:** default, active
-**Screenshots:** screenshots/{light,dark}/tabs.png, screenshots/{light,dark}/tabs-active.png
+**Supported states:** default, active, disabled
+**Screenshots:** screenshots/{light,dark}/tabs.png, screenshots/{light,dark}/tabs-active.png, screenshots/{light,dark}/tabs-disabled.png
 **Skill:** [components/tabs/component-skill.md](components/tabs/component-skill.md)
 
 ## Testimonials
@@ -722,6 +792,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/testimonials.png
 **Skill:** [components/testimonials/component-skill.md](components/testimonials/component-skill.md)
+
+## Text Rotate
+
+**Type:** ATM
+**Why:** One line at a time from a short list, rolling on an infinite CSS loop - a one-line window (1lh) and keyframes picked by the line count (:has()); no JavaScript, pauses on hover, readable by assistive tech as the full list.
+**When:** A headline or sentence whose key word cycles ("Build faster / safer / together"), rotating taglines, a live-looking status word. For content the user must read at their own pace use a carousel or a list; for a number that counts use countdown.
+**Files:** dist/components/text-rotate/text-rotate.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/text-rotate.png
+**Skill:** [components/text-rotate/component-skill.md](components/text-rotate/component-skill.md)
 
 ## Textarea
 
@@ -746,8 +826,8 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 ## Timeline
 
 **Type:** ATM
-**Why:** Ordered list laid out on a vertical rail - the <ol> keeps the chronological semantics.
-**When:** Event history: activity logs, order tracking, changelog-style lists.
+**Why:** Ordered list laid out on a vertical or horizontal rail - the <ol> keeps the chronological semantics.
+**When:** Event history: activity logs, order tracking, changelog-style lists, roadmaps and release lines (horizontal) - for a process the user moves through, use steps.
 **Files:** dist/components/timeline/timeline.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/timeline.png
@@ -817,7 +897,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 
 **Type:** ATM
 **Why:** role=tree with expandable nodes and the full arrow-key interaction model.
-**When:** Any hierarchy the user browses or picks from - file explorers, product categories, org charts, docs navigation menus (links as leaves); single selection and disabled items built in. For one flat level use a list; for show/hide sections use accordion.
+**When:** Any hierarchy the user browses or picks from - file explorers, product categories, org charts, docs navigation menus (links as leaves); single selection, checkboxes (tri-state cascade), drag & drop reordering and disabled items built in. For one flat level use a list; for show/hide sections use accordion.
 **Files:** dist/components/tree-view/tree-view.css + dist/components/tree-view/tree-view.js
 **Supported states:** default, expanded
 **Screenshots:** screenshots/{light,dark}/tree-view.png, screenshots/{light,dark}/tree-view-expanded.png

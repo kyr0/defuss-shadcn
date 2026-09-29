@@ -201,6 +201,38 @@ try {
     }
   });
 
+  await check('status badge: data-position puts it on each of the four corners', async () => {
+    const r = await page.evaluate(() => Object.fromEntries(['top-start', 'top-end', 'bottom-start', 'bottom-end'].map((p) => {
+      const av = document.getElementById(`av-pos-${p}`)!.getBoundingClientRect();
+      const b = document.querySelector(`#av-pos-${p} .avatar-badge`)!.getBoundingClientRect();
+      const top = Math.abs(b.top - av.top) < b.height / 2 + 1;
+      const start = Math.abs(b.left - av.left) < b.width / 2 + 1;
+      return [p, `${top ? 'top' : 'bottom'}-${start ? 'start' : 'end'}`];
+    })));
+    assert.deepEqual(r, { 'top-start': 'top-start', 'top-end': 'top-end', 'bottom-start': 'bottom-start', 'bottom-end': 'bottom-end' });
+  });
+
+  await check('data-shape rounded / square, data-ring, placeholder plates, group overlap', async () => {
+    const r = await page.evaluate(() => {
+      const cs = (id: string, sel = '') => getComputedStyle(document.querySelector(`#${id}${sel}`)!);
+      return {
+        rounded: cs('av-rounded').borderTopLeftRadius, square: cs('av-square').borderTopLeftRadius,
+        fallbackFollows: cs('av-rounded', ' .avatar-fallback').borderTopLeftRadius === cs('av-rounded').borderTopLeftRadius,
+        ring: cs('av-ring').boxShadow.includes('0px 0px 0px 4px'),
+        ringsDiffer: cs('av-ring').boxShadow !== cs('av-ring-d').boxShadow,
+        plates: new Set([cs('av-ph-primary', ' .avatar-fallback').backgroundColor, cs('av-ph-neutral', ' .avatar-fallback').backgroundColor, cs('av-rounded', ' .avatar-fallback').backgroundColor]).size,
+        overlap: cs('av-group-lg-2').marginLeft, countOverlap: cs('av-group-lg-count').marginLeft,
+      };
+    });
+    assert.equal(r.rounded, '10px', '--radius-lg');
+    assert.equal(r.square, '6px', '--radius-sm');
+    assert.equal(r.fallbackFollows, true);
+    assert.equal(r.ring, true, '2px gap + 4px ring');
+    assert.equal(r.ringsDiffer, true);
+    assert.equal(r.plates, 3, 'primary / neutral / muted plates differ');
+    assert.deepEqual([r.overlap, r.countOverlap], ['-16px', '-16px']);
+  });
+
 } finally {
   await browser.close();
   server.stop();

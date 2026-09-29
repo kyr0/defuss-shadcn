@@ -2,7 +2,7 @@
 import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { ROOT_SKILL_OUTPUT_FILE, SKILL_OUTPUT_FILE } from './lib/skill.ts';
-import { buildRootSkillText, buildSkillText } from './lib/skill-files.ts';
+import { buildRootSkillText, buildSkillReferences, buildSkillText } from './lib/skill-files.ts';
 import { parseThemes } from './lib/contrast.ts';
 import { themeCssText, themeFileName, themeJsonText, themeJsonFileName } from './lib/theme-css.ts';
 import { schemaManifestText } from './lib/schema.ts';
@@ -60,6 +60,16 @@ writeFileSync(join(SRC, SKILL_OUTPUT_FILE), buildSkillText(SRC));
 // index from skill frontmatter). Ships in the npm package; never hand-edited.
 mkdirSync(dirname(join(ROOT, ROOT_SKILL_OUTPUT_FILE)), { recursive: true });
 writeFileSync(join(ROOT, ROOT_SKILL_OUTPUT_FILE), await buildRootSkillText(ROOT));
+// …and its references/components/ copies of every component skill (a fresh
+// folder each build, so a removed component leaves no stale copy)
+{
+  const skillDir = dirname(join(ROOT, ROOT_SKILL_OUTPUT_FILE));
+  rmSync(join(skillDir, 'references'), { recursive: true, force: true });
+  for (const [rel, text] of buildSkillReferences(ROOT)) {
+    mkdirSync(dirname(join(skillDir, rel)), { recursive: true });
+    writeFileSync(join(skillDir, rel), text);
+  }
+}
 
 // 0b. regenerate one theme stylesheet per tweakcn preset into src/theme/,
 // from the themes.ts dataset (single source). The 1:1 copy below ships them

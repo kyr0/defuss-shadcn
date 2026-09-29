@@ -4,7 +4,7 @@
 
 # defuss-shadcn - Agent Skill
 
-**A UI component system that scales with _local_ AI.** Themeable components built on semantic HTML, modern CSS, and vanilla JavaScript. No framework, zero dependencies - `dist/` is committed and ready to use as-is. This file is the entry point for an AI agent integrating the library: read it once, then read only the component skills you need.
+**A UI component system that scales with _(local)_ AI.** Themeable components built on semantic HTML, modern CSS, and vanilla JavaScript. No framework, zero dependencies - `dist/` is committed and ready to use as-is. This file is the entry point for an AI agent integrating the library: read it once, then read only the component skills you need.
 
 ## Integrate
 

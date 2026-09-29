@@ -88,6 +88,56 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <button class="btn" data-variant="outline" onclick="df$.shadcn.toast.show({ title: 'Changes saved', description: 'Your profile has been updated.', action: { label: 'Undo', onClick: () => df$.shadcn.toast.show('Undone!') } })"> Show Toast </button>
 ```
 
+```html example label="Stacked toasts" hint="configure({ stack: 'pile' }): the newest toast stays in front and the older ones wait behind it as the Stacks sheets (shapes.css stack-top - tapered sheets) with a +n badge; hover or focus the pile and it fans out into a list, leave it and it folds back. Send a few - then switch to a list for comparison." height="30"
+<div class="flex flex-wrap gap-2">
+  <button class="btn" id="pile-send">Send 3 notifications</button>
+  <button class="btn" data-variant="outline" id="pile-mode" aria-pressed="true">Mode: pile</button>
+</div>
+<script>
+  // the toast module is a deferred module script - wait until it has run
+  addEventListener('DOMContentLoaded', () => {
+  const t = df$.shadcn.toast;
+  t.configure({ stack: 'pile', position: 'bottom-right' });
+  const news = [
+    { title: 'Build passed', description: 'main · 2m 14s', variant: 'success' },
+    { title: 'New comment', description: 'Sofia replied to your review.' },
+    { title: 'Deploy queued', description: 'production · waiting for approval', variant: 'info' },
+    { title: 'Invoice paid', description: 'INV-2291 · €1,200.00', variant: 'success' },
+  ];
+  let n = 0;
+  document.getElementById('pile-send').addEventListener('click', () => {
+    for (let i = 0; i < 3; i++) setTimeout(() => t.show({ ...news[n++ % news.length], duration: 12000 }), i * 350);
+  });
+  const mode = document.getElementById('pile-mode');
+  mode.addEventListener('click', () => {
+    const pile = mode.getAttribute('aria-pressed') !== 'true';
+    t.configure({ stack: pile ? 'pile' : 'list' });
+    mode.setAttribute('aria-pressed', String(pile));
+    mode.textContent = 'Mode: ' + (pile ? 'pile' : 'list');
+  });
+  });
+</script>
+```
+
+```html example label="Animations" hint="animation: { in, out, direction } plays any df$.anim pair on the toast - slide from the edge it lives at, pop, flip, blur, zoom, wipe. Dismiss (× or the timer) runs the exit." height="26"
+<div class="flex flex-wrap gap-2">
+  <button class="btn" data-variant="outline" onclick="df$.shadcn.toast.show({ title: 'Slide in', description: 'From the east edge, out the same way.', animation: { in: 'slideIn', out: 'slideOut', direction: 'east' } })">Slide</button>
+  <button class="btn" data-variant="outline" onclick="df$.shadcn.toast.success({ title: 'Pop', description: 'A springy scale-in.', animation: { in: 'popIn', out: 'popOut' } })">Pop</button>
+  <button class="btn" data-variant="outline" onclick="df$.shadcn.toast.info({ title: 'Flip', description: 'Turns in on its axis.', animation: { in: 'flipIn', out: 'flipOut' } })">Flip</button>
+  <button class="btn" data-variant="outline" onclick="df$.shadcn.toast.show({ title: 'Blur', description: 'Comes into focus.', animation: { in: 'blurIn', out: 'blurOut' } })">Blur</button>
+  <button class="btn" data-variant="outline" onclick="df$.shadcn.toast.warning({ title: 'Zoom', description: 'Grows from the corner.', animation: { in: 'zoomIn', out: 'zoomOut' } })">Zoom</button>
+  <button class="btn" data-variant="outline" onclick="df$.shadcn.toast.show({ title: 'Wipe', description: 'Revealed edge to edge.', animation: { in: 'wipeIn', out: 'wipeOut', direction: 'west' } })">Wipe</button>
+</div>
+```
+
+```html example label="Aura" hint="aura: true (or a style: 'rainbow', 'gold', 'holo', 'dual') turns the toast into a ring of animated light (shapes.css .aura) - for the one notification that must not be missed." height="26"
+<div class="flex flex-wrap gap-2">
+  <button class="btn" onclick="df$.shadcn.toast.show({ title: 'You are live', description: 'Your stream started - 128 viewers.', aura: true, animation: { in: 'popIn', out: 'fadeOut' } })">Aura</button>
+  <button class="btn" data-variant="outline" onclick="df$.shadcn.toast.success({ title: 'Achievement unlocked', description: '100 deploys without a rollback.', aura: 'rainbow', animation: { in: 'zoomIn', out: 'zoomOut' } })">Rainbow</button>
+  <button class="btn" data-variant="outline" onclick="df$.shadcn.toast.show({ title: 'Welcome to Pro', description: 'Your upgrade is active.', aura: 'gold' })">Gold</button>
+</div>
+```
+
 ```html example label="Size & Density" hint="size scales the width envelope (sm / md / lg, md matches the unsized default), density the padding and content gap (compact / comfortable / spacious) - pass either option to show() and it lands as the matching data-* attribute on the toast." height="20"
 <div class="flex flex-wrap gap-2">
   <button class="btn" data-variant="outline" onclick="df$.shadcn.toast.show({ title: 'Narrow toast', description: 'Width envelope sm.', size: 'sm' })">Size sm</button>

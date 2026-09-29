@@ -46,7 +46,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <details class="collapsible">
   <summary class="collapsible-trigger">
     <span>Can I use this?</span>
-    <svg class="collapsible-chevron">...</svg>
+    <svg class="collapsible-chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
   </summary>
   <div class="collapsible-content">
     <p>Yes, it's free to use.</p>
@@ -56,8 +56,13 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 ```html example label="Open by Default" hint="Use the open attribute to start expanded."
 <details class="collapsible" open>
-  <summary class="collapsible-trigger">...</summary>
-  <div class="collapsible-content">...</div>
+  <summary class="collapsible-trigger">
+    <span>What is included?</span>
+    <svg class="collapsible-chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
+  </summary>
+  <div class="collapsible-content">
+    <p>Every component, the theme presets and the documentation - it starts open because of the open attribute.</p>
+  </div>
 </details>
 ```
 
@@ -89,12 +94,143 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <summary class="collapsible-trigger">
       <span>Privacy</span>
       <svg xmlns="http://www.w3.org/2000/svg" class="collapsible-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="m6 9 6 6 6-6" ></svg>
+        <path d="m6 9 6 6 6-6" />
       </svg>
     </summary>
     <div class="collapsible-content">
       <p class="m-0">Control your privacy and data sharing settings.</p>
     </div>
+  </details>
+</div>
+```
+
+```html example label="Colors" hint="data-variant sets the surface: muted, primary, neutral, ghost (no border) - and highlight, plain while closed and primary once open. The heading, the marker and the content all follow the surface's text color."
+<div class="stack gap-2" style="width:100%;max-width:26rem;">
+  <details class="collapsible" data-variant="muted" data-marker="arrow">
+    <summary class="collapsible-trigger">Muted</summary>
+    <div class="collapsible-content"><p class="m-0">A soft surface, no border.</p></div>
+  </details>
+  <details class="collapsible" data-variant="primary" data-marker="arrow" open>
+    <summary class="collapsible-trigger">Primary</summary>
+    <div class="collapsible-content"><p class="m-0">The primary surface - content text is the foreground, softened.</p></div>
+  </details>
+  <details class="collapsible" data-variant="neutral" data-marker="arrow">
+    <summary class="collapsible-trigger">Neutral</summary>
+    <div class="collapsible-content"><p class="m-0">A charcoal surface, the same in both modes.</p></div>
+  </details>
+  <details class="collapsible" data-variant="ghost" data-marker="arrow">
+    <summary class="collapsible-trigger">Ghost</summary>
+    <div class="collapsible-content"><p class="m-0">No surface, no border - the hover tint still shows.</p></div>
+  </details>
+  <details class="collapsible" data-variant="highlight" data-marker="plus">
+    <summary class="collapsible-trigger">Highlight when open</summary>
+    <div class="collapsible-content"><p class="m-0">Plain while closed, primary once open - the color change animates.</p></div>
+  </details>
+</div>
+```
+
+```html example label="Custom colors" hint="Set background and color on the .collapsible itself - the hover tint, the marker and the content text derive from its color, so any palette works."
+<div class="stack gap-2" style="width:100%;max-width:26rem;">
+  <details class="collapsible" data-marker="arrow" style="background: oklch(0.93 0.06 190); color: oklch(0.32 0.08 200); border-color: oklch(0.8 0.08 190);" open>
+    <summary class="collapsible-trigger">Teal</summary>
+    <div class="collapsible-content"><p class="m-0">Every shade of this panel comes from two declarations.</p></div>
+  </details>
+  <details class="collapsible" data-marker="plus" style="background: linear-gradient(120deg, oklch(0.55 0.22 300), oklch(0.6 0.2 350)); color: white; border: 0;">
+    <summary class="collapsible-trigger">Gradient</summary>
+    <div class="collapsible-content"><p class="m-0">A gradient surface with white text.</p></div>
+  </details>
+</div>
+```
+
+```html example label="Bold headings" hint="data-size scales the heading: sm, md (default), lg semibold, xl bold."
+<div class="stack gap-2" style="width:100%;max-width:26rem;">
+  <details class="collapsible" data-size="lg" data-marker="arrow" open>
+    <summary class="collapsible-trigger">Large, semibold</summary>
+    <div class="collapsible-content"><p class="m-0">The content keeps its size - only the heading scales.</p></div>
+  </details>
+  <details class="collapsible" data-size="xl" data-marker="arrow">
+    <summary class="collapsible-trigger">Extra large, bold</summary>
+    <div class="collapsible-content"><p class="m-0">For page-level sections.</p></div>
+  </details>
+  <details class="collapsible" data-size="sm" data-marker="arrow">
+    <summary class="collapsible-trigger">Small</summary>
+    <div class="collapsible-content"><p class="m-0">For dense panels.</p></div>
+  </details>
+</div>
+```
+
+```html example label="Icons and emojis" hint="A .collapsible-icon in front of the heading holds an icon or an emoji in a fixed box, so headings line up."
+<div class="stack gap-2" style="width:100%;max-width:26rem;">
+  <details class="collapsible" data-marker="arrow">
+    <summary class="collapsible-trigger"><span class="collapsible-icon" aria-hidden="true"><i data-lucide="shield-check"></i></span>Security</summary>
+    <div class="collapsible-content"><p class="m-0">Two-factor authentication and active sessions.</p></div>
+  </details>
+  <details class="collapsible" data-marker="arrow">
+    <summary class="collapsible-trigger"><span class="collapsible-icon" aria-hidden="true"><i data-lucide="credit-card"></i></span>Billing</summary>
+    <div class="collapsible-content"><p class="m-0">Plan, invoices and payment methods.</p></div>
+  </details>
+  <details class="collapsible" data-marker="arrow">
+    <summary class="collapsible-trigger"><span class="collapsible-icon" aria-hidden="true">🎨</span>Appearance</summary>
+    <div class="collapsible-content"><p class="m-0">Theme, density and fonts.</p></div>
+  </details>
+  <details class="collapsible" data-marker="arrow">
+    <summary class="collapsible-trigger"><span class="collapsible-icon" aria-hidden="true">🔔</span>Notifications</summary>
+    <div class="collapsible-content"><p class="m-0">Email, push and in-app.</p></div>
+  </details>
+</div>
+```
+
+```html example label="Arrow and plus markers" hint="No icon markup needed: data-marker='arrow' draws a chevron that turns up, 'plus' a + that becomes a -. data-marker-position='start' puts the marker before the heading."
+<div class="grid gap-2" style="width:100%;max-width:34rem;grid-template-columns:1fr 1fr;">
+  <details class="collapsible" data-marker="arrow" open>
+    <summary class="collapsible-trigger">Arrow</summary>
+    <div class="collapsible-content"><p class="m-0">Open: the arrow points up.</p></div>
+  </details>
+  <details class="collapsible" data-marker="plus" open>
+    <summary class="collapsible-trigger">Plus</summary>
+    <div class="collapsible-content"><p class="m-0">Open: the plus is a minus.</p></div>
+  </details>
+  <details class="collapsible" data-marker="arrow" data-marker-position="start">
+    <summary class="collapsible-trigger">Arrow at the start</summary>
+    <div class="collapsible-content"><p class="m-0">Like a file tree.</p></div>
+  </details>
+  <details class="collapsible" data-marker="plus" data-marker-position="start">
+    <summary class="collapsible-trigger">Plus at the start</summary>
+    <div class="collapsible-content"><p class="m-0">Like a FAQ.</p></div>
+  </details>
+</div>
+```
+
+```html example label="Custom open/close signs" hint="Your own glyph: a .collapsible-chevron turns 180° (90° with data-turn='quarter', for a chevron-right) - or put two elements in the heading, .collapsible-when-closed and .collapsible-when-open, and the right one shows."
+<div class="stack gap-2" style="width:100%;max-width:26rem;">
+  <details class="collapsible">
+    <summary class="collapsible-trigger">Quarter turn <i data-lucide="chevron-right" class="collapsible-chevron" data-turn="quarter"></i></summary>
+    <div class="collapsible-content"><p class="m-0">A chevron-right that turns down when open.</p></div>
+  </details>
+  <details class="collapsible">
+    <summary class="collapsible-trigger"><span class="collapsible-icon" aria-hidden="true"><span class="collapsible-when-closed">📁</span><span class="collapsible-when-open">📂</span></span>Projects</summary>
+    <div class="collapsible-content"><p class="m-0">The folder opens with the panel.</p></div>
+  </details>
+  <details class="collapsible">
+    <summary class="collapsible-trigger">Release notes <span class="collapsible-when-closed text-sm">Show</span><span class="collapsible-when-open text-sm">Hide</span></summary>
+    <div class="collapsible-content"><p class="m-0">Words instead of an icon.</p></div>
+  </details>
+</div>
+```
+
+```html example label="Right to left" hint="Everything is logical: in dir='rtl' the icon leads on the right, the marker sits on the left, a quarter-turned chevron mirrors."
+<div class="stack gap-2" dir="rtl" lang="ar" style="width:100%;max-width:26rem;">
+  <details class="collapsible" data-marker="arrow" open>
+    <summary class="collapsible-trigger"><span class="collapsible-icon" aria-hidden="true"><i data-lucide="shield-check"></i></span>الأمان</summary>
+    <div class="collapsible-content"><p class="m-0">المصادقة الثنائية والجلسات النشطة.</p></div>
+  </details>
+  <details class="collapsible" data-marker="plus" data-variant="muted">
+    <summary class="collapsible-trigger"><span class="collapsible-icon" aria-hidden="true">🎨</span>المظهر</summary>
+    <div class="collapsible-content"><p class="m-0">السمة والكثافة والخطوط.</p></div>
+  </details>
+  <details class="collapsible">
+    <summary class="collapsible-trigger">ملاحظات الإصدار <i data-lucide="chevron-right" class="collapsible-chevron" data-turn="quarter"></i></summary>
+    <div class="collapsible-content"><p class="m-0">سهم يدور ربع دورة.</p></div>
   </details>
 </div>
 ```

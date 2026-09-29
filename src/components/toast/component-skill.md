@@ -145,6 +145,41 @@ Set `data-variant` on the `.toast` element.
 <div class="toast" role="status" data-variant="success">…</div>
 ```
 
+## Stacked toasts (pile)
+
+```js
+df$.shadcn.toast.configure({ stack: 'pile', position: 'bottom-right' });
+```
+
+`configure()` sets the region: `stack: 'list'` (default - every toast visible,
+one above the other) or `'pile'` - the newest toast in front, the older ones
+hidden behind it and drawn as the **Stacks** sheets (shapes.css `stack-top`,
+or `stack-bottom` at top positions) with a `+n` badge. Hovering or focusing
+the pile fans it out into a list (newest nearest the corner); leaving folds it
+back. A pile holds up to 6 toasts. `position` picks the corner.
+
+## Animations
+
+```js
+df$.shadcn.toast.show({ title: 'Saved', animation: { in: 'slideIn', out: 'slideOut', direction: 'east', duration: 450 } });
+```
+
+`animation` plays any pair of the shared animation engine (`df$.anim`):
+`fadeIn/Out`, `slideIn/Out` (+ `direction`), `popIn/Out`, `zoomIn/Out`,
+`flipIn/Out`, `blurIn/Out`, `wipeIn/Out`, `spinIn/Out`, `skewIn/Out`,
+`irisIn/Out`. The exit runs on dismiss (× , action, timer). A string
+(`animation: 'popIn'`) sets only the entrance.
+
+## Aura
+
+```js
+df$.shadcn.toast.show({ title: 'You are live', aura: true });        // or 'rainbow', 'gold', 'holo', 'dual', 'silver'
+```
+
+The toast becomes a ring of animated light (shapes.css `.aura`); its content
+sits on an inner `.toast-surface`. For the one notification that must not be
+missed - not for routine confirmations.
+
 ## States
 
 The api is bound to the **region container** (`#toast-container`). Its

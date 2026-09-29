@@ -44,6 +44,13 @@
     <div style="height:300vh;"></div>
 
     <script type="module" src="/dist/components/core.js"></script>
+    <!-- alignment: start / end share the trigger's edge (position-area span-*) -->
+    <div style="display:flex;gap:2rem;justify-content:center;padding:4rem 0;">
+      <button class="btn" data-tooltip-trigger="tt-align-start" id="tt-align-start-btn">Start</button>
+      <div class="tooltip" id="tt-align-start" popover="hint" role="tooltip" data-align="start">Aligned to start <div data-arrow></div></div>
+      <button class="btn" data-tooltip-trigger="tt-align-end" id="tt-align-end-btn">End</button>
+      <div class="tooltip" id="tt-align-end" popover="hint" role="tooltip" data-align="end">Aligned to end <div data-arrow></div></div>
+    </div>
     <script type="module" src="/dist/components/tooltip/tooltip.js"></script>
   </body>
 </html>

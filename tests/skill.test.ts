@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   assembleRootSkillText,
+  referenceSkillText,
   assembleSkillText,
   mdProse,
   ROOT_SKILL_DOCS_MARKER,
@@ -154,18 +155,25 @@ describe('assembleRootSkillText (repo-root SKILL.md)', () => {
     expect(out).not.toContain('- [Dialog](src/documentation/pages/dialog.mdx)');
   });
 
-  it('with a sourceBase, links resolve absolutely while the link text stays the repo path', () => {
-    // an installed skill is its folder alone - repo-relative links would point at nothing
-    const out = assembleRootSkillText(tpl, { ...data(), sourceBase: 'https://raw.example/r/main/' });
-    expect(out).toContain('- [Theming](https://raw.example/r/main/src/documentation/pages/theming.mdx) - Tokens.');
-    expect(out).toContain('**Skill:** [dist/components/dialog/component-skill.md](https://raw.example/r/main/dist/components/dialog/component-skill.md)');
-    expect(out).toContain('**Examples:** [src/documentation/pages/dialog.mdx](https://raw.example/r/main/src/documentation/pages/dialog.mdx)');
+  it('docs links are relative to the skill folder, component skills live inside it, {{RAW_BASE}} is filled', () => {
+    // the plugin cache / npm install carry the package two levels up; the
+    // component skills are copied into the skill folder itself
+    const out = assembleRootSkillText(tpl + '\nraw: {{RAW_BASE}}', { ...data(), docsPrefix: '../../', rawBase: 'https://raw.example/r/v9.9.9/' });
+    expect(out).toContain('- [Theming](../../src/documentation/pages/theming.mdx) - Tokens.');
+    expect(out).toContain('**Skill:** [references/components/dialog.md](references/components/dialog.md)');
+    expect(out).toContain('**Examples:** [src/documentation/pages/dialog.mdx](../../src/documentation/pages/dialog.mdx)');
+    expect(out).toContain('raw: https://raw.example/r/v9.9.9/');
+  });
+
+  it('referenceSkillText flattens sibling skill links for the copied references', () => {
+    expect(referenceSkillText('see [Button](../button/component-skill.md) and [x](../badge/component-skill.md#sizes)'))
+      .toBe('see [Button](button.md) and [x](badge.md#sizes)');
   });
 
   it('indexes components by sidebar section with why/when, skill and example links', () => {
     const out = assembleRootSkillText(tpl, data());
     expect(out).toContain('### Overlays\n\n#### Dialog · MOL · JS');
-    expect(out).toContain('[dist/components/dialog/component-skill.md](dist/components/dialog/component-skill.md)');
+    expect(out).toContain('**Skill:** [references/components/dialog.md](references/components/dialog.md)');
     expect(out).toContain('**Examples:** [src/documentation/pages/dialog.mdx](src/documentation/pages/dialog.mdx)');
     expect(out).toContain('**States:** `default`, `open`');
     // a component missing from the sidebar still lands in the index

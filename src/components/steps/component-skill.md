@@ -136,6 +136,34 @@ supportedStates: default
 |--------------------|--------|
 | *(none)* | Horizontal - steps arranged in a row |
 | `vertical` | Vertical - steps stacked in a column with vertical connector |
+| `responsive` | Vertical below 48rem, horizontal from there up (DaisyUI's `steps-vertical lg:steps-horizontal`) |
+
+### Colors (`data-variant` on `.steps` or on one `.step`)
+
+`primary` (default) · `secondary` · `accent` · `info` · `success` · `warning` ·
+`neutral` · `destructive` (alias `error`) - the fill of done steps, the ring of
+the current one and the connector after a done step. On a single `.step` it
+overrides the list's color. `secondary` / `accent` use `--chart-2` /
+`--chart-4` (the tokens' `--secondary` / `--accent` are pale surfaces);
+success / warning / info are literal colors.
+
+### Symbols, emoji and icons
+
+The indicator holds any content: a number, a symbol (`?` `!` `✓` `✕` `★` `●`),
+nothing, an emoji or an icon - DaisyUI's `data-content` is just the text.
+Wrap an emoji or icon in `<span class="step-icon">` for a glyph a size up;
+`data-variant="plain"` on the `.step-indicator` drops the circle (a symbol or
+icon there takes the step's color).
+
+```html
+<li class="step" data-status="complete">
+  <div class="step-indicator"><span class="step-icon">😍</span></div>
+  <div class="step-content"><p class="step-title">Loving it</p></div>
+</li>
+```
+
+For many steps in a narrow space, wrap the list in `overflow-x-auto` and give
+it a `min-width` - it scrolls instead of squeezing.
 
 ---
 

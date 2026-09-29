@@ -11,7 +11,6 @@
     width: 100%;
     border-collapse: collapse;
     font-size: 0.875rem;
-    text-align: left;
     caption-side: bottom;
   }
 
@@ -24,6 +23,8 @@
 
   .table-head {
     padding: 0.75rem 1rem;
+    /* explicit: a th's UA default centers unless the table sets a non-initial alignment */
+    text-align: start;
     font-weight: 500;
     color: var(--muted-foreground);
     background-color: var(--muted);
@@ -90,6 +91,275 @@
     & .table-head, & .table-cell { padding: 1rem 1.25rem; }
     & .table-caption { padding: 1rem 1.25rem; }
   }
+
+
+  /* -- Alignment: data-align on a th / td (start / center / end);
+     data-numeric: end-aligned tabular figures (amounts, counts) ---------- */
+  :is(.table-head, .table-cell) {
+    &[data-align="start"] { text-align: start; }
+    &[data-align="center"] { text-align: center; }
+    &[data-align="end"] { text-align: end; }
+    &[data-numeric] { text-align: end; font-variant-numeric: tabular-nums; }
+    &[data-valign="top"] { vertical-align: top; }
+    &[data-nowrap] { white-space: nowrap; }
+  }
+  .table { text-align: start; }
+
+  /* -- Sorting: a .table-sort button in the header; aria-sort on the th
+     (ascending / descending) draws the arrow, table.js sorts the rows ---- */
+  .table-sort {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin: -0.25rem -0.5rem;
+    padding: 0.25rem 0.5rem;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+
+    &:hover { color: var(--foreground); background-color: color-mix(in oklch, var(--foreground) 6%, transparent); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+    /* the arrow: both halves muted while unsorted, one strong when sorted */
+    &::after {
+      content: '';
+      width: 0.5rem;
+      height: 0.75rem;
+      flex-shrink: 0;
+      background:
+        conic-gradient(from 150deg at 50% 0, currentColor 60deg, transparent 0) top / 100% 40% no-repeat,
+        conic-gradient(from -30deg at 50% 100%, currentColor 60deg, transparent 0) bottom / 100% 40% no-repeat;
+      opacity: 0.35;
+    }
+    [data-align="end"] > &, [data-numeric] > & { flex-direction: row-reverse; }
+  }
+  .table-head[aria-sort="ascending"] .table-sort::after {
+    opacity: 1;
+    background: conic-gradient(from 150deg at 50% 0, currentColor 60deg, transparent 0) center / 100% 50% no-repeat;
+  }
+  .table-head[aria-sort="descending"] .table-sort::after {
+    opacity: 1;
+    background: conic-gradient(from -30deg at 50% 100%, currentColor 60deg, transparent 0) center / 100% 50% no-repeat;
+  }
+  .table-head[aria-sort]:not([aria-sort="none"]) { color: var(--foreground); }
+
+  /* -- Selection: a leading .table-select cell with a checkbox (the header
+     one selects all); a selected row is tinted -------------------------- */
+  .table-select {
+    width: 1%;
+    padding-inline-end: 0 !important;
+
+    & .checkbox { vertical-align: middle; }
+  }
+  .table-row[aria-selected="true"] {
+    background-color: color-mix(in oklch, var(--primary) 7%, transparent);
+
+    tbody &:hover { background-color: color-mix(in oklch, var(--primary) 11%, transparent); }
+  }
+
+  /* -- Reordering: a .table-handle cell with a grip button; the row being
+     dragged fades, a line shows where it lands -------------------------- */
+  .table-handle {
+    width: 1%;
+    padding-inline-end: 0 !important;
+    color: var(--muted-foreground);
+
+    & button {
+      display: inline-grid;
+      place-items: center;
+      width: 1.5rem;
+      height: 1.5rem;
+      padding: 0;
+      border: 0;
+      border-radius: var(--radius-sm);
+      background: none;
+      color: inherit;
+      cursor: grab;
+
+      &:hover { color: var(--foreground); background-color: var(--accent); }
+      &:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+      & svg { width: 1rem; height: 1rem; }
+    }
+  }
+  .table-row[data-dragging] { opacity: 0.4; }
+  .table-row[data-drop="before"] { box-shadow: inset 0 2px 0 var(--primary); }
+  .table-row[data-drop="after"] { box-shadow: inset 0 -2px 0 var(--primary); }
+
+  /* -- Locked columns + sticky header --------------------------------------
+     data-lock-start="1|2|3" on the .table keeps the first columns in view
+     while the .table-container scrolls sideways (table.js measures their
+     offsets into --table-lock-1 / -2); data-lock-end="1" the last column.
+     data-sticky-header keeps the header row while the container scrolls
+     vertically (give the container a max-height). */
+  .table[data-lock-start] :is(.table-head, .table-cell),
+  .table[data-lock-end] :is(.table-head, .table-cell) { background-clip: padding-box; }
+  .table[data-lock-start] :is(tr > :nth-child(1)),
+  .table:is([data-lock-start="2"], [data-lock-start="3"]) :is(tr > :nth-child(2)),
+  .table[data-lock-start="3"] :is(tr > :nth-child(3)),
+  .table[data-lock-end] :is(tr > :last-child) {
+    position: sticky;
+    z-index: 1;
+    background-color: var(--_lock-bg, var(--background));
+  }
+  .table[data-lock-start] tr > :nth-child(1) { inset-inline-start: 0; }
+  .table:is([data-lock-start="2"], [data-lock-start="3"]) tr > :nth-child(2) { inset-inline-start: var(--table-lock-1, 0px); }
+  .table[data-lock-start="3"] tr > :nth-child(3) { inset-inline-start: calc(var(--table-lock-1, 0px) + var(--table-lock-2, 0px)); }
+  .table[data-lock-end] tr > :last-child { inset-inline-end: 0; }
+  .table thead .table-head { --_lock-bg: var(--muted); }
+  .table tfoot .table-cell { --_lock-bg: var(--muted); }
+  /* the edge of the locked block casts a hairline */
+  .table[data-lock-start="1"] tr > :nth-child(1),
+  .table[data-lock-start="2"] tr > :nth-child(2),
+  .table[data-lock-start="3"] tr > :nth-child(3) { box-shadow: inset -1px 0 0 var(--border); }
+  .table[data-lock-end] tr > :last-child { box-shadow: inset 1px 0 0 var(--border); }
+  .table-row:hover > :is(.table-cell) { --_lock-bg: color-mix(in oklch, var(--muted) 100%, var(--background)); }
+  .table-row[aria-selected="true"] > .table-cell { --_lock-bg: color-mix(in oklch, var(--primary) 7%, var(--background)); }
+
+  .table[data-sticky-header] thead .table-head {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+  .table-container:has(> .table[data-sticky-header]) { overflow: auto; }
+
+  /* -- Actions: a .table-actions cell of buttons, end-aligned - always
+     visible. data-actions="quiet" on the table dims them until the row is
+     hovered or focused (touch screens: full strength). On a narrow table
+     (container < 40rem) the inline buttons (.table-actions-inline) give way
+     to one "more" button (.table-actions-menu) opening a native popover
+     menu (.table-menu) - one menu in the row, no JavaScript. Touch screens
+     get 44px targets. */
+  .table-actions {
+    width: 1%;
+    white-space: nowrap;
+    text-align: end;
+
+    & > * + *,
+    & .table-actions-inline > * + * { margin-inline-start: 0.25rem; }
+  }
+  .table-actions-inline { display: inline-flex; align-items: center; }
+  .table-actions-menu { display: none; }
+  .table[data-actions="quiet"] :is(.table-actions > .btn, .table-actions-inline, .table-actions-menu > .btn) {
+    opacity: 0.45;
+    transition: opacity 150ms ease;
+  }
+  .table[data-actions="quiet"] .table-row:is(:hover, :focus-within) :is(.table-actions > .btn, .table-actions-inline, .table-actions-menu > .btn) { opacity: 1; }
+  @media (hover: none) {
+    .table[data-actions="quiet"] :is(.table-actions > .btn, .table-actions-inline, .table-actions-menu > .btn) { opacity: 1; }
+  }
+  @media (pointer: coarse) {
+    .table-actions .btn[data-size^="icon"] { min-width: 2.75rem; min-height: 2.75rem; }
+  }
+  @container (max-width: 40rem) {
+    .table-actions:has(.table-actions-menu) .table-actions-inline { display: none; }
+    .table-actions-menu { display: inline-flex; }
+  }
+
+  /* the row menu: a popover anchored to its own "more" button */
+  .table-row { anchor-scope: --table-row-menu; }
+  .table-actions-menu > .btn { anchor-name: --table-row-menu; }
+  .table-menu[popover] {
+    position: fixed;
+    position-anchor: --table-row-menu;
+    inset: auto;
+    top: anchor(bottom);
+    right: anchor(right);
+    position-try-fallbacks: flip-block;
+    margin: 0.25rem 0 0;
+    min-width: 10rem;
+    padding: 0.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background-color: var(--popover);
+    color: var(--popover-foreground);
+    box-shadow: var(--shadow-lg);
+    text-align: start;
+
+    &:popover-open { display: grid; gap: 0.125rem; }
+  }
+  .table-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    min-height: 2.25rem;
+    padding: 0.375rem 0.625rem;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: 0.875rem;
+    text-align: start;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover, &:focus-visible { background-color: var(--accent); color: var(--accent-foreground); outline: none; }
+    &[data-tone="destructive"] { color: var(--destructive); }
+    & svg { width: 1rem; height: 1rem; }
+  }
+  @media (pointer: coarse) {
+    .table-menu-item { min-height: 2.75rem; }
+  }
+
+
+  /* -- Empty state: one .table-empty cell spanning the columns ----------- */
+  .table-empty {
+    padding: 2.5rem 1rem !important;
+    text-align: center;
+    color: var(--muted-foreground);
+
+    & > * { display: block; margin-inline: auto; }
+    & > * + * { margin-top: 0.375rem; }
+    & > strong { color: var(--foreground); font-weight: 600; }
+    & > .btn { display: inline-flex; margin-top: 1rem; }
+  }
+  .table-empty-icon {
+    display: grid !important;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-bottom: 0.5rem;
+    border-radius: 9999px;
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+
+    & svg { width: 1.25rem; height: 1.25rem; }
+  }
+  tbody .table-row:has(> .table-empty):hover { background-color: transparent; }
+  /* a dropdown button straight in the actions cell anchors its .table-menu too */
+  .table-actions > .btn[popovertarget] { anchor-name: --table-row-menu; }
+
+  /* -- Text in cells ------------------------------------------------------- */
+  .table-sub {
+    display: block;
+    margin-top: 0.125rem;
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+  }
+  .table-truncate {
+    display: block;
+    max-width: var(--table-truncate, 14rem);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .table-clamp {
+    display: -webkit-box;
+    max-width: var(--table-clamp, 20rem);
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+  .table-mono {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    white-space: nowrap;
+  }
+  .table-muted { color: var(--muted-foreground); }
 
   /* -- Container query: compact table in narrow containers -- */
   @container (max-width: 480px) {

@@ -140,6 +140,242 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </div>
 ```
 
+```html example label="Surfaces" hint="data-variant on the .accordion: bordered (one box), separated (a card per item), ghost (no dividers). Boxed variants inset the text and tint the row on hover." height="30"
+<div class="grid gap-6" style="grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));width:100%;">
+<div class="accordion" data-variant="bordered" data-marker="arrow" style="width:100%;">
+  <details class="accordion-item" open>
+    <summary class="accordion-trigger"><span>Is it accessible?</span></summary>
+    <div class="accordion-content"><p>Yes - native details/summary: keyboard and screen readers work out of the box.</p></div>
+  </details>
+  <details class="accordion-item">
+    <summary class="accordion-trigger"><span>Is it styled?</span></summary>
+    <div class="accordion-content"><p>It follows your theme tokens - every variant below is one attribute.</p></div>
+  </details>
+  <details class="accordion-item">
+    <summary class="accordion-trigger"><span>Does it need JavaScript?</span></summary>
+    <div class="accordion-content"><p>No. Only data-type="single" adds a small handler that closes the siblings.</p></div>
+  </details>
+</div>
+<div class="accordion" data-variant="separated" data-marker="plus" style="width:100%;">
+  <details class="accordion-item" open>
+    <summary class="accordion-trigger"><span>Is it accessible?</span></summary>
+    <div class="accordion-content"><p>Yes - native details/summary: keyboard and screen readers work out of the box.</p></div>
+  </details>
+  <details class="accordion-item">
+    <summary class="accordion-trigger"><span>Is it styled?</span></summary>
+    <div class="accordion-content"><p>It follows your theme tokens - every variant below is one attribute.</p></div>
+  </details>
+  <details class="accordion-item">
+    <summary class="accordion-trigger"><span>Does it need JavaScript?</span></summary>
+    <div class="accordion-content"><p>No. Only data-type="single" adds a small handler that closes the siblings.</p></div>
+  </details>
+</div>
+<div class="accordion" data-variant="ghost" data-marker="arrow" style="width:100%;">
+  <details class="accordion-item" open>
+    <summary class="accordion-trigger"><span>Is it accessible?</span></summary>
+    <div class="accordion-content"><p>Yes - native details/summary: keyboard and screen readers work out of the box.</p></div>
+  </details>
+  <details class="accordion-item">
+    <summary class="accordion-trigger"><span>Is it styled?</span></summary>
+    <div class="accordion-content"><p>It follows your theme tokens - every variant below is one attribute.</p></div>
+  </details>
+  <details class="accordion-item">
+    <summary class="accordion-trigger"><span>Does it need JavaScript?</span></summary>
+    <div class="accordion-content"><p>No. Only data-type="single" adds a small handler that closes the siblings.</p></div>
+  </details>
+</div>
+</div>
+```
+
+```html example label="Colors" hint="muted, primary and neutral put every item on that surface; highlight keeps items plain and turns the open one primary. Heading, marker and content follow the surface's text color." height="40"
+<div class="grid gap-6" style="grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));width:100%;">
+<div class="accordion" data-variant="muted" data-marker="arrow" style="width:100%;">
+  <details class="accordion-item" open>
+    <summary class="accordion-trigger"><span>Is it accessible?</span></summary>
+    <div class="accordion-content"><p>Yes - native details/summary: keyboard and screen readers work out of the box.</p></div>
+  </details>
+  <details class="accordion-item">
+    <summary class="accordion-trigger"><span>Is it styled?</span></summary>
+    <div class="accordion-content"><p>It follows your theme tokens - every variant below is one attribute.</p></div>
+  </details>
+  <details class="accordion-item">
+    <summary class="accordion-trigger"><span>Does it need JavaScript?</span></summary>
+    <div class="accordion-content"><p>No. Only data-type="single" adds a small handler that closes the siblings.</p></div>
+  </details>
+</div>
+<div class="accordion" data-variant="primary" data-marker="arrow" style="width:100%;">
+  <details class="accordion-item" open>
+    <summary class="accordion-trigger"><span>Is it accessible?</span></summary>
+    <div class="accordion-content"><p>Yes - native details/summary: keyboard and screen readers work out of the box.</p></div>
+  </details>
+  <details class="accordion-item">
+    <summary class="accordion-trigger"><span>Is it styled?</span></summary>
+    <div class="accordion-content"><p>It follows your theme tokens - every variant below is one attribute.</p></div>
+  </details>
+  <details class="accordion-item">
+    <summary class="accordion-trigger"><span>Does it need JavaScript?</span></summary>
+    <div class="accordion-content"><p>No. Only data-type="single" adds a small handler that closes the siblings.</p></div>
+  </details>
+</div>
+<div class="accordion" data-variant="neutral" data-marker="arrow" style="width:100%;">
+  <details class="accordion-item" open>
+    <summary class="accordion-trigger"><span>Is it accessible?</span></summary>
+    <div class="accordion-content"><p>Yes - native details/summary: keyboard and screen readers work out of the box.</p></div>
+  </details>
+  <details class="accordion-item">
+    <summary class="accordion-trigger"><span>Is it styled?</span></summary>
+    <div class="accordion-content"><p>It follows your theme tokens - every variant below is one attribute.</p></div>
+  </details>
+  <details class="accordion-item">
+    <summary class="accordion-trigger"><span>Does it need JavaScript?</span></summary>
+    <div class="accordion-content"><p>No. Only data-type="single" adds a small handler that closes the siblings.</p></div>
+  </details>
+</div>
+<div class="accordion" data-variant="highlight" data-marker="plus" style="width:100%;">
+  <details class="accordion-item" open>
+    <summary class="accordion-trigger"><span>Is it accessible?</span></summary>
+    <div class="accordion-content"><p>Yes - native details/summary: keyboard and screen readers work out of the box.</p></div>
+  </details>
+  <details class="accordion-item">
+    <summary class="accordion-trigger"><span>Is it styled?</span></summary>
+    <div class="accordion-content"><p>It follows your theme tokens - every variant below is one attribute.</p></div>
+  </details>
+  <details class="accordion-item">
+    <summary class="accordion-trigger"><span>Does it need JavaScript?</span></summary>
+    <div class="accordion-content"><p>No. Only data-type="single" adds a small handler that closes the siblings.</p></div>
+  </details>
+</div>
+</div>
+```
+
+```html example label="Custom colors" hint="Set background and color on an item - its hover tint, marker and content text derive from that color." height="22"
+<div class="accordion" data-variant="separated" data-marker="arrow" style="max-width:28rem;width:100%;">
+  <details class="accordion-item" open style="background: oklch(0.93 0.06 190); color: oklch(0.32 0.08 200); border-color: oklch(0.8 0.08 190);">
+    <summary class="accordion-trigger"><span>Teal</span></summary>
+    <div class="accordion-content"><p>Two declarations color the whole item.</p></div>
+  </details>
+  <details class="accordion-item" style="background: oklch(0.95 0.07 85); color: oklch(0.4 0.09 60); border-color: oklch(0.85 0.1 80);">
+    <summary class="accordion-trigger"><span>Amber</span></summary>
+    <div class="accordion-content"><p>Any palette works - the marker and text mix from the item color.</p></div>
+  </details>
+  <details class="accordion-item" style="background: linear-gradient(120deg, oklch(0.55 0.22 300), oklch(0.6 0.2 350)); color: white; border: 0;">
+    <summary class="accordion-trigger"><span>Gradient</span></summary>
+    <div class="accordion-content"><p>Even a gradient surface.</p></div>
+  </details>
+</div>
+```
+
+```html example label="Bold headings" hint="data-size scales every heading: sm, md (default), lg semibold, xl bold." height="28"
+<div class="stack gap-6" style="width:100%;max-width:28rem;">
+<div class="accordion" data-size="lg" data-marker="arrow" style="width:100%;">
+  <details class="accordion-item" open>
+    <summary class="accordion-trigger"><span>Is it accessible?</span></summary>
+    <div class="accordion-content"><p>Yes - native details/summary: keyboard and screen readers work out of the box.</p></div>
+  </details>
+  <details class="accordion-item">
+    <summary class="accordion-trigger"><span>Is it styled?</span></summary>
+    <div class="accordion-content"><p>It follows your theme tokens - every variant below is one attribute.</p></div>
+  </details>
+</div>
+<div class="accordion" data-size="xl" data-variant="bordered" data-marker="arrow" style="width:100%;">
+  <details class="accordion-item">
+    <summary class="accordion-trigger"><span>Is it accessible?</span></summary>
+    <div class="accordion-content"><p>Yes - native details/summary: keyboard and screen readers work out of the box.</p></div>
+  </details>
+  <details class="accordion-item">
+    <summary class="accordion-trigger"><span>Is it styled?</span></summary>
+    <div class="accordion-content"><p>It follows your theme tokens - every variant below is one attribute.</p></div>
+  </details>
+</div>
+</div>
+```
+
+```html example label="Icons and emojis" hint="An .accordion-icon in front of each heading - an icon or an emoji in a fixed box, so the headings line up." height="22"
+<div class="accordion" data-variant="separated" data-marker="arrow" style="max-width:28rem;width:100%;">
+  <details class="accordion-item" open>
+    <summary class="accordion-trigger"><span class="accordion-icon" aria-hidden="true"><i data-lucide="shield-check"></i></span><span>Security</span></summary>
+    <div class="accordion-content"><p>Two-factor authentication and sessions.</p></div>
+  </details>
+  <details class="accordion-item">
+    <summary class="accordion-trigger"><span class="accordion-icon" aria-hidden="true"><i data-lucide="credit-card"></i></span><span>Billing</span></summary>
+    <div class="accordion-content"><p>Plan, invoices and payment methods.</p></div>
+  </details>
+  <details class="accordion-item">
+    <summary class="accordion-trigger"><span class="accordion-icon" aria-hidden="true">🎨</span><span>Appearance</span></summary>
+    <div class="accordion-content"><p>Theme, density and fonts.</p></div>
+  </details>
+  <details class="accordion-item">
+    <summary class="accordion-trigger"><span class="accordion-icon" aria-hidden="true">🔔</span><span>Notifications</span></summary>
+    <div class="accordion-content"><p>Email, push and in-app.</p></div>
+  </details>
+</div>
+```
+
+```html example label="Arrow and plus markers" hint="data-marker='arrow' / 'plus' on the .accordion draws the sign for every item - no icon markup; data-marker-position='start' puts it before the heading (a FAQ, a file tree)." height="26"
+<div class="grid gap-6" style="grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));width:100%;">
+<div class="accordion" data-marker="plus" data-marker-position="start" style="width:100%;">
+  <details class="accordion-item" open>
+    <summary class="accordion-trigger"><span>Is it accessible?</span></summary>
+    <div class="accordion-content"><p>Yes - native details/summary: keyboard and screen readers work out of the box.</p></div>
+  </details>
+  <details class="accordion-item">
+    <summary class="accordion-trigger"><span>Is it styled?</span></summary>
+    <div class="accordion-content"><p>It follows your theme tokens - every variant below is one attribute.</p></div>
+  </details>
+  <details class="accordion-item">
+    <summary class="accordion-trigger"><span>Does it need JavaScript?</span></summary>
+    <div class="accordion-content"><p>No. Only data-type="single" adds a small handler that closes the siblings.</p></div>
+  </details>
+</div>
+<div class="accordion" data-marker="arrow" data-marker-position="start" data-variant="bordered" style="width:100%;">
+  <details class="accordion-item" open>
+    <summary class="accordion-trigger"><span>Is it accessible?</span></summary>
+    <div class="accordion-content"><p>Yes - native details/summary: keyboard and screen readers work out of the box.</p></div>
+  </details>
+  <details class="accordion-item">
+    <summary class="accordion-trigger"><span>Is it styled?</span></summary>
+    <div class="accordion-content"><p>It follows your theme tokens - every variant below is one attribute.</p></div>
+  </details>
+  <details class="accordion-item">
+    <summary class="accordion-trigger"><span>Does it need JavaScript?</span></summary>
+    <div class="accordion-content"><p>No. Only data-type="single" adds a small handler that closes the siblings.</p></div>
+  </details>
+</div>
+</div>
+```
+
+```html example label="Custom open/close signs" hint="Own glyphs: the .accordion-chevron turns 180° (90° with data-turn='quarter' for a chevron-right) - or two elements, .accordion-when-closed and .accordion-when-open, swap." height="22"
+<div class="accordion" data-variant="bordered" style="max-width:28rem;width:100%;">
+  <details class="accordion-item" open>
+    <summary class="accordion-trigger"><span>Quarter turn</span><i data-lucide="chevron-right" class="accordion-chevron" data-turn="quarter"></i></summary>
+    <div class="accordion-content"><p>A chevron-right that turns down when open.</p></div>
+  </details>
+  <details class="accordion-item">
+    <summary class="accordion-trigger"><span class="accordion-icon" aria-hidden="true"><span class="accordion-when-closed">📁</span><span class="accordion-when-open">📂</span></span><span>Projects</span></summary>
+    <div class="accordion-content"><p>The folder opens with the panel.</p></div>
+  </details>
+  <details class="accordion-item">
+    <summary class="accordion-trigger"><span>Release notes</span><span class="accordion-when-closed text-sm">Show</span><span class="accordion-when-open text-sm">Hide</span></summary>
+    <div class="accordion-content"><p>Words instead of an icon.</p></div>
+  </details>
+</div>
+```
+
+```html example label="Right to left" hint="Logical throughout: in dir='rtl' the icon leads on the right, the marker sits on the left." height="22"
+<div dir="rtl" lang="ar" style="width:100%;max-width:28rem;">
+<div class="accordion" data-variant="separated" data-marker="arrow" style="width:100%;">
+  <details class="accordion-item" open>
+    <summary class="accordion-trigger"><span class="accordion-icon" aria-hidden="true"><i data-lucide="shield-check"></i></span><span>الأمان</span></summary>
+    <div class="accordion-content"><p>المصادقة الثنائية والجلسات النشطة.</p></div>
+  </details>
+  <details class="accordion-item">
+    <summary class="accordion-trigger"><span class="accordion-icon" aria-hidden="true">🎨</span><span>المظهر</span></summary>
+    <div class="accordion-content"><p>السمة والكثافة والخطوط.</p></div>
+  </details>
+</div>
+</div>
+```
+
 ```html example label="Density" hint="Set data-density on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25), typography and fixed dimensions stay identical. comfortable matches the unsized default." height="20"
 <div class="flex flex-wrap gap-4">
   <div class="flex-1 min-w-48">

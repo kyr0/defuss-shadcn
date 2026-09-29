@@ -1,0 +1,367 @@
+// -- Mermaid ---------------------------------------------------------------
+// A thin adapter around the OFFICIAL Mermaid renderer (mermaid-js/mermaid,
+// MIT) - zero Mermaid bytes ship here. The markup is Mermaid's own native
+// convention, `<pre class="mermaid">` (inside a `.mermaid-diagram` figure);
+// defuss owns the lifecycle, the design tokens, security, errors and the
+// State API, Mermaid owns parsing, layout and SVG.
+//
+// - Lazy: a page without a diagram never requests Mermaid. The first diagram
+//   imports the pinned ESM build ONCE (MERMAID_URL, or <meta name=
+//   "mermaid-module" content="…"> / df$.shadcn.mermaid.load(url) to
+//   self-host).
+// - Controlled: startOnLoad is off; every render is mermaid.render() on the
+//   diagram's SOURCE - the <pre> stays in the DOM untouched (CSS hides it
+//   once rendered), so re-renders never read back Mermaid's SVG.
+// - Strict: securityLevel "strict" is locked (HTML in labels encoded, click
+//   handlers off); Mermaid's own `secure` list keeps %%{init}%% directives
+//   from lowering it.
+// - Themed: design tokens → Mermaid "base" themeVariables, converted to hex
+//   (Mermaid parses only hex; our tokens are oklch()). Theme changes (dark
+//   mode, the theme switcher) re-render every live diagram.
+// - Errors keep the source visible and add a token-styled <output role=alert>.
+//
+// Markup contract (component-skill.md): figure.mermaid-diagram > pre.mermaid.
+// A bare <pre class="mermaid"> is wrapped in that figure on init. State lives
+// ON THE FIGURE (data-state + dataset.stateName) - the bound `api` is the
+// only state mutator (AGENTS.md "State API").
+
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
+import { defussGlobals } from '../../shared/state-api.js';
+
+const df$ = defussGlobals();
+
+// 'default' = the source (not rendered yet / shown as text), 'rendered' =
+// the SVG, 'error' = the source + an error message
+const mermaidStates = ['default', 'rendered', 'error'];
+
+/** The pinned, tested official build - never @latest (tests/e2e pin it). */
+export const MERMAID_URL = 'https://cdn.jsdelivr.net/npm/mermaid@12.0.0/dist/mermaid.esm.min.mjs';
+
+interface MermaidLike {
+  initialize(config: Record<string, unknown>): void;
+  render(id: string, text: string): Promise<{ svg: string; bindFunctions?: (el: Element) => void }>;
+}
+
+// -- loading ----------------------------------------------------------------
+
+let modulePromise: Promise<MermaidLike> | null = null;
+let moduleUrl = '';
+
+/**
+ * Import the official Mermaid ESM once. `url` overrides the source (a
+ * self-hosted copy of the same build); without it: <meta name=
+ * "mermaid-module">, else the pinned jsDelivr build. A failed import can be
+ * retried (the next call imports again).
+ */
+function load(url?: string): Promise<MermaidLike> {
+  const vendorUrl = url || document.querySelector<HTMLMetaElement>('meta[name="mermaid-module"]')?.content || MERMAID_URL;
+  if (modulePromise && vendorUrl === moduleUrl) return modulePromise;
+  moduleUrl = vendorUrl;
+  // the ONE vendor import (verify: VENDOR_IMPORTS) - the official renderer, never our code
+  const pending = import(/* @vite-ignore */ vendorUrl).then((m) => (m.default ?? m) as MermaidLike);
+  pending.catch(() => {
+    if (modulePromise === pending) modulePromise = null;
+  });
+  modulePromise = pending;
+  return pending;
+}
+
+// -- tokens → Mermaid theme ---------------------------------------------------
+
+let probe: CanvasRenderingContext2D | null = null;
+
+/**
+ * Why: Mermaid's theme engine documents hex colors only; our tokens are
+ * oklch() and themes may use color-mix()/lab(). Painting one pixel and
+ * reading it back is the browser's own conversion to sRGB (the same probe
+ * the Chart adapter uses). '' when the color does not resolve.
+ */
+export function toHex(css: string): string {
+  if (!css || css === 'none') return '';
+  probe ??= document.createElement('canvas').getContext('2d', { willReadFrequently: true });
+  if (!probe) return '';
+  probe.clearRect(0, 0, 1, 1);
+  probe.fillStyle = 'rgba(1, 2, 3, 0.5)'; // sentinel: an invalid color keeps it
+  probe.fillStyle = css;
+  if (probe.fillStyle === 'rgba(1, 2, 3, 0.5)') return '';
+  probe.fillRect(0, 0, 1, 1);
+  const [r, g, b, a] = probe.getImageData(0, 0, 1, 1).data;
+  const hex = (n: number) => n.toString(16).padStart(2, '0');
+  return `#${hex(r)}${hex(g)}${hex(b)}${a < 255 ? hex(a) : ''}`;
+}
+
+/** Mermaid "base" themeVariables from the tokens the figure resolves. */
+export function mermaidTheme(el: Element): Record<string, unknown> {
+  const cs = getComputedStyle(el);
+  const tok = (name: string, fallback: string) => toHex(cs.getPropertyValue(name).trim()) || fallback;
+  const background = tok('--background', '#ffffff');
+  const foreground = tok('--foreground', '#0a0a0a');
+  const card = tok('--card', background);
+  const cardFg = tok('--card-foreground', foreground);
+  const muted = tok('--muted', '#f5f5f5');
+  const mutedFg = tok('--muted-foreground', '#737373');
+  const border = tok('--border', '#e5e5e5');
+  const primary = tok('--primary', foreground);
+  const primaryFg = tok('--primary-foreground', background);
+  const secondary = tok('--secondary', muted);
+  const accent = tok('--accent', muted);
+  const accentFg = tok('--accent-foreground', foreground);
+  const destructive = tok('--destructive', '#dc2626');
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(background.slice(i, i + 2), 16));
+  const dark = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 < 0.5;
+  return {
+    darkMode: dark,
+    background,
+    fontFamily: cs.fontFamily || 'system-ui, sans-serif',
+    fontSize: '14px',
+    textColor: foreground,
+    // nodes are cards: card surface, card text, a border edge
+    primaryColor: card,
+    primaryTextColor: cardFg,
+    primaryBorderColor: mutedFg,
+    mainBkg: card,
+    nodeBorder: mutedFg,
+    nodeTextColor: cardFg,
+    secondaryColor: secondary,
+    secondaryTextColor: foreground,
+    secondaryBorderColor: border,
+    tertiaryColor: muted,
+    tertiaryTextColor: foreground,
+    tertiaryBorderColor: border,
+    lineColor: mutedFg,
+    defaultLinkColor: mutedFg,
+    edgeLabelBackground: background,
+    titleColor: foreground,
+    clusterBkg: muted,
+    clusterBorder: border,
+    // sequence diagrams
+    actorBkg: card,
+    actorBorder: mutedFg,
+    actorTextColor: cardFg,
+    actorLineColor: border,
+    signalColor: foreground,
+    signalTextColor: foreground,
+    labelBoxBkgColor: muted,
+    labelBoxBorderColor: border,
+    labelTextColor: foreground,
+    loopTextColor: foreground,
+    activationBkgColor: muted,
+    activationBorderColor: mutedFg,
+    sequenceNumberColor: primaryFg,
+    noteBkgColor: accent,
+    noteTextColor: accentFg,
+    noteBorderColor: border,
+    // class / state / er
+    classText: cardFg,
+    labelColor: cardFg,
+    altBackground: muted,
+    stateBkg: card,
+    stateLabelColor: cardFg,
+    compositeBackground: muted,
+    compositeTitleBackground: muted,
+    innerEndBackground: foreground,
+    specialStateColor: foreground,
+    // emphasis + errors
+    pie1: primary,
+    errorBkgColor: destructive,
+    errorTextColor: primaryFg,
+  };
+}
+
+// -- source + rendering -----------------------------------------------------
+
+/**
+ * The diagram text: the <pre>'s markup with entities decoded - exactly how
+ * Mermaid reads it (a literal <br> in a label survives, &lt;br&gt; decodes
+ * to it), so hand-written and generated markup agree.
+ */
+function sourceOf(fig: HTMLElement): string {
+  const pre = fig.querySelector<HTMLElement>(':scope > pre.mermaid');
+  if (!pre) return '';
+  const decode = document.createElement('textarea');
+  decode.innerHTML = pre.innerHTML;
+  return decode.value.replace(/^\n+|\s+$/g, '');
+}
+
+/** The runtime-made output node (SVG host) - CodeExample chrome, never source. */
+function outputOf(fig: HTMLElement): HTMLElement {
+  let out = fig.querySelector<HTMLElement>(':scope > .mermaid-output');
+  if (!out) {
+    out = document.createElement('div');
+    out.className = 'mermaid-output';
+    out.setAttribute('data-ce-chrome', '');
+    fig.querySelector(':scope > pre.mermaid')?.after(out);
+  }
+  return out;
+}
+
+function clearError(fig: HTMLElement): void {
+  fig.querySelector(':scope > .mermaid-error')?.remove();
+}
+
+function showError(fig: HTMLElement, message: string): void {
+  clearError(fig);
+  fig.querySelector(':scope > .mermaid-output')?.remove();
+  const out = document.createElement('output');
+  out.className = 'mermaid-error';
+  out.setAttribute('role', 'alert');
+  out.setAttribute('data-ce-chrome', '');
+  out.textContent = message;
+  fig.querySelector(':scope > pre.mermaid')?.after(out);
+  fig.dataset.state = 'error';
+  fig.dataset.stateName = 'error';
+}
+
+let seq = 0;
+/** Mermaid's config is global - renders run one at a time, each with its own theme. */
+let queue: Promise<unknown> = Promise.resolve();
+
+/** Render one diagram from its source (queued). Resolves true on success. */
+function render(fig: HTMLElement): Promise<boolean> {
+  // until the first render lands the source is a placeholder (mermaid.css hides
+  // its text - no flash of raw markup); a re-render keeps the old SVG meanwhile
+  if (fig.dataset.state !== 'rendered') fig.dataset.state = 'pending';
+  const job = queue.then(async () => {
+    const source = sourceOf(fig);
+    if (!fig.isConnected || !source) {
+      if (fig.dataset.state === 'pending') delete fig.dataset.state;
+      return false;
+    }
+    let mermaid: MermaidLike;
+    try {
+      mermaid = await load();
+    } catch {
+      showError(fig, `Mermaid could not be loaded from ${moduleUrl} - the diagram source is shown instead.`);
+      return false;
+    }
+    const theme = mermaidTheme(fig);
+    mermaid.initialize({
+      startOnLoad: false,
+      securityLevel: 'strict',
+      suppressErrorRendering: true,
+      theme: 'base',
+      themeVariables: theme,
+    });
+    try {
+      const { svg, bindFunctions } = await mermaid.render(`defuss-mermaid-${++seq}`, source);
+      if (!fig.isConnected) return false;
+      clearError(fig);
+      const out = outputOf(fig);
+      out.innerHTML = svg;
+      const el = out.querySelector('svg');
+      const label = fig.getAttribute('aria-label');
+      if (el) {
+        el.removeAttribute('height');
+        el.style.maxWidth = '';
+        el.setAttribute('role', 'img');
+        if (label && !el.querySelector(':scope > title')) el.setAttribute('aria-label', label);
+      }
+      bindFunctions?.(out);
+      fig.dataset.state = 'rendered';
+      fig.dataset.stateName = 'rendered';
+      fig._mermaidTheme = JSON.stringify(theme);
+      return true;
+    } catch (err) {
+      const text = err instanceof Error ? err.message : String(err);
+      // Mermaid's parse errors are multi-line (a caret under the position) - keep the lines
+      showError(fig, `This diagram could not be rendered.\n${text.split('\n').slice(0, 4).join('\n')}`);
+      return false;
+    }
+  });
+  queue = job.catch(() => undefined);
+  return job;
+}
+
+function renderAll(): Promise<boolean[]> {
+  return Promise.all([...document.querySelectorAll<HTMLElement>('.mermaid-diagram[data-init]')].map(render));
+}
+
+/** UI side of setState: the only function that switches a diagram's state. */
+function triggerStateChange(fig: HTMLElement, stateName: string, config: Record<string, unknown>): Promise<boolean> | void {
+  switch (stateName) {
+    case 'default':
+      clearError(fig);
+      fig.querySelector(':scope > .mermaid-output')?.remove();
+      delete fig.dataset.state;
+      fig.dataset.stateName = 'default';
+      return;
+    case 'rendered':
+      return render(fig);
+    case 'error':
+      showError(fig, typeof config.message === 'string' ? config.message : 'This diagram could not be rendered.');
+      return;
+  }
+}
+
+/** Registry-level API; pass the figure explicitly. Unknown names throw. */
+export const mermaidApi = {
+  setState(fig: HTMLElement, stateName: string, config: Record<string, unknown> = {}) {
+    if (!mermaidStates.includes(stateName)) {
+      throw new Error(`mermaid: unknown state "${stateName}" (supported: ${mermaidStates.join(', ')})`);
+    }
+    fig._stateConfig = config;
+    return triggerStateChange(fig, stateName, config);
+  },
+  getState(fig: HTMLElement) {
+    return { name: fig.dataset.stateName || 'default', config: fig._stateConfig ?? {} };
+  },
+};
+
+df$.mermaidApi = mermaidApi as unknown as DefussShadcnComponentApi;
+df$.mermaidStates = mermaidStates;
+// public imperative API (AGENTS.md "No window globals": df$.shadcn.mermaid)
+df$.mermaid = { load, render, renderAll, theme: mermaidTheme, url: MERMAID_URL };
+
+// -- live re-theming ---------------------------------------------------------
+
+/**
+ * Why: themes are live - dark mode toggles a class on <html>, the theme
+ * switcher writes token overrides into <html style> or swaps a <style>.
+ * One observer re-renders every live diagram whose derived theme changed
+ * (debounced; untouched themes are skipped - Mermaid renders are not free).
+ */
+let themeWatched = false;
+function watchTheme(): void {
+  if (themeWatched) return;
+  themeWatched = true;
+  let timer = 0;
+  const schedule = (): void => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      document.querySelectorAll<HTMLElement>('.mermaid-diagram[data-state="rendered"]').forEach((fig) => {
+        if (JSON.stringify(mermaidTheme(fig)) !== fig._mermaidTheme) render(fig);
+      });
+    }, 80) as unknown as number;
+  };
+  const mo = new MutationObserver(schedule);
+  mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'style', 'data-theme'] });
+  if (document.head) mo.observe(document.head, { childList: true, subtree: true, characterData: true });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', schedule);
+}
+
+// -- init --------------------------------------------------------------------
+
+function init() {
+  // Mermaid's own convention works bare: wrap a lone <pre class="mermaid">
+  document.querySelectorAll<HTMLElement>('pre.mermaid:not(.mermaid-diagram > pre)').forEach((pre) => {
+    const fig = document.createElement('figure');
+    fig.className = 'mermaid-diagram';
+    pre.before(fig);
+    fig.append(pre);
+  });
+  document.querySelectorAll<HTMLElement>('.mermaid-diagram:not([data-init])').forEach((fig) => {
+    fig.dataset.init = '';
+    if (!fig.querySelector(':scope > pre.mermaid')) return;
+    fig.dataset.stateName = 'default';
+    fig.api = {
+      setState: (stateName: string, config?: Record<string, unknown>) => mermaidApi.setState(fig, stateName, config),
+      getState: () => mermaidApi.getState(fig),
+    };
+    watchTheme();
+    render(fig);
+  });
+}
+
+init();
+new MutationObserver(init).observe(document, { childList: true, subtree: true });

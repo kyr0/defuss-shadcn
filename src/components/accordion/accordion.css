@@ -40,15 +40,15 @@
   .accordion-trigger {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 0.5rem;
     width: 100%;
     padding: 1rem 0;
     font-size: 0.9375rem;
     font-weight: 500;
-    text-align: left;
+    text-align: start;
     cursor: pointer;
     list-style: none;
-    color: var(--foreground);
+    color: inherit;
     transition: color 150ms;
 
     &::-webkit-details-marker { display: none; }
@@ -58,7 +58,8 @@
 
   /* Chevron rotation */
   .accordion-chevron {
-    color: var(--muted-foreground);
+    margin-inline-start: auto;
+    color: color-mix(in oklch, currentColor 60%, transparent);
     transition: transform 200ms ease;
     flex-shrink: 0;
 
@@ -72,11 +73,131 @@
     padding-bottom: 1rem;
     font-size: 0.875rem;
     line-height: 1.7;
-    color: var(--muted-foreground);
+    color: color-mix(in oklch, currentColor 72%, transparent);
     overflow: hidden;
 
     & p { margin: 0; }
   }
+
+  /* -- Surfaces (data-variant on the .accordion) -----------------------
+     bordered: one box, items divided · separated: every item its own card
+     · muted / primary / neutral: separated items on that surface ·
+     highlight: separated, the open item turns primary · ghost: no
+     dividers. Boxed variants pad the text inside and swap the underline
+     hover for a tint. The item's text color flows into the heading, the
+     marker and the content, so custom colors (style on an item) just work. */
+  .accordion {
+    color: var(--foreground);
+
+    &[data-variant="bordered"] {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    &:is([data-variant="separated"], [data-variant="muted"], [data-variant="primary"], [data-variant="neutral"], [data-variant="highlight"]) {
+      gap: 0.5rem;
+
+      & > .accordion-item {
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+      }
+    }
+    &[data-variant="muted"] > .accordion-item { background-color: var(--muted); border-color: transparent; }
+    &[data-variant="primary"] > .accordion-item { background-color: var(--primary); color: var(--primary-foreground); border-color: transparent; }
+    &[data-variant="neutral"] > .accordion-item {
+      background-color: color-mix(in oklch, var(--foreground) 78%, var(--background));
+      color: var(--background);
+      border-color: transparent;
+    }
+    &[data-variant="highlight"] > .accordion-item {
+      transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
+
+      &[open] { background-color: var(--primary); color: var(--primary-foreground); border-color: transparent; }
+    }
+    &[data-variant="ghost"] > .accordion-item { border-bottom-color: transparent; }
+
+    /* boxed: text inset, tint on hover */
+    &:is([data-variant="bordered"], [data-variant="separated"], [data-variant="muted"], [data-variant="primary"], [data-variant="neutral"], [data-variant="highlight"]) {
+      & .accordion-trigger {
+        padding-inline: 1rem;
+
+        &:hover { text-decoration: none; background-color: color-mix(in oklch, currentColor 7%, transparent); }
+      }
+      & .accordion-content { padding-inline: 1rem; }
+    }
+
+    /* -- Sizes: the headings' scale and weight (md == default) ---------- */
+    &[data-size="sm"] .accordion-trigger { font-size: 0.8125rem; }
+    &[data-size="md"] .accordion-trigger { font-size: 0.9375rem; }
+    &[data-size="lg"] .accordion-trigger { font-size: 1.0625rem; font-weight: 600; }
+    &[data-size="xl"] .accordion-trigger { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; }
+  }
+
+  /* -- Leading icon / emoji ------------------------------------------- */
+  .accordion-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 1.15em;
+    height: 1.15em;
+    flex-shrink: 0;
+    font-style: normal;
+    line-height: 1;
+
+    & svg { width: 1em; height: 1em; }
+  }
+
+  /* -- Markers: data-marker="arrow" / "plus" on the .accordion draws the
+     open/close sign (no icon markup); data-marker-position="start" puts it
+     before the heading. Own glyphs: .accordion-chevron (180°, or 90° with
+     data-turn="quarter" - mirrored in RTL) or two elements
+     .accordion-when-closed / .accordion-when-open. */
+  .accordion:is([data-marker="arrow"], [data-marker="plus"]) .accordion-trigger::after {
+    content: '';
+    flex-shrink: 0;
+    margin-inline-start: auto;
+    color: color-mix(in oklch, currentColor 65%, transparent);
+    transition: rotate 200ms ease, translate 200ms ease, background-size 200ms ease;
+  }
+  .accordion[data-marker="arrow"] .accordion-trigger::after {
+    width: 0.45em;
+    height: 0.45em;
+    margin-inline-end: 0.2em;
+    /* physical: a down / up arrow is the same in RTL */
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    rotate: 45deg;
+    translate: 0 -0.15em;
+  }
+  .accordion[data-marker="arrow"] .accordion-item[open] > .accordion-trigger::after {
+    rotate: -135deg;
+    translate: 0 0.1em;
+  }
+  .accordion[data-marker="plus"] .accordion-trigger::after {
+    width: 0.8em;
+    height: 0.8em;
+    background:
+      linear-gradient(currentColor 0 0) center / 100% 2px no-repeat,
+      linear-gradient(currentColor 0 0) center / 2px 100% no-repeat;
+  }
+  .accordion[data-marker="plus"] .accordion-item[open] > .accordion-trigger::after {
+    background-size: 100% 2px, 2px 0;
+    rotate: 180deg;
+  }
+  .accordion[data-marker-position="start"] .accordion-trigger::after {
+    order: -1;
+    margin-inline-start: 0;
+    margin-inline-end: 0.25em;
+  }
+  .accordion-chevron[data-turn="quarter"] {
+    details[open] > .accordion-trigger > & { transform: rotate(90deg); }
+    &:dir(rtl) { scale: -1 1; }
+    details[open] > .accordion-trigger > &:dir(rtl) { transform: rotate(-90deg); }
+  }
+  .accordion-item:not([open]) > .accordion-trigger .accordion-when-open,
+  .accordion-item[open] > .accordion-trigger .accordion-when-closed { display: none; }
+  .accordion-trigger > :is(.accordion-when-open, .accordion-when-closed) { margin-inline-start: auto; }
+
   /* -- Density ----------------------------------------------------
      data-density on the .accordion root scales trigger + panel padding.
      comfortable (1rem) == the unsized default. Ratio mirrors sizing.css. */

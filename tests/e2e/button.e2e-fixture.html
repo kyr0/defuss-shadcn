@@ -28,5 +28,22 @@
 
     <button class="btn" id="bt-disabled" disabled>Disabled</button>
     <button class="btn" id="bt-aria-disabled" aria-disabled="true">aria-disabled</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:1rem;">
+      <button class="btn" id="bt-soft" data-variant="soft">Soft</button>
+      <button class="btn" id="bt-dashed" data-variant="dashed">Dashed</button>
+      <button class="btn" id="bt-success" data-tone="success">Success</button>
+      <button class="btn" id="bt-warning" data-tone="warning">Warning</button>
+      <button class="btn" id="bt-info" data-tone="info">Info</button>
+      <button class="btn" id="bt-tone-destructive" data-tone="destructive">Destructive</button>
+      <button class="btn" id="bt-success-outline" data-tone="success" data-variant="outline">Outline</button>
+      <button class="btn" id="bt-success-soft" data-tone="success" data-variant="soft">Soft</button>
+      <button class="btn" id="bt-success-ghost" data-tone="success" data-variant="ghost">Ghost</button>
+      <button class="btn" id="bt-success-dashed" data-tone="success" data-variant="dashed">Dashed</button>
+      <button class="btn" id="bt-success-link" data-tone="success" data-variant="link">Link</button>
+      <button class="btn" id="bt-custom" data-tone="custom" style="--btn-color: rgb(120, 40, 200); --btn-color-fg: rgb(255, 255, 0);">Custom</button>
+      <button class="btn" id="bt-custom-outline" data-tone="custom" data-variant="outline" style="--btn-color: rgb(120, 40, 200);">Custom outline</button>
+    </div>
+    <div dir="rtl" style="margin-top:1rem;"><button class="btn" id="bt-rtl">التالي <svg id="bt-rtl-arrow" data-rtl-flip viewBox="0 0 24 24"><path d="M5 12h14"/></svg><svg id="bt-rtl-sym" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/></svg></button></div>
+    <div dir="ltr"><button class="btn"><svg id="bt-ltr-arrow" data-rtl-flip viewBox="0 0 24 24"><path d="M5 12h14"/></svg> Next</button></div>
   </body>
 </html>

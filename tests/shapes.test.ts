@@ -102,8 +102,36 @@ describe('shape utilities', () => {
   });
 
   it('draw clip-path silhouettes', () => {
-    for (const cls of ['clip-circle', 'clip-hexagon', 'clip-star', 'clip-chevron', 'edge-slant-bottom']) {
+    for (const cls of ['shape-circle', 'shape-hexagon', 'shape-hexagon-2', 'shape-star', 'shape-chevron', 'edge-slant-bottom']) {
       expect(css(add(cls), 'clip-path'), cls).not.toBe('none');
+    }
+  });
+
+  it('ship every DaisyUI mask-* shape as shape-* (same names and numbering)', () => {
+    const daisy = ['squircle', 'heart', 'hexagon', 'hexagon-2', 'decagon', 'pentagon', 'diamond', 'circle',
+      'star', 'star-2', 'triangle', 'triangle-2', 'triangle-3', 'triangle-4'];
+    for (const name of daisy) {
+      const el = add(`shape-${name}`);
+      const drawn = css(el, 'clip-path') !== 'none' || css(el, 'mask-image') !== 'none';
+      expect(drawn, `shape-${name}`).toBe(true);
+    }
+    // numbered triangles point down / left / right, like their named twins
+    expect(css(add('shape-triangle-2'), 'clip-path')).toBe(css(add('shape-triangle-down'), 'clip-path'));
+    expect(css(add('shape-triangle-3'), 'clip-path')).toBe(css(add('shape-triangle-left'), 'clip-path'));
+    expect(css(add('shape-triangle-4'), 'clip-path')).toBe(css(add('shape-triangle-right'), 'clip-path'));
+    // hexagon is pointy-top, hexagon-2 flat-top
+    expect(css(add('shape-hexagon'), 'clip-path')).toMatch(/^polygon\(50% 0/);
+    expect(css(add('shape-hexagon-2'), 'clip-path')).toMatch(/^polygon\(25% 0/);
+  });
+
+  it('keep every v0.9 clip-* name as an alias of its shape-* rule', () => {
+    const names = [...new Set([...shapesCss.matchAll(/\.clip-([a-z0-9-]+)\b/g)].map((m) => m[1]))];
+    expect(names.length).toBeGreaterThan(40);
+    for (const name of names) {
+      const shape = `shape-${name === 'hexagon' ? 'hexagon-2' : name}`;
+      for (const prop of ['clip-path', 'mask-image', 'background-image']) {
+        expect(css(add(`clip-${name}`), prop), `clip-${name} ${prop}`).toBe(css(add(shape), prop));
+      }
     }
   });
 
@@ -119,11 +147,76 @@ describe('shape utilities', () => {
   });
 
   it('paint 3D facets over the author background-color', () => {
-    for (const cls of ['clip-cube', 'clip-pyramid', 'clip-gem', 'clip-sphere', 'clip-star-3d', 'clip-coin']) {
+    for (const cls of ['shape-cube', 'shape-pyramid', 'shape-gem', 'shape-sphere', 'shape-star-3d', 'shape-coin']) {
       const el = add(cls, 'background-color: rgb(0, 0, 255);');
       expect(css(el, 'background-color'), cls).toBe('rgb(0, 0, 255)');
       expect(css(el, 'background-image'), cls).not.toBe('none');
     }
+  });
+
+  it('aura: a wrapper whose conic light turns on a typed angle, ring width by size', () => {
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const base = add('aura');
+    expect(css(base, 'animation-name')).toBe(reduced ? 'none' : 'shape-aura-spin');
+    expect(css(base, 'background-image')).toMatch(/^conic-gradient/);
+    expect(css(base, 'padding-top')).toBe('3px');
+    const widths = { xs: '1px', sm: '2px', md: '3px', lg: '5px', xl: '8px' } as Record<string, string>;
+    for (const [z, w] of Object.entries(widths)) expect(css(add(`aura aura-${z}`), 'padding-top'), z).toBe(w);
+    // the ring hugs the wrapped element: wrapper radius = element radius + ring width
+    expect(css(add('aura', '--shape-round: 10px;'), 'border-top-left-radius')).toBe('13px');
+  });
+
+  it('aura styles swap the light, glow moves it into a blurred halo behind', () => {
+    const light = (cls: string) => css(add(`aura ${cls}`), 'background-image');
+    const all = ['', 'aura-dual', 'aura-rainbow', 'aura-holo', 'aura-gold', 'aura-silver'].map(light);
+    expect(new Set(all).size).toBe(all.length);
+    const glow = add('aura aura-glow');
+    expect(css(glow, 'padding-top')).toBe('0px');
+    expect(css(glow, 'background-image')).toBe('none');
+    const halo = getComputedStyle(glow, '::before');
+    expect(halo.filter).toMatch(/^blur\(12px\)$/);
+    expect(halo.backgroundImage).toMatch(/^conic-gradient/);
+    expect(halo.zIndex).toBe('-1');
+    // --shape-ink recolors the plain light; --shape-duration sets one turn
+    expect(css(add('aura', '--shape-ink: rgb(255, 0, 0);'), 'background-image')).toContain('rgb(255, 0, 0)');
+    expect(css(add('aura', '--shape-duration: 2s;'), 'animation-duration')).toBe('2s');
+  });
+
+  it('stacks: three sheets (fill + edge each), offset by direction, tapered when centered', () => {
+    /** [x, y, spread] of each sheet's EDGE shadow (the 2nd, 4th, 6th layer) */
+    const sheets = (cls: string) => {
+      const parts = css(add(cls), 'box-shadow').split(/,(?![^(]*\))/).map((p) => p.trim());
+      expect(parts.length, cls).toBe(6);
+      return [1, 3, 5].map((i) => parts[i].match(/(-?[\d.]+)px (-?[\d.]+)px 0px (-?[\d.]+)px/)!.slice(1).map(Number));
+    };
+    expect(sheets('stack-bottom-right')).toEqual([[8, 8, 0], [16, 16, 0], [24, 24, 0]]);
+    expect(sheets('stack-top-left')).toEqual([[-8, -8, 0], [-16, -16, 0], [-24, -24, 0]]);
+    expect(sheets('stack-bottom-left')).toEqual([[-8, 8, 0], [-16, 16, 0], [-24, 24, 0]]);
+    expect(sheets('stack-top-right')).toEqual([[8, -8, 0], [16, -16, 0], [24, -24, 0]]);
+    // centered piles taper: each sheet half a step narrower per side, 1.5
+    // steps out - so every sheet still peeks out one full step
+    expect(sheets('stack-bottom')).toEqual([[0, 12, -4], [0, 24, -8], [0, 36, -12]]);
+    expect(sheets('stack-top')).toEqual([[0, -12, -4], [0, -24, -8], [0, -36, -12]]);
+    expect(sheets('stack-left')).toEqual([[-12, 0, -4], [-24, 0, -8], [-36, 0, -12]]);
+    expect(sheets('stack-right')).toEqual([[12, 0, -4], [24, 0, -8], [36, 0, -12]]);
+    // density
+    expect(sheets('stack-bottom-right stack-tight')[0]).toEqual([4, 4, 0]);
+    expect(sheets('stack-bottom-right stack-loose')[2]).toEqual([42, 42, 0]);
+  });
+
+  it('stacks: card / outline / filled sheets, --shape-ink, and a fade toward the background', () => {
+    const colors = (cls: string, style = '') => css(add(cls, style), 'box-shadow').split(/,(?![^(]*\))/).map((p) => p.trim().replace(/ -?[\d.]+px.*$/, ''));
+    const card = colors('stack-bottom-right');
+    expect(card[0]).not.toBe(card[1]); // a fill and a distinct edge
+    const filled = colors('stack-bottom-right stack-filled');
+    expect(filled[0]).toBe(filled[1]); // solid sheet, no edge
+    expect(colors('stack-bottom-right stack-outline')[1]).not.toBe(card[1]); // a stronger edge
+    // --shape-ink recolors (color-mix serializes in oklch: pure red is oklch(0.628 0.258 29.23))
+    expect(colors('stack-bottom-right stack-filled', '--shape-ink: rgb(255, 0, 0);')[0]).toMatch(/^oklch\(0\.62\d+ 0\.25\d+ 29\./);
+    // fade: the three fills step toward the background; without it they match
+    const faded = colors('stack-bottom-right stack-filled stack-fade');
+    expect(new Set([faded[0], faded[2], faded[4]]).size).toBe(3);
+    expect(new Set([filled[0], filled[2], filled[4]]).size).toBe(1);
   });
 
   it('extrude through stacked drop-shadows', () => {
@@ -139,7 +232,7 @@ describe('shape utilities', () => {
 
   it('mask the mask-based shapes', () => {
     for (const cls of ['ticket', 'ticket-vertical', 'stamp', 'scoop-corner-tr', 'shape-flower', 'shape-flower-6',
-      'shape-daisy', 'shape-heart', 'shape-cloud', 'clip-donut', 'clip-moon', 'clip-tag', 'edge-concave-bottom',
+      'shape-daisy', 'shape-heart', 'shape-cloud', 'shape-squircle', 'shape-donut', 'shape-moon', 'shape-tag', 'edge-concave-bottom',
       'edge-crenel-bottom', 'edge-wave-top', 'edge-zigzag-top', 'edge-scallop-top',
       'edge-wave-bottom', 'edge-zigzag-bottom', 'edge-scallop-bottom']) {
       expect(css(add(cls), 'mask-image'), cls).not.toBe('none');

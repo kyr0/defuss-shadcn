@@ -1,6 +1,8 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
+  SKILL_REFERENCES_DIR,
+  referenceSkillText,
   parseSkillFrontmatter,
   SKILL_FRONTMATTER_KEYS,
   SKILL_TEMPLATE_FILE,
@@ -76,19 +78,34 @@ export async function buildRootSkillText(root: string): Promise<string> {
   }));
   const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
   const version = pkg.version as string;
-  // raw file URLs on the default branch: the skill installers take the repo
-  // HEAD, so HEAD's files are the ones the skill describes
+  // fallback for a skill folder copied alone: raw files at THIS release's tag
   const repo = String(typeof pkg.repository === 'string' ? pkg.repository : pkg.repository?.url ?? '')
     .replace(/^git\+/, '')
     .replace(/^git@github\.com:/, 'https://github.com/')
     .replace(/\.git$/, '');
-  const sourceBase = repo.replace(/^https:\/\/github\.com\//, 'https://raw.githubusercontent.com/') + '/main/';
+  const rawBase = `${repo.replace(/^https:\/\/github\.com\//, 'https://raw.githubusercontent.com/')}/v${version}/`;
   return assembleRootSkillText(readFileSync(join(src, ROOT_SKILL_TEMPLATE_FILE), 'utf8'), {
     version,
-    sourceBase,
+    docsPrefix: '../../',
+    rawBase,
     total: components.length,
     withJs: components.filter((c) => c.hasJs).length,
     sections: (NAV as { heading: string; items: Nav[] }[]).map((s) => ({ heading: s.heading, pages: s.items.map(toPage) })),
     components,
   });
+}
+
+/** Why: every component skill, copied into the skill folder
+ *  (skills/defuss-shadcn/references/components/<name>.md) so the lookup an
+ *  agent needs for every task resolves next to the SKILL.md in every install
+ *  mode - it once ran `find /` for half a minute. Keyed by path relative
+ *  to the skill folder; build.ts writes them, verify.ts compares them. */
+export function buildSkillReferences(root: string): Map<string, string> {
+  const compsDir = join(root, 'src', 'components');
+  const out = new Map<string, string>();
+  for (const e of skillEntries(compsDir)) {
+    const text = readFileSync(join(compsDir, e.folder, 'component-skill.md'), 'utf8');
+    out.set(`${SKILL_REFERENCES_DIR}/${e.folder}.md`, referenceSkillText(text));
+  }
+  return out;
 }

@@ -75,6 +75,24 @@ export const tocPlugin = {
                 title.setAttribute('class', 'toc-title');
                 title.textContent = 'On This Page';
                 tocContent.appendChild(title);
+                // the same links inline, right after the page header: layout.css shows
+                // this copy only while the right-hand aside is hidden (< 72rem), open
+                // and collapsible. It lives INSIDE <main>, so the SPA router's main
+                // swap carries it along.
+                const pageHeader = main.querySelector('.page-header');
+                const inline = pageHeader ? doc.createElement('details') : null;
+                const inlineLinks = doc.createElement('nav');
+                if (inline) {
+                    inline.setAttribute('class', 'page-toc');
+                    inline.setAttribute('open', '');
+                    const summary = doc.createElement('summary');
+                    summary.textContent = `On this page (${headings.length})`;
+                    inline.appendChild(summary);
+                    inlineLinks.setAttribute('class', 'page-toc-links');
+                    inlineLinks.setAttribute('aria-label', 'On this page');
+                    inline.appendChild(inlineLinks);
+                    pageHeader.after(inline);
+                }
                 for (const { el, text } of headings) {
                     const id = el.getAttribute('id') || tocId(text);
                     if (!el.getAttribute('id'))
@@ -92,6 +110,8 @@ export const tocPlugin = {
                     link.setAttribute('href', `#${id}`);
                     link.textContent = text;
                     tocContent.appendChild(link);
+                    if (inline)
+                        inlineLinks.appendChild(link.cloneNode(true));
                 }
             }
         }

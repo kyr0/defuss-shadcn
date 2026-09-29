@@ -1,0 +1,110 @@
+/* -- Mermaid component ---------------------------------------------- */
+
+@layer components {
+  @keyframes mermaid-wait { from { background-position: 150% 0; } to { background-position: -50% 0; } }
+  @keyframes mermaid-reveal { to { color: var(--muted-foreground); user-select: auto; } }
+
+  /* figure.mermaid-diagram > pre.mermaid (the source) [+ .mermaid-output,
+     the rendered SVG, + output.mermaid-error]. Without JavaScript - or
+     before the renderer arrives - the source reads as a code block; once
+     rendered, the SVG replaces it visually (the source stays in the DOM:
+     every re-render starts from it). Everything inside the SVG is themed
+     through Mermaid's themeVariables (mermaid.ts), not from here. */
+  .mermaid-diagram {
+    margin: 0;
+    display: grid;
+    align-content: start;
+    gap: 0.75rem;
+    min-width: 0;
+    max-width: 100%;
+
+    & > pre.mermaid {
+      margin: 0;
+      padding: 1rem;
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background-color: var(--muted);
+      color: var(--muted-foreground);
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      white-space: pre;
+      tab-size: 2;
+    }
+
+    /* rendered: the SVG takes the stage, the source stays for re-renders */
+    &[data-state="rendered"] > pre.mermaid { display: none; }
+
+    /* no flash of the source: before the first render (not initialized yet,
+       or pending) the source box is a quiet placeholder - same box, text
+       hidden, a soft shimmer. Without scripting nothing hides; an error
+       shows the source; and if no renderer ever arrives the text appears
+       after 4s anyway. */
+    @media (scripting: enabled) {
+      &:is(:not([data-init]), [data-state="pending"]) > pre.mermaid {
+        color: transparent;
+        user-select: none;
+        background-image: linear-gradient(90deg, transparent, color-mix(in oklch, var(--foreground) 6%, transparent), transparent);
+        background-size: 200% 100%;
+        animation: mermaid-wait 1.4s linear infinite, mermaid-reveal 0s 4s forwards;
+      }
+    }
+
+    & > figcaption {
+      font-size: 0.8125rem;
+      color: var(--muted-foreground);
+      text-align: center;
+      text-wrap: balance;
+    }
+  }
+
+  /* the SVG scales down to the column, never up past its natural size;
+     very wide diagrams scroll inside the figure instead of the page */
+  .mermaid-output {
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    display: flex;
+    justify-content: center;
+
+    & svg {
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
+  }
+
+  /* a malformed diagram: the source stays, the message is token-styled */
+  .mermaid-error {
+    display: block;
+    padding: 0.625rem 0.875rem;
+    border: 1px solid color-mix(in oklch, var(--destructive) 45%, transparent);
+    border-radius: var(--radius-md);
+    background-color: color-mix(in oklch, var(--destructive) 8%, var(--background));
+    color: var(--destructive);
+    /* the parse error keeps its lines and a caret under the position - a
+       monospace face without ligatures keeps the caret aligned */
+    font-family: var(--font-mono);
+    font-variant-ligatures: none;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  /* -- Accessibility / print ------------------------------------------ */
+  @media (forced-colors: active) {
+    .mermaid-output svg { forced-color-adjust: auto; }
+    .mermaid-error { border-color: CanvasText; color: CanvasText; }
+  }
+
+  @media print {
+    .mermaid-output { overflow: visible; }
+    .mermaid-diagram { break-inside: avoid; }
+  }
+
+  /* no shimmer for reduced motion - the 4s fallback reveal stays */
+  @media (prefers-reduced-motion: reduce) {
+    .mermaid-diagram > pre.mermaid { animation-name: none, mermaid-reveal; }
+  }
+}

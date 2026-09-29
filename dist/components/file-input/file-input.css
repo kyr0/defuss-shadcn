@@ -73,6 +73,178 @@
     &[data-size="lg"] { height: 2.75rem; font-size: 1rem;       &::file-selector-button { padding: 0 1rem; margin-right: 1rem; font-size: 1rem; } }
     &[data-size="xl"] { height: 3.25rem; font-size: 1.125rem;   &::file-selector-button { padding: 0 1.25rem; margin-right: 1.25rem; font-size: 1.125rem; } }
   }
+
+  /* -- Drop zone ---------------------------------------------------------
+     .file-drop wraps a <label class="file-drop-zone"> (the card) whose
+     native <input type="file" class="file-drop-input"> covers it,
+     invisible - so a click opens the picker and a DROP lands on the input
+     itself: the browser fills input.files natively, no JavaScript needed.
+     file-input.js adds the drag highlight, filters dropped files by
+     accept / data-max-size / data-max-files (the browser does not filter
+     drops), appends to the selection instead of replacing it, and lists the
+     files in .file-drop-list with previews and remove buttons. */
+  .file-drop {
+    display: grid;
+    gap: 0.75rem;
+    width: 100%;
+  }
+  .file-drop-zone {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 0.375rem;
+    padding: 2rem 1.5rem;
+    border: 2px dashed color-mix(in oklch, var(--foreground) 22%, transparent);
+    border-radius: var(--radius-xl);
+    background-color: var(--card);
+    color: var(--card-foreground);
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 150ms ease, background-color 150ms ease, scale 150ms ease;
+
+    &:hover { border-color: color-mix(in oklch, var(--foreground) 40%, transparent); }
+    &:has(.file-drop-input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
+    &:has(.file-drop-input:disabled) { opacity: 0.55; cursor: not-allowed; }
+  }
+  .file-drop-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: inherit;
+    font-size: 0; /* no native "No file chosen" hit-box quirks */
+  }
+  .file-drop-icon {
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 0.25rem;
+    border-radius: 9999px;
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+    font-size: 1.5rem;
+    line-height: 1;
+    transition: background-color 150ms ease, color 150ms ease, translate 150ms ease;
+
+    & svg { width: 1.5rem; height: 1.5rem; }
+  }
+  .file-drop-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    text-wrap: balance;
+
+    & u, & .file-drop-browse { color: var(--primary); text-decoration: underline; text-underline-offset: 3px; }
+  }
+  .file-drop-hint {
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+    text-wrap: balance;
+  }
+
+  /* dragging files over the zone */
+  .file-drop[data-state-name="dragover"] .file-drop-zone {
+    border-color: var(--primary);
+    border-style: solid;
+    background-color: color-mix(in oklch, var(--primary) 6%, var(--card));
+    scale: 1.01;
+
+    & .file-drop-icon { background-color: var(--primary); color: var(--primary-foreground); translate: 0 -2px; }
+  }
+  /* rejected files (wrong type, too big, too many) */
+  .file-drop[data-state-name="error"] .file-drop-zone { border-color: var(--destructive); }
+  .file-drop-error {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--destructive);
+
+    &:empty { display: none; }
+  }
+
+  /* compact: one row - icon, text, and the whole row is the target */
+  .file-drop[data-size="sm"] .file-drop-zone {
+    grid-template-columns: auto 1fr;
+    justify-items: start;
+    align-items: center;
+    column-gap: 0.75rem;
+    row-gap: 0;
+    padding: 0.75rem 1rem;
+    text-align: start;
+    border-radius: var(--radius-lg);
+
+    & .file-drop-icon { grid-row: span 2; width: 2.25rem; height: 2.25rem; margin: 0; font-size: 1.125rem; & svg { width: 1.125rem; height: 1.125rem; } }
+  }
+
+  /* -- The file list ---------------------------------------------------- */
+  .file-drop-list {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    &:empty { display: none; }
+  }
+  .file-drop-item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.5rem 0.5rem 0.625rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background-color: var(--card);
+  }
+  .file-drop-thumb {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+
+    & img { width: 100%; height: 100%; object-fit: cover; }
+  }
+  .file-drop-name {
+    overflow: hidden;
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .file-drop-meta {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--muted-foreground);
+  }
+  .file-drop-remove {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--muted-foreground);
+    cursor: pointer;
+
+    &:hover { background-color: var(--accent); color: var(--accent-foreground); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+    & svg { width: 1rem; height: 1rem; }
+  }
+
+  @media (forced-colors: active) {
+    .file-drop-zone { border-color: CanvasText; }
+    .file-drop[data-state-name="dragover"] .file-drop-zone { border-color: Highlight; }
+  }
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all

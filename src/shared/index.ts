@@ -10,7 +10,7 @@
  * enforces the membership).
  */
 export { debounce, type Debounced } from './debounce.js';
-export { bindGlobalKeys, type GlobalKeyHandler } from './keys.js';
+export { bindGlobalKeys, isEditableTarget, type GlobalKeyHandler, type GlobalKeyOptions } from './keys.js';
 export { defussGlobals, safeShowPopover } from './state-api.js';
 export { defussQuery, RUNTIME_INCOMPLETE, type HostQuery } from './query.js';
 export { SHARED_ABI } from './version.js';

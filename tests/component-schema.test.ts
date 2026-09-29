@@ -9,7 +9,7 @@ import {
   codeExampleProblems,
   EDITOR_COMPONENTS,
   editorFor,
-  exampleFences,
+  exampleFences, exampleFragment, examplePlaceholders,
   findStatesTable,
   FORBIDDEN_CODE_EXAMPLE_PROPS,
   isSchemaArtifact,
@@ -245,5 +245,28 @@ describe('example fences (§7/§21)', () => {
     const f = exampleFences('```html example component="dialog" label="X"\n<d></d>\n```')[0];
     expect(f.component).toBe('dialog');
     expect(f.label).toBe('X');
+  });
+});
+
+describe('examplePlaceholders (executed fences never abbreviate)', () => {
+  it('flags an element whose whole content is "..."', () => {
+    expect(examplePlaceholders('<svg class="spinner" data-size="xs">...</svg>\n<thead> ... </thead>')).toEqual([
+      '<svg class="spinner" data-size="xs">...</svg>',
+      '<thead> ... </thead>',
+    ]);
+  });
+  it('allows real content, a real ellipsis and text that merely contains dots', () => {
+    expect(examplePlaceholders('<a aria-disabled="true">…</a><p>Loading...</p><svg><path d="M1 1"></path></svg>')).toEqual([]);
+  });
+});
+
+describe('exampleFragment (executed fences carry their container)', () => {
+  it('flags an example that starts with an element needing a parent', () => {
+    expect(exampleFragment('\n<li class="step" data-status="error">\n  …\n</li>')).toBe('<li class="step" data-status="error">');
+    expect(exampleFragment('<!-- a row -->\n<tr class="table-row"><td>1</td></tr>')).toBe('<tr class="table-row">');
+  });
+  it('accepts an example that brings its own list / table', () => {
+    expect(exampleFragment('<ol class="steps">\n  <li class="step"></li>\n</ol>')).toBeNull();
+    expect(exampleFragment('<table class="table"><tr><td>1</td></tr></table>')).toBeNull();
   });
 });

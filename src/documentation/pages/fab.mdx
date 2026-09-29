@@ -1,0 +1,248 @@
+---
+title: "FAB"
+description: "FAB component - a floating action button with a CSS-only speed dial on the native Popover API."
+slug: "fab"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="fab" title="FAB" component="fab">
+  A floating action button - the one main action of a screen, always in reach - and its speed dial: a few related actions that fan out from it. The dial is a native <code>popover</code>, so opening, Escape, clicking outside and <code>aria-expanded</code> are the browser's; CSS anchor positioning stacks the actions at the trigger. No JavaScript.
+</PageHeader>
+
+<SkillPanel component="fab">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;button popovertarget&gt;</code> + <code>&lt;div popover&gt;</code> of actions in a fixed <code>.fab</code>; anchor positioning places the menu.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Popover_API" title="toggle, Escape, light dismiss, aria-expanded"><code>popover</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning" title="the dial sits at its trigger"><code>anchor()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style" title="staggered pop-in"><code>@starting-style</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/sin" title="the flower's quarter circle"><code>sin() / cos()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/animation-timeline/scroll" title="the extended FAB folds on scroll"><code>scroll()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/::backdrop" title="optional dim layer"><code>::backdrop</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.fab</code>
+    <code>.fab-trigger</code>
+    <code>.fab-icon</code>
+    <code>.fab-menu</code>
+    <code>.fab-action</code>
+    <code>.fab-label</code>
+    <code>.fab-main</code>
+    <code>.fab-text</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-position</code> (<code>bottom-end</code>, <code>bottom-start</code>, <code>top-end</code>, <code>top-start</code>, <code>bottom-center</code>), <code>data-direction</code> (<code>up</code>, <code>down</code>, <code>left</code>, <code>right</code>), <code>data-layout="flower"</code>, <code>data-size</code> (<code>sm</code>, <code>md</code>, <code>lg</code>), <code>data-attach="container"</code>, <code>data-backdrop</code>, <code>data-shrink="scroll"</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Speed dial" hint="Click the + (or focus it and press Enter): the actions fan out above it, the + turns into a ×. Click the × again, pick an action (each has popovertargetaction='hide'), press Escape or click outside to close it. The FAB is fixed to the corner of the viewport - here, of the example frame." height="26" schema="none"
+<div class="fab">
+  <button class="btn fab-trigger" popovertarget="fab-1" aria-label="Actions"><span class="fab-icon" aria-hidden="true"><i data-lucide="plus"></i></span></button>
+  <div class="fab-menu" id="fab-1" popover>
+    <button popovertarget="fab-1" popovertargetaction="hide" class="fab-action" aria-label="Camera"><i data-lucide="camera"></i></button>
+    <button popovertarget="fab-1" popovertargetaction="hide" class="fab-action" aria-label="Photos"><i data-lucide="image"></i></button>
+    <button popovertarget="fab-1" popovertargetaction="hide" class="fab-action" aria-label="Voice note"><i data-lucide="mic"></i></button>
+  </div>
+</div>
+```
+
+```html example label="With labels" hint="A .fab-label in each action is the chip beside it - and the button's accessible name." height="30" schema="none"
+<div class="fab">
+  <button class="btn fab-trigger" popovertarget="fab-2" aria-label="Actions"><span class="fab-icon" aria-hidden="true"><i data-lucide="plus"></i></span></button>
+  <div class="fab-menu" id="fab-2" popover>
+    <button popovertarget="fab-2" popovertargetaction="hide" class="fab-action"><i data-lucide="camera"></i><span class="fab-label">Take a photo</span></button>
+    <button popovertarget="fab-2" popovertargetaction="hide" class="fab-action"><i data-lucide="image"></i><span class="fab-label">Choose from gallery</span></button>
+    <button popovertarget="fab-2" popovertargetaction="hide" class="fab-action"><i data-lucide="file-text"></i><span class="fab-label">New document</span></button>
+    <button popovertarget="fab-2" popovertargetaction="hide" class="fab-action"><i data-lucide="link"></i><span class="fab-label">Paste a link</span></button>
+  </div>
+</div>
+```
+
+```html example label="Main action" hint="A .fab-main takes the trigger's place while the dial is open (daisyUI's main action): the second click does the main thing - here, a new message." height="26" schema="none"
+<div class="fab">
+  <button class="btn fab-trigger" popovertarget="fab-3" aria-label="Actions"><span class="fab-icon" aria-hidden="true"><i data-lucide="plus"></i></span></button>
+  <div class="fab-menu" id="fab-3" popover>
+    <button popovertarget="fab-3" popovertargetaction="hide" class="fab-action fab-main" aria-label="New message"><i data-lucide="pencil"></i></button>
+    <button popovertarget="fab-3" popovertargetaction="hide" class="fab-action"><i data-lucide="users"></i><span class="fab-label">New group</span></button>
+    <button popovertarget="fab-3" popovertargetaction="hide" class="fab-action"><i data-lucide="megaphone"></i><span class="fab-label">Broadcast</span></button>
+    <button popovertarget="fab-3" popovertargetaction="hide" class="fab-action"><i data-lucide="calendar"></i><span class="fab-label">Schedule</span></button>
+  </div>
+</div>
+```
+
+```html example label="Close icon" hint="Two icons in the trigger - .fab-icon-closed and .fab-icon-open - swap instead of turning. Any glyph works, emojis too." height="26" schema="none"
+<div class="fab">
+  <button class="btn fab-trigger" popovertarget="fab-4" aria-label="Reactions" data-tone="warning"><span class="fab-icon fab-icon-closed" aria-hidden="true">😊</span><span class="fab-icon fab-icon-open" aria-hidden="true"><i data-lucide="x"></i></span></button>
+  <div class="fab-menu" id="fab-4" popover>
+    <button popovertarget="fab-4" popovertargetaction="hide" class="fab-action" aria-label="Love">❤️</button>
+    <button popovertarget="fab-4" popovertargetaction="hide" class="fab-action" aria-label="Laugh">😂</button>
+    <button popovertarget="fab-4" popovertargetaction="hide" class="fab-action" aria-label="Wow">😮</button>
+    <button popovertarget="fab-4" popovertargetaction="hide" class="fab-action" aria-label="Clap">👏</button>
+  </div>
+</div>
+```
+
+```html example label="Flower" hint="data-layout='flower' spreads the actions on a quarter circle around the trigger, opening toward the middle of the screen; 2 - 6 actions spread evenly." height="26" schema="none"
+<div class="fab" data-layout="flower">
+  <button class="btn fab-trigger" popovertarget="fab-5" aria-label="Actions"><span class="fab-icon" aria-hidden="true"><i data-lucide="plus"></i></span></button>
+  <div class="fab-menu" id="fab-5" popover>
+    <button popovertarget="fab-5" popovertargetaction="hide" class="fab-action"><i data-lucide="camera"></i><span class="fab-label">Camera</span></button>
+    <button popovertarget="fab-5" popovertargetaction="hide" class="fab-action"><i data-lucide="image"></i><span class="fab-label">Photos</span></button>
+    <button popovertarget="fab-5" popovertargetaction="hide" class="fab-action"><i data-lucide="mic"></i><span class="fab-label">Voice</span></button>
+    <button popovertarget="fab-5" popovertargetaction="hide" class="fab-action"><i data-lucide="map-pin"></i><span class="fab-label">Location</span></button>
+  </div>
+</div>
+```
+
+```html example label="Flower with a main action" hint="The main action stays in the middle, the others around it." height="26" schema="none"
+<div class="fab" data-layout="flower" data-size="lg">
+  <button class="btn fab-trigger" popovertarget="fab-6" aria-label="Actions"><span class="fab-icon" aria-hidden="true"><i data-lucide="plus"></i></span></button>
+  <div class="fab-menu" id="fab-6" popover>
+    <button popovertarget="fab-6" popovertargetaction="hide" class="fab-action fab-main" aria-label="Compose"><i data-lucide="pencil"></i></button>
+    <button popovertarget="fab-6" popovertargetaction="hide" class="fab-action"><i data-lucide="image"></i><span class="fab-label">Photos</span></button>
+    <button popovertarget="fab-6" popovertargetaction="hide" class="fab-action"><i data-lucide="mic"></i><span class="fab-label">Voice</span></button>
+    <button popovertarget="fab-6" popovertargetaction="hide" class="fab-action"><i data-lucide="paperclip"></i><span class="fab-label">Attach</span></button>
+  </div>
+</div>
+```
+
+```html example label="Corners and directions" hint="data-position picks the corner (bottom-end, bottom-start, top-end, top-start, bottom-center), data-direction where the actions go (up, down, left, right); a flower opens toward the middle from any corner. Labels switch sides with the corner." height="30" schema="none"
+<div class="fab" data-position="top-start" data-direction="down" data-size="sm">
+  <button class="btn fab-trigger" popovertarget="fab-7a" aria-label="Actions"><span class="fab-icon" aria-hidden="true"><i data-lucide="plus"></i></span></button>
+  <div class="fab-menu" id="fab-7a" popover>
+    <button popovertarget="fab-7a" popovertargetaction="hide" class="fab-action"><i data-lucide="bold"></i><span class="fab-label">Bold</span></button>
+    <button popovertarget="fab-7a" popovertargetaction="hide" class="fab-action"><i data-lucide="italic"></i><span class="fab-label">Italic</span></button>
+  </div>
+</div>
+<div class="fab" data-position="top-end" data-direction="left" data-size="sm">
+  <button class="btn fab-trigger" popovertarget="fab-7b" aria-label="Actions"><span class="fab-icon" aria-hidden="true"><i data-lucide="plus"></i></span></button>
+  <div class="fab-menu" id="fab-7b" popover>
+    <button popovertarget="fab-7b" popovertargetaction="hide" class="fab-action"><i data-lucide="share-2"></i><span class="fab-label">Share</span></button>
+    <button popovertarget="fab-7b" popovertargetaction="hide" class="fab-action"><i data-lucide="heart"></i><span class="fab-label">Like</span></button>
+    <button popovertarget="fab-7b" popovertargetaction="hide" class="fab-action"><i data-lucide="bookmark"></i><span class="fab-label">Save</span></button>
+  </div>
+</div>
+<div class="fab" data-position="bottom-start" data-size="sm">
+  <button class="btn fab-trigger" popovertarget="fab-7c" aria-label="Actions"><span class="fab-icon" aria-hidden="true"><i data-lucide="plus"></i></span></button>
+  <div class="fab-menu" id="fab-7c" popover>
+    <button popovertarget="fab-7c" popovertargetaction="hide" class="fab-action"><i data-lucide="sun"></i><span class="fab-label">Light</span></button>
+    <button popovertarget="fab-7c" popovertargetaction="hide" class="fab-action"><i data-lucide="moon"></i><span class="fab-label">Dark</span></button>
+  </div>
+</div>
+<div class="fab" data-position="bottom-end" data-layout="flower" data-size="sm">
+  <button class="btn fab-trigger" popovertarget="fab-7d" aria-label="Actions"><span class="fab-icon" aria-hidden="true"><i data-lucide="plus"></i></span></button>
+  <div class="fab-menu" id="fab-7d" popover>
+    <button popovertarget="fab-7d" popovertargetaction="hide" class="fab-action"><i data-lucide="camera"></i><span class="fab-label">Camera</span></button>
+    <button popovertarget="fab-7d" popovertargetaction="hide" class="fab-action"><i data-lucide="image"></i><span class="fab-label">Photos</span></button>
+    <button popovertarget="fab-7d" popovertargetaction="hide" class="fab-action"><i data-lucide="mic"></i><span class="fab-label">Voice</span></button>
+  </div>
+</div>
+<div class="fab" data-position="bottom-center" data-direction="right" data-size="sm">
+  <button class="btn fab-trigger" popovertarget="fab-7e" aria-label="Actions"><span class="fab-icon" aria-hidden="true"><i data-lucide="plus"></i></span></button>
+  <div class="fab-menu" id="fab-7e" popover>
+    <button popovertarget="fab-7e" popovertargetaction="hide" class="fab-action"><i data-lucide="play"></i><span class="fab-label">Play</span></button>
+    <button popovertarget="fab-7e" popovertargetaction="hide" class="fab-action"><i data-lucide="skip-forward"></i><span class="fab-label">Next</span></button>
+  </div>
+</div>
+<p class="text-sm text-muted-foreground" style="text-align:center;margin-top:5rem;">Five FABs, one per corner - open any.</p>
+```
+
+```html example label="Text actions" hint="A .fab-text inside an action makes a pill with the words in it - clearer than icons for a few verbs." height="26" schema="none"
+<div class="fab">
+  <button class="btn fab-trigger" popovertarget="fab-8" aria-label="Actions"><span class="fab-icon" aria-hidden="true"><i data-lucide="plus"></i></span></button>
+  <div class="fab-menu" id="fab-8" popover>
+    <button popovertarget="fab-8" popovertargetaction="hide" class="fab-action"><i data-lucide="upload"></i><span class="fab-text">Upload file</span></button>
+    <button popovertarget="fab-8" popovertargetaction="hide" class="fab-action"><i data-lucide="folder-plus"></i><span class="fab-text">New folder</span></button>
+    <button popovertarget="fab-8" popovertargetaction="hide" class="fab-action"><i data-lucide="file-plus"></i><span class="fab-text">New document</span></button>
+  </div>
+</div>
+```
+
+```html example label="Colors and sizes" hint="The trigger is a .btn: data-tone and data-variant work. data-size sm / md / lg scales the trigger and the actions. data-attach='container' pins a FAB inside a positioned box instead of the viewport." height="22" schema="none"
+<div class="grid gap-4" style="grid-template-columns:repeat(3,1fr);">
+  <div class="card" style="position:relative;height:13rem;">
+    <div class="card-header"><h3 class="card-title card-title-sm">Small · success</h3></div>
+    <div class="fab" data-attach="container" data-size="sm">
+      <button class="btn fab-trigger" data-tone="success" popovertarget="fab-9a" aria-label="Actions"><span class="fab-icon" aria-hidden="true"><i data-lucide="plus"></i></span></button>
+      <div class="fab-menu" id="fab-9a" popover><button popovertarget="fab-9a" popovertargetaction="hide" class="fab-action" aria-label="Done"><i data-lucide="check"></i></button><button popovertarget="fab-9a" popovertargetaction="hide" class="fab-action" aria-label="Later"><i data-lucide="clock"></i></button></div>
+    </div>
+  </div>
+  <div class="card" style="position:relative;height:13rem;">
+    <div class="card-header"><h3 class="card-title card-title-sm">Medium · info</h3></div>
+    <div class="fab" data-attach="container">
+      <button class="btn fab-trigger" data-tone="info" popovertarget="fab-9b" aria-label="Actions"><span class="fab-icon" aria-hidden="true"><i data-lucide="plus"></i></span></button>
+      <div class="fab-menu" id="fab-9b" popover><button popovertarget="fab-9b" popovertargetaction="hide" class="fab-action" aria-label="Done"><i data-lucide="check"></i></button><button popovertarget="fab-9b" popovertargetaction="hide" class="fab-action" aria-label="Later"><i data-lucide="clock"></i></button></div>
+    </div>
+  </div>
+  <div class="card" style="position:relative;height:13rem;">
+    <div class="card-header"><h3 class="card-title card-title-sm">Large · custom</h3></div>
+    <div class="fab" data-attach="container" data-size="lg">
+      <button class="btn fab-trigger" data-tone="custom" style="--btn-color: oklch(0.6 0.22 300);" popovertarget="fab-9c" aria-label="Actions"><span class="fab-icon" aria-hidden="true"><i data-lucide="plus"></i></span></button>
+      <div class="fab-menu" id="fab-9c" popover><button popovertarget="fab-9c" popovertargetaction="hide" class="fab-action" aria-label="Done"><i data-lucide="check"></i></button><button popovertarget="fab-9c" popovertargetaction="hide" class="fab-action" aria-label="Later"><i data-lucide="clock"></i></button></div>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="Backdrop" hint="data-backdrop dims and softly blurs the page while the dial is open, so the actions read as the next step." height="26" schema="none"
+<div class="fab" data-backdrop>
+  <button class="btn fab-trigger" popovertarget="fab-10" aria-label="Actions"><span class="fab-icon" aria-hidden="true"><i data-lucide="plus"></i></span></button>
+  <div class="fab-menu" id="fab-10" popover>
+    <button popovertarget="fab-10" popovertargetaction="hide" class="fab-action"><i data-lucide="camera"></i><span class="fab-label">Camera</span></button>
+    <button popovertarget="fab-10" popovertargetaction="hide" class="fab-action"><i data-lucide="image"></i><span class="fab-label">Photos</span></button>
+    <button popovertarget="fab-10" popovertargetaction="hide" class="fab-action"><i data-lucide="file-text"></i><span class="fab-label">Document</span></button>
+  </div>
+</div>
+<p class="text-sm text-muted-foreground">Page content behind the dial.</p>
+```
+
+```html example label="Extended, shrinks on scroll" hint="A .fab-text in the trigger makes an extended FAB (icon + label). data-shrink='scroll' folds the label away over the first 120px of scrolling - a scroll-driven animation, no listener. It follows the page by default; here it follows the list (a named scroll-timeline + --fab-timeline). Scroll the list." height="22" schema="none"
+<div style="position:relative;height:18rem;timeline-scope:--inbox;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;">
+  <div style="display:grid;grid-auto-rows:max-content;gap:0.75rem;height:100%;overflow-y:auto;padding:1rem;scroll-timeline:--inbox;">
+    <p class="text-sm text-muted-foreground m-0">Scroll down - Compose shrinks to its icon.</p>
+    <div class="card" data-size="sm"><div class="card-content"><p class="m-0">Message 1</p></div></div>
+    <div class="card" data-size="sm"><div class="card-content"><p class="m-0">Message 2</p></div></div>
+    <div class="card" data-size="sm"><div class="card-content"><p class="m-0">Message 3</p></div></div>
+    <div class="card" data-size="sm"><div class="card-content"><p class="m-0">Message 4</p></div></div>
+    <div class="card" data-size="sm"><div class="card-content"><p class="m-0">Message 5</p></div></div>
+    <div class="card" data-size="sm"><div class="card-content"><p class="m-0">Message 6</p></div></div>
+    <div class="card" data-size="sm"><div class="card-content"><p class="m-0">Message 7</p></div></div>
+    <div class="card" data-size="sm"><div class="card-content"><p class="m-0">Message 8</p></div></div>
+    <div class="card" data-size="sm"><div class="card-content"><p class="m-0">Message 9</p></div></div>
+    <div class="card" data-size="sm"><div class="card-content"><p class="m-0">Message 10</p></div></div>
+    <div class="card" data-size="sm"><div class="card-content"><p class="m-0">Message 11</p></div></div>
+    <div class="card" data-size="sm"><div class="card-content"><p class="m-0">Message 12</p></div></div>
+  </div>
+  <div class="fab" data-attach="container" data-shrink="scroll" style="--fab-timeline: --inbox;">
+    <button class="btn fab-trigger" aria-label="Compose"><span class="fab-icon" aria-hidden="true"><i data-lucide="pencil"></i></span><span class="fab-text">Compose</span></button>
+  </div>
+</div>
+```
+
+```html example label="Right to left" hint="Positions are logical: bottom-end is the bottom-left corner in dir='rtl', and the labels switch sides with it." height="26" schema="none"
+<div dir="rtl" lang="ar">
+  <div class="fab">
+    <button class="btn fab-trigger" popovertarget="fab-12" aria-label="Actions"><span class="fab-icon" aria-hidden="true"><i data-lucide="plus"></i></span></button>
+    <div class="fab-menu" id="fab-12" popover>
+      <button popovertarget="fab-12" popovertargetaction="hide" class="fab-action"><i data-lucide="camera"></i><span class="fab-label">الكاميرا</span></button>
+      <button popovertarget="fab-12" popovertargetaction="hide" class="fab-action"><i data-lucide="image"></i><span class="fab-label">الصور</span></button>
+      <button popovertarget="fab-12" popovertargetaction="hide" class="fab-action"><i data-lucide="mic"></i><span class="fab-label">ملاحظة صوتية</span></button>
+    </div>
+  </div>
+</div>
+```
+
+<SourceFiles component="fab" section="css" />
+
+</DocPage>

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>indicator e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/badge/badge.css" />
+    <link rel="stylesheet" href="/dist/components/indicator/indicator.css" />
+  </head>
+  <body style="padding:3rem;">
+    <!-- mirrors the doc page: a box with nine items, one per anchor point -->
+    <div class="indicator" id="ind">
+      <span class="indicator-item badge" data-variant="default" data-position="top-start" id="ind-top-start">x</span>
+      <span class="indicator-item badge" data-variant="default" data-position="top-center" id="ind-top-center">x</span>
+      <span class="indicator-item badge" data-variant="default" data-position="top-end" id="ind-top-end">x</span>
+      <span class="indicator-item badge" data-variant="default" data-position="middle-start" id="ind-middle-start">x</span>
+      <span class="indicator-item badge" data-variant="default" data-position="middle-center" id="ind-middle-center">x</span>
+      <span class="indicator-item badge" data-variant="default" data-position="middle-end" id="ind-middle-end">x</span>
+      <span class="indicator-item badge" data-variant="default" data-position="bottom-start" id="ind-bottom-start">x</span>
+      <span class="indicator-item badge" data-variant="default" data-position="bottom-center" id="ind-bottom-center">x</span>
+      <span class="indicator-item badge" data-variant="default" data-position="bottom-end" id="ind-bottom-end">x</span>
+      <span class="indicator-item badge" data-variant="default" id="ind-default">d</span>
+      <span class="indicator-item badge" data-variant="default" data-position="bottom" id="ind-bottom">b</span>
+      <span class="indicator-item badge" data-variant="default" data-position="center" id="ind-center">c</span>
+      <div id="ind-box" style="width:200px;height:100px;background:#eee;"></div>
+    </div>
+    <!-- a wrapper given a width passes it to a size container (a card has no intrinsic width) -->
+    <div class="indicator" id="ind-fill" style="width:300px;margin-top:3rem;"><span class="indicator-item badge" data-variant="default">n</span><div id="ind-fill-box" style="container-type:inline-size;height:40px;background:#eee;"></div></div>
+    <!-- data-inset pulls a corner item toward the center; RTL flips it -->
+    <div style="display:flex;align-items:flex-start;gap:3rem;margin-top:3rem;">
+      <div class="indicator"><span class="indicator-item badge" data-variant="default" id="ins-none">n</span><div id="ins-box" style="width:40px;height:40px;background:#eee;"></div></div>
+      <div class="indicator"><span class="indicator-item badge" data-variant="default" data-inset id="ins-md">n</span><div style="width:40px;height:40px;background:#eee;"></div></div>
+      <div class="indicator"><span class="indicator-item badge" data-variant="default" data-inset="lg" id="ins-lg">n</span><div style="width:40px;height:40px;background:#eee;"></div></div>
+      <div class="indicator"><span class="indicator-item badge" data-variant="default" data-inset data-position="middle-center" id="ins-center">n</span><div style="width:40px;height:40px;background:#eee;"></div></div>
+      <div dir="rtl"><div class="indicator"><span class="indicator-item badge" data-variant="default" data-inset data-position="top-start" id="ins-rtl">n</span><div id="ins-rtl-box" style="width:40px;height:40px;background:#eee;"></div></div></div>
+    </div>
+    <!-- responsive: start, from 48rem end -->
+    <div class="indicator" style="margin-top:3rem;"><span class="indicator-item badge" data-variant="default" data-position="start" data-position-md="end" id="ind-resp">r</span><div id="ind-resp-box" style="width:200px;height:60px;background:#eee;"></div></div>
+    <!-- RTL: start is the right edge -->
+    <div dir="rtl" style="margin-top:3rem;"><div class="indicator"><span class="indicator-item badge" data-variant="default" data-position="top-start" id="ind-rtl">s</span><div id="ind-rtl-box" style="width:200px;height:60px;background:#eee;"></div></div></div>
+    <!-- status dots: variants, sizes, animations, pinned -->
+    <p style="margin-top:3rem;">
+      <span class="indicator-dot" data-variant="neutral" id="dot-neutral" role="img" aria-label="neutral"></span>
+      <span class="indicator-dot" data-variant="primary" id="dot-primary" role="img" aria-label="primary"></span>
+      <span class="indicator-dot" data-variant="secondary" id="dot-secondary" role="img" aria-label="secondary"></span>
+      <span class="indicator-dot" data-variant="accent" id="dot-accent" role="img" aria-label="accent"></span>
+      <span class="indicator-dot" data-variant="info" id="dot-info" role="img" aria-label="info"></span>
+      <span class="indicator-dot" data-variant="success" id="dot-success" role="img" aria-label="success"></span>
+      <span class="indicator-dot" data-variant="warning" id="dot-warning" role="img" aria-label="warning"></span>
+      <span class="indicator-dot" data-variant="destructive" id="dot-destructive" role="img" aria-label="destructive"></span>
+      <span class="indicator-dot" data-variant="error" id="dot-error" role="img" aria-label="error"></span>
+      <span class="indicator-dot" id="dot-default" role="img" aria-label="default"></span>
+    </p>
+    <p>
+      <span class="indicator-dot" data-size="xs" id="dot-xs" role="img" aria-label="xs"></span>
+      <span class="indicator-dot" data-size="sm" id="dot-sm" role="img" aria-label="sm"></span>
+      <span class="indicator-dot" data-size="md" id="dot-md" role="img" aria-label="md"></span>
+      <span class="indicator-dot" data-size="lg" id="dot-lg" role="img" aria-label="lg"></span>
+      <span class="indicator-dot" data-size="xl" id="dot-xl" role="img" aria-label="xl"></span>
+    </p>
+    <p>
+      <span class="indicator-dot" data-animate="ping" id="dot-ping" role="img" aria-label="ping"></span>
+      <span class="indicator-dot" data-animate="bounce" id="dot-bounce" role="img" aria-label="bounce"></span>
+      <span class="indicator-dot" data-animate="pulse" id="dot-pulse" role="img" aria-label="pulse"></span>
+    </p>
+    <div class="indicator" style="margin-top:2rem;"><span class="indicator-item indicator-dot" data-variant="success" data-animate="bounce" id="dot-pinned" role="img" aria-label="pinned"></span><div id="dot-pinned-box" style="width:120px;height:60px;background:#eee;"></div></div>
+  </body>
+</html>

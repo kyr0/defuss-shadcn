@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>mermaid e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/mermaid/mermaid.css" />
+  </head>
+  <body style="padding:2rem;">
+    <!-- mirrors the doc page: a flowchart, a sequence diagram, a malformed
+         one, a labelled one with accTitle, a bare upstream <pre class="mermaid">
+         and one inside a .dark scope -->
+    <figure class="mermaid-diagram" id="mm-flow" aria-label="Release flow">
+      <pre class="mermaid">
+flowchart LR
+  A["Edit<br/>src/"] --> B(make build)
+  B --> C{verify green?}
+  C -- yes --> D[Commit]
+  C -- no --> A
+      </pre>
+      <figcaption>Release flow</figcaption>
+    </figure>
+    <figure class="mermaid-diagram" id="mm-seq" aria-label="Sequence">
+      <pre class="mermaid">
+sequenceDiagram
+  Page->>mermaid.js: first diagram
+  mermaid.js-->>Page: SVG
+      </pre>
+    </figure>
+    <figure class="mermaid-diagram" id="mm-bad" aria-label="Broken">
+      <pre class="mermaid">
+flowchart LR
+  A --> B -->
+      </pre>
+    </figure>
+    <figure class="mermaid-diagram" id="mm-acc" aria-label="Checkout flow">
+      <pre class="mermaid">
+flowchart LR
+  accTitle: Checkout flow
+  accDescr: Cart to checkout.
+  Cart --> Checkout
+      </pre>
+    </figure>
+    <pre class="mermaid" id="mm-bare">
+flowchart LR
+  Bare --> Wrapped
+    </pre>
+    <div class="dark" style="background:var(--background);color:var(--foreground);padding:1rem;">
+      <figure class="mermaid-diagram" id="mm-dark" aria-label="Dark">
+        <pre class="mermaid">
+flowchart LR
+  Dark --> Scope
+        </pre>
+      </figure>
+    </div>
+    <script type="module" src="/dist/components/core.js"></script>
+    <script type="module" src="/dist/components/mermaid/mermaid.js"></script>
+  </body>
+</html>

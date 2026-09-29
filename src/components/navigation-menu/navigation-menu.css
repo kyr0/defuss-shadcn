@@ -71,6 +71,147 @@
     & p { margin: 0.125rem 0 0; font-size: 0.75rem; color: var(--muted-foreground); font-weight: 400; }
   }
 
+  /* -- Megamenu ------------------------------------------------------
+     The .nav-menu is an anchor (scoped per menu) so a panel can take the
+     menu's own width - data-width="wide" - or the page's - "full". Inside a
+     panel: .nav-menu-grid (auto-fit columns, or data-columns 2 / 3 / 4) of
+     .nav-menu-section (a .nav-menu-heading + links), links with a
+     .nav-menu-icon and a description, a .nav-menu-feature promo block and a
+     .nav-menu-footer row. CSS only - the triggers stay native popovers. */
+  .nav-menu {
+    anchor-name: --nav-menu-root;
+    anchor-scope: --nav-menu-root;
+  }
+  .nav-menu-content[data-width="wide"] {
+    left: anchor(--nav-menu-root left, 0px);
+    right: anchor(--nav-menu-root right, 0px);
+    width: auto;
+  }
+  .nav-menu-content[data-width="full"] {
+    left: 0;
+    right: 0;
+    width: auto;
+    border-radius: 0;
+    border-inline: 0;
+    padding-inline: max(1rem, calc((100vw - 72rem) / 2));
+  }
+
+  /* the open trigger stays highlighted; aria-current marks the page */
+  .nav-menu-trigger:has(+ .nav-menu-content:popover-open),
+  .nav-menu-link[aria-current="page"] {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+  }
+
+  .nav-menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: 1rem 1.5rem;
+
+    &[data-columns="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    &[data-columns="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    &[data-columns="4"] { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+  .nav-menu-section {
+    display: grid;
+    align-content: start;
+    gap: 0.125rem;
+    min-width: 0;
+  }
+  .nav-menu-heading {
+    margin: 0 0 0.25rem;
+    padding: 0 0.75rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+  /* a link with an icon: icon | title over description */
+  .nav-menu-content-link:has(> .nav-menu-icon) {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 0.75rem;
+    align-items: start;
+
+    & > :not(.nav-menu-icon) { grid-column: 2; }
+  }
+  .nav-menu-icon {
+    grid-row: span 2;
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: var(--radius-md);
+    background-color: var(--muted);
+    color: var(--foreground);
+
+    & svg { width: 1rem; height: 1rem; }
+  }
+  /* a promo / featured block: image (optional) + title + text */
+  .nav-menu-feature {
+    display: grid;
+    align-content: end;
+    gap: 0.25rem;
+    min-height: 9rem;
+    padding: 1rem;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(160deg, color-mix(in oklch, var(--primary) 14%, var(--muted)), var(--muted));
+    color: var(--foreground);
+    text-decoration: none;
+
+    & img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--radius-md); margin-bottom: 0.5rem; }
+    & strong { font-size: 0.9375rem; }
+    & p { margin: 0; font-size: 0.8125rem; color: var(--muted-foreground); }
+    &:hover { background: linear-gradient(160deg, color-mix(in oklch, var(--primary) 22%, var(--muted)), var(--muted)); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  }
+  .nav-menu-footer {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+
+    & a { color: var(--foreground); font-weight: 500; text-decoration: none; }
+    & a:hover { text-decoration: underline; }
+  }
+
+  /* -- Vertical: a side menu whose panels fly out to the right (and drop
+     below the trigger when there is no room). "responsive" is vertical
+     below 48rem and horizontal from there up. */
+  .nav-menu[data-orientation="vertical"] {
+    & .nav-menu-list { flex-direction: column; align-items: stretch; }
+    & :is(.nav-menu-link, .nav-menu-trigger) { justify-content: space-between; width: 100%; }
+    & .nav-menu-trigger svg { transform: rotate(-90deg); }
+    & .nav-menu-content {
+      top: anchor(top);
+      left: anchor(right);
+      margin: 0 0 0 4px;
+      position-try-fallbacks: --nav-menu-below;
+    }
+  }
+  @media (max-width: 47.99rem) {
+    .nav-menu[data-orientation="responsive"] {
+      & .nav-menu-list { flex-direction: column; align-items: stretch; }
+      & :is(.nav-menu-link, .nav-menu-trigger) { justify-content: space-between; width: 100%; }
+      & .nav-menu-trigger svg { transform: rotate(-90deg); }
+      & .nav-menu-content {
+        top: anchor(top);
+        left: anchor(right);
+        margin: 0 0 0 4px;
+        position-try-fallbacks: --nav-menu-below;
+      }
+      & .nav-menu-grid[data-columns] { grid-template-columns: minmax(0, 1fr); }
+    }
+  }
+
   /* -- Accessibility ------------------------------------------ */
 
   @media (prefers-reduced-motion: reduce) {
@@ -86,4 +227,12 @@
       border-color: ButtonText;
     }
   }
+}
+
+/* the vertical menu's fallback when a panel has no room at the side:
+   below its trigger (top-level: @position-try is not a layered rule) */
+@position-try --nav-menu-below {
+  top: anchor(bottom);
+  left: anchor(left);
+  margin: 4px 0 0;
 }

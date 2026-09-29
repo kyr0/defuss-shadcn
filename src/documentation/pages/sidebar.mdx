@@ -39,6 +39,8 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <code>.sidebar-nav</code>
     <code>.sidebar-link</code>
     <code>.sidebar-badge</code>
+    <code>.sidebar-icon</code>
+    <code>.sidebar-dot</code>
     <code>.sidebar-section-title</code>
     <code>.sidebar-group</code>
     <code>.sidebar-submenu</code>
@@ -191,6 +193,91 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
       </nav>
     </div>
   </dialog>
+</div>
+```
+
+```html example label="Icons and emojis" hint="A .sidebar-icon span puts an icon or an emoji in front of any label - links, submenus and the uppercase group headings alike. It is a fixed 1rem box, so every label lines up, and it stays visible on the collapsed rail." height="30" mode="desktop"
+<aside class="app-sidebar" data-state="expanded" style="position:relative;height:auto;width:16rem;border:1px solid var(--border);border-radius:var(--radius-lg);">
+  <div class="sidebar-content">
+    <details class="sidebar-group" open>
+      <summary>
+        <span class="sidebar-icon" aria-hidden="true"><i data-lucide="layout-dashboard"></i></span>
+        <span>Workspace</span>
+        <i data-lucide="chevron-right"></i>
+      </summary>
+      <nav class="sidebar-nav">
+        <a class="sidebar-link" href="#" aria-current="page"><span class="sidebar-icon" aria-hidden="true"><i data-lucide="house"></i></span><span>Overview</span></a>
+        <a class="sidebar-link" href="#"><span class="sidebar-icon" aria-hidden="true"><i data-lucide="calendar"></i></span><span>Calendar</span></a>
+        <details class="sidebar-submenu">
+          <summary>
+            <span class="sidebar-icon" aria-hidden="true"><i data-lucide="settings"></i></span>
+            <span>Settings</span>
+            <i data-lucide="chevron-right"></i>
+          </summary>
+          <nav class="sidebar-nav">
+            <a class="sidebar-link" href="#"><span>General</span></a>
+            <a class="sidebar-link" href="#"><span>Team</span></a>
+          </nav>
+        </details>
+      </nav>
+    </details>
+    <details class="sidebar-group" open>
+      <summary>
+        <span class="sidebar-icon" aria-hidden="true">🗂️</span>
+        <span>Projects</span>
+        <i data-lucide="chevron-right"></i>
+      </summary>
+      <nav class="sidebar-nav">
+        <a class="sidebar-link" href="#"><span class="sidebar-icon" aria-hidden="true">🚀</span><span>Launch</span></a>
+        <a class="sidebar-link" href="#"><span class="sidebar-icon" aria-hidden="true">🎨</span><span>Brand refresh</span></a>
+        <a class="sidebar-link" href="#"><span class="sidebar-icon" aria-hidden="true">🧪</span><span>Experiments</span></a>
+      </nav>
+    </details>
+  </div>
+</aside>
+```
+
+```html example label="Activity indicators" hint="A .sidebar-dot at the end of a row marks news or activity - on a link, a submenu or a whole group (so a collapsed section still says something inside is new). Colors via data-variant (success / warning / info / destructive), a ping via data-animate='ping', and it pairs with a .sidebar-badge. Name it: role='img' + aria-label. On the collapsed rail the dot moves onto the icon's corner." height="36" mode="desktop"
+<div class="flex gap-4 items-start">
+  <aside class="app-sidebar" data-state="expanded" style="position:relative;height:auto;width:16rem;border:1px solid var(--border);border-radius:var(--radius-lg);">
+    <div class="sidebar-content">
+      <details class="sidebar-group" open>
+        <summary>
+          <span class="sidebar-icon" aria-hidden="true"><i data-lucide="inbox"></i></span>
+          <span>Mail</span>
+          <span class="sidebar-dot" role="img" aria-label="New activity"></span>
+          <i data-lucide="chevron-right"></i>
+        </summary>
+        <nav class="sidebar-nav">
+          <a class="sidebar-link" href="#"><span class="sidebar-icon" aria-hidden="true"><i data-lucide="mail"></i></span><span>Inbox</span><span class="sidebar-dot" data-variant="info" data-animate="ping" role="img" aria-label="New mail"></span><span class="sidebar-badge">12</span></a>
+          <a class="sidebar-link" href="#"><span class="sidebar-icon" aria-hidden="true"><i data-lucide="send"></i></span><span>Sent</span></a>
+          <a class="sidebar-link" href="#"><span class="sidebar-icon" aria-hidden="true"><i data-lucide="triangle-alert"></i></span><span>Spam</span><span class="sidebar-dot" data-variant="warning" role="img" aria-label="Needs review"></span></a>
+        </nav>
+      </details>
+      <details class="sidebar-group" open>
+        <summary>
+          <span class="sidebar-icon" aria-hidden="true"><i data-lucide="server"></i></span>
+          <span>Deploys</span>
+          <i data-lucide="chevron-right"></i>
+        </summary>
+        <nav class="sidebar-nav">
+          <a class="sidebar-link" href="#"><span class="sidebar-icon" aria-hidden="true"><i data-lucide="circle-check"></i></span><span>Production</span><span class="sidebar-dot" data-variant="success" role="img" aria-label="Healthy"></span></a>
+          <a class="sidebar-link" href="#"><span class="sidebar-icon" aria-hidden="true"><i data-lucide="flame"></i></span><span>Staging</span><span class="sidebar-dot" data-variant="destructive" data-animate="ping" role="img" aria-label="Failing"></span></a>
+        </nav>
+      </details>
+    </div>
+  </aside>
+  <div style="width:14rem;">
+    <aside class="app-sidebar" data-state="collapsed" style="position:relative;height:auto;border:1px solid var(--border);border-radius:var(--radius-lg);">
+      <div class="sidebar-content">
+        <nav class="sidebar-nav">
+          <a class="sidebar-link" href="#" aria-label="Inbox"><span class="sidebar-icon" aria-hidden="true"><i data-lucide="mail"></i></span><span>Inbox</span><span class="sidebar-dot" data-variant="info" data-animate="ping" role="img" aria-label="New mail"></span></a>
+          <a class="sidebar-link" href="#" aria-label="Sent"><span class="sidebar-icon" aria-hidden="true"><i data-lucide="send"></i></span><span>Sent</span></a>
+          <a class="sidebar-link" href="#" aria-label="Staging"><span class="sidebar-icon" aria-hidden="true"><i data-lucide="flame"></i></span><span>Staging</span><span class="sidebar-dot" data-variant="destructive" role="img" aria-label="Failing"></span></a>
+        </nav>
+      </div>
+    </aside>
+  </div>
 </div>
 ```
 

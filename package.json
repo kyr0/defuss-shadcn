@@ -53,6 +53,7 @@
     "defuss-ssg": "^0.7.5",
     "lightningcss": "^1.33.0",
     "linkedom": "^0.18.13",
+    "mermaid": "12.0.0",
     "oxc-minify": "^0.149.0",
     "oxlint": "^1.81.0",
     "playwright": "^1.63.0",

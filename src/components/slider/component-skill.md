@@ -68,11 +68,62 @@ supportedStates: default, disabled
 
 ---
 
+### Colors
+```html
+<input class="slider" type="range" data-tone="success">                      <!-- success / warning / info / destructive -->
+<input class="slider" type="range" style="--slider-color: oklch(0.6 0.22 300)"> <!-- any color -->
+```
+
+### Icons, emojis, value and scale
+```html
+<div class="slider-field">
+  <span class="slider-icon" aria-hidden="true">🌙</span>
+  <input class="slider" type="range" id="bright" value="40" data-unit="percent" aria-label="Brightness">
+  <span class="slider-icon" aria-hidden="true">☀️</span>
+  <output class="slider-value" for="bright">40%</output>
+</div>
+<div class="slider-scale"><span>0%</span><span>100%</span></div>
+```
+
+### Units
+`data-unit` (any Intl unit: `celsius`, `percent`, `kilometer-per-hour`,
+`megabyte` …; `data-unit-display="long"` spells it out) or `data-currency`
+(`EUR`, `USD` …) formats the value - in the element's `lang` - into every
+`<output for="id">` and into `aria-valuetext`, so a screen reader says
+"21 °C", not "21". Fraction digits follow `step`.
+
+### Emoji thumb
+```html
+<input class="slider" type="range" data-thumb-emoji="😫 😕 😐 🙂 😄">
+```
+One emoji, or a space-separated list picked by the value. slider.js draws
+it into `--slider-thumb-image` (any image works there) and sets
+`data-thumb="emoji"` (no ring, 2rem).
+
+### Range (two thumbs)
+```html
+<div class="slider-range" data-currency="EUR" data-min-gap="50" role="group" aria-label="Price">
+  <input class="slider" type="range" id="min" min="0" max="1000" value="200" aria-label="Minimum price">
+  <input class="slider" type="range" id="max" min="0" max="1000" value="800" aria-label="Maximum price">
+</div>
+<output for="min max"></output>  <!-- "€200 – €800" (Intl formatRange) -->
+```
+- Two native range inputs on one track: only the thumbs take the pointer,
+  each keeps its keyboard, label and State API.
+- The low value never passes the high one; `data-min-gap` keeps a distance.
+- `data-size`, `data-tone`, `data-unit` / `data-currency` on the
+  `.slider-range` apply to both inputs.
+- RTL: the fill (single and range) runs right to left.
+
 ## Data attributes
 
 | Attribute | Values | Description |
 |-----------|--------|-------------|
 | `data-orientation` | `vertical` | Renders as a vertical slider |
+| `data-tone` | `success`, `warning`, `info`, `destructive` | Fill + thumb ring color (`--slider-color` for any color) |
+| `data-unit` / `data-currency` | an Intl unit / an ISO currency | Formats `output[for]` + `aria-valuetext` |
+| `data-thumb-emoji` | one emoji or a list | Emoji thumb (sets `data-thumb="emoji"`) |
+| `data-min-gap` | a number | On `.slider-range`: the smallest distance between the thumbs |
 
 ---
 

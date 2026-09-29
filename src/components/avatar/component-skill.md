@@ -77,6 +77,51 @@ supportedStates: default, error
 
 The dot scales with the avatar (`xs` 0.75rem · `sm` 1rem · `md`/default 1.25rem · `lg` 1.5rem · `xl` 1.75rem) and sits in front of the image with a background-coloured rim. Status colours are literals (the token set has no success/warning pair). Omitting the badge does **not** mean offline - render `data-variant="offline"` when the state is known.
 
+### Badge position (`data-position` on `.avatar-badge`)
+
+`top-start` · `top-end` · `bottom-start` · `bottom-end` (default) - any of the
+four corners. `start` / `end` are logical: in RTL, start is the right.
+
+## Shape (`data-shape`)
+
+| Value | Look |
+| --- | --- |
+| *(none)* | Circle |
+| `rounded` | Rounded square (`--radius-lg`) |
+| `square` | Square with a small radius (`--radius-sm`) |
+
+Image, fallback and ring inherit the shape. For silhouettes, put a `shape-*`
+class from `theme/utils/shapes.css` (`shape-heart`, `shape-squircle`,
+`shape-hexagon-2`, `shape-decagon`, `shape-star-2` …) on the
+`.avatar-image` - only the photo is cut, so a badge still sits on top, and a
+loaded photo drops the muted plate behind it.
+
+```html
+<span class="avatar" data-size="xl"><img class="avatar-image shape-heart" src="…" alt="Jane Doe"><span class="avatar-fallback">JD</span></span>
+```
+
+## Ring (`data-ring`)
+
+`data-ring` draws a 2px ring with a 2px background-colored gap in `--primary`;
+`data-ring="secondary"` (`--muted-foreground`) and `"destructive"` recolor it.
+It follows `data-shape`.
+
+## Placeholder (`.avatar-fallback` `data-variant`)
+
+Without an image the fallback letters are the avatar; `data-variant="primary"`
+or `"neutral"` (foreground plate) puts them on a solid plate.
+
+## Custom sizes
+
+Beyond `xs`–`xl`, sizing utilities set any size (`w-32 h-32` = 8rem); the
+badge keeps its size - set a `data-size` for a matching badge.
+
+## Group (`.avatar-group`)
+
+Overlapping avatars; `data-overlap="sm"` (0.25rem) / `"lg"` (1rem) instead of
+the default 0.5rem. `.avatar-group-count` closes the row (`+99`) and follows
+the overlap.
+
 ## States
 
 The api is bound **per `.avatar` wrapper**. Declared states: `default`

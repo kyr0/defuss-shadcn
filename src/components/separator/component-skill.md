@@ -34,7 +34,19 @@ supportedStates: default
 <div class="separator" data-orientation="vertical" role="separator"></div>
 ```
 
-### With label
+### With text
+```html
+<!-- the text sits on the line; pseudo-element lines flank it -->
+<div class="separator">OR</div>
+<!-- on a vertical line, between side-by-side blocks (parent: flex row) -->
+<div class="separator" data-orientation="vertical">OR</div>
+```
+
+An empty separator must be **truly empty** - even a space inside turns it into
+a text separator (`:not(:empty)`). `<hr>` is void, so text separators are a
+`<div>`.
+
+### With label (older wrapper form - still supported)
 ```html
 <div class="separator-label">
   <hr class="separator">
@@ -77,6 +89,19 @@ supportedStates: default
 | *(default)*        | Horizontal | `<hr>`                    |
 | `vertical`         | Vertical   | `<div role="separator">` |
 
+DaisyUI naming: its `divider-horizontal` divides side-by-side items - that is
+our `data-orientation="vertical"` (the LINE is vertical).
+
+| Attribute | Values | Effect |
+| --- | --- | --- |
+| `data-variant` | `neutral`, `primary`, `secondary`, `accent`, `info`, `success`, `warning`, `destructive` (alias `error`) | Line color (text stays muted). `secondary` / `accent` use `--chart-2` / `--chart-4` (the tokens' `--secondary` / `--accent` are pale surfaces); success / warning / info are literal colors |
+| `data-align` | `start`, `end` (default center) | Where the text sits along the line (vertical: start = top) |
+| `data-size` | `sm` 1px (default), `md` 2px, `lg` 4px, `xl` 8px | Thickness - with or without text |
+| `data-gap` | `none`, `sm`, `md` (default 0.75rem), `lg`, `xl` | Space between the text and the lines |
+| `data-orientation-md` / `-lg` | `vertical` | A vertical line from 48 / 64rem up - the parent must switch to a row at the same width |
+
+For space AROUND a separator use the margin utilities (`my-4`, `my-8` …).
+
 ---
 
 ## ARIA
@@ -87,6 +112,7 @@ supportedStates: default
 | `role="none"`      | `<hr>`      | Marks decorative separators - hidden from AT      |
 | `aria-hidden="true"`| `<hr>`     | Alternative way to hide decorative separators     |
 | `aria-orientation` | `<div>`     | Implicit from `role="separator"`; defaults to horizontal |
+| *(no role)*        | `<div>` with text | Meaningful text ("or") - `role="separator"` makes its children presentational, so screen readers would skip the text; leave the role off or add `aria-label` |
 
 ---
 
@@ -96,7 +122,7 @@ supportedStates: default
 - Vertical separators use `<div role="separator">` since `<hr>` is semantic horizontal only.
 - Decorative separators (purely visual with no semantic meaning) should use `role="none"` or `aria-hidden="true"` to hide from screen readers.
 - The vertical separator requires the parent to be a flex container.
-- The labeled separator uses a flex layout with two `<hr>` elements flanking the label text.
-- In `forced-colors` mode, the separator uses `CanvasText` system color for visibility.
-- In `prefers-contrast: more` mode, the separator uses `--foreground` and doubles in thickness (2px) for visibility.
+- Text inside the separator draws its lines as `::before` / `::after`; the older `.separator-label` wrapper (two `<hr>` around a span) still works.
+- In `forced-colors` mode, the line and text use the `CanvasText` system color.
+- In `prefers-contrast: more` mode, an uncolored separator uses `--foreground` and an unsized one is 2px thick.
 - Separators are purely visual - no JavaScript required.

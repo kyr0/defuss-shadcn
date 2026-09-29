@@ -1,0 +1,130 @@
+/* -- Countdown component ------------------------------------------ */
+
+/* The size of one digit cell, resolved to px on .countdown - the value spans
+   set font-size: 0 (their text is the accessible fallback), so every length
+   inside them reads this instead of em. Top-level: @property is not layered. */
+@property --_cd-em {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 16px;
+}
+
+@layer components {
+  /* A number that rolls to its new value - CSS only. Each value is a
+     <span style="--value:N">N</span> (0-999) inside a .countdown; change
+     --value (and the text) and the digits roll like an odometer: the ones
+     digit and the higher digits are two independent columns (::after /
+     ::before), picked with CSS math (mod(), round(down, …)). Leading zeros
+     are dropped (the column narrows away) unless data-digits="2" / "3". */
+  .countdown {
+    --_cd-em: 1em;
+    --_cd-speed: 1s;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+
+    & > span {
+      --_v: clamp(0, round(var(--value, 0)), 999);
+      --_hi: round(down, calc(var(--_v) / 10), 1);
+      --_lo: mod(var(--_v), 10);
+      display: inline-flex;
+      align-items: flex-start;
+      height: var(--_cd-em);
+      overflow-x: visible;
+      overflow-y: clip;
+      font-size: 0;
+
+      /* higher digits (0-99), right-aligned so a growing number opens leftward */
+      &::before {
+        content: "0\A 1\A 2\A 3\A 4\A 5\A 6\A 7\A 8\A 9\A 10\A 11\A 12\A 13\A 14\A 15\A 16\A 17\A 18\A 19\A 20\A 21\A 22\A 23\A 24\A 25\A 26\A 27\A 28\A 29\A 30\A 31\A 32\A 33\A 34\A 35\A 36\A 37\A 38\A 39\A 40\A 41\A 42\A 43\A 44\A 45\A 46\A 47\A 48\A 49\A 50\A 51\A 52\A 53\A 54\A 55\A 56\A 57\A 58\A 59\A 60\A 61\A 62\A 63\A 64\A 65\A 66\A 67\A 68\A 69\A 70\A 71\A 72\A 73\A 74\A 75\A 76\A 77\A 78\A 79\A 80\A 81\A 82\A 83\A 84\A 85\A 86\A 87\A 88\A 89\A 90\A 91\A 92\A 93\A 94\A 95\A 96\A 97\A 98\A 99" / "";
+        width: calc((min(1, var(--_hi)) + min(1, round(down, calc(var(--_hi) / 10), 1))) * 1ch);
+        direction: rtl;
+        text-align: start;
+        /* a narrowed column clips its (right-aligned) leading digits away */
+        overflow: hidden;
+        translate: 0 calc(var(--_hi) * -1em);
+      }
+      /* the ones digit */
+      &::after {
+        content: "0\A 1\A 2\A 3\A 4\A 5\A 6\A 7\A 8\A 9" / "";
+        width: 1ch;
+        translate: 0 calc(var(--_lo) * -1em);
+      }
+      &::before,
+      &::after {
+        font-size: var(--_cd-em);
+        line-height: 1;
+        white-space: pre;
+        transition:
+          translate var(--_cd-speed) cubic-bezier(1, 0, 0, 1),
+          width calc(var(--_cd-speed) / 2) ease;
+      }
+    }
+
+    /* at least two digits: 5 → "05" */
+    &[data-digits="2"] > span::before {
+      width: calc(max(1, min(1, var(--_hi)) + min(1, round(down, calc(var(--_hi) / 10), 1))) * 1ch);
+    }
+    /* three digits: 7 → "007" */
+    &[data-digits="3"] > span::before {
+      content: "00\A 01\A 02\A 03\A 04\A 05\A 06\A 07\A 08\A 09\A 10\A 11\A 12\A 13\A 14\A 15\A 16\A 17\A 18\A 19\A 20\A 21\A 22\A 23\A 24\A 25\A 26\A 27\A 28\A 29\A 30\A 31\A 32\A 33\A 34\A 35\A 36\A 37\A 38\A 39\A 40\A 41\A 42\A 43\A 44\A 45\A 46\A 47\A 48\A 49\A 50\A 51\A 52\A 53\A 54\A 55\A 56\A 57\A 58\A 59\A 60\A 61\A 62\A 63\A 64\A 65\A 66\A 67\A 68\A 69\A 70\A 71\A 72\A 73\A 74\A 75\A 76\A 77\A 78\A 79\A 80\A 81\A 82\A 83\A 84\A 85\A 86\A 87\A 88\A 89\A 90\A 91\A 92\A 93\A 94\A 95\A 96\A 97\A 98\A 99" / "";
+      width: 2ch;
+    }
+
+    /* -- Sizes ------------------------------------------------------- */
+    &[data-size="sm"] { font-size: 0.875rem; }
+    &[data-size="md"] { font-size: 1rem; }
+    &[data-size="lg"] { font-size: 1.5rem; }
+    &[data-size="xl"] { font-size: 2.25rem; }
+    &[data-size="2xl"] { font-size: 3.75rem; }
+    &[data-size="3xl"] { font-size: 6rem; }
+
+    /* -- Speed: the roll's duration ----------------------------------- */
+    &[data-speed="fast"] { --_cd-speed: 0.4s; }
+    &[data-speed="slow"] { --_cd-speed: 1.6s; }
+  }
+
+  /* -- Composition: a row of units, each a value over a label ---------- */
+  .countdown-group {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .countdown-unit {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.375rem;
+    min-width: 4.5rem;
+
+    &[data-variant] {
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-lg);
+    }
+    &[data-variant="muted"] { background-color: var(--muted); }
+    &[data-variant="primary"] {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+      & .countdown-label { color: color-mix(in oklch, var(--primary-foreground) 75%, transparent); }
+    }
+    &[data-variant="outline"] { border: 1px solid var(--border); }
+  }
+  .countdown-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+
+  /* -- Accessibility ------------------------------------------------ */
+  @media (prefers-reduced-motion: reduce) {
+    .countdown > span::before,
+    .countdown > span::after { transition: none; }
+  }
+  @media (forced-colors: active) {
+    .countdown-unit[data-variant] { border: 1px solid CanvasText; }
+  }
+}

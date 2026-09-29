@@ -1,0 +1,201 @@
+---
+title: "Countdown"
+description: "Countdown component - numbers that roll to a new value with CSS alone, plus an optional live timer."
+slug: "countdown"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="countdown" title="Countdown" component="countdown">
+  Numbers that roll to their next value like an odometer. Set <code>--value</code> on a span (0-999) and CSS turns the digits - no JavaScript. Add <code>data-until</code> or <code>data-duration</code> to a group and the optional script makes it a live, accessible timer with running, paused and finished states.
+</PageHeader>
+
+<SkillPanel component="countdown">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;span style="--value:N"&gt;N&lt;/span&gt;</code> per number; CSS math (<code>mod()</code>, <code>round()</code>) picks two rolling digit columns. The span's text is the accessible fallback.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/mod" title="the ones digit"><code>mod()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/round" title="the higher digits"><code>round()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@property" title="the digit size, typed"><code>@property</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/content#alternative_text" title="silent digit lists"><code>content: … / ""</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/timer_role" title="a polite live timer"><code>role="timer"</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DurationFormat" title="the spoken remaining time"><code>Intl.DurationFormat</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="no roll"><code>prefers-reduced-motion</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.countdown</code>
+    <code>.countdown-group</code>
+    <code>.countdown-unit</code>
+    <code>.countdown-label</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-digits</code> (<code>2</code>, <code>3</code>), <code>data-size</code> (<code>sm</code> … <code>3xl</code>), <code>data-speed</code> (<code>fast</code>, <code>slow</code>); timers: <code>data-until</code>, <code>data-duration</code>, <code>data-paused</code>, <code>data-unit</code>; boxes: <code>.countdown-unit[data-variant]</code> (<code>muted</code>, <code>primary</code>, <code>outline</code>).</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Timer" hint="A .countdown-group with data-duration (seconds; data-until takes a date) ticks its [data-unit] values down - days, hours, minutes, seconds in .countdown-unit boxes. Pause, resume or finish it from the State tab." height="18"
+<div class="countdown-group" data-duration="272399">
+  <div class="countdown-unit" data-variant="muted">
+    <span class="countdown" data-size="2xl"><span data-unit="days" style="--value:3">3</span></span>
+    <span class="countdown-label">days</span>
+  </div>
+  <div class="countdown-unit" data-variant="muted">
+    <span class="countdown" data-size="2xl" data-digits="2"><span data-unit="hours" style="--value:3">3</span></span>
+    <span class="countdown-label">hours</span>
+  </div>
+  <div class="countdown-unit" data-variant="muted">
+    <span class="countdown" data-size="2xl" data-digits="2"><span data-unit="minutes" style="--value:39">39</span></span>
+    <span class="countdown-label">min</span>
+  </div>
+  <div class="countdown-unit" data-variant="muted">
+    <span class="countdown" data-size="2xl" data-digits="2"><span data-unit="seconds" style="--value:59">59</span></span>
+    <span class="countdown-label">sec</span>
+  </div>
+</div>
+```
+
+```html example label="A value" schema="none" hint="The CSS-only pattern: one span with --value and the same number as text. Change both (here once a second through api.setState('default', { value })) and the digits roll." height="14"
+<span class="countdown" id="cd-one" data-size="2xl">
+  <span style="--value:59" aria-live="polite">59</span>
+</span>
+<script>
+  const one = document.getElementById('cd-one');
+  let n = 59;
+  setInterval(() => { n = n === 0 ? 59 : n - 1; one.api.setState('default', { value: n }); }, 1000);
+</script>
+```
+
+```html example label="Large text" schema="none" hint="The digits are 1em - data-size (sm … 3xl) or any font-size scales them." height="20"
+<span class="countdown" data-size="3xl" style="font-weight:700;">
+  <span style="--value:42">42</span>
+</span>
+```
+
+```html example label="Clock" schema="none" hint="Several values in one .countdown, separated by plain text. data-digits='2' keeps the leading zero. No component script needed: the page writes --value and the text of each unit - the CSS rolls the digits." height="14"
+<span class="countdown" id="cd-clock" data-size="2xl" data-digits="2" style="font-family:var(--font-mono);">
+  <span data-unit="hours" style="--value:10">10</span>:<span data-unit="minutes" style="--value:24">24</span>:<span data-unit="seconds" style="--value:59">59</span>
+</span>
+<script>
+  const set = (unit, v) => {
+    const s = document.querySelector(`#cd-clock [data-unit="${unit}"]`);
+    s.style.setProperty('--value', v);
+    s.textContent = v;
+  };
+  const tick = () => { const d = new Date(); set('hours', d.getHours()); set('minutes', d.getMinutes()); set('seconds', d.getSeconds()); };
+  tick();
+  setInterval(tick, 1000);
+</script>
+```
+
+```html example label="With labels" hint="A timer inline in a sentence - the unit words are plain text between the values. No days span, so the hours carry past 24." height="12"
+<p class="countdown-group" data-duration="93784" style="font-size:1.25rem;gap:0.25rem;">
+  <span class="countdown"><span data-unit="hours" style="--value:26">26</span></span> hours
+  <span class="countdown" data-digits="2"><span data-unit="minutes" style="--value:3">3</span></span> min
+  <span class="countdown" data-digits="2"><span data-unit="seconds" style="--value:4">4</span></span> sec
+</p>
+```
+
+```html example label="In boxes" hint="data-variant on .countdown-unit boxes each value: muted, primary, outline." height="30"
+<div class="stack gap-4">
+  <div class="countdown-group" data-duration="5025">
+    <div class="countdown-unit" data-variant="primary"><span class="countdown" data-size="xl" data-digits="2"><span data-unit="hours" style="--value:1">1</span></span><span class="countdown-label">hours</span></div>
+    <div class="countdown-unit" data-variant="primary"><span class="countdown" data-size="xl" data-digits="2"><span data-unit="minutes" style="--value:23">23</span></span><span class="countdown-label">min</span></div>
+    <div class="countdown-unit" data-variant="primary"><span class="countdown" data-size="xl" data-digits="2"><span data-unit="seconds" style="--value:45">45</span></span><span class="countdown-label">sec</span></div>
+  </div>
+  <div class="countdown-group" data-duration="5025">
+    <div class="countdown-unit" data-variant="outline"><span class="countdown" data-size="xl" data-digits="2"><span data-unit="hours" style="--value:1">1</span></span><span class="countdown-label">hours</span></div>
+    <div class="countdown-unit" data-variant="outline"><span class="countdown" data-size="xl" data-digits="2"><span data-unit="minutes" style="--value:23">23</span></span><span class="countdown-label">min</span></div>
+    <div class="countdown-unit" data-variant="outline"><span class="countdown" data-size="xl" data-digits="2"><span data-unit="seconds" style="--value:45">45</span></span><span class="countdown-label">sec</span></div>
+  </div>
+</div>
+```
+
+```html example label="Clock in boxes" hint="One .countdown per box with colons between the boxes - the countdown-group is the timer." height="16"
+<div class="countdown-group" data-duration="3725" style="gap:0.5rem;">
+  <div class="countdown-unit" data-variant="muted" style="min-width:0;"><span class="countdown" data-size="2xl" data-digits="2" style="font-family:var(--font-mono);"><span data-unit="hours" style="--value:1">1</span></span></div>
+  <span style="font-size:2.5rem;font-weight:700;">:</span>
+  <div class="countdown-unit" data-variant="muted" style="min-width:0;"><span class="countdown" data-size="2xl" data-digits="2" style="font-family:var(--font-mono);"><span data-unit="minutes" style="--value:2">2</span></span></div>
+  <span style="font-size:2.5rem;font-weight:700;">:</span>
+  <div class="countdown-unit" data-variant="muted" style="min-width:0;"><span class="countdown" data-size="2xl" data-digits="2" style="font-family:var(--font-mono);"><span data-unit="seconds" style="--value:5">5</span></span></div>
+</div>
+```
+
+```html example label="Leading zeros" schema="none" hint="data-digits sets the minimum width: none drops leading zeros (the column narrows away as the value falls), 2 and 3 pad." height="20"
+<div class="grid gap-3" style="grid-template-columns:auto auto;align-items:center;justify-content:start;column-gap:1.5rem;">
+  <code>none</code><span class="countdown" data-size="xl"><span style="--value:7">7</span></span>
+  <code>data-digits="2"</code><span class="countdown" data-size="xl" data-digits="2"><span style="--value:7">7</span></span>
+  <code>data-digits="3"</code><span class="countdown" data-size="xl" data-digits="3"><span style="--value:7">7</span></span>
+</div>
+```
+
+```html example label="A rolling counter" schema="none" hint="Any value 0-999, any jump: the ones digit and the higher digits roll separately. data-speed='slow' stretches the roll." height="18"
+<div class="flex items-center gap-4">
+  <span class="countdown" id="cd-counter" data-size="3xl" data-speed="slow" style="font-weight:700;">
+    <span style="--value:128" aria-live="polite">128</span>
+  </span>
+  <button class="btn" data-variant="outline" id="cd-roll">Roll</button>
+</div>
+<script>
+  document.getElementById('cd-roll').addEventListener('click', () => {
+    document.getElementById('cd-counter').api.setState('default', { value: Math.floor(Math.random() * 1000) });
+  });
+</script>
+```
+
+```html example label="When it ends" hint="At zero the timer reads data-state-name='finished' (style it from there) and fires countdown:finished. Restart it with setState('default')." height="16"
+<style>
+  #cd-end[data-state-name="finished"] .countdown { color: var(--destructive); }
+</style>
+<div class="flex items-center gap-4">
+  <div class="countdown-group" id="cd-end" data-duration="10">
+    <div class="countdown-unit" data-variant="outline"><span class="countdown" data-size="2xl" data-digits="2"><span data-unit="seconds" style="--value:10">10</span></span><span class="countdown-label">sec</span></div>
+  </div>
+  <button class="btn" data-variant="outline" id="cd-restart">Restart</button>
+  <output id="cd-msg" class="text-sm text-muted-foreground"></output>
+</div>
+<script>
+  const end = document.getElementById('cd-end');
+  const msg = document.getElementById('cd-msg');
+  end.addEventListener('countdown:finished', () => { msg.value = 'Time is up!'; });
+  document.getElementById('cd-restart').addEventListener('click', () => { msg.value = ''; end.api.setState('default'); });
+</script>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, bound on each timer (and each plain <code>.countdown</code>):</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - as authored: a timer restarts from <code>data-until</code> / <code>data-duration</code>; a plain countdown takes <code>config.value</code> / <code>config.values</code></li>
+    <li><code>running</code> - ticking; resumes, or starts toward <code>config.until</code> / <code>config.duration</code></li>
+    <li><code>paused</code> - frozen at the remaining time</li>
+    <li><code>finished</code> - at zero, <code>countdown:finished</code> fired</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/countdown-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a href="../schemas/countdown.schema.json"><code>countdown.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `remaining` | `number` | `—` | `0` | Seconds left - `setState('running', { duration })` restarts toward it; observed from `getState().config.remaining`. |
+| `running` | `boolean` | `true`, `false` | `true` | The timer ticks (unchecking pauses it). |
+| `paused` | `boolean` | `true`, `false` | `false` | Frozen at the remaining time. |
+| `finished` | `boolean` | `true`, `false` | `false` | At zero; `countdown:finished` fired. |
+```
+
+</StatesSection>
+
+<SourceFiles component="countdown" section="css" />
+
+<SourceFiles component="countdown" section="js" jsTitle="JS" />
+
+</DocPage>

@@ -27,7 +27,11 @@ description: Build UI prototypes and pages with defuss-shadcn - shadcn-style com
 
 Everything else in this file is lookup: §2 rules, §3 documentation map (guides + examples), §4 component index (why/when + links).
 
-**Links** open the file on GitHub (the repository's `main` branch, raw text - fetch it). The link text is the file's path in the repository, which is also its path inside an npm install (`node_modules/defuss-shadcn/<path>`): read it locally when the package is installed.
+**Where the files are - read them, do not search the filesystem.** All paths are relative to the folder of this SKILL.md:
+
+- **Component skills** (markup, variants, sizes, ARIA, states - what every task needs): `references/components/<name>.md`, next to this file in every install. §4 links each one.
+- **Documentation pages** (guides + live examples, MDX) and the shipped **CSS/JS**: two levels up, `../../src/documentation/pages/<page>.mdx` and `../../dist/components/…` - present when the skill came with the package (Claude Code plugin, npm install).
+- **Not there?** (a skills-CLI install copies only this folder): fetch the same path from `{{RAW_BASE}}` + the path without `../../` (this release's tag, raw text), e.g. `{{RAW_BASE}}src/documentation/pages/button.mdx`.
 
 ## 1. Install
 
@@ -57,7 +61,7 @@ import 'defuss-shadcn/dist/components/dialog/dialog.js';  // only interactive co
 
 - The package ships plain `.css` and ESM `.js` - no framework plugin, no typings, no build config. The bundler only resolves the paths.
 - `all.js` already contains `core.js`: never import both.
-- Optional opt-in stylesheet: `defuss-shadcn/dist/theme/utils/shapes.css` (corners, clip shapes, section edges, stylized shadows, frames, patterns).
+- Optional opt-in stylesheet: `defuss-shadcn/dist/theme/utils/shapes.css` (corners, `shape-*` silhouettes - every DaisyUI `mask-*` shape under the same name as `shape-*` - section edges, stylized shadows, frames, patterns).
 - Charts need Apache ECharts on `globalThis.echarts` before a chart mounts (`npm install echarts`, then `import * as echarts from 'echarts'; globalThis.echarts = echarts;`).
 - Icons: only if you use `<i data-lucide="name">` - `npm install lucide`, then `import { createIcons, icons } from 'lucide'; createIcons({ icons });`.
 

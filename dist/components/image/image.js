@@ -67,7 +67,45 @@ export const imageApi = {
 };
 df$.imageApi = imageApi;
 df$.imageStates = imageStates;
+/* -- Hover gallery: preload + decode before switching -------------------
+   A hover gallery shows its images instantly as the pointer crosses the
+   strips - an image that is still downloading or not yet decoded would
+   flash the first one through. So every image loads eagerly, and once the
+   gallery comes near the viewport all of them are decoded (img.decode());
+   only then does it switch (data-ready - until then the first stays). */
+const galleryIO = typeof IntersectionObserver === 'function'
+    ? new IntersectionObserver((entries) => {
+        for (const e of entries) {
+            if (!e.isIntersecting)
+                continue;
+            galleryIO.unobserve(e.target);
+            readyGallery(e.target);
+        }
+    }, { rootMargin: '300px' })
+    : null;
+function readyGallery(gallery) {
+    const imgs = [...gallery.querySelectorAll(':scope > img, :scope > picture img')];
+    Promise.all(imgs.map((img) => (img.decode ? img.decode() : Promise.resolve()).catch(() => undefined))).then(() => {
+        gallery.dataset.ready = '';
+    });
+}
+function initHoverGalleries() {
+    document.querySelectorAll('.hover-gallery:not([data-init])').forEach((gallery) => {
+        gallery.dataset.init = '';
+        gallery.querySelectorAll(':scope > img, :scope > picture img').forEach((img, i) => {
+            if (img.loading === 'lazy')
+                img.loading = 'eager';
+            if (i > 0 && !img.hasAttribute('fetchpriority'))
+                img.fetchPriority = 'low';
+        });
+        if (galleryIO)
+            galleryIO.observe(gallery);
+        else
+            readyGallery(gallery);
+    });
+}
 function init() {
+    initHoverGalleries();
     /* -- Fallback: mark images that fail to load ----------------- */
     document.querySelectorAll('.image:not([data-init])').forEach((figure) => {
         figure.dataset.init = '';

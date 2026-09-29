@@ -138,6 +138,38 @@ The lightbox dialog is created once and shared by all preview-enabled images.
 
 With `data-src-full` on the img, the lightbox shows that original instead of the inline source. The page never downloads it: the lightbox opens at once with the already-loaded inline image, sized to the frame the original will fill (up to 90vw × 85vh), preloads the original off-DOM and swaps it in without a layout jump. The figure keeps its own `src`, and the zoom-in `data-src-high` upgrade is skipped (the original already covers it).
 
+## Hover gallery
+
+```html
+<figure class="hover-gallery" data-indicator data-ratio="1/1">
+  <img src="front.jpg" alt="Speaker, front">
+  <img src="side.jpg" alt="Speaker, side">
+  <img src="back.jpg" alt="Speaker, back">
+</figure>
+```
+
+daisyUI's hover gallery, CSS only. 2 - 10 images share one frame; the first
+shows, and the frame is sliced into as many invisible strips as there are
+images - moving the pointer across shows image k in strip k (back at the
+start, the first returns). `:has()` counts the images, `clip-path` cuts the
+strips.
+
+| Attribute | Effect |
+| --- | --- |
+| `data-ratio` | `1/1`, `3/4`, `16/9` (default 4/3) |
+| `data-indicator` | A segmented position bar on hover; `="always"` keeps it |
+| `data-effect="zoom"` | The image in view eases in slightly larger (off for reduced motion) |
+| `data-direction="vertical"` | Rows instead of columns - move top to bottom |
+
+- Touch screens (no hover): the same markup is a swipeable scroll-snap strip.
+- With image.js loaded, every image loads eagerly and is decoded once the
+  gallery nears the viewport; the gallery switches only when all are ready
+  (`data-ready`) - no half-loaded frame, no flash of the first image. The
+  switch itself is instant (a crossfade would let the first image shine
+  through).
+- Every image keeps its own `alt`; the images are content, not decoration.
+- Inside a link card (`<a class="card">`) the whole card stays one link.
+
 ## Accessibility
 
 - `<img>` must have a descriptive `alt` attribute

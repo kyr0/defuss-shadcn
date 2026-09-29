@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "name": "mermaid",
+  "states": {
+    "rendered": {
+      "type": "boolean",
+      "default": true,
+      "target": {
+        "kind": "selector",
+        "selector": ".mermaid-diagram"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "rendered"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "error": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".mermaid-diagram"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "error"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

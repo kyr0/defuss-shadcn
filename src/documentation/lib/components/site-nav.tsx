@@ -1,5 +1,6 @@
 import type { Props } from 'defuss';
 import { ALWAYS_OPEN_SECTION, flattenNav, NAV, type NavItem } from '../nav';
+import { NAV_ICONS } from '../nav-icons';
 import { readSkillMeta } from '../repo';
 import { NavTypeBadge } from './type-badge';
 
@@ -26,6 +27,20 @@ const CHEVRON = (
   </svg>
 );
 
+/** The component's .sidebar-dot activity marker - a "new page" flag. */
+const NewDot = () => <span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span>;
+
+/** A section's leading icon (inline lucide SVG, rendered at build time). */
+function SectionIcon({ name }: { name: string }) {
+  const body = NAV_ICONS[name];
+  if (!body) throw new Error(`nav-icons.ts has no icon "${name}"`);
+  return (
+    <span class="sidebar-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" dangerouslySetInnerHTML={{ __html: body }}></svg>
+    </span>
+  );
+}
+
 /** One sidebar link: component .sidebar-link + the router's .nav-link hook. */
 function NavItemLink({ item, active }: { item: NavItem; active: string }) {
   // explicit page-level type (sub-pages) wins; component pages read the skill
@@ -38,6 +53,7 @@ function NavItemLink({ item, active }: { item: NavItem; active: string }) {
       {...(isActive ? { 'aria-current': 'page' } : {})}
     >
       <span>{item.label}</span>
+      {item.isNew ? <NewDot /> : null}
       {type ? <NavTypeBadge type={type} /> : null}
     </a>
   );
@@ -60,6 +76,7 @@ function NavItemSubmenu({ item, active }: { item: NavItem; active: string }) {
           {...(item.href === active ? { 'aria-current': 'page' } : {})}
         >
           <span>{item.label}</span>
+          {item.isNew || kids.some((k) => k.isNew) ? <NewDot /> : null}
           {type ? <NavTypeBadge type={type} /> : null}
         </a>
         {CHEVRON}
@@ -88,7 +105,9 @@ export function SiteNav({ active }: Props & { active: string }) {
               data-nav-section={section.heading}
             >
               <summary>
+                <SectionIcon name={section.icon} />
                 <span>{section.heading}</span>
+                {flattenNav(section.items).some((i) => i.isNew) ? <NewDot /> : null}
                 {CHEVRON}
               </summary>
               <nav class="sidebar-nav">

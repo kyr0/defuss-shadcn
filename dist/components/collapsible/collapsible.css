@@ -3,6 +3,7 @@
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     overflow: hidden;
+    color: var(--foreground);
 
     /* Two gotchas, both required for the panel to glide:
        1. `::details-content` must attach to the compound (`&::details-content`,
@@ -48,17 +49,18 @@
   .collapsible-trigger {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 0.5rem;
     width: 100%;
     padding: 0.75rem 1rem;
     font-size: 0.875rem;
     font-weight: 500;
     cursor: pointer;
-    color: var(--foreground);
+    color: inherit;
     list-style: none;
 
+    /* a tint of the text color - reads on any surface, custom colors included */
     &:hover {
-      background-color: var(--accent);
+      background-color: color-mix(in oklch, currentColor 7%, transparent);
     }
 
     &:focus-visible {
@@ -74,7 +76,8 @@
   .collapsible-chevron {
     width: 1rem;
     height: 1rem;
-    color: var(--muted-foreground);
+    margin-inline-start: auto;
+    color: color-mix(in oklch, currentColor 60%, transparent);
     transition: transform 200ms ease;
     flex-shrink: 0;
 
@@ -86,9 +89,117 @@
   .collapsible-content {
     padding: 0 1rem 0.75rem;
     font-size: 0.875rem;
-    color: var(--muted-foreground);
+    color: color-mix(in oklch, currentColor 72%, transparent);
     line-height: 1.6;
   }
+
+  /* -- Leading icon / emoji ----------------------------------------
+     .collapsible-icon in front of the heading: an svg or an emoji in a
+     fixed 1.1em box, so headings line up whatever the glyph. */
+  .collapsible-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 1.1em;
+    height: 1.1em;
+    flex-shrink: 0;
+    font-style: normal;
+    line-height: 1;
+
+    & svg { width: 1em; height: 1em; }
+  }
+
+  /* -- Sizes: the heading's scale and weight (md == default) ------- */
+  .collapsible {
+    &[data-size="sm"] .collapsible-trigger { font-size: 0.8125rem; }
+    &[data-size="md"] .collapsible-trigger { font-size: 0.875rem; }
+    &[data-size="lg"] .collapsible-trigger { font-size: 1rem; font-weight: 600; }
+    &[data-size="xl"] .collapsible-trigger { font-size: 1.125rem; font-weight: 700; letter-spacing: -0.01em; }
+
+    /* -- Variants: the surface (content follows its text color) ---- */
+    &[data-variant="ghost"] { border-color: transparent; }
+    &[data-variant="muted"] { background-color: var(--muted); border-color: transparent; }
+    &[data-variant="primary"] {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+      border-color: transparent;
+    }
+    &[data-variant="neutral"] {
+      background-color: color-mix(in oklch, var(--foreground) 78%, var(--background));
+      color: var(--background);
+      border-color: transparent;
+    }
+    /* highlight: plain while closed, the primary surface once open */
+    &[data-variant="highlight"] {
+      transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
+
+      &[open] {
+        background-color: var(--primary);
+        color: var(--primary-foreground);
+        border-color: transparent;
+      }
+    }
+  }
+
+  /* -- Markers: a CSS-drawn open/close sign at the end of the heading -
+     data-marker="arrow" (a chevron that turns up) or "plus" (+ that
+     becomes -); data-marker-position="start" puts it before the text.
+     For your own glyph use .collapsible-chevron (turns 180°, or 90° with
+     data-turn="quarter") or swap two elements with .collapsible-when-open /
+     .collapsible-when-closed. */
+  .collapsible:is([data-marker="arrow"], [data-marker="plus"]) > .collapsible-trigger::after {
+    content: '';
+    flex-shrink: 0;
+    margin-inline-start: auto;
+    color: color-mix(in oklch, currentColor 65%, transparent);
+    transition: rotate 200ms ease, translate 200ms ease, background-size 200ms ease;
+  }
+  .collapsible[data-marker="arrow"] > .collapsible-trigger::after {
+    width: 0.45em;
+    height: 0.45em;
+    margin-inline-end: 0.2em;
+    /* physical: a down/up arrow is the same in RTL */
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    rotate: 45deg;
+    translate: 0 -0.15em;
+  }
+  .collapsible[data-marker="arrow"][open] > .collapsible-trigger::after {
+    rotate: -135deg;
+    translate: 0 0.1em;
+  }
+  .collapsible[data-marker="plus"] > .collapsible-trigger::after {
+    width: 0.8em;
+    height: 0.8em;
+    background:
+      linear-gradient(currentColor 0 0) center / 100% 2px no-repeat,
+      linear-gradient(currentColor 0 0) center / 2px 100% no-repeat;
+  }
+  .collapsible[data-marker="plus"][open] > .collapsible-trigger::after {
+    background-size: 100% 2px, 2px 0;
+    rotate: 180deg;
+  }
+  .collapsible[data-marker-position="start"] > .collapsible-trigger::after {
+    order: -1;
+    margin-inline-start: 0;
+    margin-inline-end: 0.25em;
+  }
+
+  .collapsible-chevron[data-turn="quarter"] {
+    details[open] > summary > & { transform: rotate(90deg); }
+    /* RTL: a quarter-turned chevron-right points the other way */
+    &:dir(rtl) { scale: -1 1; }
+    details[open] > summary > &:dir(rtl) { transform: rotate(-90deg); }
+  }
+
+  /* swap two glyphs (📁 / 📂, "Show" / "Hide") instead of turning one */
+  .collapsible:not([open]) > .collapsible-trigger .collapsible-when-open,
+  .collapsible[open] > .collapsible-trigger .collapsible-when-closed {
+    display: none;
+  }
+  .collapsible-trigger > :is(.collapsible-when-open, .collapsible-when-closed) {
+    margin-inline-start: auto;
+  }
+
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all

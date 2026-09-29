@@ -54,19 +54,22 @@
       &:popover-open { translate: 0 0; }
     }
 
-    /* ----- Align variants (combined with side) ----- */
+    /* ----- Align variants (combined with side) -----
+       span-*: the tooltip starts AT the trigger's edge and extends past it.
+       (The corner areas - "top left" - put it entirely beside the trigger,
+       pointing at nothing.) start = shares the trigger's start edge. */
     &[data-align="start"] {
-      &:not([data-side="left"]):not([data-side="right"]) { position-area: top left; }
-      &[data-side="bottom"] { position-area: bottom left; }
-      &[data-side="left"] { position-area: left top; }
-      &[data-side="right"] { position-area: right top; }
+      &:not([data-side="left"]):not([data-side="right"]) { position-area: top span-right; }
+      &[data-side="bottom"] { position-area: bottom span-right; }
+      &[data-side="left"] { position-area: left span-bottom; }
+      &[data-side="right"] { position-area: right span-bottom; }
     }
 
     &[data-align="end"] {
-      &:not([data-side="left"]):not([data-side="right"]) { position-area: top right; }
-      &[data-side="bottom"] { position-area: bottom right; }
-      &[data-side="left"] { position-area: left bottom; }
-      &[data-side="right"] { position-area: right bottom; }
+      &:not([data-side="left"]):not([data-side="right"]) { position-area: top span-left; }
+      &[data-side="bottom"] { position-area: bottom span-left; }
+      &[data-side="left"] { position-area: left span-top; }
+      &[data-side="right"] { position-area: right span-top; }
     }
 
     /* ----- Arrow ----- */
@@ -92,6 +95,13 @@
     &[data-side="right"] {
       & [data-arrow] { left: -4px; top: 50%; margin-top: -4px; }
     }
+
+    /* Aligned tooltips: the arrow sits near the shared edge, so it points
+       into the trigger (a centred arrow would point past a narrow trigger) */
+    &[data-align="start"]:not([data-side="left"]):not([data-side="right"]) [data-arrow] { left: 1rem; margin-left: -4px; }
+    &[data-align="end"]:not([data-side="left"]):not([data-side="right"]) [data-arrow] { left: auto; right: 1rem; margin-left: 0; margin-right: -4px; }
+    &[data-align="start"]:is([data-side="left"], [data-side="right"]) [data-arrow] { top: 0.75rem; margin-top: -4px; }
+    &[data-align="end"]:is([data-side="left"], [data-side="right"]) [data-arrow] { top: auto; bottom: 0.75rem; margin-top: 0; margin-bottom: -4px; }
   }
 
   @starting-style {

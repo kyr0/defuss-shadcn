@@ -35,6 +35,47 @@ supportedStates: default
 ```
 
 
+### Icons, emojis and markers
+
+```html
+<details class="collapsible" data-marker="arrow" data-size="lg" data-variant="muted">
+  <summary class="collapsible-trigger">
+    <span class="collapsible-icon" aria-hidden="true">🎨</span>
+    Appearance
+  </summary>
+  <div class="collapsible-content">…</div>
+</details>
+```
+
+- `.collapsible-icon` - an svg or emoji in front of the heading (a fixed
+  1.1em box, so headings line up).
+- `data-marker="arrow"` / `"plus"` - a CSS-drawn sign at the end of the
+  heading (the arrow turns up, the plus becomes a minus) - no icon markup.
+  `data-marker-position="start"` moves it before the heading.
+- Your own glyph: `.collapsible-chevron` turns 180° when open
+  (`data-turn="quarter"`: 90°, for a chevron-right; mirrored in RTL) - or two
+  elements `.collapsible-when-closed` / `.collapsible-when-open` (📁 / 📂,
+  "Show" / "Hide") of which the right one shows.
+
+## Variants (`data-variant`)
+
+| Value | Surface |
+| --- | --- |
+| *(none)* | Bordered, page background |
+| `ghost` | No border, no surface |
+| `muted` | `--muted` surface |
+| `primary` | `--primary` surface, `--primary-foreground` text |
+| `neutral` | Charcoal (the inverse colors, softened) |
+| `highlight` | Plain while closed, `primary` once open (animated) |
+
+Custom colors: set `background` and `color` on the `.collapsible` - the hover
+tint (7%), the marker (65%) and the content text (72%) mix from its text
+color, so any palette works.
+
+## Sizes (`data-size`)
+
+The heading only: `sm` 0.8125rem · `md` 0.875rem (default) · `lg` 1rem semibold · `xl` 1.125rem bold.
+
 ## Density
 
 Set `data-density` on the `.collapsible` root. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25); typography and fixed dimensions stay identical. `comfortable` matches the unsized default.

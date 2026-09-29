@@ -347,6 +347,70 @@ try {
     assert.ok(r.inside, 'the label stays inside the tree');
   });
 
+  const boxState = (id: string) => page.$eval(`#${id} > .tree-leaf > .tree-check, #${id} > details > summary > .tree-check`, (b) => ((b as HTMLInputElement).indeterminate ? 'mixed' : String((b as HTMLInputElement).checked)));
+  const order = (id: string) => page.$$eval(`#${id} > details > .tree-group > li`, (ls) => ls.map((l) => l.id));
+
+  await check('checkable: authored state rolls up (mixed folders), a checked folder cascades down, aria-checked mirrors', async () => {
+    assert.equal(await boxState('tc-cmp'), 'mixed');
+    assert.equal(await boxState('tc-src'), 'mixed');
+    assert.equal(await boxState('tc-g'), 'true', 'docs checked → its children');
+    assert.equal(await page.getAttribute('#tc-src', 'aria-checked'), 'mixed');
+    const label = await page.$eval('#tc-a .tree-check', (b) => document.getElementById(b.getAttribute('aria-labelledby')!)?.textContent);
+    assert.equal(label, 'a.ts', 'the row label names the checkbox');
+  });
+
+  await check('checkable: checking a folder checks its subtree; the last child completes the parent', async () => {
+    let values: string[] = [];
+    await page.$eval('#tc', (tree) => tree.addEventListener('tree-check', (e) => ((globalThis as unknown as { __v: string[] }).__v = (e as CustomEvent).detail.values)));
+    await page.click('#tc-cmp > details > summary > .tree-check');
+    assert.equal(await boxState('tc-b'), 'true');
+    assert.equal(await boxState('tc-cmp'), 'true');
+    assert.equal(await boxState('tc-src'), 'mixed', 'index.ts still unchecked');
+    assert.equal(await page.$eval('#tc-cmp > details', (d) => (d as HTMLDetailsElement).open), true, 'the box did not toggle the folder');
+    await page.click('#tc-idx .tree-leaf > span'); // a click on a leaf name ticks it
+    assert.equal(await boxState('tc-src'), 'true');
+    values = await page.evaluate(() => (globalThis as unknown as { __v: string[] }).__v);
+    assert.deepEqual(values.sort(), ['a', 'b', 'components', 'docs', 'guide', 'index', 'src']);
+  });
+
+  await check('checkable: Space on a focused row ticks its box (a folder does not toggle open)', async () => {
+    await page.focus('#tc-docs > details > summary');
+    await page.keyboard.press(' ');
+    assert.equal(await boxState('tc-docs'), 'false');
+    assert.equal(await boxState('tc-g'), 'false');
+    assert.equal(await page.$eval('#tc-docs > details', (d) => (d as HTMLDetailsElement).open), true);
+  });
+
+  await check('checkable="independent": no cascade, no roll-up', async () => {
+    await page.click('#ti-p > details > summary > .tree-check');
+    assert.equal(await boxState('ti-p'), 'true');
+    assert.equal(await boxState('ti-w'), 'false');
+    assert.equal(await boxState('ti-r'), 'true');
+  });
+
+  await check('sortable: rows are draggable; Alt+ArrowDown / Alt+ArrowUp move among siblings (focus kept, tree-reorder fires)', async () => {
+    assert.equal(await page.getAttribute('#ts-1 .tree-leaf', 'draggable'), 'true');
+    await page.$eval('#ts', (tree) => tree.addEventListener('tree-reorder', (e) => ((globalThis as unknown as { __r: number }).__r = (e as CustomEvent).detail.index)));
+    await page.focus('#ts-1 .tree-leaf');
+    await page.keyboard.press('Alt+ArrowDown');
+    assert.deepEqual(await order('ts-m'), ['ts-2', 'ts-1', 'ts-3']);
+    assert.equal(await page.evaluate(() => document.activeElement?.closest('li')?.id), 'ts-1');
+    assert.equal(await page.evaluate(() => (globalThis as unknown as { __r: number }).__r), 1);
+    await page.keyboard.press('Alt+ArrowUp');
+    assert.deepEqual(await order('ts-m'), ['ts-1', 'ts-2', 'ts-3']);
+  });
+
+  await check('sortable: drag onto the lower half of a row puts it after; onto a folder middle moves it inside', async () => {
+    await page.locator('#ts-3 .tree-leaf').dragTo(page.locator('#ts-1 .tree-leaf'), { targetPosition: { x: 20, y: 22 } });
+    assert.deepEqual(await order('ts-m'), ['ts-1', 'ts-3', 'ts-2']);
+    await page.locator('#ts-u .tree-leaf').dragTo(page.locator('#ts-f > details > summary'), { targetPosition: { x: 40, y: 14 } });
+    assert.deepEqual(await order('ts-f'), ['ts-4', 'ts-u']);
+    // a folder can't move into itself
+    await page.locator('#ts-m > details > summary').dragTo(page.locator('#ts-2 .tree-leaf'));
+    assert.equal(await page.$eval('#ts-m', (m) => m.parentElement!.id), 'ts');
+    assert.equal(await page.$$eval('#ts [data-drop], #ts [data-dragging]', (l) => l.length), 0, 'no leftover markers');
+  });
+
 } finally {
   await browser.close();
   server.stop();

@@ -14,13 +14,16 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 <SkillPanel component="timeline">
   <SkillField label="Native basis">
-<SkillText><code>&lt;ol&gt;</code> element with timeline items connected by a vertical line.</SkillText>
+<SkillText><code>&lt;ol&gt;</code> element with timeline items connected by a line - vertical by default, horizontal with <code>data-orientation="horizontal"</code>.</SkillText>
   </SkillField>
 
   <SkillField label="Web Platform APIs">
 <SkillRow>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol" title="ordered list conveying sequence"><code>&lt;ol&gt;</code></ApiPill>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/::before" title="pseudo-element for connector line and dot"><code>::before</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout/Subgrid" title="horizontal: every dot on one line"><code>subgrid</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-snap-type" title="horizontal: sideways scrolling snaps to items"><code>scroll-snap</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="icon dots re-center the connector"><code>:has()</code></ApiPill>
   </SkillRow>
   </SkillField>
 
@@ -38,7 +41,17 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
   <SkillField label="Variants (data-variant)">
 <SkillGrid>
-    <Variant name="active" description="Alternate background styling" />
+    <Variant name="active" description="Primary dot - the current step" />
+    <Variant name="outline" description="Hollow ring - planned / upcoming" />
+    <Variant name="destructive" description="Destructive dot - a failure" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Layout (on .timeline)">
+<SkillGrid>
+    <Variant name='data-orientation="horizontal"' description="A row of equal columns, dot on top; scrolls sideways when full" />
+    <Variant name='data-align="center"' description="Horizontal: dot and text centered in each column" />
+    <Variant name="data-alternate" description="Horizontal: every second item's content above the line" />
   </SkillGrid>
   </SkillField>
 </SkillPanel>
@@ -108,6 +121,267 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     </div>
   </li>
 </ol>
+```
+
+```html example label="Horizontal" hint="data-orientation=&quot;horizontal&quot; lays the items out as a row of equal columns - dot on top, content below, the connector running from dot to dot. The outline dot marks what is still planned."
+<ol class="timeline" data-orientation="horizontal">
+  <li class="timeline-item">
+    <div class="timeline-dot"></div>
+    <div class="timeline-content">
+      <p class="timeline-title">Research</p>
+      <p class="timeline-description">Interviews with 24 teams.</p>
+      <time class="timeline-time">Q1 2026</time>
+    </div>
+  </li>
+  <li class="timeline-item">
+    <div class="timeline-dot"></div>
+    <div class="timeline-content">
+      <p class="timeline-title">Prototype</p>
+      <p class="timeline-description">Clickable flows, first usability test.</p>
+      <time class="timeline-time">Q2 2026</time>
+    </div>
+  </li>
+  <li class="timeline-item">
+    <div class="timeline-dot" data-variant="active"></div>
+    <div class="timeline-content">
+      <p class="timeline-title">Beta</p>
+      <p class="timeline-description">Invite-only, 300 workspaces.</p>
+      <time class="timeline-time">Q3 2026</time>
+    </div>
+  </li>
+  <li class="timeline-item">
+    <div class="timeline-dot" data-variant="outline"></div>
+    <div class="timeline-content">
+      <p class="timeline-title">Launch</p>
+      <p class="timeline-description">Public release and pricing.</p>
+      <time class="timeline-time">Q4 2026</time>
+    </div>
+  </li>
+</ol>
+```
+
+```html example label="Horizontal, centered" hint="data-align=&quot;center&quot; centers each dot over its column and the text under it - a release line."
+<ol class="timeline" data-orientation="horizontal" data-align="center">
+  <li class="timeline-item">
+    <div class="timeline-dot" data-variant="active"></div>
+    <div class="timeline-content">
+      <p class="timeline-title">v1.0</p>
+      <p class="timeline-description">First stable API</p>
+      <time class="timeline-time">Mar 2025</time>
+    </div>
+  </li>
+  <li class="timeline-item">
+    <div class="timeline-dot" data-variant="active"></div>
+    <div class="timeline-content">
+      <p class="timeline-title">v1.1</p>
+      <p class="timeline-description">Dark mode</p>
+      <time class="timeline-time">Jun 2025</time>
+    </div>
+  </li>
+  <li class="timeline-item">
+    <div class="timeline-dot" data-variant="active"></div>
+    <div class="timeline-content">
+      <p class="timeline-title">v2.0</p>
+      <p class="timeline-description">New layout engine</p>
+      <time class="timeline-time">Jan 2026</time>
+    </div>
+  </li>
+  <li class="timeline-item">
+    <div class="timeline-dot" data-variant="outline"></div>
+    <div class="timeline-content">
+      <p class="timeline-title">v2.1</p>
+      <p class="timeline-description">Offline sync</p>
+      <time class="timeline-time">Planned</time>
+    </div>
+  </li>
+</ol>
+```
+
+```html example label="Horizontal, alternating" hint="data-alternate puts every second item's content above the line, so dense histories get twice the room. All dots stay on one line - the rows are a subgrid shared by every item."
+<ol class="timeline" data-orientation="horizontal" data-align="center" data-alternate>
+  <li class="timeline-item">
+    <div class="timeline-dot"></div>
+    <div class="timeline-content">
+      <p class="timeline-title">Founded</p>
+      <p class="timeline-description">Two people, one garage.</p>
+      <time class="timeline-time">2012</time>
+    </div>
+  </li>
+  <li class="timeline-item">
+    <div class="timeline-dot"></div>
+    <div class="timeline-content">
+      <p class="timeline-title">First office</p>
+      <p class="timeline-description">Berlin, twelve desks.</p>
+      <time class="timeline-time">2014</time>
+    </div>
+  </li>
+  <li class="timeline-item">
+    <div class="timeline-dot"></div>
+    <div class="timeline-content">
+      <p class="timeline-title">Series A</p>
+      <p class="timeline-description">$8M to go international.</p>
+      <time class="timeline-time">2017</time>
+    </div>
+  </li>
+  <li class="timeline-item">
+    <div class="timeline-dot"></div>
+    <div class="timeline-content">
+      <p class="timeline-title">100 people</p>
+      <p class="timeline-description">Offices in three countries.</p>
+      <time class="timeline-time">2020</time>
+    </div>
+  </li>
+  <li class="timeline-item">
+    <div class="timeline-dot" data-variant="active"></div>
+    <div class="timeline-content">
+      <p class="timeline-title">Profitable</p>
+      <p class="timeline-description">Four quarters in a row.</p>
+      <time class="timeline-time">2024</time>
+    </div>
+  </li>
+</ol>
+```
+
+```html example label="Scrolling" hint="Columns never get narrower than 10rem: when the row is full it scrolls sideways and snaps to each item. The container here is 32rem wide."
+<ol class="timeline" data-orientation="horizontal" style="max-width:32rem;">
+  <li class="timeline-item">
+    <div class="timeline-dot"></div>
+    <div class="timeline-content">
+      <p class="timeline-title">Mon</p>
+      <p class="timeline-description">Kick-off</p>
+      <time class="timeline-time">22 Sep</time>
+    </div>
+  </li>
+  <li class="timeline-item">
+    <div class="timeline-dot"></div>
+    <div class="timeline-content">
+      <p class="timeline-title">Tue</p>
+      <p class="timeline-description">Design review</p>
+      <time class="timeline-time">23 Sep</time>
+    </div>
+  </li>
+  <li class="timeline-item">
+    <div class="timeline-dot"></div>
+    <div class="timeline-content">
+      <p class="timeline-title">Wed</p>
+      <p class="timeline-description">API freeze</p>
+      <time class="timeline-time">24 Sep</time>
+    </div>
+  </li>
+  <li class="timeline-item">
+    <div class="timeline-dot" data-variant="active"></div>
+    <div class="timeline-content">
+      <p class="timeline-title">Thu</p>
+      <p class="timeline-description">Code review</p>
+      <time class="timeline-time">25 Sep</time>
+    </div>
+  </li>
+  <li class="timeline-item">
+    <div class="timeline-dot" data-variant="outline"></div>
+    <div class="timeline-content">
+      <p class="timeline-title">Fri</p>
+      <p class="timeline-description">QA</p>
+      <time class="timeline-time">26 Sep</time>
+    </div>
+  </li>
+  <li class="timeline-item">
+    <div class="timeline-dot" data-variant="outline"></div>
+    <div class="timeline-content">
+      <p class="timeline-title">Sat</p>
+      <p class="timeline-description">Buffer</p>
+      <time class="timeline-time">27 Sep</time>
+    </div>
+  </li>
+  <li class="timeline-item">
+    <div class="timeline-dot" data-variant="outline"></div>
+    <div class="timeline-content">
+      <p class="timeline-title">Sun</p>
+      <p class="timeline-description">Release</p>
+      <time class="timeline-time">28 Sep</time>
+    </div>
+  </li>
+</ol>
+```
+
+```html example label="Icons and status" hint="Put an icon inside the dot (a lucide &lt;i data-lucide&gt;, an svg or an img) and it becomes a 1.5rem badge - the connector re-centers on it. data-variant=&quot;active&quot;, &quot;destructive&quot; and &quot;outline&quot; color it by status. Works horizontally too."
+<div class="flex flex-col gap-8">
+<ol class="timeline" style="max-width:28rem;">
+  <li class="timeline-item">
+    <div class="timeline-dot"><i data-lucide="git-commit-horizontal"></i></div>
+    <div class="timeline-content">
+      <p class="timeline-title">Committed</p>
+      <p class="timeline-description">fix: retry flaky upload</p>
+      <time class="timeline-time">10:02</time>
+    </div>
+  </li>
+  <li class="timeline-item">
+    <div class="timeline-dot"><i data-lucide="hammer"></i></div>
+    <div class="timeline-content">
+      <p class="timeline-title">Built</p>
+      <p class="timeline-description">2 min 14 s, 38 MB image</p>
+      <time class="timeline-time">10:05</time>
+    </div>
+  </li>
+  <li class="timeline-item">
+    <div class="timeline-dot" data-variant="destructive"><i data-lucide="circle-x"></i></div>
+    <div class="timeline-content">
+      <p class="timeline-title">Tests failed</p>
+      <p class="timeline-description">3 of 412 failed in checkout.spec</p>
+      <time class="timeline-time">10:09</time>
+    </div>
+  </li>
+  <li class="timeline-item">
+    <div class="timeline-dot" data-variant="active"><i data-lucide="rotate-ccw"></i></div>
+    <div class="timeline-content">
+      <p class="timeline-title">Re-running</p>
+      <p class="timeline-description">Attempt 2 of 3</p>
+      <time class="timeline-time">10:11</time>
+    </div>
+  </li>
+  <li class="timeline-item">
+    <div class="timeline-dot" data-variant="outline"><i data-lucide="rocket"></i></div>
+    <div class="timeline-content">
+      <p class="timeline-title">Deploy</p>
+      <p class="timeline-description">Waiting for green tests</p>
+      <time class="timeline-time">Pending</time>
+    </div>
+  </li>
+</ol>
+<ol class="timeline" data-orientation="horizontal" data-align="center">
+  <li class="timeline-item">
+    <div class="timeline-dot" data-variant="active"><i data-lucide="shopping-cart"></i></div>
+    <div class="timeline-content">
+      <p class="timeline-title">Ordered</p>
+      <p class="timeline-description">Payment received</p>
+      <time class="timeline-time">2 Sep</time>
+    </div>
+  </li>
+  <li class="timeline-item">
+    <div class="timeline-dot" data-variant="active"><i data-lucide="package"></i></div>
+    <div class="timeline-content">
+      <p class="timeline-title">Packed</p>
+      <p class="timeline-description">Warehouse Leipzig</p>
+      <time class="timeline-time">3 Sep</time>
+    </div>
+  </li>
+  <li class="timeline-item">
+    <div class="timeline-dot" data-variant="active"><i data-lucide="truck"></i></div>
+    <div class="timeline-content">
+      <p class="timeline-title">Shipped</p>
+      <p class="timeline-description">Tracking DE-4471</p>
+      <time class="timeline-time">3 Sep</time>
+    </div>
+  </li>
+  <li class="timeline-item">
+    <div class="timeline-dot" data-variant="outline"><i data-lucide="house"></i></div>
+    <div class="timeline-content">
+      <p class="timeline-title">Delivered</p>
+      <p class="timeline-description">Expected Friday</p>
+      <time class="timeline-time">6 Sep</time>
+    </div>
+  </li>
+</ol>
+</div>
 ```
 
 ```html example label="Density" hint="Set data-density on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25), typography and fixed dimensions stay identical. comfortable matches the unsized default."

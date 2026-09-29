@@ -67,4 +67,65 @@ await cssSmoke('typography', [
     selector: '#ty-code',
     css: { 'font-family': /mono/, 'border-radius': '6px', padding: '3.2px 4.8px' },
   },
+  {
+    label: 'CJK paragraphs: justified between characters, strict breaks, hanging sentence ends, 1.9 leading; Latin untouched',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const cs = (id: string) => getComputedStyle(document.getElementById(id)!);
+        const zh = cs('ty-zh-p'), en = cs('ty-en');
+        return {
+          zh: [zh.textAlign, zh.textJustify, zh.lineBreak, (zh as unknown as { textSpacingTrim?: string }).textSpacingTrim ?? 'normal', (parseFloat(zh.lineHeight) / parseFloat(zh.fontSize)).toFixed(1)],
+          en: [en.textAlign, en.lineBreak],
+          autospace: (zh as unknown as { textAutospace?: string }).textAutospace ?? 'unsupported',
+        };
+      });
+      assert.deepEqual(r.zh, ['justify', 'inter-character', 'strict', 'normal', '1.9']);
+      // hanging-punctuation is Safari-only - where it exists it must be allow-end
+      const hang = await page.$eval('#ty-zh-p', (e) => (getComputedStyle(e) as unknown as { hangingPunctuation?: string }).hangingPunctuation);
+      assert.ok(hang === undefined || hang === 'allow-end', String(hang));
+      assert.deepEqual(r.en.slice(0, 2), ['start', 'auto']);
+      assert.ok(['normal', 'unsupported'].includes(r.autospace), r.autospace);
+    },
+  },
+  {
+    label: 'CJK headings drop the Latin tracking; Japanese headings break by phrase; blockquote is upright',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const cs = (id: string) => getComputedStyle(document.getElementById(id)!);
+        return { zhH: cs('ty-zh-h').letterSpacing, jaH: cs('ty-ja-h').wordBreak, q: cs('ty-zh-q').fontStyle };
+      });
+      assert.equal(r.zhH, 'normal');
+      assert.equal(r.jaH, 'auto-phrase');
+      assert.equal(r.q, 'normal');
+    },
+  },
+  {
+    label: 'vertical text: vertical-rl + mixed; logical spacing turns (paragraph gap runs along the x axis)',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const cs = (id: string) => getComputedStyle(document.getElementById(id)!);
+        const p1 = document.getElementById('ty-ja-p')!.getBoundingClientRect();
+        const p2 = document.getElementById('ty-ja-p2')!.getBoundingClientRect();
+        return { wm: cs('ty-ja').writingMode, to: cs('ty-ja').textOrientation, ml: cs('ty-ja-p2').marginRight, mt: cs('ty-ja-p2').marginTop, leftOf: p2.right <= p1.left + 1 };
+      });
+      assert.equal(r.wm, 'vertical-rl'); assert.equal(r.to, 'mixed');
+      assert.equal(r.ml, '24px', 'margin-block-start is the right margin in vertical-rl');
+      assert.equal(r.mt, '0px');
+      assert.ok(r.leftOf, 'the second paragraph is the next column to the left');
+    },
+  },
+  {
+    label: 'tate-chu-yoko, emphasis marks (sesame in ja, dots under in zh), muted half-size ruby',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const cs = (id: string) => getComputedStyle(document.getElementById(id)!);
+        const rt = cs('ty-rt'), h = cs('ty-ja-h');
+        return { tcy: cs('ty-tcy').textCombineUpright, ja: [cs('ty-ja-em').textEmphasisStyle, cs('ty-ja-em').fontStyle], zh: [cs('ty-zh-em').textEmphasisStyle, cs('ty-zh-em').textEmphasisPosition], rt: parseFloat(rt.fontSize) / parseFloat(h.fontSize) };
+      });
+      assert.equal(r.tcy, 'all');
+      assert.ok(/sesame/.test(r.ja[0]) && r.ja[1] === 'normal', r.ja.join());
+      assert.ok(/dot/.test(r.zh[0]) && r.zh[1].startsWith('under'), r.zh.join());
+      assert.equal(r.rt, 0.5);
+    },
+  },
 ]);

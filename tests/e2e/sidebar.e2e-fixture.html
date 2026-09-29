@@ -76,6 +76,34 @@
     <aside class="app-sidebar" id="sb-comfortable" data-density="comfortable" data-state="expanded" style="position:relative;height:14rem;width:14rem;margin-top:1rem;"><div class="sidebar-header"><a class="sidebar-logo" href="#"><span class="sidebar-logo-text">App</span></a></div><div class="sidebar-content"><nav class="sidebar-nav"><a class="sidebar-link" href="#"><span>Dashboard</span></a><a class="sidebar-link" href="#"><span>Inbox</span></a></nav></div></aside>
     <aside class="app-sidebar" id="sb-spacious" data-density="spacious" data-state="expanded" style="position:relative;height:14rem;width:14rem;margin-top:1rem;"><div class="sidebar-header"><a class="sidebar-logo" href="#"><span class="sidebar-logo-text">App</span></a></div><div class="sidebar-content"><nav class="sidebar-nav"><a class="sidebar-link" href="#"><span>Dashboard</span></a><a class="sidebar-link" href="#"><span>Inbox</span></a></nav></div></aside>
   <!-- global keys: typing in a field is never a shortcut (shared bindGlobalKeys guard) -->
+    <aside class="app-sidebar" id="sb-icons" data-state="expanded" style="position:relative;height:auto;width:16rem;margin-top:1rem;">
+      <div class="sidebar-content">
+        <details class="sidebar-group" open>
+          <summary>
+            <span class="sidebar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18"/></svg></span>
+            <span>Mail</span>
+            <span class="sidebar-dot" id="dot-group" role="img" aria-label="New activity"></span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+          </summary>
+          <nav class="sidebar-nav">
+            <a class="sidebar-link" id="link-svg" href="#"><span class="sidebar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg></span><span>Inbox</span><span class="sidebar-dot" id="dot-info" data-variant="info" data-animate="ping" role="img" aria-label="New"></span><span class="sidebar-badge">12</span></a>
+            <a class="sidebar-link" id="link-emoji" href="#"><span class="sidebar-icon" aria-hidden="true">🚀</span><span>Launch</span><span class="sidebar-dot" id="dot-success" data-variant="success" role="img" aria-label="Healthy"></span></a>
+            <a class="sidebar-link" href="#"><span class="sidebar-icon" aria-hidden="true">🧪</span><span>Tests</span><span class="sidebar-dot" id="dot-warning" data-variant="warning" role="img" aria-label="Flaky"></span></a>
+            <a class="sidebar-link" href="#"><span class="sidebar-icon" aria-hidden="true">🔥</span><span>Staging</span><span class="sidebar-dot" id="dot-destructive" data-variant="destructive" role="img" aria-label="Failing"></span></a>
+            <a class="sidebar-link" href="#"><span class="sidebar-icon" aria-hidden="true">📦</span><span>Plain</span><span class="sidebar-dot" id="dot-plain" role="img" aria-label="New"></span></a>
+          </nav>
+        </details>
+      </div>
+    </aside>
+    <div style="width:14rem;margin-top:1rem;">
+      <aside class="app-sidebar" id="sb-rail" data-state="collapsed" style="position:relative;height:auto;">
+        <div class="sidebar-content">
+          <nav class="sidebar-nav">
+            <a class="sidebar-link" id="rail-link" href="#" aria-label="Inbox"><span class="sidebar-icon" aria-hidden="true">📥</span><span>Inbox</span><span class="sidebar-dot" data-animate="ping" role="img" aria-label="New"></span></a>
+          </nav>
+        </div>
+      </aside>
+    </div>
   <input id="typing-field" aria-label="Typing field" />
 </body>
 </html>

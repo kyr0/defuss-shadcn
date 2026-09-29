@@ -84,6 +84,8 @@ interface DefussShadcnShared {
   anim: typeof import('../shared/anim.js').anim;
   /** shared global-key API (src/shared/keys.ts) - one document keydown listener */
   bindGlobalKeys: typeof import('../shared/keys.js').bindGlobalKeys;
+  /** did a key event come from a field being typed in? (for { editable: true } handlers) */
+  isEditableTarget: typeof import('../shared/keys.js').isEditableTarget;
   /** theme resource loader (src/shared/theme-links.ts; theme/<id>.json sidecars) */
   loadTheme: typeof import('../shared/theme-links.js').loadTheme;
 }
@@ -103,6 +105,14 @@ interface DefussShadcnRegistry {
     theme: typeof import('../components/chart/chart.js').chartTheme;
     color: typeof import('../components/chart/chart.js').chartColor;
     deck: typeof import('../components/chart/chart.js').chartDeck;
+  };
+  /** mermaid imperative API (src/components/mermaid/mermaid.ts): lazy loader, renders, token theme */
+  mermaid?: {
+    load: (url?: string) => Promise<unknown>;
+    render: (fig: HTMLElement) => Promise<boolean>;
+    renderAll: () => Promise<boolean[]>;
+    theme: typeof import('../components/mermaid/mermaid.js').mermaidTheme;
+    url: string;
   };
   /** chart storytelling driver (src/components/chart/chart.ts) */
   chartStory?: typeof import('../components/chart/chart.js').chartStory;
@@ -146,6 +156,8 @@ interface HTMLElement {
   _applying?: boolean;
   /** Accordion-only: generation counter so queued toggle events can't clear a newer _applying. */
   _applyGen?: number;
+  /** Mermaid-only: the theme (JSON) the diagram was last rendered with - re-render when it changes. */
+  _mermaidTheme?: string;
 }
 
 interface HTMLDialogElement {

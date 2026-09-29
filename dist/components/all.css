@@ -41,15 +41,15 @@
   .accordion-trigger {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 0.5rem;
     width: 100%;
     padding: 1rem 0;
     font-size: 0.9375rem;
     font-weight: 500;
-    text-align: left;
+    text-align: start;
     cursor: pointer;
     list-style: none;
-    color: var(--foreground);
+    color: inherit;
     transition: color 150ms;
 
     &::-webkit-details-marker { display: none; }
@@ -59,7 +59,8 @@
 
   /* Chevron rotation */
   .accordion-chevron {
-    color: var(--muted-foreground);
+    margin-inline-start: auto;
+    color: color-mix(in oklch, currentColor 60%, transparent);
     transition: transform 200ms ease;
     flex-shrink: 0;
 
@@ -73,11 +74,131 @@
     padding-bottom: 1rem;
     font-size: 0.875rem;
     line-height: 1.7;
-    color: var(--muted-foreground);
+    color: color-mix(in oklch, currentColor 72%, transparent);
     overflow: hidden;
 
     & p { margin: 0; }
   }
+
+  /* -- Surfaces (data-variant on the .accordion) -----------------------
+     bordered: one box, items divided · separated: every item its own card
+     · muted / primary / neutral: separated items on that surface ·
+     highlight: separated, the open item turns primary · ghost: no
+     dividers. Boxed variants pad the text inside and swap the underline
+     hover for a tint. The item's text color flows into the heading, the
+     marker and the content, so custom colors (style on an item) just work. */
+  .accordion {
+    color: var(--foreground);
+
+    &[data-variant="bordered"] {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    &:is([data-variant="separated"], [data-variant="muted"], [data-variant="primary"], [data-variant="neutral"], [data-variant="highlight"]) {
+      gap: 0.5rem;
+
+      & > .accordion-item {
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+      }
+    }
+    &[data-variant="muted"] > .accordion-item { background-color: var(--muted); border-color: transparent; }
+    &[data-variant="primary"] > .accordion-item { background-color: var(--primary); color: var(--primary-foreground); border-color: transparent; }
+    &[data-variant="neutral"] > .accordion-item {
+      background-color: color-mix(in oklch, var(--foreground) 78%, var(--background));
+      color: var(--background);
+      border-color: transparent;
+    }
+    &[data-variant="highlight"] > .accordion-item {
+      transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
+
+      &[open] { background-color: var(--primary); color: var(--primary-foreground); border-color: transparent; }
+    }
+    &[data-variant="ghost"] > .accordion-item { border-bottom-color: transparent; }
+
+    /* boxed: text inset, tint on hover */
+    &:is([data-variant="bordered"], [data-variant="separated"], [data-variant="muted"], [data-variant="primary"], [data-variant="neutral"], [data-variant="highlight"]) {
+      & .accordion-trigger {
+        padding-inline: 1rem;
+
+        &:hover { text-decoration: none; background-color: color-mix(in oklch, currentColor 7%, transparent); }
+      }
+      & .accordion-content { padding-inline: 1rem; }
+    }
+
+    /* -- Sizes: the headings' scale and weight (md == default) ---------- */
+    &[data-size="sm"] .accordion-trigger { font-size: 0.8125rem; }
+    &[data-size="md"] .accordion-trigger { font-size: 0.9375rem; }
+    &[data-size="lg"] .accordion-trigger { font-size: 1.0625rem; font-weight: 600; }
+    &[data-size="xl"] .accordion-trigger { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; }
+  }
+
+  /* -- Leading icon / emoji ------------------------------------------- */
+  .accordion-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 1.15em;
+    height: 1.15em;
+    flex-shrink: 0;
+    font-style: normal;
+    line-height: 1;
+
+    & svg { width: 1em; height: 1em; }
+  }
+
+  /* -- Markers: data-marker="arrow" / "plus" on the .accordion draws the
+     open/close sign (no icon markup); data-marker-position="start" puts it
+     before the heading. Own glyphs: .accordion-chevron (180°, or 90° with
+     data-turn="quarter" - mirrored in RTL) or two elements
+     .accordion-when-closed / .accordion-when-open. */
+  .accordion:is([data-marker="arrow"], [data-marker="plus"]) .accordion-trigger::after {
+    content: '';
+    flex-shrink: 0;
+    margin-inline-start: auto;
+    color: color-mix(in oklch, currentColor 65%, transparent);
+    transition: rotate 200ms ease, translate 200ms ease, background-size 200ms ease;
+  }
+  .accordion[data-marker="arrow"] .accordion-trigger::after {
+    width: 0.45em;
+    height: 0.45em;
+    margin-inline-end: 0.2em;
+    /* physical: a down / up arrow is the same in RTL */
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    rotate: 45deg;
+    translate: 0 -0.15em;
+  }
+  .accordion[data-marker="arrow"] .accordion-item[open] > .accordion-trigger::after {
+    rotate: -135deg;
+    translate: 0 0.1em;
+  }
+  .accordion[data-marker="plus"] .accordion-trigger::after {
+    width: 0.8em;
+    height: 0.8em;
+    background:
+      linear-gradient(currentColor 0 0) center / 100% 2px no-repeat,
+      linear-gradient(currentColor 0 0) center / 2px 100% no-repeat;
+  }
+  .accordion[data-marker="plus"] .accordion-item[open] > .accordion-trigger::after {
+    background-size: 100% 2px, 2px 0;
+    rotate: 180deg;
+  }
+  .accordion[data-marker-position="start"] .accordion-trigger::after {
+    order: -1;
+    margin-inline-start: 0;
+    margin-inline-end: 0.25em;
+  }
+  .accordion-chevron[data-turn="quarter"] {
+    details[open] > .accordion-trigger > & { transform: rotate(90deg); }
+    &:dir(rtl) { scale: -1 1; }
+    details[open] > .accordion-trigger > &:dir(rtl) { transform: rotate(-90deg); }
+  }
+  .accordion-item:not([open]) > .accordion-trigger .accordion-when-open,
+  .accordion-item[open] > .accordion-trigger .accordion-when-closed { display: none; }
+  .accordion-trigger > :is(.accordion-when-open, .accordion-when-closed) { margin-inline-start: auto; }
+
   /* -- Density ----------------------------------------------------
      data-density on the .accordion root scales trigger + panel padding.
      comfortable (1rem) == the unsized default. Ratio mirrors sizing.css. */
@@ -523,6 +644,24 @@
       --_badge: 1.75rem;
       font-size: 1rem;
     }
+
+    /* -- Shape: the image and fallback inherit the radius, so one
+       attribute reshapes the whole avatar (the badge is never clipped).
+       For silhouettes (heart, squircle, hexagon…) put a shape-* class from
+       theme/utils/shapes.css on the .avatar-image instead. */
+    &[data-shape="rounded"] { border-radius: var(--radius-lg); }
+    &[data-shape="square"] { border-radius: var(--radius-sm); }
+
+    /* a loaded photo covers the box: no muted plate behind a shaped image */
+    &:has(> .avatar-image:not([data-error])) { background-color: transparent; }
+
+    /* -- Ring: a colored ring with a background-colored gap, following
+       the avatar's shape */
+    &[data-ring] {
+      box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--primary);
+    }
+    &[data-ring="secondary"] { box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--muted-foreground); }
+    &[data-ring="destructive"] { box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--destructive); }
   }
 
   .avatar-image {
@@ -545,6 +684,10 @@
     position: absolute;
     inset: 0;
     border-radius: inherit; /* .avatar no longer clips - the fallback must round itself */
+
+    /* placeholder colors (letters on a solid plate) */
+    &[data-variant="primary"] { background-color: var(--primary); color: var(--primary-foreground); }
+    &[data-variant="neutral"] { background-color: var(--foreground); color: var(--background); }
   }
 
   /* Hide fallback when image is loaded */
@@ -565,8 +708,8 @@
   .avatar-badge {
     --_rim: max(2px, calc(var(--_badge, 1.25rem) * 0.15));
     position: absolute;
-    right: calc(var(--_rim) * -0.5);
-    bottom: calc(var(--_rim) * -0.5);
+    inset-inline-end: calc(var(--_rim) * -0.5);
+    inset-block-end: calc(var(--_rim) * -0.5);
     z-index: 1;
     width: var(--_badge, 1.25rem);
     height: var(--_badge, 1.25rem);
@@ -579,6 +722,11 @@
     &[data-variant="online"] {
       background-color: #16a34a;
     }
+
+    /* data-position: any of the four corners (default bottom-end); start /
+       end are logical - in RTL, start is the right */
+    &[data-position^="top"] { inset-block: calc(var(--_rim) * -0.5) auto; }
+    &[data-position$="start"] { inset-inline: calc(var(--_rim) * -0.5) auto; }
 
     /* hollow ring: "not here" */
     &[data-variant="offline"] {
@@ -605,7 +753,7 @@
     }
   }
 
-  /* Avatar group */
+  /* Avatar group - data-overlap="sm|lg" tightens / loosens the stack */
   .avatar-group {
     display: flex;
     align-items: center;
@@ -618,6 +766,8 @@
         margin-left: 0;
       }
     }
+    &[data-overlap="sm"] :is(.avatar, .avatar-group-count):not(:first-child) { margin-left: -0.25rem; }
+    &[data-overlap="lg"] :is(.avatar, .avatar-group-count):not(:first-child) { margin-left: -1rem; }
   }
 
   .avatar-group-count {
@@ -1003,6 +1153,28 @@
     [dir="rtl"] & svg { scale: -1 1; }
   }
   .breadcrumb-page { color: var(--foreground); font-weight: 400; }
+
+  /* -- Icons / emoji in front of a crumb ---------------------------
+     An <svg> or a <span class="breadcrumb-icon"> (emoji) before the label:
+     link and page line them up on the label's center and size them to the
+     text (1em - so data-size scales them too). */
+  .breadcrumb-link, .breadcrumb-page {
+    &:has(> :is(svg, .breadcrumb-icon)) {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375em;
+    }
+    & > svg { width: 1em; height: 1em; flex-shrink: 0; }
+  }
+  .breadcrumb-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 1.15em;
+    height: 1.15em;
+    flex-shrink: 0;
+    line-height: 1;
+    font-style: normal;
+  }
   .breadcrumb-ellipsis {
     display: flex; align-items: center; justify-content: center;
     width: 1.5rem; height: 1.5rem; color: var(--muted-foreground);
@@ -1144,6 +1316,74 @@
 
       &:hover { text-decoration: underline; }
     }
+
+    /* soft: a tint of the color, text in the color */
+    &[data-variant="soft"] {
+      background-color: color-mix(in oklch, var(--primary) 12%, transparent);
+      color: color-mix(in oklch, var(--primary) 80%, var(--foreground));
+
+      &:hover { background-color: color-mix(in oklch, var(--primary) 20%, transparent); }
+    }
+
+    /* dashed: a drop-zone / "add" look */
+    &[data-variant="dashed"] {
+      background-color: transparent;
+      color: var(--foreground);
+      border: 1px dashed color-mix(in oklch, var(--foreground) 35%, transparent);
+
+      &:hover {
+        background-color: var(--accent);
+        color: var(--accent-foreground);
+        border-style: solid;
+      }
+    }
+
+    /* -- Tones: any variant in another color -------------------
+       data-tone="success" / "warning" / "info" / "destructive" - or
+       data-tone="custom" with style="--btn-color: …; --btn-color-fg: …"
+       (the text on a solid fill, default white). Solid buttons fill with the
+       tone; outline / ghost / soft / dashed / link write in it, mixed toward
+       the foreground so a light tone (amber) stays readable. */
+    &[data-tone] {
+      --_tone: var(--btn-color, var(--primary));
+      --_tone-fg: var(--btn-color-fg, #fff);
+      --_tone-ink: color-mix(in oklch, var(--_tone) 78%, var(--foreground));
+    }
+    &[data-tone="success"] { --_tone: oklch(0.6 0.15 150); }
+    &[data-tone="warning"] { --_tone: oklch(0.8 0.16 80); --_tone-fg: oklch(0.28 0.06 60); }
+    &[data-tone="info"] { --_tone: oklch(0.6 0.16 250); }
+    &[data-tone="destructive"] { --_tone: var(--destructive); --_tone-fg: var(--destructive-foreground, #fff); }
+
+    &[data-tone]:is(:not([data-variant]), [data-variant="default"]) {
+      background-color: var(--_tone);
+      color: var(--_tone-fg);
+
+      &:hover { opacity: 0.9; }
+    }
+    &[data-tone][data-variant="outline"] {
+      background-color: transparent;
+      color: var(--_tone-ink);
+      border-color: var(--_tone);
+
+      &:hover { background-color: color-mix(in oklch, var(--_tone) 12%, transparent); color: var(--_tone-ink); }
+    }
+    &[data-tone]:is([data-variant="ghost"], [data-variant="dashed"]) {
+      color: var(--_tone-ink);
+
+      &:hover { background-color: color-mix(in oklch, var(--_tone) 14%, transparent); color: var(--_tone-ink); }
+    }
+    &[data-tone][data-variant="dashed"] { border-color: var(--_tone); }
+    &[data-tone][data-variant="soft"] {
+      background-color: color-mix(in oklch, var(--_tone) 16%, transparent);
+      color: var(--_tone-ink);
+
+      &:hover { background-color: color-mix(in oklch, var(--_tone) 26%, transparent); }
+    }
+    &[data-tone][data-variant="link"] { color: var(--_tone-ink); }
+
+    /* -- RTL: arrows and other directional icons mirror ----------
+       mark them data-rtl-flip; symmetric icons stay as they are */
+    &:dir(rtl) [data-rtl-flip] { scale: -1 1; }
 
     /* -- Sizes ----------------------------------------------- */
     &[data-size="xs"]      { height: 1.75rem; padding: 0 0.5rem;  font-size: 0.75rem; border-radius: var(--radius-sm); }
@@ -1809,7 +2049,18 @@
 /* -- Card component -------------------------------------------- */
 
 @layer components {
+  /* Spacing runs through one private variable: --_pad (section padding) =
+     --_base (the SIZE's padding, md 1.5rem) × --_k (the DENSITY factor), and
+     --_hf (the header→footer gap when no content sits between them) =
+     --_hfb × --_kh. Size and density therefore combine instead of fighting.
+     --_title / --_desc carry the size's type scale. All private. */
   .card {
+    --_base: 1.5rem;
+    --_hfb: 1rem;
+    --_k: 1;
+    --_kh: 1;
+    --_pad: calc(var(--_base) * var(--_k));
+    --_hf: calc(var(--_hfb) * var(--_kh));
     background-color: var(--card);
     color: var(--card-foreground);
     border: 1px solid var(--border);
@@ -1822,12 +2073,12 @@
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-    padding: 1.5rem;
+    padding: var(--_pad, 1.5rem);
     padding-bottom: 0;
   }
 
   .card-title {
-    font-size: 1.25rem;
+    font-size: var(--_title, 1.25rem);
     font-weight: 600;
     line-height: 1.25;
     letter-spacing: -0.01em;
@@ -1835,28 +2086,71 @@
   }
 
   .card-description {
-    font-size: 0.875rem;
+    font-size: var(--_desc, 0.875rem);
     color: var(--muted-foreground);
     margin: 0;
     line-height: 1.6;
   }
 
   .card-content {
-    padding: 1.5rem;
+    padding: var(--_pad, 1.5rem);
   }
 
   .card-footer {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 1.5rem;
+    padding: var(--_pad, 1.5rem);
     padding-top: 0;
   }
 
   /* Header + footer with no .card-content between: the zeroed paddings would
      glue them together - restore the gap for that composition only. */
   .card-header + .card-footer {
-    padding-top: 1rem;
+    padding-top: var(--_hf, 1rem);
+  }
+
+  /* A header-only card (a title + description panel): the header is the last
+     section, so it keeps its bottom padding instead of sitting on the edge. */
+  .card-header:last-child {
+    padding-bottom: var(--_pad, 1.5rem);
+  }
+
+  /* -- Body: an optional wrapper around header / content / footer.
+     Needed for the side and overlay layouts (media | body); in a column it
+     pushes the footer to the bottom, so a row of cards lines up its actions. */
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+
+    & > .card-footer { margin-top: auto; }
+  }
+
+  /* -- Media: a figure (img / video / picture / svg) edge to edge - first
+     child for an image on top, last child for one at the bottom. 16:9 unless
+     the author sets an aspect-ratio. data-inset pads and rounds it instead
+     (the centered-content look). */
+  .card-media {
+    display: block;
+    margin: 0;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+
+    & > :is(img, video, picture, svg) {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    &[data-inset] {
+      margin: var(--_pad) var(--_pad) 0;
+      border-radius: var(--radius-lg);
+    }
+    &[data-inset]:last-child {
+      margin: 0 var(--_pad) var(--_pad);
+    }
   }
 
   /* -- Density --------------------------------------------------
@@ -1864,31 +2158,146 @@
      Scale matches sizing.css data-density (0.75 / 1 / 1.25): comfortable is
      the unsized default (1.5rem), compact 1rem, spacious 2rem; the
      header+footer-only gap (1rem base) follows the ratio (0.75 / 1 / 1.5). */
-  .card:where([data-density="compact"]) {
-    & .card-header { padding: 1rem; padding-bottom: 0; }
-    & .card-content { padding: 1rem; }
-    & .card-footer { padding: 1rem; padding-top: 0; }
-    & .card-header + .card-footer { padding-top: 0.75rem; }
-  }
-  .card:where([data-density="comfortable"]) {
-    & .card-header { padding: 1.5rem; padding-bottom: 0; }
-    & .card-content { padding: 1.5rem; }
-    & .card-footer { padding: 1.5rem; padding-top: 0; }
-    & .card-header + .card-footer { padding-top: 1rem; }
-  }
-  .card:where([data-density="spacious"]) {
-    & .card-header { padding: 2rem; padding-bottom: 0; }
-    & .card-content { padding: 2rem; }
-    & .card-footer { padding: 2rem; padding-top: 0; }
-    & .card-header + .card-footer { padding-top: 1.5rem; }
+  .card:where([data-density="compact"]) { --_k: calc(2 / 3); --_kh: 0.75; }
+  .card:where([data-density="comfortable"]) { --_k: 1; --_kh: 1; }
+  .card:where([data-density="spacious"]) { --_k: calc(4 / 3); --_kh: 1.5; }
+
+  .card {
+    /* -- Sizes: padding + type scale together (md == the default) ----- */
+    &[data-size="xs"] { --_base: 0.75rem; --_hfb: 0.5rem; --_title: 0.875rem; --_desc: 0.75rem; }
+    &[data-size="sm"] { --_base: 1rem; --_hfb: 0.75rem; --_title: 1rem; --_desc: 0.8125rem; }
+    &[data-size="md"] { --_base: 1.5rem; --_hfb: 1rem; --_title: 1.25rem; --_desc: 0.875rem; }
+    &[data-size="lg"] { --_base: 2rem; --_hfb: 1.25rem; --_title: 1.5rem; --_desc: 1rem; }
+    &[data-size="xl"] { --_base: 2.5rem; --_hfb: 1.5rem; --_title: 1.875rem; --_desc: 1.0625rem; }
+
+    /* -- Variants -------------------------------------------------- */
+    &[data-variant="outline"] { background-color: transparent; }
+    &[data-variant="dashed"] { border-style: dashed; border-width: 2px; }
+    &[data-variant="ghost"] { background-color: transparent; border-color: transparent; }
+    &[data-variant="muted"] { background-color: var(--muted); border-color: transparent; }
+    &[data-variant="elevated"] { border-color: transparent; box-shadow: var(--shadow-lg); }
+    &[data-variant="primary"] {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+      border-color: transparent;
+
+      & .card-description { color: color-mix(in oklch, var(--primary-foreground) 78%, transparent); }
+    }
+    /* a charcoal surface: the inverse colors, softened (78%) so it stays
+       apart from --primary - in the default theme primary IS near-black */
+    &[data-variant="neutral"] {
+      background-color: color-mix(in oklch, var(--foreground) 78%, var(--background));
+      color: var(--background);
+      border-color: transparent;
+
+      & .card-description { color: color-mix(in oklch, var(--background) 72%, transparent); }
+    }
+    /* ghost / link buttons on a colored surface take its text color and a
+       hover tint made from it (the default hover - the pale --accent - would
+       put near-white text on near-white) */
+    &:is([data-variant="primary"], [data-variant="neutral"], [data-layout="overlay"]) .btn:is([data-variant="ghost"], [data-variant="link"]) {
+      color: inherit;
+
+      &:hover { background-color: color-mix(in oklch, currentColor 16%, transparent); color: inherit; }
+    }
+    /* frosted: translucent card over whatever is behind it */
+    &[data-variant="glass"] {
+      background-color: color-mix(in oklch, var(--card) 55%, transparent);
+      border-color: color-mix(in oklch, var(--foreground) 14%, transparent);
+      backdrop-filter: blur(16px) saturate(1.4);
+      box-shadow: 0 8px 32px -8px color-mix(in oklch, var(--foreground) 22%, transparent);
+    }
+
+    /* -- Centered content ------------------------------------------ */
+    &[data-align="center"] {
+      text-align: center;
+
+      & .card-header { align-items: center; }
+      & .card-footer { justify-content: center; }
+    }
+
+    /* -- Layouts ---------------------------------------------------
+       side: media | body in one row, always (media after the body = image
+       on the right). auto: side by side while the CARD is wide enough,
+       stacked when it is not - the flex-wrap switch follows the card's own
+       width, not the viewport, so the same card works in a sidebar and in a
+       wide column. overlay: the media is the background, the body sits on
+       a scrim at the bottom. */
+    &[data-layout="side"] {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+
+      & > .card-media { aspect-ratio: auto; min-height: 100%; }
+    }
+    &[data-layout="side"]:has(> .card-body:first-child) {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    }
+    &[data-layout="auto"] {
+      display: flex;
+      flex-wrap: wrap;
+
+      & > .card-media { flex: 1 1 12rem; aspect-ratio: auto; min-height: 10rem; }
+      & > .card-body { flex: 999 1 18rem; }
+    }
+    &[data-layout="overlay"] {
+      display: grid;
+      color: #fff;
+      border-color: transparent;
+
+      & > * { grid-area: 1 / 1; }
+      & > .card-media { aspect-ratio: auto; min-height: 14rem; }
+      & > .card-body {
+        z-index: 1;
+        align-self: end;
+        background: linear-gradient(to top, oklch(0 0 0 / 0.78), oklch(0 0 0 / 0.35) 65%, transparent);
+        padding-top: 3rem;
+      }
+      & .card-description { color: oklch(1 0 0 / 0.82); }
+    }
+
+    /* -- Interactive: a link (or [data-interactive]) card lifts on hover
+       and shows a focus ring on keyboard focus ------------------------ */
+    &:is(a, [data-interactive]) {
+      display: block;
+      text-decoration: none;
+      transition: translate 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+
+      &:hover { translate: 0 -2px; box-shadow: var(--shadow-md); border-color: color-mix(in oklch, var(--foreground) 22%, var(--border)); }
+      &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+    }
+    &:is(a, [data-interactive])[data-layout="auto"] { display: flex; }
+    &:is(a, [data-interactive]):is([data-layout="side"], [data-layout="overlay"]) { display: grid; }
+
+    /* -- Selectable: a <label class="card"> around a checkbox / radio -
+       the checked card takes a primary ring; keyboard focus shows too */
+    &:is(label) {
+      display: block;
+      cursor: pointer;
+      transition: border-color 150ms ease, box-shadow 150ms ease;
+
+      &:has(:is(input[type="checkbox"], input[type="radio"]):checked) {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 1px var(--primary);
+      }
+      &:has(input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
+      &:has(input:disabled) { cursor: not-allowed; opacity: 0.55; }
+    }
   }
 
-  /* -- Container query: compact card in narrow containers -- */
+  /* -- Container query: compact card in narrow containers - unless the
+     card asks for a size (an explicit data-size wins) -- */
   @container (max-width: 280px) {
-    .card-header { padding: 1rem; padding-bottom: 0; }
-    .card-content { padding: 1rem; }
-    .card-footer { padding: 1rem; padding-top: 0; }
-    .card-title { font-size: 1rem; }
+    .card:not([data-size]) :is(.card-header, .card-content, .card-footer) { --_pad: 1rem; }
+    .card:not([data-size]) .card-title { font-size: 1rem; }
+  }
+
+  /* -- Accessibility ------------------------------------------ */
+  @media (prefers-reduced-motion: reduce) {
+    .card:is(a, [data-interactive]) { transition: none; }
+    .card:is(a, [data-interactive]):hover { translate: none; }
+  }
+  @media (forced-colors: active) {
+    .card:is(label):has(:is(input[type="checkbox"], input[type="radio"]):checked) { border: 2px solid Highlight; }
   }
 }
 
@@ -2306,6 +2715,7 @@
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     overflow: hidden;
+    color: var(--foreground);
 
     /* Two gotchas, both required for the panel to glide:
        1. `::details-content` must attach to the compound (`&::details-content`,
@@ -2351,17 +2761,18 @@
   .collapsible-trigger {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 0.5rem;
     width: 100%;
     padding: 0.75rem 1rem;
     font-size: 0.875rem;
     font-weight: 500;
     cursor: pointer;
-    color: var(--foreground);
+    color: inherit;
     list-style: none;
 
+    /* a tint of the text color - reads on any surface, custom colors included */
     &:hover {
-      background-color: var(--accent);
+      background-color: color-mix(in oklch, currentColor 7%, transparent);
     }
 
     &:focus-visible {
@@ -2377,7 +2788,8 @@
   .collapsible-chevron {
     width: 1rem;
     height: 1rem;
-    color: var(--muted-foreground);
+    margin-inline-start: auto;
+    color: color-mix(in oklch, currentColor 60%, transparent);
     transition: transform 200ms ease;
     flex-shrink: 0;
 
@@ -2389,9 +2801,117 @@
   .collapsible-content {
     padding: 0 1rem 0.75rem;
     font-size: 0.875rem;
-    color: var(--muted-foreground);
+    color: color-mix(in oklch, currentColor 72%, transparent);
     line-height: 1.6;
   }
+
+  /* -- Leading icon / emoji ----------------------------------------
+     .collapsible-icon in front of the heading: an svg or an emoji in a
+     fixed 1.1em box, so headings line up whatever the glyph. */
+  .collapsible-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 1.1em;
+    height: 1.1em;
+    flex-shrink: 0;
+    font-style: normal;
+    line-height: 1;
+
+    & svg { width: 1em; height: 1em; }
+  }
+
+  /* -- Sizes: the heading's scale and weight (md == default) ------- */
+  .collapsible {
+    &[data-size="sm"] .collapsible-trigger { font-size: 0.8125rem; }
+    &[data-size="md"] .collapsible-trigger { font-size: 0.875rem; }
+    &[data-size="lg"] .collapsible-trigger { font-size: 1rem; font-weight: 600; }
+    &[data-size="xl"] .collapsible-trigger { font-size: 1.125rem; font-weight: 700; letter-spacing: -0.01em; }
+
+    /* -- Variants: the surface (content follows its text color) ---- */
+    &[data-variant="ghost"] { border-color: transparent; }
+    &[data-variant="muted"] { background-color: var(--muted); border-color: transparent; }
+    &[data-variant="primary"] {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+      border-color: transparent;
+    }
+    &[data-variant="neutral"] {
+      background-color: color-mix(in oklch, var(--foreground) 78%, var(--background));
+      color: var(--background);
+      border-color: transparent;
+    }
+    /* highlight: plain while closed, the primary surface once open */
+    &[data-variant="highlight"] {
+      transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
+
+      &[open] {
+        background-color: var(--primary);
+        color: var(--primary-foreground);
+        border-color: transparent;
+      }
+    }
+  }
+
+  /* -- Markers: a CSS-drawn open/close sign at the end of the heading -
+     data-marker="arrow" (a chevron that turns up) or "plus" (+ that
+     becomes -); data-marker-position="start" puts it before the text.
+     For your own glyph use .collapsible-chevron (turns 180°, or 90° with
+     data-turn="quarter") or swap two elements with .collapsible-when-open /
+     .collapsible-when-closed. */
+  .collapsible:is([data-marker="arrow"], [data-marker="plus"]) > .collapsible-trigger::after {
+    content: '';
+    flex-shrink: 0;
+    margin-inline-start: auto;
+    color: color-mix(in oklch, currentColor 65%, transparent);
+    transition: rotate 200ms ease, translate 200ms ease, background-size 200ms ease;
+  }
+  .collapsible[data-marker="arrow"] > .collapsible-trigger::after {
+    width: 0.45em;
+    height: 0.45em;
+    margin-inline-end: 0.2em;
+    /* physical: a down/up arrow is the same in RTL */
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    rotate: 45deg;
+    translate: 0 -0.15em;
+  }
+  .collapsible[data-marker="arrow"][open] > .collapsible-trigger::after {
+    rotate: -135deg;
+    translate: 0 0.1em;
+  }
+  .collapsible[data-marker="plus"] > .collapsible-trigger::after {
+    width: 0.8em;
+    height: 0.8em;
+    background:
+      linear-gradient(currentColor 0 0) center / 100% 2px no-repeat,
+      linear-gradient(currentColor 0 0) center / 2px 100% no-repeat;
+  }
+  .collapsible[data-marker="plus"][open] > .collapsible-trigger::after {
+    background-size: 100% 2px, 2px 0;
+    rotate: 180deg;
+  }
+  .collapsible[data-marker-position="start"] > .collapsible-trigger::after {
+    order: -1;
+    margin-inline-start: 0;
+    margin-inline-end: 0.25em;
+  }
+
+  .collapsible-chevron[data-turn="quarter"] {
+    details[open] > summary > & { transform: rotate(90deg); }
+    /* RTL: a quarter-turned chevron-right points the other way */
+    &:dir(rtl) { scale: -1 1; }
+    details[open] > summary > &:dir(rtl) { transform: rotate(-90deg); }
+  }
+
+  /* swap two glyphs (📁 / 📂, "Show" / "Hide") instead of turning one */
+  .collapsible:not([open]) > .collapsible-trigger .collapsible-when-open,
+  .collapsible[open] > .collapsible-trigger .collapsible-when-closed {
+    display: none;
+  }
+  .collapsible-trigger > :is(.collapsible-when-open, .collapsible-when-closed) {
+    margin-inline-start: auto;
+  }
+
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all
@@ -3138,6 +3658,138 @@
   }
 }
 
+/* ── components/countdown/countdown.css ── */
+/* -- Countdown component ------------------------------------------ */
+
+/* The size of one digit cell, resolved to px on .countdown - the value spans
+   set font-size: 0 (their text is the accessible fallback), so every length
+   inside them reads this instead of em. Top-level: @property is not layered. */
+@property --_cd-em {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 16px;
+}
+
+@layer components {
+  /* A number that rolls to its new value - CSS only. Each value is a
+     <span style="--value:N">N</span> (0-999) inside a .countdown; change
+     --value (and the text) and the digits roll like an odometer: the ones
+     digit and the higher digits are two independent columns (::after /
+     ::before), picked with CSS math (mod(), round(down, …)). Leading zeros
+     are dropped (the column narrows away) unless data-digits="2" / "3". */
+  .countdown {
+    --_cd-em: 1em;
+    --_cd-speed: 1s;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+
+    & > span {
+      --_v: clamp(0, round(var(--value, 0)), 999);
+      --_hi: round(down, calc(var(--_v) / 10), 1);
+      --_lo: mod(var(--_v), 10);
+      display: inline-flex;
+      align-items: flex-start;
+      height: var(--_cd-em);
+      overflow-x: visible;
+      overflow-y: clip;
+      font-size: 0;
+
+      /* higher digits (0-99), right-aligned so a growing number opens leftward */
+      &::before {
+        content: "0\A 1\A 2\A 3\A 4\A 5\A 6\A 7\A 8\A 9\A 10\A 11\A 12\A 13\A 14\A 15\A 16\A 17\A 18\A 19\A 20\A 21\A 22\A 23\A 24\A 25\A 26\A 27\A 28\A 29\A 30\A 31\A 32\A 33\A 34\A 35\A 36\A 37\A 38\A 39\A 40\A 41\A 42\A 43\A 44\A 45\A 46\A 47\A 48\A 49\A 50\A 51\A 52\A 53\A 54\A 55\A 56\A 57\A 58\A 59\A 60\A 61\A 62\A 63\A 64\A 65\A 66\A 67\A 68\A 69\A 70\A 71\A 72\A 73\A 74\A 75\A 76\A 77\A 78\A 79\A 80\A 81\A 82\A 83\A 84\A 85\A 86\A 87\A 88\A 89\A 90\A 91\A 92\A 93\A 94\A 95\A 96\A 97\A 98\A 99" / "";
+        width: calc((min(1, var(--_hi)) + min(1, round(down, calc(var(--_hi) / 10), 1))) * 1ch);
+        direction: rtl;
+        text-align: start;
+        /* a narrowed column clips its (right-aligned) leading digits away */
+        overflow: hidden;
+        translate: 0 calc(var(--_hi) * -1em);
+      }
+      /* the ones digit */
+      &::after {
+        content: "0\A 1\A 2\A 3\A 4\A 5\A 6\A 7\A 8\A 9" / "";
+        width: 1ch;
+        translate: 0 calc(var(--_lo) * -1em);
+      }
+      &::before,
+      &::after {
+        font-size: var(--_cd-em);
+        line-height: 1;
+        white-space: pre;
+        transition:
+          translate var(--_cd-speed) cubic-bezier(1, 0, 0, 1),
+          width calc(var(--_cd-speed) / 2) ease;
+      }
+    }
+
+    /* at least two digits: 5 → "05" */
+    &[data-digits="2"] > span::before {
+      width: calc(max(1, min(1, var(--_hi)) + min(1, round(down, calc(var(--_hi) / 10), 1))) * 1ch);
+    }
+    /* three digits: 7 → "007" */
+    &[data-digits="3"] > span::before {
+      content: "00\A 01\A 02\A 03\A 04\A 05\A 06\A 07\A 08\A 09\A 10\A 11\A 12\A 13\A 14\A 15\A 16\A 17\A 18\A 19\A 20\A 21\A 22\A 23\A 24\A 25\A 26\A 27\A 28\A 29\A 30\A 31\A 32\A 33\A 34\A 35\A 36\A 37\A 38\A 39\A 40\A 41\A 42\A 43\A 44\A 45\A 46\A 47\A 48\A 49\A 50\A 51\A 52\A 53\A 54\A 55\A 56\A 57\A 58\A 59\A 60\A 61\A 62\A 63\A 64\A 65\A 66\A 67\A 68\A 69\A 70\A 71\A 72\A 73\A 74\A 75\A 76\A 77\A 78\A 79\A 80\A 81\A 82\A 83\A 84\A 85\A 86\A 87\A 88\A 89\A 90\A 91\A 92\A 93\A 94\A 95\A 96\A 97\A 98\A 99" / "";
+      width: 2ch;
+    }
+
+    /* -- Sizes ------------------------------------------------------- */
+    &[data-size="sm"] { font-size: 0.875rem; }
+    &[data-size="md"] { font-size: 1rem; }
+    &[data-size="lg"] { font-size: 1.5rem; }
+    &[data-size="xl"] { font-size: 2.25rem; }
+    &[data-size="2xl"] { font-size: 3.75rem; }
+    &[data-size="3xl"] { font-size: 6rem; }
+
+    /* -- Speed: the roll's duration ----------------------------------- */
+    &[data-speed="fast"] { --_cd-speed: 0.4s; }
+    &[data-speed="slow"] { --_cd-speed: 1.6s; }
+  }
+
+  /* -- Composition: a row of units, each a value over a label ---------- */
+  .countdown-group {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .countdown-unit {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.375rem;
+    min-width: 4.5rem;
+
+    &[data-variant] {
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-lg);
+    }
+    &[data-variant="muted"] { background-color: var(--muted); }
+    &[data-variant="primary"] {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+      & .countdown-label { color: color-mix(in oklch, var(--primary-foreground) 75%, transparent); }
+    }
+    &[data-variant="outline"] { border: 1px solid var(--border); }
+  }
+  .countdown-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+
+  /* -- Accessibility ------------------------------------------------ */
+  @media (prefers-reduced-motion: reduce) {
+    .countdown > span::before,
+    .countdown > span::after { transition: none; }
+  }
+  @media (forced-colors: active) {
+    .countdown-unit[data-variant] { border: 1px solid CanvasText; }
+  }
+}
+
 /* ── components/date-picker/date-picker.css ── */
 /* -- Date Picker component -------------------------------------- */
 /* Uses the .input class with type="date" or type="datetime-local" */
@@ -3365,6 +4017,611 @@
   }
 }
 
+/* ── components/diff/diff.css ── */
+/* -- Diff component ----------------------------------------------- */
+
+@layer components {
+  /* Two layers in one grid cell - .diff-item-1 (before) over .diff-item-2
+     (after) - and a native <input type="range" class="diff-range"> spread
+     over the whole figure as the divider: drag anywhere, arrow keys / Home /
+     End, and a screen reader announces the value. diff.js mirrors the value
+     into --diff-pos; item 1 is clipped at that line. Without JS the figure
+     still shows a 50 / 50 split. The range is widened by one knob on both
+     sides, so the knob's CENTER sits exactly on --diff-pos. */
+  .diff {
+    --diff-pos: 50%;
+    --_knob: 2.25rem;
+    position: relative;
+    display: grid;
+    margin: 0;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    isolation: isolate;
+    user-select: none;
+    touch-action: pan-y;
+    background-color: var(--muted);
+    cursor: ew-resize;
+
+    /* the divider line */
+    &::after {
+      content: '';
+      position: absolute;
+      z-index: 2;
+      top: 0;
+      bottom: 0;
+      left: var(--diff-pos);
+      width: 2px;
+      translate: -50% 0;
+      background-color: var(--background);
+      box-shadow: 0 0 0 1px color-mix(in oklch, var(--foreground) 12%, transparent);
+      pointer-events: none;
+    }
+  }
+
+  .diff-item-1,
+  .diff-item-2 {
+    grid-area: 1 / 1;
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+
+    & > :is(img, video, picture, canvas, svg) {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+  .diff-item-1 {
+    z-index: 1;
+    clip-path: inset(0 calc(100% - var(--diff-pos)) 0 0);
+  }
+  .diff-item-2 { z-index: 0; }
+
+  /* a corner caption on either side (Before / After) */
+  .diff-label {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: var(--radius-sm);
+    background-color: color-mix(in oklch, var(--background) 82%, transparent);
+    color: var(--foreground);
+    font-size: 0.75rem;
+    font-weight: 500;
+    pointer-events: none;
+  }
+  .diff-item-2 .diff-label { left: auto; right: 0.75rem; }
+
+  /* -- The range: a knob-high strip across the middle (diff.js makes the
+     whole figure a drag surface and keeps keyboard / AT on the range) -- */
+  .diff-range {
+    position: absolute;
+    z-index: 3;
+    top: 50%;
+    left: calc(var(--_knob) / -2);
+    width: calc(100% + var(--_knob));
+    height: var(--_knob);
+    translate: 0 -50%;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    appearance: none;
+    cursor: ew-resize;
+    outline: none;
+
+    &::-webkit-slider-runnable-track { height: 100%; background: transparent; }
+    &::-moz-range-track { height: 100%; background: transparent; }
+    &::-webkit-slider-thumb {
+      appearance: none;
+      width: var(--_knob);
+      height: var(--_knob);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--background) center / 1.125rem no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23808080' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 6-6 6 6 6M15 6l6 6-6 6'/%3E%3C/svg%3E");
+      box-shadow: var(--shadow-md);
+      transition: scale 120ms ease;
+    }
+    &::-moz-range-thumb {
+      width: var(--_knob);
+      height: var(--_knob);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--background) center / 1.125rem no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23808080' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 6-6 6 6 6M15 6l6 6-6 6'/%3E%3C/svg%3E");
+      box-shadow: var(--shadow-md);
+    }
+    &:active::-webkit-slider-thumb { scale: 1.08; }
+    &:focus-visible::-webkit-slider-thumb { outline: 2px solid var(--ring); outline-offset: 2px; }
+    &:focus-visible::-moz-range-thumb { outline: 2px solid var(--ring); outline-offset: 2px; }
+  }
+  /* RTL: the range runs right → left, so item 1 is revealed from the right */
+  .diff:dir(rtl):not([data-orientation="vertical"]) {
+    &::after { left: calc(100% - var(--diff-pos)); }
+    & .diff-item-1 { clip-path: inset(0 0 0 calc(100% - var(--diff-pos))); }
+    & .diff-item-1 .diff-label { left: auto; right: 0.75rem; }
+    & .diff-item-2 .diff-label { right: auto; left: 0.75rem; }
+  }
+
+  /* -- Aspect ratios (or set aspect-ratio / a height yourself) -------- */
+  .diff[data-ratio="16/9"] { aspect-ratio: 16 / 9; }
+  .diff[data-ratio="4/3"] { aspect-ratio: 4 / 3; }
+  .diff[data-ratio="1/1"] { aspect-ratio: 1; }
+  .diff[data-ratio="3/4"] { aspect-ratio: 3 / 4; }
+
+  /* -- Knob variants ---------------------------------------------------- */
+  /* line: no knob - just the divider (the whole figure is still the hit area) */
+  .diff[data-variant="line"] .diff-range {
+    &::-webkit-slider-thumb { opacity: 0; }
+    &::-moz-range-thumb { opacity: 0; }
+    &:focus-visible::-webkit-slider-thumb { opacity: 1; }
+  }
+  .diff[data-variant="line"]::after { width: 3px; }
+  /* primary: a --primary divider + knob ring */
+  .diff[data-variant="primary"] {
+    &::after { background-color: var(--primary); box-shadow: none; }
+    & .diff-range::-webkit-slider-thumb { border: 2px solid var(--primary); }
+    & .diff-range::-moz-range-thumb { border: 2px solid var(--primary); }
+  }
+
+  /* -- Vertical: before on top, after below; the range runs top → bottom */
+  .diff[data-orientation="vertical"] {
+    touch-action: pan-x;
+    cursor: ns-resize;
+
+    &::after {
+      top: var(--diff-pos);
+      bottom: auto;
+      left: 0;
+      right: 0;
+      width: auto;
+      height: 2px;
+      translate: 0 -50%;
+    }
+    & .diff-item-1 { clip-path: inset(0 0 calc(100% - var(--diff-pos)) 0); }
+    & .diff-item-2 .diff-label { top: auto; bottom: 0.75rem; left: 0.75rem; right: auto; }
+    & .diff-range {
+      writing-mode: vertical-lr;
+      top: calc(var(--_knob) / -2);
+      left: 50%;
+      width: var(--_knob);
+      height: calc(100% + var(--_knob));
+      translate: -50% 0;
+      cursor: ns-resize;
+
+      &::-webkit-slider-runnable-track { width: 100%; height: auto; }
+      &::-webkit-slider-thumb { rotate: 90deg; }
+      &::-moz-range-thumb { rotate: 90deg; }
+    }
+  }
+  .diff[data-orientation="vertical"][data-variant="line"]::after { height: 3px; width: auto; }
+
+  /* -- Accessibility ------------------------------------------------------ */
+  @media (prefers-reduced-motion: reduce) {
+    .diff-range::-webkit-slider-thumb { transition: none; }
+  }
+  @media (forced-colors: active) {
+    .diff::after { background-color: CanvasText; }
+    .diff-range::-webkit-slider-thumb { border-color: CanvasText; }
+  }
+}
+
+/* ── components/dock/dock.css ── */
+/* -- Dock component ------------------------------------------------ */
+
+@layer components {
+  /* A bottom navigation bar (daisyUI's dock, plus): a <nav class="dock"> of
+     .dock-item links / buttons / labels, each an icon (.dock-icon - an svg
+     or an emoji, optionally with a .dock-badge or .dock-dot) over a
+     .dock-label. Fixed to the bottom of the viewport by default, clear of
+     the device's safe area. The active item is aria-current="page" (links),
+     aria-pressed="true" (buttons) or a checked radio inside a <label> - the
+     radio form switches the active item with no JavaScript at all.
+     data-indicator: bar (default) / pill / dot. CSS only. */
+  .dock {
+    --_h: 4rem;
+    box-sizing: border-box; /* the size IS the bar height, border included */
+    --_icon: 1.375rem;
+    --_label: 0.6875rem;
+    --_accent: var(--primary);
+    position: fixed;
+    z-index: 40;
+    inset-inline: 0;
+    bottom: 0;
+    display: flex;
+    align-items: stretch;
+    justify-content: space-around;
+    height: calc(var(--_h) + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-inline: 0.25rem;
+    border-top: 1px solid var(--border);
+    background-color: var(--background);
+    color: var(--muted-foreground);
+
+    /* -- Placement ------------------------------------------------------- */
+    &[data-position="static"] { position: static; height: var(--_h); padding-bottom: 0; }
+    &[data-position="top"] { bottom: auto; top: 0; border-top: 0; border-bottom: 1px solid var(--border); padding-bottom: 0; height: var(--_h); }
+    &[data-attach="container"] { position: absolute; }
+    /* side docks: a column down the left / right edge */
+    &:is([data-position="left"], [data-position="right"]) {
+      inset: 0 auto 0 0;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.25rem;
+      width: calc(var(--_h) + 0.5rem);
+      height: auto;
+      padding: 0.5rem 0.25rem;
+      border-top: 0;
+      border-inline-end: 1px solid var(--border);
+
+      & .dock-item { flex: 0 0 auto; padding-block: 0.625rem; }
+    }
+    &[data-position="right"] { inset: 0 0 0 auto; border-inline-end: 0; border-inline-start: 1px solid var(--border); }
+
+    /* -- Sizes ------------------------------------------------------------ */
+    &[data-size="xs"] { --_h: 2.75rem; --_icon: 1.125rem; --_label: 0.625rem; }
+    &[data-size="sm"] { --_h: 3.375rem; --_icon: 1.25rem; --_label: 0.625rem; }
+    &[data-size="md"] { --_h: 4rem; --_icon: 1.375rem; --_label: 0.6875rem; }
+    &[data-size="lg"] { --_h: 4.75rem; --_icon: 1.625rem; --_label: 0.75rem; }
+    &[data-size="xl"] { --_h: 5.5rem; --_icon: 1.875rem; --_label: 0.8125rem; }
+
+    /* -- Surfaces --------------------------------------------------------- */
+    &[data-variant="muted"] { background-color: var(--muted); border-color: transparent; }
+    &[data-variant="primary"] {
+      --_accent: var(--primary-foreground);
+      background-color: var(--primary);
+      color: color-mix(in oklch, var(--primary-foreground) 65%, transparent);
+      border-color: transparent;
+    }
+    &[data-variant="neutral"] {
+      --_accent: var(--background);
+      background-color: color-mix(in oklch, var(--foreground) 82%, var(--background));
+      color: color-mix(in oklch, var(--background) 62%, transparent);
+      border-color: transparent;
+    }
+    &[data-variant="glass"] {
+      background-color: color-mix(in oklch, var(--background) 60%, transparent);
+      backdrop-filter: blur(16px) saturate(1.5);
+      border-color: color-mix(in oklch, var(--foreground) 12%, transparent);
+    }
+    /* floating: a rounded bar hovering above the bottom edge */
+    &[data-variant="floating"] {
+      inset-inline: 1rem;
+      bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+      height: var(--_h);
+      padding: 0 0.375rem;
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      box-shadow: var(--shadow-lg);
+      max-width: 32rem;
+      margin-inline: auto;
+    }
+    &[data-variant="floating"][data-position="static"] { margin-block: 0.5rem; }
+    &[data-variant="floating"]:is([data-position="left"], [data-position="right"]) {
+      inset-block: 0;
+      height: fit-content;
+      max-height: calc(100% - 2rem);
+      margin-block: auto;
+      margin-inline: 0;
+      padding: 0.375rem 0.25rem;
+      border: 1px solid var(--border);
+    }
+    &[data-variant="floating"][data-position="left"] { left: 1rem; }
+    &[data-variant="floating"][data-position="right"] { right: 1rem; left: auto; }
+    &[data-variant="floating"][data-position="top"] { top: 1rem; bottom: auto; }
+  }
+
+  /* -- Items ------------------------------------------------------------ */
+  .dock-item {
+    position: relative;
+    display: flex;
+    flex: 1 1 0;
+    min-width: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: color 150ms ease, scale 180ms ease, translate 180ms ease;
+
+    &:hover { color: var(--foreground); }
+    .dock:is([data-variant="primary"], [data-variant="neutral"]) &:hover { color: var(--_accent); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: -4px; border-radius: var(--radius-lg); }
+    &:has(> input:focus-visible) { outline: 2px solid var(--ring); outline-offset: -4px; border-radius: var(--radius-lg); }
+    &:is(:disabled, [aria-disabled="true"]) { opacity: 0.45; pointer-events: none; }
+
+    /* the radio form: the input is invisible, the label is the item */
+    & > input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+  .dock-icon {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: calc(var(--_icon) + 1.5rem);
+    height: calc(var(--_icon) + 0.375rem);
+    border-radius: 9999px;
+    font-size: var(--_icon);
+    line-height: 1;
+    transition: background-color 180ms ease, color 180ms ease;
+
+    & svg { width: var(--_icon); height: var(--_icon); }
+  }
+  .dock-label {
+    max-width: 100%;
+    overflow: hidden;
+    font-size: var(--_label);
+    font-weight: 500;
+    line-height: 1.2;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* -- Active item ------------------------------------------------------ */
+  .dock-item:is([aria-current="page"], [aria-current="true"], [aria-pressed="true"], [data-active], :has(> input:checked)) {
+    color: var(--_accent);
+
+    & .dock-label { font-weight: 600; }
+  }
+  /* bar (default): a short line on the top edge (bottom edge for a top dock) */
+  .dock:not([data-indicator]) .dock-item::before,
+  .dock[data-indicator="bar"] .dock-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 0;
+    height: 3px;
+    translate: -50% 0;
+    border-radius: 0 0 3px 3px;
+    background-color: var(--_accent);
+    transition: width 200ms ease;
+  }
+  .dock[data-position="top"] .dock-item::before { top: auto; bottom: 0; border-radius: 3px 3px 0 0; }
+  .dock:is([data-position="left"], [data-position="right"]) .dock-item::before {
+    top: 50%;
+    left: 0;
+    width: 3px;
+    height: 0;
+    translate: 0 -50%;
+    border-radius: 0 3px 3px 0;
+    transition: height 200ms ease;
+  }
+  .dock[data-position="right"] .dock-item::before { left: auto; right: 0; border-radius: 3px 0 0 3px; }
+  .dock:is([data-position="left"], [data-position="right"]):is(:not([data-indicator]), [data-indicator="bar"]) .dock-item:is([aria-current="page"], [aria-current="true"], [aria-pressed="true"], [data-active], :has(> input:checked))::before {
+    width: 3px;
+    height: 2.25rem;
+  }
+  .dock:is(:not([data-indicator]), [data-indicator="bar"]) .dock-item:is([aria-current="page"], [aria-current="true"], [aria-pressed="true"], [data-active], :has(> input:checked))::before {
+    width: 2.25rem;
+  }
+  .dock[data-variant="floating"]:not([data-indicator]) .dock-item::before { display: none; }
+  .dock[data-variant="floating"]:not([data-indicator]) .dock-item:is([aria-current="page"], [aria-current="true"], [aria-pressed="true"], [data-active], :has(> input:checked)) .dock-icon,
+  /* pill: a tinted capsule behind the active icon (Material 3) */
+  .dock[data-indicator="pill"] .dock-item:is([aria-current="page"], [aria-current="true"], [aria-pressed="true"], [data-active], :has(> input:checked)) .dock-icon {
+    background-color: color-mix(in oklch, var(--_accent) 16%, transparent);
+  }
+  /* dot: a small dot under the label */
+  .dock[data-indicator="dot"] .dock-item::after {
+    content: '';
+    position: absolute;
+    bottom: 0.3rem;
+    left: 50%;
+    width: 4px;
+    height: 4px;
+    translate: -50% 0;
+    border-radius: 9999px;
+    background-color: var(--_accent);
+    scale: 0;
+    transition: scale 180ms ease;
+  }
+  .dock[data-indicator="dot"] .dock-item:is([aria-current="page"], [aria-current="true"], [aria-pressed="true"], [data-active], :has(> input:checked))::after { scale: 1; }
+
+  /* -- Labels: always (default), only for the active item, or none ------ */
+  .dock[data-labels="active"] .dock-item:not([aria-current="page"], [aria-current="true"], [aria-pressed="true"], [data-active], :has(> input:checked)) .dock-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .dock[data-labels="none"] .dock-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  /* -- Badges and dots on an icon ---------------------------------------- */
+  .dock-badge {
+    position: absolute;
+    top: -0.3rem;
+    inset-inline-start: calc(50% + 0.35rem);
+    min-width: 1.125rem;
+    height: 1.125rem;
+    padding-inline: 0.3rem;
+    border-radius: 9999px;
+    background-color: var(--destructive);
+    color: var(--destructive-foreground, #fff);
+    box-shadow: 0 0 0 2px var(--background);
+    font-size: 0.625rem;
+    font-weight: 700;
+    line-height: 1.125rem;
+    text-align: center;
+  }
+  .dock-dot {
+    position: absolute;
+    top: 0;
+    inset-inline-start: calc(50% + 0.45rem);
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    background-color: var(--_c, var(--primary));
+    box-shadow: 0 0 0 2px var(--background);
+
+    &[data-tone="success"] { --_c: oklch(0.65 0.17 150); }
+    &[data-tone="warning"] { --_c: oklch(0.78 0.16 75); }
+    &[data-tone="destructive"] { --_c: var(--destructive); }
+    &[data-animate="ping"]::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background-color: inherit;
+      animation: dock-ping 1.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+    }
+  }
+  @keyframes dock-ping { 75%, 100% { scale: 2.4; opacity: 0; } }
+
+  /* -- Raised center action (data-raised on an item) --------------------- */
+  .dock-item[data-raised],
+  .dock-item[data-raised]:is([aria-current], [aria-pressed="true"], [data-active], :has(> input:checked)) {
+    /* always the primary-foreground glyph - the accent color of an active
+       item is --primary, the raised disc's own color */
+    color: var(--primary-foreground);
+
+    & .dock-icon {
+      width: calc(var(--_h) - 0.75rem);
+      height: calc(var(--_h) - 0.75rem);
+      /* lifted with a margin, not a transform: a FAB menu anchored to this
+         icon (anchor positioning ignores transforms) lands where it shows */
+      margin-block-start: calc((var(--_h) - 0.75rem) * -0.7);
+      padding: 0;
+      border: 0;
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+      box-shadow: var(--shadow-lg), 0 0 0 4px var(--background);
+      cursor: pointer;
+    }
+    & .dock-icon:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
+    & .dock-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+    &::before, &::after { display: none; }
+    &:hover { color: var(--primary-foreground); }
+    &:hover .dock-icon { background-color: color-mix(in oklch, var(--primary) 88%, var(--primary-foreground)); }
+  }
+  /* a FAB as the raised item: <div class="dock-item fab" data-raised
+     data-layout="flower" data-position="bottom-center"> with a
+     .fab-trigger.dock-icon button and a .fab-menu popover - the dial fans
+     out over the dock (fab.css: a semicircle from the center) */
+  .dock .fab.dock-item {
+    position: relative;
+    inset: auto;
+    z-index: auto;
+    justify-content: center;
+    pointer-events: auto;
+  }
+  .dock .fab.dock-item > .fab-trigger { box-shadow: var(--shadow-lg), 0 0 0 4px var(--background); }
+
+  /* -- Magnify (macOS): the hovered item grows, its neighbours a little -- */
+  .dock[data-effect="magnify"] {
+    overflow: visible;
+    align-items: center;
+    border: 0;
+
+    & .dock-item { transform-origin: 50% 100%; }
+    & .dock-item:hover { scale: 1.35; translate: 0 -0.35rem; z-index: 1; }
+    & .dock-item:has(+ .dock-item:hover),
+    & .dock-item:hover + .dock-item { scale: 1.15; translate: 0 -0.15rem; }
+    &[data-position="top"] .dock-item { transform-origin: 50% 0; }
+    &[data-position="top"] .dock-item:hover { translate: 0 0.35rem; }
+    &[data-position="top"] :is(.dock-item:has(+ .dock-item:hover), .dock-item:hover + .dock-item) { translate: 0 0.15rem; }
+    &[data-position="left"] .dock-item { transform-origin: 0 50%; }
+    &[data-position="left"] .dock-item:hover { translate: 0.35rem 0; }
+    &[data-position="left"] :is(.dock-item:has(+ .dock-item:hover), .dock-item:hover + .dock-item) { translate: 0.15rem 0; }
+    &[data-position="right"] .dock-item { transform-origin: 100% 50%; }
+    &[data-position="right"] .dock-item:hover { translate: -0.35rem 0; }
+    &[data-position="right"] :is(.dock-item:has(+ .dock-item:hover), .dock-item:hover + .dock-item) { translate: -0.15rem 0; }
+  }
+
+  /* -- Autohide: tucked away at its edge, it slides in when the pointer
+     comes close (a strip of it stays reachable, plus a hit zone past it)
+     or when focus enters - the macOS dock. data-autohide on the .dock. */
+  .dock[data-autohide] {
+    --_peek: 6px;
+    transition: translate 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    translate: 0 calc(100% - var(--_peek));
+
+    &[data-variant="floating"] { translate: 0 calc(100% + 1rem - var(--_peek)); }
+    &[data-position="top"] { translate: 0 calc(-100% + var(--_peek)); }
+    &[data-position="top"][data-variant="floating"] { translate: 0 calc(-100% - 1rem + var(--_peek)); }
+    &[data-position="left"] { translate: calc(-100% + var(--_peek)) 0; }
+    &[data-position="left"][data-variant="floating"] { translate: calc(-100% - 1rem + var(--_peek)) 0; }
+    &[data-position="right"] { translate: calc(100% - var(--_peek)) 0; }
+    &[data-position="right"][data-variant="floating"] { translate: calc(100% + 1rem - var(--_peek)) 0; }
+    &:is(:hover, :focus-within) { translate: 0 0; }
+
+    /* reach: an invisible zone beyond the tucked edge */
+    &::after {
+      content: '';
+      position: absolute;
+      inset-inline: 0;
+      bottom: 100%;
+      height: 1.5rem;
+    }
+    &[data-position="top"]::after { bottom: auto; top: 100%; }
+    &[data-position="left"]::after { inset: 0 auto 0 100%; width: 1.5rem; height: auto; }
+    &[data-position="right"]::after { inset: 0 100% 0 auto; width: 1.5rem; height: auto; }
+  }
+
+  /* -- Views: the dock switches a card's content, CSS only --------------
+     A .dock-view holds the radio .dock and a .dock-panels of .dock-panel
+     elements in the same order as the items: the panel at position k shows
+     while item k's radio is checked. (An item without a radio - the raised
+     action - keeps its place with an empty panel.) */
+  .dock-panel { display: none; }
+  /* a card that closes with its dock: <div class="card dock-view"> holds the
+     .dock-panels and an in-flow dock as its footer - the dock drops its own
+     edges and the card's rounded corners clip it (one frame, no square
+     border under a round corner) */
+  .card.dock-view {
+    display: flex;
+    flex-direction: column;
+
+    & > .dock-panels { flex: 1 1 auto; }
+    & > .dock[data-position="static"] {
+      border-inline: 0;
+      border-bottom: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+  }
+  .dock-view:has(.dock > .dock-item:nth-child(1) > input:checked) .dock-panels > .dock-panel:nth-child(1),
+  .dock-view:has(.dock > .dock-item:nth-child(2) > input:checked) .dock-panels > .dock-panel:nth-child(2),
+  .dock-view:has(.dock > .dock-item:nth-child(3) > input:checked) .dock-panels > .dock-panel:nth-child(3),
+  .dock-view:has(.dock > .dock-item:nth-child(4) > input:checked) .dock-panels > .dock-panel:nth-child(4),
+  .dock-view:has(.dock > .dock-item:nth-child(5) > input:checked) .dock-panels > .dock-panel:nth-child(5),
+  .dock-view:has(.dock > .dock-item:nth-child(6) > input:checked) .dock-panels > .dock-panel:nth-child(6),
+  .dock-view:has(.dock > .dock-item:nth-child(7) > input:checked) .dock-panels > .dock-panel:nth-child(7) {
+    display: block;
+    animation: dock-panel-in 220ms ease both;
+  }
+  @keyframes dock-panel-in { from { opacity: 0; translate: 0 6px; } }
+
+  /* -- Accessibility ------------------------------------------------------ */
+  @media (prefers-reduced-motion: reduce) {
+    .dock-item, .dock-icon, .dock-item::before, .dock-item::after { transition: none; }
+    .dock[data-effect="magnify"] .dock-item { scale: none !important; translate: none !important; }
+    .dock-dot[data-animate]::after { animation: none; }
+    .dock-panel { animation: none !important; }
+    .dock[data-autohide] { transition: none; }
+  }
+  @media (forced-colors: active) {
+    .dock { border-top: 1px solid CanvasText; }
+    .dock-item:is([aria-current="page"], [aria-pressed="true"], [data-active], :has(> input:checked)) { outline: 2px solid Highlight; outline-offset: -4px; }
+  }
+}
+
 /* ── components/dropdown/dropdown.css ── */
 /* -- Dropdown component ---------------------------------------- */
 
@@ -3562,6 +4819,326 @@
         color: HighlightText;
       }
     }
+  }
+}
+
+/* ── components/fab/fab.css ── */
+/* -- FAB (floating action button) + speed dial ---------------------- */
+
+@layer components {
+  /* A .fab holds a .fab-trigger (a .btn with popovertarget) and, for a speed
+     dial, a .fab-menu[popover] of .fab-action buttons. The popover is the
+     whole behavior: click / Enter toggles it, Escape and an outside click
+     close it, the trigger reports aria-expanded - no JavaScript. The menu is
+     anchored to the trigger (anchor-scope keeps many FABs apart) and stacks
+     its actions away from it: data-direction up (default) / down / left /
+     right, or data-layout="flower" for a quarter circle. */
+  .fab {
+    --_trig: 3.5rem;
+    --_act: 2.75rem;
+    --_gap: 0.75rem;
+    --_edge: 1.5rem;
+    anchor-scope: --fab;
+    position: fixed;
+    z-index: 50;
+    inset-block-end: var(--_edge);
+    inset-inline-end: var(--_edge);
+    display: flex;
+
+    /* -- Position: the corner (or edge center) it floats in ------------- */
+    &[data-position="bottom-start"] { inset-inline-end: auto; inset-inline-start: var(--_edge); }
+    &[data-position="top-end"] { inset-block-end: auto; inset-block-start: var(--_edge); }
+    &[data-position="top-start"] { inset: var(--_edge) auto auto var(--_edge); }
+    &[data-position="bottom-center"] { inset-inline: 0; justify-content: center; pointer-events: none; & > * { pointer-events: auto; } }
+    /* inside a positioned container (a card, a panel) instead of the page */
+    &[data-attach="container"] { position: absolute; }
+
+    /* -- Sizes: trigger + actions scale together (md == default) --------- */
+    &[data-size="sm"] { --_trig: 2.75rem; --_act: 2.25rem; --_gap: 0.5rem; }
+    &[data-size="md"] { --_trig: 3.5rem; --_act: 2.75rem; --_gap: 0.75rem; }
+    &[data-size="lg"] { --_trig: 4.25rem; --_act: 3.25rem; --_gap: 0.875rem; }
+  }
+
+  /* -- Trigger ------------------------------------------------------------ */
+  .fab-trigger {
+    anchor-name: --fab;
+    width: var(--_trig);
+    height: var(--_trig);
+    padding: 0;
+    border-radius: 9999px;
+    box-shadow: var(--shadow-lg);
+
+    & svg { width: 1.375rem; height: 1.375rem; }
+    & .fab-icon { display: inline-grid; place-items: center; font-size: 1.375rem; line-height: 1; transition: rotate 200ms ease; }
+
+    /* extended: icon + label, a pill */
+    /* icon-only width == the round trigger, so a folded label leaves a circle */
+    &:has(.fab-text) { width: auto; min-width: var(--_trig); padding-inline: calc((var(--_trig) - 1.375rem) / 2); gap: 0; }
+    & .fab-text { margin-inline-start: 0.625rem; padding-inline-end: 0.25rem; }
+  }
+  .fab-text {
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: 0.9375rem;
+  }
+  /* open: the trigger's icon turns (+ becomes ×) - or swaps with
+     .fab-icon-open / .fab-icon-closed */
+  .fab:has(.fab-menu:popover-open) .fab-trigger .fab-icon:not(.fab-icon-open, .fab-icon-closed) { rotate: 45deg; }
+  .fab:not(:has(.fab-menu:popover-open)) .fab-icon-open,
+  .fab:has(.fab-menu:popover-open) .fab-icon-closed { display: none; }
+
+  /* -- The menu (a popover in the top layer, anchored to the trigger) ----- */
+  .fab-menu[popover] {
+    position: fixed;
+    position-anchor: --fab;
+    inset: auto;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    overflow: visible;
+    display: none;
+    gap: var(--_gap);
+    align-items: center;
+
+    /* up (default): stacked above the trigger, first action nearest */
+    bottom: anchor(bottom);
+    left: anchor(center);
+    translate: -50% 0;
+    flex-direction: column-reverse;
+    padding-block-end: calc(var(--_trig) + var(--_gap));
+
+    &:popover-open { display: flex; }
+
+    /* the menu box overlaps the trigger (its padding leaves room for it) - only
+       the actions take the pointer, so the trigger stays clickable to close */
+    pointer-events: none;
+    & > * { pointer-events: auto; }
+
+    transition: display 180ms allow-discrete, overlay 180ms allow-discrete;
+  }
+  .fab[data-direction="down"] .fab-menu[popover] {
+    bottom: auto;
+    top: anchor(top);
+    flex-direction: column;
+    padding-block: calc(var(--_trig) + var(--_gap)) 0;
+  }
+  .fab[data-direction="left"] .fab-menu[popover] {
+    bottom: auto;
+    left: auto;
+    right: anchor(right);
+    top: anchor(center);
+    translate: 0 -50%;
+    flex-direction: row-reverse;
+    padding: 0 calc(var(--_trig) + var(--_gap)) 0 0;
+  }
+  .fab[data-direction="right"] .fab-menu[popover] {
+    bottom: auto;
+    left: anchor(left);
+    top: anchor(center);
+    translate: 0 -50%;
+    flex-direction: row;
+    padding: 0 0 0 calc(var(--_trig) + var(--_gap));
+  }
+  /* an optional dim layer behind the open dial */
+  .fab[data-backdrop] .fab-menu::backdrop {
+    background-color: color-mix(in oklch, var(--foreground) 22%, transparent);
+    backdrop-filter: blur(2px);
+  }
+
+  /* text dials: the pills line up with the trigger's outer edge */
+  .fab-menu[popover]:has(> .fab-action > .fab-text) {
+    left: auto;
+    right: anchor(right);
+    translate: none;
+    align-items: flex-end;
+  }
+  .fab:is([data-position="bottom-start"], [data-position="top-start"]) .fab-menu[popover]:has(> .fab-action > .fab-text) {
+    right: auto;
+    left: anchor(left);
+    align-items: flex-start;
+  }
+
+  /* -- Actions ------------------------------------------------------------ */
+  .fab-action {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: var(--_act);
+    height: var(--_act);
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 9999px;
+    background-color: var(--popover);
+    color: var(--popover-foreground);
+    box-shadow: var(--shadow-md);
+    font: inherit;
+    font-size: 1.125rem;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 160ms ease, scale 160ms ease, translate 160ms ease, background-color 150ms ease;
+    transition-delay: calc(var(--_i, 0) * 35ms);
+
+    &:hover { background-color: var(--accent); color: var(--accent-foreground); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+    & svg { width: 1.125rem; height: 1.125rem; }
+    /* .btn tones / variants work on an action too */
+    &.btn { border-radius: 9999px; width: var(--_act); height: var(--_act); padding: 0; }
+  }
+  /* text actions: a pill with the words inside */
+  .fab-action:has(> .fab-text) { display: inline-flex; align-items: center; width: auto; padding-inline: 0.875rem 1.125rem; gap: 0.5rem; white-space: nowrap; font-size: 0.875rem; font-weight: 500; }
+  .fab-action .fab-text { font-size: inherit; }
+
+  /* the stagger: actions pop out from the trigger one after another */
+  .fab-menu > :nth-child(2) { --_i: 1; }
+  .fab-menu > :nth-child(3) { --_i: 2; }
+  .fab-menu > :nth-child(4) { --_i: 3; }
+  .fab-menu > :nth-child(5) { --_i: 4; }
+  .fab-menu > :nth-child(6) { --_i: 5; }
+  .fab-menu > :nth-child(7) { --_i: 6; }
+  .fab-menu:not(:popover-open) > * { opacity: 0; scale: 0.6; }
+  @starting-style {
+    .fab-menu:popover-open > * { opacity: 0; scale: 0.6; }
+    .fab[data-layout="flower"] .fab-menu:popover-open > * { translate: -50% -50%; }
+  }
+
+  /* label chips beside the actions (toward the screen's middle) */
+  .fab-label {
+    position: absolute;
+    inset-inline-end: calc(100% + 0.625rem);
+    top: 50%;
+    translate: 0 -50%;
+    padding: 0.25rem 0.625rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background-color: var(--popover);
+    color: var(--popover-foreground);
+    box-shadow: var(--shadow-sm);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .fab:is([data-position="bottom-start"], [data-position="top-start"]) .fab-label {
+    inset-inline-end: auto;
+    inset-inline-start: calc(100% + 0.625rem);
+  }
+  /* sideways dials: the label sits above its action */
+  .fab:is([data-direction="left"], [data-direction="right"]) .fab-label {
+    inset-inline: auto;
+    left: 50%;
+    top: auto;
+    bottom: calc(100% + 0.5rem);
+    translate: -50% 0;
+  }
+
+  /* -- Main action: an action that takes the trigger's place when open ---- */
+  .fab-menu > .fab-main {
+    --_i: 0;
+    width: var(--_trig);
+    height: var(--_trig);
+    border: 0;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    box-shadow: var(--shadow-lg);
+    font-size: 1.375rem;
+
+    &:hover { background-color: color-mix(in oklch, var(--primary) 88%, var(--primary-foreground)); color: var(--primary-foreground); }
+    & svg { width: 1.375rem; height: 1.375rem; }
+  }
+  .fab-menu:has(> .fab-main) { padding: 0 !important; }
+  .fab-menu:has(> .fab-main) > :not(.fab-main) { --_i: 1; }
+
+  /* -- Flower: the actions on a quarter circle around the trigger --------
+     The arc opens toward the screen's middle (up-left from bottom-end);
+     2 - 6 actions spread evenly. Labels are visually hidden here (they
+     still name the buttons). */
+  .fab[data-layout="flower"] {
+    --_r: calc(var(--_trig) + var(--_act) * 1.6);
+    --_arc: 90deg;
+    --_a0: 0deg;
+    --_sx: -1;
+    --_sy: -1;
+
+    &:is([data-position="bottom-start"], [data-position="top-start"]) { --_sx: 1; }
+    &:is([data-position="top-end"], [data-position="top-start"]) { --_sy: 1; }
+    /* from the center of an edge (a dock's raised action): a semicircle */
+    /* the upper arc only (30° - 150°): the ends stay clear of whatever sits
+       level with the trigger (a dock's neighbouring items) */
+    &:is([data-position="bottom-center"], [data-position="top-center"]) {
+      --_arc: 120deg;
+      --_a0: 30deg;
+      --_sx: -1;
+      --_r: calc(var(--_trig) + var(--_act) * 0.9);
+    }
+    &[data-position="bottom-center"] { --_sy: -1; }
+    &[data-position="top-center"] { --_sy: 1; }
+
+    & .fab-menu[popover] {
+      top: anchor(center);
+      left: anchor(center);
+      bottom: auto;
+      right: auto;
+      width: 0;
+      height: 0;
+      padding: 0;
+      translate: none;
+      display: none;
+      &:popover-open { display: block; }
+    }
+    & .fab-menu > * {
+      --_step: var(--_arc);
+      --_a: calc(var(--_a0) + var(--_k, 0) * var(--_step));
+      position: absolute;
+      left: 0;
+      top: 0;
+      translate: calc(-50% + var(--_sx) * cos(var(--_a)) * var(--_r)) calc(-50% + var(--_sy) * sin(var(--_a)) * var(--_r));
+    }
+    & .fab-menu:not(:popover-open) > * { translate: -50% -50%; }
+    & .fab-label { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); border: 0; }
+
+    /* k = 0 … n-1 along the arc (the main action, if any, stays centered) */
+    & .fab-menu > :not(.fab-main):nth-child(1 of :not(.fab-main)) { --_k: 0; }
+    & .fab-menu > :not(.fab-main):nth-child(2 of :not(.fab-main)) { --_k: 1; }
+    & .fab-menu > :not(.fab-main):nth-child(3 of :not(.fab-main)) { --_k: 2; }
+    & .fab-menu > :not(.fab-main):nth-child(4 of :not(.fab-main)) { --_k: 3; }
+    & .fab-menu > :not(.fab-main):nth-child(5 of :not(.fab-main)) { --_k: 4; }
+    & .fab-menu > :not(.fab-main):nth-child(6 of :not(.fab-main)) { --_k: 5; }
+    & .fab-menu:has(> :not(.fab-main):nth-child(3 of :not(.fab-main))) > * { --_step: calc(var(--_arc) / 2); }
+    & .fab-menu:has(> :not(.fab-main):nth-child(4 of :not(.fab-main))) > * { --_step: calc(var(--_arc) / 3); }
+    & .fab-menu:has(> :not(.fab-main):nth-child(5 of :not(.fab-main))) > * { --_step: calc(var(--_arc) / 4); --_r: calc(var(--_trig) + var(--_act) * 2.1); }
+    & .fab-menu:has(> :not(.fab-main):nth-child(6 of :not(.fab-main))) > * { --_step: calc(var(--_arc) / 5); }
+    & .fab-menu > .fab-main { translate: -50% -50%; }
+  }
+
+  /* -- Extended FAB that shrinks to its icon as the page scrolls ----------
+     data-shrink="scroll": a scroll-driven animation (no listener) folds the
+     label away over the first 120px of scrolling. It follows the page;
+     for a scrolling container, name its timeline (scroll-timeline: --list;
+     timeline-scope on a shared ancestor) and set --fab-timeline: --list. */
+  @keyframes fab-shrink {
+    to { max-width: 0; opacity: 0; margin-inline-start: 0; padding-inline-end: 0; }
+  }
+  .fab[data-shrink="scroll"] .fab-trigger {
+    & .fab-text {
+      max-width: 12rem;
+      animation: fab-shrink linear both;
+      animation-timeline: var(--fab-timeline, scroll(root block));
+      animation-range: 0 120px;
+    }
+  }
+
+  /* -- Accessibility -------------------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .fab-action, .fab-trigger .fab-icon, .fab-menu[popover] { transition: none; }
+    .fab[data-shrink="scroll"] .fab-trigger .fab-text { animation: none; }
+  }
+  @media (forced-colors: active) {
+    .fab-action, .fab-label { border: 1px solid CanvasText; }
   }
 }
 
@@ -3862,6 +5439,178 @@
     &[data-size="md"] { height: 2.25rem; font-size: 0.875rem; }
     &[data-size="lg"] { height: 2.75rem; font-size: 1rem;       &::file-selector-button { padding: 0 1rem; margin-right: 1rem; font-size: 1rem; } }
     &[data-size="xl"] { height: 3.25rem; font-size: 1.125rem;   &::file-selector-button { padding: 0 1.25rem; margin-right: 1.25rem; font-size: 1.125rem; } }
+  }
+
+  /* -- Drop zone ---------------------------------------------------------
+     .file-drop wraps a <label class="file-drop-zone"> (the card) whose
+     native <input type="file" class="file-drop-input"> covers it,
+     invisible - so a click opens the picker and a DROP lands on the input
+     itself: the browser fills input.files natively, no JavaScript needed.
+     file-input.js adds the drag highlight, filters dropped files by
+     accept / data-max-size / data-max-files (the browser does not filter
+     drops), appends to the selection instead of replacing it, and lists the
+     files in .file-drop-list with previews and remove buttons. */
+  .file-drop {
+    display: grid;
+    gap: 0.75rem;
+    width: 100%;
+  }
+  .file-drop-zone {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 0.375rem;
+    padding: 2rem 1.5rem;
+    border: 2px dashed color-mix(in oklch, var(--foreground) 22%, transparent);
+    border-radius: var(--radius-xl);
+    background-color: var(--card);
+    color: var(--card-foreground);
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 150ms ease, background-color 150ms ease, scale 150ms ease;
+
+    &:hover { border-color: color-mix(in oklch, var(--foreground) 40%, transparent); }
+    &:has(.file-drop-input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
+    &:has(.file-drop-input:disabled) { opacity: 0.55; cursor: not-allowed; }
+  }
+  .file-drop-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: inherit;
+    font-size: 0; /* no native "No file chosen" hit-box quirks */
+  }
+  .file-drop-icon {
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 0.25rem;
+    border-radius: 9999px;
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+    font-size: 1.5rem;
+    line-height: 1;
+    transition: background-color 150ms ease, color 150ms ease, translate 150ms ease;
+
+    & svg { width: 1.5rem; height: 1.5rem; }
+  }
+  .file-drop-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    text-wrap: balance;
+
+    & u, & .file-drop-browse { color: var(--primary); text-decoration: underline; text-underline-offset: 3px; }
+  }
+  .file-drop-hint {
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+    text-wrap: balance;
+  }
+
+  /* dragging files over the zone */
+  .file-drop[data-state-name="dragover"] .file-drop-zone {
+    border-color: var(--primary);
+    border-style: solid;
+    background-color: color-mix(in oklch, var(--primary) 6%, var(--card));
+    scale: 1.01;
+
+    & .file-drop-icon { background-color: var(--primary); color: var(--primary-foreground); translate: 0 -2px; }
+  }
+  /* rejected files (wrong type, too big, too many) */
+  .file-drop[data-state-name="error"] .file-drop-zone { border-color: var(--destructive); }
+  .file-drop-error {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--destructive);
+
+    &:empty { display: none; }
+  }
+
+  /* compact: one row - icon, text, and the whole row is the target */
+  .file-drop[data-size="sm"] .file-drop-zone {
+    grid-template-columns: auto 1fr;
+    justify-items: start;
+    align-items: center;
+    column-gap: 0.75rem;
+    row-gap: 0;
+    padding: 0.75rem 1rem;
+    text-align: start;
+    border-radius: var(--radius-lg);
+
+    & .file-drop-icon { grid-row: span 2; width: 2.25rem; height: 2.25rem; margin: 0; font-size: 1.125rem; & svg { width: 1.125rem; height: 1.125rem; } }
+  }
+
+  /* -- The file list ---------------------------------------------------- */
+  .file-drop-list {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    &:empty { display: none; }
+  }
+  .file-drop-item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.5rem 0.5rem 0.625rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background-color: var(--card);
+  }
+  .file-drop-thumb {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+
+    & img { width: 100%; height: 100%; object-fit: cover; }
+  }
+  .file-drop-name {
+    overflow: hidden;
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .file-drop-meta {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--muted-foreground);
+  }
+  .file-drop-remove {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--muted-foreground);
+    cursor: pointer;
+
+    &:hover { background-color: var(--accent); color: var(--accent-foreground); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+    & svg { width: 1rem; height: 1rem; }
+  }
+
+  @media (forced-colors: active) {
+    .file-drop-zone { border-color: CanvasText; }
+    .file-drop[data-state-name="dragover"] .file-drop-zone { border-color: Highlight; }
   }
 }
 
@@ -4448,6 +6197,324 @@
       transition: none;
     }
   }
+
+  /* -- Hover gallery (daisyUI's hover-gallery, plus) -----------------------
+     A .hover-gallery holds 2-10 images in one cell. The first shows; every
+     other image is an invisible vertical strip of the frame (1/n of its
+     width, in order) that the pointer can hit - hovering strip k shows
+     image k full-size, and the strips of the others stay above it so moving
+     on keeps working. CSS only. data-ratio sizes the frame (default 4/3),
+     data-indicator draws a position bar, data-effect="zoom" eases the shown
+     image in, data-direction="vertical" slices the frame into rows. On
+     touch screens (no hover) it becomes a swipeable scroll-snap strip. */
+  .hover-gallery {
+    --_n: 1;
+    --_cur: 1;
+    position: relative;
+    display: grid;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius-lg);
+    background-color: var(--muted);
+    isolation: isolate;
+
+    &[data-ratio="1/1"] { aspect-ratio: 1; }
+    &[data-ratio="3/4"] { aspect-ratio: 3 / 4; }
+    &[data-ratio="16/9"] { aspect-ratio: 16 / 9; }
+
+    & > :is(img, picture, video) {
+      grid-area: 1 / 1;
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      min-height: 0;
+      object-fit: cover;
+    }
+    & > :not(:first-child) {
+      z-index: 1;
+      opacity: 0;
+      /* strip k of n: the columns (k-1)/n .. k/n */
+      clip-path: inset(0 calc(100% - var(--_k) * 100% / var(--_n)) 0 calc((var(--_k) - 1) * 100% / var(--_n)));
+      /* the switch is instant: a crossfade would leave both images half
+         transparent for a moment and the first would shine through */
+    }
+    & > :not(:first-child):hover {
+      z-index: 0;
+      opacity: 1;
+      clip-path: none;
+    }
+    /* with image.js: no switching until every image is decoded (data-ready) -
+       the first one stays instead of a half-loaded frame */
+    &[data-init]:not([data-ready]) > :not(:first-child) { visibility: hidden; }
+    &[data-direction="vertical"] > :not(:first-child) {
+      clip-path: inset(calc((var(--_k) - 1) * 100% / var(--_n)) 0 calc(100% - var(--_k) * 100% / var(--_n)) 0);
+    }
+    &[data-direction="vertical"] > :not(:first-child):hover { clip-path: none; }
+    /* strip 1 needs a hit area too: moving back from image k must leave it */
+    &::before {
+      content: '';
+      position: absolute;
+      z-index: 1;
+      inset: 0 calc(100% - 100% / var(--_n)) 0 0;
+    }
+    &[data-direction="vertical"]::before { inset: 0 0 calc(100% - 100% / var(--_n)) 0; }
+
+    /* k per image, n from the count, the shown one for the indicator */
+    & > :nth-child(2) { --_k: 2; }
+    & > :nth-child(3) { --_k: 3; }
+    & > :nth-child(4) { --_k: 4; }
+    & > :nth-child(5) { --_k: 5; }
+    & > :nth-child(6) { --_k: 6; }
+    & > :nth-child(7) { --_k: 7; }
+    & > :nth-child(8) { --_k: 8; }
+    & > :nth-child(9) { --_k: 9; }
+    & > :nth-child(10) { --_k: 10; }
+    &:has(> :nth-child(2)) { --_n: 2; }
+    &:has(> :nth-child(3)) { --_n: 3; }
+    &:has(> :nth-child(4)) { --_n: 4; }
+    &:has(> :nth-child(5)) { --_n: 5; }
+    &:has(> :nth-child(6)) { --_n: 6; }
+    &:has(> :nth-child(7)) { --_n: 7; }
+    &:has(> :nth-child(8)) { --_n: 8; }
+    &:has(> :nth-child(9)) { --_n: 9; }
+    &:has(> :nth-child(10)) { --_n: 10; }
+    &:has(> :nth-child(2):hover) { --_cur: 2; }
+    &:has(> :nth-child(3):hover) { --_cur: 3; }
+    &:has(> :nth-child(4):hover) { --_cur: 4; }
+    &:has(> :nth-child(5):hover) { --_cur: 5; }
+    &:has(> :nth-child(6):hover) { --_cur: 6; }
+    &:has(> :nth-child(7):hover) { --_cur: 7; }
+    &:has(> :nth-child(8):hover) { --_cur: 8; }
+    &:has(> :nth-child(9):hover) { --_cur: 9; }
+    &:has(> :nth-child(10):hover) { --_cur: 10; }
+
+    /* position bar: n segments, the shown one bright */
+    &[data-indicator]::after {
+      content: '';
+      position: absolute;
+      z-index: 2;
+      inset: auto 0.75rem 0.625rem;
+      height: 3px;
+      pointer-events: none;
+      --_seg: calc((100% + 4px) / var(--_n));
+      /* stops along the full width: the shown segment bright, all segments dim */
+      background:
+        linear-gradient(90deg, transparent calc((var(--_cur) - 1) * var(--_seg)), oklch(1 0 0) 0 calc(var(--_cur) * var(--_seg) - 4px), transparent 0),
+        repeating-linear-gradient(90deg, oklch(1 0 0 / 0.45) 0 calc(var(--_seg) - 4px), transparent 0 var(--_seg));
+      border-radius: 9999px;
+      filter: drop-shadow(0 1px 1px oklch(0 0 0 / 0.35));
+      opacity: 0;
+      transition: opacity 150ms ease;
+    }
+    &[data-indicator]:hover::after,
+    &[data-indicator="always"]::after { opacity: 1; }
+
+    /* zoom: the shown image eases in from a slight scale */
+    &[data-effect="zoom"] > :is(img, picture, video) { transition: scale 400ms ease; }
+    &[data-effect="zoom"]:hover > :first-child:not(:has(~ :hover)),
+    &[data-effect="zoom"] > :not(:first-child):hover { scale: 1.04; }
+  }
+  /* no hover (touch): a swipeable strip, one image per view */
+  @media (hover: none) {
+    .hover-gallery {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      overscroll-behavior-inline: contain;
+      scrollbar-width: none;
+
+      & > :is(img, picture, video),
+      & > :not(:first-child) {
+        flex: 0 0 100%;
+        opacity: 1;
+        clip-path: none;
+        scroll-snap-align: start;
+      }
+      &[data-indicator]::after { display: none; }
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hover-gallery > * { transition: none; }
+    .hover-gallery[data-effect="zoom"] > * { scale: none !important; }
+  }
+}
+
+/* ── components/indicator/indicator.css ── */
+/* -- Indicator component ------------------------------------------ */
+
+@layer components {
+  /* .indicator wraps any element (a button, avatar, card, input, image)
+     and pins one or more .indicator-item on it. Each item is CENTERED on an
+     anchor point of the wrapper's edge: data-position picks the point -
+     vertical top / middle / bottom + horizontal start / center / end
+     (default top-end). A single word sets one axis - "start" / "center" /
+     "end" horizontal, "top" / "middle" / "bottom" vertical - so "middle-center"
+     is the middle of the element. start / end are logical: in RTL, start is
+     the right edge. */
+  .indicator {
+    position: relative;
+    display: inline-flex;
+    width: max-content;
+    max-width: 100%;
+  }
+  /* the wrapped element fills the wrapper: a no-op at the default
+     max-content width, but a wrapper given a width passes it on - a card
+     (a size container, no intrinsic width) would otherwise collapse to 0 */
+  .indicator > :not(.indicator-item) {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .indicator-item {
+    /* --_h / --_v: 0 = start / top, 0.5 = center / middle, 1 = end / bottom */
+    --_h: 1;
+    --_v: 0;
+    position: absolute;
+    z-index: 1;
+    /* --_in: data-inset pulls the item toward the element's center by this
+       much per axis (a corner item moves diagonally) - for an icon inside a
+       padded button, whose box corner sits well away from the glyph;
+       --_dir flips the horizontal pull in RTL */
+    --_in: 0px;
+    --_dir: 1;
+    inset-block-start: calc(var(--_v) * 100%);
+    left: calc(var(--_h) * 100%);
+    translate:
+      calc(-50% + (1 - 2 * var(--_h)) * var(--_in) * var(--_dir))
+      calc(-50% + (1 - 2 * var(--_v)) * var(--_in));
+    white-space: nowrap;
+
+    &:dir(rtl) { left: calc((1 - var(--_h)) * 100%); --_dir: -1; }
+    &[data-inset] { --_in: 0.5rem; }
+    &[data-inset="sm"] { --_in: 0.25rem; }
+    &[data-inset="lg"] { --_in: 0.75rem; }
+
+    &[data-position^="middle"] { --_v: 0.5; }
+    &[data-position^="bottom"] { --_v: 1; }
+    &[data-position$="start"] { --_h: 0; }
+    &[data-position$="center"] { --_h: 0.5; }
+
+    /* responsive placement (DaisyUI's sm: / md: / lg: / xl:): the same
+       values in data-position-sm / -md / -lg / -xl apply from that viewport
+       width up (40 / 48 / 64 / 80rem) */
+    @media (min-width: 40rem) {
+      &[data-position-sm^="top"] { --_v: 0; }
+      &[data-position-sm^="middle"] { --_v: 0.5; }
+      &[data-position-sm^="bottom"] { --_v: 1; }
+      &[data-position-sm$="start"] { --_h: 0; }
+      &[data-position-sm$="center"] { --_h: 0.5; }
+      &[data-position-sm$="end"] { --_h: 1; }
+    }
+    @media (min-width: 48rem) {
+      &[data-position-md^="top"] { --_v: 0; }
+      &[data-position-md^="middle"] { --_v: 0.5; }
+      &[data-position-md^="bottom"] { --_v: 1; }
+      &[data-position-md$="start"] { --_h: 0; }
+      &[data-position-md$="center"] { --_h: 0.5; }
+      &[data-position-md$="end"] { --_h: 1; }
+    }
+    @media (min-width: 64rem) {
+      &[data-position-lg^="top"] { --_v: 0; }
+      &[data-position-lg^="middle"] { --_v: 0.5; }
+      &[data-position-lg^="bottom"] { --_v: 1; }
+      &[data-position-lg$="start"] { --_h: 0; }
+      &[data-position-lg$="center"] { --_h: 0.5; }
+      &[data-position-lg$="end"] { --_h: 1; }
+    }
+    @media (min-width: 80rem) {
+      &[data-position-xl^="top"] { --_v: 0; }
+      &[data-position-xl^="middle"] { --_v: 0.5; }
+      &[data-position-xl^="bottom"] { --_v: 1; }
+      &[data-position-xl$="start"] { --_h: 0; }
+      &[data-position-xl$="center"] { --_h: 0.5; }
+      &[data-position-xl$="end"] { --_h: 1; }
+    }
+  }
+
+  /* -- Status dot ----------------------------------------------------
+     A small colored dot for presence and state (DaisyUI's status): on its
+     own inline, or as an .indicator-item. data-variant colors it,
+     data-size sizes it, data-animate="ping" sends a ring pulsing out of it
+     (an ::after copy scaling up and fading), "bounce" hops it, "pulse"
+     fades it. The dot is currentColor, so a variant is one color line.
+     Success / warning / info are literals by design: the tweakcn token set
+     has no such pairs (AGENTS.md token rule, like the avatar badge). */
+  .indicator-dot {
+    position: relative;
+    display: inline-block;
+    flex-shrink: 0;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    color: var(--muted-foreground);
+    background-color: currentColor;
+    vertical-align: middle;
+
+    &[data-variant="neutral"] { color: var(--foreground); }
+    &[data-variant="primary"] { color: var(--primary); }
+    /* the tweakcn --secondary / --accent are pale SURFACES - too faint for a
+       dot: secondary / accent take the theme's vivid chart colors instead */
+    &[data-variant="secondary"] { color: var(--chart-2); }
+    &[data-variant="accent"] { color: var(--chart-4); }
+    &[data-variant="destructive"], &[data-variant="error"] { color: var(--destructive); }
+    &[data-variant="success"] { color: #16a34a; }
+    &[data-variant="warning"] { color: #f59e0b; }
+    &[data-variant="info"] { color: #0ea5e9; }
+
+    &[data-size="xs"] { width: 0.25rem; height: 0.25rem; }
+    &[data-size="sm"] { width: 0.375rem; height: 0.375rem; }
+    &[data-size="md"] { width: 0.5rem; height: 0.5rem; }
+    &[data-size="lg"] { width: 0.75rem; height: 0.75rem; }
+    &[data-size="xl"] { width: 1rem; height: 1rem; }
+
+    &[data-animate="ping"]::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background-color: currentColor;
+      animation: indicator-ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+    }
+    &[data-animate="bounce"] { animation: indicator-bounce 1s infinite; }
+    &[data-animate="pulse"] { animation: indicator-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+  }
+
+  /* a dot pinned as an indicator stays absolutely positioned (the dot's own
+     position: relative comes later in the cascade); a bounce must not fight
+     the centering translate, so it moves the pinned dot with margin instead */
+  .indicator-item.indicator-dot {
+    position: absolute;
+
+    &[data-animate="bounce"] { animation-name: indicator-bounce-margin; }
+  }
+
+  @keyframes indicator-ping {
+    75%, 100% { scale: 2.25; opacity: 0; }
+  }
+  @keyframes indicator-bounce {
+    0%, 100% { translate: 0 -25%; animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
+    50% { translate: 0 0; animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
+  }
+  @keyframes indicator-bounce-margin {
+    0%, 100% { margin-top: -0.25em; animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
+    50% { margin-top: 0; animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
+  }
+  @keyframes indicator-pulse {
+    50% { opacity: 0.5; }
+  }
+
+  /* -- Accessibility ------------------------------------------ */
+  @media (prefers-reduced-motion: reduce) {
+    .indicator-dot[data-animate], .indicator-item.indicator-dot[data-animate] { animation: none; }
+    .indicator-dot[data-animate]::after { animation: none; opacity: 0; }
+  }
+
+  /* forced colors would repaint the dot with Canvas and erase it: the
+     color carries the state, so the dot keeps its own */
+  @media (forced-colors: active) {
+    .indicator-dot { forced-color-adjust: none; }
+  }
 }
 
 /* ── components/input/input.css ── */
@@ -4844,6 +6911,118 @@
   }
 }
 
+/* ── components/mermaid/mermaid.css ── */
+/* -- Mermaid component ---------------------------------------------- */
+
+@layer components {
+  @keyframes mermaid-wait { from { background-position: 150% 0; } to { background-position: -50% 0; } }
+  @keyframes mermaid-reveal { to { color: var(--muted-foreground); user-select: auto; } }
+
+  /* figure.mermaid-diagram > pre.mermaid (the source) [+ .mermaid-output,
+     the rendered SVG, + output.mermaid-error]. Without JavaScript - or
+     before the renderer arrives - the source reads as a code block; once
+     rendered, the SVG replaces it visually (the source stays in the DOM:
+     every re-render starts from it). Everything inside the SVG is themed
+     through Mermaid's themeVariables (mermaid.ts), not from here. */
+  .mermaid-diagram {
+    margin: 0;
+    display: grid;
+    align-content: start;
+    gap: 0.75rem;
+    min-width: 0;
+    max-width: 100%;
+
+    & > pre.mermaid {
+      margin: 0;
+      padding: 1rem;
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background-color: var(--muted);
+      color: var(--muted-foreground);
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      white-space: pre;
+      tab-size: 2;
+    }
+
+    /* rendered: the SVG takes the stage, the source stays for re-renders */
+    &[data-state="rendered"] > pre.mermaid { display: none; }
+
+    /* no flash of the source: before the first render (not initialized yet,
+       or pending) the source box is a quiet placeholder - same box, text
+       hidden, a soft shimmer. Without scripting nothing hides; an error
+       shows the source; and if no renderer ever arrives the text appears
+       after 4s anyway. */
+    @media (scripting: enabled) {
+      &:is(:not([data-init]), [data-state="pending"]) > pre.mermaid {
+        color: transparent;
+        user-select: none;
+        background-image: linear-gradient(90deg, transparent, color-mix(in oklch, var(--foreground) 6%, transparent), transparent);
+        background-size: 200% 100%;
+        animation: mermaid-wait 1.4s linear infinite, mermaid-reveal 0s 4s forwards;
+      }
+    }
+
+    & > figcaption {
+      font-size: 0.8125rem;
+      color: var(--muted-foreground);
+      text-align: center;
+      text-wrap: balance;
+    }
+  }
+
+  /* the SVG scales down to the column, never up past its natural size;
+     very wide diagrams scroll inside the figure instead of the page */
+  .mermaid-output {
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    display: flex;
+    justify-content: center;
+
+    & svg {
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
+  }
+
+  /* a malformed diagram: the source stays, the message is token-styled */
+  .mermaid-error {
+    display: block;
+    padding: 0.625rem 0.875rem;
+    border: 1px solid color-mix(in oklch, var(--destructive) 45%, transparent);
+    border-radius: var(--radius-md);
+    background-color: color-mix(in oklch, var(--destructive) 8%, var(--background));
+    color: var(--destructive);
+    /* the parse error keeps its lines and a caret under the position - a
+       monospace face without ligatures keeps the caret aligned */
+    font-family: var(--font-mono);
+    font-variant-ligatures: none;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  /* -- Accessibility / print ------------------------------------------ */
+  @media (forced-colors: active) {
+    .mermaid-output svg { forced-color-adjust: auto; }
+    .mermaid-error { border-color: CanvasText; color: CanvasText; }
+  }
+
+  @media print {
+    .mermaid-output { overflow: visible; }
+    .mermaid-diagram { break-inside: avoid; }
+  }
+
+  /* no shimmer for reduced motion - the 4s fallback reveal stays */
+  @media (prefers-reduced-motion: reduce) {
+    .mermaid-diagram > pre.mermaid { animation-name: none, mermaid-reveal; }
+  }
+}
+
 /* ── components/motion/motion.css ── */
 /* -- Motion component -------------------------------------------------
    The shared entrance-animation vocabulary: CSS @keyframes are the single
@@ -5030,6 +7209,271 @@
   }
 }
 
+/* ── components/navbar/navbar.css ── */
+/* -- Navbar component --------------------------------------------- */
+
+@layer components {
+  /* An app bar: .navbar-start / .navbar-center / .navbar-end regions (start
+     and end share the free space equally, so the center stays truly
+     centered), a .navbar-brand, a .navbar-menu of links (with <details>
+     submenus), and any component inside - buttons, inputs, dropdowns,
+     avatars, indicators. Responsive collapse is native: the collapsible
+     part is a popover (.navbar-collapse[popover]) shown INLINE from the
+     data-collapse breakpoint up and opened by a .navbar-toggle below it - one
+     menu in the markup, no JavaScript. anchor-scope keeps each navbar's
+     toggle anchor to itself. */
+  .navbar {
+    --_h: 3.5rem;
+    anchor-scope: --navbar-toggle;
+    box-sizing: border-box; /* the size IS the bar height */
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: var(--_h);
+    padding: 0.5rem 1rem;
+    background-color: var(--background);
+    color: var(--foreground);
+    border-bottom: 1px solid var(--border);
+
+    /* -- Sizes -------------------------------------------------------- */
+    &[data-size="sm"] { --_h: 3rem; padding-block: 0.25rem; }
+    &[data-size="md"] { --_h: 3.5rem; }
+    &[data-size="lg"] { --_h: 4.5rem; padding-block: 0.75rem; }
+
+    /* -- Variants ------------------------------------------------------ */
+    &[data-variant="muted"] { background-color: var(--muted); border-color: transparent; }
+    &[data-variant="primary"] { background-color: var(--primary); color: var(--primary-foreground); border-color: transparent; }
+    /* a charcoal bar (like the neutral card): the inverse colors, softened */
+    &[data-variant="neutral"] { background-color: color-mix(in oklch, var(--foreground) 78%, var(--background)); color: var(--background); border-color: transparent; }
+    &[data-variant="ghost"] { background-color: transparent; border-color: transparent; }
+    &[data-variant="glass"] {
+      background-color: color-mix(in oklch, var(--background) 62%, transparent);
+      border-color: color-mix(in oklch, var(--foreground) 12%, transparent);
+      backdrop-filter: blur(14px) saturate(1.4);
+    }
+    /* a floating pill: rounded, bordered all round, a shadow - put it inside
+       a padded container */
+    &[data-variant="floating"] {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-md);
+    }
+
+    /* -- Position ------------------------------------------------------ */
+    &[data-position="sticky"] { position: sticky; top: 0; z-index: 40; }
+
+    /* ghost / link buttons on a colored bar take its text color */
+    &:is([data-variant="primary"], [data-variant="neutral"]) .btn:is([data-variant="ghost"], [data-variant="link"]) {
+      color: inherit;
+
+      &:hover { background-color: color-mix(in oklch, currentColor 16%, transparent); color: inherit; }
+    }
+  }
+
+  .navbar-start,
+  .navbar-end {
+    flex: 1 1 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+  .navbar-end { justify-content: flex-end; }
+  .navbar-center {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* -- Brand ------------------------------------------------------------ */
+  .navbar-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-md);
+    color: inherit;
+    font-size: 1.0625rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    white-space: nowrap;
+
+    & :is(img, svg) { height: 1.5rem; width: auto; }
+    &:is(a):hover { background-color: color-mix(in oklch, currentColor 8%, transparent); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  }
+
+  /* -- Menu ------------------------------------------------------------- */
+  .navbar-menu {
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    & :is(a, summary) {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.375rem 0.75rem;
+      border-radius: var(--radius-md);
+      color: color-mix(in oklch, currentColor 72%, transparent);
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-decoration: none;
+      white-space: nowrap;
+      cursor: pointer;
+      list-style: none;
+
+      &:hover { color: inherit; background-color: color-mix(in oklch, currentColor 8%, transparent); }
+      &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+      & svg { width: 1rem; height: 1rem; }
+    }
+    & :is(a, summary):hover { color: currentColor; }
+    & a[aria-current="page"] {
+      color: inherit;
+      background-color: color-mix(in oklch, currentColor 10%, transparent);
+    }
+
+    /* a submenu: <details><summary>…</summary><ul>…</ul></details> - the
+       chevron turns when open; the list drops below as a small popover-like
+       panel. <details name="…"> keeps one open at a time. */
+    & details { position: relative; }
+    & summary::-webkit-details-marker { display: none; }
+    & summary::after {
+      content: '';
+      width: 0.375rem;
+      height: 0.375rem;
+      margin-inline-start: 0.125rem;
+      border-right: 1.5px solid currentColor;
+      border-bottom: 1.5px solid currentColor;
+      rotate: 45deg;
+      translate: 0 -0.125rem;
+      transition: rotate 150ms ease;
+    }
+    & details[open] > summary::after { rotate: -135deg; translate: 0 0.0625rem; }
+    & details > ul {
+      position: absolute;
+      top: calc(100% + 0.375rem);
+      left: 0;
+      z-index: 50;
+      display: grid;
+      gap: 0.125rem;
+      min-width: 11rem;
+      margin: 0;
+      padding: 0.25rem;
+      list-style: none;
+      background-color: var(--popover);
+      color: var(--popover-foreground);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+    }
+  }
+
+  /* -- Responsive collapse ------------------------------------------------
+     .navbar-collapse[popover] renders INLINE (the UA's popover styles are
+     reset) unless its navbar collapses at the current width - then it is a
+     real popover, anchored under the .navbar-toggle. */
+  .navbar-toggle {
+    anchor-name: --navbar-toggle;
+    display: none;
+  }
+  .navbar-collapse[popover] {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: static;
+    inset: auto;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    border: 0;
+    background: none;
+    color: inherit;
+  }
+
+  /* shared: the collapsed state (inside a media query per breakpoint) */
+  .navbar[data-collapse="always"] {
+    & .navbar-toggle { display: inline-flex; }
+    & .navbar-collapse[popover]:not(:popover-open) { display: none; }
+    & .navbar-collapse[popover]:popover-open {
+      position: fixed;
+      position-anchor: --navbar-toggle;
+      inset: auto;
+      top: anchor(bottom);
+      left: anchor(left);
+      position-try-fallbacks: flip-inline;
+      display: grid;
+      align-items: stretch;
+      min-width: 14rem;
+      margin: 0.5rem 0 0;
+      padding: 0.375rem;
+      background-color: var(--popover);
+      color: var(--popover-foreground);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+
+      & .navbar-menu { flex-direction: column; align-items: stretch; }
+      & .navbar-menu details > ul { position: static; box-shadow: none; border: 0; padding: 0 0 0 0.75rem; }
+    }
+  }
+  @media (max-width: 39.99rem) {
+    .navbar[data-collapse="sm"] {
+      & .navbar-toggle { display: inline-flex; }
+      & .navbar-collapse[popover]:not(:popover-open) { display: none; }
+      & .navbar-collapse[popover]:popover-open {
+        position: fixed; position-anchor: --navbar-toggle; inset: auto; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-inline;
+        display: grid; align-items: stretch; min-width: 14rem; margin: 0.5rem 0 0; padding: 0.375rem;
+        background-color: var(--popover); color: var(--popover-foreground); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+        & .navbar-menu { flex-direction: column; align-items: stretch; }
+        & .navbar-menu details > ul { position: static; box-shadow: none; border: 0; padding: 0 0 0 0.75rem; }
+      }
+    }
+  }
+  @media (max-width: 47.99rem) {
+    .navbar[data-collapse="md"] {
+      & .navbar-toggle { display: inline-flex; }
+      & .navbar-collapse[popover]:not(:popover-open) { display: none; }
+      & .navbar-collapse[popover]:popover-open {
+        position: fixed; position-anchor: --navbar-toggle; inset: auto; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-inline;
+        display: grid; align-items: stretch; min-width: 14rem; margin: 0.5rem 0 0; padding: 0.375rem;
+        background-color: var(--popover); color: var(--popover-foreground); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+        & .navbar-menu { flex-direction: column; align-items: stretch; }
+        & .navbar-menu details > ul { position: static; box-shadow: none; border: 0; padding: 0 0 0 0.75rem; }
+      }
+    }
+  }
+  @media (max-width: 63.99rem) {
+    .navbar[data-collapse="lg"] {
+      & .navbar-toggle { display: inline-flex; }
+      & .navbar-collapse[popover]:not(:popover-open) { display: none; }
+      & .navbar-collapse[popover]:popover-open {
+        position: fixed; position-anchor: --navbar-toggle; inset: auto; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-inline;
+        display: grid; align-items: stretch; min-width: 14rem; margin: 0.5rem 0 0; padding: 0.375rem;
+        background-color: var(--popover); color: var(--popover-foreground); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+        & .navbar-menu { flex-direction: column; align-items: stretch; }
+        & .navbar-menu details > ul { position: static; box-shadow: none; border: 0; padding: 0 0 0 0.75rem; }
+      }
+    }
+  }
+
+  /* -- Accessibility -------------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .navbar-menu summary::after { transition: none; }
+  }
+  @media (forced-colors: active) {
+    .navbar { border-bottom: 1px solid CanvasText; }
+    .navbar-menu a[aria-current="page"] { outline: 1px solid Highlight; }
+  }
+}
+
 /* ── components/navigation-menu/navigation-menu.css ── */
 @layer components {
   .nav-menu-list { display: flex; align-items: center; gap: 0.25rem; list-style: none; margin: 0; padding: 0; }
@@ -5104,6 +7548,147 @@
     & p { margin: 0.125rem 0 0; font-size: 0.75rem; color: var(--muted-foreground); font-weight: 400; }
   }
 
+  /* -- Megamenu ------------------------------------------------------
+     The .nav-menu is an anchor (scoped per menu) so a panel can take the
+     menu's own width - data-width="wide" - or the page's - "full". Inside a
+     panel: .nav-menu-grid (auto-fit columns, or data-columns 2 / 3 / 4) of
+     .nav-menu-section (a .nav-menu-heading + links), links with a
+     .nav-menu-icon and a description, a .nav-menu-feature promo block and a
+     .nav-menu-footer row. CSS only - the triggers stay native popovers. */
+  .nav-menu {
+    anchor-name: --nav-menu-root;
+    anchor-scope: --nav-menu-root;
+  }
+  .nav-menu-content[data-width="wide"] {
+    left: anchor(--nav-menu-root left, 0px);
+    right: anchor(--nav-menu-root right, 0px);
+    width: auto;
+  }
+  .nav-menu-content[data-width="full"] {
+    left: 0;
+    right: 0;
+    width: auto;
+    border-radius: 0;
+    border-inline: 0;
+    padding-inline: max(1rem, calc((100vw - 72rem) / 2));
+  }
+
+  /* the open trigger stays highlighted; aria-current marks the page */
+  .nav-menu-trigger:has(+ .nav-menu-content:popover-open),
+  .nav-menu-link[aria-current="page"] {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+  }
+
+  .nav-menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: 1rem 1.5rem;
+
+    &[data-columns="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    &[data-columns="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    &[data-columns="4"] { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+  .nav-menu-section {
+    display: grid;
+    align-content: start;
+    gap: 0.125rem;
+    min-width: 0;
+  }
+  .nav-menu-heading {
+    margin: 0 0 0.25rem;
+    padding: 0 0.75rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+  /* a link with an icon: icon | title over description */
+  .nav-menu-content-link:has(> .nav-menu-icon) {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 0.75rem;
+    align-items: start;
+
+    & > :not(.nav-menu-icon) { grid-column: 2; }
+  }
+  .nav-menu-icon {
+    grid-row: span 2;
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: var(--radius-md);
+    background-color: var(--muted);
+    color: var(--foreground);
+
+    & svg { width: 1rem; height: 1rem; }
+  }
+  /* a promo / featured block: image (optional) + title + text */
+  .nav-menu-feature {
+    display: grid;
+    align-content: end;
+    gap: 0.25rem;
+    min-height: 9rem;
+    padding: 1rem;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(160deg, color-mix(in oklch, var(--primary) 14%, var(--muted)), var(--muted));
+    color: var(--foreground);
+    text-decoration: none;
+
+    & img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--radius-md); margin-bottom: 0.5rem; }
+    & strong { font-size: 0.9375rem; }
+    & p { margin: 0; font-size: 0.8125rem; color: var(--muted-foreground); }
+    &:hover { background: linear-gradient(160deg, color-mix(in oklch, var(--primary) 22%, var(--muted)), var(--muted)); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  }
+  .nav-menu-footer {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+
+    & a { color: var(--foreground); font-weight: 500; text-decoration: none; }
+    & a:hover { text-decoration: underline; }
+  }
+
+  /* -- Vertical: a side menu whose panels fly out to the right (and drop
+     below the trigger when there is no room). "responsive" is vertical
+     below 48rem and horizontal from there up. */
+  .nav-menu[data-orientation="vertical"] {
+    & .nav-menu-list { flex-direction: column; align-items: stretch; }
+    & :is(.nav-menu-link, .nav-menu-trigger) { justify-content: space-between; width: 100%; }
+    & .nav-menu-trigger svg { transform: rotate(-90deg); }
+    & .nav-menu-content {
+      top: anchor(top);
+      left: anchor(right);
+      margin: 0 0 0 4px;
+      position-try-fallbacks: --nav-menu-below;
+    }
+  }
+  @media (max-width: 47.99rem) {
+    .nav-menu[data-orientation="responsive"] {
+      & .nav-menu-list { flex-direction: column; align-items: stretch; }
+      & :is(.nav-menu-link, .nav-menu-trigger) { justify-content: space-between; width: 100%; }
+      & .nav-menu-trigger svg { transform: rotate(-90deg); }
+      & .nav-menu-content {
+        top: anchor(top);
+        left: anchor(right);
+        margin: 0 0 0 4px;
+        position-try-fallbacks: --nav-menu-below;
+      }
+      & .nav-menu-grid[data-columns] { grid-template-columns: minmax(0, 1fr); }
+    }
+  }
+
   /* -- Accessibility ------------------------------------------ */
 
   @media (prefers-reduced-motion: reduce) {
@@ -5119,6 +7704,14 @@
       border-color: ButtonText;
     }
   }
+}
+
+/* the vertical menu's fallback when a panel has no room at the side:
+   below its trigger (top-level: @position-try is not a layered rule) */
+@position-try --nav-menu-below {
+  top: anchor(bottom);
+  left: anchor(left);
+  margin: 4px 0 0;
 }
 
 /* ── components/newsletter/newsletter.css ── */
@@ -6830,20 +9423,32 @@
 /* -- Separator component ---------------------------------------- */
 
 @layer components {
+  /* One element, three looks:
+     - empty: a plain line (1px, --border) - horizontal, or vertical with
+       data-orientation="vertical" (inside a flex row)
+     - with text inside: the text sits ON the line - two pseudo-element lines
+       left and right of it (above and below when vertical)
+     Knobs: data-variant (line color), data-size (thickness), data-gap (space
+     between text and lines), data-align="start|end" (text position),
+     data-orientation-md / -lg="vertical" (switch to a vertical line from
+     48 / 64rem). --_line / --_thick / --_gap are private. */
   .separator {
+    --_line: var(--border);
+    --_thick: 1px;
+    --_gap: 0.75rem;
     border: none;
     margin: 0;
     flex-shrink: 0;
-    background: var(--border);
+    background: var(--_line);
 
     /* Horizontal (default) */
-    height: 1px;
+    height: var(--_thick);
     width: 100%;
 
     /* Vertical */
     &[data-orientation="vertical"] {
       height: auto;
-      width: 1px;
+      width: var(--_thick);
       align-self: stretch;
     }
 
@@ -6852,9 +9457,109 @@
     &[role="none"] {
       /* No visual change - purely semantic */
     }
+
+    /* -- Text on the line ------------------------------------ */
+    &:not(:empty) {
+      display: flex;
+      align-items: center;
+      gap: var(--_gap);
+      height: auto;
+      background: none;
+      font-size: 0.75rem;
+      font-weight: 500;
+      line-height: 1.25rem;
+      letter-spacing: 0.02em;
+      color: var(--muted-foreground);
+      white-space: nowrap;
+
+      &::before,
+      &::after {
+        content: '';
+        flex: 1 1 0;
+        height: var(--_thick);
+        background: var(--_line);
+      }
+
+      /* text position along the line */
+      &[data-align="start"]::before { display: none; }
+      &[data-align="end"]::after { display: none; }
+
+      &[data-orientation="vertical"] {
+        flex-direction: column;
+        width: auto;
+        align-self: stretch;
+
+        &::before,
+        &::after {
+          width: var(--_thick);
+          height: auto;
+          min-height: 0.5rem;
+        }
+      }
+    }
+
+    /* -- Colors (the line; the text stays muted) -------------- */
+    &[data-variant="neutral"] { --_line: var(--foreground); }
+    &[data-variant="primary"] { --_line: var(--primary); }
+    /* the tweakcn --secondary / --accent are pale surfaces, too faint for a
+       line: the theme's vivid chart colors instead (like the status dot) */
+    &[data-variant="secondary"] { --_line: var(--chart-2); }
+    &[data-variant="accent"] { --_line: var(--chart-4); }
+    &[data-variant="destructive"],
+    &[data-variant="error"] { --_line: var(--destructive); }
+    /* success / warning / info: literals - the token set has no such pairs */
+    &[data-variant="success"] { --_line: #16a34a; }
+    &[data-variant="warning"] { --_line: #f59e0b; }
+    &[data-variant="info"] { --_line: #0ea5e9; }
+
+    /* -- Thickness -------------------------------------------- */
+    &[data-size="sm"] { --_thick: 1px; }
+    &[data-size="md"] { --_thick: 2px; }
+    &[data-size="lg"] { --_thick: 4px; }
+    &[data-size="xl"] { --_thick: 8px; }
+
+    /* -- Gap between the text and the lines ------------------- */
+    &[data-gap="none"] { --_gap: 0; }
+    &[data-gap="sm"] { --_gap: 0.375rem; }
+    &[data-gap="md"] { --_gap: 0.75rem; }
+    &[data-gap="lg"] { --_gap: 1.5rem; }
+    &[data-gap="xl"] { --_gap: 2.5rem; }
+
+    /* -- Responsive: a vertical line from a breakpoint up (DaisyUI's
+       lg:divider-horizontal). The PARENT must turn into a row at the
+       same width - the separator only follows it. */
+    @media (min-width: 48rem) {
+      &[data-orientation-md="vertical"] {
+        height: auto;
+        width: var(--_thick);
+        align-self: stretch;
+
+        &:not(:empty) {
+          flex-direction: column;
+          width: auto;
+
+          &::before, &::after { width: var(--_thick); height: auto; min-height: 0.5rem; }
+        }
+      }
+    }
+    @media (min-width: 64rem) {
+      &[data-orientation-lg="vertical"] {
+        height: auto;
+        width: var(--_thick);
+        align-self: stretch;
+
+        &:not(:empty) {
+          flex-direction: column;
+          width: auto;
+
+          &::before, &::after { width: var(--_thick); height: auto; min-height: 0.5rem; }
+        }
+      }
+    }
   }
 
-  /* -- Labeled separator ------------------------------------- */
+  /* -- Labeled separator (the older wrapper form) --------------
+     Still supported; text inside .separator itself is the simpler form. */
   .separator-label {
     display: flex;
     align-items: center;
@@ -6875,21 +9580,17 @@
 
   /* -- Accessibility ----------------------------------------- */
   @media (forced-colors: active) {
+    /* system colors would erase the line (a background) - keep it */
     .separator {
-      background: CanvasText;
+      forced-color-adjust: none;
+      --_line: CanvasText;
+      color: CanvasText;
     }
   }
 
   @media (prefers-contrast: more) {
-    .separator {
-      background: var(--foreground);
-      height: 2px;
-
-      &[data-orientation="vertical"] {
-        width: 2px;
-        height: auto;
-      }
-    }
+    .separator:not([data-variant]) { --_line: var(--foreground); }
+    .separator:not([data-size]) { --_thick: 2px; }
   }
 }
 
@@ -6952,7 +9653,9 @@
       bottom: auto;
       width: 100%;
       max-width: 100vw;
-      max-height: 100vh;
+      /* a sheet, not a page: the backdrop always shows (content scrolls
+         inside the modal past this) */
+      max-height: 85dvh;
       height: auto;
       border-left: none;
       border-bottom: 1px solid var(--border);
@@ -6968,7 +9671,9 @@
       top: auto;
       width: 100%;
       max-width: 100vw;
-      max-height: 100vh;
+      /* a sheet, not a page: the backdrop always shows (content scrolls
+         inside the modal past this) */
+      max-height: 85dvh;
       height: auto;
       border-left: none;
       border-top: 1px solid var(--border);
@@ -7186,7 +9891,7 @@
     &[data-state="collapsed"] {
       width: var(--sidebar-width-collapsed, 3.5rem);
 
-      & .sidebar-link span,
+      & .sidebar-link span:not(.sidebar-icon, .sidebar-dot),
       & .sidebar-section-title,
       & .sidebar-group-action,
       & .sidebar-badge,
@@ -7196,8 +9901,8 @@
       & .sidebar-link { justify-content: center; padding: 0.5rem; gap: 0; }
       & .sidebar-header { justify-content: center; padding: 0.75rem 0.5rem; }
       & .sidebar-group > summary { justify-content: center; }
-      & .sidebar-group > summary span { display: none; }
-      & .sidebar-group > summary svg:last-child { display: none; }
+      & .sidebar-group > summary span:not(.sidebar-icon, .sidebar-dot) { display: none; }
+      & .sidebar-group > summary > svg:last-child { display: none; }
 
       /* The nested-nav indent (0.75rem) would offset submenu icons from the
          rail column - drop it while collapsed. */
@@ -7207,8 +9912,8 @@
          the same centering or its icon drifts off the icon column. Expanded
          submenu items have no icons, so the nav stays hidden while collapsed. */
       & .sidebar-submenu > summary { justify-content: center; padding: 0.5rem; gap: 0; }
-      & .sidebar-submenu > summary span { display: none; }
-      & .sidebar-submenu > summary svg:last-child { display: none; }
+      & .sidebar-submenu > summary span:not(.sidebar-icon, .sidebar-dot) { display: none; }
+      & .sidebar-submenu > summary > svg:last-child { display: none; }
       & .sidebar-submenu > .sidebar-nav { display: none; }
     }
 
@@ -7307,6 +10012,68 @@
     line-height: 1;
   }
 
+  /* ── Leading icon / emoji ─────────────────────────────────── */
+  /* <span class="sidebar-icon"> in front of a link, submenu or group label:
+     holds an <svg> or an emoji in a fixed 1rem box, so labels line up and
+     the collapsed rail keeps showing it. */
+  .sidebar-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    font-size: 0.9375rem;
+    font-style: normal;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: 0;
+
+    & svg { width: 1rem; height: 1rem; }
+  }
+  .sidebar-group > summary .sidebar-icon { width: 0.875rem; height: 0.875rem; font-size: 0.8125rem; }
+  .sidebar-group > summary .sidebar-icon svg { width: 0.875rem; height: 0.875rem; }
+
+  /* ── Activity dot ─────────────────────────────────────────── */
+  /* <span class="sidebar-dot"> at the end of a link / summary marks news or
+     activity (name it: role="img" aria-label="New"). Colors via data-variant,
+     a ping via data-animate="ping"; on the collapsed rail it sits on the
+     icon's corner. */
+  .sidebar-dot {
+    --_c: var(--sidebar-primary);
+    position: relative;
+    width: 0.5rem;
+    height: 0.5rem;
+    flex-shrink: 0;
+    margin-left: auto;
+    border-radius: 999px;
+    background-color: var(--_c);
+
+    &[data-variant="destructive"] { --_c: var(--destructive); }
+    &[data-variant="success"] { --_c: oklch(0.65 0.17 150); }
+    &[data-variant="warning"] { --_c: oklch(0.78 0.16 75); }
+    &[data-variant="info"] { --_c: oklch(0.62 0.17 250); }
+
+    &[data-animate="ping"]::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background-color: var(--_c);
+      animation: sidebar-dot-ping 1.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+    }
+  }
+  @keyframes sidebar-dot-ping {
+    75%, 100% { scale: 2.4; opacity: 0; }
+  }
+  /* dot + badge / dot + chevron share the pushed-right slot */
+  .sidebar-badge + .sidebar-dot,
+  .sidebar-dot + .sidebar-badge,
+  :is(.sidebar-group, .sidebar-submenu) > summary > .sidebar-dot ~ svg:last-child { margin-left: 0; }
+  .app-sidebar[data-state="collapsed"] {
+    & :is(.sidebar-group, .sidebar-submenu) > summary { position: relative; }
+    & .sidebar-dot { position: absolute; top: 0.3125rem; right: 0.3125rem; margin: 0; width: 0.4375rem; height: 0.4375rem; }
+  }
+
   /* ── Section title ────────────────────────────────────────── */
   .sidebar-section-title {
     padding: 0.75rem 0.75rem 0.375rem;
@@ -7337,7 +10104,7 @@
       &:hover { background-color: var(--sidebar-accent); }
       &::-webkit-details-marker { display: none; }
 
-      & svg:last-child {
+      & > svg:last-child {
         width: 0.875rem;
         height: 0.875rem;
         margin-left: auto;
@@ -7345,7 +10112,7 @@
       }
     }
 
-    &[open] > summary svg:last-child { rotate: 90deg; }
+    &[open] > summary > svg:last-child { rotate: 90deg; }
     & > .sidebar-nav { padding: 0.25rem 0 0.25rem 0.75rem; }
   }
 
@@ -7365,7 +10132,7 @@
 
       /* leading icon matches .sidebar-link's 1rem - otherwise lucide's
          24px default renders the cog larger than the nav icons */
-      & svg:first-child { width: 1rem; height: 1rem; flex-shrink: 0; }
+      & > svg:first-child { width: 1rem; height: 1rem; flex-shrink: 0; }
 
       &:hover {
         background-color: var(--sidebar-accent);
@@ -7373,7 +10140,7 @@
       }
       &::-webkit-details-marker { display: none; }
 
-      & svg:last-child {
+      & > svg:last-child {
         width: 0.875rem;
         height: 0.875rem;
         margin-left: auto;
@@ -7381,7 +10148,7 @@
       }
     }
 
-    &[open] > summary svg:last-child { rotate: 90deg; }
+    &[open] > summary > svg:last-child { rotate: 90deg; }
 
     & > .sidebar-nav {
       padding: 0.25rem 0 0.25rem 1.5rem;
@@ -7516,8 +10283,9 @@
   @media (prefers-reduced-motion: reduce) {
     .app-sidebar { transition: none; }
     .sidebar-link { transition: none; }
-    .sidebar-group > summary svg:last-child { transition: none; }
-    .sidebar-submenu > summary svg:last-child { transition: none; }
+    .sidebar-group > summary > svg:last-child { transition: none; }
+    .sidebar-submenu > summary > svg:last-child { transition: none; }
+    .sidebar-dot[data-animate]::after { animation: none; }
     .sidebar-mobile { transition: none; }
     .sidebar-mobile::backdrop { transition: none; }
   }
@@ -7770,27 +10538,36 @@
 /* -- Slider component ------------------------------------------- */
 
 @layer components {
+  /* Everything runs through a few private variables so a .slider-range
+     wrapper (two thumbs) can hand its size and color down to both inputs:
+     --_track / --_thumb (set by data-size, on the slider or on the range),
+     --_c (set by data-tone) and the public --slider-color for any color.
+     --_fill resolves them once, here, on the input. */
   .slider {
     --slider-value: 50%;
+    --_fill: var(--_c, var(--slider-color, var(--primary)));
+    --_t: var(--_track, 0.5rem);
+    --_d: var(--_thumb, 1.25rem);
+    --_dir: to right;
     -webkit-appearance: none;
     appearance: none;
     width: 100%;
-    height: 0.5rem;
+    height: var(--_t);
     border-radius: 9999px;
     background: var(--secondary);
     cursor: pointer;
     outline: none;
     border: none;
-    accent-color: var(--primary);
+    accent-color: var(--_fill);
 
     /* Track - WebKit (filled via gradient) */
     &::-webkit-slider-runnable-track {
-      height: 0.5rem;
+      height: var(--_t);
       border-radius: 9999px;
       background: linear-gradient(
-        to right,
-        var(--primary) 0%,
-        var(--primary) var(--slider-value),
+        var(--_dir),
+        var(--_fill) 0%,
+        var(--_fill) var(--slider-value),
         var(--secondary) var(--slider-value),
         var(--secondary) 100%
       );
@@ -7798,7 +10575,7 @@
 
     /* Track - Firefox */
     &::-moz-range-track {
-      height: 0.5rem;
+      height: var(--_t);
       border-radius: 9999px;
       background: var(--secondary);
       border: none;
@@ -7806,42 +10583,43 @@
 
     /* Filled portion - Firefox */
     &::-moz-range-progress {
-      height: 0.5rem;
+      height: var(--_t);
       border-radius: 9999px;
-      background: var(--primary);
+      background: var(--_fill);
     }
 
-    /* Thumb - WebKit */
+    /* Thumb - WebKit (re-centered on the track: (track - thumb) / 2).
+       --slider-thumb-image paints a picture (an emoji, see data-thumb) */
     &::-webkit-slider-thumb {
       -webkit-appearance: none;
-      width: 1.25rem;
-      height: 1.25rem;
+      width: var(--_d);
+      height: var(--_d);
       border-radius: 50%;
-      background: var(--background);
-      border: 2px solid var(--primary);
-      margin-top: -0.375rem;
+      background: var(--slider-thumb-image, none) center / 100% no-repeat, var(--background);
+      border: 2px solid var(--_fill);
+      margin-top: calc((var(--_t) - var(--_d)) / 2);
       cursor: pointer;
-      transition: box-shadow 150ms, transform 150ms;
+      transition: box-shadow 150ms, scale 150ms;
     }
 
     /* Thumb - Firefox */
     &::-moz-range-thumb {
-      width: 1.25rem;
-      height: 1.25rem;
+      width: var(--_d);
+      height: var(--_d);
       border-radius: 50%;
-      background: var(--background);
-      border: 2px solid var(--primary);
+      background: var(--slider-thumb-image, none) center / 100% no-repeat, var(--background);
+      border: 2px solid var(--_fill);
       cursor: pointer;
-      transition: box-shadow 150ms, transform 150ms;
+      transition: box-shadow 150ms, scale 150ms;
     }
 
     /* Hover */
     &:hover:not(:disabled) {
       &::-webkit-slider-thumb {
-        box-shadow: 0 0 0 4px color-mix(in oklch, var(--primary) 15%, transparent);
+        box-shadow: 0 0 0 4px color-mix(in oklch, var(--_fill) 15%, transparent);
       }
       &::-moz-range-thumb {
-        box-shadow: 0 0 0 4px color-mix(in oklch, var(--primary) 15%, transparent);
+        box-shadow: 0 0 0 4px color-mix(in oklch, var(--_fill) 15%, transparent);
       }
     }
 
@@ -7866,104 +10644,146 @@
       &::-moz-range-thumb { cursor: not-allowed; }
     }
 
+    /* RTL: the range runs right to left, so does the fill */
+    &:dir(rtl) { --_dir: to left; }
+
     /* Vertical orientation */
     &[data-orientation="vertical"] {
+      --_dir: to top;
       writing-mode: vertical-lr;
       direction: rtl;
-      width: 0.5rem;
+      width: var(--_t);
       height: 12rem;
 
-      &::-webkit-slider-runnable-track {
-        width: 0.5rem;
-        background: linear-gradient(
-          to top,
-          var(--primary) 0%,
-          var(--primary) var(--slider-value),
-          var(--secondary) var(--slider-value),
-          var(--secondary) 100%
-        );
-      }
-
+      &::-webkit-slider-runnable-track { width: var(--_t); height: auto; }
       &::-webkit-slider-thumb {
         margin-top: 0;
-        margin-left: -0.375rem;
+        margin-left: calc((var(--_t) - var(--_d)) / 2);
       }
     }
 
-    /* -- Sizes -------------------------------------------------
-       Track thickness + thumb diameter scale together; the WebKit thumb
-       margin-top (and the vertical margin-left) re-centers it for each
-       size: (track − thumb) / 2. md == the default (md explicitly
-       selectable so demos/e2e can pin it like the other four). */
-    &[data-size="xs"] {
-      height: 0.25rem;
-      &::-webkit-slider-runnable-track { height: 0.25rem; }
-      &::-moz-range-track { height: 0.25rem; }
-      &::-moz-range-progress { height: 0.25rem; }
-      &::-webkit-slider-thumb { width: 0.75rem; height: 0.75rem; margin-top: -0.25rem; }
-      &::-moz-range-thumb { width: 0.75rem; height: 0.75rem; }
-      &[data-orientation="vertical"] {
-        width: 0.25rem;
-        &::-webkit-slider-runnable-track { width: 0.25rem; }
-        &::-webkit-slider-thumb { margin-top: 0; margin-left: -0.25rem; }
-      }
-    }
+    /* -- Emoji thumb: data-thumb="emoji" (slider.js draws the emoji from
+       data-thumb-emoji into --slider-thumb-image) - no ring, no fill disc,
+       a bit larger than the plain thumb. */
+    &[data-thumb="emoji"] {
+      --_d: var(--_thumb, 2rem);
 
-    &[data-size="sm"] {
-      height: 0.375rem;
-      &::-webkit-slider-runnable-track { height: 0.375rem; }
-      &::-moz-range-track { height: 0.375rem; }
-      &::-moz-range-progress { height: 0.375rem; }
-      &::-webkit-slider-thumb { width: 1rem; height: 1rem; margin-top: -0.3125rem; }
-      &::-moz-range-thumb { width: 1rem; height: 1rem; }
-      &[data-orientation="vertical"] {
-        width: 0.375rem;
-        &::-webkit-slider-runnable-track { width: 0.375rem; }
-        &::-webkit-slider-thumb { margin-top: 0; margin-left: -0.3125rem; }
-      }
+      &::-webkit-slider-thumb { border: 0; background-color: transparent; }
+      &::-moz-range-thumb { border: 0; background-color: transparent; }
+      &:active::-webkit-slider-thumb { scale: 1.15; }
+      &:active::-moz-range-thumb { scale: 1.15; }
     }
+  }
 
-    &[data-size="md"] {
-      height: 0.5rem;
-      &::-webkit-slider-runnable-track { height: 0.5rem; }
-      &::-moz-range-track { height: 0.5rem; }
-      &::-moz-range-progress { height: 0.5rem; }
-      &::-webkit-slider-thumb { width: 1.25rem; height: 1.25rem; margin-top: -0.375rem; }
-      &::-moz-range-thumb { width: 1.25rem; height: 1.25rem; }
-      &[data-orientation="vertical"] {
-        width: 0.5rem;
-        &::-webkit-slider-runnable-track { width: 0.5rem; }
-        &::-webkit-slider-thumb { margin-top: 0; margin-left: -0.375rem; }
-      }
-    }
+  /* -- Sizes: track thickness + thumb diameter (md == the default) ----
+     On a .slider or on a .slider-range (both inputs inherit). */
+  :is(.slider, .slider-range) {
+    &[data-size="xs"] { --_track: 0.25rem; --_thumb: 0.75rem; }
+    &[data-size="sm"] { --_track: 0.375rem; --_thumb: 1rem; }
+    &[data-size="md"] { --_track: 0.5rem; --_thumb: 1.25rem; }
+    &[data-size="lg"] { --_track: 0.625rem; --_thumb: 1.5rem; }
+    &[data-size="xl"] { --_track: 0.75rem; --_thumb: 1.75rem; }
 
-    &[data-size="lg"] {
-      height: 0.625rem;
-      &::-webkit-slider-runnable-track { height: 0.625rem; }
-      &::-moz-range-track { height: 0.625rem; }
-      &::-moz-range-progress { height: 0.625rem; }
-      &::-webkit-slider-thumb { width: 1.5rem; height: 1.5rem; margin-top: -0.4375rem; }
-      &::-moz-range-thumb { width: 1.5rem; height: 1.5rem; }
-      &[data-orientation="vertical"] {
-        width: 0.625rem;
-        &::-webkit-slider-runnable-track { width: 0.625rem; }
-        &::-webkit-slider-thumb { margin-top: 0; margin-left: -0.4375rem; }
-      }
-    }
+    /* -- Tones: success / warning / info / destructive; any other color
+       via style="--slider-color: …" */
+    &[data-tone="success"] { --_c: oklch(0.6 0.15 150); }
+    &[data-tone="warning"] { --_c: oklch(0.78 0.16 75); }
+    &[data-tone="info"] { --_c: oklch(0.6 0.16 250); }
+    &[data-tone="destructive"] { --_c: var(--destructive); }
+  }
 
-    &[data-size="xl"] {
-      height: 0.75rem;
-      &::-webkit-slider-runnable-track { height: 0.75rem; }
-      &::-moz-range-track { height: 0.75rem; }
-      &::-moz-range-progress { height: 0.75rem; }
-      &::-webkit-slider-thumb { width: 1.75rem; height: 1.75rem; margin-top: -0.5rem; }
-      &::-moz-range-thumb { width: 1.75rem; height: 1.75rem; }
-      &[data-orientation="vertical"] {
-        width: 0.75rem;
-        &::-webkit-slider-runnable-track { width: 0.75rem; }
-        &::-webkit-slider-thumb { margin-top: 0; margin-left: -0.5rem; }
-      }
+  /* -- Range: two thumbs on one track ---------------------------------
+     Two .slider inputs stacked in a .slider-range; only their thumbs take
+     the pointer, the wrapper paints one track with the span between the
+     thumbs filled (slider.js keeps --range-from / --range-to in sync and
+     the low value <= the high one). Each input keeps its own keyboard,
+     label and State API. */
+  .slider-range {
+    --range-from: 25%;
+    --range-to: 75%;
+    --_fill: var(--_c, var(--slider-color, var(--primary)));
+    --_dir: to right;
+    position: relative;
+    display: block;
+    width: 100%;
+    height: var(--_thumb, 1.25rem);
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset-inline: 0;
+      top: 50%;
+      height: var(--_track, 0.5rem);
+      translate: 0 -50%;
+      border-radius: 9999px;
+      background: linear-gradient(
+        var(--_dir),
+        var(--secondary) var(--range-from),
+        var(--_fill) var(--range-from),
+        var(--_fill) var(--range-to),
+        var(--secondary) var(--range-to)
+      );
     }
+    &:dir(rtl) { --_dir: to left; }
+
+    & > .slider {
+      position: absolute;
+      inset-inline: 0;
+      top: 50%;
+      translate: 0 -50%;
+      margin: 0;
+      background: none;
+      pointer-events: none;
+
+      &::-webkit-slider-runnable-track { background: none; }
+      &::-moz-range-track { background: none; }
+      &::-moz-range-progress { background: none; }
+      &::-webkit-slider-thumb { pointer-events: auto; }
+      &::-moz-range-thumb { pointer-events: auto; }
+    }
+    /* the thumb last moved stays on top (both can reach the same value) */
+    & > .slider[data-active] { z-index: 1; }
+
+    &:has(.slider:disabled) { opacity: 0.5; }
+  }
+
+  /* -- Field: icons, emojis and values around a slider ----------------- */
+  .slider-field {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+
+    & > :is(.slider, .slider-range) { flex: 1 1 auto; min-width: 0; }
+  }
+  .slider-icon {
+    display: inline-grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    font-size: 1.125rem;
+    line-height: 1;
+    color: var(--muted-foreground);
+
+    & svg { width: 1.125rem; height: 1.25rem; }
+  }
+  .slider-value {
+    flex-shrink: 0;
+    min-width: 3.5em;
+    text-align: end;
+    font-size: 0.875rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--foreground);
+  }
+  /* a scale under the track: the first and last labels align to the ends */
+  .slider-scale {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.375rem;
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted-foreground);
   }
 
   /* Reduced motion */
@@ -8018,6 +10838,7 @@
         }
       }
     }
+    .slider-range::before { background: Highlight; }
   }
 }
 
@@ -8452,23 +11273,50 @@
 
 /* ── components/steps/steps.css ── */
 @layer components {
-  .steps { display: flex; gap: 0.5rem; list-style: none; margin: 0; padding: 0; }
+  /* --_accent / --_accent-fg: the color of done (complete) and current steps -
+     --primary unless data-variant (on the list, or on one step) picks another */
+  .steps { --_accent: var(--primary); --_accent-fg: var(--primary-foreground); display: flex; gap: 0.5rem; list-style: none; margin: 0; padding: 0; }
   .step {
     flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; position: relative; text-align: center;
     &:not(:last-child)::after { content: ''; position: absolute; top: 1rem; left: calc(50% + 1.25rem); right: calc(-50% + 1.25rem); height: 2px; background-color: var(--border); }
-    &[data-status='complete']::after { background-color: var(--primary); }
+    &[data-status='complete']::after { background-color: var(--_accent); }
     &[data-status='error']::after { background-color: var(--destructive); }
   }
   .step-indicator {
     display: flex; align-items: center; justify-content: center; width: 2rem; height: 2rem;
     border-radius: 9999px; font-size: 0.75rem; font-weight: 500;
     border: 2px solid var(--border); color: var(--muted-foreground); background-color: var(--background); position: relative; z-index: 1;
-    .step[data-status='current'] & { border-color: var(--primary); color: var(--primary); }
-    .step[data-status='complete'] & { border-color: var(--primary); background-color: var(--primary); color: var(--primary-foreground); }
+    .step[data-status='current'] & { border-color: var(--_accent); color: var(--_accent); }
+    .step[data-status='complete'] & { border-color: var(--_accent); background-color: var(--_accent); color: var(--_accent-fg); }
     .step[data-status='error'] & { border-color: var(--destructive); background-color: var(--destructive); color: var(--destructive-foreground); }
 
     & svg { width: 0.875rem; height: 0.875rem; pointer-events: none; }
+    /* a glyph of your own - emoji, symbol, icon - a size up from the number */
+    & .step-icon { font-size: 1.5em; line-height: 1; display: grid; place-items: center; }
+    & .step-icon svg { width: 1.2em; height: 1.2em; }
   }
+  /* data-variant="plain" on the indicator: no circle - just the glyph
+     (an emoji step); the status still tints a symbol or icon */
+  .steps .step .step-indicator[data-variant='plain'] {
+    border-color: transparent;
+    background-color: transparent;
+    font-size: 1.25rem;
+  }
+  .steps .step:is([data-status='complete'], [data-status='current']) .step-indicator[data-variant='plain'] { color: var(--_accent); }
+  .steps .step[data-status='error'] .step-indicator[data-variant='plain'] { color: var(--destructive); }
+
+  /* -- Colors: data-variant on .steps (every step) or on one .step -------
+     secondary / accent use --chart-2 / --chart-4 (the tokens' --secondary /
+     --accent are pale surfaces); success / warning / info are literals - the
+     token set has no such pairs. */
+  :is(.steps, .step)[data-variant='neutral'] { --_accent: var(--foreground); --_accent-fg: var(--background); }
+  :is(.steps, .step)[data-variant='primary'] { --_accent: var(--primary); --_accent-fg: var(--primary-foreground); }
+  :is(.steps, .step)[data-variant='secondary'] { --_accent: var(--chart-2); --_accent-fg: #fff; }
+  :is(.steps, .step)[data-variant='accent'] { --_accent: var(--chart-4); --_accent-fg: #fff; }
+  :is(.steps, .step)[data-variant='info'] { --_accent: #0ea5e9; --_accent-fg: #fff; }
+  :is(.steps, .step)[data-variant='success'] { --_accent: #16a34a; --_accent-fg: #fff; }
+  :is(.steps, .step)[data-variant='warning'] { --_accent: #f59e0b; --_accent-fg: #1c1917; }
+  :is(.steps, .step):is([data-variant='destructive'], [data-variant='error']) { --_accent: var(--destructive); --_accent-fg: var(--destructive-foreground); }
   .step-content { display: flex; flex-direction: column; gap: 0.125rem; }
   .step-title { margin: 0; font-size: 0.8125rem; font-weight: 500; color: var(--foreground); }
   .step-description { margin: 0; font-size: 0.75rem; color: var(--muted-foreground); }
@@ -8551,6 +11399,32 @@
     }
 
     & .step-content { padding-top: 0.25rem; }
+  }
+
+  /* -- Responsive: data-orientation="responsive" stacks vertically below
+     48rem and runs horizontally from there up (DaisyUI's
+     steps-vertical lg:steps-horizontal) */
+  @media (max-width: 47.99rem) {
+    .steps[data-orientation="responsive"] {
+      flex-direction: column;
+      gap: 0;
+
+      & .step {
+        flex-direction: row;
+        align-items: flex-start;
+        text-align: left;
+        padding-bottom: 1.5rem;
+
+        &:not(:last-child)::after { top: 2.25rem; left: 0.9375rem; right: auto; width: 2px; height: calc(100% - 2.25rem); }
+      }
+
+      & .step-content { padding-top: 0.25rem; }
+      &[data-size='xs'] .step:not(:last-child)::after { top: 1.5rem; left: 0.5625rem; height: calc(100% - 1.5rem); }
+      &[data-size='sm'] .step:not(:last-child)::after { top: 1.75rem; left: 0.6875rem; height: calc(100% - 1.75rem); }
+      &[data-size='md'] .step:not(:last-child)::after { top: 2.25rem; left: 0.9375rem; height: calc(100% - 2.25rem); }
+      &[data-size='lg'] .step:not(:last-child)::after { top: 2.75rem; left: 1.1875rem; height: calc(100% - 2.75rem); }
+      &[data-size='xl'] .step:not(:last-child)::after { top: 3.25rem; left: 1.4375rem; height: calc(100% - 3.25rem); }
+    }
   }
 
   /* -- Accessibility ------------------------------------------ */
@@ -8863,7 +11737,6 @@
     width: 100%;
     border-collapse: collapse;
     font-size: 0.875rem;
-    text-align: left;
     caption-side: bottom;
   }
 
@@ -8876,6 +11749,8 @@
 
   .table-head {
     padding: 0.75rem 1rem;
+    /* explicit: a th's UA default centers unless the table sets a non-initial alignment */
+    text-align: start;
     font-weight: 500;
     color: var(--muted-foreground);
     background-color: var(--muted);
@@ -8942,6 +11817,275 @@
     & .table-head, & .table-cell { padding: 1rem 1.25rem; }
     & .table-caption { padding: 1rem 1.25rem; }
   }
+
+
+  /* -- Alignment: data-align on a th / td (start / center / end);
+     data-numeric: end-aligned tabular figures (amounts, counts) ---------- */
+  :is(.table-head, .table-cell) {
+    &[data-align="start"] { text-align: start; }
+    &[data-align="center"] { text-align: center; }
+    &[data-align="end"] { text-align: end; }
+    &[data-numeric] { text-align: end; font-variant-numeric: tabular-nums; }
+    &[data-valign="top"] { vertical-align: top; }
+    &[data-nowrap] { white-space: nowrap; }
+  }
+  .table { text-align: start; }
+
+  /* -- Sorting: a .table-sort button in the header; aria-sort on the th
+     (ascending / descending) draws the arrow, table.js sorts the rows ---- */
+  .table-sort {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin: -0.25rem -0.5rem;
+    padding: 0.25rem 0.5rem;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+
+    &:hover { color: var(--foreground); background-color: color-mix(in oklch, var(--foreground) 6%, transparent); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+    /* the arrow: both halves muted while unsorted, one strong when sorted */
+    &::after {
+      content: '';
+      width: 0.5rem;
+      height: 0.75rem;
+      flex-shrink: 0;
+      background:
+        conic-gradient(from 150deg at 50% 0, currentColor 60deg, transparent 0) top / 100% 40% no-repeat,
+        conic-gradient(from -30deg at 50% 100%, currentColor 60deg, transparent 0) bottom / 100% 40% no-repeat;
+      opacity: 0.35;
+    }
+    [data-align="end"] > &, [data-numeric] > & { flex-direction: row-reverse; }
+  }
+  .table-head[aria-sort="ascending"] .table-sort::after {
+    opacity: 1;
+    background: conic-gradient(from 150deg at 50% 0, currentColor 60deg, transparent 0) center / 100% 50% no-repeat;
+  }
+  .table-head[aria-sort="descending"] .table-sort::after {
+    opacity: 1;
+    background: conic-gradient(from -30deg at 50% 100%, currentColor 60deg, transparent 0) center / 100% 50% no-repeat;
+  }
+  .table-head[aria-sort]:not([aria-sort="none"]) { color: var(--foreground); }
+
+  /* -- Selection: a leading .table-select cell with a checkbox (the header
+     one selects all); a selected row is tinted -------------------------- */
+  .table-select {
+    width: 1%;
+    padding-inline-end: 0 !important;
+
+    & .checkbox { vertical-align: middle; }
+  }
+  .table-row[aria-selected="true"] {
+    background-color: color-mix(in oklch, var(--primary) 7%, transparent);
+
+    tbody &:hover { background-color: color-mix(in oklch, var(--primary) 11%, transparent); }
+  }
+
+  /* -- Reordering: a .table-handle cell with a grip button; the row being
+     dragged fades, a line shows where it lands -------------------------- */
+  .table-handle {
+    width: 1%;
+    padding-inline-end: 0 !important;
+    color: var(--muted-foreground);
+
+    & button {
+      display: inline-grid;
+      place-items: center;
+      width: 1.5rem;
+      height: 1.5rem;
+      padding: 0;
+      border: 0;
+      border-radius: var(--radius-sm);
+      background: none;
+      color: inherit;
+      cursor: grab;
+
+      &:hover { color: var(--foreground); background-color: var(--accent); }
+      &:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+      & svg { width: 1rem; height: 1rem; }
+    }
+  }
+  .table-row[data-dragging] { opacity: 0.4; }
+  .table-row[data-drop="before"] { box-shadow: inset 0 2px 0 var(--primary); }
+  .table-row[data-drop="after"] { box-shadow: inset 0 -2px 0 var(--primary); }
+
+  /* -- Locked columns + sticky header --------------------------------------
+     data-lock-start="1|2|3" on the .table keeps the first columns in view
+     while the .table-container scrolls sideways (table.js measures their
+     offsets into --table-lock-1 / -2); data-lock-end="1" the last column.
+     data-sticky-header keeps the header row while the container scrolls
+     vertically (give the container a max-height). */
+  .table[data-lock-start] :is(.table-head, .table-cell),
+  .table[data-lock-end] :is(.table-head, .table-cell) { background-clip: padding-box; }
+  .table[data-lock-start] :is(tr > :nth-child(1)),
+  .table:is([data-lock-start="2"], [data-lock-start="3"]) :is(tr > :nth-child(2)),
+  .table[data-lock-start="3"] :is(tr > :nth-child(3)),
+  .table[data-lock-end] :is(tr > :last-child) {
+    position: sticky;
+    z-index: 1;
+    background-color: var(--_lock-bg, var(--background));
+  }
+  .table[data-lock-start] tr > :nth-child(1) { inset-inline-start: 0; }
+  .table:is([data-lock-start="2"], [data-lock-start="3"]) tr > :nth-child(2) { inset-inline-start: var(--table-lock-1, 0px); }
+  .table[data-lock-start="3"] tr > :nth-child(3) { inset-inline-start: calc(var(--table-lock-1, 0px) + var(--table-lock-2, 0px)); }
+  .table[data-lock-end] tr > :last-child { inset-inline-end: 0; }
+  .table thead .table-head { --_lock-bg: var(--muted); }
+  .table tfoot .table-cell { --_lock-bg: var(--muted); }
+  /* the edge of the locked block casts a hairline */
+  .table[data-lock-start="1"] tr > :nth-child(1),
+  .table[data-lock-start="2"] tr > :nth-child(2),
+  .table[data-lock-start="3"] tr > :nth-child(3) { box-shadow: inset -1px 0 0 var(--border); }
+  .table[data-lock-end] tr > :last-child { box-shadow: inset 1px 0 0 var(--border); }
+  .table-row:hover > :is(.table-cell) { --_lock-bg: color-mix(in oklch, var(--muted) 100%, var(--background)); }
+  .table-row[aria-selected="true"] > .table-cell { --_lock-bg: color-mix(in oklch, var(--primary) 7%, var(--background)); }
+
+  .table[data-sticky-header] thead .table-head {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+  .table-container:has(> .table[data-sticky-header]) { overflow: auto; }
+
+  /* -- Actions: a .table-actions cell of buttons, end-aligned - always
+     visible. data-actions="quiet" on the table dims them until the row is
+     hovered or focused (touch screens: full strength). On a narrow table
+     (container < 40rem) the inline buttons (.table-actions-inline) give way
+     to one "more" button (.table-actions-menu) opening a native popover
+     menu (.table-menu) - one menu in the row, no JavaScript. Touch screens
+     get 44px targets. */
+  .table-actions {
+    width: 1%;
+    white-space: nowrap;
+    text-align: end;
+
+    & > * + *,
+    & .table-actions-inline > * + * { margin-inline-start: 0.25rem; }
+  }
+  .table-actions-inline { display: inline-flex; align-items: center; }
+  .table-actions-menu { display: none; }
+  .table[data-actions="quiet"] :is(.table-actions > .btn, .table-actions-inline, .table-actions-menu > .btn) {
+    opacity: 0.45;
+    transition: opacity 150ms ease;
+  }
+  .table[data-actions="quiet"] .table-row:is(:hover, :focus-within) :is(.table-actions > .btn, .table-actions-inline, .table-actions-menu > .btn) { opacity: 1; }
+  @media (hover: none) {
+    .table[data-actions="quiet"] :is(.table-actions > .btn, .table-actions-inline, .table-actions-menu > .btn) { opacity: 1; }
+  }
+  @media (pointer: coarse) {
+    .table-actions .btn[data-size^="icon"] { min-width: 2.75rem; min-height: 2.75rem; }
+  }
+  @container (max-width: 40rem) {
+    .table-actions:has(.table-actions-menu) .table-actions-inline { display: none; }
+    .table-actions-menu { display: inline-flex; }
+  }
+
+  /* the row menu: a popover anchored to its own "more" button */
+  .table-row { anchor-scope: --table-row-menu; }
+  .table-actions-menu > .btn { anchor-name: --table-row-menu; }
+  .table-menu[popover] {
+    position: fixed;
+    position-anchor: --table-row-menu;
+    inset: auto;
+    top: anchor(bottom);
+    right: anchor(right);
+    position-try-fallbacks: flip-block;
+    margin: 0.25rem 0 0;
+    min-width: 10rem;
+    padding: 0.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background-color: var(--popover);
+    color: var(--popover-foreground);
+    box-shadow: var(--shadow-lg);
+    text-align: start;
+
+    &:popover-open { display: grid; gap: 0.125rem; }
+  }
+  .table-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    min-height: 2.25rem;
+    padding: 0.375rem 0.625rem;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: 0.875rem;
+    text-align: start;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover, &:focus-visible { background-color: var(--accent); color: var(--accent-foreground); outline: none; }
+    &[data-tone="destructive"] { color: var(--destructive); }
+    & svg { width: 1rem; height: 1rem; }
+  }
+  @media (pointer: coarse) {
+    .table-menu-item { min-height: 2.75rem; }
+  }
+
+
+  /* -- Empty state: one .table-empty cell spanning the columns ----------- */
+  .table-empty {
+    padding: 2.5rem 1rem !important;
+    text-align: center;
+    color: var(--muted-foreground);
+
+    & > * { display: block; margin-inline: auto; }
+    & > * + * { margin-top: 0.375rem; }
+    & > strong { color: var(--foreground); font-weight: 600; }
+    & > .btn { display: inline-flex; margin-top: 1rem; }
+  }
+  .table-empty-icon {
+    display: grid !important;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-bottom: 0.5rem;
+    border-radius: 9999px;
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+
+    & svg { width: 1.25rem; height: 1.25rem; }
+  }
+  tbody .table-row:has(> .table-empty):hover { background-color: transparent; }
+  /* a dropdown button straight in the actions cell anchors its .table-menu too */
+  .table-actions > .btn[popovertarget] { anchor-name: --table-row-menu; }
+
+  /* -- Text in cells ------------------------------------------------------- */
+  .table-sub {
+    display: block;
+    margin-top: 0.125rem;
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+  }
+  .table-truncate {
+    display: block;
+    max-width: var(--table-truncate, 14rem);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .table-clamp {
+    display: -webkit-box;
+    max-width: var(--table-clamp, 20rem);
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+  .table-mono {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    white-space: nowrap;
+  }
+  .table-muted { color: var(--muted-foreground); }
 
   /* -- Container query: compact table in narrow containers -- */
   @container (max-width: 480px) {
@@ -9010,9 +12154,19 @@
 
 @layer components {
   /* -- Default (pill) variant ----------------------------------- */
+  /* An inline GRID, one minmax(0, max-content) track per tab: when the row
+     is too narrow, every track grows from 0 at the same pace, so short labels
+     reach their full width first and only the long ones are cut ("…") -
+     flex-shrink would clip a short "Churn" as eagerly as a long label. */
   .tab-list {
-    display: inline-flex;
+    display: inline-grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, max-content);
     align-items: center;
+    /* never wider than its container: the triggers shrink and ellipsize */
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
     background: var(--muted);
     border-radius: var(--radius-lg);
     padding: 0.25rem;
@@ -9021,19 +12175,21 @@
     /* -- Sizes: trigger font + padding scale (set data-size on .tab-list).
        :where() keeps these at one class of specificity over the plain
        .tab-trigger base. md == each variant's own base padding, so md is
-       selectable everywhere without a visual change. The line variant's
-       trigger base (0.5rem/1rem, nested in [data-variant="line"]) outranks
-       the :where() rules, so its overrides are un-:where()'d (two attrs). */
-    &:where([data-size="xs"]) .tab-trigger { padding: 0.25rem 0.5rem;    font-size: 0.75rem; }
-    &:where([data-size="sm"]) .tab-trigger { padding: 0.3125rem 0.625rem; font-size: 0.8125rem; }
-    &:where([data-size="md"]) .tab-trigger { padding: 0.375rem 0.75rem;   font-size: 0.875rem; }
-    &:where([data-size="lg"]) .tab-trigger { padding: 0.5rem 1rem;       font-size: 1rem; }
-    &:where([data-size="xl"]) .tab-trigger { padding: 0.625rem 1.25rem;  font-size: 1.125rem; }
-    &[data-variant="line"][data-size="xs"] .tab-trigger { padding: 0.25rem 0.5rem; }
-    &[data-variant="line"][data-size="sm"] .tab-trigger { padding: 0.375rem 0.75rem; }
-    &[data-variant="line"][data-size="md"] .tab-trigger { padding: 0.5rem 1rem; }
-    &[data-variant="line"][data-size="lg"] .tab-trigger { padding: 0.625rem 1.25rem; }
-    &[data-variant="line"][data-size="xl"] .tab-trigger { padding: 0.75rem 1.5rem; }
+       selectable everywhere without a visual change. Paddings are logical
+       (block / inline), so they turn with the vertical labels of side tabs.
+       The line variant's trigger base (0.5rem/1rem, nested in
+       [data-variant="line"]) outranks the :where() rules, so its overrides
+       are un-:where()'d (two attrs). */
+    &:where([data-size="xs"]) .tab-trigger { padding-block: 0.25rem; padding-inline: 0.5rem;    font-size: 0.75rem; }
+    &:where([data-size="sm"]) .tab-trigger { padding-block: 0.3125rem; padding-inline: 0.625rem; font-size: 0.8125rem; }
+    &:where([data-size="md"]) .tab-trigger { padding-block: 0.375rem; padding-inline: 0.75rem;   font-size: 0.875rem; }
+    &:where([data-size="lg"]) .tab-trigger { padding-block: 0.5rem; padding-inline: 1rem;       font-size: 1rem; }
+    &:where([data-size="xl"]) .tab-trigger { padding-block: 0.625rem; padding-inline: 1.25rem;  font-size: 1.125rem; }
+    &[data-variant="line"][data-size="xs"] .tab-trigger { padding-block: 0.25rem; padding-inline: 0.5rem; }
+    &[data-variant="line"][data-size="sm"] .tab-trigger { padding-block: 0.375rem; padding-inline: 0.75rem; }
+    &[data-variant="line"][data-size="md"] .tab-trigger { padding-block: 0.5rem; padding-inline: 1rem; }
+    &[data-variant="line"][data-size="lg"] .tab-trigger { padding-block: 0.625rem; padding-inline: 1.25rem; }
+    &[data-variant="line"][data-size="xl"] .tab-trigger { padding-block: 0.75rem; padding-inline: 1.5rem; }
 
     /* -- Line variant --------------------------------------------- */
     &[data-variant="line"] {
@@ -9045,7 +12201,8 @@
 
       & .tab-trigger {
         border-radius: 0;
-        padding: 0.5rem 1rem;
+        padding-block: 0.5rem;
+        padding-inline: 1rem;
         border-bottom: 2px solid transparent;
         margin-bottom: -1px;
 
@@ -9060,22 +12217,33 @@
 
     /* -- Vertical orientation ------------------------------------ */
     &[aria-orientation="vertical"] {
-      flex-direction: column;
+      grid-auto-flow: row;
+      grid-auto-rows: minmax(0, max-content);
+      grid-auto-columns: auto;
+      align-items: stretch;
       width: auto;
 
-      & .tab-trigger {
-        justify-content: flex-start;
-        width: 100%;
-      }
+      & .tab-trigger { text-align: start; }
     }
   }
 
+  /* A trigger is a BLOCK box (not inline-flex): text-overflow only works on
+     a block container's own line, and a flex container would wrap a bare
+     label in an anonymous box that never ellipsizes. Icons and emoji ride
+     inline in front of the label - svg / img / .tab-icon - so plain
+     <button>Label</button> markup keeps working and a long label ends in "…"
+     when the list runs out of room (horizontal and vertical alike). */
   .tab-trigger {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.375rem 0.75rem;
+    display: block;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+    line-height: 1.25rem;
+    padding-block: 0.375rem;
+    padding-inline: 0.75rem;
     border-radius: calc(var(--radius) * 0.6);
     font-size: 0.875rem;
     font-weight: 500;
@@ -9084,8 +12252,19 @@
     color: var(--muted-foreground);
     cursor: pointer;
     transition: all 150ms ease;
-    white-space: nowrap;
     outline: none;
+
+    & :is(svg, img, .tab-icon) {
+      display: inline-block;
+      vertical-align: middle;
+      margin-inline-end: 0.5em;
+      line-height: 1;
+    }
+    & :is(svg, img) {
+      inline-size: 1em;
+      block-size: 1em;
+      translate: 0 -0.0625em;
+    }
 
     &[aria-selected="true"] {
       background: var(--background);
@@ -9099,21 +12278,266 @@
     }
 
     &:disabled {
-      pointer-events: none;
+      cursor: not-allowed;
       opacity: 0.5;
     }
   }
 
-  /* -- Vertical layout container ----------------------------- */
-  .tabs:has(.tab-list[aria-orientation="vertical"]) {
+  /* -- Layout: which side of the panel the tabs sit on ---------
+     data-side="top|bottom|left|right" on .tabs (default top; a vertical
+     tablist without data-side keeps the old settings-nav layout) and
+     data-align="start|center|end" for where the tabs cluster along that
+     edge (top/bottom: start = left; left/right: start = top). The DOM order
+     never changes - tablist first - only the visual side. :where() keeps the
+     side selectors at zero specificity, so variants override them cleanly. */
+  .tabs {
     display: flex;
-    gap: 1rem;
-    align-items: flex-start;
+    flex-direction: column;
+    min-width: 0;
 
-    & > .tab-content {
-      margin-top: 0;
-      flex: 1;
+    & > .tab-list { align-self: flex-start; }
+    &[data-align="center"] > .tab-list { align-self: center; }
+    &[data-align="end"] > .tab-list { align-self: flex-end; }
+
+    &:where([data-side="bottom"]) {
+      & > .tab-list { order: 2; }
+      & > .tab-content { margin-top: 0; margin-bottom: 0.75rem; }
     }
+
+    /* the older aria-orientation-only markup: a settings nav beside the
+       panel, horizontal labels (ellipsized past 40% of the width) */
+    &:where(:not([data-side]):has(> .tab-list[aria-orientation="vertical"])) {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 1rem;
+
+      & > .tab-list { max-width: 40%; }
+      & > .tab-content { margin: 0; flex: 1; min-width: 0; }
+      &:dir(rtl) { flex-direction: row-reverse; }
+    }
+
+    /* data-side left / right: a two-column grid. The tab column has
+       height 0 + min-height 100% - it adds nothing to the row, so the PANEL
+       decides the height and the column fills it: when the labels need more
+       room than the panel is tall, they shrink and ellipsize. left / right
+       are physical sides, also in RTL. */
+    &:where([data-side="left"], [data-side="right"]) {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      grid-template-areas: "list panel";
+      column-gap: 1rem;
+
+      & > .tab-list {
+        grid-area: list;
+        grid-auto-flow: row;
+        grid-auto-rows: minmax(0, max-content);
+        grid-auto-columns: auto;
+        align-items: stretch;
+        align-self: stretch;
+        align-content: start;
+        height: 0;
+        min-height: 100%;
+        max-width: none;
+      }
+      &[data-align="center"] > .tab-list { align-content: center; }
+      &[data-align="end"] > .tab-list { align-content: end; }
+      & > .tab-content { grid-area: panel; margin: 0; min-width: 0; }
+
+      /* the labels run vertically along the panel edge - right-hand tabs
+         read top to bottom, left-hand ones bottom to top (like book spines;
+         sideways-lr where supported, else top to bottom too). The logical
+         trigger paddings turn with the writing mode, and icons and emoji
+         turn with the label: text-orientation: sideways lays emoji on
+         their side like any other glyph, and svg / img (which a vertical
+         line would keep upright) rotate a quarter turn. */
+      & > .tab-list .tab-trigger {
+        writing-mode: vertical-rl;
+        text-orientation: sideways;
+        text-align: center;
+
+        & :is(svg, img) { rotate: 90deg; }
+      }
+    }
+    &:where([data-side="right"]) {
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas: "panel list";
+    }
+    &:where([data-side="left"]):dir(rtl) {
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas: "panel list";
+    }
+    &:where([data-side="right"]):dir(rtl) {
+      grid-template-columns: auto minmax(0, 1fr);
+      grid-template-areas: "list panel";
+    }
+    @supports (writing-mode: sideways-lr) {
+      /* sideways-lr lays emoji on their side, but svg / img keep their
+         orientation: a quarter turn back, so they point up the line */
+      &:where([data-side="left"]) > .tab-list .tab-trigger {
+        writing-mode: sideways-lr;
+
+        & :is(svg, img) { rotate: -90deg; }
+      }
+    }
+  }
+
+  /* line variant: the rule sits on the edge that faces the panel (physical
+     sides for left / right - the trigger's own writing mode is vertical, so
+     its logical inline-end would point down) */
+  .tabs[data-side="bottom"] > .tab-list[data-variant="line"] {
+    border-bottom: none;
+    border-top: 1px solid var(--border);
+
+    & .tab-trigger {
+      border-bottom: none;
+      border-top: 2px solid transparent;
+      margin-bottom: 0;
+      margin-top: -1px;
+
+      &[aria-selected="true"] { border-top-color: var(--primary); }
+    }
+  }
+  .tabs:is([data-side="left"], [data-side="right"], :not([data-side]):has(> .tab-list[aria-orientation="vertical"])) > .tab-list[data-variant="line"] {
+    border-bottom: none;
+
+    & .tab-trigger { border-bottom: none; margin-bottom: 0; }
+  }
+  .tabs:is([data-side="left"], :not([data-side]):has(> .tab-list[aria-orientation="vertical"])) > .tab-list[data-variant="line"] {
+    border-right: 1px solid var(--border);
+
+    & .tab-trigger {
+      border-right: 2px solid transparent;
+      margin-right: -1px;
+
+      &[aria-selected="true"] { border-right-color: var(--primary); }
+    }
+  }
+  .tabs[data-side="right"] > .tab-list[data-variant="line"] {
+    border-left: 1px solid var(--border);
+
+    & .tab-trigger {
+      border-left: 2px solid transparent;
+      margin-left: -1px;
+
+      &[aria-selected="true"] { border-left-color: var(--primary); }
+    }
+  }
+
+  /* -- Attached variant: folder tabs joined to the panel's card --
+     data-variant="attached" on the .tab-list; each panel holds a .card.
+     The selected tab takes the card surface and covers the card's border
+     where they meet, so tab and card read as one shape. The card corner the
+     tabs grow from is squared; every ROUNDED corner keeps the tabs a card
+     radius (--radius-xl) away, so no tab ever sits on a curve - start keeps
+     the far end clear, end the near one, center both. */
+  .tab-list[data-variant="attached"] {
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    gap: 0.25rem;
+    position: relative;
+    z-index: 1;
+
+    & .tab-trigger {
+      border: 1px solid var(--border);
+      background: var(--muted);
+      box-shadow: none;
+      border-radius: var(--radius-md) var(--radius-md) 0 0;
+
+      &[aria-selected="true"] {
+        background: var(--card);
+        color: var(--card-foreground);
+        box-shadow: none;
+        border-bottom-color: var(--card);
+      }
+    }
+  }
+  .tabs:has(> .tab-list[data-variant="attached"]) {
+    gap: 0;
+    column-gap: 0;
+
+    & > .tab-content { margin: 0; }
+
+    /* top (default) / bottom: the tabs overlap the card border by 1px and
+       stay clear of the rounded corner(s) along the row */
+    & > .tab-list[data-variant="attached"] {
+      margin-bottom: -1px;
+      margin-inline-end: var(--radius-xl);
+      max-width: calc(100% - var(--radius-xl));
+    }
+    &[data-align="end"] > .tab-list[data-variant="attached"] {
+      margin-inline: var(--radius-xl) 0;
+    }
+    &[data-align="center"] > .tab-list[data-variant="attached"] {
+      margin-inline: var(--radius-xl);
+      max-width: calc(100% - 2 * var(--radius-xl));
+    }
+
+    &[data-side="bottom"] > .tab-list[data-variant="attached"] {
+      margin-top: -1px;
+      margin-bottom: 0;
+
+      & .tab-trigger {
+        border-radius: 0 0 var(--radius-md) var(--radius-md);
+        &[aria-selected="true"] { border-bottom-color: var(--border); border-top-color: var(--card); }
+      }
+    }
+
+    /* left / right (and the legacy column): the gap runs down the column */
+    &:is([data-side="left"], [data-side="right"], :not([data-side]):has(> .tab-list[aria-orientation="vertical"])) {
+      & > .tab-list[data-variant="attached"] {
+        margin-block: 0;
+        margin-inline: 0;
+        max-width: none;
+        grid-auto-flow: row;
+        grid-auto-rows: minmax(0, max-content);
+        grid-auto-columns: auto;
+        padding-bottom: var(--radius-xl);
+
+        & .tab-trigger { width: 100%; }
+      }
+      &[data-align="end"] > .tab-list[data-variant="attached"] { padding-block: var(--radius-xl) 0; }
+      &[data-align="center"] > .tab-list[data-variant="attached"] { padding-block: var(--radius-xl); }
+    }
+    /* legacy column (a flex row): the card grows to the column's height */
+    &:not([data-side]):has(> .tab-list[aria-orientation="vertical"]) {
+      & > .tab-list[data-variant="attached"] { max-width: 40%; }
+      & > .tab-content:not([hidden]) {
+        align-self: stretch;
+        display: flex;
+        flex-direction: column;
+
+        & > .card { flex: 1; }
+      }
+    }
+    &:is([data-side="left"], :not([data-side]):has(> .tab-list[aria-orientation="vertical"])) > .tab-list[data-variant="attached"] {
+      margin-right: -1px;
+
+      & .tab-trigger {
+        border-radius: var(--radius-md) 0 0 var(--radius-md);
+        &[aria-selected="true"] { border-bottom-color: var(--border); border-right-color: var(--card); }
+      }
+    }
+    &[data-side="right"] > .tab-list[data-variant="attached"] {
+      margin-left: -1px;
+
+      & .tab-trigger {
+        border-radius: 0 var(--radius-md) var(--radius-md) 0;
+        &[aria-selected="true"] { border-bottom-color: var(--border); border-left-color: var(--card); }
+      }
+    }
+
+    /* the card corner the aligned tabs grow from is square */
+    &:not([data-side]):not(:has(> .tab-list[aria-orientation="vertical"])):not([data-align="center"]):not([data-align="end"]) > .tab-content > .card { border-start-start-radius: 0; }
+    &:not([data-side]):not(:has(> .tab-list[aria-orientation="vertical"]))[data-align="end"] > .tab-content > .card { border-start-end-radius: 0; }
+    &[data-side="top"]:not([data-align="center"]):not([data-align="end"]) > .tab-content > .card { border-start-start-radius: 0; }
+    &[data-side="top"][data-align="end"] > .tab-content > .card { border-start-end-radius: 0; }
+    &[data-side="bottom"]:not([data-align="center"]):not([data-align="end"]) > .tab-content > .card { border-end-start-radius: 0; }
+    &[data-side="bottom"][data-align="end"] > .tab-content > .card { border-end-end-radius: 0; }
+    &:is([data-side="left"], :not([data-side]):has(> .tab-list[aria-orientation="vertical"])):not([data-align="center"]):not([data-align="end"]) > .tab-content > .card { border-top-left-radius: 0; }
+    &:is([data-side="left"], :not([data-side]):has(> .tab-list[aria-orientation="vertical"]))[data-align="end"] > .tab-content > .card { border-bottom-left-radius: 0; }
+    &[data-side="right"]:not([data-align="center"]):not([data-align="end"]) > .tab-content > .card { border-top-right-radius: 0; }
+    &[data-side="right"][data-align="end"] > .tab-content > .card { border-bottom-right-radius: 0; }
   }
 
   /* -- Panel ---------------------------------------------------- */
@@ -9139,6 +12563,7 @@
       border: 2px solid Highlight;
       box-shadow: none;
     }
+    .tab-trigger:disabled { color: GrayText; }
 
     .tab-list[data-variant="line"] .tab-trigger[aria-selected="true"] {
       border: none;
@@ -9279,6 +12704,182 @@
 
   @media (forced-colors: active) {
     .mk-testimonial-card-body { background: Canvas; }
+  }
+}
+
+/* ── components/text-rotate/text-rotate.css ── */
+/* -- Text Rotate component ------------------------------------------ */
+
+@layer components {
+  /* daisyUI's text-rotate, CSS only: a .text-rotate holds one <span> of 2-6
+     lines (each a child element); one line shows at a time and the stack
+     rolls on to the next - an infinite loop that pauses while hovered. The
+     window is one line tall (1lh), so it works at any font-size and
+     line-height, inline in a sentence or as a headline. The keyframes are
+     picked from the line count (:has()); --text-rotate-duration sets one
+     full round (default 10s). data-direction="down" rolls the other way,
+     data-effect="fade" crossfades in place, data-pause="none" keeps it
+     running under the pointer. Reduced motion shows the first line only. */
+  .text-rotate {
+    --_n: 1;
+    --_dur: var(--text-rotate-duration, 10s);
+    display: inline-grid;
+    height: 1lh;
+    overflow: hidden;
+    vertical-align: bottom;
+
+    & > span {
+      display: flex;
+      flex-direction: column;
+      animation: var(--_name, none) var(--_dur) cubic-bezier(0.65, 0, 0.35, 1) infinite;
+    }
+    & > span > * {
+      display: block;
+      height: 1lh;
+      white-space: nowrap;
+    }
+    &[data-align="center"] > span > * { text-align: center; }
+    &[data-align="end"] > span > * { text-align: end; }
+
+    &:hover > span,
+    &:focus-within > span { animation-play-state: paused; }
+    &[data-pause="none"]:hover > span,
+    &[data-pause="none"]:focus-within > span { animation-play-state: running; }
+
+    &[data-direction="down"] > span { flex-direction: column-reverse; animation-name: var(--_down, none); }
+
+    /* fade: every line in the same cell, each fades through its slot */
+    &[data-effect="fade"] > span {
+      display: grid;
+      animation: none;
+    }
+    &[data-effect="fade"] > span > * {
+      grid-area: 1 / 1;
+      opacity: 0;
+      animation: var(--_fade, none) var(--_dur) ease infinite both;
+    }
+    &[data-effect="fade"]:hover > span > *,
+    &[data-effect="fade"]:focus-within > span > * { animation-play-state: paused; }
+    &[data-effect="fade"][data-pause="none"]:hover > span > * { animation-play-state: running; }
+  }
+
+  /* the line count picks the keyframes */
+  .text-rotate:has(> span > :nth-child(2):last-child) { --_n: 2; --_name: text-rotate-2; --_down: text-rotate-2-down; --_fade: text-rotate-fade-2; }
+  .text-rotate:has(> span > :nth-child(3):last-child) { --_n: 3; --_name: text-rotate-3; --_down: text-rotate-3-down; --_fade: text-rotate-fade-3; }
+  .text-rotate:has(> span > :nth-child(4):last-child) { --_n: 4; --_name: text-rotate-4; --_down: text-rotate-4-down; --_fade: text-rotate-fade-4; }
+  .text-rotate:has(> span > :nth-child(5):last-child) { --_n: 5; --_name: text-rotate-5; --_down: text-rotate-5-down; --_fade: text-rotate-fade-5; }
+  .text-rotate:has(> span > :nth-child(6):last-child) { --_n: 6; --_name: text-rotate-6; --_down: text-rotate-6-down; --_fade: text-rotate-fade-6; }
+
+  /* fade: line k starts its slot k-1 slots later */
+  .text-rotate[data-effect="fade"] > span > :nth-child(2) { animation-delay: calc(var(--_dur) * 1 / var(--_n)); }
+  .text-rotate[data-effect="fade"] > span > :nth-child(3) { animation-delay: calc(var(--_dur) * 2 / var(--_n)); }
+  .text-rotate[data-effect="fade"] > span > :nth-child(4) { animation-delay: calc(var(--_dur) * 3 / var(--_n)); }
+  .text-rotate[data-effect="fade"] > span > :nth-child(5) { animation-delay: calc(var(--_dur) * 4 / var(--_n)); }
+  .text-rotate[data-effect="fade"] > span > :nth-child(6) { animation-delay: calc(var(--_dur) * 5 / var(--_n)); }
+
+  @keyframes text-rotate-2 {
+    0%, 46% { translate: 0 0; }
+    50%, 96% { translate: 0 -50%; }
+    100% { translate: 0 0; }
+  }
+  @keyframes text-rotate-2-down {
+    0%, 46% { translate: 0 -50%; }
+    50%, 96% { translate: 0 0; }
+    100% { translate: 0 -50%; }
+  }
+  @keyframes text-rotate-fade-2 {
+    0% { opacity: 0; translate: 0 0.25lh; }
+    4%, 46% { opacity: 1; translate: 0 0; }
+    50%, 100% { opacity: 0; translate: 0 -0.25lh; }
+  }
+  @keyframes text-rotate-3 {
+    0%, 30.667% { translate: 0 0; }
+    33.333%, 64% { translate: 0 -33.3333%; }
+    66.667%, 97.333% { translate: 0 -66.6667%; }
+    100% { translate: 0 0; }
+  }
+  @keyframes text-rotate-3-down {
+    0%, 30.667% { translate: 0 -66.6667%; }
+    33.333%, 64% { translate: 0 -33.3333%; }
+    66.667%, 97.333% { translate: 0 0; }
+    100% { translate: 0 -66.6667%; }
+  }
+  @keyframes text-rotate-fade-3 {
+    0% { opacity: 0; translate: 0 0.25lh; }
+    2.667%, 30.667% { opacity: 1; translate: 0 0; }
+    33.333%, 100% { opacity: 0; translate: 0 -0.25lh; }
+  }
+  @keyframes text-rotate-4 {
+    0%, 23% { translate: 0 0; }
+    25%, 48% { translate: 0 -25%; }
+    50%, 73% { translate: 0 -50%; }
+    75%, 98% { translate: 0 -75%; }
+    100% { translate: 0 0; }
+  }
+  @keyframes text-rotate-4-down {
+    0%, 23% { translate: 0 -75%; }
+    25%, 48% { translate: 0 -50%; }
+    50%, 73% { translate: 0 -25%; }
+    75%, 98% { translate: 0 0; }
+    100% { translate: 0 -75%; }
+  }
+  @keyframes text-rotate-fade-4 {
+    0% { opacity: 0; translate: 0 0.25lh; }
+    2%, 23% { opacity: 1; translate: 0 0; }
+    25%, 100% { opacity: 0; translate: 0 -0.25lh; }
+  }
+  @keyframes text-rotate-5 {
+    0%, 18.4% { translate: 0 0; }
+    20%, 38.4% { translate: 0 -20%; }
+    40%, 58.4% { translate: 0 -40%; }
+    60%, 78.4% { translate: 0 -60%; }
+    80%, 98.4% { translate: 0 -80%; }
+    100% { translate: 0 0; }
+  }
+  @keyframes text-rotate-5-down {
+    0%, 18.4% { translate: 0 -80%; }
+    20%, 38.4% { translate: 0 -60%; }
+    40%, 58.4% { translate: 0 -40%; }
+    60%, 78.4% { translate: 0 -20%; }
+    80%, 98.4% { translate: 0 0; }
+    100% { translate: 0 -80%; }
+  }
+  @keyframes text-rotate-fade-5 {
+    0% { opacity: 0; translate: 0 0.25lh; }
+    1.6%, 18.4% { opacity: 1; translate: 0 0; }
+    20%, 100% { opacity: 0; translate: 0 -0.25lh; }
+  }
+  @keyframes text-rotate-6 {
+    0%, 15.333% { translate: 0 0; }
+    16.667%, 32% { translate: 0 -16.6667%; }
+    33.333%, 48.667% { translate: 0 -33.3333%; }
+    50%, 65.333% { translate: 0 -50%; }
+    66.667%, 82% { translate: 0 -66.6667%; }
+    83.333%, 98.667% { translate: 0 -83.3333%; }
+    100% { translate: 0 0; }
+  }
+  @keyframes text-rotate-6-down {
+    0%, 15.333% { translate: 0 -83.3333%; }
+    16.667%, 32% { translate: 0 -66.6667%; }
+    33.333%, 48.667% { translate: 0 -50%; }
+    50%, 65.333% { translate: 0 -33.3333%; }
+    66.667%, 82% { translate: 0 -16.6667%; }
+    83.333%, 98.667% { translate: 0 0; }
+    100% { translate: 0 -83.3333%; }
+  }
+  @keyframes text-rotate-fade-6 {
+    0% { opacity: 0; translate: 0 0.25lh; }
+    1.333%, 15.333% { opacity: 1; translate: 0 0; }
+    16.667%, 100% { opacity: 0; translate: 0 -0.25lh; }
+  }
+
+  /* -- Accessibility ----------------------------------------------------
+     Reduced motion: no rolling - the first line stays. All lines stay in
+     the DOM, so assistive tech reads the full list. */
+  @media (prefers-reduced-motion: reduce) {
+    .text-rotate > span,
+    .text-rotate[data-effect="fade"] > span > * { animation: none; }
+    .text-rotate[data-effect="fade"] > span > :first-child { opacity: 1; }
   }
 }
 
@@ -9586,6 +13187,38 @@
     &[data-variant="active"] {
       background-color: var(--primary);
     }
+    &[data-variant="destructive"] {
+      background-color: var(--destructive);
+    }
+    /* a hollow ring: planned / upcoming */
+    &[data-variant="outline"] {
+      background-color: var(--background);
+      box-shadow: inset 0 0 0 2px var(--primary);
+    }
+
+    /* an icon inside the dot (svg / img / lucide <i data-lucide>) turns it
+       into a 1.5rem badge; the connector re-centers on it (below) */
+    &:has(> :is(svg, img)) {
+      display: grid;
+      place-items: center;
+      width: 1.5rem;
+      height: 1.5rem;
+      margin-top: -0.125rem;
+      background-color: var(--muted);
+      color: var(--foreground);
+
+      & > :is(svg, img) { width: 0.875rem; height: 0.875rem; }
+      &[data-variant="active"] { background-color: var(--primary); color: var(--primary-foreground); }
+      &[data-variant="destructive"] { background-color: var(--destructive); color: var(--destructive-foreground); }
+      &[data-variant="outline"] { background-color: var(--background); color: var(--foreground); box-shadow: inset 0 0 0 1px var(--border); }
+    }
+  }
+
+  /* vertical connector under an icon dot: centered on the 1.5rem badge */
+  .timeline-item:has(> .timeline-dot > :is(svg, img))::before {
+    left: calc(0.75rem - 0.5px);
+    top: 1.75rem;
+    bottom: 0.5rem;
   }
 
   .timeline-content {
@@ -9635,6 +13268,88 @@
     & .timeline-item:not(:last-child) { padding-bottom: 1.875rem; }
   }
 
+  /* -- Horizontal ---------------------------------------------------
+     data-orientation="horizontal": one equal column per item (at least
+     10rem - more items scroll sideways, snapping to each), the dot on top,
+     the content below. The rows are a SUBGRID across all items, so every
+     dot sits on one line even when contents differ in height. The
+     connector is the item's ::before as a GRID ITEM in the dot's row: it
+     starts 0.375rem after the dot and runs through the item's trailing
+     padding to 0.375rem before the next dot. data-align="center" centers
+     dot and text in the column; data-alternate puts every second item's
+     content ABOVE the line. The item gap (density-scaled) spaces dot and
+     content. Declared after the density rules, which it overrides where
+     they meet (padding). */
+  .timeline[data-orientation="horizontal"] {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(10rem, 1fr);
+    grid-template-rows: auto auto;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+
+    & > .timeline-item {
+      display: grid;
+      grid-row: span 2;
+      grid-template-rows: subgrid;
+      grid-template-columns: minmax(0, 1fr);
+      column-gap: 0;
+      padding: 0;
+      padding-inline-end: 1.5rem;
+      scroll-snap-align: start;
+
+      & > .timeline-dot { grid-row: 1; grid-column: 1; margin: 0; justify-self: start; align-self: center; }
+      & > .timeline-content { grid-row: 2; grid-column: 1; }
+
+      &::before {
+        position: static;
+        grid-row: 1;
+        grid-column: 1;
+        align-self: center;
+        width: auto;
+        height: 1px;
+        margin-inline: 1rem -1.125rem;
+      }
+      &:has(> .timeline-dot > :is(svg, img))::before { margin-inline: 1.875rem -1.125rem; }
+      &:last-child { padding-inline-end: 0; }
+    }
+
+    &[data-align="center"] > .timeline-item {
+      text-align: center;
+
+      & > .timeline-dot { justify-self: center; }
+      & > .timeline-content { align-items: center; }
+      /* percentages resolve against the column: from just past this dot's
+         center to just before the next one's */
+      &::before { margin-inline: calc(50% + 0.6875rem) calc(-50% - 0.8125rem); }
+      &:has(> .timeline-dot > :is(svg, img))::before { margin-inline: calc(50% + 1.125rem) calc(-50% - 0.375rem); }
+    }
+
+    &[data-alternate] {
+      grid-template-rows: auto auto auto;
+
+      & > .timeline-item {
+        grid-row: span 3;
+
+        & > .timeline-dot, &::before { grid-row: 2; }
+        & > .timeline-content { grid-row: 3; }
+        &:nth-child(even) > .timeline-content { grid-row: 1; align-self: end; }
+      }
+    }
+  }
+
+
+  /* -- Accessibility ------------------------------------------
+     forced colors drop background colors: keep the dots and the
+     connector visible in system colors */
+  @media (forced-colors: active) {
+    .timeline-dot { forced-color-adjust: none; background-color: CanvasText; color: Canvas; }
+    .timeline-dot[data-variant="active"] { background-color: Highlight; color: HighlightText; }
+    .timeline-dot[data-variant="outline"] { background-color: Canvas; box-shadow: inset 0 0 0 2px CanvasText; color: CanvasText; }
+    .timeline-item::before { forced-color-adjust: none; background-color: CanvasText; }
+  }
 }
 
 /* ── components/toast/toast.css ── */
@@ -9669,6 +13384,8 @@
     position: fixed;
     inset: auto;
     margin: 0;
+    /* the UA popover sheet clips (overflow: auto) - the pile badge sits on the edge */
+    overflow: visible;
     background-color: var(--popover);
     color: var(--popover-foreground);
     border: 1px solid var(--border);
@@ -9747,6 +13464,68 @@
       opacity: 0;
       transform: translateY(0.5rem);
     }
+  }
+
+
+  /* -- Named animations (options.animation) ------------------------
+     df$.anim plays the entrance / exit; the CSS fade stands down. */
+  .toast[data-anim] {
+    transition: bottom 220ms ease, top 220ms ease, scale 220ms ease, opacity 220ms ease;
+
+    &:popover-open { opacity: 1; transform: none; }
+  }
+  @starting-style {
+    .toast[data-anim]:popover-open { opacity: 1; transform: none; }
+  }
+
+  /* -- Pile (df$.shadcn.toast.configure({ stack: 'pile' })) ----------
+     The newest toast is in front and wears the shapes.css stack-* sheets
+     (added by toast.js); the older ones wait behind it, hidden, and fan out
+     into a list while the pointer or focus is inside the pile. A "+n" badge
+     counts the hidden ones. */
+  .toast-container[data-stack="pile"] .toast {
+    transition: opacity 200ms ease, transform 200ms ease, bottom 220ms cubic-bezier(0.2, 0.8, 0.2, 1), top 220ms cubic-bezier(0.2, 0.8, 0.2, 1), scale 220ms ease;
+  }
+  .toast[data-piled] {
+    opacity: 0 !important;
+    scale: 0.94;
+    pointer-events: none;
+  }
+  .toast[data-more]:not([data-more="0"])::after {
+    content: "+" attr(data-more);
+    position: absolute;
+    inset-block-start: -0.5rem;
+    inset-inline-start: -0.5rem;
+    min-width: 1.5rem;
+    height: 1.5rem;
+    padding-inline: 0.375rem;
+    border-radius: 9999px;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.5rem;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+  }
+  .toast-container[data-position^="top"] .toast[data-more]::after { inset-block-start: auto; inset-block-end: -0.5rem; }
+
+  /* -- Aura (options.aura) ------------------------------------------
+     The toast is the ring of light (shapes.css .aura), its content sits on
+     an inner surface with the toast's own colors and padding. */
+  .toast[data-aura] {
+    --shape-round: var(--radius-lg);
+    border: 0;
+    background-color: transparent;
+    box-shadow: 0 8px 28px -6px color-mix(in oklch, var(--foreground) 30%, transparent);
+  }
+  .toast-surface {
+    padding: 1rem;
+    border-radius: var(--radius-lg);
+    background-color: var(--popover);
+    color: var(--popover-foreground);
+
+    .toast[data-variant="destructive"] > & { background-color: var(--destructive); color: var(--destructive-foreground); }
   }
 
   /* -- Inner elements ------------------------------------------- */
@@ -10347,19 +14126,22 @@
       &:popover-open { translate: 0 0; }
     }
 
-    /* ----- Align variants (combined with side) ----- */
+    /* ----- Align variants (combined with side) -----
+       span-*: the tooltip starts AT the trigger's edge and extends past it.
+       (The corner areas - "top left" - put it entirely beside the trigger,
+       pointing at nothing.) start = shares the trigger's start edge. */
     &[data-align="start"] {
-      &:not([data-side="left"]):not([data-side="right"]) { position-area: top left; }
-      &[data-side="bottom"] { position-area: bottom left; }
-      &[data-side="left"] { position-area: left top; }
-      &[data-side="right"] { position-area: right top; }
+      &:not([data-side="left"]):not([data-side="right"]) { position-area: top span-right; }
+      &[data-side="bottom"] { position-area: bottom span-right; }
+      &[data-side="left"] { position-area: left span-bottom; }
+      &[data-side="right"] { position-area: right span-bottom; }
     }
 
     &[data-align="end"] {
-      &:not([data-side="left"]):not([data-side="right"]) { position-area: top right; }
-      &[data-side="bottom"] { position-area: bottom right; }
-      &[data-side="left"] { position-area: left bottom; }
-      &[data-side="right"] { position-area: right bottom; }
+      &:not([data-side="left"]):not([data-side="right"]) { position-area: top span-left; }
+      &[data-side="bottom"] { position-area: bottom span-left; }
+      &[data-side="left"] { position-area: left span-top; }
+      &[data-side="right"] { position-area: right span-top; }
     }
 
     /* ----- Arrow ----- */
@@ -10385,6 +14167,13 @@
     &[data-side="right"] {
       & [data-arrow] { left: -4px; top: 50%; margin-top: -4px; }
     }
+
+    /* Aligned tooltips: the arrow sits near the shared edge, so it points
+       into the trigger (a centred arrow would point past a narrow trigger) */
+    &[data-align="start"]:not([data-side="left"]):not([data-side="right"]) [data-arrow] { left: 1rem; margin-left: -4px; }
+    &[data-align="end"]:not([data-side="left"]):not([data-side="right"]) [data-arrow] { left: auto; right: 1rem; margin-left: 0; margin-right: -4px; }
+    &[data-align="start"]:is([data-side="left"], [data-side="right"]) [data-arrow] { top: 0.75rem; margin-top: -4px; }
+    &[data-align="end"]:is([data-side="left"], [data-side="right"]) [data-arrow] { top: auto; bottom: 0.75rem; margin-top: 0; margin-bottom: -4px; }
   }
 
   @starting-style {
@@ -10521,6 +14310,30 @@
       height: 1rem;
       flex-shrink: 0;
       color: var(--muted-foreground);
+    }
+  }
+  /* -- Checkboxes (data-checkable) ---------------------------------
+     A .tree-check (the checkbox component) sits after the icons, before
+     the label; tree-view.js cascades and rolls it up (indeterminate). */
+  .tree-check {
+    flex-shrink: 0;
+    margin: 0;
+  }
+  .tree[data-checkable] .tree-leaf:has(.tree-check) { cursor: pointer; }
+
+  /* -- Drag & drop (data-sortable) ----------------------------------
+     A dragged item fades; the row under the pointer shows where it lands:
+     a line above / below (before / after) or a tinted frame (into a
+     folder). */
+  .tree[data-sortable] :is(.tree-branch-trigger, .tree-leaf)[draggable="true"] { cursor: grab; }
+  .tree[data-sortable] :is(.tree-branch-trigger, .tree-leaf):active { cursor: grabbing; }
+  .tree [data-dragging] > :is(.tree-leaf, details > .tree-branch-trigger) { opacity: 0.4; }
+  :is(.tree-branch-trigger, .tree-leaf) {
+    &[data-drop="before"] { box-shadow: inset 0 2px 0 var(--primary); }
+    &[data-drop="after"] { box-shadow: inset 0 -2px 0 var(--primary); }
+    &[data-drop="inside"] {
+      background-color: color-mix(in oklch, var(--primary) 12%, transparent);
+      box-shadow: inset 0 0 0 1px var(--primary);
     }
   }
   /* -- Labels -----------------------------------------------------
@@ -10776,10 +14589,10 @@
     line-height: 1.25;
     text-wrap: balance;
     color: var(--foreground);
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 0.5rem;
+    border-block-end: 1px solid var(--border);
+    padding-block-end: 0.5rem;
 
-    &:first-child { margin-top: 0; }
+    &:first-child { margin-block-start: 0; }
   }
 
   .h3 {
@@ -10808,7 +14621,7 @@
     text-wrap: pretty;
     color: var(--foreground);
 
-    &:not(:first-child) { margin-top: 1.5rem; }
+    &:not(:first-child) { margin-block-start: 1.5rem; }
   }
 
   /* -- Lead --------------------------------------------------- */
@@ -10842,7 +14655,7 @@
 
   /* -- Blockquote --------------------------------------------- */
   .blockquote {
-    margin-top: 1.5rem;
+    margin-block-start: 1.5rem;
     border-inline-start: 2px solid var(--border);
     padding-inline-start: 1.5rem;
     font-style: italic;
@@ -10862,6 +14675,78 @@
     font-size: 0.875em;
     font-weight: 600;
     color: var(--foreground);
+  }
+
+  /* -- CJK: Chinese, Japanese, Korean ------------------------------
+     Keyed on the lang attribute, so one set of classes serves every script.
+     Latin tuning is undone (negative tracking, faux italics); paragraphs
+     justify between characters with strict line breaking (kinsoku: no 。
+     or ， at a line start), and sentence-end punctuation may hang past the
+     edge (Safari: hanging-punctuation) or trims to half width
+     (Chromium: text-spacing-trim) so the justified edge stays straight.
+     text-autospace adds the thin gap between CJK and Latin /
+     digits that authors used to type by hand. */
+  :is(.h1, .h2, .h3, .h4, .lead, .large):is(:lang(zh), :lang(ja), :lang(ko)),
+  :is(:lang(zh), :lang(ja), :lang(ko)) :is(.h1, .h2, .h3, .h4, .lead, .large) {
+    letter-spacing: 0;
+  }
+  /* Japanese headings break between phrases (bunsetsu), not mid-word */
+  :is(.h1, .h2, .h3, .h4, .lead):lang(ja),
+  :lang(ja) :is(.h1, .h2, .h3, .h4, .lead) {
+    word-break: auto-phrase;
+  }
+  :is(.p, .lead, .blockquote):is(:lang(zh), :lang(ja), :lang(ko)),
+  :is(:lang(zh), :lang(ja), :lang(ko)) :is(.p, .lead, .blockquote) {
+    line-height: 1.9;
+    line-break: strict;
+    text-autospace: normal;
+  }
+  :is(.p, .blockquote):is(:lang(zh), :lang(ja)),
+  :is(:lang(zh), :lang(ja)) :is(.p, .blockquote) {
+    text-align: justify;
+    text-justify: inter-character;
+    /* the line-end 。，: Safari hangs it past the edge; Chromium trims the
+       fullwidth glyph's blank half (text-spacing-trim) - either way the
+       justified edge stays straight */
+    hanging-punctuation: allow-end;
+    text-spacing-trim: normal;
+  }
+  /* CJK has no italics - a slanted Han character is a synthetic oblique */
+  .blockquote:is(:lang(zh), :lang(ja), :lang(ko)),
+  :is(:lang(zh), :lang(ja), :lang(ko)) .blockquote {
+    font-style: normal;
+  }
+
+  /* -- Vertical text (tategaki / 直排) ----------------------------------
+     .text-vertical sets top-to-bottom lines flowing right to left. Latin
+     runs lie sideways (text-orientation: mixed); .text-upright stands a
+     short run (a two-digit number) upright in one cell - tate-chu-yoko.
+     The spacing above uses logical properties, so headings, paragraphs and
+     the blockquote rule turn with the text. Give the block a height. */
+  .text-vertical {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+  }
+  .text-upright {
+    text-combine-upright: all;
+  }
+
+  /* -- Emphasis marks (圈点 / 傍点) ---------------------------------------
+     Dots beside each character instead of italics: over the text in
+     Japanese (right of it when vertical), under it in Chinese. */
+  .text-emphasis {
+    font-style: normal;
+    text-emphasis: filled dot;
+    text-emphasis-position: over right;
+  }
+  .text-emphasis:lang(ja) { text-emphasis-style: filled sesame; }
+  .text-emphasis:lang(zh) { text-emphasis-position: under right; }
+
+  /* ruby annotations (furigana, pinyin, zhuyin) read as small, muted type */
+  :is(.p, .lead, .blockquote, .h1, .h2, .h3, .h4) rt {
+    font-size: 0.5em;
+    color: var(--muted-foreground);
+    letter-spacing: 0;
   }
 
   /* -- Accessibility ------------------------------------------ */

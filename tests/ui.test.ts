@@ -53,18 +53,24 @@ test('header: panel-left toggle docks the sidebar; version badge + separators si
   expect(toggle, 'header sidebar toggle').toBeTruthy();
   expect(toggle!.previousElementSibling?.classList.contains('header-brand'), 'toggle follows the brand').toBe(true);
 
-  // version badge now lives in the actions nav, left of the GitHub link,
-  // separated from it (and from the icon buttons) by vertical separators
+  // the version badge sits in the brand, centered under the logo and clear
+  // of the name beside it (every width)
+  const version: HTMLElementOrNull = doc.querySelector('.site-header .header-brand .header-brand-mark .header-version');
+  expect(version, 'version badge under the logo').toBeTruthy();
+  expect(version!.textContent!.trim()).toMatch(/^v\d+\.\d+\.\d+$/);
+  const logoBox = doc.querySelector('.header-brand-logo')!.getBoundingClientRect();
+  const badgeBox = version!.getBoundingClientRect();
+  const nameBox = doc.querySelector('.header-brand-name')!.getBoundingClientRect();
+  expect(Math.abs(badgeBox.left + badgeBox.width / 2 - (logoBox.left + logoBox.width / 2)), 'badge centered under the logo').toBeLessThan(1.5);
+  expect(badgeBox.top, 'badge below the logo').toBeGreaterThan(logoBox.top + logoBox.height / 2);
+  expect(badgeBox.right, 'badge clear of the name').toBeLessThanOrEqual(nameBox.left);
+  // the actions nav: GitHub, a separator, the icon buttons
   const nav = doc.querySelector('.site-header nav');
   expect(nav, 'actions nav').toBeTruthy();
-  const version: HTMLElementOrNull = nav!.querySelector('.header-version');
-  expect(version, 'version badge in actions nav').toBeTruthy();
-  expect(version!.textContent).toMatch(/^v\d+\.\d+\.\d+$/);
+  expect(nav!.querySelector('.header-version'), 'no version badge in the nav any more').toBeNull();
   const separators = nav!.querySelectorAll('.separator[data-orientation="vertical"]');
-  expect(separators.length, 'version↔GitHub and GitHub↔buttons separators').toBe(2);
-  expect(version!.nextElementSibling?.classList.contains('separator'), 'separator after version').toBe(true);
+  expect(separators.length, 'GitHub↔buttons separator').toBe(1);
   const gh = nav!.querySelector<HTMLAnchorElement>('a[href*="github.com"]');
-  expect(gh?.previousElementSibling?.classList.contains('separator'), 'separator before GitHub').toBe(true);
   expect(gh?.nextElementSibling?.classList.contains('separator'), 'separator after GitHub').toBe(true);
 
   // clicking the toggle docks the sidebar (component data-state) and re-labels it

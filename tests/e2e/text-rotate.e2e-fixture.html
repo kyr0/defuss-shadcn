@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>text-rotate e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/text-rotate/text-rotate.css" />
+  </head>
+  <body style="padding:2rem;font-family:system-ui;font-size:20px;line-height:1.5;">
+    <!-- mirrors the doc page: default (3 lines), in a sentence, 2 / 6 lines,
+         duration, down, fade, center, custom line-height, pause none -->
+    <p id="sentence">Build <span class="text-rotate" id="tr3"><span><span>ONE</span><span>TWO</span><span>THREE</span></span></span> now.</p>
+    <p><span class="text-rotate" id="tr2" style="--text-rotate-duration:4s;"><span><span>A</span><span>B</span></span></span></p>
+    <p><span class="text-rotate" id="tr6" data-pause="none"><span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span></span></span></p>
+    <p><span class="text-rotate" id="down" data-direction="down"><span><span>ONE</span><span>TWO</span><span>THREE</span></span></span></p>
+    <p><span class="text-rotate" id="fade" data-effect="fade"><span><span>ONE</span><span>TWO</span><span>THREE</span></span></span></p>
+    <p><span class="text-rotate" id="center" data-align="center"><span><span>Hi</span><span>Hello there</span></span></span></p>
+    <p style="line-height:2.5;"><span class="text-rotate" id="tall"><span><span>X</span><span>Y</span></span></span></p>
+  </body>
+</html>

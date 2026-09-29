@@ -1,0 +1,220 @@
+---
+title: "Mermaid"
+description: "Mermaid component - text-first diagrams (flowchart, sequence, class, state …) rendered by the official Mermaid renderer, lazy-loaded, themed from the design tokens, strict security."
+slug: "mermaid"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="mermaid" title="Mermaid" component="mermaid">
+  Diagrams as text. Write Mermaid's own syntax in a <code>&lt;pre class="mermaid"&gt;</code> inside a <code>.mermaid-diagram</code> figure; the official Mermaid renderer turns it into an SVG in your theme's colors. The component ships no Mermaid code - the first diagram on a page loads the pinned official build once, a page without one never does. Without JavaScript the source reads as a code block.
+</PageHeader>
+
+<SkillPanel component="mermaid">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;figure&gt;</code> + Mermaid's native <code>&lt;pre class="mermaid"&gt;</code> - progressive enhancement from readable source to SVG.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import" title="the renderer loads only when a diagram exists"><code>import()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver" title="new diagrams render, theme changes re-render"><code>MutationObserver</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output" title="announced render errors"><code>&lt;output&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure" title="diagram + caption as one unit"><code>&lt;figure&gt;</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mermaid-diagram</code>
+    <code>.mermaid</code>
+    <code>.mermaid-output</code>
+    <code>.mermaid-error</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Upstream">
+<SkillGrid>
+    <Variant name="mermaid@12.0.0" description="Official renderer (mermaid-js/mermaid, MIT) - dist/mermaid.esm.min.mjs via jsDelivr, pinned" />
+    <Variant name='meta name="mermaid-module"' description="Self-host: point the loader at your copy of the same build" />
+    <Variant name="securityLevel: strict" description="Locked - HTML in labels encoded, click handlers off" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• <code>aria-label</code> on the figure names the SVG (<code>role="img"</code>)</SkillText>
+  <SkillText dense>• <code>accTitle:</code> / <code>accDescr:</code> in the source become the SVG's title and description</SkillText>
+  <SkillText dense>• Render errors are an <code>&lt;output role="alert"&gt;</code>; the source stays readable</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Flowchart" hint="The figure wraps Mermaid's own markup. Nodes are card surfaces, edges the muted foreground - all from the design tokens."
+<figure class="mermaid-diagram" aria-label="Release flow">
+  <pre class="mermaid">
+flowchart LR
+  A[Edit src/] --> B(make build)
+  B --> C{verify green?}
+  C -- yes --> D[Commit and release]
+  C -- no --> A
+  </pre>
+</figure>
+```
+
+```html example label="Sequence diagram" hint="Actors, messages, activations and notes."
+<figure class="mermaid-diagram" aria-label="Loading the renderer">
+  <pre class="mermaid">
+sequenceDiagram
+  participant Page
+  participant mermaid.js
+  participant jsDelivr
+  Page->>mermaid.js: first .mermaid-diagram appears
+  activate mermaid.js
+  mermaid.js->>jsDelivr: import mermaid@12.0.0 (once)
+  jsDelivr-->>mermaid.js: official ESM build
+  Note right of mermaid.js: themeVariables from the tokens
+  mermaid.js-->>Page: token-themed SVG
+  deactivate mermaid.js
+  </pre>
+</figure>
+```
+
+```html example label="Class and state diagrams" hint="Any Mermaid diagram type works - the theme is the same everywhere."
+<div class="grid grid-cols-auto gap-6" style="--layout-min:18rem;">
+  <figure class="mermaid-diagram" aria-label="Component classes">
+    <pre class="mermaid">
+classDiagram
+  class Component {
+    +name
+    +type
+    +setState(name, config)
+  }
+  class Skill {
+    +frontmatter
+    +states
+  }
+  Component "1" --> "1" Skill : documented by
+    </pre>
+  </figure>
+  <figure class="mermaid-diagram" aria-label="Diagram states">
+    <pre class="mermaid">
+stateDiagram-v2
+  [*] --> Source
+  Source --> SVG : renderer loaded
+  Source --> Failed : invalid syntax
+  Failed --> SVG : source fixed
+  SVG --> SVG : theme changed
+    </pre>
+  </figure>
+</div>
+```
+
+```html example label="Added at runtime" hint="Diagrams inserted later - SPA navigation, streamed content, a click - render on their own: a MutationObserver finds them. No init call."
+<button class="btn" data-variant="outline" id="mm-add">Add a diagram</button>
+<div id="mm-host" class="stack gap-4 mt-4"></div>
+<script>
+  let n = 0;
+  document.getElementById('mm-add').addEventListener('click', () => {
+    n++;
+    const fig = document.createElement('figure');
+    fig.className = 'mermaid-diagram';
+    fig.setAttribute('aria-label', 'Diagram ' + n);
+    const pre = document.createElement('pre');
+    pre.className = 'mermaid';
+    pre.textContent = 'flowchart LR\n  Click' + n + '[click ' + n + '] --> Diagram' + n + '[diagram ' + n + ']';
+    fig.append(pre);
+    document.getElementById('mm-host').append(fig);
+  });
+</script>
+```
+
+```html example label="Light and dark" hint="The colors come from the design tokens the figure resolves, converted to the hex values Mermaid needs. A figure inside a .dark scope renders dark on a light page; toggling the site theme (or any theme switch) re-renders every diagram."
+<div class="grid grid-cols-auto gap-4" style="--layout-min:16rem;">
+  <figure class="mermaid-diagram" aria-label="Light">
+    <pre class="mermaid">
+flowchart TD
+  Tokens[design tokens] --> Hex[hex colors]
+  Hex --> SVG[Mermaid SVG]
+    </pre>
+  </figure>
+  <div class="dark p-4 rounded-lg" style="background:var(--background);color:var(--foreground);">
+    <figure class="mermaid-diagram" aria-label="Dark">
+      <pre class="mermaid">
+flowchart TD
+  Tokens[design tokens] --> Hex[hex colors]
+  Hex --> SVG[Mermaid SVG]
+      </pre>
+    </figure>
+  </div>
+</div>
+```
+
+```html example label="A malformed diagram" hint="Invalid syntax never destroys the source: it stays visible, and an output with role=&quot;alert&quot; says what went wrong."
+<figure class="mermaid-diagram" aria-label="Broken diagram">
+  <pre class="mermaid">
+flowchart LR
+  A --> B -->
+  </pre>
+</figure>
+```
+
+```html example label="Accessible diagrams" hint="aria-label names the SVG; Mermaid's accTitle / accDescr lines become its title and description; a figcaption is visible to everyone."
+<figure class="mermaid-diagram" aria-label="Checkout flow">
+  <pre class="mermaid">
+flowchart LR
+  accTitle: Checkout flow
+  accDescr: A cart leads to checkout; paid orders ship, failed payments return to checkout.
+  Cart --> Checkout --> Pay{Payment}
+  Pay -- paid --> Ship
+  Pay -- failed --> Checkout
+  </pre>
+  <figcaption>From cart to shipment</figcaption>
+</figure>
+```
+
+```html example label="Mermaid's own markup" hint="A bare pre class=&quot;mermaid&quot; - the convention from Mermaid's documentation - is wrapped in the figure automatically."
+<pre class="mermaid">
+pie title Where a build spends its time
+  "Compile + bundle" : 18
+  "Screenshots" : 42
+  "Verify" : 11
+  "Tests" : 29
+</pre>
+```
+
+<h2 id="in-docs" class="h2-display">In the docs: a fence</h2>
+
+<DocText>In these docs (MDX) and in <code>ARCH.md</code>, a <code>mermaid</code> code fence becomes the component - the same figure, rendered by the same runtime. <code>label="…"</code> names it, <code>caption="…"</code> adds a figcaption. The <DocLink href="architecture.html">Verified Agentic Engineering</DocLink> proof loop and the <DocLink href="component-skills.html">Component Skills</DocLink> build diagram are written this way.</DocText>
+
+```mermaid label="From fence to SVG" caption="One content primitive: text in the source, SVG in the browser."
+flowchart LR
+    Fence["mermaid fence<br/>(MDX or ARCH.md)"] --> Figure["figure.mermaid-diagram<br/>pre.mermaid"]
+    Figure --> Static["static HTML:<br/>readable source"]
+    Figure --> Runtime["mermaid.js<br/>+ design tokens"]
+    Runtime --> SVG["themed SVG"]
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, bound on each figure:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - the source as text (not rendered yet, or reset)</li>
+    <li><code>rendered</code> - the SVG, rendered from the source (setState re-renders)</li>
+    <li><code>error</code> - the source plus the error message (<code>config.message</code>)</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/mermaid-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a href="../schemas/mermaid.schema.json"><code>mermaid.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `rendered` | `boolean` | `true`, `false` | `true` | The SVG is shown (unchecking returns to the source text via `setState('default')`). |
+| `error` | `boolean` | `true`, `false` | `false` | The error state: the source plus an `output role="alert"` message. |
+```
+
+</StatesSection>
+
+<SourceFiles component="mermaid" />
+
+</DocPage>

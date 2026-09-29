@@ -14,7 +14,7 @@ import { defussQuery } from './query.js';
 export { defussQuery } from './query.js';
 // the shared global-key API - components register document-level keyboard
 // handlers through one flag-guarded listener instead of hand-rolling their own
-export { bindGlobalKeys, type GlobalKeyHandler } from './keys.js';
+export { bindGlobalKeys, isEditableTarget, type GlobalKeyHandler, type GlobalKeyOptions } from './keys.js';
 
 // the presentation machinery rides the same binding path: components import it
 // from this module, build.ts rewrites the import into df$.shadcn.shared

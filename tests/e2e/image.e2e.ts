@@ -339,6 +339,56 @@ try {
       await retina.close();
     }
   });
+  const shown = (id: string) => page.$eval('#' + id, (g) => [...g.children].filter((c, i) => i === 0 ? ![...g.children].slice(1).some((o) => getComputedStyle(o).opacity === '1') : getComputedStyle(c).opacity === '1' && getComputedStyle(c).clipPath === 'none').map((c) => c.getAttribute('alt')).join());
+  const at = async (id: string, fx: number, fy = 0.5) => { await page.$eval('#' + id, (g) => g.scrollIntoView({ block: 'center' })); const b = (await page.locator('#' + id).boundingBox())!; await page.mouse.move(b.x + b.width * fx, b.y + b.height * fy); await page.waitForTimeout(180); };
+
+  await check('hover gallery: image.js preloads (eager) and decodes every image, then marks data-ready; the switch is instant (no transition)', async () => {
+    // readiness is lazy: a gallery decodes when it nears the viewport
+    for (const id of ['hg', 'hg-zoom', 'hg-v']) await page.$eval('#' + id, (g) => g.scrollIntoView({ block: 'center' }));
+    await page.waitForFunction(() => document.querySelectorAll('.hover-gallery[data-ready]').length === 3, undefined, { timeout: 10000 });
+    const r = await page.$eval('#hg', (g) => ({ lazy: [...g.querySelectorAll('img')].filter((i) => (i as HTMLImageElement).loading === 'lazy').length, t: getComputedStyle(g.children[2]).transitionDuration }));
+    assert.deepEqual(r, { lazy: 0, t: '0s' });
+  });
+
+  await check('hover gallery: the first image shows; each fourth of the frame shows the next; back at the start the first returns', async () => {
+    await page.mouse.move(1, 1);
+    assert.equal(await shown('hg'), 'h1');
+    const r = await page.$eval('#hg', (g) => [getComputedStyle(g).aspectRatio, getComputedStyle(g).getPropertyValue('--_n').trim()]);
+    assert.deepEqual(r, ['4 / 3', '4']);
+    for (const [fx, want] of [[0.1, 'h1'], [0.35, 'h2'], [0.6, 'h3'], [0.9, 'h4'], [0.4, 'h2'], [0.05, 'h1']] as const) {
+      await at('hg', fx);
+      assert.equal(await shown('hg'), want, `at ${fx}`);
+    }
+  });
+
+  await check('hover gallery: the position bar shows on hover, its bright segment follows (--_cur)', async () => {
+    await at('hg', 0.6);
+    const r = await page.$eval('#hg', (g) => [getComputedStyle(g, '::after').opacity, getComputedStyle(g).getPropertyValue('--_cur').trim()]);
+    assert.deepEqual(r, ['1', '3']);
+    await page.mouse.move(1, 1);
+    await page.waitForTimeout(200);
+    assert.equal(await page.$eval('#hg', (g) => getComputedStyle(g, '::after').opacity), '0');
+  });
+
+  await check('hover gallery: data-effect="zoom" scales the image in view; vertical slices rows', async () => {
+    await at('hg-zoom', 0.8);
+    await page.waitForTimeout(450); // the 400ms ease
+    assert.equal(await page.$eval('#hg-zoom img:nth-child(2)', (i) => getComputedStyle(i).scale), '1.04');
+    await at('hg-v', 0.5, 0.9);
+    assert.equal(await shown('hg-v'), 'h3');
+    await at('hg-v', 0.5, 0.1);
+    assert.equal(await shown('hg-v'), 'h1');
+  });
+
+  await check('hover gallery: without hover (touch) it is a swipeable scroll-snap strip', async () => {
+    const ctx = await browser.newContext({ hasTouch: true, isMobile: true, viewport: { width: 420, height: 800 } });
+    const p2 = await ctx.newPage();
+    await p2.goto(page.url());
+    const r = await p2.$eval('#hg', (g) => ({ d: getComputedStyle(g).display, snap: getComputedStyle(g).scrollSnapType, scroll: g.scrollWidth > g.clientWidth * 3, op: getComputedStyle(g.children[2]).opacity }));
+    assert.deepEqual(r, { d: 'flex', snap: 'x mandatory', scroll: true, op: '1' });
+    await ctx.close();
+  });
+
 } finally {
   await browser.close();
   server.stop();

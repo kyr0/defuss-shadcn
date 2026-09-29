@@ -1,0 +1,272 @@
+---
+title: "Navbar"
+description: "Navbar component - an app bar with start / center / end regions, brand, link menu with submenus, colors, sticky and glass, and a responsive collapse that is one native popover - no JavaScript."
+slug: "navbar"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="navbar" title="Navbar" component="navbar">
+  The top bar of an app or a site: a <code>&lt;nav&gt;</code> with start, center and end regions for the brand, the primary links and the actions - buttons, search, an account dropdown, a cart indicator. The responsive menu is <strong>one</strong> native popover: inline on wide screens, opened by a toggle on narrow ones. No JavaScript. The header of this site is the same pattern.
+</PageHeader>
+
+<SkillPanel component="navbar">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;nav&gt;</code> with three flex regions; <code>&lt;details&gt;</code> submenus; a <code>popover</code> for the collapsed menu.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Popover_API" title="the collapsed menu"><code>popover</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/anchor-scope" title="each menu drops under its own toggle"><code>anchor-scope</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details" title="submenus"><code>&lt;details&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current" title="the active link"><code>aria-current</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.navbar</code>
+    <code>.navbar-start</code>
+    <code>.navbar-center</code>
+    <code>.navbar-end</code>
+    <code>.navbar-brand</code>
+    <code>.navbar-menu</code>
+    <code>.navbar-toggle</code>
+    <code>.navbar-collapse</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillGrid>
+    <Variant name="data-variant" description="muted, primary, neutral, ghost, glass, floating" />
+    <Variant name="data-size" description="sm, md (default), lg - the bar's minimum height" />
+    <Variant name='data-position="sticky"' description="sticks to the top of its scroll container" />
+    <Variant name="data-collapse" description="sm, md, lg (collapse below 40 / 48 / 64rem) or always" />
+  </SkillGrid>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Title only" hint="Just the brand."
+<nav class="navbar" aria-label="Main">
+  <a class="navbar-brand" href="#top"><i data-lucide="hexagon"></i> defuss-shadcn</a>
+</nav>
+```
+
+```html example label="Title and icon" hint="The brand in .navbar-start (it takes the free space), an action in .navbar-end."
+<nav class="navbar" aria-label="Main">
+  <div class="navbar-start"><a class="navbar-brand" href="#top"><i data-lucide="hexagon"></i> Acme</a></div>
+  <div class="navbar-end"><button class="btn" data-variant="ghost" data-size="icon" aria-label="More"><i data-lucide="ellipsis"></i></button></div>
+</nav>
+```
+
+```html example label="Icons at start and end" hint="A menu button at the start, the brand centered in .navbar-center, a search button at the end - start and end share the free space equally, so the center is centered on the bar."
+<nav class="navbar" aria-label="Main">
+  <div class="navbar-start"><button class="btn" data-variant="ghost" data-size="icon" aria-label="Menu"><i data-lucide="menu"></i></button></div>
+  <div class="navbar-center"><a class="navbar-brand" href="#top"><i data-lucide="hexagon"></i> Acme</a></div>
+  <div class="navbar-end"><button class="btn" data-variant="ghost" data-size="icon" aria-label="Search"><i data-lucide="search"></i></button></div>
+</nav>
+```
+
+```html example label="Menu and submenu" hint="A .navbar-menu of links; a &lt;details&gt; item is a submenu (details name=&quot;…&quot; keeps one open at a time). aria-current=&quot;page&quot; marks the active link. Below 48rem the menu folds behind the ☰ toggle (data-collapse=&quot;md&quot;)." height="22"
+<nav class="navbar" data-collapse="md" aria-label="Main">
+  <div class="navbar-start"><button class="btn navbar-toggle" data-variant="ghost" data-size="icon" popovertarget="nav-menu-demo" aria-label="Menu"><i data-lucide="menu"></i></button><a class="navbar-brand" href="#top"><i data-lucide="hexagon"></i> Acme</a></div>
+  <div class="navbar-end">
+    <div class="navbar-collapse" id="nav-menu-demo" popover>
+      <ul class="navbar-menu">
+        <li><a href="#docs" aria-current="page">Docs</a></li>
+        <li>
+          <details name="nav-products">
+            <summary>Products</summary>
+            <ul>
+              <li><a href="#cloud">Cloud</a></li>
+              <li><a href="#edge">Edge</a></li>
+              <li><a href="#analytics">Analytics</a></li>
+            </ul>
+          </details>
+        </li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#blog">Blog</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+```
+
+```html example label="Search and account" hint="Any component fits: an .input-group search field (magnifier included) that shrinks on narrow screens, and a dropdown behind the avatar." height="22"
+<nav class="navbar" aria-label="Main">
+  <div class="navbar-start"><a class="navbar-brand" href="#top"><i data-lucide="hexagon"></i> Acme</a></div>
+  <div class="navbar-end">
+    <div class="input-group" style="flex:0 1 14rem;min-width:7.5rem;">
+      <svg class="input-group-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input class="input" type="search" placeholder="Search" aria-label="Search">
+    </div>
+    <button class="btn" data-variant="ghost" data-size="icon" aria-haspopup="menu" aria-expanded="false" aria-controls="nav-account-1" data-dropdown-trigger="nav-account-1" aria-label="Account">
+        <span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/kyr0.png" alt=""><span class="avatar-fallback">AH</span></span>
+      </button>
+      <div id="nav-account-1" role="menu" popover class="dropdown-content" aria-label="Account menu" style="min-width:11rem;">
+        <button role="menuitem" class="dropdown-item" tabindex="-1">Profile <span class="badge" data-variant="default" data-size="xs" style="margin-left:auto;">New</span></button>
+        <button role="menuitem" class="dropdown-item" tabindex="-1">Settings</button>
+        <div class="dropdown-separator" role="separator"></div>
+        <button role="menuitem" class="dropdown-item" tabindex="-1">Log out</button>
+      </div>
+  </div>
+</nav>
+```
+
+```html example label="Cart indicator" hint="An .indicator puts the item count on the cart button - data-inset pulls it onto the icon corner, past the button's padding; the avatar opens the account menu." height="22"
+<nav class="navbar" aria-label="Shop">
+  <div class="navbar-start"><a class="navbar-brand" href="#top"><i data-lucide="hexagon"></i> Shop</a></div>
+  <div class="navbar-end">
+    <div class="indicator">
+      <span class="indicator-item badge" data-variant="default" data-size="xs" data-inset>8</span>
+      <button class="btn" data-variant="ghost" data-size="icon" aria-label="Cart, 8 items"><i data-lucide="shopping-cart"></i></button>
+    </div>
+    <button class="btn" data-variant="ghost" data-size="icon" aria-haspopup="menu" aria-expanded="false" aria-controls="nav-account-2" data-dropdown-trigger="nav-account-2" aria-label="Account">
+        <span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/kyr0.png" alt=""><span class="avatar-fallback">AH</span></span>
+      </button>
+      <div id="nav-account-2" role="menu" popover class="dropdown-content" aria-label="Account menu" style="min-width:11rem;">
+        <button role="menuitem" class="dropdown-item" tabindex="-1">Profile <span class="badge" data-variant="default" data-size="xs" style="margin-left:auto;">New</span></button>
+        <button role="menuitem" class="dropdown-item" tabindex="-1">Settings</button>
+        <div class="dropdown-separator" role="separator"></div>
+        <button role="menuitem" class="dropdown-item" tabindex="-1">Log out</button>
+      </div>
+  </div>
+</nav>
+```
+
+```html example label="Dropdown, centered logo, icons" hint="A menu dropdown at the start, the logo in the middle, search and notifications at the end - the pinging dot sits on the bell (data-inset="lg")." height="22"
+<nav class="navbar" aria-label="Main">
+  <div class="navbar-start">
+    <button class="btn" data-variant="ghost" data-size="icon" aria-haspopup="menu" aria-expanded="false" aria-controls="nav-pages" data-dropdown-trigger="nav-pages" aria-label="Pages"><i data-lucide="menu"></i></button>
+    <div id="nav-pages" role="menu" popover class="dropdown-content" aria-label="Pages" style="min-width:10rem;">
+      <button role="menuitem" class="dropdown-item" tabindex="-1">Home</button>
+      <button role="menuitem" class="dropdown-item" tabindex="-1">Portfolio</button>
+      <button role="menuitem" class="dropdown-item" tabindex="-1">About</button>
+    </div>
+  </div>
+  <div class="navbar-center"><a class="navbar-brand" href="#top"><i data-lucide="hexagon"></i> Acme</a></div>
+  <div class="navbar-end">
+    <button class="btn" data-variant="ghost" data-size="icon" aria-label="Search"><i data-lucide="search"></i></button>
+    <div class="indicator">
+      <span class="indicator-item indicator-dot" data-variant="primary" data-animate="ping" data-inset="lg" role="img" aria-label="New notifications"></span>
+      <button class="btn" data-variant="ghost" data-size="icon" aria-label="Notifications"><i data-lucide="bell"></i></button>
+    </div>
+  </div>
+</nav>
+```
+
+```html example label="Responsive" hint="data-collapse=&quot;md&quot;: from 48rem the menu sits in the middle of the bar; below, the ☰ toggle opens the SAME element as a popover under it - one menu in the markup, no JavaScript. Try the device sizes in the toolbar." height="26"
+<nav class="navbar" data-collapse="md" aria-label="Main">
+  <div class="navbar-start">
+    <button class="btn navbar-toggle" data-variant="ghost" data-size="icon" popovertarget="nav-responsive-menu" aria-label="Menu"><i data-lucide="menu"></i></button>
+    <a class="navbar-brand" href="#top"><i data-lucide="hexagon"></i> Acme</a>
+  </div>
+  <div class="navbar-center">
+    <div class="navbar-collapse" id="nav-responsive-menu" popover>
+      <ul class="navbar-menu">
+        <li><a href="#docs" aria-current="page">Docs</a></li>
+        <li>
+          <details name="nav-products">
+            <summary>Products</summary>
+            <ul>
+              <li><a href="#cloud">Cloud</a></li>
+              <li><a href="#edge">Edge</a></li>
+              <li><a href="#analytics">Analytics</a></li>
+            </ul>
+          </details>
+        </li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#blog">Blog</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="navbar-end"><button class="btn" data-size="sm">Sign up</button></div>
+</nav>
+```
+
+```html example label="Colors" hint="data-variant: muted, primary, neutral (charcoal), ghost. Menu links and ghost buttons take the bar's text color; below 40rem the links fold behind the toggle." height="30"
+<div class="stack gap-4">
+  <nav class="navbar" data-variant="muted" data-collapse="sm" aria-label="muted example">
+    <div class="navbar-start"><button class="btn navbar-toggle" data-variant="ghost" data-size="icon" popovertarget="nav-color-muted" aria-label="Menu"><i data-lucide="menu"></i></button><a class="navbar-brand" href="#top"><i data-lucide="hexagon"></i> Muted</a></div>
+    <div class="navbar-end">
+      <div class="navbar-collapse" id="nav-color-muted" popover>
+      <ul class="navbar-menu"><li><a href="#c0" aria-current="page">Docs</a></li><li><a href="#c0b">Blog</a></li></ul>
+    </div>
+      <button class="btn" data-variant="ghost" data-size="icon" aria-label="Search"><i data-lucide="search"></i></button>
+    </div>
+  </nav>
+  <nav class="navbar" data-variant="primary" data-collapse="sm" aria-label="primary example">
+    <div class="navbar-start"><button class="btn navbar-toggle" data-variant="ghost" data-size="icon" popovertarget="nav-color-primary" aria-label="Menu"><i data-lucide="menu"></i></button><a class="navbar-brand" href="#top"><i data-lucide="hexagon"></i> Primary</a></div>
+    <div class="navbar-end">
+      <div class="navbar-collapse" id="nav-color-primary" popover>
+      <ul class="navbar-menu"><li><a href="#c1" aria-current="page">Docs</a></li><li><a href="#c1b">Blog</a></li></ul>
+    </div>
+      <button class="btn" data-variant="ghost" data-size="icon" aria-label="Search"><i data-lucide="search"></i></button>
+    </div>
+  </nav>
+  <nav class="navbar" data-variant="neutral" data-collapse="sm" aria-label="neutral example">
+    <div class="navbar-start"><button class="btn navbar-toggle" data-variant="ghost" data-size="icon" popovertarget="nav-color-neutral" aria-label="Menu"><i data-lucide="menu"></i></button><a class="navbar-brand" href="#top"><i data-lucide="hexagon"></i> Neutral</a></div>
+    <div class="navbar-end">
+      <div class="navbar-collapse" id="nav-color-neutral" popover>
+      <ul class="navbar-menu"><li><a href="#c2" aria-current="page">Docs</a></li><li><a href="#c2b">Blog</a></li></ul>
+    </div>
+      <button class="btn" data-variant="ghost" data-size="icon" aria-label="Search"><i data-lucide="search"></i></button>
+    </div>
+  </nav>
+  <nav class="navbar" data-variant="ghost" data-collapse="sm" aria-label="ghost example">
+    <div class="navbar-start"><button class="btn navbar-toggle" data-variant="ghost" data-size="icon" popovertarget="nav-color-ghost" aria-label="Menu"><i data-lucide="menu"></i></button><a class="navbar-brand" href="#top"><i data-lucide="hexagon"></i> Ghost</a></div>
+    <div class="navbar-end">
+      <div class="navbar-collapse" id="nav-color-ghost" popover>
+      <ul class="navbar-menu"><li><a href="#c3" aria-current="page">Docs</a></li><li><a href="#c3b">Blog</a></li></ul>
+    </div>
+      <button class="btn" data-variant="ghost" data-size="icon" aria-label="Search"><i data-lucide="search"></i></button>
+    </div>
+  </nav>
+</div>
+```
+
+```html example label="Glass and floating" hint="glass: translucent with a backdrop blur - over a photo or scrolling content. floating: a rounded pill with a shadow, inside a padded container." height="24"
+<div class="stack gap-6">
+  <div style="background:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&amp;h=400&amp;fit=crop') center/cover;padding:1.5rem 0 5rem;">
+    <nav class="navbar" data-variant="glass" data-collapse="sm" aria-label="Glass example">
+      <div class="navbar-start"><button class="btn navbar-toggle" data-variant="ghost" data-size="icon" popovertarget="nav-glass-menu" aria-label="Menu"><i data-lucide="menu"></i></button><a class="navbar-brand" href="#top"><i data-lucide="hexagon"></i> Acme</a></div>
+      <div class="navbar-end"><div class="navbar-collapse" id="nav-glass-menu" popover>
+      <ul class="navbar-menu"><li><a href="#g1">Tours</a></li><li><a href="#g2">Guides</a></li></ul>
+    </div></div>
+    </nav>
+  </div>
+  <div class="p-4" style="background:var(--muted);">
+    <nav class="navbar" data-variant="floating" data-collapse="md" aria-label="Floating example">
+      <div class="navbar-start"><button class="btn navbar-toggle" data-variant="ghost" data-size="icon" popovertarget="nav-floating-menu" aria-label="Menu"><i data-lucide="menu"></i></button><a class="navbar-brand" href="#top"><i data-lucide="hexagon"></i> Acme</a></div>
+      <div class="navbar-center"><div class="navbar-collapse" id="nav-floating-menu" popover>
+      <ul class="navbar-menu"><li><a href="#f1" aria-current="page">Product</a></li><li><a href="#f2">Pricing</a></li><li><a href="#f3">Docs</a></li></ul>
+    </div></div>
+      <div class="navbar-end"><button class="btn" data-size="sm">Get started</button></div>
+    </nav>
+  </div>
+</div>
+```
+
+```html example label="Sticky and sizes" hint="data-position=&quot;sticky&quot; keeps the bar at the top of its scroll container (scroll the box); data-size sm / md / lg sets its height." height="28"
+<div class="stack gap-4">
+  <div style="border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;">
+    <div style="height:14rem;overflow:auto;">
+      <nav class="navbar" data-position="sticky" data-variant="glass" aria-label="Sticky example">
+        <div class="navbar-start"><a class="navbar-brand" href="#top"><i data-lucide="hexagon"></i> Acme</a></div>
+        <div class="navbar-end"><button class="btn" data-variant="ghost" data-size="icon" aria-label="Search"><i data-lucide="search"></i></button></div>
+      </nav>
+      <div class="stack gap-3 p-4"><div class="card" data-size="sm"><div class="card-header"><p class="card-title">Post 1</p><p class="card-description">Scroll - the bar stays.</p></div></div><div class="card" data-size="sm"><div class="card-header"><p class="card-title">Post 2</p><p class="card-description">Scroll - the bar stays.</p></div></div><div class="card" data-size="sm"><div class="card-header"><p class="card-title">Post 3</p><p class="card-description">Scroll - the bar stays.</p></div></div><div class="card" data-size="sm"><div class="card-header"><p class="card-title">Post 4</p><p class="card-description">Scroll - the bar stays.</p></div></div><div class="card" data-size="sm"><div class="card-header"><p class="card-title">Post 5</p><p class="card-description">Scroll - the bar stays.</p></div></div><div class="card" data-size="sm"><div class="card-header"><p class="card-title">Post 6</p><p class="card-description">Scroll - the bar stays.</p></div></div><div class="card" data-size="sm"><div class="card-header"><p class="card-title">Post 7</p><p class="card-description">Scroll - the bar stays.</p></div></div><div class="card" data-size="sm"><div class="card-header"><p class="card-title">Post 8</p><p class="card-description">Scroll - the bar stays.</p></div></div></div>
+    </div>
+  </div>
+  <nav class="navbar" data-size="sm" aria-label="Size sm"><div class="navbar-start"><a class="navbar-brand" href="#top"><i data-lucide="hexagon"></i> Size sm</a></div><div class="navbar-end"><button class="btn" data-variant="ghost" data-size="icon" aria-label="Search"><i data-lucide="search"></i></button></div></nav>
+  <nav class="navbar" data-size="md" aria-label="Size md"><div class="navbar-start"><a class="navbar-brand" href="#top"><i data-lucide="hexagon"></i> Size md</a></div><div class="navbar-end"><button class="btn" data-variant="ghost" data-size="icon" aria-label="Search"><i data-lucide="search"></i></button></div></nav>
+  <nav class="navbar" data-size="lg" aria-label="Size lg"><div class="navbar-start"><a class="navbar-brand" href="#top"><i data-lucide="hexagon"></i> Size lg</a></div><div class="navbar-end"><button class="btn" data-variant="ghost" data-size="icon" aria-label="Search"><i data-lucide="search"></i></button></div></nav>
+</div>
+```
+
+<SourceFiles component="navbar" section="css" />
+
+</DocPage>

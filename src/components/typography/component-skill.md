@@ -78,6 +78,46 @@ Pure CSS - no JavaScript or ARIA required.
 
 ---
 
+### Chinese, Japanese, Korean
+
+Set `lang` (`zh-Hans`, `zh-Hant`, `ja`, `ko`) on the text or any ancestor - the
+same classes switch to CJK rules:
+
+- headings drop the Latin negative tracking; Japanese headings break between
+  phrases (`word-break: auto-phrase`)
+- `.p` / `.lead` / `.blockquote`: line-height 1.9, strict line breaking (no
+  。 or ， at a line start), `text-autospace` (the thin gap between CJK and
+  Latin / digits); Chinese and Japanese paragraphs justify between characters
+  and keep the right edge straight at a line-end 。 or ，: Safari hangs it
+  past the edge (`hanging-punctuation: allow-end`), Chromium trims its blank
+  half (`text-spacing-trim`)
+- `.blockquote` is upright (no synthetic italics)
+
+```html
+<article lang="zh-Hans">
+  <h3 class="h3">排版的细节</h3>
+  <p class="p">好的中文排版……使用 CSS 与 HTML，<em class="text-emphasis">无需任何脚本</em>。</p>
+</article>
+```
+
+### Vertical text
+
+```html
+<article class="text-vertical" lang="ja">
+  <h3 class="h3">縦書きの<ruby>美<rt>うつく</rt></ruby>しさ</h3>
+  <p class="p"><span class="text-upright">12</span>月<span class="text-upright">24</span>日……</p>
+</article>
+```
+
+- `.text-vertical` - `writing-mode: vertical-rl` (top to bottom, columns right
+  to left); Latin runs lie sideways. The spacing is logical, so heading rules,
+  paragraph gaps and the blockquote rule turn with the text.
+- `.text-upright` - `text-combine-upright: all`: a short run (two digits)
+  upright in one cell (tate-chu-yoko).
+- `.text-emphasis` - emphasis dots instead of italics: sesame over / right of
+  the text in Japanese, dots under it in Chinese.
+- `<ruby>` / `<rt>` (furigana, pinyin, bopomofo) - `rt` is half size and muted.
+
 ## Classes
 
 | Class | Element | Description |

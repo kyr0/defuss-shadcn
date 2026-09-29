@@ -1,6 +1,6 @@
 ---
 title: "Shapes"
-description: "A catalog of reusable silhouettes to mix a design up: radius scale, organic and cut corners, clip-path shapes, section edges, shadows, frames and patterns - one opt-in stylesheet."
+description: "A catalog of reusable silhouettes to mix a design up: radius scale, organic and cut corners, shape-* silhouettes, section edges, shadows, frames and patterns - one opt-in stylesheet."
 slug: "shapes"
 ---
 
@@ -9,7 +9,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <DocPage meta={meta}>
 
 <PageHeader slug="shapes" title="Shapes" introStyle="max-width:38rem;">
-  A catalog of ready-made silhouettes for websites, landing pages and documentation: radius scale, organic and cut corners, clip-path shapes, section edges, stylized shadows, frames and background patterns (the theme's plain shadow scale, <code>shadow-2xs</code> … <code>shadow-2xl</code>, is covered in <DocLink href="theming.html">Theming</DocLink>). One opt-in stylesheet, token colors only - so every shape follows the active theme and dark mode. Every code block is the live demo.
+  A catalog of ready-made silhouettes for websites, landing pages and documentation: radius scale, organic and cut corners, {"shape-*"} silhouettes, section edges, stylized shadows, frames and background patterns (the theme's plain shadow scale, <code>shadow-2xs</code> … <code>shadow-2xl</code>, is covered in <DocLink href="theming.html">Theming</DocLink>). One opt-in stylesheet, token colors only - so every shape follows the active theme and dark mode. Every code block is the live demo.
 </PageHeader>
 
 <h2 id="install" class="h2-display">Load the module</h2>
@@ -130,30 +130,49 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="clip" class="h2-display">Clip-path silhouettes</h2>
+<h2 id="clip" class="h2-display">Shape silhouettes</h2>
 
-<DocText>Geometric shapes for avatars, image crops, markers and decoration. They work on any element, including <code>{"<img>"}</code> and <code>{"<video>"}</code>. Keep text out of the sharp shapes (triangle, star, burst): the clip cuts off whatever it covers.</DocText>
+<DocText>Geometric shapes for avatars, image crops, markers and decoration - every one is a <code>{"shape-*"}</code> class. They work on any element, including <code>{"<img>"}</code> and <code>{"<video>"}</code>. Keep text out of the sharp shapes (triangle, star, burst): the clip cuts off whatever it covers. The v0.9 <code>{"clip-*"}</code> names keep working as aliases of the same rules (<code>clip-hexagon</code> is <code>shape-hexagon-2</code>).</DocText>
+
+```html example schema="none" label="The DaisyUI set" hint="Every mask-* shape DaisyUI ships exists here as shape-*, with the same names and numbering: shape-hexagon is pointy-top, shape-hexagon-2 flat-top, shape-star-2 the bold star, shape-triangle-2 / -3 / -4 point down, left and right. On an <img> they crop the photo itself."
+<div class="grid grid-cols-auto gap-5" style="--layout-min:6.5rem;">
+  <figure class="stack items-center gap-2 m-0"><img class="w-full shape-squircle" src="images/mk-square.png" alt="" style="aspect-ratio:1;object-fit:cover;"><figcaption class="demo-label text-center">shape-squircle</figcaption></figure>
+  <figure class="stack items-center gap-2 m-0"><img class="w-full shape-heart" src="images/mk-square.png" alt="" style="aspect-ratio:1;object-fit:cover;"><figcaption class="demo-label text-center">shape-heart</figcaption></figure>
+  <figure class="stack items-center gap-2 m-0"><img class="w-full shape-hexagon" src="images/mk-square.png" alt="" style="aspect-ratio:1;object-fit:cover;"><figcaption class="demo-label text-center">shape-hexagon<br>vertical</figcaption></figure>
+  <figure class="stack items-center gap-2 m-0"><img class="w-full shape-hexagon-2" src="images/mk-square.png" alt="" style="aspect-ratio:1;object-fit:cover;"><figcaption class="demo-label text-center">shape-hexagon-2<br>horizontal</figcaption></figure>
+  <figure class="stack items-center gap-2 m-0"><img class="w-full shape-decagon" src="images/mk-square.png" alt="" style="aspect-ratio:1;object-fit:cover;"><figcaption class="demo-label text-center">shape-decagon</figcaption></figure>
+  <figure class="stack items-center gap-2 m-0"><img class="w-full shape-pentagon" src="images/mk-square.png" alt="" style="aspect-ratio:1;object-fit:cover;"><figcaption class="demo-label text-center">shape-pentagon</figcaption></figure>
+  <figure class="stack items-center gap-2 m-0"><img class="w-full shape-diamond" src="images/mk-square.png" alt="" style="aspect-ratio:1;object-fit:cover;"><figcaption class="demo-label text-center">shape-diamond</figcaption></figure>
+  <figure class="stack items-center gap-2 m-0"><img class="w-full shape-circle" src="images/mk-square.png" alt="" style="aspect-ratio:1;object-fit:cover;"><figcaption class="demo-label text-center">shape-circle</figcaption></figure>
+  <figure class="stack items-center gap-2 m-0"><img class="w-full shape-star" src="images/mk-square.png" alt="" style="aspect-ratio:1;object-fit:cover;"><figcaption class="demo-label text-center">shape-star</figcaption></figure>
+  <figure class="stack items-center gap-2 m-0"><img class="w-full shape-star-2" src="images/mk-square.png" alt="" style="aspect-ratio:1;object-fit:cover;"><figcaption class="demo-label text-center">shape-star-2<br>bold</figcaption></figure>
+  <figure class="stack items-center gap-2 m-0"><img class="w-full shape-triangle" src="images/mk-square.png" alt="" style="aspect-ratio:1;object-fit:cover;"><figcaption class="demo-label text-center">shape-triangle<br>up</figcaption></figure>
+  <figure class="stack items-center gap-2 m-0"><img class="w-full shape-triangle-2" src="images/mk-square.png" alt="" style="aspect-ratio:1;object-fit:cover;"><figcaption class="demo-label text-center">shape-triangle-2<br>down</figcaption></figure>
+  <figure class="stack items-center gap-2 m-0"><img class="w-full shape-triangle-3" src="images/mk-square.png" alt="" style="aspect-ratio:1;object-fit:cover;"><figcaption class="demo-label text-center">shape-triangle-3<br>left</figcaption></figure>
+  <figure class="stack items-center gap-2 m-0"><img class="w-full shape-triangle-4" src="images/mk-square.png" alt="" style="aspect-ratio:1;object-fit:cover;"><figcaption class="demo-label text-center">shape-triangle-4<br>right</figcaption></figure>
+</div>
+```
 
 ```html example schema="none"
 <style>.shape-demo { aspect-ratio: 1; background-color: var(--primary); }</style>
 <div class="grid grid-cols-auto gap-5" style="--layout-min:5.5rem;">
-  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-circle"></div><p class="demo-label">clip-circle</p></div>
-  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-ellipse" style="aspect-ratio:3/2;"></div><p class="demo-label">clip-ellipse</p></div>
-  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-triangle"></div><p class="demo-label">clip-triangle</p></div>
-  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-triangle-down"></div><p class="demo-label">clip-triangle-down</p></div>
-  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-diamond"></div><p class="demo-label">clip-diamond</p></div>
-  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-pentagon"></div><p class="demo-label">clip-pentagon</p></div>
-  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-hexagon"></div><p class="demo-label">clip-hexagon</p></div>
-  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-octagon"></div><p class="demo-label">clip-octagon</p></div>
-  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-star"></div><p class="demo-label">clip-star</p></div>
-  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-burst"></div><p class="demo-label">clip-burst</p></div>
-  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-cross"></div><p class="demo-label">clip-cross</p></div>
-  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-shield"></div><p class="demo-label">clip-shield</p></div>
-  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-house"></div><p class="demo-label">clip-house</p></div>
-  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-bolt"></div><p class="demo-label">clip-bolt</p></div>
-  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-frame"></div><p class="demo-label">clip-frame</p></div>
-  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-donut"></div><p class="demo-label">clip-donut</p></div>
-  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-moon"></div><p class="demo-label">clip-moon</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-circle"></div><p class="demo-label">shape-circle</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-ellipse" style="aspect-ratio:3/2;"></div><p class="demo-label">shape-ellipse</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-triangle"></div><p class="demo-label">shape-triangle</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-triangle-down"></div><p class="demo-label">shape-triangle-down</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-diamond"></div><p class="demo-label">shape-diamond</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-pentagon"></div><p class="demo-label">shape-pentagon</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-hexagon-2"></div><p class="demo-label">shape-hexagon-2</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-octagon"></div><p class="demo-label">shape-octagon</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-star"></div><p class="demo-label">shape-star</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-burst"></div><p class="demo-label">shape-burst</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-cross"></div><p class="demo-label">shape-cross</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-shield"></div><p class="demo-label">shape-shield</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-house"></div><p class="demo-label">shape-house</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-bolt"></div><p class="demo-label">shape-bolt</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-frame"></div><p class="demo-label">shape-frame</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-donut"></div><p class="demo-label">shape-donut</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-moon"></div><p class="demo-label">shape-moon</p></div>
 </div>
 ```
 
@@ -164,15 +183,15 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 ```html example schema="none"
 <style>.shape-demo { aspect-ratio: 1; background-color: var(--primary); }</style>
 <div class="grid grid-cols-auto gap-5" style="--layout-min:6.5rem;">
-  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-cube" style="background-color:var(--chart-1);"></div><p class="demo-label">clip-cube</p></div>
-  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-pyramid" style="background-color:var(--chart-2);"></div><p class="demo-label">clip-pyramid</p></div>
-  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-diamond-3d" style="background-color:var(--chart-3);"></div><p class="demo-label">clip-diamond-3d</p></div>
-  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-hexagon-3d" style="background-color:var(--chart-4);"></div><p class="demo-label">clip-hexagon-3d</p></div>
-  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-star-3d" style="background-color:var(--chart-5);"></div><p class="demo-label">clip-star-3d</p></div>
-  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-gem" style="background-color:var(--chart-2);"></div><p class="demo-label">clip-gem</p></div>
-  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-sphere" style="background-color:var(--chart-1);"></div><p class="demo-label">clip-sphere</p></div>
-  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-cylinder" style="background-color:var(--chart-3);"></div><p class="demo-label">clip-cylinder</p></div>
-  <div class="stack items-center gap-2"><div class="shape-demo w-full clip-coin" style="background-color:#d4a017;"></div><p class="demo-label">clip-coin</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-cube" style="background-color:var(--chart-1);"></div><p class="demo-label">shape-cube</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-pyramid" style="background-color:var(--chart-2);"></div><p class="demo-label">shape-pyramid</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-diamond-3d" style="background-color:var(--chart-3);"></div><p class="demo-label">shape-diamond-3d</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-hexagon-3d" style="background-color:var(--chart-4);"></div><p class="demo-label">shape-hexagon-3d</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-star-3d" style="background-color:var(--chart-5);"></div><p class="demo-label">shape-star-3d</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-gem" style="background-color:var(--chart-2);"></div><p class="demo-label">shape-gem</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-sphere" style="background-color:var(--chart-1);"></div><p class="demo-label">shape-sphere</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-cylinder" style="background-color:var(--chart-3);"></div><p class="demo-label">shape-cylinder</p></div>
+  <div class="stack items-center gap-2"><div class="shape-demo w-full shape-coin" style="background-color:#d4a017;"></div><p class="demo-label">shape-coin</p></div>
 </div>
 ```
 
@@ -181,12 +200,12 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 ```html example schema="none"
 <style>.shape-demo { aspect-ratio: 1; background-color: var(--primary); width: 6rem; }</style>
 <div class="flex gap-8 flex-wrap items-center p-2">
-  <div class="drop-shadow-extrude"><div class="shape-demo clip-hexagon" style="background-color:var(--chart-1);"></div></div>
-  <div class="drop-shadow-extrude" style="--shape-ink:var(--foreground);"><div class="shape-demo clip-star" style="background-color:var(--chart-4);"></div></div>
+  <div class="drop-shadow-extrude"><div class="shape-demo shape-hexagon-2" style="background-color:var(--chart-1);"></div></div>
+  <div class="drop-shadow-extrude" style="--shape-ink:var(--foreground);"><div class="shape-demo shape-star" style="background-color:var(--chart-4);"></div></div>
   <div class="drop-shadow-extrude"><div class="shape-demo shape-heart" style="background-color:var(--destructive);"></div></div>
-  <div class="drop-shadow-extrude"><div class="shape-demo clip-bolt" style="background-color:#f5b400;"></div></div>
-  <div class="drop-shadow-float"><div class="shape-demo clip-sphere" style="background-color:var(--chart-2);"></div></div>
-  <div class="drop-shadow-float"><div class="shape-demo clip-cube" style="background-color:var(--chart-3);"></div></div>
+  <div class="drop-shadow-extrude"><div class="shape-demo shape-bolt" style="background-color:#f5b400;"></div></div>
+  <div class="drop-shadow-float"><div class="shape-demo shape-sphere" style="background-color:var(--chart-2);"></div></div>
+  <div class="drop-shadow-float"><div class="shape-demo shape-cube" style="background-color:var(--chart-3);"></div></div>
 </div>
 ```
 
@@ -194,26 +213,26 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 ```html example schema="none"
 <div class="flex items-center gap-4 flex-wrap">
-  <img class="clip-hexagon" src="images/mk-portrait.png" alt="Portrait" width="88" height="88" style="object-fit:cover;">
-  <img class="clip-hexagon" src="images/mk-portrait2.png" alt="Portrait" width="88" height="88" style="object-fit:cover;">
-  <img class="clip-octagon" src="images/mk-square.png" alt="Product" width="88" height="88" style="object-fit:cover;">
-  <img class="clip-circle" src="images/mk-portrait.png" alt="Portrait" width="88" height="88" style="object-fit:cover;">
-  <img class="clip-star" src="images/mk-square.png" alt="Product" width="104" height="104" style="object-fit:cover;">
+  <img class="shape-hexagon-2" src="images/mk-portrait.png" alt="Portrait" width="88" height="88" style="object-fit:cover;">
+  <img class="shape-hexagon-2" src="images/mk-portrait2.png" alt="Portrait" width="88" height="88" style="object-fit:cover;">
+  <img class="shape-octagon" src="images/mk-square.png" alt="Product" width="88" height="88" style="object-fit:cover;">
+  <img class="shape-circle" src="images/mk-portrait.png" alt="Portrait" width="88" height="88" style="object-fit:cover;">
+  <img class="shape-star" src="images/mk-square.png" alt="Product" width="104" height="104" style="object-fit:cover;">
 </div>
 ```
 
 ```html example schema="none" label="More silhouettes" hint="Directions the arrow / chevron / triangle sets were missing, plus a kite, a heptagon, four- and six-point stars and an x."
 <style>.shape-demo { aspect-ratio: 1; background-color: var(--primary); width: 5rem; }</style>
 <div class="flex gap-6 flex-wrap items-center p-2">
-  <div class="shape-demo clip-arrow-up" title="clip-arrow-up"></div>
-  <div class="shape-demo clip-chevron-up" title="clip-chevron-up"></div>
-  <div class="shape-demo clip-triangle-left" title="clip-triangle-left"></div>
-  <div class="shape-demo clip-triangle-right" title="clip-triangle-right"></div>
-  <div class="shape-demo clip-kite" title="clip-kite"></div>
-  <div class="shape-demo clip-heptagon" title="clip-heptagon"></div>
-  <div class="shape-demo clip-star-4" title="clip-star-4"></div>
-  <div class="shape-demo clip-star-6" title="clip-star-6"></div>
-  <div class="shape-demo clip-x" title="clip-x"></div>
+  <div class="shape-demo shape-arrow-up" title="shape-arrow-up"></div>
+  <div class="shape-demo shape-chevron-up" title="shape-chevron-up"></div>
+  <div class="shape-demo shape-triangle-left" title="shape-triangle-left"></div>
+  <div class="shape-demo shape-triangle-right" title="shape-triangle-right"></div>
+  <div class="shape-demo shape-kite" title="shape-kite"></div>
+  <div class="shape-demo shape-heptagon" title="shape-heptagon"></div>
+  <div class="shape-demo shape-star-4" title="shape-star-4"></div>
+  <div class="shape-demo shape-star-6" title="shape-star-6"></div>
+  <div class="shape-demo shape-x" title="shape-x"></div>
 </div>
 ```
 
@@ -221,50 +240,50 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <h2 id="directional" class="h2-display">Arrows, chevrons, ribbons and bubbles</h2>
 
-<DocText>Directional shapes that can hold text: <code>clip-parallelogram</code>, <code>clip-trapezoid</code>, <code>clip-arrow</code>, <code>clip-chevron</code> (they chain into a step bar) and <code>clip-ribbon</code> for tags and banners. <code>--shape-slant</code> (default 1.5rem) sets how far the edges run; give the element at least that much inline padding. <code>clip-message</code> adds a speech-bubble tail - a transparent bottom border reserves the tail's space, so the text never runs into it.</DocText>
+<DocText>Directional shapes that can hold text: <code>shape-parallelogram</code>, <code>shape-trapezoid</code>, <code>shape-arrow</code>, <code>shape-chevron</code> (they chain into a step bar) and <code>shape-ribbon</code> for tags and banners. <code>--shape-slant</code> (default 1.5rem) sets how far the edges run; give the element at least that much inline padding. <code>shape-message</code> adds a speech-bubble tail - a transparent bottom border reserves the tail's space, so the text never runs into it.</DocText>
 
 ```html example schema="none"
 <div class="stack gap-5">
   <div class="flex gap-3 flex-wrap items-center">
-    <span class="clip-parallelogram" style="background:var(--primary);color:var(--primary-foreground);padding:0.5rem 2rem;font-weight:600;">clip-parallelogram</span>
-    <span class="clip-trapezoid" style="background:var(--secondary);color:var(--secondary-foreground);padding:0.5rem 2rem;font-weight:600;">clip-trapezoid</span>
-    <span class="clip-arrow" style="background:var(--primary);color:var(--primary-foreground);padding:0.5rem 2.25rem 0.5rem 1rem;font-weight:600;">clip-arrow</span>
-    <span class="clip-ribbon" style="background:var(--destructive);color:var(--destructive-foreground);padding:0.5rem 2.25rem 0.5rem 1rem;font-weight:600;">clip-ribbon</span>
+    <span class="shape-parallelogram" style="background:var(--primary);color:var(--primary-foreground);padding:0.5rem 2rem;font-weight:600;">shape-parallelogram</span>
+    <span class="shape-trapezoid" style="background:var(--secondary);color:var(--secondary-foreground);padding:0.5rem 2rem;font-weight:600;">shape-trapezoid</span>
+    <span class="shape-arrow" style="background:var(--primary);color:var(--primary-foreground);padding:0.5rem 2.25rem 0.5rem 1rem;font-weight:600;">shape-arrow</span>
+    <span class="shape-ribbon" style="background:var(--destructive);color:var(--destructive-foreground);padding:0.5rem 2.25rem 0.5rem 1rem;font-weight:600;">shape-ribbon</span>
   </div>
   <ol class="flex" style="list-style:none;margin:0;padding:0;">
-    <li class="clip-arrow" style="background:var(--primary);color:var(--primary-foreground);padding:0.625rem 2rem 0.625rem 1rem;">1 · Cart</li>
-    <li class="clip-chevron" style="background:var(--primary);color:var(--primary-foreground);padding:0.625rem 2rem 0.625rem 2.25rem;margin-inline-start:-0.75rem;">2 · Shipping</li>
-    <li class="clip-chevron" style="background:var(--muted);color:var(--muted-foreground);padding:0.625rem 2rem 0.625rem 2.25rem;margin-inline-start:-0.75rem;">3 · Payment</li>
+    <li class="shape-arrow" style="background:var(--primary);color:var(--primary-foreground);padding:0.625rem 2rem 0.625rem 1rem;">1 · Cart</li>
+    <li class="shape-chevron" style="background:var(--primary);color:var(--primary-foreground);padding:0.625rem 2rem 0.625rem 2.25rem;margin-inline-start:-0.75rem;">2 · Shipping</li>
+    <li class="shape-chevron" style="background:var(--muted);color:var(--muted-foreground);padding:0.625rem 2rem 0.625rem 2.25rem;margin-inline-start:-0.75rem;">3 · Payment</li>
   </ol>
-  <p class="clip-message" style="max-width:20rem;margin:0;background:var(--secondary);color:var(--secondary-foreground);padding:0.75rem 1rem;">clip-message: a speech bubble whose tail never covers the text.</p>
+  <p class="shape-message" style="max-width:20rem;margin:0;background:var(--secondary);color:var(--secondary-foreground);padding:0.75rem 1rem;">shape-message: a speech bubble whose tail never covers the text.</p>
 </div>
 ```
 
-<DocText>More directions and banners: arrows pointing left, both ways and down, a left chevron, a price <code>clip-tag</code> with a punched hole, a swallowtail <code>clip-banner</code>, a <code>clip-bookmark</code> and a triangular <code>clip-pennant</code>. <code>clip-chevron-down</code> stacks into a vertical process. Bubbles come with the tail at the bottom end (<code>clip-message-end</code>), at the top (<code>clip-message-top</code>) or pointing left (<code>clip-callout-left</code>); <code>--shape-tail</code> sets the tail size.</DocText>
+<DocText>More directions and banners: arrows pointing left, both ways and down, a left chevron, a price <code>shape-tag</code> with a punched hole, a swallowtail <code>shape-banner</code>, a <code>shape-bookmark</code> and a triangular <code>shape-pennant</code>. <code>shape-chevron-down</code> stacks into a vertical process. Bubbles come with the tail at the bottom end (<code>shape-message-end</code>), at the top (<code>shape-message-top</code>) or pointing left (<code>shape-callout-left</code>); <code>--shape-tail</code> sets the tail size.</DocText>
 
 ```html example schema="none"
 <style>.dir-demo { color: var(--primary-foreground); background-color: var(--primary); font-weight: 600; }</style>
 <div class="stack gap-5">
   <div class="flex gap-3 flex-wrap items-center">
-    <span class="dir-demo clip-arrow-left" style="padding:0.5rem 1rem 0.5rem 2.25rem;">clip-arrow-left</span>
-    <span class="dir-demo clip-chevron-left" style="padding:0.5rem 2rem 0.5rem 2.25rem;">clip-chevron-left</span>
-    <span class="dir-demo clip-arrow-both" style="padding:0.5rem 2.25rem;">clip-arrow-both</span>
-    <span class="dir-demo clip-tag" style="padding:0.5rem 1rem 0.5rem 2.25rem;background-color:var(--chart-2);">clip-tag · €24</span>
-    <span class="dir-demo clip-banner" style="padding:0.5rem 2.25rem;background-color:var(--destructive);color:var(--destructive-foreground);">clip-banner</span>
+    <span class="dir-demo shape-arrow-left" style="padding:0.5rem 1rem 0.5rem 2.25rem;">shape-arrow-left</span>
+    <span class="dir-demo shape-chevron-left" style="padding:0.5rem 2rem 0.5rem 2.25rem;">shape-chevron-left</span>
+    <span class="dir-demo shape-arrow-both" style="padding:0.5rem 2.25rem;">shape-arrow-both</span>
+    <span class="dir-demo shape-tag" style="padding:0.5rem 1rem 0.5rem 2.25rem;background-color:var(--chart-2);">shape-tag · €24</span>
+    <span class="dir-demo shape-banner" style="padding:0.5rem 2.25rem;background-color:var(--destructive);color:var(--destructive-foreground);">shape-banner</span>
   </div>
   <div class="flex gap-6 flex-wrap items-start">
-    <span class="dir-demo clip-bookmark" style="padding:0.75rem 1rem 2.25rem;width:6rem;text-align:center;">clip-bookmark</span>
-    <span class="dir-demo clip-pennant" style="padding:1.25rem 3rem 1.25rem 0.75rem;background-color:var(--chart-4);">pennant</span>
+    <span class="dir-demo shape-bookmark" style="padding:0.75rem 1rem 2.25rem;width:6rem;text-align:center;">shape-bookmark</span>
+    <span class="dir-demo shape-pennant" style="padding:1.25rem 3rem 1.25rem 0.75rem;background-color:var(--chart-4);">pennant</span>
     <ol class="stack" style="list-style:none;margin:0;padding:0;width:11rem;">
-      <li class="dir-demo clip-arrow-down" style="padding:0.5rem 1rem 1.75rem;text-align:center;">1 · Plan</li>
-      <li class="dir-demo clip-chevron-down" style="padding:1.75rem 1rem 1.75rem;text-align:center;margin-top:-1.25rem;">2 · Build</li>
-      <li class="dir-demo clip-chevron-down" style="padding:1.75rem 1rem 1.75rem;text-align:center;margin-top:-1.25rem;background-color:var(--muted);color:var(--muted-foreground);">3 · Ship</li>
+      <li class="dir-demo shape-arrow-down" style="padding:0.5rem 1rem 1.75rem;text-align:center;">1 · Plan</li>
+      <li class="dir-demo shape-chevron-down" style="padding:1.75rem 1rem 1.75rem;text-align:center;margin-top:-1.25rem;">2 · Build</li>
+      <li class="dir-demo shape-chevron-down" style="padding:1.75rem 1rem 1.75rem;text-align:center;margin-top:-1.25rem;background-color:var(--muted);color:var(--muted-foreground);">3 · Ship</li>
     </ol>
   </div>
   <div class="flex gap-4 flex-wrap items-center">
-    <p class="clip-message-end" style="max-width:15rem;margin:0;background:var(--primary);color:var(--primary-foreground);padding:0.75rem 1rem;">clip-message-end: my reply.</p>
-    <p class="clip-message-top" style="max-width:15rem;margin:0;background:var(--secondary);color:var(--secondary-foreground);padding:0.75rem 1rem;">clip-message-top: a tooltip-like note.</p>
-    <p class="clip-callout-left" style="max-width:15rem;margin:0;background:var(--muted);color:var(--foreground);padding:0.75rem 1rem;">clip-callout-left: points at the thing to its left.</p>
+    <p class="shape-message-end" style="max-width:15rem;margin:0;background:var(--primary);color:var(--primary-foreground);padding:0.75rem 1rem;">shape-message-end: my reply.</p>
+    <p class="shape-message-top" style="max-width:15rem;margin:0;background:var(--secondary);color:var(--secondary-foreground);padding:0.75rem 1rem;">shape-message-top: a tooltip-like note.</p>
+    <p class="shape-callout-left" style="max-width:15rem;margin:0;background:var(--muted);color:var(--foreground);padding:0.75rem 1rem;">shape-callout-left: points at the thing to its left.</p>
   </div>
 </div>
 ```
@@ -312,7 +331,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <h2 id="shadow-styles" class="h2-display">Stylized shadows</h2>
 
-<DocText>Shadows with a character: hard offset (brutalist), a paper stack, smooth layered depth, a floating card, an inset well, a glow, a focus-style ring, a 3D key edge, a long flat-design shadow and soft UI (<code>shadow-neu</code> - best on <code>--muted</code> or <code>--background</code>). <code>--shape-ink</code> recolors the hard, stack, glow, ring, edge and long shadows. <code>shadow-lift</code> rises on hover and keyboard focus (without motion when reduced motion is requested). Further styles: an outlined offset copy, two- and five-color retro offsets in the chart palette, a solid 3D <code>shadow-extrude</code>, a tinted <code>shadow-colored</code>, a bottom-only shadow, a hairline, a hard inset, a raised <code>shadow-bevel</code>, a <code>shadow-neon</code> glow, a die-cut <code>shadow-sticker</code> and a <code>shadow-paper-stack</code> of sheets peeking out underneath.</DocText>
+<DocText>Shadows with a character: hard offset (brutalist), smooth layered depth, a floating card, an inset well, a glow, a focus-style ring, a 3D key edge, a long flat-design shadow and soft UI (<code>shadow-neu</code> - best on <code>--muted</code> or <code>--background</code>). <code>--shape-ink</code> recolors the hard, glow, ring, edge and long shadows. <code>shadow-lift</code> rises on hover and keyboard focus (without motion when reduced motion is requested). Further styles: an outlined offset copy, two- and five-color retro offsets in the chart palette, a solid 3D <code>shadow-extrude</code>, a tinted <code>shadow-colored</code>, a bottom-only shadow, a hairline, a hard inset, a raised <code>shadow-bevel</code>, a <code>shadow-neon</code> glow, and a die-cut <code>shadow-sticker</code>. Piles of sheets have their own section: <DocLink href="#stacks">Stacks</DocLink>.</DocText>
 
 ```html example schema="none"
 <div class="grid grid-cols-auto gap-8 p-4" style="--layout-min:9rem;">
@@ -320,7 +339,6 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <div class="card shadow-hard flex items-center justify-center text-center h-20 p-3 text-sm font-medium">shadow-hard</div>
   <div class="card shadow-hard-lg flex items-center justify-center text-center h-20 p-3 text-sm font-medium">shadow-hard-lg</div>
   <div class="card shadow-hard flex items-center justify-center text-center h-20 p-3 text-sm font-medium" style="--shape-ink:var(--primary);">--shape-ink: primary</div>
-  <div class="card shadow-stack flex items-center justify-center text-center h-20 p-3 text-sm font-medium">shadow-stack</div>
   <div class="card shadow-layered flex items-center justify-center text-center h-20 p-3 text-sm font-medium">shadow-layered</div>
   <div class="card shadow-float flex items-center justify-center text-center h-20 p-3 text-sm font-medium">shadow-float</div>
   <div class="card shadow-inner flex items-center justify-center text-center h-20 p-3 text-sm font-medium">shadow-inner</div>
@@ -342,7 +360,81 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <div class="card shadow-bevel flex items-center justify-center text-center h-20 p-3 text-sm font-medium" style="background:var(--primary);color:var(--primary-foreground);border-color:transparent;">shadow-bevel</div>
   <div class="card shadow-neon flex items-center justify-center text-center h-20 p-3 text-sm font-medium" style="--shape-ink:var(--chart-2);">shadow-neon</div>
   <div class="card shadow-sticker flex items-center justify-center text-center h-20 p-3 text-sm font-medium" style="background:var(--chart-4);color:#fff;border-color:transparent;">shadow-sticker</div>
-  <div class="card shadow-paper-stack flex items-center justify-center text-center h-20 p-3 text-sm font-medium">shadow-paper-stack</div>
+</div>
+```
+
+<h3 id="aura" class="text-lg font-medium mt-8 mb-2">Aura</h3>
+
+<DocText>An animated light around an element - DaisyUI's aura, same class names. <code>aura</code> is a <strong>wrapper</strong>: its background is the light, a conic gradient turning on a typed <code>@property</code> angle, and the element inside covers the middle, so a ring of light runs around it. <code>aura-dual</code> sends two lights, <code>aura-rainbow</code>, <code>aura-holo</code>, <code>aura-gold</code> and <code>aura-silver</code> swap in a material, and <code>aura-glow</code> turns the ring into a blurred halo behind the element. <code>--shape-ink</code> colors the plain, dual and glow light, <code>--shape-round</code> matches the wrapped element's radius (default <code>--radius-xl</code>, a card), <code>--shape-duration</code> sets one turn. The wrapper is block-level, like the card it usually wraps - in a flex row it hugs its content; around an inline element elsewhere, add <code>w-fit</code>. Under reduced motion the light stands still.</DocText>
+
+```html example schema="none" label="Aura" hint="Wrap the element. Around a button, set --shape-round to the button's radius so the ring hugs it."
+<div class="flex flex-wrap items-center gap-8 p-4">
+  <div class="aura" style="width:18rem;"><div class="card"><div class="card-header"><h3 class="card-title" style="font-size:1rem;">Aura</h3><p class="card-description">A light runs around the card.</p></div></div></div>
+  <div class="aura" style="--shape-round:var(--radius-md);"><button class="btn">Get started</button></div>
+</div>
+```
+
+```html example schema="none" label="Styles" hint="aura-dual - two lights; aura-rainbow and aura-holo - the whole ring in color; aura-gold and aura-silver - metal. The materials are fixed colors, the same in every theme."
+<div class="grid grid-cols-auto gap-8 p-4" style="--layout-min:14rem;">
+  <div class="aura aura-dual"><div class="card"><div class="card-header"><h3 class="card-title" style="font-size:1rem;">aura-dual</h3><p class="card-description">Two lights, opposite each other.</p></div></div></div>
+  <div class="aura aura-rainbow"><div class="card"><div class="card-header"><h3 class="card-title" style="font-size:1rem;">aura-rainbow</h3><p class="card-description">The full color wheel.</p></div></div></div>
+  <div class="aura aura-holo"><div class="card"><div class="card-header"><h3 class="card-title" style="font-size:1rem;">aura-holo</h3><p class="card-description">Pastel, holographic foil.</p></div></div></div>
+  <div class="aura aura-gold"><div class="card"><div class="card-header"><h3 class="card-title" style="font-size:1rem;">aura-gold</h3><p class="card-description">Polished gold.</p></div></div></div>
+  <div class="aura aura-silver"><div class="card"><div class="card-header"><h3 class="card-title" style="font-size:1rem;">aura-silver</h3><p class="card-description">Brushed silver.</p></div></div></div>
+</div>
+```
+
+```html example schema="none" label="Glow" hint="aura-glow drops the ring: the same light, blurred, turns behind the element as a halo. It combines with every style."
+<div class="grid grid-cols-auto gap-10 p-6" style="--layout-min:14rem;">
+  <div class="aura aura-glow"><div class="card"><div class="card-header"><h3 class="card-title" style="font-size:1rem;">aura-glow</h3><p class="card-description">A halo in --shape-ink.</p></div></div></div>
+  <div class="aura aura-glow aura-rainbow"><div class="card"><div class="card-header"><h3 class="card-title" style="font-size:1rem;">aura-glow aura-rainbow</h3><p class="card-description">A rainbow halo.</p></div></div></div>
+  <div class="aura aura-glow aura-gold"><div class="card"><div class="card-header"><h3 class="card-title" style="font-size:1rem;">aura-glow aura-gold</h3><p class="card-description">A golden halo.</p></div></div></div>
+</div>
+```
+
+```html example schema="none" label="Custom color and background" hint="--shape-ink recolors the light; combine it with the wrapped element's own background for a colored panel."
+<div class="grid grid-cols-auto gap-8 p-4" style="--layout-min:14rem;">
+  <div class="aura" style="--shape-ink:oklch(0.7 0.19 45);"><div class="card"><div class="card-header"><h3 class="card-title" style="font-size:1rem;">Orange light</h3><p class="card-description">--shape-ink: an orange oklch().</p></div></div></div>
+  <div class="aura aura-dual" style="--shape-ink:oklch(0.7 0.19 45);"><div class="card" style="background:oklch(0.3 0.08 45);color:oklch(0.97 0.02 45);border-color:transparent;"><div class="card-header"><h3 class="card-title" style="font-size:1rem;">Orange on umber</h3><p class="card-description" style="color:oklch(0.85 0.06 45);">Light and panel in one hue.</p></div></div></div>
+</div>
+```
+
+```html example schema="none" label="Pricing card" hint="aura-rainbow singles out the plan you want people to pick."
+<div class="flex justify-center p-6">
+  <div class="aura aura-rainbow aura-lg" style="width:20rem;">
+    <div class="card">
+      <div class="card-header">
+        <span class="badge" style="width:fit-content;">Most popular</span>
+        <h3 class="card-title" style="font-size:1.5rem;">Pro · €19 / month</h3>
+        <p class="card-description">Everything in Starter, plus unlimited projects and priority support.</p>
+      </div>
+      <div class="card-content">
+        <ul class="text-sm m-0" style="padding-left:1.1rem;line-height:1.9;">
+          <li>Unlimited projects</li>
+          <li>Custom domains</li>
+          <li>Priority support</li>
+        </ul>
+      </div>
+      <div class="card-footer"><button class="btn w-full">Upgrade to Pro</button></div>
+    </div>
+  </div>
+</div>
+```
+
+```html example schema="none" label="Sizes" hint="aura-xs (1px) · aura-sm (2px) · aura-md (3px, the default) · aura-lg (5px) · aura-xl (8px) - the ring width, and the halo size with aura-glow."
+<div class="grid grid-cols-auto gap-8 p-4" style="--layout-min:10rem;">
+  <div class="aura aura-rainbow aura-xs"><div class="card flex items-center justify-center h-16 text-sm font-medium">aura-xs</div></div>
+  <div class="aura aura-rainbow aura-sm"><div class="card flex items-center justify-center h-16 text-sm font-medium">aura-sm</div></div>
+  <div class="aura aura-rainbow aura-md"><div class="card flex items-center justify-center h-16 text-sm font-medium">aura-md</div></div>
+  <div class="aura aura-rainbow aura-lg"><div class="card flex items-center justify-center h-16 text-sm font-medium">aura-lg</div></div>
+  <div class="aura aura-rainbow aura-xl"><div class="card flex items-center justify-center h-16 text-sm font-medium">aura-xl</div></div>
+</div>
+```
+
+```html example schema="none" label="Custom duration" hint="--shape-duration sets one turn: 1.5s races, 12s drifts (default 4s)."
+<div class="grid grid-cols-auto gap-8 p-4" style="--layout-min:12rem;">
+  <div class="aura aura-dual" style="--shape-duration:1.5s;"><div class="card"><div class="card-header"><h3 class="card-title" style="font-size:1rem;">1.5s</h3><p class="card-description">A quick pulse.</p></div></div></div>
+  <div class="aura aura-dual" style="--shape-duration:12s;"><div class="card"><div class="card-header"><h3 class="card-title" style="font-size:1rem;">12s</h3><p class="card-description">A slow drift.</p></div></div></div>
 </div>
 ```
 
@@ -351,8 +443,8 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 ```html example schema="none"
 <style>.shape-demo { aspect-ratio: 1; background-color: var(--primary); width: 6rem; }</style>
 <div class="flex gap-8 flex-wrap items-center p-2">
-  <div class="drop-shadow"><div class="shape-demo clip-hexagon"></div></div>
-  <div class="drop-shadow-hard"><div class="shape-demo clip-star"></div></div>
+  <div class="drop-shadow"><div class="shape-demo shape-hexagon-2"></div></div>
+  <div class="drop-shadow-hard"><div class="shape-demo shape-star"></div></div>
   <div class="drop-shadow-hard" style="--shape-ink:var(--chart-2);"><div class="shape-demo cut-corners-diagonal"></div></div>
   <div class="drop-shadow"><div class="shape-demo ticket" style="aspect-ratio:2/1;width:9rem;"></div></div>
 </div>
@@ -360,13 +452,85 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
+<h2 id="stacks" class="h2-display">Stacks</h2>
+
+<DocText>A pile of sheets behind an element - three box-shadows, so they follow its radius and need no extra markup. The direction picks where the sheets peek out: <code>stack-top</code>, <code>stack-bottom</code>, <code>stack-left</code> and <code>stack-right</code> are centered and taper - every sheet a little narrower and one full step further out, like a pile of notifications - while <code>stack-top-left</code>, <code>stack-top-right</code>, <code>stack-bottom-left</code> and <code>stack-bottom-right</code> offset full-size sheets toward the corner. Modifiers set the step (<code>stack-tight</code> 4px, default 8px, <code>stack-loose</code> 14px), the fill (card sheets with a border by default, <code>stack-outline</code> hollow, <code>stack-filled</code> solid) and <code>stack-fade</code>, which fades every sheet further out. <code>--shape-ink</code> colors the outline edge or the filled sheets. A stack is the element's box-shadow, so it replaces a <code>shadow-*</code> class - and leave room around it. (Not the layout module's <code>.stack</code>, which is a flex column.)</DocText>
+
+```html example schema="none" label="Directions" hint="Four centered, tapering piles (top, bottom, left, right) and four diagonal ones (the corners)."
+<div class="grid grid-cols-auto gap-12 p-10" style="--layout-min:10rem;">
+  <div class="card stack-top-left flex items-center justify-center text-center h-20 p-3 text-sm font-medium">stack-top-left</div>
+  <div class="card stack-top flex items-center justify-center text-center h-20 p-3 text-sm font-medium">stack-top</div>
+  <div class="card stack-top-right flex items-center justify-center text-center h-20 p-3 text-sm font-medium">stack-top-right</div>
+  <div class="card stack-left flex items-center justify-center text-center h-20 p-3 text-sm font-medium">stack-left</div>
+  <div class="card stack-right flex items-center justify-center text-center h-20 p-3 text-sm font-medium">stack-right</div>
+  <div class="card stack-bottom-left flex items-center justify-center text-center h-20 p-3 text-sm font-medium">stack-bottom-left</div>
+  <div class="card stack-bottom flex items-center justify-center text-center h-20 p-3 text-sm font-medium">stack-bottom</div>
+  <div class="card stack-bottom-right flex items-center justify-center text-center h-20 p-3 text-sm font-medium">stack-bottom-right</div>
+</div>
+```
+
+```html example schema="none" label="A toast pile" hint="stack-bottom under a notification: the older ones peek out below, each a little narrower - the collapsed toast stack. stack-top piles them upward for a toaster at the bottom of the screen."
+<div class="flex flex-wrap gap-12 p-8 justify-center">
+  <div class="card stack-bottom p-4" style="width:20rem;">
+    <p class="text-sm font-medium m-0">Event has been created</p>
+    <p class="text-sm text-muted-foreground m-0">Sunday, December 03, 2026 at 9:00 AM</p>
+  </div>
+  <div class="card stack-top stack-fade p-4" style="width:20rem;">
+    <p class="text-sm font-medium m-0">3 files uploaded</p>
+    <p class="text-sm text-muted-foreground m-0">report.pdf and 2 more</p>
+  </div>
+</div>
+```
+
+```html example schema="none" label="Density" hint="stack-tight (4px steps), the default (8px) and stack-loose (14px)."
+<div class="grid grid-cols-auto gap-12 p-8" style="--layout-min:11rem;">
+  <div class="card stack-bottom-right stack-tight flex items-center justify-center text-center h-20 p-3 text-sm font-medium">stack-tight</div>
+  <div class="card stack-bottom-right flex items-center justify-center text-center h-20 p-3 text-sm font-medium">default</div>
+  <div class="card stack-bottom-right stack-loose flex items-center justify-center text-center h-20 p-3 text-sm font-medium">stack-loose</div>
+  <div class="card stack-bottom stack-tight flex items-center justify-center text-center h-20 p-3 text-sm font-medium">stack-bottom stack-tight</div>
+  <div class="card stack-bottom flex items-center justify-center text-center h-20 p-3 text-sm font-medium">stack-bottom</div>
+  <div class="card stack-bottom stack-loose flex items-center justify-center text-center h-20 p-3 text-sm font-medium">stack-bottom stack-loose</div>
+</div>
+```
+
+```html example schema="none" label="Filled and outline" hint="Card sheets with a border (default), stack-outline - hollow sheets with a strong edge - and stack-filled - solid sheets without an edge. --shape-ink recolors the edge or the fill."
+<div class="grid grid-cols-auto gap-12 p-8" style="--layout-min:11rem;">
+  <div class="card stack-bottom-right flex items-center justify-center text-center h-20 p-3 text-sm font-medium">default</div>
+  <div class="card stack-bottom-right stack-outline flex items-center justify-center text-center h-20 p-3 text-sm font-medium">stack-outline</div>
+  <div class="card stack-bottom-right stack-filled flex items-center justify-center text-center h-20 p-3 text-sm font-medium">stack-filled</div>
+  <div class="card stack-bottom-right stack-outline flex items-center justify-center text-center h-20 p-3 text-sm font-medium" style="--shape-ink:var(--primary);">outline + ink</div>
+  <div class="card stack-bottom-right stack-filled flex items-center justify-center text-center h-20 p-3 text-sm font-medium" style="--shape-ink:var(--chart-2);">filled + ink</div>
+  <div class="card stack-bottom stack-filled flex items-center justify-center text-center h-20 p-3 text-sm font-medium" style="--shape-ink:var(--chart-3);">stack-bottom filled</div>
+</div>
+```
+
+```html example schema="none" label="Fading to the outside" hint="stack-fade: every sheet further out blends 28% more into the page background - it works with every direction, density and fill."
+<div class="grid grid-cols-auto gap-12 p-8" style="--layout-min:11rem;">
+  <div class="card stack-bottom stack-fade flex items-center justify-center text-center h-20 p-3 text-sm font-medium">bottom + fade</div>
+  <div class="card stack-top-right stack-fade stack-loose flex items-center justify-center text-center h-20 p-3 text-sm font-medium">top-right loose + fade</div>
+  <div class="card stack-bottom-left stack-outline stack-fade flex items-center justify-center text-center h-20 p-3 text-sm font-medium">outline + fade</div>
+  <div class="card stack-bottom-right stack-filled stack-fade flex items-center justify-center text-center h-20 p-3 text-sm font-medium" style="--shape-ink:var(--primary);">filled + fade</div>
+  <div class="card stack-right stack-filled stack-fade stack-loose flex items-center justify-center text-center h-20 p-3 text-sm font-medium" style="--shape-ink:var(--chart-2);">right filled + fade</div>
+  <div class="card stack-top stack-filled stack-fade flex items-center justify-center text-center h-20 p-3 text-sm font-medium" style="--shape-ink:var(--chart-4);">top filled + fade</div>
+</div>
+```
+
+```html example schema="none" label="Classic" hint="The two original piles stay available: shadow-stack (two outlined sheets offset bottom-right, --shape-ink colors the edge) and shadow-paper-stack (two sheets peeking out underneath)."
+<div class="grid grid-cols-auto gap-12 p-8" style="--layout-min:11rem;">
+  <div class="card shadow-stack flex items-center justify-center text-center h-20 p-3 text-sm font-medium">shadow-stack</div>
+  <div class="card shadow-paper-stack flex items-center justify-center text-center h-20 p-3 text-sm font-medium">shadow-paper-stack</div>
+</div>
+```
+
+<div class="sep" />
+
 <h2 id="frames" class="h2-display">Frames</h2>
 
-<DocText>Borders and outlines as decoration: a double rule, a dashed border, a floating offset outline, an inset stitch line, L-shaped corner brackets (drawn with <code>background-image</code>, so you keep your own background color) and a gradient border in the chart palette - plus a conic rainbow border, dotted, thick, inset-rule, ridge, groove and hand-drawn <code>frame-sketch</code> borders, an accent bar and an underline, animated <code>frame-marching-ants</code> (static under reduced motion), an app <code>frame-window</code> with traffic lights, a <code>frame-film</code> strip and an instant-photo <code>frame-polaroid</code>.</DocText>
+<DocText>Borders and outlines as decoration: a double rule, a dashed border, a floating offset outline, an inset stitch line, L-shaped corner brackets (drawn with <code>background-image</code>, so you keep your own background color) and a gradient border in the chart palette - plus a conic rainbow border, dotted, thick, inset-rule, ridge, groove and hand-drawn <code>frame-sketch</code> borders, an accent bar and an underline, animated <code>frame-marching-ants</code> (static under reduced motion), an app <code>frame-window</code> with traffic lights, a <code>frame-film</code> strip, an instant-photo <code>frame-polaroid</code>, a perforated postage-stamp edge (<code>frame-stamp</code> - a mask, the element itself is punched), <code>frame-tape</code> strips on the top corners (<code>::before</code> / <code>::after</code>), a neon-style <code>frame-glow</code> border and <code>frame-notebook</code> ruled paper with a margin line. <code>--shape-ink</code> recolors the tape and the glow.</DocText>
 
 ```html example schema="none"
 <style>.frame-demo { display: grid; place-items: center; min-height: 6rem; padding: 1rem; font: 500 0.75rem var(--font-mono); color: var(--muted-foreground); }</style>
-<div class="grid grid-cols-auto gap-6 p-2" style="--layout-min:10rem;">
+<div class="grid grid-cols-auto gap-8 p-6" style="--layout-min:10rem;">
   <div class="frame-demo frame-double">frame-double</div>
   <div class="frame-demo frame-dashed rounded-lg">frame-dashed</div>
   <div class="frame-demo frame-offset rounded-md">frame-offset</div>
@@ -386,15 +550,10 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <div class="frame-demo frame-window rounded-md" style="background-color:var(--card);">frame-window</div>
   <div class="frame-demo frame-film" style="background-color:var(--muted);">frame-film</div>
   <div class="frame-demo frame-polaroid pattern-mesh" style="min-height:8rem;">frame-polaroid</div>
-</div>
-```
-
-```html example schema="none" label="More frames" hint="A perforated postage-stamp edge (a mask - the element itself is punched), tape strips on the top corners (::before / ::after), a neon-style glow border and ruled notebook paper with a margin line. --shape-ink recolors the tape and the glow."
-<div class="grid grid-cols-auto gap-8 p-6" style="--layout-min:11rem;">
-  <div class="frame-stamp flex items-center justify-center text-center h-28 p-4 text-sm font-medium" style="background:var(--chart-2);color:#fff;">frame-stamp</div>
-  <div class="card frame-tape flex items-center justify-center text-center h-28 p-4 text-sm font-medium">frame-tape</div>
-  <div class="card frame-glow flex items-center justify-center text-center h-28 p-4 text-sm font-medium" style="--shape-ink:var(--chart-2);">frame-glow</div>
-  <div class="card frame-notebook h-28 p-4">frame-notebook<br>ruled lines + margin</div>
+  <div class="frame-demo frame-stamp" style="background:var(--chart-2);color:#fff;">frame-stamp</div>
+  <div class="frame-demo card frame-tape">frame-tape</div>
+  <div class="frame-demo card frame-glow" style="--shape-ink:var(--chart-2);">frame-glow</div>
+  <div class="frame-demo card frame-notebook" style="place-items:start;">frame-notebook</div>
 </div>
 ```
 
@@ -451,7 +610,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <div class="grid grid-cols-auto gap-8 p-2" style="--layout-min:15rem;">
     <div class="card rounded-none shadow-hard-lg" style="border:2px solid var(--foreground);">
       <div class="card-header">
-        <span class="clip-ribbon" style="align-self:flex-start;background:var(--destructive);color:var(--destructive-foreground);padding:0.25rem 1.75rem 0.25rem 0.75rem;font-size:0.75rem;font-weight:700;">MOST POPULAR</span>
+        <span class="shape-ribbon" style="align-self:flex-start;background:var(--destructive);color:var(--destructive-foreground);padding:0.25rem 1.75rem 0.25rem 0.75rem;font-size:0.75rem;font-weight:700;">MOST POPULAR</span>
         <h3 class="card-title" style="font-size:1.5rem;">Pro · €19</h3>
         <p class="card-description">Everything in Free, plus unlimited decks.</p>
       </div>
@@ -467,8 +626,8 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     </div>
 
     <div class="flex gap-3 items-end">
-      <div class="drop-shadow-hard" style="--shape-ink:var(--primary);flex-shrink:0;"><img class="clip-hexagon" src="images/mk-portrait2.png" alt="Hannah Lee" width="64" height="64" style="object-fit:cover;"></div>
-      <p class="clip-message corner-bubble" style="margin:0;background:var(--muted);color:var(--foreground);padding:0.75rem 1rem;--shape-round:1rem;">“A hexagon, a bubble, a ribbon - and the landing page finally felt like ours.”</p>
+      <div class="drop-shadow-hard" style="--shape-ink:var(--primary);flex-shrink:0;"><img class="shape-hexagon-2" src="images/mk-portrait2.png" alt="Hannah Lee" width="64" height="64" style="object-fit:cover;"></div>
+      <p class="shape-message corner-bubble" style="margin:0;background:var(--muted);color:var(--foreground);padding:0.75rem 1rem;--shape-round:1rem;">“A hexagon, a bubble, a ribbon - and the landing page finally felt like ours.”</p>
     </div>
   </div>
 </div>
@@ -485,12 +644,13 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <thead><tr><th>Property</th><th>Default</th><th>Used by</th></tr></thead>
     <tbody>
       <tr><td><code>--shape-cut</code></td><td><code>0.75rem</code></td><td><code>{"cut-*"}</code>, <code>{"notch-*"}</code>, <code>{"scoop-*"}</code>, <code>{"ticket*"}</code>, <code>stamp</code>, <code>dog-ear</code>, <code>corner-folder</code></td></tr>
-      <tr><td><code>--shape-round</code></td><td><code>2rem</code></td><td><code>{"corner-leaf*"}</code>, <code>{"corner-tab*"}</code>, <code>{"corner-bubble*"}</code>, <code>corner-squircle</code>, <code>corner-superellipse</code>, <code>corner-mixed</code></td></tr>
-      <tr><td><code>--shape-slant</code></td><td><code>1.5rem</code></td><td><code>clip-parallelogram</code>, <code>clip-trapezoid</code>, <code>{"clip-arrow*"}</code>, <code>{"clip-chevron*"}</code>, <code>clip-ribbon</code>, <code>clip-tag</code>, <code>clip-banner</code>, <code>clip-bookmark</code></td></tr>
+      <tr><td><code>--shape-round</code></td><td><code>2rem</code></td><td><code>{"corner-leaf*"}</code>, <code>{"corner-tab*"}</code>, <code>{"corner-bubble*"}</code>, <code>corner-squircle</code>, <code>corner-superellipse</code>, <code>corner-mixed</code>; the radius of the element an <code>aura</code> wraps (default <code>--radius-xl</code>)</td></tr>
+      <tr><td><code>--shape-slant</code></td><td><code>1.5rem</code></td><td><code>shape-parallelogram</code>, <code>shape-trapezoid</code>, <code>{"shape-arrow*"}</code>, <code>{"shape-chevron*"}</code>, <code>shape-ribbon</code>, <code>shape-tag</code>, <code>shape-banner</code>, <code>shape-bookmark</code></td></tr>
       <tr><td><code>--shape-edge</code></td><td><code>2.5rem</code></td><td><code>{"edge-*"}</code></td></tr>
-      <tr><td><code>--shape-tail</code></td><td><code>0.75rem</code></td><td><code>{"clip-message*"}</code>, <code>clip-callout-left</code></td></tr>
-      <tr><td><code>--shape-ink</code></td><td>per family</td><td>hard / stack / glow / ring / edge / long / extrude / neon / colored shadows, <code>drop-shadow-hard</code>, <code>drop-shadow-extrude</code>, frames, patterns</td></tr>
+      <tr><td><code>--shape-tail</code></td><td><code>0.75rem</code></td><td><code>{"shape-message*"}</code>, <code>shape-callout-left</code></td></tr>
+      <tr><td><code>--shape-ink</code></td><td>per family</td><td>hard / stack / glow / ring / edge / long / extrude / neon / colored shadows, <code>drop-shadow-hard</code>, <code>drop-shadow-extrude</code>, frames, patterns, the <code>{"stack-*"}</code> edge / fill, the <code>aura</code> / <code>aura-dual</code> / <code>aura-glow</code> light (default <code>--primary</code>)</td></tr>
       <tr><td><code>--shape-pattern</code></td><td><code>16px</code></td><td><code>{"pattern-*"}</code></td></tr>
+      <tr><td><code>--shape-duration</code></td><td><code>4s</code></td><td>one turn of an <code>{"aura*"}</code></td></tr>
     </tbody>
   </table>
 </div>

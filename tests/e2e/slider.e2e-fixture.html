@@ -25,5 +25,23 @@
     <input type="range" class="slider" id="z-slider-md" data-size="md" value="50" style="margin-top:1rem;" />
     <input type="range" class="slider" id="z-slider-lg" data-size="lg" value="50" style="margin-top:1rem;" />
     <input type="range" class="slider" id="z-slider-xl" data-size="xl" value="50" style="margin-top:1rem;" />
+  <div style="display:grid;gap:1rem;width:400px;margin-top:1rem;">
+    <input class="slider" type="range" id="t-success" data-tone="success" value="50" aria-label="s" />
+    <input class="slider" type="range" id="t-warning" data-tone="warning" value="50" aria-label="w" />
+    <input class="slider" type="range" id="t-info" data-tone="info" value="50" aria-label="i" />
+    <input class="slider" type="range" id="t-destructive" data-tone="destructive" value="50" aria-label="d" />
+    <input class="slider" type="range" id="t-custom" value="50" style="--slider-color: rgb(120, 40, 200);" aria-label="c" />
+    <div class="slider-field" id="sf"><span class="slider-icon" aria-hidden="true">🌙</span><input class="slider" type="range" id="u-pct" value="40" data-unit="percent" aria-label="Brightness" /><span class="slider-icon" aria-hidden="true">☀️</span><output class="slider-value" id="u-pct-out" for="u-pct"></output></div>
+    <input class="slider" type="range" id="u-temp" min="5" max="30" step="0.5" value="21.5" data-unit="celsius" lang="en" aria-label="Temperature" /><output id="u-temp-out" for="u-temp"></output>
+    <input class="slider" type="range" id="u-eur" min="0" max="20" value="5" data-currency="EUR" lang="en" aria-label="Tip" /><output id="u-eur-out" for="u-eur"></output>
+    <div class="slider-scale" id="scale"><span>0</span><span>100</span></div>
+    <input class="slider" type="range" id="emo" value="10" data-thumb-emoji="😫 😐 😄" aria-label="Mood" />
+    <div class="slider-range" id="rg" data-currency="EUR" data-min-gap="50" data-size="lg" data-tone="info" lang="en" role="group" aria-label="Price">
+      <input class="slider" type="range" id="rg-lo" min="0" max="1000" step="10" value="200" aria-label="Minimum" />
+      <input class="slider" type="range" id="rg-hi" min="0" max="1000" step="10" value="800" aria-label="Maximum" />
+    </div>
+    <output id="rg-out" for="rg-lo rg-hi"></output>
+    <div dir="rtl"><input class="slider" type="range" id="rtl" value="30" aria-label="rtl" /></div>
+  </div>
 </body>
 </html>

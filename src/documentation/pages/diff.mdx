@@ -1,0 +1,171 @@
+---
+title: "Diff"
+description: "Diff component - a before/after comparison with a draggable divider, built on a native range input."
+slug: "diff"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="diff" title="Diff" component="diff">
+  A side-by-side comparison of two items - drag the divider to reveal more of one or the other. Two layers share one cell; the divider is a native <code>&lt;input type="range"&gt;</code>, so it drags from anywhere on the figure, steps with the arrow keys and announces its value to screen readers.
+</PageHeader>
+
+<SkillPanel component="diff">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;figure&gt;</code> with two stacked layers + <code>&lt;input type="range"&gt;</code> as the divider; <code>clip-path: inset()</code> does the reveal.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/range" title="keyboard, touch and the announced value"><code>&lt;input type="range"&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/clip-path" title="reveals item 1 up to the divider"><code>clip-path: inset()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture" title="the whole figure is a drag surface"><code>setPointerCapture()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/writing-mode" title="the vertical range"><code>writing-mode</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure" title="comparison + caption as one unit"><code>&lt;figure&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" title="system colors"><code>forced-colors</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.diff</code>
+    <code>.diff-item-1</code>
+    <code>.diff-item-2</code>
+    <code>.diff-range</code>
+    <code>.diff-label</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-ratio</code> (<code>16/9</code>, <code>4/3</code>, <code>1/1</code>, <code>3/4</code>), <code>data-variant</code> (<code>line</code>, <code>primary</code>), <code>data-orientation="vertical"</code>, <code>data-follow="hover"</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Item 1 (left of the divider) over item 2 - the same photo in color and in black and white. Drag anywhere on the picture, or focus the knob and use the arrow keys, Home and End." height="36"
+<figure class="diff" data-ratio="16/9">
+  <div class="diff-item-1">
+    <img src="https://picsum.photos/id/1015/1200/675" alt="A fjord between steep cliffs, in color">
+    <span class="diff-label">Color</span>
+  </div>
+  <div class="diff-item-2">
+    <img src="https://picsum.photos/id/1015/1200/675?grayscale" alt="The same fjord in black and white">
+    <span class="diff-label">Black &amp; white</span>
+  </div>
+  <input class="diff-range" type="range" min="0" max="100" value="50" step="0.1" aria-label="Comparison divider">
+</figure>
+```
+
+```html example label="Text" hint="Any content works - here the same word, filled and outlined. Without media the figure takes the content's size." height="20"
+<figure class="diff" data-ratio="16/9" style="max-width: 36rem;">
+  <div class="diff-item-1">
+    <div style="display:grid;place-content:center;height:100%;background:var(--primary);color:var(--primary-foreground);font-size:clamp(3rem,12vw,7rem);font-weight:900;letter-spacing:-0.04em;">DIFF</div>
+  </div>
+  <div class="diff-item-2">
+    <div style="display:grid;place-content:center;height:100%;background:var(--muted);color:transparent;-webkit-text-stroke:2px var(--foreground);font-size:clamp(3rem,12vw,7rem);font-weight:900;letter-spacing:-0.04em;">DIFF</div>
+  </div>
+  <input class="diff-range" type="range" min="0" max="100" value="50" step="0.1" aria-label="Comparison divider">
+</figure>
+```
+
+```html example label="Old vs new design" hint="Compare components, not only pictures: a card before and after a redesign - any markup fits in an item." height="22"
+<figure class="diff" style="max-width: 32rem;">
+  <div class="diff-item-1" style="background:var(--muted);padding:2.5rem 1.5rem 1.5rem;">
+    <div class="card" data-variant="elevated"><div class="card-header"><h3 class="card-title">Weekly report</h3><p class="card-description">Revenue is up 12% on last week.</p></div><div class="card-footer"><button class="btn" data-size="sm">Open</button><button class="btn" data-variant="ghost" data-size="sm">Share</button></div></div>
+    <span class="diff-label">New</span>
+  </div>
+  <div class="diff-item-2" style="background:var(--background);padding:2.5rem 1.5rem 1.5rem;">
+    <div class="card" data-variant="dashed" style="border-radius:0;"><div class="card-header"><h3 class="card-title" style="font-weight:400;">Weekly report</h3><p class="card-description">Revenue is up 12% on last week.</p></div><div class="card-footer"><button class="btn" data-variant="outline" data-size="sm" style="border-radius:0;">Open</button><button class="btn" data-variant="outline" data-size="sm" style="border-radius:0;">Share</button></div></div>
+    <span class="diff-label">Old</span>
+  </div>
+  <input class="diff-range" type="range" min="0" max="100" value="50" step="0.1" aria-label="Old or new design">
+</figure>
+```
+
+
+```html example label="Variants" hint="data-variant='line' drops the knob (it appears on keyboard focus); 'primary' colors the divider and the knob ring." height="22"
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));">
+  <figure class="diff" data-ratio="4/3" data-variant="line">
+    <div class="diff-item-1"><img src="https://picsum.photos/id/1039/800/600" alt="A waterfall in a green forest, sharp"></div>
+    <div class="diff-item-2"><img src="https://picsum.photos/id/1039/800/600?blur=4" alt="The same waterfall, blurred"></div>
+    <input class="diff-range" type="range" min="0" max="100" value="50" step="0.1" aria-label="Comparison divider">
+  </figure>
+  <figure class="diff" data-ratio="4/3" data-variant="primary">
+    <div class="diff-item-1"><img src="https://picsum.photos/id/1016/800/600" alt="A red canyon at sunset, warm grade"></div>
+    <div class="diff-item-2"><img src="https://picsum.photos/id/1016/800/600" alt="The same canyon, cool grade" style="filter: hue-rotate(170deg) saturate(1.1);"></div>
+    <input class="diff-range" type="range" min="0" max="100" value="50" step="0.1" aria-label="Comparison divider">
+  </figure>
+</div>
+```
+
+```html example label="Vertical" hint="data-orientation='vertical': item 1 on top, item 2 below, the divider drags up and down (arrow keys too)." height="30"
+<figure class="diff" data-ratio="3/4" data-orientation="vertical" style="max-width: 20rem;">
+  <div class="diff-item-1">
+    <img src="https://picsum.photos/id/64/600/800" alt="A woman with sunglasses in a field, original">
+    <span class="diff-label">Original</span>
+  </div>
+  <div class="diff-item-2">
+    <img src="https://picsum.photos/id/64/600/800" alt="The same portrait, retouched warm" style="filter: sepia(0.45) saturate(1.35) contrast(1.05);">
+    <span class="diff-label">Retouched</span>
+  </div>
+  <input class="diff-range" type="range" min="0" max="100" value="40" step="0.1" aria-label="Comparison divider">
+</figure>
+```
+
+```html example label="Follow the pointer" hint="data-follow='hover': with a mouse the divider follows the pointer, no press needed. Touch still drags; the keyboard still steps." height="24"
+<figure class="diff" data-ratio="16/9" data-follow="hover" style="max-width: 36rem;">
+  <div class="diff-item-1"><img src="https://picsum.photos/id/1043/1200/675" alt="Pines below granite cliffs, contrast boosted" style="filter: contrast(1.3) saturate(1.35);"></div>
+  <div class="diff-item-2"><img src="https://picsum.photos/id/1043/1200/675" alt="The same scene as shot"></div>
+  <input class="diff-range" type="range" min="0" max="100" value="50" step="0.1" aria-label="Comparison divider">
+</figure>
+```
+
+```html example label="Start position and ratio" hint="The range's value sets where the divider starts (here 25%); data-ratio 1/1 makes a square - color on the left, black and white on the right." height="22"
+<figure class="diff" data-ratio="1/1" style="max-width: 18rem;">
+  <div class="diff-item-1"><img src="https://picsum.photos/id/1025/600/600" alt="A pug in a blanket, in color"></div>
+  <div class="diff-item-2"><img src="https://picsum.photos/id/1025/600/600?grayscale" alt="The same pug in black and white"></div>
+  <input class="diff-range" type="range" min="0" max="100" value="25" step="0.1" aria-label="Comparison divider">
+</figure>
+```
+
+```html example label="Right to left" hint="In an RTL context the range runs right to left - and the reveal follows it." height="24"
+<figure class="diff" data-ratio="16/9" dir="rtl" style="max-width: 36rem;">
+  <div class="diff-item-1">
+    <img src="https://picsum.photos/id/1050/1200/675" alt="بعد">
+    <span class="diff-label">بعد</span>
+  </div>
+  <div class="diff-item-2">
+    <img src="https://picsum.photos/id/1050/1200/675?grayscale" alt="قبل">
+    <span class="diff-label">قبل</span>
+  </div>
+  <input class="diff-range" type="range" min="0" max="100" value="50" step="0.1" aria-label="مقسم المقارنة">
+</figure>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, bound on each <code>.diff</code> figure:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - the authored position, or <code>config.position</code> (0-100)</li>
+    <li><code>before</code> - the divider at 100%: only item 1</li>
+    <li><code>after</code> - the divider at 0%: only item 2</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/diff-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a href="../schemas/diff.schema.json"><code>diff.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `position` | `number` | `—` | `50` | The divider position in percent - `setState('default', { position })`; observed from the range's value. |
+| `before` | `boolean` | `true`, `false` | `false` | Divider at 100% - only item 1 (`setState('before')`). |
+| `after` | `boolean` | `true`, `false` | `false` | Divider at 0% - only item 2 (`setState('after')`). |
+```
+
+</StatesSection>
+
+<SourceFiles component="diff" section="css" />
+
+<SourceFiles component="diff" section="js" jsTitle="JS" />
+
+</DocPage>

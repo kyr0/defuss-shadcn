@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <title>tabs e2e fixture</title>
     <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/card/card.css" />
     <link rel="stylesheet" href="/dist/components/tabs/tabs.css" />
   </head>
   <body style="padding:2rem;">
@@ -29,6 +30,90 @@
       <div class="tab-content" role="tabpanel" id="line-panel-downloads" aria-labelledby="line-tab-downloads" tabindex="0" hidden>Downloads panel</div>
     </div>
 
+    <!-- side / align / attached -->
+    <div class="tabs" id="tb-bottom" data-side="bottom" data-align="end" style="max-width:28rem;margin-top:2rem;">
+      <div class="tab-list" role="tablist" aria-label="tb-bottom" id="tb-bottom-list" data-variant="attached">
+        <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="tb-bottom-p0" id="tb-bottom-t0">One</button>
+        <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="tb-bottom-p1" id="tb-bottom-t1" tabindex="-1">Two</button>
+      </div>
+      <div class="tab-content" role="tabpanel" id="tb-bottom-p0" aria-labelledby="tb-bottom-t0" tabindex="0"><div class="card" id="tb-bottom-card" style="min-height:6rem;">Panel one</div></div>
+      <div class="tab-content" role="tabpanel" id="tb-bottom-p1" aria-labelledby="tb-bottom-t1" tabindex="0" hidden><div class="card" style="min-height:6rem;">Panel two</div></div>
+    </div>
+    <div class="tabs" id="tb-right" data-side="right" data-align="end" style="max-width:28rem;margin-top:2rem;">
+      <div class="tab-list" role="tablist" aria-label="tb-right" id="tb-right-list" data-variant="attached">
+        <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="tb-right-p0" id="tb-right-t0">One</button>
+        <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="tb-right-p1" id="tb-right-t1" tabindex="-1">Two</button>
+      </div>
+      <div class="tab-content" role="tabpanel" id="tb-right-p0" aria-labelledby="tb-right-t0" tabindex="0"><div class="card" id="tb-right-card" style="min-height:6rem;">Panel one</div></div>
+      <div class="tab-content" role="tabpanel" id="tb-right-p1" aria-labelledby="tb-right-t1" tabindex="0" hidden><div class="card" style="min-height:6rem;">Panel two</div></div>
+    </div>
+    <div class="tabs" id="tb-left" data-side="left" style="max-width:28rem;margin-top:2rem;">
+      <div class="tab-list" role="tablist" aria-label="tb-left" id="tb-left-list">
+        <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="tb-left-p0" id="tb-left-t0">One</button>
+        <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="tb-left-p1" id="tb-left-t1" tabindex="-1">Two</button>
+      </div>
+      <div class="tab-content" role="tabpanel" id="tb-left-p0" aria-labelledby="tb-left-t0" tabindex="0"><div class="card" id="tb-left-card" style="min-height:6rem;">Panel one</div></div>
+      <div class="tab-content" role="tabpanel" id="tb-left-p1" aria-labelledby="tb-left-t1" tabindex="0" hidden><div class="card" style="min-height:6rem;">Panel two</div></div>
+    </div>
+    <div class="tabs" id="tb-legacy" style="max-width:28rem;margin-top:2rem;">
+      <div class="tab-list" role="tablist" aria-label="tb-legacy" aria-orientation="vertical" id="tb-legacy-list">
+        <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="tb-legacy-p0" id="tb-legacy-t0">General</button>
+        <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="tb-legacy-p1" id="tb-legacy-t1" tabindex="-1">Security</button>
+      </div>
+      <div class="tab-content" role="tabpanel" id="tb-legacy-p0" aria-labelledby="tb-legacy-t0" tabindex="0"><div class="card" style="min-height:6rem;">General</div></div>
+      <div class="tab-content" role="tabpanel" id="tb-legacy-p1" aria-labelledby="tb-legacy-t1" tabindex="0" hidden><div class="card" style="min-height:6rem;">Security</div></div>
+    </div>
+    <!-- icons + emoji, long labels, a colored tab, disabled + State API -->
+    <div class="tabs" id="tb-icons" style="margin-top:2rem;max-width:28rem;">
+      <div class="tab-list" role="tablist" aria-label="tb-icons" id="tb-icons-list">
+        <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="tb-icons-p0" id="tb-icons-t0"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="currentColor"/></svg>Inbox</button>
+        <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="tb-icons-p1" id="tb-icons-t1" tabindex="-1"><span class="tab-icon" aria-hidden="true">🏖️</span>Beach</button>
+        <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="tb-icons-p2" id="tb-icons-t2" tabindex="-1">Plain</button>
+      </div>
+      <div class="tab-content" role="tabpanel" id="tb-icons-p0" aria-labelledby="tb-icons-t0" tabindex="0"><div class="card" id="tb-icons-card0" style="min-height:6rem;">Panel 0</div></div>
+      <div class="tab-content" role="tabpanel" id="tb-icons-p1" aria-labelledby="tb-icons-t1" tabindex="0" hidden><div class="card" id="tb-icons-card1" style="min-height:6rem;">Panel 1</div></div>
+      <div class="tab-content" role="tabpanel" id="tb-icons-p2" aria-labelledby="tb-icons-t2" tabindex="0" hidden><div class="card" id="tb-icons-card2" style="min-height:6rem;">Panel 2</div></div>
+    </div>
+    <div class="tabs" id="tb-long" style="margin-top:2rem;max-width:22rem;">
+      <div class="tab-list" role="tablist" aria-label="tb-long" id="tb-long-list" data-variant="attached">
+        <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="tb-long-p0" id="tb-long-t0">Quarterly revenue by region</button>
+        <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="tb-long-p1" id="tb-long-t1" tabindex="-1">Customer acquisition cost</button>
+        <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="tb-long-p2" id="tb-long-t2" tabindex="-1">Churn</button>
+      </div>
+      <div class="tab-content" role="tabpanel" id="tb-long-p0" aria-labelledby="tb-long-t0" tabindex="0"><div class="card" id="tb-long-card0" style="min-height:4rem;">Panel 0</div></div>
+      <div class="tab-content" role="tabpanel" id="tb-long-p1" aria-labelledby="tb-long-t1" tabindex="0" hidden><div class="card" id="tb-long-card1" style="min-height:4rem;">Panel 1</div></div>
+      <div class="tab-content" role="tabpanel" id="tb-long-p2" aria-labelledby="tb-long-t2" tabindex="0" hidden><div class="card" id="tb-long-card2" style="min-height:4rem;">Panel 2</div></div>
+    </div>
+    <div class="tabs" id="tb-vlong" data-side="right" style="margin-top:2rem;max-width:28rem;">
+      <div class="tab-list" role="tablist" aria-label="tb-vlong" id="tb-vlong-list" data-variant="attached">
+        <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="tb-vlong-p0" id="tb-vlong-t0">Introduction and motivation</button>
+        <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="tb-vlong-p1" id="tb-vlong-t1" tabindex="-1">Related work</button>
+        <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="tb-vlong-p2" id="tb-vlong-t2" tabindex="-1">Method and evaluation</button>
+      </div>
+      <div class="tab-content" role="tabpanel" id="tb-vlong-p0" aria-labelledby="tb-vlong-t0" tabindex="0"><div class="card" id="tb-vlong-card0" style="height:12rem;">Panel 0</div></div>
+      <div class="tab-content" role="tabpanel" id="tb-vlong-p1" aria-labelledby="tb-vlong-t1" tabindex="0" hidden><div class="card" id="tb-vlong-card1" style="height:12rem;">Panel 1</div></div>
+      <div class="tab-content" role="tabpanel" id="tb-vlong-p2" aria-labelledby="tb-vlong-t2" tabindex="0" hidden><div class="card" id="tb-vlong-card2" style="height:12rem;">Panel 2</div></div>
+    </div>
+    <div class="tabs" id="tb-color" style="margin-top:2rem;max-width:28rem;">
+      <div class="tab-list" role="tablist" aria-label="tb-color" id="tb-color-list" data-variant="line">
+        <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="tb-color-p0" id="tb-color-t0">General</button>
+        <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="tb-color-p1" id="tb-color-t1" tabindex="-1">Collaborators</button>
+        <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="tb-color-p2" id="tb-color-t2" tabindex="-1" style="color:rgb(220, 38, 38);">Danger zone</button>
+      </div>
+      <div class="tab-content" role="tabpanel" id="tb-color-p0" aria-labelledby="tb-color-t0" tabindex="0"><div class="card" id="tb-color-card0" style="min-height:6rem;">Panel 0</div></div>
+      <div class="tab-content" role="tabpanel" id="tb-color-p1" aria-labelledby="tb-color-t1" tabindex="0" hidden><div class="card" id="tb-color-card1" style="min-height:6rem;">Panel 1</div></div>
+      <div class="tab-content" role="tabpanel" id="tb-color-p2" aria-labelledby="tb-color-t2" tabindex="0" hidden><div class="card" id="tb-color-card2" style="min-height:6rem;">Panel 2</div></div>
+    </div>
+    <div class="tabs" id="tb-st" style="margin-top:2rem;max-width:28rem;">
+      <div class="tab-list" role="tablist" aria-label="tb-st" id="tb-st-list">
+        <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="tb-st-p0" id="tb-st-t0">Profile</button>
+        <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="tb-st-p1" id="tb-st-t1" tabindex="-1" disabled>Billing</button>
+        <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="tb-st-p2" id="tb-st-t2" tabindex="-1">Team</button>
+      </div>
+      <div class="tab-content" role="tabpanel" id="tb-st-p0" aria-labelledby="tb-st-t0" tabindex="0"><div class="card" id="tb-st-card0" style="min-height:6rem;">Panel 0</div></div>
+      <div class="tab-content" role="tabpanel" id="tb-st-p1" aria-labelledby="tb-st-t1" tabindex="0" hidden><div class="card" id="tb-st-card1" style="min-height:6rem;">Panel 1</div></div>
+      <div class="tab-content" role="tabpanel" id="tb-st-p2" aria-labelledby="tb-st-t2" tabindex="0" hidden><div class="card" id="tb-st-card2" style="min-height:6rem;">Panel 2</div></div>
+    </div>
     <script type="module" src="/dist/components/core.js"></script>
     <script type="module" src="/dist/components/tabs/tabs.js"></script>
       <div class="tabs" style="margin-top:1rem;"><div class="tab-list" role="tablist" aria-label="Size xs" id="z-tabs-xs" data-size="xs"><button class="tab-trigger" role="tab" aria-selected="true" aria-controls="z-tabs-xs-p1" id="z-tabs-xs-t1">Tab A</button><button class="tab-trigger" role="tab" aria-selected="false" aria-controls="z-tabs-xs-p2" id="z-tabs-xs-t2" tabindex="-1">Tab B</button></div><div class="tab-content" role="tabpanel" id="z-tabs-xs-p1" aria-labelledby="z-tabs-xs-t1" tabindex="0">Panel A</div><div class="tab-content" role="tabpanel" id="z-tabs-xs-p2" aria-labelledby="z-tabs-xs-t2" tabindex="0" hidden>Panel B</div></div>

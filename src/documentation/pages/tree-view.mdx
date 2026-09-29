@@ -249,6 +249,142 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </script>
 ```
 
+```html example label="Checkboxes" hint="data-checkable on the tree: a .tree-check checkbox in each row (after the icons, before the label). Checking a folder checks everything in it; a folder with some children checked shows the indeterminate dash. Space ticks the focused row, a click on a file's name too. The inputs are real form controls - name/value submit - and every change fires tree-check with the checked values."
+<div style="max-width:20rem;border:1px solid var(--border);border-radius:var(--radius-lg);padding:0.5rem;">
+  <ul class="tree" role="tree" aria-label="Files to commit" data-checkable id="commit-tree">
+    <li class="tree-item" role="treeitem" aria-expanded="true">
+      <details class="tree-branch" open>
+        <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><input type="checkbox" class="checkbox tree-check" name="files" value="src"><span>src</span></summary>
+        <ul class="tree-group" role="group">
+          <li class="tree-item" role="treeitem" aria-expanded="true">
+            <details class="tree-branch" open>
+              <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><input type="checkbox" class="checkbox tree-check" name="files" value="components"><span>components</span></summary>
+              <ul class="tree-group" role="group">
+                <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><input type="checkbox" class="checkbox tree-check" name="files" value="button-ts" checked><span>button.ts</span></span></li>
+                <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><input type="checkbox" class="checkbox tree-check" name="files" value="card-ts"><span>card.ts</span></span></li>
+                <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><input type="checkbox" class="checkbox tree-check" name="files" value="dialog-ts"><span>dialog.ts</span></span></li>
+              </ul>
+            </details>
+          </li>
+          <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><input type="checkbox" class="checkbox tree-check" name="files" value="index-ts"><span>index.ts</span></span></li>
+        </ul>
+      </details>
+    </li>
+    <li class="tree-item" role="treeitem" aria-expanded="false">
+      <details class="tree-branch">
+        <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><input type="checkbox" class="checkbox tree-check" name="files" value="docs"><span>docs</span></summary>
+        <ul class="tree-group" role="group">
+          <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><input type="checkbox" class="checkbox tree-check" name="files" value="guide-md"><span>guide.md</span></span></li>
+          <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><input type="checkbox" class="checkbox tree-check" name="files" value="api-md"><span>api.md</span></span></li>
+        </ul>
+      </details>
+    </li>
+    <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><input type="checkbox" class="checkbox tree-check" name="files" value="package-json" checked><span>package.json</span></span></li>
+  </ul>
+</div>
+<p class="text-sm text-muted-foreground" style="margin:0.75rem 0 0;">Checked: <output id="commit-out">button.ts, package.json</output></p>
+<script>
+  document.getElementById('commit-tree').addEventListener('tree-check', (e) => {
+    document.getElementById('commit-out').textContent = e.detail.values.join(', ') || 'nothing';
+  });
+</script>
+```
+
+```html example label="Checkboxes with emojis, independent" hint="data-checkable='independent' keeps every box on its own (no cascade) - a permissions list where a group can be granted without its members. Emojis stand in for icons."
+<div style="max-width:20rem;border:1px solid var(--border);border-radius:var(--radius-lg);padding:0.5rem;">
+  <ul class="tree" role="tree" aria-label="Permissions" data-checkable="independent">
+    <li class="tree-item" role="treeitem" aria-expanded="true">
+      <details class="tree-branch" open>
+        <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><span aria-hidden="true">📁</span><input type="checkbox" class="checkbox tree-check" name="perm" value="projects"><span>Projects</span></summary>
+        <ul class="tree-group" role="group">
+          <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span aria-hidden="true">👀</span><input type="checkbox" class="checkbox tree-check" name="perm" value="read" checked><span>Read</span></span></li>
+          <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span aria-hidden="true">✏️</span><input type="checkbox" class="checkbox tree-check" name="perm" value="write"><span>Write</span></span></li>
+          <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span aria-hidden="true">🗑️</span><input type="checkbox" class="checkbox tree-check" name="perm" value="delete"><span>Delete</span></span></li>
+        </ul>
+      </details>
+    </li>
+    <li class="tree-item" role="treeitem" aria-expanded="true">
+      <details class="tree-branch" open>
+        <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><span aria-hidden="true">💳</span><input type="checkbox" class="checkbox tree-check" name="perm" value="billing"><span>Billing</span></summary>
+        <ul class="tree-group" role="group">
+          <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span aria-hidden="true">🧾</span><input type="checkbox" class="checkbox tree-check" name="perm" value="view-invoices" checked><span>View invoices</span></span></li>
+          <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><span aria-hidden="true">🔁</span><input type="checkbox" class="checkbox tree-check" name="perm" value="change-plan" checked><span>Change plan</span></span></li>
+        </ul>
+      </details>
+    </li>
+  </ul>
+</div>
+```
+
+```html example label="Drag and drop" hint="data-sortable: drag a row onto the upper or lower edge of another to put it before or after, onto the middle of a folder to move it inside (the folder opens). Keyboard: Alt+ArrowUp / Alt+ArrowDown moves the focused row among its siblings. Every move fires tree-reorder with the item, its new parent and index."
+<div style="max-width:20rem;border:1px solid var(--border);border-radius:var(--radius-lg);padding:0.5rem;">
+  <ul class="tree" role="tree" aria-label="Playlists" data-sortable id="play-tree">
+    <li class="tree-item" role="treeitem" aria-expanded="true">
+      <details class="tree-branch" open>
+        <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>Morning</span></summary>
+        <ul class="tree-group" role="group">
+          <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>Sunrise</span></span></li>
+          <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>Coffee</span></span></li>
+          <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>Commute</span></span></li>
+        </ul>
+      </details>
+    </li>
+    <li class="tree-item" role="treeitem" aria-expanded="true">
+      <details class="tree-branch" open>
+        <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>Focus</span></summary>
+        <ul class="tree-group" role="group">
+          <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>Deep work</span></span></li>
+          <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>Lo-fi</span></span></li>
+        </ul>
+      </details>
+    </li>
+    <li class="tree-item" role="treeitem" aria-expanded="false">
+      <details class="tree-branch">
+        <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>Evening</span></summary>
+        <ul class="tree-group" role="group">
+          <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>Dinner</span></span></li>
+          <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>Night walk</span></span></li>
+        </ul>
+      </details>
+    </li>
+    <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><span>Unsorted</span></span></li>
+  </ul>
+</div>
+<p class="text-sm text-muted-foreground" style="margin:0.75rem 0 0;">Last move: <output id="play-out">-</output></p>
+<script>
+  document.getElementById('play-tree').addEventListener('tree-reorder', (e) => {
+    const name = (el) => el.querySelector(':scope > * span:last-child, :scope > details > summary > span:last-child')?.textContent ?? 'top';
+    document.getElementById('play-out').textContent = name(e.detail.item) + ' → ' + (e.detail.parent.matches('.tree') ? 'top level' : name(e.detail.parent)) + ', position ' + (e.detail.index + 1);
+  });
+</script>
+```
+
+```html example label="Checkboxes and drag and drop" hint="Both at once: pick items and sort them. Moving an item re-derives the folders' checkbox states."
+<div style="max-width:20rem;border:1px solid var(--border);border-radius:var(--radius-lg);padding:0.5rem;">
+  <ul class="tree" role="tree" aria-label="Backlog" data-checkable data-sortable>
+    <li class="tree-item" role="treeitem" aria-expanded="true">
+      <details class="tree-branch" open>
+        <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><input type="checkbox" class="checkbox tree-check" name="task" value="sprint-12"><span>Sprint 12</span></summary>
+        <ul class="tree-group" role="group">
+          <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><input type="checkbox" class="checkbox tree-check" name="task" value="login-flow" checked><span>Login flow</span></span></li>
+          <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><input type="checkbox" class="checkbox tree-check" name="task" value="dark-mode"><span>Dark mode</span></span></li>
+          <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><input type="checkbox" class="checkbox tree-check" name="task" value="export-csv"><span>Export CSV</span></span></li>
+        </ul>
+      </details>
+    </li>
+    <li class="tree-item" role="treeitem" aria-expanded="true">
+      <details class="tree-branch" open>
+        <summary class="tree-branch-trigger" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><input type="checkbox" class="checkbox tree-check" name="task" value="later"><span>Later</span></summary>
+        <ul class="tree-group" role="group">
+          <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><input type="checkbox" class="checkbox tree-check" name="task" value="offline-mode"><span>Offline mode</span></span></li>
+          <li class="tree-item" role="treeitem"><span class="tree-leaf" tabindex="0"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg><input type="checkbox" class="checkbox tree-check" name="task" value="themes"><span>Themes</span></span></li>
+        </ul>
+      </details>
+    </li>
+  </ul>
+</div>
+```
+
 ```html example label="Disabled items" hint="aria-disabled='true' on a treeitem dims the row and makes it inert: a disabled folder can't be opened (click, Enter, Space, ArrowRight), a disabled row can't be selected or followed. It stays in the arrow-key path, so screen-reader users still learn it exists."
 <div style="max-width:18rem;border:1px solid var(--border);border-radius:var(--radius-lg);padding:0.5rem;">
   <ul class="tree" role="tree" aria-label="Workspace" data-selectable>

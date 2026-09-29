@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "name": "table",
+  "states": {
+    "sorted": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".table"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "sorted"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "selected": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".table"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "selected"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

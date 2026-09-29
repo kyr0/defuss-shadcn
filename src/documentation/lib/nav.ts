@@ -20,10 +20,16 @@ export interface NavItem {
    *  chart studies or the per-animation deep dives) - component pages get
    *  their badge from the skill frontmatter instead (source of truth). */
   type?: 'ATM' | 'MOL' | 'ORG' | 'BLK' | 'TPL';
+  /** Marks a page as new / recently changed - the sidebar shows an activity
+   *  dot on it (and on its collapsed section). Clear it one release later. */
+  isNew?: boolean;
 }
 
 export interface NavSection {
   heading: string;
+  /** Lucide icon name (a key of NAV_ICONS in nav-icons.ts) shown in front of
+   *  the section heading - 14 sections read faster with a landmark each. */
+  icon: string;
   items: NavItem[];
 }
 
@@ -32,7 +38,7 @@ export interface NavSection {
 export const ALWAYS_OPEN_SECTION = 'Introduction';
 
 export const NAV: NavSection[] = [
-  { heading: 'Introduction', items: [
+  { heading: 'Introduction', icon: 'book-open', items: [
     { label: 'Getting Started', href: 'index.html' },
     { label: 'Installation', href: 'installation.html' },
     { label: 'How to Use', href: 'how-to-use.html' },
@@ -40,13 +46,13 @@ export const NAV: NavSection[] = [
     { label: 'Verified Agentic Engineering (VAE)', href: 'architecture.html' },
     { label: 'Changelog', href: 'changelog.html' },
   ]},
-  { heading: 'Guides', items: [
+  { heading: 'Guides', icon: 'compass', items: [
     { label: 'Theming', href: 'theming.html' },
     { label: 'Dark Mode', href: 'dark-mode.html' },
     { label: 'Data Attribute API', href: 'data-attribute-api.html' },
     { label: 'State API', href: 'state-api.html' },
     { label: 'DOM Querying & Morphing', href: 'dom-querying.html' },
-    { label: 'Global Key Commands', href: 'global-keys.html' },
+    { label: 'Global Key Commands', href: 'global-keys.html', isNew: true },
     { label: 'Cascade Layers', href: 'cascade-layers.html' },
     { label: 'JavaScript Modules', href: 'es-modules.html' },
     { label: 'Native Web APIs', href: 'native-web-apis.html' },
@@ -94,20 +100,22 @@ export const NAV: NavSection[] = [
     { label: 'Shapes', href: 'shapes.html' },
     { label: 'Accessibility', href: 'accessibility.html' },
   ]},
-  { heading: 'Primitives', items: [
+  { heading: 'Primitives', icon: 'shapes', items: [
     { label: 'Typography', href: 'typography.html' },
+    { label: 'Text Rotate', href: 'text-rotate.html', isNew: true },
     { label: 'Separator', href: 'separator.html' },
     { label: 'Icon', href: 'icon.html' },
     { label: 'Heading Anchor', href: 'heading-anchor.html' },
   ]},
-  { heading: 'Actions', items: [
+  { heading: 'Actions', icon: 'mouse-pointer-click', items: [
     { label: 'Button', href: 'button.html' },
+    { label: 'FAB', href: 'fab.html', isNew: true },
     { label: 'Toggle', href: 'toggle.html' },
     { label: 'Toggle Group', href: 'toggle-group.html' },
     { label: 'Button Group', href: 'button-group.html' },
     { label: 'Toolbar', href: 'toolbar.html' },
   ]},
-  { heading: 'Forms & Inputs', items: [
+  { heading: 'Forms & Inputs', icon: 'text-cursor-input', items: [
     { label: 'Label', href: 'label.html' },
     { label: 'Input', href: 'input.html' },
     { label: 'Textarea', href: 'textarea.html' },
@@ -123,10 +131,13 @@ export const NAV: NavSection[] = [
     { label: 'Combobox', href: 'combobox.html' },
     { label: 'Form', href: 'form.html' },
   ]},
-  { heading: 'Data Display', items: [
+  { heading: 'Data Display', icon: 'layout-grid', items: [
     { label: 'Badge', href: 'badge.html' },
     { label: 'Type Badge', href: 'type-badge.html' },
     { label: 'Avatar', href: 'avatar.html' },
+    { label: 'Indicator', href: 'indicator.html', isNew: true },
+    { label: 'Diff', href: 'diff.html', isNew: true },
+    { label: 'Countdown', href: 'countdown.html', isNew: true },
     { label: 'Card', href: 'card.html' },
     {
       label: 'Image',
@@ -143,7 +154,7 @@ export const NAV: NavSection[] = [
     { label: 'Scroll Area', href: 'scroll-area.html' },
     { label: 'Sortable', href: 'sortable.html' },
   ]},
-  { heading: 'Charts', items: [
+  { heading: 'Charts', icon: 'chart-column', items: [
     { label: 'Chart', href: 'chart.html' },
     { label: 'Comparison', href: 'charts-comparison.html', type: 'MOL' },
     { label: 'Change over time', href: 'charts-change.html', type: 'MOL' },
@@ -152,7 +163,10 @@ export const NAV: NavSection[] = [
     { label: 'Election', href: 'charts-election.html', type: 'MOL' },
     { label: 'Narrative', href: 'charts-narrative.html', type: 'MOL' },
   ]},
-  { heading: 'Feedback & Status', items: [
+  { heading: 'Diagrams', icon: 'workflow', items: [
+    { label: 'Mermaid', href: 'mermaid.html', isNew: true },
+  ]},
+  { heading: 'Feedback & Status', icon: 'bell-ring', items: [
     { label: 'Spinner', href: 'spinner.html' },
     { label: 'Skeleton', href: 'skeleton.html' },
     { label: 'Progress', href: 'progress.html' },
@@ -160,7 +174,7 @@ export const NAV: NavSection[] = [
     { label: 'Alert Dialog', href: 'alert-dialog.html' },
     { label: 'Toast', href: 'toast.html' },
   ]},
-  { heading: 'Overlays', items: [
+  { heading: 'Overlays', icon: 'layers', items: [
     { label: 'Popover', href: 'popover.html' },
     { label: 'Tooltip', href: 'tooltip.html' },
     { label: 'Context Menu', href: 'context-menu.html' },
@@ -169,7 +183,9 @@ export const NAV: NavSection[] = [
     { label: 'Accordion', href: 'accordion.html' },
     { label: 'Command', href: 'command.html' },
   ]},
-  { heading: 'Navigation', items: [
+  { heading: 'Navigation', icon: 'navigation', items: [
+    { label: 'Navbar', href: 'navbar.html', isNew: true },
+    { label: 'Dock', href: 'dock.html', isNew: true },
     { label: 'Breadcrumb', href: 'breadcrumb.html' },
     { label: 'Table of Contents', href: 'toc.html' },
     { label: 'Pagination', href: 'pagination.html' },
@@ -179,11 +195,11 @@ export const NAV: NavSection[] = [
     { label: 'Navigation Menu', href: 'navigation-menu.html' },
     { label: 'Theme Switcher', href: 'theme-switcher.html' },
   ]},
-  { heading: 'Application', items: [
+  { heading: 'Application', icon: 'app-window', items: [
     { label: 'Sidebar', href: 'sidebar.html' },
     { label: 'Resizer', href: 'resizer.html' },
   ]},
-  { heading: 'Presentations', items: [
+  { heading: 'Presentations', icon: 'presentation', items: [
     { label: 'Presentation', href: 'presentation.html' },
     { label: 'Deck Gallery', href: 'presentations.html', children: [
       { label: 'The System in Numbers', href: 'system-in-numbers.html' },
@@ -221,7 +237,7 @@ export const NAV: NavSection[] = [
       { label: 'Story State Machine', href: 'story-state-machine.html' },
     ]},
   ]},
-  { heading: 'Marketing', items: [
+  { heading: 'Marketing', icon: 'megaphone', items: [
     { label: 'Site Header', href: 'site-header.html' },
     { label: 'Hero', href: 'hero.html' },
     { label: 'Product Showcase', href: 'product-showcase.html' },

@@ -18,6 +18,7 @@ import {
   animateCount,
   anim,
   bindGlobalKeys,
+  isEditableTarget,
   clampIndex,
   coerceIndex,
   debounce,
@@ -50,6 +51,7 @@ type ShadcnNamespace = {
     draw: typeof draw;
     anim: typeof anim;
     bindGlobalKeys: typeof bindGlobalKeys;
+    isEditableTarget: typeof isEditableTarget;
     loadTheme: typeof loadTheme;
   };
   docs?: Record<string, unknown>;
@@ -103,6 +105,7 @@ shadcn.shared = {
   anim,
   // shared global-key API (src/shared/keys.ts) - one document listener
   bindGlobalKeys,
+  isEditableTarget,
   // theme resource loader (theme/<id>.json sidecars, built from themes.ts)
   loadTheme,
 };
@@ -130,6 +133,7 @@ installDdf({
   draw,
   anim,
   bindGlobalKeys,
+  isEditableTarget,
   loadTheme,
   clampIndex,
   coerceIndex,

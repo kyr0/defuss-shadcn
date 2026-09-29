@@ -1,21 +1,48 @@
 @layer components {
-  .steps { display: flex; gap: 0.5rem; list-style: none; margin: 0; padding: 0; }
+  /* --_accent / --_accent-fg: the color of done (complete) and current steps -
+     --primary unless data-variant (on the list, or on one step) picks another */
+  .steps { --_accent: var(--primary); --_accent-fg: var(--primary-foreground); display: flex; gap: 0.5rem; list-style: none; margin: 0; padding: 0; }
   .step {
     flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; position: relative; text-align: center;
     &:not(:last-child)::after { content: ''; position: absolute; top: 1rem; left: calc(50% + 1.25rem); right: calc(-50% + 1.25rem); height: 2px; background-color: var(--border); }
-    &[data-status='complete']::after { background-color: var(--primary); }
+    &[data-status='complete']::after { background-color: var(--_accent); }
     &[data-status='error']::after { background-color: var(--destructive); }
   }
   .step-indicator {
     display: flex; align-items: center; justify-content: center; width: 2rem; height: 2rem;
     border-radius: 9999px; font-size: 0.75rem; font-weight: 500;
     border: 2px solid var(--border); color: var(--muted-foreground); background-color: var(--background); position: relative; z-index: 1;
-    .step[data-status='current'] & { border-color: var(--primary); color: var(--primary); }
-    .step[data-status='complete'] & { border-color: var(--primary); background-color: var(--primary); color: var(--primary-foreground); }
+    .step[data-status='current'] & { border-color: var(--_accent); color: var(--_accent); }
+    .step[data-status='complete'] & { border-color: var(--_accent); background-color: var(--_accent); color: var(--_accent-fg); }
     .step[data-status='error'] & { border-color: var(--destructive); background-color: var(--destructive); color: var(--destructive-foreground); }
 
     & svg { width: 0.875rem; height: 0.875rem; pointer-events: none; }
+    /* a glyph of your own - emoji, symbol, icon - a size up from the number */
+    & .step-icon { font-size: 1.5em; line-height: 1; display: grid; place-items: center; }
+    & .step-icon svg { width: 1.2em; height: 1.2em; }
   }
+  /* data-variant="plain" on the indicator: no circle - just the glyph
+     (an emoji step); the status still tints a symbol or icon */
+  .steps .step .step-indicator[data-variant='plain'] {
+    border-color: transparent;
+    background-color: transparent;
+    font-size: 1.25rem;
+  }
+  .steps .step:is([data-status='complete'], [data-status='current']) .step-indicator[data-variant='plain'] { color: var(--_accent); }
+  .steps .step[data-status='error'] .step-indicator[data-variant='plain'] { color: var(--destructive); }
+
+  /* -- Colors: data-variant on .steps (every step) or on one .step -------
+     secondary / accent use --chart-2 / --chart-4 (the tokens' --secondary /
+     --accent are pale surfaces); success / warning / info are literals - the
+     token set has no such pairs. */
+  :is(.steps, .step)[data-variant='neutral'] { --_accent: var(--foreground); --_accent-fg: var(--background); }
+  :is(.steps, .step)[data-variant='primary'] { --_accent: var(--primary); --_accent-fg: var(--primary-foreground); }
+  :is(.steps, .step)[data-variant='secondary'] { --_accent: var(--chart-2); --_accent-fg: #fff; }
+  :is(.steps, .step)[data-variant='accent'] { --_accent: var(--chart-4); --_accent-fg: #fff; }
+  :is(.steps, .step)[data-variant='info'] { --_accent: #0ea5e9; --_accent-fg: #fff; }
+  :is(.steps, .step)[data-variant='success'] { --_accent: #16a34a; --_accent-fg: #fff; }
+  :is(.steps, .step)[data-variant='warning'] { --_accent: #f59e0b; --_accent-fg: #1c1917; }
+  :is(.steps, .step):is([data-variant='destructive'], [data-variant='error']) { --_accent: var(--destructive); --_accent-fg: var(--destructive-foreground); }
   .step-content { display: flex; flex-direction: column; gap: 0.125rem; }
   .step-title { margin: 0; font-size: 0.8125rem; font-weight: 500; color: var(--foreground); }
   .step-description { margin: 0; font-size: 0.75rem; color: var(--muted-foreground); }
@@ -98,6 +125,32 @@
     }
 
     & .step-content { padding-top: 0.25rem; }
+  }
+
+  /* -- Responsive: data-orientation="responsive" stacks vertically below
+     48rem and runs horizontally from there up (DaisyUI's
+     steps-vertical lg:steps-horizontal) */
+  @media (max-width: 47.99rem) {
+    .steps[data-orientation="responsive"] {
+      flex-direction: column;
+      gap: 0;
+
+      & .step {
+        flex-direction: row;
+        align-items: flex-start;
+        text-align: left;
+        padding-bottom: 1.5rem;
+
+        &:not(:last-child)::after { top: 2.25rem; left: 0.9375rem; right: auto; width: 2px; height: calc(100% - 2.25rem); }
+      }
+
+      & .step-content { padding-top: 0.25rem; }
+      &[data-size='xs'] .step:not(:last-child)::after { top: 1.5rem; left: 0.5625rem; height: calc(100% - 1.5rem); }
+      &[data-size='sm'] .step:not(:last-child)::after { top: 1.75rem; left: 0.6875rem; height: calc(100% - 1.75rem); }
+      &[data-size='md'] .step:not(:last-child)::after { top: 2.25rem; left: 0.9375rem; height: calc(100% - 2.25rem); }
+      &[data-size='lg'] .step:not(:last-child)::after { top: 2.75rem; left: 1.1875rem; height: calc(100% - 2.75rem); }
+      &[data-size='xl'] .step:not(:last-child)::after { top: 3.25rem; left: 1.4375rem; height: calc(100% - 3.25rem); }
+    }
   }
 
   /* -- Accessibility ------------------------------------------ */

@@ -51,6 +51,20 @@
     <span class="avatar"><span class="avatar-fallback">BU</span><span class="avatar-badge" id="av-status-busy" data-variant="busy" role="img" aria-label="Busy"></span></span>
     <span class="avatar"><span class="avatar-fallback">AW</span><span class="avatar-badge" id="av-status-away" data-variant="away" role="img" aria-label="Away"></span></span>
 
+    <!-- badge corners, shapes, ring, placeholder plates, group overlap -->
+    <div style="display:flex;gap:2rem;margin-top:2rem;">
+      <span class="avatar" data-size="lg" id="av-pos-top-start"><span class="avatar-fallback">AB</span><span class="avatar-badge" data-position="top-start" role="img" aria-label="Online"></span></span>
+      <span class="avatar" data-size="lg" id="av-pos-top-end"><span class="avatar-fallback">AB</span><span class="avatar-badge" data-position="top-end" role="img" aria-label="Online"></span></span>
+      <span class="avatar" data-size="lg" id="av-pos-bottom-start"><span class="avatar-fallback">AB</span><span class="avatar-badge" data-position="bottom-start" role="img" aria-label="Online"></span></span>
+      <span class="avatar" data-size="lg" id="av-pos-bottom-end"><span class="avatar-fallback">AB</span><span class="avatar-badge" data-position="bottom-end" role="img" aria-label="Online"></span></span>
+      <span class="avatar" data-size="lg" data-shape="rounded" id="av-rounded"><span class="avatar-fallback">R</span></span>
+      <span class="avatar" data-size="lg" data-shape="square" id="av-square"><span class="avatar-fallback">S</span></span>
+      <span class="avatar" data-size="lg" data-ring id="av-ring"><span class="avatar-fallback">RG</span></span>
+      <span class="avatar" data-size="lg" data-ring="destructive" id="av-ring-d"><span class="avatar-fallback">RD</span></span>
+      <span class="avatar" data-size="lg" id="av-ph-primary"><span class="avatar-fallback" data-variant="primary">P</span></span>
+      <span class="avatar" data-size="lg" id="av-ph-neutral"><span class="avatar-fallback" data-variant="neutral">N</span></span>
+    </div>
+    <div class="avatar-group" data-overlap="lg" id="av-group-lg" style="margin-top:2rem;"><span class="avatar"><span class="avatar-fallback">A</span></span><span class="avatar" id="av-group-lg-2"><span class="avatar-fallback">B</span></span><span class="avatar-group-count" id="av-group-lg-count">+9</span></div>
     <script type="module" src="/dist/components/core.js"></script>
     <script type="module" src="/dist/components/avatar/avatar.js"></script>
   </body>

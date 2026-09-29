@@ -56,7 +56,9 @@
       bottom: auto;
       width: 100%;
       max-width: 100vw;
-      max-height: 100vh;
+      /* a sheet, not a page: the backdrop always shows (content scrolls
+         inside the modal past this) */
+      max-height: 85dvh;
       height: auto;
       border-left: none;
       border-bottom: 1px solid var(--border);
@@ -72,7 +74,9 @@
       top: auto;
       width: 100%;
       max-width: 100vw;
-      max-height: 100vh;
+      /* a sheet, not a page: the backdrop always shows (content scrolls
+         inside the modal past this) */
+      max-height: 85dvh;
       height: auto;
       border-left: none;
       border-top: 1px solid var(--border);

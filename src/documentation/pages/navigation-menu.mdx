@@ -37,7 +37,23 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <code>.nav-menu-trigger</code>
     <code>.nav-menu-content</code>
     <code>.nav-menu-content-link</code>
+    <code>.nav-menu-grid</code>
+    <code>.nav-menu-section</code>
+    <code>.nav-menu-heading</code>
+    <code>.nav-menu-icon</code>
+    <code>.nav-menu-feature</code>
+    <code>.nav-menu-footer</code>
   </SkillRow>
+  </SkillField>
+
+  <SkillField label="Megamenu attributes">
+<SkillGrid>
+    <Variant name='.nav-menu-content[data-width="wide"]' description="the panel takes the whole menu's width" />
+    <Variant name='.nav-menu-content[data-width="full"]' description="the panel spans the page (content kept to 72rem)" />
+    <Variant name=".nav-menu-grid[data-columns]" description="2, 3, 4 columns (default: auto-fit, min 12rem)" />
+    <Variant name='.nav-menu[data-orientation="vertical"]' description="a side menu, panels fly out to the right (or below when there is no room)" />
+    <Variant name='.nav-menu[data-orientation="responsive"]' description="vertical below 48rem, horizontal above" />
+  </SkillGrid>
   </SkillField>
 </SkillPanel>
 
@@ -96,6 +112,208 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <li class="nav-menu-item">
       <a class="nav-menu-link" href="#" onclick="event.preventDefault()">Contact</a>
     </li>
+  </ul>
+</nav>
+```
+
+<h2 id="megamenu" class="h2-display">Megamenu</h2>
+
+<DocText>For large sites, a panel is a whole page of navigation: columns of sections with headings, links with icons and descriptions, a featured block, a footer row. <code>data-width="wide"</code> gives a panel the menu's own width, <code>"full"</code> the page's; <code>.nav-menu-grid</code> lays out the columns. It stays native - every panel is a popover, one open at a time, Escape and outside clicks close it.</DocText>
+
+```html example label="Megamenu with columns" hint="A wide panel (data-width=&quot;wide&quot; - the menu's width) with three .nav-menu-section columns: a heading, links with a .nav-menu-icon and a description, and a .nav-menu-footer row." height="34"
+<nav class="nav-menu" aria-label="Platform" style="width:100%;">
+  <ul class="nav-menu-list">
+    <li class="nav-menu-item">
+      <button class="nav-menu-trigger" popovertarget="mm-platform"> Platform <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg></button>
+      <div class="nav-menu-content" id="mm-platform" data-width="wide" popover>
+        <div class="nav-menu-grid" data-columns="3">
+        <div class="nav-menu-section">
+          <p class="nav-menu-heading">Build</p>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"><span class="nav-menu-icon"><i data-lucide="code"></i></span><strong>Components</strong><p>Tokens-first UI parts</p></a>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"><span class="nav-menu-icon"><i data-lucide="palette"></i></span><strong>Themes</strong><p>43 presets, live switching</p></a>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"><span class="nav-menu-icon"><i data-lucide="shapes"></i></span><strong>Shapes</strong><p>Corners, frames, stacks</p></a>
+        </div>
+        <div class="nav-menu-section">
+          <p class="nav-menu-heading">Ship</p>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"><span class="nav-menu-icon"><i data-lucide="rocket"></i></span><strong>Deploy</strong><p>One command to production</p></a>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"><span class="nav-menu-icon"><i data-lucide="shield-check"></i></span><strong>Verify</strong><p>Gates that never sleep</p></a>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"><span class="nav-menu-icon"><i data-lucide="gauge"></i></span><strong>Analytics</strong><p>Budgets per component</p></a>
+        </div>
+        <div class="nav-menu-section">
+          <p class="nav-menu-heading">Learn</p>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"><span class="nav-menu-icon"><i data-lucide="book-open"></i></span><strong>Docs</strong><p>Guides and references</p></a>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"><span class="nav-menu-icon"><i data-lucide="graduation-cap"></i></span><strong>Tutorials</strong><p>From zero to a dashboard</p></a>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"><span class="nav-menu-icon"><i data-lucide="message-circle"></i></span><strong>Community</strong><p>Ask and share</p></a>
+        </div>
+          <div class="nav-menu-footer"><span>New: Mermaid diagrams in every docs page.</span><a href="#" onclick="event.preventDefault()">What's new →</a></div>
+        </div>
+      </div>
+    </li>
+    <li class="nav-menu-item"><a class="nav-menu-link" href="#" onclick="event.preventDefault()">Pricing</a></li>
+    <li class="nav-menu-item"><a class="nav-menu-link" href="#" onclick="event.preventDefault()">Customers</a></li>
+  </ul>
+</nav>
+```
+
+```html example label="With a featured block" hint="Two link columns and a .nav-menu-feature promo block (image, title, text) in the third column." height="36"
+<nav class="nav-menu" aria-label="Solutions" style="width:100%;">
+  <ul class="nav-menu-list">
+    <li class="nav-menu-item">
+      <button class="nav-menu-trigger" popovertarget="mm-solutions"> Solutions <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg></button>
+      <div class="nav-menu-content" id="mm-solutions" data-width="wide" popover>
+        <div class="nav-menu-grid" data-columns="3">
+        <div class="nav-menu-section">
+          <p class="nav-menu-heading">By team</p>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">Engineering</a>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">Design</a>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">Product</a>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">Marketing</a>
+        </div>
+        <div class="nav-menu-section">
+          <p class="nav-menu-heading">By size</p>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">Startups</a>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">Scale-ups</a>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">Enterprise</a>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">Public sector</a>
+        </div>
+          <a class="nav-menu-feature" href="#" onclick="event.preventDefault()">
+            <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&amp;h=340&amp;fit=crop" alt="">
+            <strong>Case study: Alpine Air</strong>
+            <p>How a 12-person team shipped a design system in six weeks.</p>
+          </a>
+        </div>
+      </div>
+    </li>
+    <li class="nav-menu-item"><a class="nav-menu-link" href="#" onclick="event.preventDefault()">Docs</a></li>
+  </ul>
+</nav>
+```
+
+```html example label="Lists side by side" hint="A panel sized to its content with horizontal groups: data-columns=&quot;2&quot; on the grid, plain links in each column." height="24"
+<nav class="nav-menu" aria-label="Services">
+  <ul class="nav-menu-list">
+    <li class="nav-menu-item">
+      <button class="nav-menu-trigger" popovertarget="mm-services"> Services <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg></button>
+      <div class="nav-menu-content" id="mm-services" popover>
+        <div class="nav-menu-grid" data-columns="2">
+        <div class="nav-menu-section">
+          <p class="nav-menu-heading">Cloud</p>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">Compute</a>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">Storage</a>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">Networking</a>
+        </div>
+        <div class="nav-menu-section">
+          <p class="nav-menu-heading">AI</p>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">Models</a>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">Agents</a>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">Evaluation</a>
+        </div>
+        </div>
+      </div>
+    </li>
+    <li class="nav-menu-item"><a class="nav-menu-link" href="#" onclick="event.preventDefault()">About</a></li>
+  </ul>
+</nav>
+```
+
+```html example label="Full width in a navbar" hint="A .navbar with the menu in its center; data-width=&quot;full&quot; spans the panel across the page and keeps its content to 72rem." height="36"
+<nav class="navbar" aria-label="Site">
+  <div class="navbar-start"><a class="navbar-brand" href="#top"><i data-lucide="hexagon"></i> Acme</a></div>
+  <div class="navbar-center">
+    <div class="nav-menu" role="presentation">
+      <ul class="nav-menu-list">
+        <li class="nav-menu-item">
+          <button class="nav-menu-trigger" popovertarget="mm-full"> Products <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg></button>
+          <div class="nav-menu-content" id="mm-full" data-width="full" popover>
+            <div class="nav-menu-grid" data-columns="4">
+        <div class="nav-menu-section">
+          <p class="nav-menu-heading">Analytics</p>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"><span class="nav-menu-icon"><i data-lucide="chart-line"></i></span><strong>Dashboards</strong><p>Every metric, live</p></a>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"><span class="nav-menu-icon"><i data-lucide="bell"></i></span><strong>Alerts</strong><p>Know first</p></a>
+        </div>
+        <div class="nav-menu-section">
+          <p class="nav-menu-heading">Automation</p>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"><span class="nav-menu-icon"><i data-lucide="workflow"></i></span><strong>Workflows</strong><p>Drag, drop, done</p></a>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"><span class="nav-menu-icon"><i data-lucide="plug"></i></span><strong>Integrations</strong><p>300+ apps</p></a>
+        </div>
+        <div class="nav-menu-section">
+          <p class="nav-menu-heading">Security</p>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"><span class="nav-menu-icon"><i data-lucide="lock"></i></span><strong>Access</strong><p>Roles and SSO</p></a>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"><span class="nav-menu-icon"><i data-lucide="file-check"></i></span><strong>Audit</strong><p>Every change logged</p></a>
+        </div>
+              <a class="nav-menu-feature" href="#" onclick="event.preventDefault()"><strong>Start free</strong><p>No card, no time limit.</p></a>
+            </div>
+          </div>
+        </li>
+        <li class="nav-menu-item"><a class="nav-menu-link" href="#" onclick="event.preventDefault()">Pricing</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="navbar-end"><button class="btn" data-size="sm">Sign in</button></div>
+</nav>
+```
+
+```html example label="Vertical" hint="data-orientation=&quot;vertical&quot;: a side menu; each panel flies out to the right of its trigger and drops below it when there is no room at the side." height="30"
+<nav class="nav-menu" data-orientation="vertical" aria-label="Sections" style="width:14rem;">
+  <ul class="nav-menu-list">
+    <li class="nav-menu-item"><a class="nav-menu-link" href="#" onclick="event.preventDefault()" aria-current="page">Overview</a></li>
+    <li class="nav-menu-item">
+      <button class="nav-menu-trigger" popovertarget="mm-v-cloud"> Cloud <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg></button>
+      <div class="nav-menu-content" id="mm-v-cloud" popover>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"><span class="nav-menu-icon"><i data-lucide="server"></i></span><strong>Compute</strong><p>VMs and containers</p></a>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"><span class="nav-menu-icon"><i data-lucide="database"></i></span><strong>Storage</strong><p>Objects and volumes</p></a>
+      </div>
+    </li>
+    <li class="nav-menu-item">
+      <button class="nav-menu-trigger" popovertarget="mm-v-ai"> AI <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg></button>
+      <div class="nav-menu-content" id="mm-v-ai" popover>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"><span class="nav-menu-icon"><i data-lucide="brain"></i></span><strong>Models</strong><p>Hosted and fine-tuned</p></a>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"><span class="nav-menu-icon"><i data-lucide="bot"></i></span><strong>Agents</strong><p>Tools and memory</p></a>
+      </div>
+    </li>
+    <li class="nav-menu-item"><a class="nav-menu-link" href="#" onclick="event.preventDefault()">Support</a></li>
+  </ul>
+</nav>
+```
+
+```html example label="Responsive" hint="data-orientation=&quot;responsive&quot;: horizontal from 48rem, a vertical list below it (fixed columns collapse to one). Try the device sizes." height="34"
+<nav class="nav-menu" data-orientation="responsive" aria-label="Responsive">
+  <ul class="nav-menu-list">
+    <li class="nav-menu-item">
+      <button class="nav-menu-trigger" popovertarget="mm-r-products"> Products <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg></button>
+      <div class="nav-menu-content" id="mm-r-products" popover>
+        <div class="nav-menu-grid" data-columns="2">
+        <div class="nav-menu-section">
+          <p class="nav-menu-heading">Build</p>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">Components</a>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">Themes</a>
+        </div>
+        <div class="nav-menu-section">
+          <p class="nav-menu-heading">Ship</p>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">Deploy</a>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">Verify</a>
+        </div>
+        </div>
+      </div>
+    </li>
+    <li class="nav-menu-item"><a class="nav-menu-link" href="#" onclick="event.preventDefault()">Pricing</a></li>
+    <li class="nav-menu-item"><a class="nav-menu-link" href="#" onclick="event.preventDefault()">Docs</a></li>
+  </ul>
+</nav>
+```
+
+```html example label="Without arrows" hint="The chevron is markup, not CSS: leave the svg out of the trigger for arrowless triggers." height="24"
+<nav class="nav-menu" aria-label="Arrowless">
+  <ul class="nav-menu-list">
+    <li class="nav-menu-item">
+      <button class="nav-menu-trigger" popovertarget="mm-noarrow"> Company</button>
+      <div class="nav-menu-content" id="mm-noarrow" popover>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">About</a>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">Careers</a>
+          <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()">Press</a>
+      </div>
+    </li>
+    <li class="nav-menu-item"><a class="nav-menu-link" href="#" onclick="event.preventDefault()">Blog</a></li>
   </ul>
 </nav>
 ```
