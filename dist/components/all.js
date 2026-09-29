@@ -5850,6 +5850,18 @@ new MutationObserver(init14).observe(document, { childList: true, subtree: true 
 // src/components/dropdown/dropdown.ts
 var df$15 = defussGlobals();
 var dropdownStates = ["default", "open"];
+var ITEM = '[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]';
+var isDisabled = (el) => el.disabled || el.getAttribute("aria-disabled") === "true";
+var itemsOf = (menu) => Array.from(menu.querySelectorAll(ITEM)).filter((i) => i.closest('[role="menu"]') === menu && !isDisabled(i));
+var subOf = (trigger2) => trigger2.closest(".dropdown-sub")?.querySelector(":scope > .dropdown-sub-content") ?? null;
+var rootOf2 = (menu) => {
+  let m = menu;
+  while (m?.parentElement?.closest(".dropdown-content[popover]"))
+    m = m.parentElement.closest(".dropdown-content[popover]");
+  return m;
+};
+var HOVER_OPEN = 120;
+var HOVER_CLOSE = 220;
 function triggerStateChange15(menu, stateName, _config) {
   switch (stateName) {
     case "default":
@@ -5877,6 +5889,228 @@ var dropdownApi = {
 };
 df$15.dropdownApi = dropdownApi;
 df$15.dropdownStates = dropdownStates;
+var anchorSeq = 0;
+function highlight(menu, item, focus = true) {
+  itemsOf(menu).forEach((i) => {
+    if (i !== item)
+      i.removeAttribute("data-highlighted");
+  });
+  if (item) {
+    item.setAttribute("data-highlighted", "");
+    if (focus)
+      item.focus({ preventScroll: true });
+  }
+}
+function activate2(menu, item) {
+  if (isDisabled(item))
+    return;
+  const role = item.getAttribute("role");
+  if (item.classList.contains("dropdown-sub-trigger")) {
+    openSub(item, true);
+    return;
+  }
+  if (role === "menuitemcheckbox") {
+    const checked = item.getAttribute("aria-checked") !== "true";
+    item.setAttribute("aria-checked", String(checked));
+    item.dispatchEvent(new CustomEvent("dropdown:select", { bubbles: true, detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked } }));
+    return;
+  }
+  if (role === "menuitemradio") {
+    const group = item.closest('[role="group"]') ?? menu;
+    group.querySelectorAll('[role="menuitemradio"]').forEach((r) => {
+      if (r.closest('[role="menu"]') === menu)
+        r.setAttribute("aria-checked", String(r === item));
+    });
+    item.dispatchEvent(new CustomEvent("dropdown:select", { bubbles: true, detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked: true } }));
+    return;
+  }
+  item.dispatchEvent(new CustomEvent("dropdown:select", { bubbles: true, detail: { item, value: item.dataset.value ?? item.textContent.trim() } }));
+  try {
+    rootOf2(menu).hidePopover();
+  } catch {}
+}
+function openSub(trigger2, focusFirst) {
+  const sub = subOf(trigger2);
+  if (!sub || isDisabled(trigger2))
+    return;
+  clearTimeout(sub._closeTimer);
+  sub._focusFirst = focusFirst;
+  if (!sub.matches(":popover-open")) {
+    try {
+      sub.showPopover();
+    } catch {}
+  } else if (focusFirst)
+    highlight(sub, itemsOf(sub)[0]);
+}
+function closeSub(sub) {
+  if (sub?.matches(":popover-open")) {
+    try {
+      sub.hidePopover();
+    } catch {}
+  }
+}
+function wireMenu(menu) {
+  if (menu._wired)
+    return;
+  menu._wired = true;
+  const own = (e) => e.target instanceof Element && e.target.closest('[role="menu"]') === menu;
+  const openSubs = () => Array.from(menu.querySelectorAll(".dropdown-sub-content")).filter((s) => s.parentElement.closest('[role="menu"]') === menu && s.matches(":popover-open"));
+  menu.addEventListener("mousemove", (e) => {
+    if (!own(e))
+      return;
+    const item = e.target.closest(ITEM);
+    if (!item || isDisabled(item))
+      return;
+    if (!(item.hasAttribute("data-highlighted") && item === document.activeElement))
+      highlight(menu, item);
+    if (menu._hoverItem === item)
+      return;
+    menu._hoverItem = item;
+    clearTimeout(menu._hoverTimer);
+    const sub = item.classList.contains("dropdown-sub-trigger") ? subOf(item) : null;
+    menu._hoverTimer = setTimeout(() => {
+      openSubs().forEach((s) => {
+        if (s !== sub)
+          closeSub(s);
+      });
+      if (sub)
+        openSub(item, false);
+    }, sub ? HOVER_OPEN : HOVER_CLOSE);
+  });
+  menu.addEventListener("mouseleave", (e) => {
+    clearTimeout(menu._hoverTimer);
+    menu._hoverItem = null;
+    const to = e.relatedTarget;
+    if (to instanceof Element && to.closest(".dropdown-sub-content") && menu.contains(to))
+      return;
+    itemsOf(menu).forEach((i) => {
+      if (!(i.classList.contains("dropdown-sub-trigger") && subOf(i)?.matches(":popover-open")))
+        i.removeAttribute("data-highlighted");
+    });
+  });
+  menu.addEventListener("mousedown", (e) => {
+    if (!own(e))
+      return;
+    const hit = e.target instanceof Element ? e.target.closest(`${ITEM}, input, textarea, select`) : null;
+    if (!hit || isDisabled(hit))
+      e.preventDefault();
+  });
+  menu.addEventListener("click", (e) => {
+    if (!own(e))
+      return;
+    const item = e.target.closest(ITEM);
+    if (!item)
+      return;
+    activate2(menu, item);
+  });
+  menu.addEventListener("keydown", (e) => {
+    if (!own(e))
+      return;
+    const items = itemsOf(menu);
+    const current = items.indexOf(document.activeElement);
+    const isSub = menu.classList.contains("dropdown-sub-content");
+    const rtl = getComputedStyle(menu).direction === "rtl";
+    const inward = rtl ? "ArrowLeft" : "ArrowRight";
+    const outward = rtl ? "ArrowRight" : "ArrowLeft";
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        highlight(menu, items[(current + 1) % items.length]);
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        highlight(menu, items[(current - 1 + items.length) % items.length]);
+        break;
+      case "Home":
+        e.preventDefault();
+        highlight(menu, items[0]);
+        break;
+      case "End":
+        e.preventDefault();
+        highlight(menu, items[items.length - 1]);
+        break;
+      case inward:
+        if (document.activeElement?.classList.contains("dropdown-sub-trigger")) {
+          e.preventDefault();
+          openSub(document.activeElement, true);
+        }
+        break;
+      case outward:
+        if (isSub) {
+          e.preventDefault();
+          closeSub(menu);
+        }
+        break;
+      case "Escape":
+        e.preventDefault();
+        e.stopPropagation();
+        if (isSub)
+          closeSub(menu);
+        else
+          menu.hidePopover();
+        break;
+      case "Tab":
+        try {
+          rootOf2(menu).hidePopover();
+        } catch {}
+        break;
+      case "Enter":
+      case " ":
+        e.preventDefault();
+        if (document.activeElement?.matches(ITEM) && !isDisabled(document.activeElement))
+          document.activeElement.click();
+        break;
+      default:
+        if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+          const k = e.key.toLowerCase();
+          const rest = items.slice(current + 1).concat(items.slice(0, current + 1));
+          const match = rest.find((item) => item.textContent.trim().toLowerCase().startsWith(k));
+          if (match)
+            highlight(menu, match);
+        }
+    }
+  });
+}
+function wireSub(wrap) {
+  const trigger2 = wrap.querySelector(":scope > .dropdown-sub-trigger");
+  const sub = wrap.querySelector(":scope > .dropdown-sub-content");
+  if (!trigger2 || !sub || sub._subWired)
+    return;
+  sub._subWired = true;
+  sub.dataset.init = "";
+  if (!sub.hasAttribute("popover"))
+    sub.setAttribute("popover", "auto");
+  if (!sub.id)
+    sub.id = `dropdown-sub-${++anchorSeq}`;
+  const anchor = `--dropdown-sub-${anchorSeq}-${sub.id}`;
+  trigger2.style.anchorName = anchor;
+  sub.style.positionAnchor = anchor;
+  trigger2.setAttribute("aria-haspopup", "menu");
+  trigger2.setAttribute("aria-expanded", "false");
+  trigger2.setAttribute("aria-controls", sub.id);
+  wireMenu(sub);
+  sub.addEventListener("toggle", (e) => {
+    const open = e.newState === "open";
+    trigger2.setAttribute("aria-expanded", String(open));
+    if (open) {
+      trigger2.setAttribute("data-highlighted", "");
+      if (sub._focusFirst)
+        highlight(sub, itemsOf(sub)[0]);
+    } else {
+      itemsOf(sub).forEach((i) => {
+        i.removeAttribute("data-highlighted");
+      });
+      if (sub.contains(document.activeElement) || document.activeElement === document.body)
+        trigger2.focus({ preventScroll: true });
+    }
+  });
+  sub.addEventListener("mouseenter", () => {
+    const parent = trigger2.closest('[role="menu"]');
+    if (parent)
+      clearTimeout(parent._hoverTimer);
+    highlight(parent, trigger2, false);
+  });
+}
 function init15() {
   document.querySelectorAll("[data-dropdown-trigger]:not([data-init])").forEach((trigger2) => {
     trigger2.dataset.init = "";
@@ -5886,98 +6120,39 @@ function init15() {
     const anchorId = `--dropdown-${menu.id}`;
     trigger2.style.anchorName = anchorId;
     menu.style.positionAnchor = anchorId;
-    const getItems = () => {
-      return Array.from(menu.querySelectorAll('[role="menuitem"]:not(:disabled), [role="menuitemcheckbox"]:not(:disabled), [role="menuitemradio"]:not(:disabled)'));
-    };
-    const highlight = (item) => {
-      getItems().forEach((i) => {
-        i.removeAttribute("data-highlighted");
-      });
-      if (item) {
-        item.setAttribute("data-highlighted", "");
-        item.focus();
-      }
-    };
+    if (!trigger2.hasAttribute("aria-haspopup"))
+      trigger2.setAttribute("aria-haspopup", "menu");
+    if (!trigger2.hasAttribute("aria-controls"))
+      trigger2.setAttribute("aria-controls", menu.id);
     if (!trigger2.hasAttribute("popovertarget"))
       trigger2.setAttribute("popovertarget", menu.id);
+    menu._trigger = trigger2;
     menu.addEventListener("toggle", (e) => {
+      if (e.target !== menu)
+        return;
       const open = e.newState === "open";
-      trigger2.setAttribute("aria-expanded", open);
+      trigger2.setAttribute("aria-expanded", String(open));
       if (open) {
-        const first = getItems()[0];
-        if (first)
-          highlight(first);
+        const first = itemsOf(menu)[0];
+        if (first && !menu._noFocus)
+          highlight(menu, first);
+        menu._noFocus = false;
       } else {
-        getItems().forEach((i) => {
+        itemsOf(menu).forEach((i) => {
           i.removeAttribute("data-highlighted");
         });
-        trigger2.focus();
+        const active2 = document.activeElement;
+        const other = active2 instanceof Element && active2 !== trigger2 ? active2.closest("[data-dropdown-trigger]") : null;
+        const otherOpen = other ? document.getElementById(other.getAttribute("data-dropdown-trigger"))?.matches(":popover-open") : false;
+        if (!otherOpen && (!active2 || active2 === document.body || menu.contains(active2) || other))
+          trigger2.focus({ preventScroll: true });
       }
     });
-    menu.addEventListener("mousemove", (e) => {
-      const item = e.target.closest('[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]');
-      if (item && !item.disabled)
-        highlight(item);
-    });
-    menu.addEventListener("mouseleave", () => {
-      getItems().forEach((i) => {
-        i.removeAttribute("data-highlighted");
-      });
-    });
-    menu.addEventListener("keydown", (e) => {
-      const items = getItems();
-      const current = items.indexOf(document.activeElement);
-      switch (e.key) {
-        case "ArrowDown":
-          e.preventDefault();
-          highlight(items[(current + 1) % items.length]);
-          break;
-        case "ArrowUp":
-          e.preventDefault();
-          highlight(items[(current - 1 + items.length) % items.length]);
-          break;
-        case "Home":
-          e.preventDefault();
-          highlight(items[0]);
-          break;
-        case "End":
-          e.preventDefault();
-          highlight(items[items.length - 1]);
-          break;
-        case "Escape":
-          menu.hidePopover();
-          break;
-        case "Enter":
-        case " ":
-          e.preventDefault();
-          if (document.activeElement) {
-            const role = document.activeElement.getAttribute("role");
-            if (role === "menuitemcheckbox") {
-              const checked = document.activeElement.getAttribute("aria-checked") === "true";
-              document.activeElement.setAttribute("aria-checked", !checked);
-            } else if (role === "menuitemradio") {
-              const group = document.activeElement.closest('[role="group"]');
-              if (group)
-                group.querySelectorAll('[role="menuitemradio"]').forEach((r) => {
-                  r.setAttribute("aria-checked", "false");
-                });
-              document.activeElement.setAttribute("aria-checked", "true");
-            } else {
-              document.activeElement.click();
-              menu.hidePopover();
-            }
-          }
-          break;
-        default:
-          if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
-            const match = items.find((item) => item.textContent.trim().toLowerCase().startsWith(e.key.toLowerCase()));
-            if (match)
-              highlight(match);
-          }
-      }
-    });
+    wireMenu(menu);
+    menu.querySelectorAll(".dropdown-sub").forEach(wireSub);
   });
-  document.querySelectorAll(".dropdown-content[popover]:not([data-init])").forEach((menu) => {
+  document.querySelectorAll(".dropdown-sub").forEach(wireSub);
+  document.querySelectorAll(".dropdown-content[popover]:not(.dropdown-sub-content):not([data-init])").forEach((menu) => {
     menu.dataset.init = "";
     menu.api = {
       setState: (stateName, config) => dropdownApi.setState(menu, stateName, config),
@@ -6424,8 +6599,174 @@ if (!document.__imagePreviewInit) {
   });
 }
 
-// src/components/mermaid/mermaid.ts
+// src/components/menubar/menubar.ts
 var df$18 = defussGlobals();
+var menubarStates = ["default", "open"];
+var triggersOf = (bar) => Array.from(bar.querySelectorAll(".menubar-trigger")).filter((t) => t.closest(".menubar") === bar && !t.disabled && t.getAttribute("aria-disabled") !== "true");
+var menuOf = (trigger2) => document.getElementById(trigger2.dataset.dropdownTrigger || trigger2.getAttribute("popovertarget") || "");
+var openMenuOf = (bar) => triggersOf(bar).map(menuOf).find((m) => m?.matches(":popover-open")) ?? null;
+function setRoving(bar, active2) {
+  triggersOf(bar).forEach((t) => t.setAttribute("tabindex", t === active2 ? "0" : "-1"));
+}
+function openMenu(bar, trigger2, quiet = false) {
+  const menu = menuOf(trigger2);
+  if (!menu)
+    return;
+  setRoving(bar, trigger2);
+  if (menu.matches(":popover-open")) {
+    if (!quiet)
+      focusItem(menu);
+    return;
+  }
+  menu._noFocus = quiet;
+  if (quiet)
+    trigger2.focus({ preventScroll: true });
+  safeShowPopover(menu);
+}
+function focusItem(menu, last = false) {
+  const own = Array.from(menu.querySelectorAll('[role^="menuitem"]')).filter((x) => x.closest('[role="menu"]') === menu && !x.disabled && x.getAttribute("aria-disabled") !== "true");
+  own.forEach((x) => x.removeAttribute("data-highlighted"));
+  const item = last ? own.at(-1) : own[0];
+  item?.setAttribute("data-highlighted", "");
+  item?.focus({ preventScroll: true });
+}
+function triggerStateChange18(bar, stateName, config) {
+  switch (stateName) {
+    case "default": {
+      const open = openMenuOf(bar);
+      if (open) {
+        try {
+          open.hidePopover();
+        } catch {}
+      }
+      break;
+    }
+    case "open": {
+      const ts = triggersOf(bar);
+      const t = typeof config.menu === "number" ? ts[config.menu] : config.menu ? ts.find((x) => x.dataset.dropdownTrigger === config.menu) : ts[0];
+      if (t)
+        openMenu(bar, t);
+      break;
+    }
+  }
+}
+var menubarApi = {
+  setState(bar, stateName, config = {}) {
+    if (!menubarStates.includes(stateName)) {
+      throw new Error(`menubar: unknown state "${stateName}" (supported: ${menubarStates.join(", ")})`);
+    }
+    bar._stateConfig = config;
+    bar.dataset.stateName = stateName;
+    triggerStateChange18(bar, stateName, config);
+  },
+  getState(bar) {
+    const open = openMenuOf(bar);
+    return { name: open ? "open" : "default", config: { ...bar._stateConfig, menu: open?.id ?? null } };
+  }
+};
+df$18.menubarApi = menubarApi;
+df$18.menubarStates = menubarStates;
+function init18() {
+  document.querySelectorAll(".menubar:not([data-init])").forEach((bar) => {
+    bar.dataset.init = "";
+    if (!bar.hasAttribute("role"))
+      bar.setAttribute("role", "menubar");
+    bar.api = {
+      setState: (stateName, config) => menubarApi.setState(bar, stateName, config),
+      getState: () => menubarApi.getState(bar)
+    };
+    const triggers = triggersOf(bar);
+    triggers.forEach((t) => {
+      if (!t.hasAttribute("role"))
+        t.setAttribute("role", "menuitem");
+    });
+    setRoving(bar, triggers[0]);
+    triggers.forEach((t) => {
+      menuOf(t)?.addEventListener("toggle", () => {
+        bar.dataset.stateName = openMenuOf(bar) ? "open" : "default";
+      });
+    });
+    bar.addEventListener("pointerover", (e) => {
+      const t = e.target instanceof Element ? e.target.closest(".menubar-trigger") : null;
+      if (!t || t.closest(".menubar") !== bar || !triggersOf(bar).includes(t))
+        return;
+      const open = openMenuOf(bar);
+      if (open && menuOf(t) !== open)
+        openMenu(bar, t, true);
+    });
+    bar.addEventListener("keydown", (e) => {
+      const ts = triggersOf(bar);
+      const rtl = getComputedStyle(bar).direction === "rtl";
+      const next = rtl ? "ArrowLeft" : "ArrowRight";
+      const prev = rtl ? "ArrowRight" : "ArrowLeft";
+      const onTrigger = e.target instanceof Element && e.target.classList.contains("menubar-trigger");
+      const openMenuEl = openMenuOf(bar);
+      const i = onTrigger ? ts.indexOf(e.target) : ts.findIndex((t) => menuOf(t) === openMenuEl);
+      if (i < 0)
+        return;
+      const step = (d) => ts[(i + d + ts.length) % ts.length];
+      if (onTrigger) {
+        const moveTo = (t) => {
+          if (openMenuEl)
+            openMenu(bar, t);
+          else {
+            setRoving(bar, t);
+            t.focus();
+          }
+        };
+        switch (e.key) {
+          case next:
+            e.preventDefault();
+            moveTo(step(1));
+            break;
+          case prev:
+            e.preventDefault();
+            moveTo(step(-1));
+            break;
+          case "Home":
+            e.preventDefault();
+            setRoving(bar, ts[0]);
+            ts[0].focus();
+            break;
+          case "End":
+            e.preventDefault();
+            setRoving(bar, ts[ts.length - 1]);
+            ts[ts.length - 1].focus();
+            break;
+          case "ArrowDown":
+          case "Enter":
+          case " ":
+            e.preventDefault();
+            openMenu(bar, ts[i]);
+            break;
+          case "ArrowUp": {
+            e.preventDefault();
+            const menu = menuOf(ts[i]);
+            openMenu(bar, ts[i]);
+            if (menu)
+              setTimeout(() => focusItem(menu, true), 20);
+            break;
+          }
+        }
+        return;
+      }
+      if (e.defaultPrevented)
+        return;
+      if (e.key === next) {
+        e.preventDefault();
+        openMenu(bar, step(1));
+      } else if (e.key === prev) {
+        e.preventDefault();
+        openMenu(bar, step(-1));
+      }
+    });
+  });
+}
+init18();
+new MutationObserver(init18).observe(document, { childList: true, subtree: true });
+
+// src/components/mermaid/mermaid.ts
+var df$19 = defussGlobals();
 var mermaidStates = ["default", "rendered", "error"];
 var MERMAID_URL = "https://cdn.jsdelivr.net/npm/mermaid@12.0.0/dist/mermaid.esm.min.mjs";
 var modulePromise = null;
@@ -6630,7 +6971,7 @@ ${text.split(`
 function renderAll() {
   return Promise.all([...document.querySelectorAll(".mermaid-diagram[data-init]")].map(render2));
 }
-function triggerStateChange18(fig, stateName, config) {
+function triggerStateChange19(fig, stateName, config) {
   switch (stateName) {
     case "default":
       clearError(fig);
@@ -6651,15 +6992,15 @@ var mermaidApi = {
       throw new Error(`mermaid: unknown state "${stateName}" (supported: ${mermaidStates.join(", ")})`);
     }
     fig._stateConfig = config;
-    return triggerStateChange18(fig, stateName, config);
+    return triggerStateChange19(fig, stateName, config);
   },
   getState(fig) {
     return { name: fig.dataset.stateName || "default", config: fig._stateConfig ?? {} };
   }
 };
-df$18.mermaidApi = mermaidApi;
-df$18.mermaidStates = mermaidStates;
-df$18.mermaid = { load, render: render2, renderAll, theme: mermaidTheme, url: MERMAID_URL };
+df$19.mermaidApi = mermaidApi;
+df$19.mermaidStates = mermaidStates;
+df$19.mermaid = { load, render: render2, renderAll, theme: mermaidTheme, url: MERMAID_URL };
 var themeWatched2 = false;
 function watchTheme2() {
   if (themeWatched2)
@@ -6681,7 +7022,7 @@ function watchTheme2() {
     mo.observe(document.head, { childList: true, subtree: true, characterData: true });
   matchMedia("(prefers-color-scheme: dark)").addEventListener("change", schedule2);
 }
-function init18() {
+function init19() {
   document.querySelectorAll("pre.mermaid:not(.mermaid-diagram > pre)").forEach((pre) => {
     const fig = document.createElement("figure");
     fig.className = "mermaid-diagram";
@@ -6701,13 +7042,13 @@ function init18() {
     render2(fig);
   });
 }
-init18();
-new MutationObserver(init18).observe(document, { childList: true, subtree: true });
+init19();
+new MutationObserver(init19).observe(document, { childList: true, subtree: true });
 
 // src/components/navigation-menu/navigation-menu.ts
-var df$19 = defussGlobals();
+var df$20 = defussGlobals();
 var navigationMenuStates = ["default", "open"];
-function triggerStateChange19(content, stateName, _config) {
+function triggerStateChange20(content, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -6724,7 +7065,7 @@ var navigationMenuApi = {
     if (!navigationMenuStates.includes(stateName)) {
       throw new Error(`navigation-menu: unknown state "${stateName}" (supported: ${navigationMenuStates.join(", ")})`);
     }
-    triggerStateChange19(content, stateName, config);
+    triggerStateChange20(content, stateName, config);
     content.dataset.stateName = stateName;
     content._stateConfig = config;
   },
@@ -6732,9 +7073,9 @@ var navigationMenuApi = {
     return { name: content.dataset.stateName || "default", config: content._stateConfig ?? {} };
   }
 };
-df$19.navigationMenuApi = navigationMenuApi;
-df$19.navigationMenuStates = navigationMenuStates;
-function init19() {
+df$20.navigationMenuApi = navigationMenuApi;
+df$20.navigationMenuStates = navigationMenuStates;
+function init20() {
   document.querySelectorAll(".nav-menu-trigger[popovertarget]:not([data-init])").forEach((trigger2) => {
     trigger2.dataset.init = "";
     const content = document.getElementById(trigger2.getAttribute("popovertarget"));
@@ -6752,11 +7093,11 @@ function init19() {
     };
   });
 }
-init19();
-new MutationObserver(init19).observe(document, { childList: true, subtree: true });
+init20();
+new MutationObserver(init20).observe(document, { childList: true, subtree: true });
 
 // src/components/number-input/number-input.ts
-var df$20 = defussGlobals();
+var df$21 = defussGlobals();
 var numberInputStates = ["default"];
 var getInput2 = (wrapper) => wrapper.querySelector('input:not([type="hidden"])');
 function currencyConfig(wrapper) {
@@ -6877,7 +7218,7 @@ function formatDecimals(wrapper, input) {
   if (input.value !== fixed)
     input.value = fixed;
 }
-function triggerStateChange20(wrapper, config) {
+function triggerStateChange21(wrapper, config) {
   const input = getInput2(wrapper);
   if (!input || config?.value === undefined)
     return;
@@ -6897,7 +7238,7 @@ var numberInputApi = {
     if (!numberInputStates.includes(stateName)) {
       throw new Error(`number-input: unknown state "${stateName}" (supported: ${numberInputStates.join(", ")})`);
     }
-    triggerStateChange20(wrapper, config);
+    triggerStateChange21(wrapper, config);
     wrapper.dataset.stateName = stateName;
     wrapper._stateConfig = config;
   },
@@ -6913,9 +7254,9 @@ var numberInputApi = {
     };
   }
 };
-df$20.numberInputApi = numberInputApi;
-df$20.numberInputStates = numberInputStates;
-function init20() {
+df$21.numberInputApi = numberInputApi;
+df$21.numberInputStates = numberInputStates;
+function init21() {
   document.querySelectorAll(".number-input:not([data-init])").forEach((wrapper) => {
     wrapper.dataset.init = "";
     wrapper.api = {
@@ -6991,11 +7332,11 @@ function init20() {
       });
   });
 }
-init20();
-new MutationObserver(init20).observe(document, { childList: true, subtree: true });
+init21();
+new MutationObserver(init21).observe(document, { childList: true, subtree: true });
 
 // src/components/pagination/pagination.ts
-var df$21 = defussGlobals();
+var df$22 = defussGlobals();
 var dfDollar7 = defussQuery();
 var paginationStates = ["default"];
 var numAttr = (el, key, fallback) => {
@@ -7087,7 +7428,7 @@ function setPage(nav, page) {
   nav.dataset.activePage = String(next);
   nav.dispatchEvent(new CustomEvent("pagination-change", { bubbles: true, detail: { page: next } }));
 }
-function triggerStateChange21(nav, stateName, config = {}) {
+function triggerStateChange22(nav, stateName, config = {}) {
   if (stateName !== "default")
     return;
   const a = config.activePage ?? config.page;
@@ -7106,7 +7447,7 @@ var paginationApi = {
     if (!paginationStates.includes(stateName)) {
       throw new Error(`pagination: unknown state "${stateName}" (supported: ${paginationStates.join(", ")})`);
     }
-    triggerStateChange21(nav, stateName, config);
+    triggerStateChange22(nav, stateName, config);
     nav.dataset.stateName = stateName;
     nav._stateConfig = config;
   },
@@ -7123,9 +7464,9 @@ var paginationApi = {
     };
   }
 };
-df$21.paginationApi = paginationApi;
-df$21.paginationStates = paginationStates;
-function init21() {
+df$22.paginationApi = paginationApi;
+df$22.paginationStates = paginationStates;
+function init22() {
   document.querySelectorAll(".pagination:not([data-init])").forEach((nav) => {
     nav.dataset.init = "";
     nav.api = {
@@ -7158,13 +7499,13 @@ function init21() {
     nav.addEventListener("pagination-prev", () => setPage(nav, numAttr(nav, "activePage", 1) - 1));
   });
 }
-init21();
-new MutationObserver(init21).observe(document, { childList: true, subtree: true });
+init22();
+new MutationObserver(init22).observe(document, { childList: true, subtree: true });
 
 // src/components/popover/popover.ts
-var df$22 = defussGlobals();
+var df$23 = defussGlobals();
 var popoverStates = ["default", "open"];
-function triggerStateChange22(popover, stateName, _config) {
+function triggerStateChange23(popover, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -7181,7 +7522,7 @@ var popoverApi = {
     if (!popoverStates.includes(stateName)) {
       throw new Error(`popover: unknown state "${stateName}" (supported: ${popoverStates.join(", ")})`);
     }
-    triggerStateChange22(popover, stateName, config);
+    triggerStateChange23(popover, stateName, config);
     popover.dataset.stateName = stateName;
     popover._stateConfig = config;
   },
@@ -7189,9 +7530,9 @@ var popoverApi = {
     return { name: popover.dataset.stateName || "default", config: popover._stateConfig ?? {} };
   }
 };
-df$22.popoverApi = popoverApi;
-df$22.popoverStates = popoverStates;
-function init22() {
+df$23.popoverApi = popoverApi;
+df$23.popoverStates = popoverStates;
+function init23() {
   document.querySelectorAll("[popovertarget]:not([data-init])").forEach((trigger2) => {
     const id = trigger2.getAttribute("popovertarget");
     const popover = document.getElementById(id);
@@ -7210,11 +7551,11 @@ function init22() {
     };
   });
 }
-init22();
-new MutationObserver(init22).observe(document, { childList: true, subtree: true });
+init23();
+new MutationObserver(init23).observe(document, { childList: true, subtree: true });
 
 // src/components/presentation/presentation.ts
-var df$23 = defussGlobals();
+var df$24 = defussGlobals();
 var presentationStates = ["default", "notes", "fullscreen"];
 var DEFAULT_IN = "fadeIn";
 var DEFAULT_OUT = "fadeOut";
@@ -7325,7 +7666,7 @@ function exitFullscreen(root) {
   if (nativeDeck === root)
     nativeDeck = null;
 }
-function triggerStateChange23(root, stateName, config = {}) {
+function triggerStateChange24(root, stateName, config = {}) {
   if (!presentationStates.includes(stateName)) {
     throw new Error(`presentation: unknown state "${stateName}" (supported: ${presentationStates.join(", ")})`);
   }
@@ -7349,7 +7690,7 @@ function triggerStateChange23(root, stateName, config = {}) {
 }
 var presentationApi = {
   setState(root, stateName, config = {}) {
-    triggerStateChange23(root, stateName, config);
+    triggerStateChange24(root, stateName, config);
     root.dataset.stateName = stateName;
     root._stateConfig = config;
   },
@@ -7365,8 +7706,8 @@ var presentationApi = {
     };
   }
 };
-df$23.presentationApi = presentationApi;
-df$23.presentationStates = presentationStates;
+df$24.presentationApi = presentationApi;
+df$24.presentationStates = presentationStates;
 var keysBound2 = false;
 function bindKeyboard() {
   if (keysBound2)
@@ -7411,7 +7752,7 @@ function bindKeyboard() {
         break;
       case "f":
       case "F":
-        triggerStateChange23(root, "fullscreen", { value: !root.hasAttribute("data-fullscreen") });
+        triggerStateChange24(root, "fullscreen", { value: !root.hasAttribute("data-fullscreen") });
         break;
       default:
         handled = false;
@@ -7452,7 +7793,7 @@ function bindFullscreen() {
     }
   });
 }
-function init23() {
+function init24() {
   document.querySelectorAll(".presentation:not([data-init])").forEach((root) => {
     root.dataset.init = "";
     root.api = {
@@ -7537,7 +7878,7 @@ function init23() {
       };
     };
     let booted = false;
-    const activate2 = (index, forward) => {
+    const activate3 = (index, forward) => {
       const slides = slidesOf(root);
       if (slides.length === 0)
         return;
@@ -7569,7 +7910,7 @@ function init23() {
       if (number)
         number.textContent = `${pad(clamped + 1)}⁄${pad(slides.length)}`;
     };
-    root._presentationActivate = activate2;
+    root._presentationActivate = activate3;
     const applyScale = () => {
       const cs = getComputedStyle(root);
       const w = parseFloat(cs.getPropertyValue("--presentation-width")) || 1600;
@@ -7588,22 +7929,22 @@ function init23() {
       const at = indexOf(root);
       switch (btn.getAttribute("data-presentation-action")) {
         case "next":
-          activate2(root.hasAttribute("data-loop") ? (at + 1) % total : at + 1, true);
+          activate3(root.hasAttribute("data-loop") ? (at + 1) % total : at + 1, true);
           break;
         case "prev":
-          activate2(root.hasAttribute("data-loop") && at === 0 ? total - 1 : at - 1, false);
+          activate3(root.hasAttribute("data-loop") && at === 0 ? total - 1 : at - 1, false);
           break;
         case "first":
-          activate2(0);
+          activate3(0);
           break;
         case "last":
-          activate2(total - 1);
+          activate3(total - 1);
           break;
         case "notes":
           root.toggleAttribute("data-notes");
           break;
         case "fullscreen":
-          triggerStateChange23(root, "fullscreen", { value: !root.hasAttribute("data-fullscreen") });
+          triggerStateChange24(root, "fullscreen", { value: !root.hasAttribute("data-fullscreen") });
           break;
       }
     });
@@ -7612,17 +7953,17 @@ function init23() {
     bindFullscreen();
     const hashId = decodeURIComponent(location.hash.slice(1));
     const hashIndex = hashId ? slidesOf(root).findIndex((s) => s.id === hashId) : -1;
-    activate2(hashIndex >= 0 ? hashIndex : coerceIndex(root.dataset.currentSlide, 0));
+    activate3(hashIndex >= 0 ? hashIndex : coerceIndex(root.dataset.currentSlide, 0));
     applyScale();
   });
 }
-init23();
-new MutationObserver(init23).observe(document, { childList: true, subtree: true });
+init24();
+new MutationObserver(init24).observe(document, { childList: true, subtree: true });
 
 // src/components/product-showcase/product-showcase.ts
-var df$24 = defussGlobals();
+var df$25 = defussGlobals();
 var productShowcaseStates = ["default", "playing"];
-function triggerStateChange24(showcase, stateName, _config) {
+function triggerStateChange25(showcase, stateName, _config) {
   const video = showcase.querySelector("video");
   switch (stateName) {
     case "default":
@@ -7646,7 +7987,7 @@ var productShowcaseApi = {
     if (!productShowcaseStates.includes(stateName)) {
       throw new Error(`product-showcase: unknown state "${stateName}" (supported: ${productShowcaseStates.join(", ")})`);
     }
-    triggerStateChange24(showcase, stateName, config);
+    triggerStateChange25(showcase, stateName, config);
     showcase.dataset.stateName = stateName;
     showcase._stateConfig = config;
   },
@@ -7658,9 +7999,9 @@ var productShowcaseApi = {
     };
   }
 };
-df$24.productShowcaseApi = productShowcaseApi;
-df$24.productShowcaseStates = productShowcaseStates;
-function init24() {
+df$25.productShowcaseApi = productShowcaseApi;
+df$25.productShowcaseStates = productShowcaseStates;
+function init25() {
   document.querySelectorAll(".mk-showcase:not([data-init])").forEach((showcase) => {
     showcase.dataset.init = "";
     showcase.dataset.state = "default";
@@ -7677,11 +8018,11 @@ function init24() {
     });
   });
 }
-init24();
-new MutationObserver(init24).observe(document, { childList: true, subtree: true });
+init25();
+new MutationObserver(init25).observe(document, { childList: true, subtree: true });
 
 // src/components/progress/progress.ts
-var df$25 = defussGlobals();
+var df$26 = defussGlobals();
 var progressStates = ["default", "indeterminate", "complete"];
 var SELECTOR = "progress.progress";
 var reducedMotion4 = () => globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
@@ -7778,7 +8119,7 @@ function tween(el, to, duration) {
 }
 var stepOf = (el) => parseFloat(el.dataset.step || "") || maxOf(el) / 10;
 var durationOf = (el) => parseFloat(el.dataset.duration || "") || 3000;
-function triggerStateChange25(el, stateName, config) {
+function triggerStateChange26(el, stateName, config) {
   switch (stateName) {
     case "default": {
       if (config.max != null)
@@ -7817,7 +8158,7 @@ var progressApi = {
       throw new Error(`progress: unknown state "${stateName}" (supported: ${progressStates.join(", ")})`);
     }
     el._stateConfig = config;
-    triggerStateChange25(el, stateName, config);
+    triggerStateChange26(el, stateName, config);
   },
   getState(el) {
     const indeterminate = el.position < 0;
@@ -7827,8 +8168,8 @@ var progressApi = {
     };
   }
 };
-df$25.progressApi = progressApi;
-df$25.progressStates = progressStates;
+df$26.progressApi = progressApi;
+df$26.progressStates = progressStates;
 function run(el, command) {
   const now = el.position < 0 ? 0 : el.value;
   switch (command) {
@@ -7865,7 +8206,7 @@ function run(el, command) {
   return true;
 }
 var COMMANDS = ["reset", "increment", "decrement", "complete", "indeterminate", "play", "pause"];
-function init25() {
+function init26() {
   document.querySelectorAll(`${SELECTOR}:not([data-init])`).forEach((el) => {
     el.dataset.init = "";
     el.api = {
@@ -7902,11 +8243,11 @@ new MutationObserver((records) => {
     }
   }
 }).observe(document, { attributes: true, subtree: true, attributeFilter: ["value", "max"] });
-init25();
-new MutationObserver(init25).observe(document, { childList: true, subtree: true });
+init26();
+new MutationObserver(init26).observe(document, { childList: true, subtree: true });
 
 // src/components/radial-progress/radial-progress.ts
-var df$26 = defussGlobals();
+var df$27 = defussGlobals();
 var radialProgressStates = ["default", "indeterminate", "complete"];
 var SELECTOR2 = ".radial-progress";
 var reducedMotion5 = () => globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
@@ -7999,7 +8340,7 @@ function tween2(el, to, duration) {
 }
 var stepOf2 = (el) => parseFloat(el.dataset.step || "") || maxOf2(el) / 10;
 var durationOf2 = (el) => parseFloat(el.dataset.duration || "") || 3000;
-function triggerStateChange26(el, stateName, config) {
+function triggerStateChange27(el, stateName, config) {
   switch (stateName) {
     case "default": {
       if (config.max != null)
@@ -8035,7 +8376,7 @@ var radialProgressApi = {
       throw new Error(`radial-progress: unknown state "${stateName}" (supported: ${radialProgressStates.join(", ")})`);
     }
     el._stateConfig = config;
-    triggerStateChange26(el, stateName, config);
+    triggerStateChange27(el, stateName, config);
   },
   getState(el) {
     const v = valueOf(el);
@@ -8045,8 +8386,8 @@ var radialProgressApi = {
     };
   }
 };
-df$26.radialProgressApi = radialProgressApi;
-df$26.radialProgressStates = radialProgressStates;
+df$27.radialProgressApi = radialProgressApi;
+df$27.radialProgressStates = radialProgressStates;
 function run2(el, command) {
   const now = valueOf(el) ?? 0;
   switch (command) {
@@ -8081,7 +8422,7 @@ function run2(el, command) {
   }
 }
 var COMMANDS2 = ["reset", "increment", "decrement", "complete", "indeterminate", "play", "pause"];
-function init26() {
+function init27() {
   document.querySelectorAll(`${SELECTOR2}:not([data-init])`).forEach((el) => {
     el.dataset.init = "";
     el.api = {
@@ -8126,11 +8467,11 @@ new MutationObserver((records) => {
     }
   }
 }).observe(document, { attributes: true, subtree: true, attributeFilter: ["aria-valuenow", "aria-valuemax"] });
-init26();
-new MutationObserver(init26).observe(document, { childList: true, subtree: true });
+init27();
+new MutationObserver(init27).observe(document, { childList: true, subtree: true });
 
 // src/components/resizer/resizer.ts
-var df$27 = defussGlobals();
+var df$28 = defussGlobals();
 var resizerStates = ["default"];
 var HANDLES = ["n", "e", "s", "w", "ne", "nw", "se", "sw"];
 var CLASS_NUMBERS = Array.from({ length: 81 }, (_, i) => i + 16);
@@ -8254,7 +8595,7 @@ function applySize(wrapper, axis, px) {
     }
   }));
 }
-function triggerStateChange27(wrapper, stateName, config = {}) {
+function triggerStateChange28(wrapper, stateName, config = {}) {
   if (stateName !== "default")
     return;
   if (config.width !== undefined || wrapper._defaultSize)
@@ -8267,7 +8608,7 @@ var resizerApi = {
     if (!resizerStates.includes(stateName)) {
       throw new Error(`resizer: unknown state "${stateName}" (supported: ${resizerStates.join(", ")})`);
     }
-    triggerStateChange27(wrapper, stateName, config);
+    triggerStateChange28(wrapper, stateName, config);
     wrapper.dataset.stateName = stateName;
     wrapper._stateConfig = config;
   },
@@ -8283,8 +8624,8 @@ var resizerApi = {
     };
   }
 };
-df$27.resizerApi = resizerApi;
-df$27.resizerStates = resizerStates;
+df$28.resizerApi = resizerApi;
+df$28.resizerStates = resizerStates;
 var HANDLE_LABEL = {
   n: "top edge",
   s: "bottom edge",
@@ -8378,7 +8719,7 @@ function startDrag(wrapper, handle, ev) {
   handle.addEventListener("pointercancel", onUp);
   handle.addEventListener("lostpointercapture", onUp);
 }
-function init27() {
+function init28() {
   document.querySelectorAll(".resizer:not([data-init])").forEach((wrapper) => {
     wrapper.dataset.init = "";
     if (!targetOf(wrapper))
@@ -8406,13 +8747,13 @@ function init27() {
     wrapper.addEventListener("resizer-reset", () => resizerApi.setState(wrapper, "default"));
   });
 }
-init27();
-new MutationObserver(init27).observe(document, { childList: true, subtree: true });
+init28();
+new MutationObserver(init28).observe(document, { childList: true, subtree: true });
 
 // src/components/sheet/sheet.ts
-var df$28 = defussGlobals();
+var df$29 = defussGlobals();
 var sheetStates = ["default", "open"];
-function triggerStateChange28(sheet, stateName, _config) {
+function triggerStateChange29(sheet, stateName, _config) {
   switch (stateName) {
     case "default":
       if (sheet.open)
@@ -8429,7 +8770,7 @@ var sheetApi = {
     if (!sheetStates.includes(stateName)) {
       throw new Error(`sheet: unknown state "${stateName}" (supported: ${sheetStates.join(", ")})`);
     }
-    triggerStateChange28(sheet, stateName, config);
+    triggerStateChange29(sheet, stateName, config);
     sheet.dataset.stateName = stateName;
     sheet._stateConfig = config;
   },
@@ -8437,9 +8778,9 @@ var sheetApi = {
     return { name: sheet.dataset.stateName || "default", config: sheet._stateConfig ?? {} };
   }
 };
-df$28.sheetApi = sheetApi;
-df$28.sheetStates = sheetStates;
-function init28() {
+df$29.sheetApi = sheetApi;
+df$29.sheetStates = sheetStates;
+function init29() {
   document.querySelectorAll("[data-sheet-trigger]:not([data-init])").forEach((trigger2) => {
     trigger2.dataset.init = "";
     const sheet = document.getElementById(trigger2.dataset.sheetTrigger);
@@ -8474,13 +8815,13 @@ function init28() {
     });
   });
 }
-init28();
-new MutationObserver(init28).observe(document, { childList: true, subtree: true });
+init29();
+new MutationObserver(init29).observe(document, { childList: true, subtree: true });
 
 // src/components/sidebar/sidebar.ts
-var df$29 = defussGlobals();
+var df$30 = defussGlobals();
 var sidebarStates = ["default", "collapsed"];
-function triggerStateChange29(sidebar, stateName, _config) {
+function triggerStateChange30(sidebar, stateName, _config) {
   switch (stateName) {
     case "default":
       sidebar.dataset.state = sidebar._defaultState ?? "expanded";
@@ -8495,7 +8836,7 @@ var sidebarApi = {
     if (!sidebarStates.includes(stateName)) {
       throw new Error(`sidebar: unknown state "${stateName}" (supported: ${sidebarStates.join(", ")})`);
     }
-    triggerStateChange29(sidebar, stateName, config);
+    triggerStateChange30(sidebar, stateName, config);
     sidebar.dataset.stateName = stateName;
     sidebar._stateConfig = config;
   },
@@ -8506,9 +8847,9 @@ var sidebarApi = {
     };
   }
 };
-df$29.sidebarApi = sidebarApi;
-df$29.sidebarStates = sidebarStates;
-function init29() {
+df$30.sidebarApi = sidebarApi;
+df$30.sidebarStates = sidebarStates;
+function init30() {
   document.querySelectorAll(".app-sidebar:not([data-init])").forEach((sidebar) => {
     sidebar.dataset.init = "";
     sidebar._defaultState = sidebar.dataset.state || "expanded";
@@ -8564,8 +8905,8 @@ if (typeof ResizeObserver !== "undefined" && !document.__sidebarAutoRo) {
     }
   });
 }
-init29();
-new MutationObserver(init29).observe(document, { childList: true, subtree: true });
+init30();
+new MutationObserver(init30).observe(document, { childList: true, subtree: true });
 if (!document.__sidebarKbInit) {
   document.__sidebarKbInit = true;
   bindGlobalKeys((e) => {
@@ -8582,7 +8923,7 @@ if (!document.__sidebarKbInit) {
 }
 
 // src/components/slider/slider.ts
-var df$30 = defussGlobals();
+var df$31 = defussGlobals();
 var sliderStates = ["default", "disabled"];
 function percentOf(el) {
   const min = parseFloat(el.min || 0);
@@ -8685,7 +9026,7 @@ function initRange(range) {
     });
   paintRange(range);
 }
-function triggerStateChange30(el, stateName, config) {
+function triggerStateChange31(el, stateName, config) {
   switch (stateName) {
     case "default":
       el.disabled = el._defaultDisabled ?? false;
@@ -8703,7 +9044,7 @@ var sliderApi = {
     if (!sliderStates.includes(stateName)) {
       throw new Error(`slider: unknown state "${stateName}" (supported: ${sliderStates.join(", ")})`);
     }
-    triggerStateChange30(el, stateName, config);
+    triggerStateChange31(el, stateName, config);
     el.dataset.stateName = stateName;
     el._stateConfig = config;
   },
@@ -8714,9 +9055,9 @@ var sliderApi = {
     };
   }
 };
-df$30.sliderApi = sliderApi;
-df$30.sliderStates = sliderStates;
-function init30() {
+df$31.sliderApi = sliderApi;
+df$31.sliderStates = sliderStates;
+function init31() {
   document.querySelectorAll(".slider-range:not([data-init])").forEach((range) => {
     range.dataset.init = "";
     initRange(range);
@@ -8734,16 +9075,16 @@ function init30() {
     el.addEventListener("input", () => updateSliderValue(el));
   });
 }
-init30();
-new MutationObserver(init30).observe(document, { childList: true, subtree: true });
+init31();
+new MutationObserver(init31).observe(document, { childList: true, subtree: true });
 
 // src/components/sortable/sortable.ts
-var df$31 = defussGlobals();
+var df$32 = defussGlobals();
 var dfDollar8 = defussQuery();
 var sortableStates = ["default"];
 var drag = null;
 var sortableLabels = (list) => dfDollar8(list).find(".sortable-item").map((item) => dfDollar8(item).find("span:not(.sortable-handle):not(.sortable-moves)").text().trim());
-function triggerStateChange31(list, stateName, config) {
+function triggerStateChange32(list, stateName, config) {
   if (stateName !== "default")
     return;
   dfDollar8(list).append(list._defaultOrder ?? []);
@@ -8758,7 +9099,7 @@ var sortableApi = {
     if (!sortableStates.includes(stateName)) {
       throw new Error(`sortable: unknown state "${stateName}" (supported: ${sortableStates.join(", ")})`);
     }
-    triggerStateChange31(list, stateName, config);
+    triggerStateChange32(list, stateName, config);
     list.dataset.stateName = stateName;
     list._stateConfig = config;
   },
@@ -8775,9 +9116,9 @@ var sortableApi = {
     };
   }
 };
-df$31.sortableApi = sortableApi;
-df$31.sortableStates = sortableStates;
-function init31() {
+df$32.sortableApi = sortableApi;
+df$32.sortableStates = sortableStates;
+function init32() {
   document.querySelectorAll(".sortable:not([data-init])").forEach((list) => {
     list.dataset.init = "";
     list.api = {
@@ -9056,11 +9397,11 @@ function init31() {
     });
   });
 }
-init31();
-new MutationObserver(init31).observe(document, { childList: true, subtree: true });
+init32();
+new MutationObserver(init32).observe(document, { childList: true, subtree: true });
 
 // src/components/steps/steps.ts
-var df$32 = defussGlobals();
+var df$33 = defussGlobals();
 var stepsStates = ["default"];
 var numAttr3 = (el, key, fallback) => {
   const v = parseInt(el.dataset[key] ?? "", 10);
@@ -9089,7 +9430,7 @@ function renderSteps(ol) {
       item.removeAttribute("aria-current");
   });
 }
-function triggerStateChange32(ol, stateName, config = {}) {
+function triggerStateChange33(ol, stateName, config = {}) {
   if (stateName !== "default")
     return;
   const a = config.activeStep ?? config.step ?? config.page;
@@ -9110,7 +9451,7 @@ var stepsApi = {
     if (!stepsStates.includes(stateName)) {
       throw new Error(`steps: unknown state "${stateName}" (supported: ${stepsStates.join(", ")})`);
     }
-    triggerStateChange32(ol, stateName, config);
+    triggerStateChange33(ol, stateName, config);
     ol.dataset.stateName = stateName;
     ol._stateConfig = config;
   },
@@ -9127,9 +9468,9 @@ var stepsApi = {
     };
   }
 };
-df$32.stepsApi = stepsApi;
-df$32.stepsStates = stepsStates;
-function init32() {
+df$33.stepsApi = stepsApi;
+df$33.stepsStates = stepsStates;
+function init33() {
   document.querySelectorAll(".steps:not([data-init])").forEach((ol) => {
     ol.dataset.init = "";
     ol.api = {
@@ -9164,11 +9505,11 @@ function init32() {
     });
   });
 }
-init32();
-new MutationObserver(init32).observe(document, { childList: true, subtree: true });
+init33();
+new MutationObserver(init33).observe(document, { childList: true, subtree: true });
 
 // src/components/table/table.ts
-var df$33 = defussGlobals();
+var df$34 = defussGlobals();
 var tableStates = ["default", "sorted", "selected"];
 var bodyOf = (table) => table.tBodies[0];
 var bodyRows = (table) => [...bodyOf(table)?.rows ?? []];
@@ -9320,7 +9661,7 @@ function measureLocks(table) {
   for (let i = 1;i < n; i++)
     table.style.setProperty(`--table-lock-${i}`, `${first.cells[i - 1]?.getBoundingClientRect().width ?? 0}px`);
 }
-function triggerStateChange33(table, stateName, config) {
+function triggerStateChange34(table, stateName, config) {
   switch (stateName) {
     case "default":
       unsort(table);
@@ -9339,7 +9680,7 @@ var tableApi = {
     if (!tableStates.includes(stateName)) {
       throw new Error(`table: unknown state "${stateName}" (supported: ${tableStates.join(", ")})`);
     }
-    triggerStateChange33(table, stateName, config);
+    triggerStateChange34(table, stateName, config);
     table.dataset.stateName = stateName;
     table._stateConfig = config;
   },
@@ -9348,9 +9689,9 @@ var tableApi = {
     return { name: table.dataset.stateName || "default", config: { ...table._stateConfig, sort: table._sort ?? null, selected } };
   }
 };
-df$33.tableApi = tableApi;
-df$33.tableStates = tableStates;
-function init33() {
+df$34.tableApi = tableApi;
+df$34.tableStates = tableStates;
+function init34() {
   document.querySelectorAll("table.table:not([data-init])").forEach((table) => {
     table.dataset.init = "";
     table.dataset.stateName = "default";
@@ -9418,11 +9759,11 @@ function init33() {
     }
   });
 }
-init33();
-new MutationObserver(init33).observe(document, { childList: true, subtree: true });
+init34();
+new MutationObserver(init34).observe(document, { childList: true, subtree: true });
 
 // src/components/tabs/tabs.ts
-var df$34 = defussGlobals();
+var df$35 = defussGlobals();
 var tabsStates = ["default", "active", "disabled"];
 var ICON = ":scope > :is(svg, img, i, .tab-icon)";
 var LUCIDE_NAME = /^[a-z][a-z0-9-]*$/;
@@ -9471,7 +9812,7 @@ var applyContent = (tab, config) => {
   if (typeof config.icon === "string")
     setIcon(tab, config.icon);
 };
-var triggersOf = (el) => {
+var triggersOf2 = (el) => {
   const list = el.getAttribute("role") === "tablist" ? el : el.closest('[role="tablist"]');
   return Array.from(list.querySelectorAll('[role="tab"]'));
 };
@@ -9510,8 +9851,8 @@ var restoreTab = (tab) => {
   tab.dataset.stateName = tabName(tab);
 };
 var authoredTab = (triggers) => triggers.find((t) => t._authored.selected) || triggers.find((t) => !t.disabled);
-function triggerStateChange34(el, stateName, config) {
-  const triggers = triggersOf(el);
+function triggerStateChange35(el, stateName, config) {
+  const triggers = triggersOf2(el);
   const isList = el.getAttribute("role") === "tablist";
   const reenter = Object.keys(config).length > 0 && tabsApi.getState(el).name === stateName;
   if (isList) {
@@ -9586,12 +9927,12 @@ var tabsApi = {
     if (!tabsStates.includes(stateName)) {
       throw new Error(`tabs: unknown state "${stateName}" (supported: ${tabsStates.join(", ")})`);
     }
-    triggerStateChange34(el, stateName, config);
+    triggerStateChange35(el, stateName, config);
     el._stateConfig = { ...el._stateConfig, ...config };
   },
   getState(el) {
     if (el.getAttribute("role") === "tablist") {
-      const triggers = triggersOf(el);
+      const triggers = triggersOf2(el);
       const selected = triggers.findIndex((t) => t.getAttribute("aria-selected") === "true");
       const authored = triggers.findIndex((t) => t._authored?.selected);
       const name = triggers.every((t) => t.disabled) ? "disabled" : selected === authored || authored < 0 && selected <= 0 ? "default" : "active";
@@ -9603,9 +9944,9 @@ var tabsApi = {
     };
   }
 };
-df$34.tabsApi = tabsApi;
-df$34.tabsStates = tabsStates;
-function init34() {
+df$35.tabsApi = tabsApi;
+df$35.tabsStates = tabsStates;
+function init35() {
   document.querySelectorAll('[role="tablist"]:not([data-init])').forEach((tablist) => {
     tablist.dataset.init = "";
     if (!tablist.querySelector(".tab-trigger"))
@@ -9686,11 +10027,11 @@ function init34() {
     });
   });
 }
-init34();
-new MutationObserver(init34).observe(document, { childList: true, subtree: true });
+init35();
+new MutationObserver(init35).observe(document, { childList: true, subtree: true });
 
 // src/components/theme-switcher/theme-switcher.ts
-var df$35 = defussGlobals();
+var df$36 = defussGlobals();
 var dfDollar9 = defussQuery();
 var themeSwitcherStates = ["default", "open"];
 var STORAGE_KEY = "defuss-shadcn-color-theme";
@@ -9765,7 +10106,7 @@ function syncTrigger(root, id) {
     dfDollar9(label2).text(active2?.dataset.themeLabel || "Default");
   root.dataset.themeId = id;
 }
-function triggerStateChange35(menu, stateName, _config) {
+function triggerStateChange36(menu, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -9782,7 +10123,7 @@ var themeSwitcherApi = {
     if (!themeSwitcherStates.includes(stateName)) {
       throw new Error(`theme-switcher: unknown state "${stateName}" (supported: ${themeSwitcherStates.join(", ")})`);
     }
-    triggerStateChange35(menu, stateName, config);
+    triggerStateChange36(menu, stateName, config);
     menu.dataset.stateName = stateName;
     menu._stateConfig = config;
   },
@@ -9796,9 +10137,9 @@ var themeSwitcherApi = {
     applyThemeId(root, id);
   }
 };
-df$35.themeSwitcherApi = themeSwitcherApi;
-df$35.themeSwitcherStates = themeSwitcherStates;
-function init35() {
+df$36.themeSwitcherApi = themeSwitcherApi;
+df$36.themeSwitcherStates = themeSwitcherStates;
+function init36() {
   document.querySelectorAll(".theme-switcher-menu:not([data-init])").forEach((menu) => {
     menu.dataset.init = "";
     const root = menu.closest(".theme-switcher");
@@ -9869,14 +10210,14 @@ document.addEventListener(THEME_EVENT, (e) => {
   const id = e.detail?.id || "default";
   document.querySelectorAll(".theme-switcher").forEach((root) => syncTrigger(root, id));
 });
-init35();
-new MutationObserver(init35).observe(document, { childList: true, subtree: true });
+init36();
+new MutationObserver(init36).observe(document, { childList: true, subtree: true });
 
 // src/components/toast/toast.ts
-var df$36 = defussGlobals();
+var df$37 = defussGlobals();
 var dfDollar10 = defussQuery();
 var toastStates = ["default"];
-function triggerStateChange36(container, stateName, _config) {
+function triggerStateChange37(container, stateName, _config) {
   if (stateName !== "default")
     return;
   container.querySelectorAll(".toast").forEach((el) => toastDismiss(el));
@@ -9886,7 +10227,7 @@ var toastApi = {
     if (!toastStates.includes(stateName)) {
       throw new Error(`toast: unknown state "${stateName}" (supported: ${toastStates.join(", ")})`);
     }
-    triggerStateChange36(container, stateName, config);
+    triggerStateChange37(container, stateName, config);
     container.dataset.stateName = stateName;
     container._stateConfig = config;
   },
@@ -9897,8 +10238,8 @@ var toastApi = {
     };
   }
 };
-df$36.toastApi = toastApi;
-df$36.toastStates = toastStates;
+df$37.toastApi = toastApi;
+df$37.toastStates = toastStates;
 var DURATION = 4000;
 var MAX_VISIBLE = 3;
 var toastCallbacks = new WeakMap;
@@ -10052,7 +10393,7 @@ var toastCreate = (options) => {
     toastDismiss(toasts[0]);
   return el;
 };
-function init36() {
+function init37() {
   document.querySelectorAll("#toast-container:not([data-init])").forEach((container) => {
     container.dataset.init = "";
     container.api = {
@@ -10105,8 +10446,8 @@ function init36() {
     });
   });
 }
-init36();
-new MutationObserver(init36).observe(document.body, { childList: true, subtree: true });
+init37();
+new MutationObserver(init37).observe(document.body, { childList: true, subtree: true });
 var toastConfigure = (opts = {}) => {
   if (opts.stack)
     toastContainer.dataset.stack = opts.stack;
@@ -10115,7 +10456,7 @@ var toastConfigure = (opts = {}) => {
   stackToasts(toastContainer);
   return { stack: toastContainer.dataset.stack || "list", position: toastContainer.dataset.position };
 };
-df$36.toast = {
+df$37.toast = {
   configure: toastConfigure,
   show: toastCreate,
   success: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "success" })),
@@ -10130,9 +10471,9 @@ df$36.toast = {
 };
 
 // src/components/toggle/toggle.ts
-var df$37 = defussGlobals();
+var df$38 = defussGlobals();
 var toggleStates = ["default", "pressed"];
-function triggerStateChange37(toggle, stateName, _config) {
+function triggerStateChange38(toggle, stateName, _config) {
   switch (stateName) {
     case "default":
       toggle.setAttribute("aria-pressed", toggle._defaultPressed ?? "false");
@@ -10147,7 +10488,7 @@ var toggleApi = {
     if (!toggleStates.includes(stateName)) {
       throw new Error(`toggle: unknown state "${stateName}" (supported: ${toggleStates.join(", ")})`);
     }
-    triggerStateChange37(toggle, stateName, config);
+    triggerStateChange38(toggle, stateName, config);
     toggle.dataset.stateName = stateName;
     toggle._stateConfig = config;
   },
@@ -10159,9 +10500,9 @@ var toggleApi = {
     };
   }
 };
-df$37.toggleApi = toggleApi;
-df$37.toggleStates = toggleStates;
-function init37() {
+df$38.toggleApi = toggleApi;
+df$38.toggleStates = toggleStates;
+function init38() {
   document.querySelectorAll(".toggle:not([data-init]):not(.toggle-group .toggle)").forEach((toggle) => {
     toggle.dataset.init = "";
     toggle._defaultPressed = toggle.getAttribute("aria-pressed") || "false";
@@ -10176,13 +10517,13 @@ function init37() {
     });
   });
 }
-init37();
-new MutationObserver(init37).observe(document, { childList: true, subtree: true });
+init38();
+new MutationObserver(init38).observe(document, { childList: true, subtree: true });
 
 // src/components/toggle-group/toggle-group.ts
-var df$38 = defussGlobals();
+var df$39 = defussGlobals();
 var toggleGroupStates = ["default", "disabled"];
-function triggerStateChange38(group, stateName, _config) {
+function triggerStateChange39(group, stateName, _config) {
   switch (stateName) {
     case "default":
       group.removeAttribute("data-disabled");
@@ -10197,7 +10538,7 @@ var toggleGroupApi = {
     if (!toggleGroupStates.includes(stateName)) {
       throw new Error(`toggle-group: unknown state "${stateName}" (supported: ${toggleGroupStates.join(", ")})`);
     }
-    triggerStateChange38(group, stateName, config);
+    triggerStateChange39(group, stateName, config);
     group.dataset.stateName = stateName;
     group._stateConfig = config;
   },
@@ -10208,9 +10549,9 @@ var toggleGroupApi = {
     };
   }
 };
-df$38.toggleGroupApi = toggleGroupApi;
-df$38.toggleGroupStates = toggleGroupStates;
-function init38() {
+df$39.toggleGroupApi = toggleGroupApi;
+df$39.toggleGroupStates = toggleGroupStates;
+function init39() {
   document.querySelectorAll(".toggle-group:not([data-init])").forEach((group) => {
     group.dataset.init = "";
     group.api = {
@@ -10278,13 +10619,13 @@ function init38() {
     });
   });
 }
-init38();
-new MutationObserver(init38).observe(document, { childList: true, subtree: true });
+init39();
+new MutationObserver(init39).observe(document, { childList: true, subtree: true });
 
 // src/components/toolbar/toolbar.ts
-var df$39 = defussGlobals();
+var df$40 = defussGlobals();
 var toolbarStates = ["default"];
-function triggerStateChange39(toolbar, items, stateName, config) {
+function triggerStateChange40(toolbar, items, stateName, config) {
   if (stateName !== "default" || items.length === 0)
     return;
   const target = items[Math.min(Number(config?.focus ?? 0), items.length - 1)] || items[0];
@@ -10298,7 +10639,7 @@ var toolbarApi = {
       throw new Error(`toolbar: unknown state "${stateName}" (supported: ${toolbarStates.join(", ")})`);
     }
     const items = toolbarItems(toolbar);
-    triggerStateChange39(toolbar, items, stateName, config);
+    triggerStateChange40(toolbar, items, stateName, config);
     toolbar.dataset.stateName = stateName;
     toolbar._stateConfig = config;
   },
@@ -10311,10 +10652,10 @@ var toolbarApi = {
     };
   }
 };
-df$39.toolbarApi = toolbarApi;
-df$39.toolbarStates = toolbarStates;
+df$40.toolbarApi = toolbarApi;
+df$40.toolbarStates = toolbarStates;
 var toolbarItems = (toolbar) => Array.from(toolbar.querySelectorAll('button:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])'));
-function init39() {
+function init40() {
   document.querySelectorAll('.toolbar[role="toolbar"]:not([data-init])').forEach((toolbar) => {
     toolbar.dataset.init = "";
     toolbar.api = {
@@ -10356,13 +10697,13 @@ function init39() {
     });
   });
 }
-init39();
-new MutationObserver(init39).observe(document, { childList: true, subtree: true });
+init40();
+new MutationObserver(init40).observe(document, { childList: true, subtree: true });
 
 // src/components/tooltip/tooltip.ts
-var df$40 = defussGlobals();
+var df$41 = defussGlobals();
 var tooltipStates = ["default", "visible"];
-function triggerStateChange40(tip, stateName, _config) {
+function triggerStateChange41(tip, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -10380,7 +10721,7 @@ var tooltipApi = {
     if (!tooltipStates.includes(stateName)) {
       throw new Error(`tooltip: unknown state "${stateName}" (supported: ${tooltipStates.join(", ")})`);
     }
-    triggerStateChange40(tip, stateName, config);
+    triggerStateChange41(tip, stateName, config);
     tip.dataset.stateName = stateName;
     tip._stateConfig = config;
   },
@@ -10388,8 +10729,8 @@ var tooltipApi = {
     return { name: tip.dataset.stateName || "default", config: tip._stateConfig ?? {} };
   }
 };
-df$40.tooltipApi = tooltipApi;
-df$40.tooltipStates = tooltipStates;
+df$41.tooltipApi = tooltipApi;
+df$41.tooltipStates = tooltipStates;
 var DELAY_DEFAULT = 700;
 var CLOSE_DELAY_DEFAULT = 0;
 var GROUP_TIMEOUT = 400;
@@ -10405,7 +10746,7 @@ function scheduleGroupReset() {
     groupOpen = false;
   }, GROUP_TIMEOUT);
 }
-function init40() {
+function init41() {
   document.querySelectorAll("[data-tooltip-trigger]:not([data-init])").forEach((trigger2) => {
     trigger2.dataset.init = "";
     const tip = document.getElementById(trigger2.dataset.tooltipTrigger);
@@ -10453,8 +10794,8 @@ function init40() {
     };
   });
 }
-init40();
-new MutationObserver(init40).observe(document, { childList: true, subtree: true });
+init41();
+new MutationObserver(init41).observe(document, { childList: true, subtree: true });
 if (!document.__tooltipScrollInit) {
   document.__tooltipScrollInit = true;
   document.addEventListener("scroll", () => {
@@ -10467,9 +10808,9 @@ if (!document.__tooltipScrollInit) {
 }
 
 // src/components/tree-view/tree-view.ts
-var df$41 = defussGlobals();
+var df$42 = defussGlobals();
 var treeViewStates = ["default", "expanded"];
-function triggerStateChange41(details, stateName, _config) {
+function triggerStateChange42(details, stateName, _config) {
   switch (stateName) {
     case "default":
       details.open = details._defaultOpen ?? false;
@@ -10484,7 +10825,7 @@ var treeViewApi = {
     if (!treeViewStates.includes(stateName)) {
       throw new Error(`tree-view: unknown state "${stateName}" (supported: ${treeViewStates.join(", ")})`);
     }
-    triggerStateChange41(details, stateName, config);
+    triggerStateChange42(details, stateName, config);
     details.dataset.stateName = stateName;
     details._stateConfig = config;
   },
@@ -10495,12 +10836,12 @@ var treeViewApi = {
     };
   }
 };
-df$41.treeViewApi = treeViewApi;
-df$41.treeViewStates = treeViewStates;
+df$42.treeViewApi = treeViewApi;
+df$42.treeViewStates = treeViewStates;
 var itemOf = (row) => row.closest('[role="treeitem"]');
-var isDisabled = (item) => item?.getAttribute("aria-disabled") === "true";
+var isDisabled2 = (item) => item?.getAttribute("aria-disabled") === "true";
 function selectItem(tree, item) {
-  if (!item || isDisabled(item) || item.getAttribute("aria-selected") === "true")
+  if (!item || isDisabled2(item) || item.getAttribute("aria-selected") === "true")
     return;
   tree.querySelectorAll('[role="treeitem"][aria-selected="true"]').forEach((other) => other.setAttribute("aria-selected", "false"));
   item.setAttribute("aria-selected", "true");
@@ -10594,7 +10935,7 @@ function initSortable(tree) {
   let dragged = null;
   const rows = () => tree.querySelectorAll(".tree-branch-trigger, .tree-leaf");
   rows().forEach((row) => {
-    if (!isDisabled(itemOf(row)))
+    if (!isDisabled2(itemOf(row)))
       row.draggable = true;
   });
   tree.addEventListener("dragstart", (e) => {
@@ -10668,13 +11009,13 @@ function moveByKey(tree, row, dir) {
   row.focus();
   announceMove2(tree, item);
 }
-function init41() {
+function init42() {
   document.querySelectorAll('.tree[role="tree"]:not([data-init])').forEach((tree) => {
     tree.dataset.init = "";
     const selectable = tree.hasAttribute("data-selectable");
     if (selectable) {
       tree.querySelectorAll('[role="treeitem"]').forEach((item) => {
-        if (!isDisabled(item) && !item.hasAttribute("aria-selected"))
+        if (!isDisabled2(item) && !item.hasAttribute("aria-selected"))
           item.setAttribute("aria-selected", "false");
       });
     }
@@ -10688,7 +11029,7 @@ function init41() {
       if (!row || !tree.contains(row))
         return;
       const item = itemOf(row);
-      if (isDisabled(item)) {
+      if (isDisabled2(item)) {
         e.preventDefault();
         return;
       }
@@ -10728,7 +11069,7 @@ function init41() {
       }
       if (e.key === " " && checkable) {
         const box = checkOf(itemOf(target));
-        if (box && !box.disabled && !isDisabled(itemOf(target))) {
+        if (box && !box.disabled && !isDisabled2(itemOf(target))) {
           e.preventDefault();
           box.checked = !box.checked;
           onCheck(tree, itemOf(target));
@@ -10750,14 +11091,14 @@ function init41() {
           e.preventDefault();
           {
             const detailsR = target.closest("details.tree-branch");
-            if (detailsR && !detailsR.open && !isDisabled(itemOf(target)))
+            if (detailsR && !detailsR.open && !isDisabled2(itemOf(target)))
               detailsR.open = true;
           }
           break;
         case "Enter":
         case " ": {
           const item = itemOf(target);
-          if (isDisabled(item)) {
+          if (isDisabled2(item)) {
             e.preventDefault();
             break;
           }
@@ -10790,9 +11131,9 @@ function init41() {
     });
   });
 }
-init41();
-new MutationObserver(init41).observe(document, { childList: true, subtree: true });
+init42();
+new MutationObserver(init42).observe(document, { childList: true, subtree: true });
 
-//# debugId=5FDF82A5DC8F644B64756E2164756E21
+//# debugId=4F003C68AECFF15364756E2164756E21
 /* defuss-shadcn v0.9.2 runtime provenance: bundles defuss-morph@0.1.1 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.1.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=all.js.map

@@ -57,6 +57,62 @@
     <div id="edge-right-menu" role="menu" popover class="dropdown-content" aria-label="Right edge" style="min-width:12rem;">
       <button role="menuitem" class="dropdown-item" tabindex="-1">Item A</button>
     </div>
+    <!-- submenus three levels deep, click-toggled checkbox / radio, disabled items, inset, link item -->
+    <button class="btn" data-variant="outline" id="sub-trigger" data-dropdown-trigger="sub-menu" style="position:fixed;left:8px;top:8px;">Project</button>
+    <div id="sub-menu" role="menu" popover class="dropdown-content" aria-label="Project" style="min-width:10rem;">
+      <button role="menuitem" class="dropdown-item" tabindex="-1" id="s-new">New file</button>
+      <div class="dropdown-sub">
+        <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1" id="s1-t">Recent</button>
+        <div id="s1" role="menu" popover class="dropdown-content dropdown-sub-content" aria-label="Recent">
+          <button role="menuitem" class="dropdown-item" tabindex="-1" id="s1-a">a.ts</button>
+          <div class="dropdown-sub">
+            <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1" id="s2-t">More</button>
+            <div id="s2" role="menu" popover class="dropdown-content dropdown-sub-content" aria-label="More">
+              <button role="menuitem" class="dropdown-item" tabindex="-1" id="s2-a">b.ts</button>
+              <div class="dropdown-sub">
+                <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1" id="s3-t">Archived</button>
+                <div id="s3" role="menu" popover class="dropdown-content dropdown-sub-content" aria-label="Archived">
+                  <button role="menuitem" class="dropdown-item" tabindex="-1" id="s3-a" data-value="old">old.ts</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="dropdown-sub">
+        <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1" id="sx-t">Share</button>
+        <div id="sx" role="menu" popover class="dropdown-content dropdown-sub-content" aria-label="Share">
+          <button role="menuitem" class="dropdown-item" tabindex="-1">Email</button>
+        </div>
+      </div>
+      <div class="dropdown-sub">
+        <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1" id="sd-t" disabled>Translate</button>
+        <div id="sd" role="menu" popover class="dropdown-content dropdown-sub-content" aria-label="Translate">
+          <button role="menuitem" class="dropdown-item" tabindex="-1">English</button>
+        </div>
+      </div>
+      <button role="menuitem" class="dropdown-item" tabindex="-1" id="s-ariadis" aria-disabled="true">Paste</button>
+      <button role="menuitem" class="dropdown-item" tabindex="-1" id="s-inset" data-inset>Inset item</button>
+      <a role="menuitem" class="dropdown-item" tabindex="-1" id="s-link" href="#linked">Docs</a>
+    </div>
+
+    <button class="btn" data-variant="outline" id="live-trigger" data-dropdown-trigger="live-menu" style="position:fixed;left:8px;top:60px;">Live</button>
+    <div id="live-menu" role="menu" popover class="dropdown-content" aria-label="Live" style="min-width:10rem;">
+      <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="false" tabindex="-1" id="lv-c1" data-value="bar">Bar</button>
+      <div role="group" aria-label="Theme">
+        <button role="menuitemradio" class="dropdown-item dropdown-radio" aria-checked="true" tabindex="-1" id="lv-r1">Light</button>
+        <button role="menuitemradio" class="dropdown-item dropdown-radio" aria-checked="false" tabindex="-1" id="lv-r2">Dark</button>
+      </div>
+    </div>
+    <div dir="rtl">
+      <button class="btn" data-variant="outline" id="rtl-trigger" data-dropdown-trigger="rtl-menu" style="position:fixed;right:8px;top:8px;">قائمة</button>
+      <div id="rtl-menu" role="menu" popover class="dropdown-content" aria-label="RTL" style="min-width:8rem;">
+        <div class="dropdown-sub">
+          <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1" id="rtl-sub-t">مشاركة</button>
+          <div id="rtl-sub" role="menu" popover class="dropdown-content dropdown-sub-content" aria-label="مشاركة"><button role="menuitem" class="dropdown-item" tabindex="-1">بريد</button></div>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/dist/components/core.js"></script>
     <script type="module" src="/dist/components/dropdown/dropdown.js"></script>
       <button class="btn" data-variant="outline" data-dropdown-trigger="z-dropdown-xs-pop" aria-haspopup="menu">Size xs</button><div id="z-dropdown-xs-pop" role="menu" popover class="dropdown-content" data-size="xs" aria-label="Size xs" style="min-width:10rem;"><button role="menuitem" class="dropdown-item">Item A</button><button role="menuitem" class="dropdown-item">Item B</button></div>

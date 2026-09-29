@@ -166,6 +166,23 @@ test('dialog component: the CodeExample card drives showModal/close end to end',
   );
 });
 
+test('menubar component: the CodeExample card opens and closes a menu of the bar end to end', async () => {
+  // the menubar demo is an executable fence (sandbox iframe) - assert the
+  // card's mirrored data-state-values, observed from the bar's state name
+  const { doc } = await openDocPage('menubar.html');
+
+  const card = doc.querySelector('.code-example[data-component="menubar"]') as HTMLElement & {
+    api?: { setState(name: string, config?: unknown): void };
+  };
+  await waitFor(() => card?.api, 'menubar example card to boot its sandbox');
+
+  card.api!.setState('open', true);
+  await waitFor(() => JSON.parse(card.dataset.stateValues || '{}').open === true, 'a menu of the bar to open (mirrored)');
+
+  card.api!.setState('open', false);
+  await waitFor(() => JSON.parse(card.dataset.stateValues || '{}').open === false, 'the bar to close (mirrored)');
+});
+
 test('index states the current stats.json footprint and dogfoods the Statistic component', async () => {
   // the machine-checked claim (verify's `stats claim` gate) proven in the real
   // browser too: what a visitor reads must equal what the build measured

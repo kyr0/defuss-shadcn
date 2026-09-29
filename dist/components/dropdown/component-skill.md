@@ -149,32 +149,69 @@ The trigger button's own `data-size` (from `.btn`) is independent - set both to 
 
 ## Checkbox and radio items
 
-For checkbox/radio items in the menu, use `aria-checked`:
+`.dropdown-check` / `.dropdown-radio` on the item draw the indicator from
+`aria-checked`. A click (or Enter / Space) toggles a checkbox and selects a
+radio within its `role="group"` - the menu stays open, so several options
+can be set in one go - and fires `dropdown:select`.
 
 ```html
-<!-- Checkbox item -->
-<button role="menuitemcheckbox" class="dropdown-item"
-        aria-checked="true" tabindex="-1">
-  <svg class="dropdown-check" aria-hidden="true" width="16" height="16">
-    <path d="M20 6 9 17l-5-5"/>
-  </svg>
-  Show Sidebar
-</button>
+<button class="dropdown-item dropdown-check" role="menuitemcheckbox" aria-checked="true" tabindex="-1">Show Status Bar</button>
 
-<!-- Radio group -->
-<div role="group" aria-label="Sort order">
-  <div class="dropdown-label">Sort by</div>
-  <button role="menuitemradio" class="dropdown-item"
-          aria-checked="true" tabindex="-1">
-    <svg class="dropdown-check" aria-hidden="true">...</svg>
-    Date
-  </button>
-  <button role="menuitemradio" class="dropdown-item"
-          aria-checked="false" tabindex="-1">
-    Name
-  </button>
+<div role="group" aria-label="Panel position">
+  <div class="dropdown-label" data-inset>Panel position</div>
+  <button class="dropdown-item dropdown-radio" role="menuitemradio" aria-checked="true" tabindex="-1" data-value="top">Top</button>
+  <button class="dropdown-item dropdown-radio" role="menuitemradio" aria-checked="false" tabindex="-1" data-value="bottom">Bottom</button>
 </div>
 ```
+
+## Submenus
+
+Nest a `.dropdown-sub`: a `.dropdown-sub-trigger` item and its
+`.dropdown-sub-content` menu - which can hold more `.dropdown-sub`s, any
+depth.
+
+```html
+<div class="dropdown-sub">
+  <button class="dropdown-item dropdown-sub-trigger" role="menuitem" tabindex="-1">Share</button>
+  <div class="dropdown-content dropdown-sub-content" role="menu" popover aria-label="Share">
+    <button class="dropdown-item" role="menuitem" tabindex="-1">Email link</button>
+    <div class="dropdown-sub">
+      <button class="dropdown-item dropdown-sub-trigger" role="menuitem" tabindex="-1">Social</button>
+      <div class="dropdown-content dropdown-sub-content" role="menu" popover aria-label="Social">…</div>
+    </div>
+  </div>
+</div>
+```
+
+- The submenu is a DOM descendant of its menu, so the Popover API keeps the
+  parent open, closes sibling submenus and light-dismisses the whole tree.
+- It opens beside its trigger (CSS anchor positioning; `dropdown.js` names
+  the anchors), flipping to the other side or upward near the viewport edge,
+  and to the left in RTL. The trigger shows a chevron and stays highlighted
+  while its submenu is open.
+- Pointer: hover opens after 120 ms; moving to another item closes it after
+  220 ms - enough to travel diagonally into the submenu. Click opens it too.
+- Keyboard: → (← in RTL) / Enter / Space opens it and focuses its first item;
+  ← / Esc closes just that submenu and returns to its trigger.
+- The script adds `aria-haspopup`, `aria-expanded`, `aria-controls` and
+  the `popover` attribute if missing.
+
+## Disabled items
+
+`disabled` (a `<button>`) or `aria-disabled="true"` (any element): dimmed,
+skipped by the arrow keys and typeahead, clicks ignored. A disabled
+`.dropdown-sub-trigger` never opens its submenu.
+
+## Inset, icons, events
+
+- `data-inset` on an item or a `.dropdown-label` lines its text up with
+  the checkbox / radio items.
+- An `<svg>` first in an item is the icon (muted, 1rem).
+- Every activation fires `dropdown:select` on the item (bubbles):
+  `detail: { item, value, checked }` - `value` is `data-value` or the text,
+  `checked` only for checkbox / radio items. A plain item then closes the
+  whole menu tree.
+- `<a role="menuitem" href>` items navigate normally.
 
 ---
 
@@ -196,6 +233,7 @@ The api is bound per menu element; the registry global is
 - CSS anchor positioning (`position-anchor`, `anchor()`) handles placement - no JS positioning needed
 - `position-try: flip-block` automatically flips the menu above the trigger if there's no room below
 - The `popover` API handles light-dismiss (click outside) automatically
-- For submenus, nest another `[popover]` element triggered by a `menuitem` with `aria-haspopup="menu"`
-- Escape closes the menu and returns focus to the trigger
+- Submenus: see "Submenus" - `.dropdown-sub` wrappers, any depth
+- Escape closes the menu (in a submenu: that submenu) and returns focus to its trigger
+- Menubar (`menubar`) reuses these menus - every feature here works inside it
 - Menu items use `tabindex="-1"` - only arrow keys move focus (roving focus pattern)

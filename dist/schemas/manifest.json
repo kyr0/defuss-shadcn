@@ -21,6 +21,7 @@
     "file-input": "./file-input.schema.json",
     "image": "./image.schema.json",
     "input": "./input.schema.json",
+    "menubar": "./menubar.schema.json",
     "mermaid": "./mermaid.schema.json",
     "navigation-menu": "./navigation-menu.schema.json",
     "number-input": "./number-input.schema.json",

@@ -34,8 +34,15 @@
     /* -- Animation --------------------------------------------- */
     opacity: 0;
     transform: scale(0.96) translateY(-0.25rem);
+    /* overlay keeps a closing menu in the top layer until its exit
+       animation ends - otherwise a closing SUBMENU drops back into its
+       parent menu for 150ms, where the parent's transform makes it the
+       containing block: the parent grew scrollbars and resized */
     transition: opacity 150ms ease, transform 150ms ease,
+                overlay 150ms allow-discrete,
                 display 150ms allow-discrete;
+    /* a menu never scrolls sideways; submenus live in the top layer */
+    overflow-x: hidden;
 
     &:popover-open {
       opacity: 1;
@@ -51,6 +58,7 @@
   }
 
   .dropdown-item {
+    box-sizing: border-box;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -63,7 +71,10 @@
     color: var(--foreground);
     cursor: pointer;
     outline: none;
-    text-align: left;
+    text-align: start;
+    text-decoration: none;
+    font: inherit;
+    font-size: 0.875rem;
 
     &:hover, &[data-highlighted] {
       background-color: var(--accent);
@@ -77,9 +88,65 @@
       }
     }
 
-    &:disabled {
+    &:disabled, &[aria-disabled="true"] {
       pointer-events: none;
       opacity: 0.5;
+    }
+
+    /* data-inset: lines a plain item (or a label) up with the text of
+       checkbox / radio items */
+    &[data-inset] { padding-inline-start: 1.5rem; }
+    & > svg { width: 1rem; height: 1rem; flex-shrink: 0; color: var(--muted-foreground); }
+    &[data-variant="destructive"] > svg { color: currentColor; }
+  }
+  .dropdown-label[data-inset] { padding-inline-start: 1.5rem; }
+
+  /* -- Submenus ----------------------------------------------------
+     <div class="dropdown-sub">
+       <button class="dropdown-item dropdown-sub-trigger" role="menuitem">…</button>
+       <div class="dropdown-content dropdown-sub-content" role="menu" popover>…</div>
+     </div>
+     The submenu is a DOM descendant of its menu, so the Popover API keeps
+     the parent open while it shows, closes open siblings and light-dismisses
+     the whole tree - any depth. It opens beside its trigger (flipping to
+     the other side, or up, when there is no room); dropdown.js anchors it. */
+  .dropdown-sub { display: contents; }
+  .dropdown-sub-trigger {
+    &::after {
+      content: "";
+      width: 1rem;
+      height: 1rem;
+      margin-inline-start: auto;
+      flex-shrink: 0;
+      background-color: currentColor;
+      opacity: 0.6;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E") center / contain no-repeat;
+    }
+    &:dir(rtl)::after { scale: -1 1; }
+    /* the shortcut sits before the chevron */
+    & .dropdown-shortcut { margin-inline-start: auto; }
+    &:has(.dropdown-shortcut)::after { margin-inline-start: 0.5rem; }
+    &[aria-expanded="true"] {
+      background-color: var(--accent);
+      color: var(--accent-foreground);
+    }
+  }
+  .dropdown-content.dropdown-sub-content {
+    top: anchor(top);
+    left: anchor(right);
+    margin: 0;
+    margin-block-start: calc(-0.25rem - 1px);
+    margin-inline-start: 0.125rem;
+    position-try-fallbacks: flip-inline, flip-block, flip-block flip-inline;
+    transform: scale(0.96) translateX(-0.25rem);
+
+    &:popover-open { transform: none; }
+    &:dir(rtl) { left: auto; right: anchor(left); }
+  }
+  @starting-style {
+    .dropdown-content.dropdown-sub-content:popover-open {
+      opacity: 0;
+      transform: scale(0.96) translateX(-0.25rem);
     }
   }
 
@@ -113,7 +180,7 @@
   }
 
   .dropdown-radio[aria-checked="true"]::before {
-    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='5'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='black'%3E%3Ccircle cx='12' cy='12' r='4.5'/%3E%3C/svg%3E");
   }
 
   .dropdown-check[aria-checked="true"]::before,

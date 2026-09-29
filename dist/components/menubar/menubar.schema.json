@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "name": "menubar",
+  "states": {
+    "open": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".menubar"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "open"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

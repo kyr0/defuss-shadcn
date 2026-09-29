@@ -35,6 +35,11 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <code>.dropdown-separator</code>
     <code>.dropdown-label</code>
     <code>.dropdown-shortcut</code>
+    <code>.dropdown-check</code>
+    <code>.dropdown-radio</code>
+    <code>.dropdown-sub</code>
+    <code>.dropdown-sub-trigger</code>
+    <code>.dropdown-sub-content</code>
   </SkillRow>
   </SkillField>
 
@@ -84,7 +89,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </div>
 ```
 
-```html example label="Checkbox &amp; Radio" hint="Use menuitemcheckbox for toggleable options and menuitemradio inside a role='group' for exclusive choices." height="24"
+```html example label="Checkbox &amp; Radio" hint="Use menuitemcheckbox for toggleable options and menuitemradio inside a role='group' for exclusive choices - a click or Enter / Space toggles them and the menu stays open." height="24"
 <button class="btn" data-variant="outline" aria-haspopup="menu" aria-expanded="false" aria-controls="demo-dropdown-checks" data-dropdown-trigger="demo-dropdown-checks"> View <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"></path></svg></button>
 <div id="demo-dropdown-checks" role="menu" popover class="dropdown-content" aria-label="View options" style="min-width:11rem;">
   <div class="dropdown-label">Appearance</div>
@@ -99,6 +104,102 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <button role="menuitemradio" class="dropdown-item dropdown-radio" aria-checked="true" tabindex="-1">Sidebar Left</button>
     <button role="menuitemradio" class="dropdown-item dropdown-radio" aria-checked="false" tabindex="-1">Sidebar Right</button>
   </div>
+</div>
+```
+
+```html example label="Live checkbox and radio state" schema="none" hint="Checkbox items toggle and radio items switch on click (or Enter / Space) - the menu stays open so several can be set at once. Every change fires dropdown:select; the line under the trigger reads the live aria-checked state." height="26"
+<button class="btn" data-variant="outline" data-dropdown-trigger="dd-live">Appearance <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"></path></svg></button>
+<div id="dd-live" role="menu" popover class="dropdown-content" aria-label="Appearance" style="min-width:13rem;">
+  <div class="dropdown-label">Panels</div>
+  <div role="group" aria-label="Panels">
+    <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="true" tabindex="-1" data-value="status-bar">Status Bar</button>
+    <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="false" tabindex="-1" data-value="activity-bar">Activity Bar</button>
+    <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="true" tabindex="-1" data-value="minimap">Minimap</button>
+  </div>
+  <div class="dropdown-separator" role="separator"></div>
+  <div class="dropdown-label">Theme</div>
+  <div role="group" aria-label="Theme">
+    <button role="menuitemradio" class="dropdown-item dropdown-radio" aria-checked="false" tabindex="-1" data-value="light">Light</button>
+    <button role="menuitemradio" class="dropdown-item dropdown-radio" aria-checked="true" tabindex="-1" data-value="dark">Dark</button>
+    <button role="menuitemradio" class="dropdown-item dropdown-radio" aria-checked="false" tabindex="-1" data-value="system">System</button>
+  </div>
+</div>
+<p class="text-sm text-muted-foreground mt-3" id="dd-live-state" aria-live="polite"></p>
+<script>
+  const liveMenu = document.getElementById('dd-live');
+  const showLive = () => {
+    const on = [...liveMenu.querySelectorAll('[role="menuitemcheckbox"][aria-checked="true"]')].map((i) => i.textContent.trim());
+    const theme = liveMenu.querySelector('[role="menuitemradio"][aria-checked="true"]').textContent.trim();
+    document.getElementById('dd-live-state').textContent = 'Panels: ' + (on.join(', ') || 'none') + ' · Theme: ' + theme;
+  };
+  liveMenu.addEventListener('dropdown:select', showLive);
+  showLive();
+</script>
+```
+
+```html example label="Submenus" schema="none" hint="Nest .dropdown-sub (a .dropdown-sub-trigger + its .dropdown-sub-content menu) - any depth; here three levels. Hover or click opens, → / Enter / Space opens by keyboard, ← / Esc closes one level. Submenus flip to the other side near the viewport edge." height="32"
+<button class="btn" data-variant="outline" data-dropdown-trigger="dd-subs">Project <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"></path></svg></button>
+<div id="dd-subs" role="menu" popover class="dropdown-content" aria-label="Project" style="min-width:12rem;">
+  <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="file-plus"></i>New file<span class="dropdown-shortcut">⌘N</span></button>
+  <div class="dropdown-sub">
+    <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1"><i data-lucide="history"></i>Open recent</button>
+    <div id="dd-recent" role="menu" popover class="dropdown-content dropdown-sub-content" aria-label="Open recent">
+      <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="file-code"></i>dashboard.tsx</button>
+      <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="file-text"></i>README.md</button>
+      <div class="dropdown-sub">
+        <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1"><i data-lucide="folder"></i>More projects</button>
+        <div id="dd-projects" role="menu" popover class="dropdown-content dropdown-sub-content" aria-label="More projects">
+          <button role="menuitem" class="dropdown-item" tabindex="-1">defuss-shadcn</button>
+          <button role="menuitem" class="dropdown-item" tabindex="-1">defuss-ssg</button>
+          <div class="dropdown-sub">
+            <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1">Archived</button>
+            <div id="dd-archived" role="menu" popover class="dropdown-content dropdown-sub-content" aria-label="Archived">
+              <button role="menuitem" class="dropdown-item" tabindex="-1">shadcn-html (2025)</button>
+              <button role="menuitem" class="dropdown-item" tabindex="-1">legacy-docs (2024)</button>
+              <button role="menuitem" class="dropdown-item" tabindex="-1" data-variant="destructive">Clear archive</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="dropdown-sub">
+    <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1"><i data-lucide="send"></i>Share</button>
+    <div id="dd-share" role="menu" popover class="dropdown-content dropdown-sub-content" aria-label="Share">
+      <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="link"></i>Copy link</button>
+      <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="mail"></i>Email</button>
+      <div class="dropdown-sub">
+        <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1"><i data-lucide="share-2"></i>Social</button>
+        <div id="dd-social" role="menu" popover class="dropdown-content dropdown-sub-content" aria-label="Social">
+          <button role="menuitem" class="dropdown-item" tabindex="-1">Mastodon</button>
+          <button role="menuitem" class="dropdown-item" tabindex="-1">Bluesky</button>
+          <button role="menuitem" class="dropdown-item" tabindex="-1">LinkedIn</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="dropdown-separator" role="separator"></div>
+  <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="settings"></i>Settings<span class="dropdown-shortcut">⌘,</span></button>
+</div>
+```
+
+```html example label="Disabled items" schema="none" hint="disabled (a <button>) or aria-disabled='true': dimmed, skipped by the arrow keys and typeahead, clicks ignored - a disabled submenu trigger never opens its submenu." height="26"
+<button class="btn" data-variant="outline" data-dropdown-trigger="dd-disabled">Edit <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"></path></svg></button>
+<div id="dd-disabled" role="menu" popover class="dropdown-content" aria-label="Edit" style="min-width:12rem;">
+  <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="undo-2"></i>Undo<span class="dropdown-shortcut">⌘Z</span></button>
+  <button role="menuitem" class="dropdown-item" tabindex="-1" disabled><i data-lucide="redo-2"></i>Redo<span class="dropdown-shortcut">⇧⌘Z</span></button>
+  <div class="dropdown-separator" role="separator"></div>
+  <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="scissors"></i>Cut<span class="dropdown-shortcut">⌘X</span></button>
+  <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="copy"></i>Copy<span class="dropdown-shortcut">⌘C</span></button>
+  <button role="menuitem" class="dropdown-item" tabindex="-1" aria-disabled="true"><i data-lucide="clipboard"></i>Paste<span class="dropdown-shortcut">⌘V</span></button>
+  <div class="dropdown-separator" role="separator"></div>
+  <div class="dropdown-sub">
+    <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1" disabled><i data-lucide="languages"></i>Translate</button>
+    <div id="dd-translate" role="menu" popover class="dropdown-content dropdown-sub-content" aria-label="Translate">
+      <button role="menuitem" class="dropdown-item" tabindex="-1">English</button>
+    </div>
+  </div>
+  <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="true" tabindex="-1" disabled>Spell check (managed)</button>
 </div>
 ```
 

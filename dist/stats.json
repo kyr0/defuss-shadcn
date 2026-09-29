@@ -1,25 +1,25 @@
 {
-  "total": 90,
+  "total": 91,
   "byType": {
     "ATM": 55,
-    "MOL": 18,
+    "MOL": 19,
     "ORG": 2,
     "BLK": 13,
     "TPL": 2
   },
-  "withJs": 41,
+  "withJs": 42,
   "withoutJs": 49,
-  "totalSize": 1025793,
-  "totalSizeMinified": 480012,
-  "totalSizeGz": 318851,
-  "totalSizeGzMinified": 160782,
+  "totalSize": 1048807,
+  "totalSizeMinified": 490321,
+  "totalSizeGz": 325751,
+  "totalSizeGzMinified": 164319,
   "bundle": {
-    "jsSize": 385887,
-    "jsSizeMinified": 216419,
-    "cssSize": 533656,
-    "cssSizeMinified": 294196,
-    "totalSizeGz": 198094,
-    "totalSizeGzMinified": 111692
+    "jsSize": 397883,
+    "jsSizeMinified": 223527,
+    "cssSize": 539104,
+    "cssSizeMinified": 297197,
+    "totalSizeGz": 201792,
+    "totalSizeGzMinified": 113806
   },
   "core": {
     "jsSize": 88008,
@@ -385,14 +385,14 @@
       "name": "dropdown",
       "type": "ATM",
       "withJs": true,
-      "jsSize": 7991,
-      "jsSizeMinified": 3078,
-      "cssSize": 6271,
-      "cssSizeMinified": 3662,
-      "totalSizeGz": 4440,
-      "totalSizeGzMinified": 2425,
-      "totalSize": 14262,
-      "totalSizeMinified": 6740
+      "jsSize": 16631,
+      "jsSizeMinified": 7090,
+      "cssSize": 9128,
+      "cssSizeMinified": 5041,
+      "totalSizeGz": 7521,
+      "totalSizeGzMinified": 3849,
+      "totalSize": 25759,
+      "totalSizeMinified": 12131
     },
     "fab": {
       "name": "fab",
@@ -575,6 +575,19 @@
       "totalSizeGzMinified": 1050,
       "totalSize": 4878,
       "totalSizeMinified": 2998
+    },
+    "menubar": {
+      "name": "menubar",
+      "type": "MOL",
+      "withJs": true,
+      "jsSize": 8978,
+      "jsSizeMinified": 3277,
+      "cssSize": 2539,
+      "cssSizeMinified": 1641,
+      "totalSizeGz": 3819,
+      "totalSizeGzMinified": 2113,
+      "totalSize": 11517,
+      "totalSizeMinified": 4918
     },
     "mermaid": {
       "name": "mermaid",

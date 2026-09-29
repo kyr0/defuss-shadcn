@@ -280,6 +280,111 @@ try {
     assert.deepEqual([r.endGap, r.inView, r.below], [0, true, true]);
   });
 
+
+  const openIds = () => page.evaluate(() => [...document.querySelectorAll('.dropdown-content')].filter((m) => m.matches(':popover-open')).map((m) => m.id));
+  const focusedId = () => page.evaluate(() => document.activeElement?.id);
+  const closeAll = async () => { await page.evaluate(() => document.querySelectorAll('.dropdown-content:popover-open').forEach((m) => { try { (m as HTMLElement).hidePopover(); } catch { /* nested: closed with its parent */ } })); await page.waitForTimeout(200); };
+
+  await check('submenus: hover opens nested menus three levels deep, each beside its trigger; the tree stays open', async () => {
+    await page.click('#sub-trigger');
+    await page.hover('#s1-t'); await page.waitForTimeout(300);
+    await page.hover('#s2-t'); await page.waitForTimeout(300);
+    await page.hover('#s3-t'); await page.waitForTimeout(300);
+    assert.deepEqual(await openIds(), ['sub-menu', 's1', 's2', 's3']);
+    const r = await page.evaluate(() => ['s1-t', 's1', 's2-t', 's2', 's3-t', 's3'].map((id) => document.getElementById(id)!.getBoundingClientRect()));
+    for (let k = 0; k < 6; k += 2) {
+      assert.ok(Math.abs(r[k + 1].left - r[k].right) < 14, 'opens at the trigger\'s end edge');
+      assert.ok(Math.abs(r[k + 1].top - r[k].top) < 8, 'top aligned with the trigger');
+    }
+    assert.equal(await page.$eval('#s2-t', (e) => e.getAttribute('aria-expanded')), 'true');
+  });
+
+  await check('submenus: hovering a sibling item closes the open submenu (hover intent); the chevron trigger is marked', async () => {
+    await page.hover('#s2-a'); await page.waitForTimeout(350);
+    assert.deepEqual(await openIds(), ['sub-menu', 's1', 's2']);
+    assert.equal(await page.$eval('#s1-t', (e) => getComputedStyle(e, '::after').content), '""');
+  });
+
+  await check('menus never resize or scroll: the parent keeps its box while a submenu opens and closes (overlay transition), no item overflows it', async () => {
+    const dims = () => page.evaluate(() => { const m = document.getElementById('sub-menu')!; const r = m.getBoundingClientRect(); return [m.scrollWidth - m.clientWidth, m.scrollHeight - m.clientHeight, Math.round(r.width), Math.round(r.height)]; });
+    await closeAll();
+    await page.click('#sub-trigger'); await page.waitForTimeout(200);
+    const base = await dims();
+    assert.deepEqual(base.slice(0, 2), [0, 0], 'no overflow at rest (a link item included)');
+    await page.hover('#s1-t'); await page.waitForTimeout(300);
+    await page.hover('#s-new');
+    for (let i = 0; i < 10; i++) { assert.deepEqual(await dims(), base, `frame ${i} of the submenu's exit`); await page.waitForTimeout(30); }
+    // leave the tree as the next check expects it: root, s1, s2 open
+    await page.hover('#s1-t'); await page.waitForTimeout(300);
+    await page.hover('#s2-t'); await page.waitForTimeout(300);
+  });
+
+  await check('submenus: ← / Esc close one level and focus its trigger; a plain item click closes the whole tree + fires dropdown:select', async () => {
+    await page.hover('#s3-t'); await page.waitForTimeout(300);
+    await page.focus('#s3-a');
+    await page.keyboard.press('ArrowLeft'); await page.waitForTimeout(150);
+    assert.deepEqual(await openIds(), ['sub-menu', 's1', 's2']);
+    assert.equal(await focusedId(), 's3-t');
+    await page.keyboard.press('Escape'); await page.waitForTimeout(150);
+    assert.deepEqual(await openIds(), ['sub-menu', 's1']);
+    assert.equal(await focusedId(), 's2-t');
+    await page.hover('#s2-t'); await page.waitForTimeout(300);
+    await page.hover('#s3-t'); await page.waitForTimeout(300);
+    const value = await page.evaluate(() => new Promise((res) => { document.addEventListener('dropdown:select', (e) => res((e as CustomEvent).detail.value), { once: true }); (document.getElementById('s3-a') as HTMLElement).click(); }));
+    assert.equal(value, 'old');
+    await page.waitForTimeout(150);
+    assert.deepEqual(await openIds(), []);
+  });
+
+  await check('submenus by keyboard: → / Enter open and focus the first item, sibling submenus close each other', async () => {
+    await page.click('#sub-trigger'); await page.waitForTimeout(150);
+    await page.keyboard.press('ArrowDown');
+    assert.equal(await focusedId(), 's1-t');
+    await page.keyboard.press('ArrowRight'); await page.waitForTimeout(150);
+    assert.equal(await focusedId(), 's1-a');
+    await page.keyboard.press('ArrowLeft'); await page.waitForTimeout(150);
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Enter'); await page.waitForTimeout(150);
+    assert.deepEqual(await openIds(), ['sub-menu', 'sx']);
+    await closeAll();
+  });
+
+  await check('disabled: a disabled sub-trigger never opens and is skipped; aria-disabled items are skipped and ignore clicks', async () => {
+    await page.click('#sub-trigger'); await page.waitForTimeout(150);
+    await page.hover('#sd-t', { force: true }); await page.waitForTimeout(300);
+    assert.ok(!(await openIds()).includes('sd'));
+    const order: string[] = [];
+    for (let k = 0; k < 5; k++) { await page.keyboard.press('ArrowDown'); order.push(String(await focusedId())); }
+    assert.ok(!order.includes('sd-t') && !order.includes('s-ariadis'), order.join(','));
+    await page.click('#s-ariadis', { force: true }); await page.waitForTimeout(100);
+    assert.ok((await openIds()).includes('sub-menu'), 'still open');
+    assert.notEqual(await page.evaluate(() => document.activeElement?.tagName), 'BODY', 'focus stays in the menu');
+    const pad = await page.$eval('#s-inset', (e) => getComputedStyle(e).paddingInlineStart);
+    assert.equal(pad, '24px', 'data-inset lines up with check items');
+    await closeAll();
+  });
+
+  await check('checkbox / radio: a click toggles / switches, the menu stays open, dropdown:select reports it', async () => {
+    await page.click('#live-trigger'); await page.waitForTimeout(150);
+    const seen = await page.evaluate(() => { const s: unknown[] = []; document.getElementById('live-menu')!.addEventListener('dropdown:select', (e) => s.push((e as CustomEvent).detail.checked)); (window as any).__seen = s; return true; });
+    assert.ok(seen);
+    await page.click('#lv-c1');
+    await page.click('#lv-r2');
+    const r = await page.evaluate(() => [document.getElementById('lv-c1')!.getAttribute('aria-checked'), document.getElementById('lv-r1')!.getAttribute('aria-checked'), document.getElementById('lv-r2')!.getAttribute('aria-checked'), (window as any).__seen]);
+    assert.deepEqual(r, ['true', 'false', 'true', [true, true]]);
+    assert.ok((await openIds()).includes('live-menu'), 'menu stays open');
+    await page.click('#lv-c1');
+    assert.equal(await page.$eval('#lv-c1', (e) => e.getAttribute('aria-checked')), 'false', 'toggles back');
+    await closeAll();
+  });
+
+  await check('RTL: a submenu opens to the left of its trigger', async () => {
+    await page.click('#rtl-trigger'); await page.waitForTimeout(150);
+    await page.hover('#rtl-sub-t'); await page.waitForTimeout(300);
+    const r = await page.evaluate(() => [document.getElementById('rtl-sub-t')!.getBoundingClientRect().left, document.getElementById('rtl-sub')!.getBoundingClientRect().right]);
+    assert.ok(Math.abs(r[1] - r[0]) < 14, `sub right ${r[1]} ~ trigger left ${r[0]}`);
+    await closeAll();
+  });
 } finally {
   await browser.close();
   server.stop();

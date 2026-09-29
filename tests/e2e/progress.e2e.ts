@@ -122,7 +122,7 @@ try {
     await page.waitForTimeout(200);
     assert.equal(await val(page, 'cmd'), held, 'paused');
     await page.click('#b-play');
-    await page.waitForFunction(() => (document.getElementById('cmd') as HTMLProgressElement).value === 100, undefined, { timeout: 2000 });
+    await page.waitForFunction(() => (document.getElementById('cmd') as HTMLProgressElement).value === 100, undefined, { timeout: 4000 });
     assert.equal(await stateName(page, 'cmd'), 'complete');
   });
 

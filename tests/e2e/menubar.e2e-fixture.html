@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>menubar e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/dropdown/dropdown.css" />
+    <link rel="stylesheet" href="/dist/components/menubar/menubar.css" />
+  </head>
+  <body style="margin:0;padding:1.5rem;font-family:system-ui;">
+    <!-- mirrors the doc page: File (shortcuts, disabled, submenus 3 deep),
+         Edit, a disabled trigger, View (checkbox + radio), Help; variants,
+         sizes, RTL -->
+    <div class="menubar" id="bar" aria-label="Application">
+      <button class="menubar-trigger" id="t-file" data-dropdown-trigger="m-file">File</button>
+      <div id="m-file" role="menu" popover class="dropdown-content" aria-label="File" style="min-width:12rem;">
+        <button role="menuitem" class="dropdown-item" tabindex="-1" id="f-new">New Tab<span class="dropdown-shortcut">⌘T</span></button>
+        <button role="menuitem" class="dropdown-item" tabindex="-1" id="f-incog" disabled>New Incognito Window</button>
+        <div class="dropdown-sub">
+          <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1" id="f-share">Share</button>
+          <div id="m-share" role="menu" popover class="dropdown-content dropdown-sub-content" aria-label="Share">
+            <button role="menuitem" class="dropdown-item" tabindex="-1" id="sh-email">Email link</button>
+            <div class="dropdown-sub">
+              <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1" id="sh-more">More</button>
+              <div id="m-more" role="menu" popover class="dropdown-content dropdown-sub-content" aria-label="More">
+                <button role="menuitem" class="dropdown-item" tabindex="-1" id="mo-copy">Copy link</button>
+                <div class="dropdown-sub">
+                  <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1" id="mo-social">Social</button>
+                  <div id="m-social" role="menu" popover class="dropdown-content dropdown-sub-content" aria-label="Social">
+                    <button role="menuitem" class="dropdown-item" tabindex="-1" id="so-masto">Mastodon</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button role="menuitem" class="dropdown-item" tabindex="-1" id="f-print">Print…<span class="dropdown-shortcut">⌘P</span></button>
+      </div>
+      <button class="menubar-trigger" id="t-edit" data-dropdown-trigger="m-edit">Edit</button>
+      <div id="m-edit" role="menu" popover class="dropdown-content" aria-label="Edit">
+        <button role="menuitem" class="dropdown-item" tabindex="-1" id="e-undo">Undo</button>
+        <button role="menuitem" class="dropdown-item" tabindex="-1" id="e-redo">Redo</button>
+      </div>
+      <button class="menubar-trigger" id="t-git" disabled>Git</button>
+      <button class="menubar-trigger" id="t-view" data-dropdown-trigger="m-view">View</button>
+      <div id="m-view" role="menu" popover class="dropdown-content" aria-label="View">
+        <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="false" tabindex="-1" id="v-bm">Show Bookmarks Bar</button>
+        <div role="group" aria-label="Profile">
+          <button role="menuitemradio" class="dropdown-item dropdown-radio" aria-checked="true" tabindex="-1" id="v-andy">Andy</button>
+          <button role="menuitemradio" class="dropdown-item dropdown-radio" aria-checked="false" tabindex="-1" id="v-luis">Luis</button>
+        </div>
+        <button role="menuitem" class="dropdown-item" tabindex="-1" id="v-reload" data-inset>Reload</button>
+      </div>
+      <button class="menubar-trigger" id="t-help" data-dropdown-trigger="m-help">Help</button>
+      <div id="m-help" role="menu" popover class="dropdown-content" aria-label="Help">
+        <button role="menuitem" class="dropdown-item" tabindex="-1" id="h-docs">Documentation</button>
+      </div>
+    </div>
+
+    <div class="menubar" id="bar-muted" data-variant="muted" data-size="sm" aria-label="m" style="margin-top:14rem;"><button class="menubar-trigger" id="mt" data-dropdown-trigger="mm">A</button><div id="mm" role="menu" popover class="dropdown-content"><button role="menuitem" class="dropdown-item" tabindex="-1">x</button></div></div>
+    <div class="menubar" id="bar-ghost" data-variant="ghost" aria-label="g"><button class="menubar-trigger" id="gt" data-dropdown-trigger="gm">A</button><div id="gm" role="menu" popover class="dropdown-content"><button role="menuitem" class="dropdown-item" tabindex="-1">x</button></div></div>
+    <div class="menubar" id="bar-lg" data-size="lg" aria-label="l"><button class="menubar-trigger" id="lt" data-dropdown-trigger="lm">A</button><div id="lm" role="menu" popover class="dropdown-content"><button role="menuitem" class="dropdown-item" tabindex="-1">x</button></div></div>
+
+    <div dir="rtl" style="margin-top:1rem;">
+      <div class="menubar" id="bar-rtl" aria-label="rtl">
+        <button class="menubar-trigger" id="r1" data-dropdown-trigger="rm1">ملف</button>
+        <div id="rm1" role="menu" popover class="dropdown-content"><button role="menuitem" class="dropdown-item" tabindex="-1">جديد</button></div>
+        <button class="menubar-trigger" id="r2" data-dropdown-trigger="rm2">تعديل</button>
+        <div id="rm2" role="menu" popover class="dropdown-content"><button role="menuitem" class="dropdown-item" tabindex="-1">تراجع</button></div>
+      </div>
+    </div>
+
+    <script type="module" src="/dist/components/core.js"></script>
+    <script type="module" src="/dist/components/dropdown/dropdown.js"></script>
+    <script type="module" src="/dist/components/menubar/menubar.js"></script>
+  </body>
+</html>

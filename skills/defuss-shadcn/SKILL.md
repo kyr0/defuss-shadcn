@@ -9,7 +9,7 @@ description: Build UI prototypes and pages with defuss-shadcn - shadcn-style com
 
 # defuss-shadcn 0.9.2 - Agent Skill
 
-90 components (49 CSS-only, 41 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
+91 components (49 CSS-only, 42 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
 
 ## 0. Quick start - do exactly this, in this order
 
@@ -178,7 +178,7 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
 ### Presentations
 
 - [Deck Gallery](../../src/documentation/pages/presentations.mdx) - 33 presentation decks - the flagship System in Numbers plus 32 ECharts design studies, each a 12-slide English deck on its own topic with its own numbers, animated slide transitions and one morphing chart per deck.
-  - [The System in Numbers](../../src/documentation/pages/system-in-numbers.mdx) - defuss-shadcn presents itself - the flagship 10-slide deck with the system's real numbers (90 components, 54% CSS-only, 157.0 KiB min+gz): glyph cover, unit dots, gauge, tanks, chart staircase, taxonomy donut, stopwatch, branching route.
+  - [The System in Numbers](../../src/documentation/pages/system-in-numbers.mdx) - defuss-shadcn presents itself - the flagship 10-slide deck with the system's real numbers (91 components, 54% CSS-only, 160.5 KiB min+gz): glyph cover, unit dots, gauge, tanks, chart staircase, taxonomy donut, stopwatch, branching route.
   - [Editorial Highlight Bars](../../src/documentation/pages/editorial-highlight-bars.mdx) - Swiss International design language presenting a region’s commuting shift as a 10-slide deck - one highlighted bar, recolored, re-ranked by volume and folded into a mode-share donut on a single morphing chart.
   - [Lollipop Ranking](../../src/documentation/pages/lollipop-ranking.mdx) - Bauhaus Primary Poster design language presenting caffeine by brew method as a 10-slide deck - lollipops that re-rank per 100 ml, burst into a bubble scatter and settle into columns on one morphing chart.
   - [Dumbbell Before/After](../../src/documentation/pages/dumbbell-before-after.mdx) - Financial Broadsheet design language presenting a city’s rent rise 2019–2025 as a 12-slide deck - dumbbells that re-sort by growth, collapse into change bars and split into rent-burden columns on one morphing chart.
@@ -649,6 +649,12 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **Why:** Button-triggered menu as a Popover positioned by CSS anchor positioning - dismiss and placement are browser-owned.
 - **When:** The go-to menu of actions or options anchored to a trigger button.
 - **States:** `default`, `open` · **Skill:** [references/components/dropdown.md](references/components/dropdown.md) · **Examples:** [src/documentation/pages/dropdown.mdx](../../src/documentation/pages/dropdown.mdx)
+
+#### Menubar · MOL · JS
+
+- **Why:** A row of menu triggers that each open a dropdown menu (Popover API, anchor-positioned, submenus any depth); menubar.js adds the APG menubar keyboard model - one tab stop, arrows between menus, hover switching while one is open.
+- **When:** The persistent command bar of an app-like page - File / Edit / View / Help. One menu of actions takes dropdown; site navigation takes navbar or navigation-menu.
+- **States:** `default`, `open` · **Skill:** [references/components/menubar.md](references/components/menubar.md) · **Examples:** [src/documentation/pages/menubar.mdx](../../src/documentation/pages/menubar.mdx)
 
 #### Navigation Menu · ATM · JS
 

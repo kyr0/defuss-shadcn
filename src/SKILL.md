@@ -493,6 +493,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/marker.png
 **Skill:** [components/marker/component-skill.md](components/marker/component-skill.md)
 
+## Menubar
+
+**Type:** MOL
+**Why:** A row of menu triggers that each open a dropdown menu (Popover API, anchor-positioned, submenus any depth); menubar.js adds the APG menubar keyboard model - one tab stop, arrows between menus, hover switching while one is open.
+**When:** The persistent command bar of an app-like page - File / Edit / View / Help. One menu of actions takes dropdown; site navigation takes navbar or navigation-menu.
+**Files:** dist/components/menubar/menubar.css + dist/components/menubar/menubar.js (with dist/components/dropdown/dropdown.css + dropdown.js)
+**Supported states:** default, open
+**Screenshots:** screenshots/{light,dark}/menubar.png, screenshots/{light,dark}/menubar-open.png
+**Skill:** [components/menubar/component-skill.md](components/menubar/component-skill.md)
+
 ## Mermaid
 
 **Type:** ATM

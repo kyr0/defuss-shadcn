@@ -195,6 +195,7 @@ export const NAV: NavSection[] = [
     { label: 'Steps', href: 'steps.html' },
     { label: 'Tabs', href: 'tabs.html' },
     { label: 'Dropdown Menu', href: 'dropdown.html' },
+    { label: 'Menubar', href: 'menubar.html', isNew: true },
     { label: 'Navigation Menu', href: 'navigation-menu.html' },
     { label: 'Theme Switcher', href: 'theme-switcher.html' },
   ]},
