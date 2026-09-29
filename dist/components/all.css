@@ -9053,7 +9053,10 @@
     font-weight: 500;
     font-variant-numeric: tabular-nums;
     line-height: 1;
-    color: var(--primary);
+    text-align: center;
+    /* data-tone (--_c) > the public --progress-color > --primary; the arc,
+       its cap and the label all paint in currentColor */
+    color: var(--_c, var(--progress-color, var(--primary)));
     /* the arc is a function of --value, so the registered property tweens it */
     transition: --_rp-value 600ms ease;
 
@@ -9121,6 +9124,42 @@
       color: oklch(0.65 0.2 145);
     }
 
+    /* -- Tones (same vocabulary as progress): success / warning / info /
+       destructive; auto follows the value - radial-progress.js sets
+       data-level low (< 34%) / mid / high. Any color: --progress-color. */
+    &[data-tone="success"] { --_c: oklch(0.6 0.15 150); }
+    &[data-tone="warning"] { --_c: oklch(0.72 0.16 70); }
+    &[data-tone="info"] { --_c: oklch(0.6 0.16 250); }
+    &[data-tone="destructive"] { --_c: var(--destructive); }
+    &[data-tone="auto"] {
+      &[data-level="low"] { --_c: var(--destructive); }
+      &[data-level="mid"] { --_c: oklch(0.72 0.16 70); }
+      &[data-level="high"] { --_c: oklch(0.6 0.15 150); }
+    }
+
+    /* -- Label parts: a .radial-progress-value (the number the script
+       writes) over an optional .radial-progress-caption ------------- */
+    & .radial-progress-value { font-weight: 600; }
+    & .radial-progress-caption {
+      margin-block-start: 0.25em;
+      font-size: 0.6875em;
+      font-weight: 400;
+      color: var(--muted-foreground);
+    }
+
+    /* -- A glide driven by the script paints every frame itself: no CSS
+       easing on top (it would lag the counting label) --------------- */
+    &[data-running] { transition: none; }
+
+    /* -- Indeterminate: no aria-valuenow (an indeterminate progressbar has
+       none) - a quarter arc spins, the cap hides --------------------- */
+    &:not([aria-valuenow]) {
+      --_rp-value: 25;
+      transition: none;
+      &::before { animation: radial-progress-spin 1s linear infinite; }
+      &::after { display: none; }
+    }
+
     /* -- Sizes ---------------------------------------------------- */
     &[data-size="sm"] {
       --size: 3.5rem;
@@ -9133,6 +9172,8 @@
     }
   }
 
+  @keyframes radial-progress-spin { to { rotate: 1turn; } }
+
   /* -- Accessibility -------------------------------------------- */
 
   /* Suppress motion for users who request it (REQUIRED — AGENTS.md
@@ -9141,6 +9182,7 @@
   @media (prefers-reduced-motion: reduce) {
     .radial-progress {
       transition-duration: 0.01ms !important;
+      &::before { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
     }
   }
 

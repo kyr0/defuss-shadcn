@@ -1,10 +1,10 @@
 ---
 name: Radial Progress
 type: ATM
-why: A conic-gradient masked to a ring plus a typed @property — the arc animates itself, no JS and no SVG.
-when: Percentage of a known total that must read at a glance with the number inside it; a linear bar takes progress, unknown totals take spinner.
-where: dist/components/radial-progress/radial-progress.css
-supportedStates: default
+why: A conic-gradient masked to a ring plus a typed @property draws the arc with no SVG; the optional script makes it state - tones, percent / x of n / template labels, step jumps or a linear glide, and reset / step / play buttons.
+when: A percentage of a known total that must read at a glance with the number inside it; a linear bar takes progress, an unknown total can spin (indeterminate) or take spinner.
+where: dist/components/radial-progress/radial-progress.css + dist/components/radial-progress/radial-progress.js
+supportedStates: default, indeterminate, complete
 ---
 
 # Pattern: Radial Progress
@@ -47,9 +47,11 @@ are supplied explicitly — `role="progressbar"` with `aria-valuenow` /
 >70%</div>
 ```
 
-The element's text content is free-form — a percentage, a fraction, an icon.
-Keep `aria-valuenow` in sync with `--value`; the label is decoration, the ARIA
-attribute is what assistive technology announces.
+With `radial-progress.js` loaded, `aria-valuenow` alone is enough - the
+script derives `--value` and the label from it (the example's inline
+`--value` and text are the CSS-only fallback). Without the script, keep
+`aria-valuenow`, `--value` and the text in sync yourself: the label is
+decoration, the ARIA attribute is what assistive technology announces.
 
 ### Custom properties (the public API)
 
@@ -67,24 +69,52 @@ attribute is what assistive technology announces.
 
 ---
 
-## Variants
+## Tones (`data-tone`)
 
-| `data-variant` | Purpose                                              |
-|----------------|------------------------------------------------------|
-| `default`      | Primary arc — the standard indicator                 |
-| `secondary`    | Muted arc, low emphasis (secondary metric, sidebar)  |
-| `destructive`  | Over-quota / failing threshold                       |
-| `success`      | Completed or healthy threshold                       |
+| Value | Arc + label |
+|-------|-------------|
+| *(none)* | `--primary` |
+| `success` | green (literal oklch - no token exists) |
+| `warning` | amber |
+| `info` | blue |
+| `destructive` | `--destructive` |
+| `auto` | follows the value: `data-level` low (< 34 %) destructive, mid amber, high green |
 
-The variant sets `color`, which paints both the arc and the label — one
-declaration recolors the whole component.
+Any other color: `style="--progress-color: …"`. The older `data-variant`
+values still work: `default`, `secondary` (muted - the low-emphasis ring),
+`destructive`, `success`.
+
+## Labels
+
+The script writes the label from `aria-valuenow` / `aria-valuemax` - into a
+`.radial-progress-value` child, or into the ring itself when it holds plain
+text (an icon or other markup inside is left alone).
+
+| Attribute (on the ring) | Label |
+|-------------------------|-------|
+| *(none)* / `data-format="percent"` | `70%` |
+| `data-format="fraction"` | `3 / 8` |
+| `data-format="value"` | `3` |
+| `data-template="…"` | `{value}`, `{max}`, `{percent}` filled in, e.g. `{value} km` |
+| `data-indeterminate="…"` | the text while there is no value (default `…`) |
 
 ```html
-<div class="radial-progress" data-variant="default"     role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="--value:70">70%</div>
-<div class="radial-progress" data-variant="secondary"   role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="--value:70">70%</div>
-<div class="radial-progress" data-variant="destructive" role="progressbar" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100" style="--value:95">95%</div>
-<div class="radial-progress" data-variant="success"     role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="--value:100">100%</div>
+<div class="radial-progress" data-format="fraction" role="progressbar" aria-label="Workouts"
+     aria-valuenow="4" aria-valuemin="0" aria-valuemax="5">
+  <span class="radial-progress-value"></span>
+  <span class="radial-progress-caption">workouts</span>
+</div>
 ```
+
+A fraction or template is also written to `aria-valuetext`.
+
+## Commands
+
+The same vocabulary as progress - on a `<button commandfor="ring-id" command="--…">`
+or as a `progress:<name>` event on the ring: `--increment` / `--decrement`
+(by `data-step`, default a tenth of max), `--reset`, `--play` (linear to max
+over `data-duration` ms, default 3000), `--pause`, `--complete`,
+`--indeterminate`.
 
 ---
 
@@ -125,21 +155,26 @@ component has no indeterminate presentation, so use `spinner` for that case.
 
 ## States
 
-| State     | Meaning                                                        |
-|-----------|----------------------------------------------------------------|
-| `default` | The only state — the ring renders whatever `--value` it is given |
+| State | Meaning |
+|-------|---------|
+| `default` | Determinate. `{ value }` jumps there, `{ value, duration }` glides there linearly (ms); no config restores the authored value; `{ max }` changes the total |
+| `indeterminate` | `aria-valuenow` removed - a quarter arc spins |
+| `complete` | Value = max (`{ duration }` glides there); `progress:completed` fires |
 
-CSS-only component: there is no `.js` file and no State API object. The value
-is data, not state — set it by writing `--value` (and `aria-valuenow`):
+The state name follows the value. `aria-valuenow` is the source of truth: the
+script derives `--value` (0-100 of the arc), the label and `data-level`
+from it, and repaints when it is written directly.
 
 ```js
 const ring = document.querySelector('.radial-progress');
-ring.style.setProperty('--value', 82);
-ring.setAttribute('aria-valuenow', '82');
+ring.api.setState('default', { value: 40 });                 // jump
+ring.api.setState('default', { value: 90, duration: 1500 });  // glide
+ring.api.getState(); // { name: 'default', config: { value: 90, max: 100, percent: 0.9 } }
 ```
 
-Because the ring paints from a registered copy of `--value` (`@property
---_rp-value`), that assignment tweens over 600ms instead of snapping — no animation code required.
+Every change fires `progress:change` (`detail: { value, max, percent }`).
+Without the script the ring is CSS-only: set `--value` (0-100) inline and it
+tweens there over 600 ms through the registered `--_rp-value`.
 
 ---
 
@@ -152,8 +187,12 @@ Because the ring paints from a registered copy of `--value` (`@property
   `<progress>`' child text is fallback-only content and its bar lives in
   vendor pseudo-elements that cannot be masked into an annulus. Use the linear
   `progress` component whenever no centered label is needed.
-- **Keep the label and `aria-valuenow` in sync.** They are two independent
-  writes; a mismatch is a silent accessibility bug.
+- **Keep the label and `aria-valuenow` in sync** when running CSS-only - they
+  are two independent writes there; the script makes `aria-valuenow` the only one.
+- **Jumps vs glides**: a jump (no `duration`) still eases over 600 ms through
+  the CSS tween while the number updates at once; a scripted glide paints every
+  frame itself (`data-running` switches the CSS tween off) so number and arc
+  move together. With `prefers-reduced-motion` both land immediately.
 - **Sits on the text baseline** (`vertical-align: middle`), so it composes
   inline in table cells and stat rows without a wrapper.
 - **Content-box sizing** — `--size` is the drawn diameter, so `padding` on the

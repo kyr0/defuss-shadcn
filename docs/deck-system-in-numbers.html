@@ -117,7 +117,7 @@
   #sys-route.is-on .sys-train { animation: sys-ride 7s cubic-bezier(.45,0,.55,1) 2.2s infinite; }
   @keyframes sys-ride { 0% { offset-distance: 0%; opacity: 0; } 6% { opacity: 1; } 88% { opacity: 1; } 100% { offset-distance: 100%; opacity: 0; } }
 
-  /* S4 gauge: two segments (CSS-only vs with JS), needle at 54.02% */
+  /* S4 gauge: two segments (CSS-only vs with JS), needle at 52.87% */
   #sys-barometer .sys-num small { font-size: .42em; font-weight: 800; margin-left: .08em; }
   #sys-barometer .sys-aside { display: flex; align-items: center; gap: 18px; font-size: 30px; font-weight: 400; }
   #sys-barometer .sys-aside::before { content: ""; width: 60px; height: 3px; background: #0A1E4A; }
@@ -127,7 +127,7 @@
   #sys-barometer .sys-glab { font-size: 22px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; fill: #0A1E4A; }
   #sys-barometer .sys-gpct { font-size: 26px; font-weight: 800; fill: #0A1E4A; }
   #sys-barometer .sys-needle-o { transform-box: view-box; transform-origin: 1100px 640px; transform: rotate(-90deg); transition: transform 2.4s cubic-bezier(.2,1.45,.45,1) .7s; }
-  #sys-barometer.is-on .sys-needle-o { transform: rotate(7.2deg); }
+  #sys-barometer.is-on .sys-needle-o { transform: rotate(5.2deg); }
   #sys-barometer .sys-needle-i { transform-box: view-box; transform-origin: 1100px 640px; }
   #sys-barometer.is-on .sys-needle-i { animation: sys-jitter 2.8s ease-in-out 3.2s infinite; }
   @keyframes sys-jitter { 0%, 100% { transform: rotate(0); } 40% { transform: rotate(1.6deg); } 70% { transform: rotate(-1deg); } }
@@ -294,55 +294,55 @@
     <div class="sys-train" style="offset-path:path('M 80 540 L 128 540 H 172 L 258 400 H 302 L 388 540 H 432 L 518 400 H 562 L 648 540 H 692 L 778 400 H 822 L 908 540 H 952 L 1038 400 H 1082 L 1168 540 H 1212 L 1298 400 H 1342 L 1428 540 H 1472 L 1520 540')"></div>
     <p class="presentation-note">The feature areas, in sidebar order: Primitives, Actions, Forms & Inputs, Data Display, Charts, Feedback & Status, Overlays, Navigation, Application, Presentations, Marketing.</p>
   </section>
-  <!-- 4 · System - gauge: 54% CSS-only, needle at 54.02% -->
+  <!-- 4 · System - gauge: 53% CSS-only, needle at 52.87% -->
   <section class="slide" data-slide id="sys-barometer" data-theme="paper" data-sec="1" aria-label="Gauge: CSS-only share">
-    <div class="abs sys-num" data-df-entrance="up" style="--df-motion-delay:.2s; left:108px; top:190px; font-size:250px"><span data-count="54" data-count-delay="300">54</span><small>%</small></div>
+    <div class="abs sys-num" data-df-entrance="up" style="--df-motion-delay:.2s; left:108px; top:190px; font-size:250px"><span data-count="53" data-count-delay="300">53</span><small>%</small></div>
     <p class="abs sys-lead" data-df-entrance="up" style="--df-motion-delay:.5s; left:120px; top:440px; width:520px; font-weight:700; font-size:44px; line-height:1.12">of the components need no JavaScript at all.</p>
-    <div class="abs sys-aside" data-df-entrance="left" style="--df-motion-delay:2.6s; left:120px; top:730px">40 use JS - only where HTML and CSS end.</div>
-    <svg class="sys-fx" viewBox="0 0 1600 900" role="img" aria-label="Gauge: 54 percent of the components are CSS-only, 46 percent use JavaScript">
+    <div class="abs sys-aside" data-df-entrance="left" style="--df-motion-delay:2.6s; left:120px; top:730px">41 use JS - only where HTML and CSS end.</div>
+    <svg class="sys-fx" viewBox="0 0 1600 900" role="img" aria-label="Gauge: 53 percent of the components are CSS-only, 47 percent use JavaScript">
       <g id="sys-gticks"></g>
-      <path class="sys-gseg js" data-df-draw pathLength="1" stroke-width="87.2" style="--df-motion-delay:.3s; --df-motion-duration:1s" d="M 740.1 632.5 A 360 360 0 0 1 1048.4 283.7"></path>
-      <path class="sys-gseg" data-df-draw pathLength="1" stroke-width="100.8" style="--df-motion-delay:.48s; --df-motion-duration:1s" d="M 1063.3 281.9 A 360 360 0 0 1 1459.9 632.5"></path>
+      <path class="sys-gseg js" data-df-draw pathLength="1" stroke-width="89.1" style="--df-motion-delay:.3s; --df-motion-duration:1s" d="M 740.1 632.5 A 360 360 0 0 1 1060.9 282.1"></path>
+      <path class="sys-gseg" data-df-draw pathLength="1" stroke-width="98.9" style="--df-motion-delay:.48s; --df-motion-duration:1s" d="M 1075.9 280.8 A 360 360 0 0 1 1459.9 632.5"></path>
       <text class="sys-glab" x="740" y="700" text-anchor="middle">with JavaScript</text>
       <text class="sys-glab" x="1460" y="700" text-anchor="middle">CSS-only</text>
-      <text class="sys-gpct" x="754" y="368" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:1.2s">46%</text>
-      <text class="sys-gpct" x="1388" y="295" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:1.38s">54%</text>
+      <text class="sys-gpct" x="754" y="368" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:1.2s">47%</text>
+      <text class="sys-gpct" x="1388" y="295" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:1.38s">53%</text>
       <g class="sys-needle-o"><g class="sys-needle-i">
         <path d="M 1092 640 L 1100 300 L 1108 640 Z" fill="#0A1E4A"></path>
       </g></g>
       <circle cx="1100" cy="640" r="30" fill="#0A1E4A"></circle>
       <circle cx="1100" cy="640" r="10" fill="#FFFFFF"></circle>
-      <text class="sys-glab" x="1100" y="800" text-anchor="middle">47 of 87 components need no JavaScript</text>
+      <text class="sys-glab" x="1100" y="800" text-anchor="middle">46 of 87 components need no JavaScript</text>
     </svg>
-    <p class="presentation-note">54% of the components need no JavaScript - 47 of 87 run as plain HTML and CSS.</p>
+    <p class="presentation-note">53% of the components need no JavaScript - 46 of 87 run as plain HTML and CSS.</p>
   </section>
-  <!-- 5 · System - the ratio: liquid tanks 54% vs 46% -->
+  <!-- 5 · System - the ratio: liquid tanks 53% vs 47% -->
   <section class="slide" data-slide id="sys-tanks" data-theme="ink" data-sec="1" aria-label="The ratio">
     <p class="abs sys-eyebrow" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:118px; opacity:.7">CSS-only vs JavaScript</p>
     <h2 class="abs sys-h-xl" data-df-entrance="skew" style="--df-motion-delay:.2s; left:112px; top:150px">The<br>ratio</h2>
     <p class="abs" data-df-entrance="up" style="--df-motion-delay:3s; left:120px; top:560px; width:500px; font-size:40px; font-weight:600; line-height:1.2; margin:0">As little JavaScript as possible - as much as necessary.</p>
-    <div class="sys-tank" style="left:720px"><div class="sys-liq" style="--h:54.02%; --d:.4s"><b><span data-count="54" data-count-delay="400">54</span>%</b></div></div>
-    <div class="sys-tank" style="left:1040px"><div class="sys-liq" style="--h:45.98%; --d:1s"><b><span data-count="46" data-count-delay="1000">46</span>%</b></div></div>
+    <div class="sys-tank" style="left:720px"><div class="sys-liq" style="--h:52.87%; --d:.4s"><b><span data-count="53" data-count-delay="400">53</span>%</b></div></div>
+    <div class="sys-tank" style="left:1040px"><div class="sys-liq" style="--h:47.13%; --d:1s"><b><span data-count="47" data-count-delay="1000">47</span>%</b></div></div>
     <div class="sys-tlab" style="left:720px">CSS-only</div>
     <div class="sys-tlab" style="left:1040px">with JavaScript</div>
     <svg class="sys-fx" viewBox="0 0 1600 900" aria-hidden="true">
       <g class="sys-dimg">
-        <path class="sys-dimdash" d="M 940 435.6 H 1300"></path>
-        <path class="sys-dimdash" d="M 1260 482.4 H 1300"></path>
-        <path class="sys-dim" d="M 1290 441.6 V 476.4"></path>
-        <path class="sys-dim" d="M 1280 453.6 L 1290 439.6 L 1300 453.6 M 1280 464.4 L 1290 478.4 L 1300 464.4"></path>
+        <path class="sys-dimdash" d="M 940 442.3 H 1300"></path>
+        <path class="sys-dimdash" d="M 1260 475.7 H 1300"></path>
+        <path class="sys-dim" d="M 1290 448.3 V 469.7"></path>
+        <path class="sys-dim" d="M 1280 460.3 L 1290 446.3 L 1300 460.3 M 1280 457.7 L 1290 471.7 L 1300 457.7"></path>
       </g>
     </svg>
-    <div class="abs sys-gapnum" data-df-entrance="left" style="--df-motion-delay:2.7s; left:1316px; top:390px"><b>+7</b><span>more components without JS</span></div>
-    <p class="presentation-note">The ratio: 54% CSS-only against 46% with JavaScript - seven more components without than with.</p>
+    <div class="abs sys-gapnum" data-df-entrance="left" style="--df-motion-delay:2.7s; left:1316px; top:390px"><b>+5</b><span>more components without JS</span></div>
+    <p class="presentation-note">The ratio: 53% CSS-only against 47% with JavaScript - five more components without than with.</p>
   </section>
   <!-- 6 · System - staircase: the shipped chart component + bouncing ball -->
   <section class="slide" data-slide id="sys-treppe" data-theme="paper" data-sec="1" aria-label="Shipped sizes">
-    <h2 class="abs sys-h-l" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:106px">The whole system:<br>150.4 KiB.</h2>
+    <h2 class="abs sys-h-l" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:106px">The whole system:<br>152.7 KiB.</h2>
     <p class="abs" data-df-entrance="up" style="--df-motion-delay:.4s; left:124px; top:318px; font-size:28px; font-weight:500; margin:0">Minified + gzip - measured from dist/stats.json</p>
-    <div class="chart" id="sys-treppe-chart" role="img" aria-label="Bar chart of shipped sizes: total 150.4 KiB, bundle 105.6 KiB, core 24.2 KiB, 1.7 KiB per component on average" style="position:absolute; left:120px; top:340px; width:1360px; height:440px"></div>
+    <div class="chart" id="sys-treppe-chart" role="img" aria-label="Bar chart of shipped sizes: total 152.7 KiB, bundle 106.6 KiB, core 24.2 KiB, 1.7 KiB per component on average" style="position:absolute; left:120px; top:340px; width:1360px; height:440px"></div>
     <div class="sys-ball" style="offset-path:path('M 320 200 L 320 390 Q 480 290 640 490 Q 800 400 960 615 Q 1120 540 1280 686')"></div>
-    <p class="presentation-note">The whole system weighs 150.4 KiB minified and gzipped - the bundle 105.6, the core 24.2, 1.7 KiB per component on average.</p>
+    <p class="presentation-note">The whole system weighs 152.7 KiB minified and gzipped - the bundle 106.6, the core 24.2, 1.7 KiB per component on average.</p>
   </section>
   <!-- 7 · Components - taxonomy donut in the five class colours -->
   <section class="slide" data-slide id="sys-radar" data-theme="ink" data-sec="3" aria-label="What the system is made of">
@@ -566,7 +566,7 @@
         type: 'bar',
         barWidth: 240,
         barMaxWidth: 240, // the artboard theme caps bars narrower - the ball needs landing room
-        data: [150.4, 105.6, 24.2, {
+        data: [152.7, 106.6, 24.2, {
           value: 1.7,
           // above the ball's final resting place on this tiny bar
           label: { position: 'top', distance: 52, color: '#0A1E4A' },

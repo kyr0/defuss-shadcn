@@ -29,6 +29,7 @@
     "presentation": "./presentation.schema.json",
     "product-showcase": "./product-showcase.schema.json",
     "progress": "./progress.schema.json",
+    "radial-progress": "./radial-progress.schema.json",
     "radio": "./radio.schema.json",
     "resizer": "./resizer.schema.json",
     "scroll-area": "./scroll-area.schema.json",

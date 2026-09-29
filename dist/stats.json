@@ -7,26 +7,26 @@
     "BLK": 13,
     "TPL": 2
   },
-  "withJs": 40,
-  "withoutJs": 47,
-  "totalSize": 989338,
-  "totalSizeMinified": 458291,
-  "totalSizeGz": 308198,
-  "totalSizeGzMinified": 154045,
+  "withJs": 41,
+  "withoutJs": 46,
+  "totalSize": 1002641,
+  "totalSizeMinified": 464698,
+  "totalSizeGz": 312395,
+  "totalSizeGzMinified": 156373,
   "bundle": {
-    "jsSize": 377590,
-    "jsSizeMinified": 211161,
-    "cssSize": 508455,
-    "cssSizeMinified": 278167,
-    "totalSizeGz": 192035,
-    "totalSizeGzMinified": 108183
+    "jsSize": 385887,
+    "jsSizeMinified": 216419,
+    "cssSize": 510352,
+    "cssSizeMinified": 278998,
+    "totalSizeGz": 193438,
+    "totalSizeGzMinified": 109153
   },
   "core": {
-    "jsSize": 88035,
+    "jsSize": 88008,
     "jsSizeMinified": 44782,
     "cssSize": 127905,
     "cssSizeMinified": 109216,
-    "totalSizeGz": 33087,
+    "totalSizeGz": 33075,
     "totalSizeGzMinified": 24741
   },
   "components": {
@@ -709,15 +709,15 @@
     "radial-progress": {
       "name": "radial-progress",
       "type": "ATM",
-      "withJs": false,
-      "jsSize": 0,
-      "jsSizeMinified": 0,
-      "cssSize": 5634,
-      "cssSizeMinified": 2357,
-      "totalSizeGz": 2036,
-      "totalSizeGzMinified": 800,
-      "totalSize": 5634,
-      "totalSizeMinified": 2357
+      "withJs": true,
+      "jsSize": 11406,
+      "jsSizeMinified": 5576,
+      "cssSize": 7531,
+      "cssSizeMinified": 3188,
+      "totalSizeGz": 6233,
+      "totalSizeGzMinified": 3128,
+      "totalSize": 18937,
+      "totalSizeMinified": 8764
     },
     "radio": {
       "name": "radio",

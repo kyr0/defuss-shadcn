@@ -596,11 +596,11 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 ## Radial Progress
 
 **Type:** ATM
-**Why:** A conic-gradient masked to a ring plus a typed @property — the arc animates itself, no JS and no SVG.
-**When:** Percentage of a known total that must read at a glance with the number inside it; a linear bar takes progress, unknown totals take spinner.
-**Files:** dist/components/radial-progress/radial-progress.css
-**Supported states:** default
-**Screenshots:** screenshots/{light,dark}/radial-progress.png
+**Why:** A conic-gradient masked to a ring plus a typed @property draws the arc with no SVG; the optional script makes it state - tones, percent / x of n / template labels, step jumps or a linear glide, and reset / step / play buttons.
+**When:** A percentage of a known total that must read at a glance with the number inside it; a linear bar takes progress, an unknown total can spin (indeterminate) or take spinner.
+**Files:** dist/components/radial-progress/radial-progress.css + dist/components/radial-progress/radial-progress.js
+**Supported states:** default, indeterminate, complete
+**Screenshots:** screenshots/{light,dark}/radial-progress.png, screenshots/{light,dark}/radial-progress-indeterminate.png, screenshots/{light,dark}/radial-progress-complete.png
 **Skill:** [components/radial-progress/component-skill.md](components/radial-progress/component-skill.md)
 
 ## Radio Group

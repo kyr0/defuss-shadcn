@@ -1,6 +1,6 @@
 ---
 title: "Radial Progress"
-description: "Radial Progress component - a ring that shows a percentage with the number inside it: one conic-gradient masked to a ring, animated by a typed @property, no JS and no SVG."
+description: "Radial Progress component - a ring with its number inside: any color, percent / x of n / template labels, a State API, step-by-step or linearly interpolated updates and declarative reset / step / play buttons."
 slug: "radial-progress"
 ---
 
@@ -9,118 +9,194 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <DocPage meta={meta}>
 
 <PageHeader slug="radial-progress" title="Radial Progress" component="radial-progress">
-  A progress ring with its number in the middle - storage used, a score, a goal reached. Set <code>--value</code> (0-100) and CSS draws the arc: one <code>conic-gradient</code> masked down to a ring, with a round cap on the leading edge. Change the value and the ring tweens there on its own - a typed <code>@property</code> does the animation, no JavaScript, no SVG.
+  A progress ring with its number in the middle - storage used, a score, a goal reached. CSS draws the arc (one <code>conic-gradient</code> masked to a ring, a round cap on the leading edge); the optional script makes it state: any color, a percent, "x / n" or your own label, values that jump in steps or glide there linearly, and the same reset / step / play buttons as the <DocLink href="progress.html">progress bar</DocLink> (<code>commandfor</code> + <code>command="--reset"</code>).
 </PageHeader>
 
 <SkillPanel component="radial-progress">
   <SkillField label="Native basis">
-<SkillText>A <code>&lt;div role="progressbar"&gt;</code> with <code>aria-valuenow</code> / <code>aria-valuemin</code> / <code>aria-valuemax</code> - not <code>&lt;progress&gt;</code>, which cannot hold visible text in its center. The text inside is free: a percentage, a fraction, an icon.</SkillText>
+<SkillText>A <code>&lt;div role="progressbar"&gt;</code> with <code>aria-valuenow</code> / <code>aria-valuemin</code> / <code>aria-valuemax</code> - not <code>&lt;progress&gt;</code>, which cannot hold visible text in its center. <code>aria-valuenow</code> is the one source of truth: the script derives <code>--value</code>, the label and the tone from it.</SkillText>
   </SkillField>
 
   <SkillField label="Web Platform APIs">
 <SkillRow>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/conic-gradient" title="the arc"><code>conic-gradient()</code></ApiPill>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/mask" title="cuts the disc to a ring"><code>mask</code></ApiPill>
-    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@property" title="the value tweens"><code>@property</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@property" title="the CSS-only value tween"><code>@property</code></ApiPill>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/cos" title="the leading round cap"><code>cos()</code> / <code>sin()</code></ApiPill>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/progressbar_role" title="progressbar semantics"><code>role="progressbar"</code></ApiPill>
-    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="no tween"><code>prefers-reduced-motion</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Invoker_Commands_API" title="buttons that reset / step / play the ring"><code>commandfor</code> / <code>command</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat" title="locale-aware percent and numbers"><code>Intl.NumberFormat</code></ApiPill>
   </SkillRow>
   </SkillField>
 
   <SkillField label="Classes">
 <SkillRow>
     <code>.radial-progress</code>
+    <code>.radial-progress-value</code>
+    <code>.radial-progress-caption</code>
   </SkillRow>
   </SkillField>
 
   <SkillField label="Data attributes">
-<SkillText><code>data-variant</code> (<code>default</code>, <code>secondary</code>, <code>destructive</code>, <code>success</code>), <code>data-size</code> (<code>sm</code>, <code>lg</code>); custom properties <code>--value</code>, <code>--size</code>, <code>--thickness</code>.</SkillText>
+<SkillText><code>data-tone</code> (<code>success</code>, <code>warning</code>, <code>info</code>, <code>destructive</code>, <code>auto</code>), <code>data-variant="secondary"</code> (muted), <code>data-size</code> (<code>sm</code>, <code>lg</code>), <code>data-format</code> (<code>percent</code>, <code>fraction</code>, <code>value</code>), <code>data-template</code>, <code>data-step</code>, <code>data-duration</code>; custom properties <code>--size</code>, <code>--thickness</code>, <code>--progress-color</code>. Commands: <code>--reset</code>, <code>--increment</code>, <code>--decrement</code>, <code>--play</code>, <code>--pause</code>, <code>--complete</code>, <code>--indeterminate</code>.</SkillText>
   </SkillField>
 </SkillPanel>
 
-```html example label="Default" schema="none" hint="--value sets the arc (0-100); keep aria-valuenow in step - it is what a screen reader announces."
-<div class="radial-progress" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="--value:70">70%</div>
+```html example label="Determinate" hint="aria-valuenow is the value; the script paints the arc (--value), writes the label and keeps both in step with every change."
+<div class="radial-progress" role="progressbar" aria-label="Upload" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100">70%</div>
 ```
 
 ```html example label="Values" schema="none" hint="The arc starts at twelve o'clock and runs clockwise; a round cap marks its leading edge."
 <div class="flex flex-wrap items-center gap-4">
-  <div class="radial-progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="--value:0">0%</div>
-  <div class="radial-progress" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="--value:20">20%</div>
-  <div class="radial-progress" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="--value:60">60%</div>
-  <div class="radial-progress" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="--value:80">80%</div>
-  <div class="radial-progress" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="--value:100">100%</div>
+  <div class="radial-progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+  <div class="radial-progress" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
+  <div class="radial-progress" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+  <div class="radial-progress" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+  <div class="radial-progress" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
 </div>
 ```
 
-```html example label="Animated" schema="none" hint="Write a new --value and the ring tweens there (600ms) - the typed @property animates it; the script only sets the value and the ARIA."
-<div class="flex items-center gap-4">
-  <div class="radial-progress" id="rp-live" data-size="lg" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="--value:25">25%</div>
-  <div class="flex flex-col gap-2">
-    <button class="btn" data-variant="outline" data-size="sm" type="button" onclick="setRing(-10)">− 10</button>
-    <button class="btn" data-variant="outline" data-size="sm" type="button" onclick="setRing(10)">+ 10</button>
+```html example label="Colors" schema="none" hint="data-tone paints arc and label together: success, warning, info, destructive - any other color through --progress-color; data-variant='secondary' is the muted one. data-tone='auto' follows the value: red below a third, amber below two thirds, green above."
+<div class="flex flex-col gap-4">
+  <div class="flex flex-wrap items-center gap-4">
+    <div class="radial-progress" data-tone="success" role="progressbar" aria-label="Tests" aria-valuenow="92" aria-valuemin="0" aria-valuemax="100"></div>
+    <div class="radial-progress" data-tone="warning" role="progressbar" aria-label="Disk" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100"></div>
+    <div class="radial-progress" data-tone="info" role="progressbar" aria-label="Sync" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
+    <div class="radial-progress" data-tone="destructive" role="progressbar" aria-label="Quota" aria-valuenow="97" aria-valuemin="0" aria-valuemax="100"></div>
+    <div class="radial-progress" role="progressbar" aria-label="Brand" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="--progress-color: oklch(0.62 0.2 300);"></div>
+    <div class="radial-progress" data-variant="secondary" role="progressbar" aria-label="Secondary" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+  </div>
+  <div class="flex flex-wrap items-center gap-4">
+    <div class="radial-progress" data-tone="auto" role="progressbar" aria-label="Auto, low" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
+    <div class="radial-progress" data-tone="auto" role="progressbar" aria-label="Auto, mid" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+    <div class="radial-progress" data-tone="auto" role="progressbar" aria-label="Auto, high" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+  </div>
+</div>
+```
+
+```html example label="Labels" schema="none" hint="data-format on the ring: percent (default), fraction (x / n, out of aria-valuemax) or value; data-template fills in the value, max and percent tokens (in curly braces). A .radial-progress-value + .radial-progress-caption pair puts a small caption under the number. Fraction and template also become aria-valuetext."
+<div class="flex flex-wrap items-center gap-6">
+  <div class="radial-progress" data-size="lg" role="progressbar" aria-label="Percent" aria-valuenow="38" aria-valuemin="0" aria-valuemax="100"></div>
+  <div class="radial-progress" data-size="lg" data-format="fraction" role="progressbar" aria-label="Lessons" aria-valuenow="3" aria-valuemin="0" aria-valuemax="8"></div>
+  <div class="radial-progress" data-size="lg" data-template="{value} km" role="progressbar" aria-label="Run" aria-valuenow="7" aria-valuemin="0" aria-valuemax="10"></div>
+  <div class="radial-progress" data-size="lg" data-tone="success" data-format="fraction" role="progressbar" aria-label="Workouts" aria-valuenow="4" aria-valuemin="0" aria-valuemax="5">
+    <span class="radial-progress-value"></span>
+    <span class="radial-progress-caption">workouts</span>
+  </div>
+</div>
+```
+
+```html example label="Step by step" schema="none" hint="Jumps: --increment / --decrement move the ring by data-step (10% by default), --reset empties it - plain buttons with commandfor + command. 'Run' steps through a task in 10% jumps via the State API."
+<div class="flex items-center gap-6">
+  <div class="radial-progress" id="rp-st" data-size="lg" data-tone="auto" data-step="10" role="progressbar" aria-label="Installing" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
+  <div class="flex flex-wrap gap-2" style="max-width:14rem;">
+    <button class="btn" data-variant="outline" data-size="sm" type="button" commandfor="rp-st" command="--decrement">− 10%</button>
+    <button class="btn" data-variant="outline" data-size="sm" type="button" commandfor="rp-st" command="--increment">+ 10%</button>
+    <button class="btn" data-variant="secondary" data-size="sm" type="button" onclick="runRingSteps()">Run</button>
+    <button class="btn" data-variant="ghost" data-size="sm" type="button" commandfor="rp-st" command="--reset">Reset</button>
   </div>
 </div>
 <script>
-  function setRing(delta) {
-    const ring = document.getElementById('rp-live');
-    const v = Math.max(0, Math.min(100, Number(ring.getAttribute('aria-valuenow')) + delta));
-    ring.style.setProperty('--value', v);
-    ring.setAttribute('aria-valuenow', v);
-    ring.textContent = v + '%';
+  function runRingSteps() {
+    const ring = document.getElementById('rp-st');
+    clearInterval(ring._timer);
+    ring.api.setState('default', { value: 0 });
+    ring._timer = setInterval(() => {
+      const { value, max } = ring.api.getState().config;
+      if (value >= max) return clearInterval(ring._timer);
+      ring.api.setState('default', { value: value + 10 });
+    }, 450);
   }
 </script>
 ```
 
-```html example label="Variants" schema="none" hint="data-variant sets the color of the arc and the label together: default, secondary (low emphasis), destructive (over quota), success (done)."
-<div class="flex flex-wrap items-center gap-4">
-  <div class="radial-progress" data-variant="default" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="--value:70">70%</div>
-  <div class="radial-progress" data-variant="secondary" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="--value:70">70%</div>
-  <div class="radial-progress" data-variant="destructive" role="progressbar" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100" style="--value:95">95%</div>
-  <div class="radial-progress" data-variant="success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="--value:100">100%</div>
+```html example label="Linear (interpolated)" schema="none" hint="Glides: --play runs the ring to the end linearly over data-duration (ms) - the number counts every frame; --pause holds it, --reset starts over. setState('default', with value and duration) interpolates to any value."
+<div class="flex items-center gap-6">
+  <div class="radial-progress" id="rp-lin" data-size="lg" data-duration="4000" role="progressbar" aria-label="Rendering" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+    <span class="radial-progress-value"></span>
+    <span class="radial-progress-caption">rendering</span>
+  </div>
+  <div class="flex flex-wrap gap-2" style="max-width:14rem;">
+    <button class="btn" data-size="sm" type="button" commandfor="rp-lin" command="--play">Play</button>
+    <button class="btn" data-variant="outline" data-size="sm" type="button" commandfor="rp-lin" command="--pause">Pause</button>
+    <button class="btn" data-variant="outline" data-size="sm" type="button" onclick="document.getElementById('rp-lin').api.setState('default', { value: 75, duration: 1200 })">Glide to 75%</button>
+    <button class="btn" data-variant="ghost" data-size="sm" type="button" commandfor="rp-lin" command="--reset">Reset</button>
+  </div>
+</div>
+```
+
+```html example label="Indeterminate" schema="none" hint="No aria-valuenow: a quarter arc spins for an unknown amount; the label shows its data-indeterminate text."
+<div class="flex items-center gap-4">
+  <div class="radial-progress" data-indeterminate="…" role="progressbar" aria-label="Connecting" aria-valuemin="0" aria-valuemax="100"></div>
+  <div class="radial-progress" data-tone="info" data-size="sm" data-indeterminate="" role="progressbar" aria-label="Loading" aria-valuemin="0" aria-valuemax="100"></div>
 </div>
 ```
 
 ```html example label="Sizes" schema="none" hint="data-size sm (3.5rem) · default (5rem) · lg (8rem); any other diameter is style='--size: …'."
 <div class="flex flex-wrap items-center gap-4">
-  <div class="radial-progress" data-size="sm" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="--value:40">40%</div>
-  <div class="radial-progress" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="--value:40">40%</div>
-  <div class="radial-progress" data-size="lg" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="--value:40">40%</div>
+  <div class="radial-progress" data-size="sm" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+  <div class="radial-progress" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+  <div class="radial-progress" data-size="lg" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
 </div>
 ```
 
-```html example label="Custom size and thickness" schema="none" hint="--size and --thickness shape any ring - a hairline gauge, a chunky donut; the label can be any content, e.g. an icon or a fraction with aria-valuetext."
+```html example label="Custom size and thickness" schema="none" hint="--size and --thickness shape any ring - a hairline gauge, a chunky donut; markup inside the ring (an icon) is left as it is."
 <div class="flex flex-wrap items-center gap-6">
-  <div class="radial-progress" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="--value:60;--size:10rem;--thickness:2px">60%</div>
-  <div class="radial-progress" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="--value:75;--size:6rem;--thickness:1.5rem">75%</div>
-  <div class="radial-progress" data-variant="success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" aria-label="Upload" style="--value:100"><i data-lucide="check" aria-hidden="true"></i></div>
-  <div class="radial-progress" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" aria-valuetext="7 of 10 seats" style="--value:70">7/10</div>
+  <div class="radial-progress" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="--size:10rem;--thickness:2px"></div>
+  <div class="radial-progress" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="--size:6rem;--thickness:1.5rem"></div>
+  <div class="radial-progress" data-tone="success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" aria-label="Upload"><i data-lucide="check" aria-hidden="true"></i></div>
 </div>
 ```
 
-```html example label="In cards" schema="none" hint="Rings sit on the text baseline, so they compose into stat tiles without a wrapper."
+```html example label="In cards" schema="none" hint="Rings sit on the text baseline, so they compose into stat tiles without a wrapper; data-tone='auto' flags the one that runs out."
 <div class="grid gap-4" style="grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));">
   <div class="card">
     <div class="card-content flex items-center gap-4" style="padding-block:1.25rem;">
-      <div class="radial-progress" role="progressbar" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100" aria-label="Storage used" style="--value:72">72%</div>
-      <div><p class="text-sm font-medium m-0">Storage</p><p class="text-sm text-muted-foreground m-0">72 GB of 100 GB</p></div>
+      <div class="radial-progress" data-tone="auto" role="progressbar" aria-valuenow="28" aria-valuemin="0" aria-valuemax="100" aria-label="Storage free"></div>
+      <div><p class="text-sm font-medium m-0">Storage free</p><p class="text-sm text-muted-foreground m-0">28 GB of 100 GB</p></div>
     </div>
   </div>
   <div class="card">
     <div class="card-content flex items-center gap-4" style="padding-block:1.25rem;">
-      <div class="radial-progress" data-variant="destructive" role="progressbar" aria-valuenow="96" aria-valuemin="0" aria-valuemax="100" aria-label="API quota" style="--value:96">96%</div>
-      <div><p class="text-sm font-medium m-0">API quota</p><p class="text-sm text-muted-foreground m-0">9,600 of 10,000 calls</p></div>
+      <div class="radial-progress" data-format="fraction" role="progressbar" aria-valuenow="6" aria-valuemin="0" aria-valuemax="10" aria-label="Seats booked"></div>
+      <div><p class="text-sm font-medium m-0">Seats booked</p><p class="text-sm text-muted-foreground m-0">6 of 10 seats</p></div>
     </div>
   </div>
   <div class="card">
     <div class="card-content flex items-center gap-4" style="padding-block:1.25rem;">
-      <div class="radial-progress" data-variant="success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" aria-label="Weekly goal" style="--value:100">100%</div>
+      <div class="radial-progress" data-tone="success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" aria-label="Weekly goal"></div>
       <div><p class="text-sm font-medium m-0">Weekly goal</p><p class="text-sm text-muted-foreground m-0">5 of 5 workouts</p></div>
     </div>
   </div>
 </div>
 ```
 
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code> (the ring's state name follows its value) - the same contract as the <DocLink href="progress.html">progress bar</DocLink>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - determinate: <code>\{ value \}</code> jumps there, <code>\{ value, duration \}</code> glides there linearly (ms), no config restores the authored value; optional <code>\{ max \}</code></li>
+    <li><code>indeterminate</code> - <code>aria-valuenow</code> removed: the spinning arc</li>
+    <li><code>complete</code> - value = max (<code>\{ duration \}</code> glides there); <code>progress:completed</code> fires</li>
+  </ul>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Every change fires <code>progress:change</code> (<code>detail: \{ value, max, percent \}</code>). Button commands: <code>commandfor="id" command="--reset"</code> (<code>--increment</code>, <code>--decrement</code>, <code>--play</code>, <code>--pause</code>, <code>--complete</code>, <code>--indeterminate</code>) - or <code>progress:&lt;command&gt;</code> events on the ring. Writing <code>aria-valuenow</code> directly repaints it too.</p>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/radial-progress-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a href="../schemas/radial-progress.schema.json"><code>radial-progress.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `value` | `number` | `—` | `70` | The value (0 – aria-valuemax); set through the State API (`setState('default', { value })`), observed from `aria-valuenow`. |
+| `indeterminate` | `boolean` | `true`, `false` | `false` | No value - the spinning arc (`setState('indeterminate')`). |
+| `complete` | `boolean` | `true`, `false` | `false` | Value = max (`setState('complete')`); `progress:completed` fires. |
+| `size` | `enum` | `sm`, `md`, `lg` | `"md"` | Ring diameter. |
+| `tone` | `enum` | `primary`, `success`, `warning`, `info`, `destructive`, `auto` | `"primary"` | Arc and label color; `auto` follows the value. |
+```
+
+</StatesSection>
+
 <SourceFiles component="radial-progress" section="css" />
+
+<SourceFiles component="radial-progress" section="js" jsTitle="JS" />
 
 </DocPage>

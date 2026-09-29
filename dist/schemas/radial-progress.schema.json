@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 1,
+  "name": "radial-progress",
+  "states": {
+    "value": {
+      "type": "number",
+      "default": 70,
+      "target": {
+        "kind": "selector",
+        "selector": ".radial-progress"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "default",
+        "args": {
+          "value": "@value"
+        }
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "aria-valuenow"
+      },
+      "editor": {
+        "component": "number",
+        "props": {
+          "min": 0,
+          "max": 100
+        }
+      }
+    },
+    "indeterminate": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".radial-progress"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "indeterminate"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "complete": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".radial-progress"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "complete"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "size": {
+      "type": "enum",
+      "values": [
+        "sm",
+        "md",
+        "lg"
+      ],
+      "default": "md",
+      "target": {
+        "kind": "selector",
+        "selector": ".radial-progress"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "data-size"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-size"
+      },
+      "editor": {
+        "component": "radio"
+      }
+    },
+    "tone": {
+      "type": "enum",
+      "values": [
+        "primary",
+        "success",
+        "warning",
+        "info",
+        "destructive",
+        "auto"
+      ],
+      "default": "primary",
+      "target": {
+        "kind": "selector",
+        "selector": ".radial-progress"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "data-tone"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-tone"
+      },
+      "editor": {
+        "component": "select"
+      }
+    }
+  },
+  "actions": {
+    "reset": {
+      "target": {
+        "kind": "selector",
+        "selector": ".radial-progress"
+      },
+      "operation": {
+        "kind": "event",
+        "name": "progress:reset"
+      }
+    },
+    "increment": {
+      "target": {
+        "kind": "selector",
+        "selector": ".radial-progress"
+      },
+      "operation": {
+        "kind": "event",
+        "name": "progress:increment"
+      }
+    },
+    "play": {
+      "target": {
+        "kind": "selector",
+        "selector": ".radial-progress"
+      },
+      "operation": {
+        "kind": "event",
+        "name": "progress:play"
+      }
+    },
+    "pause": {
+      "target": {
+        "kind": "selector",
+        "selector": ".radial-progress"
+      },
+      "operation": {
+        "kind": "event",
+        "name": "progress:pause"
+      }
+    }
+  }
+}
