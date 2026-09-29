@@ -1,0 +1,201 @@
+---
+title: "Bubble"
+description: "Bubble component - chat message bubbles: seven variants, sent / received alignment, groups with tightened corners, tails, overlapped reactions, link and button bubbles, collapsible content, media and a typing indicator. CSS only."
+slug: "bubble"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="bubble" title="Bubble" component="bubble">
+  The surface of a chat message. Bubbles size to their content, sit on the received (start) or sent (end) side, stack into groups whose joined corners tighten, grow a tail, carry overlapped emoji reactions, turn into links or buttons, fold long text behind "Show more" - and show when the other side is typing. Avatars, names and timestamps belong to the message row around it. CSS only, after shadcn/ui's Bubble.
+</PageHeader>
+
+<SkillPanel component="bubble">
+  <SkillField label="Native basis">
+<SkillText>A <code>.bubble</code> around a <code>.bubble-content</code> surface - a <code>&lt;div&gt;</code>, or an <code>&lt;a&gt;</code> / <code>&lt;button&gt;</code> when the whole bubble is an action; <code>&lt;details&gt;</code> folds long content.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details" title="collapsible content"><code>&lt;details&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/::details-content" title="animated Show more"><code>::details-content</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix" title="tinted surfaces"><code>color-mix()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_logical_properties_and_values" title="groups and tails mirror in RTL">logical properties</ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/mask" title="the curved tail"><code>mask</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.bubble</code>
+    <code>.bubble-content</code>
+    <code>.bubble-reactions</code>
+    <code>.bubble-reactions-count</code>
+    <code>.bubble-group</code>
+    <code>.bubble-more</code>
+    <code>.bubble-caption</code>
+    <code>.bubble-typing</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code> (<code>secondary</code>, <code>muted</code>, <code>tinted</code>, <code>outline</code>, <code>ghost</code>, <code>destructive</code>), <code>data-align="end"</code> (bubble or group), <code>data-tail</code> (bubble or group), <code>data-size</code> (<code>sm</code>, <code>lg</code>); reactions: <code>data-side="top"</code>, <code>data-align="start"</code>; content: <code>data-media</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Chat" schema="none" hint="Received bubbles sit at the start (secondary), your own at the end (the default primary bubble); a .bubble-reactions pill hangs on the edge - role='img' with an aria-label reads it once."
+<div class="flex flex-col gap-3" style="max-width:28rem;">
+  <div class="bubble" data-variant="secondary">
+    <div class="bubble-content">Hey! Did the new release go out?</div>
+  </div>
+  <div class="bubble" data-align="end">
+    <div class="bubble-content">Yes - 5 minutes ago. The changelog is live too.</div>
+    <div class="bubble-reactions" role="img" aria-label="Reactions: thumbs up, party popper and 2 more">
+      <span>👍</span><span>🎉</span><span class="bubble-reactions-count">+2</span>
+    </div>
+  </div>
+  <div class="bubble" data-variant="secondary">
+    <div class="bubble-content">Amazing, thank you! 🙌</div>
+  </div>
+</div>
+```
+
+```html example label="Variants" schema="none" hint="default (your messages), secondary (the other side), muted, tinted, outline (rich content), ghost (an assistant's unframed, full-width reply) and destructive (failed)."
+<div class="flex flex-col gap-3" style="max-width:28rem;">
+  <div class="bubble" data-align="end"><div class="bubble-content">Default - your own message</div></div>
+  <div class="bubble" data-variant="secondary"><div class="bubble-content">Secondary - the other side</div></div>
+  <div class="bubble" data-variant="muted"><div class="bubble-content">Muted - supporting, lower emphasis</div></div>
+  <div class="bubble" data-variant="tinted" data-align="end"><div class="bubble-content">Tinted - a subtle primary bubble</div></div>
+  <div class="bubble" data-variant="outline"><div class="bubble-content">Outline - options, cards, rich content</div></div>
+  <div class="bubble" data-variant="ghost"><div class="bubble-content"><p><strong>Ghost</strong> - an assistant reply without a frame. It runs the full width, like the markdown answer of a chat model, with <code>inline code</code> and lists:</p><ul><li>no background</li><li>no side padding</li></ul></div></div>
+  <div class="bubble" data-variant="destructive" data-align="end"><div class="bubble-content">Not delivered - tap to retry</div></div>
+</div>
+```
+
+```html example label="Groups and tails" schema="none" hint="A .bubble-group stacks one sender's consecutive bubbles 3px apart and tightens the corners where they meet; data-tail on the group gives its last bubble a curved tail."
+<div class="flex flex-col gap-3" style="max-width:28rem;">
+  <div class="bubble-group" data-tail>
+    <div class="bubble" data-variant="secondary"><div class="bubble-content">Hi, I can't log in since this morning.</div></div>
+    <div class="bubble" data-variant="secondary"><div class="bubble-content">It says my password is wrong.</div></div>
+    <div class="bubble" data-variant="secondary"><div class="bubble-content">But I didn't change it 🤔</div></div>
+  </div>
+  <div class="bubble-group" data-align="end" data-tail>
+    <div class="bubble"><div class="bubble-content">Sorry about that!</div></div>
+    <div class="bubble"><div class="bubble-content">Can you tell me what's the issue exactly?</div></div>
+    <div class="bubble"><div class="bubble-content">A screenshot helps too.</div></div>
+  </div>
+</div>
+```
+
+```html example label="Links and buttons" schema="none" hint="When the whole bubble is an action, make .bubble-content a real <button> or <a> - focusable, with hover and a focus ring. Quick replies in outline bubbles."
+<div class="flex flex-col gap-2" style="max-width:28rem;">
+  <div class="bubble" data-variant="secondary" data-tail><div class="bubble-content">How can I help you today?</div></div>
+  <div class="bubble" data-variant="outline" data-align="end"><button class="bubble-content" type="button">I forgot my password</button></div>
+  <div class="bubble" data-variant="outline" data-align="end"><button class="bubble-content" type="button">I need help with my subscription</button></div>
+  <div class="bubble" data-variant="outline" data-align="end"><a class="bubble-content" href="#contact">Something else →</a></div>
+</div>
+```
+
+```html example label="Reactions" schema="none" hint="Overlapped emoji in a pill on the bubble's edge - bottom end by default; data-side='top' and data-align='start' move it; a .bubble-reactions-count ends it."
+<div class="flex flex-col gap-5" style="max-width:28rem;">
+  <div class="bubble" data-variant="secondary">
+    <div class="bubble-content">We hit 10,000 users this morning!</div>
+    <div class="bubble-reactions" role="img" aria-label="Reactions: party popper, clapping hands"><span>🎉</span><span>👏</span></div>
+  </div>
+  <div class="bubble" data-align="end">
+    <div class="bubble-content">Wow - that was quick.</div>
+    <div class="bubble-reactions" data-align="start" role="img" aria-label="Reactions: eyes, rocket and 2 more"><span>👀</span><span>🚀</span><span class="bubble-reactions-count">+2</span></div>
+  </div>
+  <div class="bubble" data-variant="secondary">
+    <div class="bubble-reactions" data-side="top" role="img" aria-label="Reactions: thumbs up, surprised face"><span>👍</span><span>😮</span></div>
+    <div class="bubble-content">Launch party on Friday?</div>
+  </div>
+</div>
+```
+
+```html example label="Collapsible content" schema="none" hint="A long message folds: the preview stays, the rest sits in a <details class='bubble-more'> - its summary toggles Show more / Show less and the height animates (::details-content). Keyboard-operable, no script."
+<div class="flex flex-col gap-3" style="max-width:28rem;">
+  <div class="bubble" data-variant="secondary">
+    <div class="bubble-content">
+      <p>Accessibility review of the checkout: the form is mostly in good shape - labels are present and the error summary is announced.</p>
+      <details class="bubble-more">
+        <summary><span class="bubble-more-closed">Show more</span><span class="bubble-more-open">Show less</span></summary>
+        <p>Three things to fix before launch: the card-number field lacks an autocomplete hint, the date picker traps focus in Safari, and the "Pay" button contrast is 3.9:1 in the dark theme - it needs 4.5:1.</p>
+        <p>Everything else passes: headings are in order, the progress steps are announced and the timeout warning can be extended.</p>
+      </details>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="With a tooltip" schema="none" hint="A read receipt on demand: make the bubble a button and give it a tooltip (the shipped tooltip component - hover or focus it)."
+<div class="flex flex-col gap-3" style="max-width:28rem;">
+  <div class="bubble" data-align="end">
+    <button class="bubble-content" type="button" data-tooltip-trigger="bubble-read">Did you remove the stale route?</button>
+  </div>
+  <div class="tooltip" id="bubble-read" popover="hint" role="tooltip">Read · 10:42</div>
+</div>
+```
+
+```html example label="With a popover" schema="none" hint="A failed message whose details open in a popover (the shipped popover component) - the destructive bubble is the trigger."
+<div class="flex flex-col gap-3" style="max-width:28rem;min-height:15rem;">
+  <div class="bubble" data-variant="secondary"><div class="bubble-content">Run the build script, please.</div></div>
+  <div class="bubble" data-variant="destructive">
+    <button class="bubble-content" type="button" popovertarget="bubble-error">Build failed - show details</button>
+  </div>
+  <div class="popover" id="bubble-error" popover>
+    <div class="popover-header">
+      <p class="popover-title">Exit code 1</p>
+      <p class="popover-description">src/app.ts:42 - Cannot find module './routes/stale'</p>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="Media" schema="none" hint="data-media on the content puts an image or video edge to edge; a .bubble-caption below it keeps the text padding."
+<div class="flex flex-col gap-3" style="max-width:28rem;">
+  <div class="bubble" data-align="end">
+    <div class="bubble-content" data-media style="width:16rem;">
+      <img src="https://picsum.photos/id/1015/640/400" alt="A river running through a green valley" width="640" height="400" loading="lazy">
+      <p class="bubble-caption">The view from today's hike 🏞️</p>
+    </div>
+  </div>
+  <div class="bubble" data-variant="secondary"><div class="bubble-content">Wow, where is that?</div></div>
+</div>
+```
+
+```html example label="Typing" schema="none" hint="A .bubble-typing inside a bubble: three bouncing dots while the other side writes (still for reduced motion). role='status' with a label announces it."
+<div class="flex flex-col gap-3" style="max-width:28rem;">
+  <div class="bubble" data-align="end"><div class="bubble-content">Any update on the invoice?</div></div>
+  <div class="bubble" data-variant="secondary" data-tail>
+    <div class="bubble-content" role="status" aria-label="Sofia is typing"><span class="bubble-typing" aria-hidden="true"><span></span><span></span><span></span></span></div>
+  </div>
+</div>
+```
+
+```html example label="Sizes" schema="none" hint="data-size sm · (default) · lg - text, padding and corner radius scale together."
+<div class="flex flex-col gap-3" style="max-width:28rem;">
+  <div class="bubble" data-variant="secondary" data-size="sm"><div class="bubble-content">Small - dense threads and sidebars</div></div>
+  <div class="bubble" data-variant="secondary"><div class="bubble-content">Default</div></div>
+  <div class="bubble" data-variant="secondary" data-size="lg"><div class="bubble-content">Large - a focused conversation</div></div>
+</div>
+```
+
+```html example label="Right to left" schema="none" hint="Logical throughout: in dir='rtl' received bubbles sit on the right, sent ones on the left, and the group corners, tails and reactions mirror."
+<div dir="rtl" lang="ar" class="flex flex-col gap-3" style="max-width:28rem;">
+  <div class="bubble-group" data-tail>
+    <div class="bubble" data-variant="secondary"><div class="bubble-content">مرحبا! هل وصلت الطلبية؟</div></div>
+    <div class="bubble" data-variant="secondary"><div class="bubble-content">كانت متوقعة اليوم.</div></div>
+  </div>
+  <div class="bubble" data-align="end" data-tail>
+    <div class="bubble-content">نعم، وصلت قبل ساعة.</div>
+    <div class="bubble-reactions" role="img" aria-label="تفاعلات: إبهام"><span>👍</span></div>
+  </div>
+</div>
+```
+
+<SourceFiles component="bubble" section="css" />
+
+</DocPage>

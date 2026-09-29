@@ -163,6 +163,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/breadcrumb.png
 **Skill:** [components/breadcrumb/component-skill.md](components/breadcrumb/component-skill.md)
 
+## Bubble
+
+**Type:** ATM
+**Why:** A chat bubble is a styled block - variants, alignment, groups with tightened corners, tails, overlapped reactions and typing dots are all CSS; interactive bubbles are real <a>/<button>, collapsible ones a native <details>.
+**When:** The message surface of a chat, assistant reply or comment thread. Avatars, names, timestamps and message actions belong to the message row around it; a system notice across the thread is an alert.
+**Files:** dist/components/bubble/bubble.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/bubble.png
+**Skill:** [components/bubble/component-skill.md](components/bubble/component-skill.md)
+
 ## Button
 
 **Type:** ATM

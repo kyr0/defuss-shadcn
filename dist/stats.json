@@ -1,25 +1,25 @@
 {
-  "total": 87,
+  "total": 88,
   "byType": {
-    "ATM": 53,
+    "ATM": 54,
     "MOL": 17,
     "ORG": 2,
     "BLK": 13,
     "TPL": 2
   },
   "withJs": 41,
-  "withoutJs": 46,
-  "totalSize": 1002641,
-  "totalSizeMinified": 464698,
-  "totalSizeGz": 312395,
-  "totalSizeGzMinified": 156373,
+  "withoutJs": 47,
+  "totalSize": 1014199,
+  "totalSizeMinified": 472978,
+  "totalSizeGz": 315307,
+  "totalSizeGzMinified": 158502,
   "bundle": {
     "jsSize": 385887,
     "jsSizeMinified": 216419,
-    "cssSize": 510352,
-    "cssSizeMinified": 278998,
-    "totalSizeGz": 193438,
-    "totalSizeGzMinified": 109153
+    "cssSize": 521960,
+    "cssSizeMinified": 287259,
+    "totalSizeGz": 195681,
+    "totalSizeGzMinified": 110461
   },
   "core": {
     "jsSize": 88008,
@@ -146,6 +146,19 @@
       "totalSizeGzMinified": 729,
       "totalSize": 3697,
       "totalSizeMinified": 2197
+    },
+    "bubble": {
+      "name": "bubble",
+      "type": "ATM",
+      "withJs": false,
+      "jsSize": 0,
+      "jsSizeMinified": 0,
+      "cssSize": 11558,
+      "cssSizeMinified": 8280,
+      "totalSizeGz": 2912,
+      "totalSizeGzMinified": 2129,
+      "totalSize": 11558,
+      "totalSizeMinified": 8280
     },
     "button": {
       "name": "button",

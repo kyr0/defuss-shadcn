@@ -202,6 +202,9 @@ export const NAV: NavSection[] = [
     { label: 'Sidebar', href: 'sidebar.html' },
     { label: 'Resizer', href: 'resizer.html' },
   ]},
+  { heading: 'Chat', icon: 'messages-square', items: [
+    { label: 'Bubble', href: 'bubble.html', isNew: true },
+  ]},
   { heading: 'Presentations', icon: 'presentation', items: [
     { label: 'Presentation', href: 'presentation.html' },
     { label: 'Deck Gallery', href: 'presentations.html', children: [

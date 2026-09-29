@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>bubble e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/bubble/bubble.css" />
+  </head>
+  <body style="margin:0;padding:1.5rem;font-family:system-ui;">
+    <!-- mirrors the doc page: variants, alignment, groups + tails, action
+         bubbles, reactions, collapsible, media, typing, sizes, RTL -->
+    <div id="thread" style="width:400px;display:flex;flex-direction:column;gap:12px;">
+      <div class="bubble" id="b-default" data-align="end"><div class="bubble-content">Default</div></div>
+      <div class="bubble" id="b-default-explicit" data-variant="default" data-align="end"><div class="bubble-content">Default, explicit</div></div>
+      <div class="bubble" id="b-secondary" data-variant="secondary"><div class="bubble-content">Secondary</div></div>
+      <div class="bubble" id="b-muted" data-variant="muted"><div class="bubble-content">Muted</div></div>
+      <div class="bubble" id="b-tinted" data-variant="tinted"><div class="bubble-content">Tinted</div></div>
+      <div class="bubble" id="b-outline" data-variant="outline"><div class="bubble-content">Outline</div></div>
+      <div class="bubble" id="b-ghost" data-variant="ghost"><div class="bubble-content">Ghost</div></div>
+      <div class="bubble" id="b-destructive" data-variant="destructive"><div class="bubble-content">Failed</div></div>
+      <div class="bubble" id="b-long" data-variant="secondary"><div class="bubble-content">A long message that certainly needs to wrap onto several lines because it is far wider than the thread allows.</div></div>
+
+      <div class="bubble-group" id="g-start" data-tail>
+        <div class="bubble" data-variant="secondary"><div class="bubble-content" id="gs-1">One</div></div>
+        <div class="bubble" data-variant="secondary"><div class="bubble-content" id="gs-2">Two</div></div>
+        <div class="bubble" data-variant="secondary"><div class="bubble-content" id="gs-3">Three</div></div>
+      </div>
+      <div class="bubble-group" id="g-end" data-align="end" data-tail>
+        <div class="bubble"><div class="bubble-content" id="ge-1">One</div></div>
+        <div class="bubble"><div class="bubble-content" id="ge-2">Two</div></div>
+      </div>
+
+      <div class="bubble" data-variant="outline" data-align="end"><button class="bubble-content" id="b-button" type="button">I forgot my password</button></div>
+      <div class="bubble" data-variant="outline" data-align="end"><a class="bubble-content" id="b-link" href="#x">Something else</a></div>
+
+      <div class="bubble" id="r-bottom" data-variant="secondary">
+        <div class="bubble-content" id="r-bottom-c">Reactions bottom end</div>
+        <div class="bubble-reactions" id="r-bottom-r" role="img" aria-label="r"><span id="r-e1">🎉</span><span id="r-e2">👏</span><span class="bubble-reactions-count">+2</span></div>
+      </div>
+      <div class="bubble" id="r-top" data-align="end">
+        <div class="bubble-content" id="r-top-c">Reactions top start</div>
+        <div class="bubble-reactions" id="r-top-r" data-side="top" data-align="start" role="img" aria-label="r"><span>👍</span></div>
+      </div>
+
+      <div class="bubble" data-variant="secondary">
+        <div class="bubble-content">
+          <p>Preview</p>
+          <details class="bubble-more" id="more">
+            <summary id="more-s"><span class="bubble-more-closed">Show more</span><span class="bubble-more-open">Show less</span></summary>
+            <p id="more-rest">The rest</p>
+          </details>
+        </div>
+      </div>
+
+      <div class="bubble" data-align="end">
+        <div class="bubble-content" id="media" data-media style="width:200px;">
+          <img id="media-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100'/%3E" width="200" height="100" alt="x">
+          <p class="bubble-caption" id="media-cap">Caption</p>
+        </div>
+      </div>
+
+      <div class="bubble" data-variant="secondary"><div class="bubble-content" role="status" aria-label="typing"><span class="bubble-typing" id="typing" aria-hidden="true"><span></span><span></span><span></span></span></div></div>
+
+      <div class="bubble" id="s-sm" data-size="sm" data-variant="secondary"><div class="bubble-content">sm</div></div>
+      <div class="bubble" id="s-md" data-variant="secondary"><div class="bubble-content">md</div></div>
+      <div class="bubble" id="s-lg" data-size="lg" data-variant="secondary"><div class="bubble-content">lg</div></div>
+    </div>
+
+    <div dir="rtl" style="width:400px;display:flex;flex-direction:column;gap:12px;margin-top:24px;">
+      <div class="bubble" id="rtl-start" data-variant="secondary"><div class="bubble-content">start</div></div>
+      <div class="bubble" id="rtl-end" data-align="end"><div class="bubble-content">end</div></div>
+      <div class="bubble-group" data-tail>
+        <div class="bubble" data-variant="secondary"><div class="bubble-content" id="rtl-g1">One</div></div>
+        <div class="bubble" data-variant="secondary"><div class="bubble-content" id="rtl-g2">Two</div></div>
+      </div>
+    </div>
+  </body>
+</html>
