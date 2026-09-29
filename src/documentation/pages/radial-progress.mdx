@@ -1,0 +1,126 @@
+---
+title: "Radial Progress"
+description: "Radial Progress component - a ring that shows a percentage with the number inside it: one conic-gradient masked to a ring, animated by a typed @property, no JS and no SVG."
+slug: "radial-progress"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="radial-progress" title="Radial Progress" component="radial-progress">
+  A progress ring with its number in the middle - storage used, a score, a goal reached. Set <code>--value</code> (0-100) and CSS draws the arc: one <code>conic-gradient</code> masked down to a ring, with a round cap on the leading edge. Change the value and the ring tweens there on its own - a typed <code>@property</code> does the animation, no JavaScript, no SVG.
+</PageHeader>
+
+<SkillPanel component="radial-progress">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;div role="progressbar"&gt;</code> with <code>aria-valuenow</code> / <code>aria-valuemin</code> / <code>aria-valuemax</code> - not <code>&lt;progress&gt;</code>, which cannot hold visible text in its center. The text inside is free: a percentage, a fraction, an icon.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/conic-gradient" title="the arc"><code>conic-gradient()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/mask" title="cuts the disc to a ring"><code>mask</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@property" title="the value tweens"><code>@property</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/cos" title="the leading round cap"><code>cos()</code> / <code>sin()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/progressbar_role" title="progressbar semantics"><code>role="progressbar"</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="no tween"><code>prefers-reduced-motion</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.radial-progress</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code> (<code>default</code>, <code>secondary</code>, <code>destructive</code>, <code>success</code>), <code>data-size</code> (<code>sm</code>, <code>lg</code>); custom properties <code>--value</code>, <code>--size</code>, <code>--thickness</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" schema="none" hint="--value sets the arc (0-100); keep aria-valuenow in step - it is what a screen reader announces."
+<div class="radial-progress" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="--value:70">70%</div>
+```
+
+```html example label="Values" schema="none" hint="The arc starts at twelve o'clock and runs clockwise; a round cap marks its leading edge."
+<div class="flex flex-wrap items-center gap-4">
+  <div class="radial-progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="--value:0">0%</div>
+  <div class="radial-progress" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="--value:20">20%</div>
+  <div class="radial-progress" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="--value:60">60%</div>
+  <div class="radial-progress" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="--value:80">80%</div>
+  <div class="radial-progress" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="--value:100">100%</div>
+</div>
+```
+
+```html example label="Animated" schema="none" hint="Write a new --value and the ring tweens there (600ms) - the typed @property animates it; the script only sets the value and the ARIA."
+<div class="flex items-center gap-4">
+  <div class="radial-progress" id="rp-live" data-size="lg" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="--value:25">25%</div>
+  <div class="flex flex-col gap-2">
+    <button class="btn" data-variant="outline" data-size="sm" type="button" onclick="setRing(-10)">− 10</button>
+    <button class="btn" data-variant="outline" data-size="sm" type="button" onclick="setRing(10)">+ 10</button>
+  </div>
+</div>
+<script>
+  function setRing(delta) {
+    const ring = document.getElementById('rp-live');
+    const v = Math.max(0, Math.min(100, Number(ring.getAttribute('aria-valuenow')) + delta));
+    ring.style.setProperty('--value', v);
+    ring.setAttribute('aria-valuenow', v);
+    ring.textContent = v + '%';
+  }
+</script>
+```
+
+```html example label="Variants" schema="none" hint="data-variant sets the color of the arc and the label together: default, secondary (low emphasis), destructive (over quota), success (done)."
+<div class="flex flex-wrap items-center gap-4">
+  <div class="radial-progress" data-variant="default" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="--value:70">70%</div>
+  <div class="radial-progress" data-variant="secondary" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="--value:70">70%</div>
+  <div class="radial-progress" data-variant="destructive" role="progressbar" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100" style="--value:95">95%</div>
+  <div class="radial-progress" data-variant="success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="--value:100">100%</div>
+</div>
+```
+
+```html example label="Sizes" schema="none" hint="data-size sm (3.5rem) · default (5rem) · lg (8rem); any other diameter is style='--size: …'."
+<div class="flex flex-wrap items-center gap-4">
+  <div class="radial-progress" data-size="sm" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="--value:40">40%</div>
+  <div class="radial-progress" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="--value:40">40%</div>
+  <div class="radial-progress" data-size="lg" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="--value:40">40%</div>
+</div>
+```
+
+```html example label="Custom size and thickness" schema="none" hint="--size and --thickness shape any ring - a hairline gauge, a chunky donut; the label can be any content, e.g. an icon or a fraction with aria-valuetext."
+<div class="flex flex-wrap items-center gap-6">
+  <div class="radial-progress" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="--value:60;--size:10rem;--thickness:2px">60%</div>
+  <div class="radial-progress" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="--value:75;--size:6rem;--thickness:1.5rem">75%</div>
+  <div class="radial-progress" data-variant="success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" aria-label="Upload" style="--value:100"><i data-lucide="check" aria-hidden="true"></i></div>
+  <div class="radial-progress" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" aria-valuetext="7 of 10 seats" style="--value:70">7/10</div>
+</div>
+```
+
+```html example label="In cards" schema="none" hint="Rings sit on the text baseline, so they compose into stat tiles without a wrapper."
+<div class="grid gap-4" style="grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));">
+  <div class="card">
+    <div class="card-content flex items-center gap-4" style="padding-block:1.25rem;">
+      <div class="radial-progress" role="progressbar" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100" aria-label="Storage used" style="--value:72">72%</div>
+      <div><p class="text-sm font-medium m-0">Storage</p><p class="text-sm text-muted-foreground m-0">72 GB of 100 GB</p></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-content flex items-center gap-4" style="padding-block:1.25rem;">
+      <div class="radial-progress" data-variant="destructive" role="progressbar" aria-valuenow="96" aria-valuemin="0" aria-valuemax="100" aria-label="API quota" style="--value:96">96%</div>
+      <div><p class="text-sm font-medium m-0">API quota</p><p class="text-sm text-muted-foreground m-0">9,600 of 10,000 calls</p></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-content flex items-center gap-4" style="padding-block:1.25rem;">
+      <div class="radial-progress" data-variant="success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" aria-label="Weekly goal" style="--value:100">100%</div>
+      <div><p class="text-sm font-medium m-0">Weekly goal</p><p class="text-sm text-muted-foreground m-0">5 of 5 workouts</p></div>
+    </div>
+  </div>
+</div>
+```
+
+<SourceFiles component="radial-progress" section="css" />
+
+</DocPage>

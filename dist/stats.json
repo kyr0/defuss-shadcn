@@ -1,32 +1,32 @@
 {
-  "total": 85,
+  "total": 87,
   "byType": {
-    "ATM": 51,
+    "ATM": 53,
     "MOL": 17,
     "ORG": 2,
     "BLK": 13,
     "TPL": 2
   },
   "withJs": 39,
-  "withoutJs": 46,
-  "totalSize": 957892,
-  "totalSizeMinified": 442721,
-  "totalSizeGz": 298353,
-  "totalSizeGzMinified": 149055,
+  "withoutJs": 48,
+  "totalSize": 972803,
+  "totalSizeMinified": 450102,
+  "totalSizeGz": 302972,
+  "totalSizeGzMinified": 151201,
   "bundle": {
-    "jsSize": 369572,
+    "jsSize": 369599,
     "jsSizeMinified": 206082,
-    "cssSize": 488408,
-    "cssSizeMinified": 267703,
-    "totalSizeGz": 185345,
-    "totalSizeGzMinified": 105015
+    "cssSize": 503433,
+    "cssSizeMinified": 275214,
+    "totalSizeGz": 188997,
+    "totalSizeGzMinified": 106246
   },
   "core": {
-    "jsSize": 88008,
+    "jsSize": 88035,
     "jsSizeMinified": 44782,
     "cssSize": 127905,
     "cssSizeMinified": 109216,
-    "totalSizeGz": 33075,
+    "totalSizeGz": 33087,
     "totalSizeGzMinified": 24741
   },
   "components": {
@@ -634,12 +634,12 @@
       "withJs": true,
       "jsSize": 11667,
       "jsSizeMinified": 3992,
-      "cssSize": 4187,
-      "cssSizeMinified": 2834,
-      "totalSizeGz": 5171,
-      "totalSizeGzMinified": 2372,
-      "totalSize": 15854,
-      "totalSizeMinified": 6826
+      "cssSize": 6628,
+      "cssSizeMinified": 4344,
+      "totalSizeGz": 5757,
+      "totalSizeGzMinified": 2646,
+      "totalSize": 18295,
+      "totalSizeMinified": 8336
     },
     "popover": {
       "name": "popover",
@@ -705,6 +705,19 @@
       "totalSizeGzMinified": 469,
       "totalSize": 2202,
       "totalSizeMinified": 1334
+    },
+    "radial-progress": {
+      "name": "radial-progress",
+      "type": "ATM",
+      "withJs": false,
+      "jsSize": 0,
+      "jsSizeMinified": 0,
+      "cssSize": 5634,
+      "cssSizeMinified": 2357,
+      "totalSizeGz": 2036,
+      "totalSizeGzMinified": 800,
+      "totalSize": 5634,
+      "totalSizeMinified": 2357
     },
     "radio": {
       "name": "radio",
@@ -842,12 +855,12 @@
       "withJs": true,
       "jsSize": 8371,
       "jsSizeMinified": 3747,
-      "cssSize": 9002,
-      "cssSizeMinified": 5040,
-      "totalSizeGz": 5562,
-      "totalSizeGzMinified": 3067,
-      "totalSize": 17373,
-      "totalSizeMinified": 8787
+      "cssSize": 11098,
+      "cssSizeMinified": 5996,
+      "totalSizeGz": 6155,
+      "totalSizeGzMinified": 3247,
+      "totalSize": 19469,
+      "totalSizeMinified": 9743
     },
     "sortable": {
       "name": "sortable",
@@ -913,6 +926,19 @@
       "totalSizeGzMinified": 2567,
       "totalSize": 17775,
       "totalSizeMinified": 9402
+    },
+    "swap": {
+      "name": "swap",
+      "type": "ATM",
+      "withJs": false,
+      "jsSize": 0,
+      "jsSizeMinified": 0,
+      "cssSize": 4740,
+      "cssSizeMinified": 2558,
+      "totalSizeGz": 1404,
+      "totalSizeGzMinified": 892,
+      "totalSize": 4740,
+      "totalSizeMinified": 2558
     },
     "switch": {
       "name": "switch",

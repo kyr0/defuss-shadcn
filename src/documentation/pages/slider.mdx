@@ -33,11 +33,17 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <SkillField label="Classes">
 <SkillRow>
     <code>.slider</code>
+    <code>.slider-range</code>
+    <code>.slider-field</code>
+    <code>.slider-icon</code>
+    <code>.slider-value</code>
+    <code>.slider-scale</code>
+    <code>.slider-marks</code>
   </SkillRow>
   </SkillField>
 
   <SkillField label="Data attributes">
-<SkillText><code>data-orientation="vertical"</code> - renders as a vertical slider.</SkillText>
+<SkillText><code>data-size</code> (<code>xs</code> … <code>xl</code>), <code>data-tone</code> (<code>success</code>, <code>warning</code>, <code>info</code>, <code>destructive</code>), <code>data-orientation="vertical"</code>, <code>data-unit</code> / <code>data-currency</code>, <code>data-thumb-emoji</code>, <code>data-min-gap</code> (on <code>.slider-range</code>).</SkillText>
   </SkillField>
 
   <SkillField label="Keyboard">
@@ -93,6 +99,25 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <output id="d-step-output" class="text-muted-foreground" for="d-step" style="font-size:0.875rem;font-family:var(--font-mono);">50</output>
   </div>
   <input class="slider" type="range" id="d-step" min="0" max="100" step="25" value="50" oninput="document.getElementById('d-step-output').value = this.value"></input>
+</div>
+```
+
+```html example label="Steps with marks" hint="A .slider-marks row after the slider draws a CSS-only tick under every step - labeled or bare (an empty child). It follows the slider's data-size, so the ticks stay on the thumb's travel."
+<div class="flex flex-col gap-6 w-full max-w-80">
+  <div>
+    <label class="label" for="d-marks">Volume</label>
+    <input class="slider" type="range" id="d-marks" min="0" max="100" step="25" value="50">
+    <div class="slider-marks" aria-hidden="true">
+      <span>0</span><span>25</span><span>50</span><span>75</span><span>100</span>
+    </div>
+  </div>
+  <div>
+    <label class="label" for="d-marks-lg">Rating</label>
+    <input class="slider" type="range" id="d-marks-lg" data-size="lg" data-tone="warning" min="1" max="5" step="1" value="4">
+    <div class="slider-marks" aria-hidden="true">
+      <span>1★</span><span></span><span>3★</span><span></span><span>5★</span>
+    </div>
+  </div>
 </div>
 ```
 

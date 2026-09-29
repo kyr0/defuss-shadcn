@@ -4,7 +4,8 @@ import { cssSmoke } from './lib/css-smoke.ts';
 /**
  * Why: pagination is CSS-only - verify the centered flex bar, the 36px
  * square controls, prev/next's wider padding, the active border + weight,
- * and aria-disabled inertness.
+ * aria-disabled inertness, the outline / joined variants (RTL-mirrored
+ * corners) and the split previous / next layout.
  */
 await cssSmoke('pagination', [
   {
@@ -80,6 +81,55 @@ await cssSmoke('pagination', [
       assert.equal(await page.$eval('#pg-live', (el) => el.getAttribute('data-active-page')), '5');
       await page.$eval('#pg-live', (el) => el.dispatchEvent(new Event('pagination-prev', { bubbles: true })));
       assert.equal(await page.$eval('#pg-live', (el) => el.getAttribute('data-active-page')), '4');
+    },
+  },
+  {
+    label: 'outline: every cell bordered on the background; the active page fills with the accent surface',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const g = (id: string) => getComputedStyle(document.getElementById(id)!);
+        const plain = g('pg-link');
+        return { border: g('pg-outline-1').borderTopColor !== 'rgba(0, 0, 0, 0)', plainBorder: plain.borderTopColor, active: g('pg-outline-2').backgroundColor, cell: g('pg-outline-1').backgroundColor, shadow: g('pg-outline-1').boxShadow !== 'none' };
+      });
+      assert.equal(r.border, true);
+      assert.equal(r.plainBorder, 'rgba(0, 0, 0, 0)', 'the default variant stays ghost');
+      assert.notEqual(r.active, r.cell);
+      assert.ok(r.shadow);
+    },
+  },
+  {
+    label: 'joined: no gap, shared borders (-1px), square inner corners, rounded outer ends - mirrored in RTL',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const g = (id: string) => getComputedStyle(document.getElementById(id)!);
+        const b = (id: string) => document.getElementById(id)!.getBoundingClientRect();
+        return {
+          gap: getComputedStyle(document.querySelector('#pg-joined .pagination-list')!).columnGap,
+          overlap: Math.round(b('pg-joined-1').left - b('pg-joined-prev').right),
+          inner: g('pg-joined-1').borderTopLeftRadius,
+          first: [g('pg-joined-prev').borderTopLeftRadius !== '0px', g('pg-joined-prev').borderTopRightRadius !== '0px'],
+          last: [g('pg-joined-next').borderTopLeftRadius !== '0px', g('pg-joined-next').borderTopRightRadius !== '0px'],
+          rtlFirst: [g('pg-joined-rtl-prev').borderTopLeftRadius !== '0px', g('pg-joined-rtl-prev').borderTopRightRadius !== '0px'],
+          ellipsis: g('pg-joined-ell').borderTopWidth,
+          activeZ: g('pg-joined-2').zIndex,
+        };
+      });
+      assert.deepEqual(r, { gap: '0px', overlap: -1, inner: '0px', first: [true, false], last: [false, true], rtlFirst: [false, true], ellipsis: '1px', activeZ: '1' });
+    },
+  },
+  {
+    label: 'split: previous / next as two equal columns across the container; aria-disabled mutes without inline styles',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const b = (id: string) => document.getElementById(id)!.getBoundingClientRect();
+        const p = b('pg-split-prev'), n = b('pg-split-next'), nav = b('pg-split');
+        const s = getComputedStyle(document.getElementById('pg-split-prev')!);
+        return { equal: Math.round(p.width) === Math.round(n.width), full: Math.round(nav.width), fill: Math.round(p.width + n.width + 8), disabled: [s.pointerEvents, s.opacity] };
+      });
+      assert.equal(r.equal, true);
+      assert.equal(r.full, 400);
+      assert.equal(r.fill, 400, 'two columns + the 8px gap fill the width');
+      assert.deepEqual(r.disabled, ['none', '0.5']);
     },
   },
   {

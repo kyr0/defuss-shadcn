@@ -29,6 +29,44 @@
     <!-- data-driven live demo for the runtime (pagination.ts): the window is
          rendered by the script from these attributes -->
     <nav class="pagination" id="pg-live" data-active-page="3" data-min-page="1" data-max-page="20" data-page-display-count="3" aria-label="Live pagination" style="margin-top:1.5rem;"><ul class="pagination-list"><li><a class="pagination-prev" href="#" aria-label="Go to previous page">Previous</a></li><li><a class="pagination-next" href="#" aria-label="Go to next page">Next</a></li></ul></nav>
+  <!-- variants + split layout (doc page: Outline / Joined / Previous / next) -->
+  <nav class="pagination" id="pg-outline" data-variant="outline" aria-label="pg-outline" style="margin-top:1rem;">
+    <ul class="pagination-list">
+      <li><a class="pagination-prev" id="pg-outline-prev" href="#" aria-disabled="true">Previous</a></li>
+      <li><a class="pagination-link" id="pg-outline-1" href="#">1</a></li>
+      <li><a class="pagination-link pagination-active" id="pg-outline-2" href="#" aria-current="page">2</a></li>
+      <li><span class="pagination-ellipsis" id="pg-outline-ell" aria-hidden="true">&hellip;</span></li>
+      <li><a class="pagination-next" id="pg-outline-next" href="#">Next</a></li>
+    </ul>
+  </nav>
+  <nav class="pagination" id="pg-joined" data-variant="joined" aria-label="pg-joined" style="margin-top:1rem;">
+    <ul class="pagination-list">
+      <li><a class="pagination-prev" id="pg-joined-prev" href="#" aria-disabled="true">Previous</a></li>
+      <li><a class="pagination-link" id="pg-joined-1" href="#">1</a></li>
+      <li><a class="pagination-link pagination-active" id="pg-joined-2" href="#" aria-current="page">2</a></li>
+      <li><span class="pagination-ellipsis" id="pg-joined-ell" aria-hidden="true">&hellip;</span></li>
+      <li><a class="pagination-next" id="pg-joined-next" href="#">Next</a></li>
+    </ul>
+  </nav>
+  <div dir="rtl">
+  <nav class="pagination" id="pg-joined-rtl" data-variant="joined" aria-label="pg-joined-rtl" style="margin-top:1rem;">
+    <ul class="pagination-list">
+      <li><a class="pagination-prev" id="pg-joined-rtl-prev" href="#" aria-disabled="true">Previous</a></li>
+      <li><a class="pagination-link" id="pg-joined-rtl-1" href="#">1</a></li>
+      <li><a class="pagination-link pagination-active" id="pg-joined-rtl-2" href="#" aria-current="page">2</a></li>
+      <li><span class="pagination-ellipsis" id="pg-joined-rtl-ell" aria-hidden="true">&hellip;</span></li>
+      <li><a class="pagination-next" id="pg-joined-rtl-next" href="#">Next</a></li>
+    </ul>
+  </nav>
+  </div>
+  <div style="width:400px;">
+  <nav class="pagination" id="pg-split" data-layout="split" data-variant="outline" aria-label="split">
+    <ul class="pagination-list">
+      <li><a class="pagination-prev" id="pg-split-prev" href="#" aria-disabled="true">Previous</a></li>
+      <li><a class="pagination-next" id="pg-split-next" href="#">Next</a></li>
+    </ul>
+  </nav>
+  </div>
   <script type="module" src="/dist/components/core.js"></script>
   <script type="module" src="/dist/components/pagination/pagination.js"></script>
 </body>

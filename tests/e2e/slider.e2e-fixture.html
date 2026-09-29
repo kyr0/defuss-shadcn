@@ -43,5 +43,13 @@
     <output id="rg-out" for="rg-lo rg-hi"></output>
     <div dir="rtl"><input class="slider" type="range" id="rtl" value="30" aria-label="rtl" /></div>
   </div>
+  <!-- marks (doc page: Steps with marks) - default size, lg via sibling, lg set on the marks -->
+  <div style="width:320px;">
+    <input class="slider" type="range" id="mk" min="0" max="100" step="25" value="50">
+    <div class="slider-marks" id="mk-marks" aria-hidden="true"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+    <input class="slider" type="range" id="mk-lg" data-size="lg" min="1" max="5" step="1" value="4">
+    <div class="slider-marks" id="mk-lg-marks" aria-hidden="true"><span>1</span><span></span><span>3</span><span></span><span>5</span></div>
+    <div class="slider-marks" id="mk-apart" data-size="lg" aria-hidden="true"><span>1</span><span>5</span></div>
+  </div>
 </body>
 </html>

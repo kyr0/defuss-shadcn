@@ -22,6 +22,7 @@ supportedStates: default
 - [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) - keyboard-only focus ring
 - [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) - suppresses hover transitions
 - [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) - thickens borders when high-contrast requested
+- [Logical properties](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_logical_properties_and_values) - `border-start-start-radius` / `margin-inline-start` give RTL joined groups for free
 - [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) - maps active page border and hover to system colors
 
 ---
@@ -81,6 +82,51 @@ supportedStates: default
 </nav>
 ```
 
+### Joined (shared borders)
+
+```html
+<nav class="pagination" data-variant="joined" aria-label="Pagination">
+  <ul class="pagination-list">
+    <li><a class="pagination-link" href="#">1</a></li>
+    <li><a class="pagination-link pagination-active" href="#" aria-current="page">2</a></li>
+    <li><span class="pagination-ellipsis" aria-hidden="true">&hellip;</span></li>
+    <li><a class="pagination-link" href="#">10</a></li>
+  </ul>
+</nav>
+```
+
+### Previous / Next only (two equal columns)
+
+```html
+<nav class="pagination" data-layout="split" data-variant="outline" aria-label="Pagination">
+  <ul class="pagination-list">
+    <li><a class="pagination-prev" href="#" aria-label="Go to previous page" aria-disabled="true">Previous</a></li>
+    <li><a class="pagination-next" href="#" aria-label="Go to next page">Next</a></li>
+  </ul>
+</nav>
+```
+
+---
+
+## Variants
+
+Set on the `.pagination` nav - every cell inherits the treatment.
+
+| `data-variant` | Visual behavior |
+|-----------|---------|
+| *(omitted)* | Ghost cells on the page background; only the active page gets a border + surface |
+| `outline` | Every cell carries `var(--border)` + `var(--background)` and `--shadow-xs`; the active page fills with `var(--accent)` |
+| `joined` | `outline` with the gap collapsed: neighbours share one border (`margin-inline-start: -1px`), inner corners are square, only the first / last cell keeps its outer radius; the ellipsis joins the chain |
+
+## Layouts
+
+| `data-layout` | Behavior |
+|-----------|---------|
+| *(omitted)* | Centered row that shrinks to its content |
+| `split` | Two equal columns (`grid-template-columns: 1fr 1fr`) across the container - the previous / next pager for article footers; combines with any variant |
+
+Variant, layout, size and density are independent axes and combine freely.
+
 ---
 
 ## Sizes
@@ -135,10 +181,22 @@ All links are native `<a>` elements - keyboard navigation works automatically.
 
 - Use `<a>` elements for page links - they support native keyboard focus and navigation.
 - Mark the active page with `aria-current="page"` and the `.pagination-active` class.
-- On the first page, add `aria-disabled="true"` to the Previous link. On the last page, add it to Next.
+- On the first page, add `aria-disabled="true"` to the Previous link. On the last page, add
+  it to Next. The attribute alone is the whole API: CSS mutes the link and removes pointer
+  interaction, so never add inline `pointer-events` / `opacity` styles alongside it. For a
+  boundary link that must also leave the tab order, drop the `href` - an `<a href>` stays
+  focusable by design and `aria-disabled` deliberately does not change that.
 - Use `<span class="pagination-ellipsis" aria-hidden="true">` for the "…" indicator - it's not a link.
 - Chevron SVG icons are preferred over text arrows for visual consistency.
-- CSS uses logical properties (`padding-inline`) for automatic RTL support.
+- CSS uses logical properties (`padding-inline`, `border-start-start-radius`,
+  `margin-inline-start`), so joined groups round and collapse correctly in RTL.
+- `joined` shares the look of the [button group](../button-group/component-skill.md) - reach for
+  `.btn-group` when the row is *buttons*, for `data-variant="joined"` when it is page
+  *navigation* (the landmark, `aria-current` and link semantics are the point).
+- **No radio-input pagination** (daisyUI has one): pagination *navigates* - each page is a URL, so
+  links give middle-click / new tab, history, crawlable pages and the `navigation` landmark, and
+  `aria-current="page"` is the right current-item semantic. A control that *picks* a page number
+  for a form is a [select](../select/component-skill.md).
 - No JavaScript required - this is a purely CSS component.
 
 ## States

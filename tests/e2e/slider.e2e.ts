@@ -7,7 +7,7 @@ import { startServer } from './server.ts';
  * (default + custom-range + authored-disabled sliders, mirroring the doc
  * page) over HTTP in a real browser, then verifies the fill-track custom
  * property, keyboard stepping, native disabled behavior, and the named State
- * API ({ value } preset) - the same files consumers copy from dist/,
+ * API ({ value } preset) and the CSS-only .slider-marks tick scale - the same files consumers copy from dist/,
  * unmodified.
  */
 
@@ -238,6 +238,29 @@ try {
   await check('RTL: the fill runs right to left', async () => {
     const d = await page.$eval('#rtl', (e) => getComputedStyle(e).getPropertyValue('--_dir').trim());
     assert.equal(d, 'to left');
+  });
+
+  await check('slider-marks: one tick per step, centred on the thumb travel (default + lg via sibling / own data-size)', async () => {
+    const r = await page.evaluate(() => {
+      const ticks = (id: string) => [...document.getElementById(id)!.children].map((c) => { const b = c.getBoundingClientRect(); return Math.round(b.left + b.width / 2); });
+      const input = (id: string) => document.getElementById(id)!.getBoundingClientRect();
+      const pad = (id: string) => getComputedStyle(document.getElementById(id)!).paddingLeft;
+      const mk = input('mk');
+      return {
+        first: ticks('mk-marks')[0] - Math.round(mk.left),
+        last: Math.round(mk.right) - ticks('mk-marks')[4],
+        even: ticks('mk-marks').map((v, i, a) => (i ? v - a[i - 1] : 0)).slice(1),
+        pads: [pad('mk-marks'), pad('mk-lg-marks'), pad('mk-apart')],
+        tick: getComputedStyle(document.getElementById('mk-marks')!.children[0], '::before').height,
+        bare: getComputedStyle(document.getElementById('mk-lg-marks')!.children[1], '::before').height,
+      };
+    });
+    // default thumb 20px -> ticks start / end 10px in from the track ends
+    assert.equal(r.first, 10);
+    assert.equal(r.last, 10);
+    assert.ok(Math.max(...r.even) - Math.min(...r.even) <= 1, `evenly spaced: ${r.even}`);
+    assert.deepEqual(r.pads, ['10px', '12px', '12px'], 'half a thumb: md, lg by sibling, lg by own data-size');
+    assert.deepEqual([r.tick, r.bare], ['6px', '4px']);
   });
 
 } finally {

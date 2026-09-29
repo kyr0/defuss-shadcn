@@ -13,7 +13,7 @@ var __export = (target, all) => {
     });
 };
 
-// node_modules/defuss-morph/dist/index.mjs
+// ../../../node_modules/defuss-morph/dist/index.mjs
 var exports_dist = {};
 __export(exports_dist, {
   updateDomWithVdom: () => updateDomWithVdom,
@@ -1245,7 +1245,7 @@ var morph = (el, newContent, options = {}) => {
   apply(newContent);
 };
 
-// node_modules/defuss-query/dist/dom.js
+// ../../../node_modules/defuss-query/dist/dom.js
 var isNode = (value) => !!value && typeof value === "object" && typeof value.nodeType === "number";
 var isElement = (value) => isNode(value) && value.nodeType === 1;
 var isTarget = (value) => !!value && typeof value.addEventListener === "function";
@@ -1391,7 +1391,7 @@ function createDomAdapter(api) {
   return { create: render, insert, replace, remove, morph: morph2, text };
 }
 
-// node_modules/defuss-query/dist/query.js
+// ../../../node_modules/defuss-query/dist/query.js
 var _a;
 var QUERY_VERSION = "0.1.0";
 var brand = Symbol.for("defuss-query.factory");
@@ -2548,6 +2548,6 @@ installDdf({
   coerceIndex
 });
 
-//# debugId=A11D4F5347F1711464756E2164756E21
+//# debugId=3ED6496BDE89D9F164756E2164756E21
 /* defuss-shadcn v0.9.2 runtime provenance: bundles defuss-morph@0.1.1 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.1.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=core.js.map

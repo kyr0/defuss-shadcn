@@ -1,0 +1,172 @@
+---
+title: "Swap"
+description: "Swap component - two (or three) faces in one spot, switched by a hidden checkbox: fade, rotate or flip, CSS only."
+slug: "swap"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="swap" title="Swap" component="swap">
+  Two faces in one spot - a sun and a moon, play and pause, a hamburger and a close icon - and a click swaps them. A hidden checkbox inside a <code>&lt;label&gt;</code> is the whole state machine: <code>:checked</code>, <code>:indeterminate</code> and <code>:has()</code> pick the visible face, CSS animates the change. No JavaScript.
+</PageHeader>
+
+<SkillPanel component="swap">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;label class="swap"&gt;</code> around a hidden <code>&lt;input type="checkbox"&gt;</code> and the faces <code>.swap-on</code> / <code>.swap-off</code> (optionally <code>.swap-indeterminate</code>). The checkbox stays focusable - Space toggles it.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:checked" title="the on face"><code>:checked</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:indeterminate" title="the third face"><code>:indeterminate</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="the label reacts to its checkbox"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/rotate" title="rotate and flip"><code>rotate</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/backface-visibility" title="the back of a flipping face"><code>backface-visibility</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="swap without motion"><code>prefers-reduced-motion</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.swap</code>
+    <code>.swap-on</code>
+    <code>.swap-off</code>
+    <code>.swap-indeterminate</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code> (<code>rotate</code>, <code>flip</code>), <code>data-size</code> (<code>sm</code>, <code>lg</code>), <code>data-active</code> (forces the on face).</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" schema="none" hint="The faces crossfade in place - click one: the hidden checkbox is the state. The box sizes to the widest face, so nothing shifts."
+<div class="flex items-center gap-6">
+  <label class="swap">
+    <input type="checkbox" aria-label="Toggle text">
+    <span class="swap-on">ON</span>
+    <span class="swap-off">OFF</span>
+  </label>
+  <label class="swap">
+    <input type="checkbox" checked aria-label="Toggle text, checked">
+    <span class="swap-on">ON</span>
+    <span class="swap-off">OFF</span>
+  </label>
+</div>
+```
+
+```html example label="Icons" schema="none" hint="Any content is a face. Hide decorative glyphs with aria-hidden and name the checkbox."
+<div class="flex items-center gap-6">
+  <label class="swap">
+    <input type="checkbox" aria-label="Mute">
+    <span class="swap-on" aria-hidden="true"><i data-lucide="volume-x"></i></span>
+    <span class="swap-off" aria-hidden="true"><i data-lucide="volume-2"></i></span>
+  </label>
+  <label class="swap">
+    <input type="checkbox" aria-label="Play">
+    <span class="swap-on" aria-hidden="true"><i data-lucide="pause"></i></span>
+    <span class="swap-off" aria-hidden="true"><i data-lucide="play"></i></span>
+  </label>
+  <label class="swap">
+    <input type="checkbox" aria-label="Bookmark">
+    <span class="swap-on" aria-hidden="true"><i data-lucide="bookmark-check"></i></span>
+    <span class="swap-off" aria-hidden="true"><i data-lucide="bookmark"></i></span>
+  </label>
+</div>
+```
+
+```html example label="Rotate" schema="none" hint="data-variant='rotate' swings the faces in and out over ±45° - the theme toggle and the menu button."
+<div class="flex items-center gap-6">
+  <label class="swap" data-variant="rotate">
+    <input type="checkbox" aria-label="Dark mode">
+    <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
+    <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
+  </label>
+  <label class="swap" data-variant="rotate">
+    <input type="checkbox" aria-label="Menu">
+    <span class="swap-on" aria-hidden="true"><i data-lucide="x"></i></span>
+    <span class="swap-off" aria-hidden="true"><i data-lucide="menu"></i></span>
+  </label>
+</div>
+```
+
+```html example label="Flip" schema="none" hint="data-variant='flip' turns the control over on its Y axis, like a card."
+<div class="flex items-center gap-6">
+  <label class="swap" data-variant="flip" data-size="lg">
+    <input type="checkbox" aria-label="Mood">
+    <span class="swap-on" aria-hidden="true">😇</span>
+    <span class="swap-off" aria-hidden="true">😈</span>
+  </label>
+  <label class="swap" data-variant="flip" data-size="lg">
+    <input type="checkbox" checked aria-label="Weather">
+    <span class="swap-on" aria-hidden="true">🌤️</span>
+    <span class="swap-off" aria-hidden="true">🌧️</span>
+  </label>
+</div>
+```
+
+```html example label="Sizes" schema="none" hint="data-size sm · (default) · lg sets the minimum box, the type and the icon scale; the control still grows to its widest face."
+<div class="flex items-center gap-6">
+  <label class="swap" data-size="sm">
+    <input type="checkbox" aria-label="Small swap">
+    <span class="swap-on">ON</span>
+    <span class="swap-off">OFF</span>
+  </label>
+  <label class="swap">
+    <input type="checkbox" aria-label="Medium swap">
+    <span class="swap-on">ON</span>
+    <span class="swap-off">OFF</span>
+  </label>
+  <label class="swap" data-size="lg">
+    <input type="checkbox" aria-label="Large swap">
+    <span class="swap-on">ON</span>
+    <span class="swap-off">OFF</span>
+  </label>
+</div>
+```
+
+```html example label="Third face (indeterminate)" schema="none" hint="A .swap-indeterminate face shows while the checkbox is indeterminate - an IDL property only, so one line of script sets it. The first click leaves the mixed state for on."
+<label class="swap" data-size="lg">
+  <input type="checkbox" id="swap-tri" aria-label="Selection">
+  <span class="swap-on">All</span>
+  <span class="swap-indeterminate">Some</span>
+  <span class="swap-off">None</span>
+</label>
+<script>document.getElementById('swap-tri').indeterminate = true;</script>
+```
+
+```html example label="Active (forced)" schema="none" hint="data-active shows the on face without a checked checkbox - server-rendered state; remove it to hand control back to the checkbox."
+<div class="flex items-center gap-6">
+  <label class="swap" data-active>
+    <input type="checkbox" aria-label="Forced on">
+    <span class="swap-on">ON</span>
+    <span class="swap-off">OFF</span>
+  </label>
+  <label class="swap" data-variant="rotate" data-active>
+    <input type="checkbox" aria-label="Forced on, rotate">
+    <span class="swap-on" aria-hidden="true"><i data-lucide="heart"></i></span>
+    <span class="swap-off" aria-hidden="true"><i data-lucide="heart-off"></i></span>
+  </label>
+</div>
+```
+
+```html example label="Disabled" schema="none" hint="disabled on the checkbox dims the control and blocks the pointer - it keeps its current face."
+<div class="flex items-center gap-6">
+  <label class="swap">
+    <input type="checkbox" disabled aria-label="Disabled">
+    <span class="swap-on">ON</span>
+    <span class="swap-off">OFF</span>
+  </label>
+  <label class="swap">
+    <input type="checkbox" checked disabled aria-label="Disabled, checked">
+    <span class="swap-on">ON</span>
+    <span class="swap-off">OFF</span>
+  </label>
+</div>
+```
+
+<SourceFiles component="swap" section="css" />
+
+</DocPage>

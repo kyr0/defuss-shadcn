@@ -1,0 +1,180 @@
+/* -- Swap component -------------------------------------------- */
+
+@layer components {
+  .swap {
+    /* the faces stack in one grid cell, so the box sizes to the widest one
+       and no absolute positioning / JS measurement is needed */
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    min-width: 2.25rem;
+    min-height: 2.25rem;
+    border-radius: var(--radius-md);
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--foreground);
+    cursor: pointer;
+    user-select: none;
+    vertical-align: middle;
+    /* flip needs depth; harmless for the other variants */
+    perspective: 40rem;
+
+    /* the checkbox IS the state — visually hidden but focusable and
+       hit-testable across the whole control (no .sr-only dependency) */
+    & > input[type="checkbox"] {
+      grid-area: 1 / 1;
+      appearance: none;
+      -webkit-appearance: none;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      opacity: 0;
+      cursor: inherit;
+    }
+
+    & .swap-on,
+    & .swap-off,
+    & .swap-indeterminate {
+      grid-area: 1 / 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      backface-visibility: hidden;
+      transition:
+        opacity 300ms cubic-bezier(0.4, 0, 0.2, 1),
+        rotate 300ms cubic-bezier(0.4, 0, 0.2, 1),
+        scale 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    & svg:not([class*="size-"]) {
+      width: 1.25rem;
+      height: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    /* -- Faces: default (off) ------------------------------- */
+    & .swap-off { opacity: 1; }
+
+    /* -- Faces: indeterminate ------------------------------- */
+    &:has(> input:indeterminate) {
+      & .swap-off { opacity: 0; }
+      & .swap-indeterminate { opacity: 1; }
+    }
+
+    /* -- Faces: on (checked, or forced via data-active) ------ */
+    &:has(> input:checked),
+    &[data-active] {
+      & .swap-off,
+      & .swap-indeterminate { opacity: 0; }
+      & .swap-on { opacity: 1; }
+    }
+
+    /* -- Variant: rotate ------------------------------------ */
+    &[data-variant="rotate"] {
+      & .swap-on,
+      & .swap-indeterminate { rotate: -45deg; }
+
+      &:has(> input:indeterminate) {
+        & .swap-off { rotate: 45deg; }
+        & .swap-indeterminate { rotate: 0deg; }
+      }
+
+      &:has(> input:checked),
+      &[data-active] {
+        & .swap-off,
+        & .swap-indeterminate { rotate: 45deg; }
+        & .swap-on { rotate: 0deg; }
+      }
+    }
+
+    /* -- Variant: flip -------------------------------------- */
+    &[data-variant="flip"] {
+      & .swap-on,
+      & .swap-indeterminate { rotate: y 180deg; }
+
+      &:has(> input:indeterminate) {
+        & .swap-off { rotate: y -180deg; }
+        & .swap-indeterminate { rotate: y 0deg; }
+      }
+
+      &:has(> input:checked),
+      &[data-active] {
+        & .swap-off,
+        & .swap-indeterminate { rotate: y -180deg; }
+        & .swap-on { rotate: y 0deg; }
+      }
+    }
+
+    /* -- Sizes ---------------------------------------------- */
+    &[data-size="sm"] {
+      min-width: 2rem;
+      min-height: 2rem;
+      font-size: 0.75rem;
+
+      & svg:not([class*="size-"]) { width: 1rem; height: 1rem; }
+    }
+
+    &[data-size="lg"] {
+      min-width: 2.75rem;
+      min-height: 2.75rem;
+      font-size: 1.125rem;
+
+      & svg:not([class*="size-"]) { width: 1.5rem; height: 1.5rem; }
+    }
+
+    /* -- Interaction states --------------------------------- */
+    &:hover { background-color: var(--accent); color: var(--accent-foreground); }
+
+    &:has(> input:focus-visible) {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+
+    &:has(> input:disabled) {
+      pointer-events: none;
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  /* Accessibility: honour a reduced-motion request — the faces still swap,
+     they just do not animate (near-zero duration keeps transitionend firing). */
+  @media (prefers-reduced-motion: reduce) {
+    .swap .swap-on,
+    .swap .swap-off,
+    .swap .swap-indeterminate {
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .swap {
+      border: 2px solid transparent;
+
+      &:has(> input:checked),
+      &[data-active] { border-color: currentColor; }
+    }
+  }
+
+  @media (forced-colors: active) {
+    .swap {
+      border: 1px solid ButtonText;
+      color: ButtonText;
+      forced-color-adjust: none;
+
+      &:has(> input:checked),
+      &[data-active] {
+        background: Highlight;
+        color: HighlightText;
+      }
+
+      &:has(> input:disabled) { border-color: GrayText; color: GrayText; }
+    }
+  }
+}

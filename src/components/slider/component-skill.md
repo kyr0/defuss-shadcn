@@ -56,6 +56,23 @@ supportedStates: default, disabled
 <input class="slider" type="range" min="0" max="100" step="25" value="50">
 ```
 
+### With steps and marks
+```html
+<input class="slider" type="range" min="0" max="100" step="25" value="50">
+<div class="slider-marks" aria-hidden="true">
+  <span>0</span><span>25</span><span>50</span><span>75</span><span>100</span>
+</div>
+```
+
+`.slider-marks` is a CSS-only tick scale, the slider's next sibling (or a
+`.slider-range`'s): one child per step, zero-width flex items spread over the
+thumb-centre travel so each tick sits exactly under its step. The child's text
+is the label - leave it empty for an unlabeled tick. `aria-hidden="true"`: the
+input already announces its value (use `data-unit` for units). It follows the
+slider's `data-size` as its next sibling; elsewhere give it the same
+`data-size`. (`.slider-scale` only labels the two ends; reach for
+`.slider-marks` when every step needs a tick under the thumb.)
+
 ### Vertical
 ```html
 <input class="slider" type="range" data-orientation="vertical" min="0" max="100" value="50">
@@ -124,6 +141,7 @@ it into `--slider-thumb-image` (any image works there) and sets
 | `data-unit` / `data-currency` | an Intl unit / an ISO currency | Formats `output[for]` + `aria-valuetext` |
 | `data-thumb-emoji` | one emoji or a list | Emoji thumb (sets `data-thumb="emoji"`) |
 | `data-min-gap` | a number | On `.slider-range`: the smallest distance between the thumbs |
+| `data-size` | `xs` … `xl` | On `.slider-marks` placed apart from its slider: keeps the ticks aligned to that size |
 
 ---
 

@@ -52,6 +52,43 @@
     & .pagination-ellipsis { width: 2.75rem; height: 2.75rem; }
   }
 
+  /* -- Variants (data-variant on the .pagination nav) -----------
+     outline: every cell a bordered button; joined: one segmented bar -
+     shared borders collapse, only the outer corners round (logical radii,
+     so RTL mirrors for free). The active page gets a filled surface so it
+     still stands out among bordered cells. */
+  .pagination:is([data-variant="outline"], [data-variant="joined"]) {
+    & :is(.pagination-link, .pagination-prev, .pagination-next) {
+      border-color: var(--border);
+      background-color: var(--background);
+      box-shadow: var(--shadow-xs);
+      &:hover { background-color: var(--accent); color: var(--accent-foreground); }
+    }
+    & .pagination-active { background-color: var(--accent); color: var(--accent-foreground); }
+  }
+  .pagination[data-variant="joined"] {
+    & .pagination-list { gap: 0; }
+    & :is(.pagination-link, .pagination-prev, .pagination-next, .pagination-ellipsis) { border-radius: 0; }
+    /* the ellipsis joins the chain instead of floating between two groups */
+    & .pagination-ellipsis { border: 1px solid var(--border); background-color: var(--background); }
+    & .pagination-list > li:first-child > * { border-start-start-radius: var(--radius-md); border-end-start-radius: var(--radius-md); }
+    & .pagination-list > li:last-child > * { border-start-end-radius: var(--radius-md); border-end-end-radius: var(--radius-md); }
+    & .pagination-list > li + li > * { margin-inline-start: -1px; }
+    /* the hovered / focused / active cell's own border stays on top */
+    & :is(.pagination-link, .pagination-prev, .pagination-next):is(:hover, :focus-visible),
+    & .pagination-active { position: relative; z-index: 1; }
+  }
+
+  /* -- Layout: split - previous / next as two equal columns across the
+     full width (daisyUI's two-column pager) --------------------------- */
+  .pagination[data-layout="split"] {
+    width: 100%;
+    & .pagination-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; width: 100%; }
+    & .pagination-list > li { display: flex; }
+    & :is(.pagination-link, .pagination-prev, .pagination-next) { flex: 1; }
+  }
+  .pagination[data-layout="split"][data-variant="joined"] .pagination-list { gap: 0; }
+
   /* -- Accessibility ------------------------------------------ */
 
   @media (prefers-reduced-motion: reduce) {
@@ -72,6 +109,10 @@
     }
     .pagination-link, .pagination-prev, .pagination-next {
       &:hover { forced-color-adjust: none; background: Highlight; color: HighlightText; }
+      &[aria-disabled="true"], &.disabled { color: GrayText; }
+    }
+    .pagination[data-variant="joined"] :is(.pagination-link, .pagination-prev, .pagination-next, .pagination-ellipsis) {
+      border-color: ButtonText;
     }
   }
   /* -- Density ----------------------------------------------------

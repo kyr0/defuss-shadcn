@@ -9,7 +9,7 @@ description: Build UI prototypes and pages with defuss-shadcn - shadcn-style com
 
 # defuss-shadcn 0.9.2 - Agent Skill
 
-85 components (46 CSS-only, 39 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
+87 components (48 CSS-only, 39 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
 
 ## 0. Quick start - do exactly this, in this order
 
@@ -178,7 +178,7 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
 ### Presentations
 
 - [Deck Gallery](../../src/documentation/pages/presentations.mdx) - 33 presentation decks - the flagship System in Numbers plus 32 ECharts design studies, each a 12-slide English deck on its own topic with its own numbers, animated slide transitions and one morphing chart per deck.
-  - [The System in Numbers](../../src/documentation/pages/system-in-numbers.mdx) - defuss-shadcn presents itself - the flagship 10-slide deck with the system's real numbers (85 components, 54% CSS-only, 145.6 KiB min+gz): glyph cover, unit dots, gauge, tanks, chart staircase, taxonomy donut, stopwatch, branching route.
+  - [The System in Numbers](../../src/documentation/pages/system-in-numbers.mdx) - defuss-shadcn presents itself - the flagship 10-slide deck with the system's real numbers (87 components, 55% CSS-only, 147.7 KiB min+gz): glyph cover, unit dots, gauge, tanks, chart staircase, taxonomy donut, stopwatch, branching route.
   - [Editorial Highlight Bars](../../src/documentation/pages/editorial-highlight-bars.mdx) - Swiss International design language presenting a region’s commuting shift as a 10-slide deck - one highlighted bar, recolored, re-ranked by volume and folded into a mode-share donut on a single morphing chart.
   - [Lollipop Ranking](../../src/documentation/pages/lollipop-ranking.mdx) - Bauhaus Primary Poster design language presenting caffeine by brew method as a 10-slide deck - lollipops that re-rank per 100 ml, burst into a bubble scatter and settle into columns on one morphing chart.
   - [Dumbbell Before/After](../../src/documentation/pages/dumbbell-before-after.mdx) - Financial Broadsheet design language presenting a city’s rent rise 2019–2025 as a 12-slide deck - dumbbells that re-sort by growth, collapse into change bars and split into rent-burden columns on one morphing chart.
@@ -281,6 +281,12 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **Why:** Two-state button carrying aria-pressed - activation is native.
 - **When:** A single on/off action: mute, bold, favorite.
 - **States:** `default`, `pressed` · **Skill:** [references/components/toggle.md](references/components/toggle.md) · **Examples:** [src/documentation/pages/toggle.mdx](../../src/documentation/pages/toggle.mdx)
+
+#### Swap · ATM · CSS
+
+- **Why:** A hidden `<input type="checkbox">` inside a `<label>` is the whole state machine — :checked, :indeterminate and :has() pick the visible face, CSS transforms animate it.
+- **When:** Toggling between two (or three) glyphs or words in place — theme icons, play/pause, hamburger/close; use toggle or switch when the control needs a pressed button or form-field appearance.
+- **States:** `default` · **Skill:** [references/components/swap.md](references/components/swap.md) · **Examples:** [src/documentation/pages/swap.mdx](../../src/documentation/pages/swap.mdx)
 
 #### Toggle Group · MOL · JS
 
@@ -525,6 +531,12 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **Why:** Native `<progress value max>` - semantics and rendering come free.
 - **When:** Completion of a task with a known total; unknown total takes the spinner.
 - **States:** `default` · **Skill:** [references/components/progress.md](references/components/progress.md) · **Examples:** [src/documentation/pages/progress.mdx](../../src/documentation/pages/progress.mdx)
+
+#### Radial Progress · ATM · CSS
+
+- **Why:** A conic-gradient masked to a ring plus a typed @property — the arc animates itself, no JS and no SVG.
+- **When:** Percentage of a known total that must read at a glance with the number inside it; a linear bar takes progress, unknown totals take spinner.
+- **States:** `default` · **Skill:** [references/components/radial-progress.md](references/components/radial-progress.md) · **Examples:** [src/documentation/pages/radial-progress.mdx](../../src/documentation/pages/radial-progress.mdx)
 
 #### Alert · MOL · CSS
 

@@ -8013,6 +8013,43 @@
     & .pagination-ellipsis { width: 2.75rem; height: 2.75rem; }
   }
 
+  /* -- Variants (data-variant on the .pagination nav) -----------
+     outline: every cell a bordered button; joined: one segmented bar -
+     shared borders collapse, only the outer corners round (logical radii,
+     so RTL mirrors for free). The active page gets a filled surface so it
+     still stands out among bordered cells. */
+  .pagination:is([data-variant="outline"], [data-variant="joined"]) {
+    & :is(.pagination-link, .pagination-prev, .pagination-next) {
+      border-color: var(--border);
+      background-color: var(--background);
+      box-shadow: var(--shadow-xs);
+      &:hover { background-color: var(--accent); color: var(--accent-foreground); }
+    }
+    & .pagination-active { background-color: var(--accent); color: var(--accent-foreground); }
+  }
+  .pagination[data-variant="joined"] {
+    & .pagination-list { gap: 0; }
+    & :is(.pagination-link, .pagination-prev, .pagination-next, .pagination-ellipsis) { border-radius: 0; }
+    /* the ellipsis joins the chain instead of floating between two groups */
+    & .pagination-ellipsis { border: 1px solid var(--border); background-color: var(--background); }
+    & .pagination-list > li:first-child > * { border-start-start-radius: var(--radius-md); border-end-start-radius: var(--radius-md); }
+    & .pagination-list > li:last-child > * { border-start-end-radius: var(--radius-md); border-end-end-radius: var(--radius-md); }
+    & .pagination-list > li + li > * { margin-inline-start: -1px; }
+    /* the hovered / focused / active cell's own border stays on top */
+    & :is(.pagination-link, .pagination-prev, .pagination-next):is(:hover, :focus-visible),
+    & .pagination-active { position: relative; z-index: 1; }
+  }
+
+  /* -- Layout: split - previous / next as two equal columns across the
+     full width (daisyUI's two-column pager) --------------------------- */
+  .pagination[data-layout="split"] {
+    width: 100%;
+    & .pagination-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; width: 100%; }
+    & .pagination-list > li { display: flex; }
+    & :is(.pagination-link, .pagination-prev, .pagination-next) { flex: 1; }
+  }
+  .pagination[data-layout="split"][data-variant="joined"] .pagination-list { gap: 0; }
+
   /* -- Accessibility ------------------------------------------ */
 
   @media (prefers-reduced-motion: reduce) {
@@ -8033,6 +8070,10 @@
     }
     .pagination-link, .pagination-prev, .pagination-next {
       &:hover { forced-color-adjust: none; background: Highlight; color: HighlightText; }
+      &[aria-disabled="true"], &.disabled { color: GrayText; }
+    }
+    .pagination[data-variant="joined"] :is(.pagination-link, .pagination-prev, .pagination-next, .pagination-ellipsis) {
+      border-color: ButtonText;
     }
   }
   /* -- Density ----------------------------------------------------
@@ -8834,6 +8875,172 @@
       transition-duration: 0.01ms !important;
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
+    }
+  }
+}
+
+/* ── components/radial-progress/radial-progress.css ── */
+/* -- Radial Progress component --------------------------------- */
+
+/* Typed custom property: a registered <number> interpolates, so a new
+   --value tweens the ring with zero JS. The PUBLIC knob stays the plain
+   --value (daisyUI's API); only this private copy is registered - a global
+   @property --value would re-type every other --value on the page (the
+   countdown digits use one) and any consumer's own. @property is an
+   at-rule: no cascade weight, outside @layer components. */
+@property --_rp-value {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+@layer components {
+  /* Public custom properties (set them inline on the element):
+       --value      0–100, required — the completion percentage
+       --size       outer diameter        (default 5rem)
+       --thickness  ring stroke width     (default 10% of --size)
+     Colors come from the ring's own `color`, so a variant recolors the arc
+     and the label in one declaration. */
+  .radial-progress {
+    /* the public knob (an inline style="--value:70" overrides it) and its
+       registered, animatable copy that everything below paints from */
+    --value: 0;
+    --_rp-value: var(--value);
+    --size: 5rem;
+    --thickness: calc(var(--size) / 10);
+    /* leading-edge cap travels the stroke centerline: r = (size - thickness)/2 */
+    --_rp-angle: calc(var(--_rp-value) * 3.6deg - 90deg);
+
+    position: relative;
+    display: inline-grid;
+    place-content: center;
+    box-sizing: content-box;
+    inline-size: var(--size);
+    block-size: var(--size);
+    border-radius: 9999px;
+    vertical-align: middle;
+    font-size: 0.875rem;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    color: var(--primary);
+    /* the arc is a function of --value, so the registered property tweens it */
+    transition: --_rp-value 600ms ease;
+
+    /* Track + indicator in one painted layer: a conic-gradient (arc up to
+       --value, track after it) masked down to a ring, plus a round dot at
+       12 o'clock so the arc's start is capped. */
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background:
+        radial-gradient(farthest-side, currentColor 98%, #0000)
+          top / var(--thickness) var(--thickness) no-repeat,
+        conic-gradient(currentColor calc(var(--_rp-value) * 1%), var(--secondary) 0);
+      -webkit-mask: radial-gradient(
+        farthest-side,
+        #0000 calc(99% - var(--thickness)),
+        #000 calc(100% - var(--thickness))
+      );
+      mask: radial-gradient(
+        farthest-side,
+        #0000 calc(99% - var(--thickness)),
+        #000 calc(100% - var(--thickness))
+      );
+    }
+
+    /* Round cap at the leading edge. Positioned with cos()/sin() rather than
+       a compound `transform: rotate() translate()` — individual transform
+       properties compose in the wrong order for a polar offset, and the trig
+       functions keep the position a pure function of --value (so it tweens). */
+    &::after {
+      content: "";
+      position: absolute;
+      inline-size: var(--thickness);
+      block-size: var(--thickness);
+      border-radius: 9999px;
+      background-color: currentColor;
+      inset-inline-start: calc(
+        50% + cos(var(--_rp-angle)) * (var(--size) - var(--thickness)) / 2 -
+          var(--thickness) / 2
+      );
+      inset-block-start: calc(
+        50% + sin(var(--_rp-angle)) * (var(--size) - var(--thickness)) / 2 -
+          var(--thickness) / 2
+      );
+    }
+
+    /* -- Variants (recolor arc + label together) ------------------ */
+    &[data-variant="default"] {
+      color: var(--primary);
+    }
+
+    &[data-variant="secondary"] {
+      color: var(--muted-foreground);
+    }
+
+    &[data-variant="destructive"] {
+      color: var(--destructive);
+    }
+
+    /* no semantic "success" token exists in the tweakcn shape — literal, same
+       green the toast component uses (token boundary rule) */
+    &[data-variant="success"] {
+      color: oklch(0.65 0.2 145);
+    }
+
+    /* -- Sizes ---------------------------------------------------- */
+    &[data-size="sm"] {
+      --size: 3.5rem;
+      font-size: 0.75rem;
+    }
+
+    &[data-size="lg"] {
+      --size: 8rem;
+      font-size: 1.25rem;
+    }
+  }
+
+  /* -- Accessibility -------------------------------------------- */
+
+  /* Suppress motion for users who request it (REQUIRED — AGENTS.md
+     "Accessibility CSS"). Near-zero instead of `none` keeps transitionend
+     firing for anything awaiting the value tween. */
+  @media (prefers-reduced-motion: reduce) {
+    .radial-progress {
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* Thicker stroke and a darker track when more contrast is requested. */
+  @media (prefers-contrast: more) {
+    .radial-progress {
+      --thickness: calc(var(--size) / 6);
+
+      &::before {
+        background:
+          radial-gradient(farthest-side, currentColor 98%, #0000)
+            top / var(--thickness) var(--thickness) no-repeat,
+          conic-gradient(currentColor calc(var(--_rp-value) * 1%), var(--border) 0);
+      }
+    }
+  }
+
+  /* Windows High Contrast Mode: gradients are dropped by forced colors, so
+     opt out and repaint the ring with system colors instead. */
+  @media (forced-colors: active) {
+    .radial-progress {
+      forced-color-adjust: none;
+      color: Highlight;
+
+      &::before {
+        background:
+          radial-gradient(farthest-side, Highlight 98%, #0000)
+            top / var(--thickness) var(--thickness) no-repeat,
+          conic-gradient(Highlight calc(var(--_rp-value) * 1%), GrayText 0);
+      }
     }
   }
 }
@@ -10552,6 +10759,9 @@
     -webkit-appearance: none;
     appearance: none;
     width: 100%;
+    /* the UA gives a range a 2px margin: with width 100% the track would
+       overflow its box and drift off a .slider-marks scale */
+    margin-inline: 0;
     height: var(--_t);
     border-radius: 9999px;
     background: var(--secondary);
@@ -10677,7 +10887,7 @@
 
   /* -- Sizes: track thickness + thumb diameter (md == the default) ----
      On a .slider or on a .slider-range (both inputs inherit). */
-  :is(.slider, .slider-range) {
+  :is(.slider, .slider-range, .slider-marks) {
     &[data-size="xs"] { --_track: 0.25rem; --_thumb: 0.75rem; }
     &[data-size="sm"] { --_track: 0.375rem; --_thumb: 1rem; }
     &[data-size="md"] { --_track: 0.5rem; --_thumb: 1.25rem; }
@@ -10691,6 +10901,48 @@
     &[data-tone="info"] { --_c: oklch(0.6 0.16 250); }
     &[data-tone="destructive"] { --_c: var(--destructive); }
   }
+
+  /* -- Marks: a CSS-only tick scale under a stepped slider ------------
+     <div class="slider-marks" aria-hidden="true"> right after the slider
+     (or range); each child is a zero-width flex item, so space-between
+     lands the tick centres on the thumb-centre travel (inset by half a
+     thumb at each end). The tick is generated, the child's text is the
+     optional label. It follows the slider's data-size when it is the
+     slider's next sibling (or set data-size on the marks). */
+  .slider-marks {
+    display: flex;
+    justify-content: space-between;
+    padding-inline: calc(var(--_thumb, 1.25rem) / 2);
+    margin-top: 0.375rem;
+    font-size: 0.6875rem;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted-foreground);
+
+    & > * {
+      /* zero-width: flex-basis 0 alone leaves min-width:auto, which would
+         widen the item to its label and push the tick off its step */
+      flex: 0 0 0;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      white-space: nowrap;
+    }
+    & > *::before {
+      content: "";
+      width: 1px;
+      height: 0.375rem;
+      background: var(--border);
+    }
+    /* a tick without a label (an empty child) stays a short tick */
+    & > :empty::before { height: 0.25rem; }
+  }
+  :is(.slider, .slider-range)[data-size="xs"] + .slider-marks:not([data-size]) { --_thumb: 0.75rem; }
+  :is(.slider, .slider-range)[data-size="sm"] + .slider-marks:not([data-size]) { --_thumb: 1rem; }
+  :is(.slider, .slider-range)[data-size="lg"] + .slider-marks:not([data-size]) { --_thumb: 1.5rem; }
+  :is(.slider, .slider-range)[data-size="xl"] + .slider-marks:not([data-size]) { --_thumb: 1.75rem; }
 
   /* -- Range: two thumbs on one track ---------------------------------
      Two .slider inputs stacked in a .slider-range; only their thumbs take
@@ -10796,6 +11048,7 @@
 
   /* High contrast */
   @media (prefers-contrast: more) {
+    .slider-marks { color: var(--foreground); & > *::before { background: var(--foreground); } }
     .slider {
       &::-webkit-slider-thumb {
         border-width: 3px;
@@ -10808,6 +11061,7 @@
 
   /* Forced colors (Windows High Contrast Mode) */
   @media (forced-colors: active) {
+    .slider-marks { color: CanvasText; & > *::before { background: CanvasText; } }
     .slider {
       &::-webkit-slider-runnable-track {
         background: ButtonFace;
@@ -11471,6 +11725,188 @@
     & .step-content { gap: 0.25rem; }
   }
 
+}
+
+/* ── components/swap/swap.css ── */
+/* -- Swap component -------------------------------------------- */
+
+@layer components {
+  .swap {
+    /* the faces stack in one grid cell, so the box sizes to the widest one
+       and no absolute positioning / JS measurement is needed */
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    min-width: 2.25rem;
+    min-height: 2.25rem;
+    border-radius: var(--radius-md);
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--foreground);
+    cursor: pointer;
+    user-select: none;
+    vertical-align: middle;
+    /* flip needs depth; harmless for the other variants */
+    perspective: 40rem;
+
+    /* the checkbox IS the state — visually hidden but focusable and
+       hit-testable across the whole control (no .sr-only dependency) */
+    & > input[type="checkbox"] {
+      grid-area: 1 / 1;
+      appearance: none;
+      -webkit-appearance: none;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      opacity: 0;
+      cursor: inherit;
+    }
+
+    & .swap-on,
+    & .swap-off,
+    & .swap-indeterminate {
+      grid-area: 1 / 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      backface-visibility: hidden;
+      transition:
+        opacity 300ms cubic-bezier(0.4, 0, 0.2, 1),
+        rotate 300ms cubic-bezier(0.4, 0, 0.2, 1),
+        scale 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    & svg:not([class*="size-"]) {
+      width: 1.25rem;
+      height: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    /* -- Faces: default (off) ------------------------------- */
+    & .swap-off { opacity: 1; }
+
+    /* -- Faces: indeterminate ------------------------------- */
+    &:has(> input:indeterminate) {
+      & .swap-off { opacity: 0; }
+      & .swap-indeterminate { opacity: 1; }
+    }
+
+    /* -- Faces: on (checked, or forced via data-active) ------ */
+    &:has(> input:checked),
+    &[data-active] {
+      & .swap-off,
+      & .swap-indeterminate { opacity: 0; }
+      & .swap-on { opacity: 1; }
+    }
+
+    /* -- Variant: rotate ------------------------------------ */
+    &[data-variant="rotate"] {
+      & .swap-on,
+      & .swap-indeterminate { rotate: -45deg; }
+
+      &:has(> input:indeterminate) {
+        & .swap-off { rotate: 45deg; }
+        & .swap-indeterminate { rotate: 0deg; }
+      }
+
+      &:has(> input:checked),
+      &[data-active] {
+        & .swap-off,
+        & .swap-indeterminate { rotate: 45deg; }
+        & .swap-on { rotate: 0deg; }
+      }
+    }
+
+    /* -- Variant: flip -------------------------------------- */
+    &[data-variant="flip"] {
+      & .swap-on,
+      & .swap-indeterminate { rotate: y 180deg; }
+
+      &:has(> input:indeterminate) {
+        & .swap-off { rotate: y -180deg; }
+        & .swap-indeterminate { rotate: y 0deg; }
+      }
+
+      &:has(> input:checked),
+      &[data-active] {
+        & .swap-off,
+        & .swap-indeterminate { rotate: y -180deg; }
+        & .swap-on { rotate: y 0deg; }
+      }
+    }
+
+    /* -- Sizes ---------------------------------------------- */
+    &[data-size="sm"] {
+      min-width: 2rem;
+      min-height: 2rem;
+      font-size: 0.75rem;
+
+      & svg:not([class*="size-"]) { width: 1rem; height: 1rem; }
+    }
+
+    &[data-size="lg"] {
+      min-width: 2.75rem;
+      min-height: 2.75rem;
+      font-size: 1.125rem;
+
+      & svg:not([class*="size-"]) { width: 1.5rem; height: 1.5rem; }
+    }
+
+    /* -- Interaction states --------------------------------- */
+    &:hover { background-color: var(--accent); color: var(--accent-foreground); }
+
+    &:has(> input:focus-visible) {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+
+    &:has(> input:disabled) {
+      pointer-events: none;
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  /* Accessibility: honour a reduced-motion request — the faces still swap,
+     they just do not animate (near-zero duration keeps transitionend firing). */
+  @media (prefers-reduced-motion: reduce) {
+    .swap .swap-on,
+    .swap .swap-off,
+    .swap .swap-indeterminate {
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .swap {
+      border: 2px solid transparent;
+
+      &:has(> input:checked),
+      &[data-active] { border-color: currentColor; }
+    }
+  }
+
+  @media (forced-colors: active) {
+    .swap {
+      border: 1px solid ButtonText;
+      color: ButtonText;
+      forced-color-adjust: none;
+
+      &:has(> input:checked),
+      &[data-active] {
+        background: Highlight;
+        color: HighlightText;
+      }
+
+      &:has(> input:disabled) { border-color: GrayText; color: GrayText; }
+    }
+  }
 }
 
 /* ── components/switch/switch.css ── */
