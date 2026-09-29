@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>message e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/avatar/avatar.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/bubble/bubble.css" />
+    <link rel="stylesheet" href="/dist/components/message/message.css" />
+  </head>
+  <body style="margin:0;padding:1.5rem;font-family:system-ui;">
+    <!-- mirrors the doc page: received / sent rows, header + footer (status),
+         groups, actions (hover reveal), attachment, sizes, no avatar, RTL -->
+    <div class="message-list" id="list" role="log" aria-label="t" style="width:480px;">
+      <div class="message" id="m-recv">
+        <div class="message-avatar" id="m-recv-av"><span class="avatar" data-size="sm"><span class="avatar-fallback">SD</span></span></div>
+        <div class="message-content" id="m-recv-c">
+          <div class="message-header" id="m-recv-h"><span class="message-name" id="m-name">Sofia</span><time class="message-time" datetime="2026-09-30T10:42">10:42</time></div>
+          <div class="bubble" data-variant="secondary"><div class="bubble-content" id="m-recv-b">Did the release go out?</div></div>
+        </div>
+      </div>
+      <div class="message" id="m-sent" data-align="end">
+        <div class="message-avatar" id="m-sent-av"><span class="avatar" data-size="sm"><span class="avatar-fallback">ME</span></span></div>
+        <div class="message-content" id="m-sent-c">
+          <div class="bubble"><div class="bubble-content" id="m-sent-b">Yes - a long answer that certainly wraps onto more than one line because it keeps going on and on.</div></div>
+          <div class="message-footer" id="m-sent-f"><time datetime="2026-09-30T10:43">10:43</time><span class="message-status" id="st-read" data-status="read">✓✓<span class="sr-only">Read</span></span></div>
+        </div>
+      </div>
+      <div class="message" data-align="end"><div class="message-avatar"></div><div class="message-content"><div class="bubble"><div class="bubble-content">x</div></div><div class="message-footer"><span class="message-status" id="st-sent" data-status="sent">✓</span><span class="message-status" id="st-delivered" data-status="delivered">✓✓</span><span class="message-status" id="st-failed" data-status="failed">!</span></div></div></div>
+
+      <div class="message-group" id="grp">
+        <div class="message"><div class="message-avatar" id="g1-av"><span class="avatar" data-size="sm"><span class="avatar-fallback">A</span></span></div><div class="message-content"><div class="message-header" id="g1-h"><span class="message-name">A</span></div><div class="bubble" data-variant="secondary"><div class="bubble-content" id="g1-b">One</div></div></div></div>
+        <div class="message"><div class="message-avatar"></div><div class="message-content"><div class="message-header" id="g2-h"><span class="message-name">A</span></div><div class="bubble" data-variant="secondary"><div class="bubble-content" id="g2-b">Two</div></div></div></div>
+        <div class="message"><div class="message-avatar" id="g3-av"><span class="avatar" data-size="sm"><span class="avatar-fallback">A</span></span></div><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content" id="g3-b">Three</div></div></div></div>
+      </div>
+      <div class="message-group" id="grp-end">
+        <div class="message" data-align="end"><div class="message-avatar"></div><div class="message-content"><div class="bubble"><div class="bubble-content" id="ge1-b">One</div></div></div></div>
+        <div class="message" data-align="end"><div class="message-avatar"></div><div class="message-content"><div class="bubble"><div class="bubble-content" id="ge2-b">Two</div></div></div></div>
+      </div>
+
+      <div class="message" id="m-bot">
+        <div class="message-avatar"><span class="avatar" data-size="sm"><span class="avatar-fallback">AI</span></span></div>
+        <div class="message-content" id="m-bot-c">
+          <div class="bubble" data-variant="ghost"><div class="bubble-content">An assistant reply that runs the full width of the thread.</div></div>
+          <div class="message-footer" id="m-bot-f" data-reveal="hover"><button class="btn" id="m-copy" data-variant="ghost" data-size="icon-xs" type="button" aria-label="Copy">⧉</button></div>
+        </div>
+      </div>
+
+      <div class="message" data-align="end">
+        <div class="message-avatar"></div>
+        <div class="message-content">
+          <a class="message-attachment" id="att" href="#f" download>
+            <span class="message-attachment-icon" id="att-i" aria-hidden="true">📄</span>
+            <span class="message-attachment-body"><span class="message-attachment-name" id="att-n">a-very-long-file-name-that-must-truncate-nicely.pdf</span><span class="message-attachment-meta">PDF · 2.4 MB</span></span>
+          </a>
+        </div>
+      </div>
+
+      <div class="message" id="s-sm" data-size="sm"><div class="message-avatar" id="s-sm-av"></div><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">sm</div></div></div></div>
+      <div class="message" id="s-lg" data-size="lg"><div class="message-avatar" id="s-lg-av"></div><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">lg</div></div></div></div>
+      <div class="message" id="m-noav" data-avatar="none"><div class="message-avatar" id="m-noav-av"></div><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content" id="m-noav-b">no avatar</div></div></div></div>
+    </div>
+
+    <div dir="rtl" style="width:480px;margin-top:24px;">
+      <div class="message" id="rtl"><div class="message-avatar" id="rtl-av"><span class="avatar" data-size="sm"><span class="avatar-fallback">ص</span></span></div><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content" id="rtl-b">مرحبا</div></div></div></div>
+    </div>
+  </body>
+</html>

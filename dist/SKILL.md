@@ -503,6 +503,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/mermaid.png, screenshots/{light,dark}/mermaid-rendered.png, screenshots/{light,dark}/mermaid-error.png
 **Skill:** [components/mermaid/component-skill.md](components/mermaid/component-skill.md)
 
+## Message
+
+**Type:** MOL
+**Why:** A message row is layout - an avatar column beside a header / surface / footer column, start or end - so it is CSS; the avatar lines up with the surface's bottom edge (not the footer's), groups keep one avatar and one header.
+**When:** Each row of a chat or an assistant thread - sender avatar, name and time, the bubble (or attachment), delivery status and actions. The bare surface is bubble; inline status lines between rows are marker.
+**Files:** dist/components/message/message.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/message.png
+**Skill:** [components/message/component-skill.md](components/message/component-skill.md)
+
 ## Motion
 
 **Type:** ATM

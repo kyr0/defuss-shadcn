@@ -205,6 +205,7 @@ export const NAV: NavSection[] = [
   { heading: 'Chat', icon: 'messages-square', items: [
     { label: 'Bubble', href: 'bubble.html', isNew: true },
     { label: 'Marker', href: 'marker.html', isNew: true },
+    { label: 'Message', href: 'message.html', isNew: true },
   ]},
   { heading: 'Presentations', icon: 'presentation', items: [
     { label: 'Presentation', href: 'presentation.html' },

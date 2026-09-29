@@ -1,0 +1,326 @@
+---
+title: "Message"
+description: "Message component - a conversation row where avatar, name, time, bubble, status and actions come together: sent / received, groups with one avatar, attachments, typing, reactions and assistant replies. CSS only."
+slug: "message"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="message" title="Message" component="message">
+  One row of a conversation, where the pieces come together: an <DocLink href="avatar.html">avatar</DocLink>, the sender's name and time, the <DocLink href="bubble.html">bubble</DocLink> (or a file), delivery status and actions. Rows sit on the received or sent side, group so one sender shows one avatar and one name, and compose with <DocLink href="marker.html">markers</DocLink> into a whole thread. The avatar stays level with the bubble's bottom edge, above any footer. CSS only, after shadcn/ui's Message.
+</PageHeader>
+
+<SkillPanel component="message">
+  <SkillField label="Native basis">
+<SkillText>A <code>.message</code> row of a <code>.message-avatar</code> slot and a <code>.message-content</code> column (header, surface, footer); <code>&lt;time datetime&gt;</code> for times; a <code>.message-list</code> with <code>role="log"</code> is the thread.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time" title="machine-readable timestamps"><code>&lt;time&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/log_role" title="new messages announced"><code>role="log"</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="the avatar clears the footer"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/hover" title="hover actions stay on touch"><code>@media (hover)</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.message</code>
+    <code>.message-avatar</code>
+    <code>.message-content</code>
+    <code>.message-header</code>
+    <code>.message-name</code>
+    <code>.message-time</code>
+    <code>.message-footer</code>
+    <code>.message-status</code>
+    <code>.message-attachment</code>
+    <code>.message-group</code>
+    <code>.message-list</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-align="end"</code>, <code>data-size</code> (<code>sm</code>, <code>lg</code>), <code>data-avatar="none"</code> on the row; <code>data-reveal="hover"</code> on the footer; <code>data-status</code> (<code>sent</code>, <code>delivered</code>, <code>read</code>, <code>failed</code>) on a <code>.message-status</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Conversation" schema="none" hint="Rows of avatar + content: received at the start (a secondary bubble), your own at the end (data-align='end', the primary bubble). The avatar sits level with the bubble's bottom edge; a .message-list with role='log' is the thread."
+<div class="message-list" role="log" aria-label="Conversation with Sofia" style="max-width:32rem;">
+  <div class="message">
+    <div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"><span class="avatar-fallback">SD</span></span></div>
+    <div class="message-content">
+      <div class="message-header"><span class="message-name">Sofia Davis</span><time class="message-time" datetime="2026-09-30T10:42">10:42</time></div>
+      <div class="bubble" data-variant="secondary"><div class="bubble-content">Hey! Did the new release go out?</div></div>
+    </div>
+  </div>
+  <div class="message" data-align="end">
+    <div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/kyr0.png" alt="You"><span class="avatar-fallback">AH</span></span></div>
+    <div class="message-content">
+      <div class="bubble"><div class="bubble-content">Yes - 5 minutes ago. The changelog is live too.</div></div>
+    </div>
+  </div>
+  <div class="message">
+    <div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"><span class="avatar-fallback">SD</span></span></div>
+    <div class="message-content">
+      <div class="message-header"><span class="message-name">Sofia Davis</span><time class="message-time" datetime="2026-09-30T10:44">10:44</time></div>
+      <div class="bubble" data-variant="secondary"><div class="bubble-content">Amazing, thank you! 🙌</div></div>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="Grouped messages" schema="none" hint="A .message-group stacks one sender's consecutive rows: only the last row shows the avatar and only the first its header - every row keeps an (empty) .message-avatar, so the bubbles line up - and the joined bubble corners tighten."
+<div class="message-list" role="log" aria-label="Grouped messages" style="max-width:32rem;">
+  <div class="message-group">
+    <div class="message">
+      <div class="message-avatar"></div>
+      <div class="message-content">
+        <div class="message-header"><span class="message-name">Sofia Davis</span><time class="message-time" datetime="2026-09-30T09:12">09:12</time></div>
+        <div class="bubble" data-variant="secondary"><div class="bubble-content">Hi, I can't log in since this morning.</div></div>
+      </div>
+    </div>
+    <div class="message">
+      <div class="message-avatar"></div>
+      <div class="message-content">
+        <div class="bubble" data-variant="secondary"><div class="bubble-content">It says my password is wrong.</div></div>
+      </div>
+    </div>
+    <div class="message">
+      <div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"><span class="avatar-fallback">SD</span></span></div>
+      <div class="message-content">
+        <div class="bubble" data-variant="secondary" data-tail><div class="bubble-content">But I didn't change it 🤔</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="message-group">
+    <div class="message" data-align="end">
+      <div class="message-avatar"></div>
+      <div class="message-content">
+        <div class="bubble"><div class="bubble-content">Sorry about that!</div></div>
+      </div>
+    </div>
+    <div class="message" data-align="end">
+      <div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/kyr0.png" alt="You"><span class="avatar-fallback">AH</span></span></div>
+      <div class="message-content">
+        <div class="bubble" data-tail><div class="bubble-content">Let me reset it for you - check your inbox in a minute.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="Header and footer" schema="none" hint="The header names the sender and the time; the footer follows the row's side with the time and a .message-status - sent, delivered, read (blue) or failed. The avatar lifts above the footer, staying level with the bubble."
+<div class="message-list" role="log" aria-label="Delivery status" style="max-width:32rem;">
+  <div class="message">
+    <div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"><span class="avatar-fallback">SD</span></span></div>
+    <div class="message-content">
+      <div class="message-header"><span class="message-name">Sofia Davis</span><time class="message-time" datetime="2026-09-30T14:02">14:02</time></div>
+      <div class="bubble" data-variant="secondary"><div class="bubble-content">Are we still on for the review at 3?</div></div>
+      <div class="message-footer"><time datetime="2026-09-30T14:02">14:02</time></div>
+    </div>
+  </div>
+  <div class="message" data-align="end">
+    <div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/kyr0.png" alt="You"><span class="avatar-fallback">AH</span></span></div>
+    <div class="message-content">
+      <div class="bubble"><div class="bubble-content">Yes - see you there.</div></div>
+      <div class="message-footer"><time datetime="2026-09-30T14:03">14:03</time><span class="message-status" data-status="sent"><i data-lucide="check"></i><span class="sr-only">Sent</span></span></div>
+    </div>
+  </div>
+  <div class="message" data-align="end">
+    <div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/kyr0.png" alt="You"><span class="avatar-fallback">AH</span></span></div>
+    <div class="message-content">
+      <div class="bubble"><div class="bubble-content">I booked room 4.</div></div>
+      <div class="message-footer"><time datetime="2026-09-30T14:03">14:03</time><span class="message-status" data-status="delivered"><i data-lucide="check-check"></i><span class="sr-only">Delivered</span></span></div>
+    </div>
+  </div>
+  <div class="message" data-align="end">
+    <div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/kyr0.png" alt="You"><span class="avatar-fallback">AH</span></span></div>
+    <div class="message-content">
+      <div class="bubble"><div class="bubble-content">And ordered coffee ☕</div></div>
+      <div class="message-footer"><time datetime="2026-09-30T14:04">14:04</time><span class="message-status" data-status="read"><i data-lucide="check-check"></i><span class="sr-only">Read</span></span></div>
+    </div>
+  </div>
+  <div class="message" data-align="end">
+    <div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/kyr0.png" alt="You"><span class="avatar-fallback">AH</span></span></div>
+    <div class="message-content">
+      <div class="bubble" data-variant="destructive"><button class="bubble-content" type="button">Slides attached</button></div>
+      <div class="message-footer"><span class="message-status" data-status="failed"><i data-lucide="circle-alert"></i><span class="sr-only">Failed:</span></span>Not delivered · tap to retry</div>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="Actions" schema="none" hint="An assistant's reply: a ghost bubble (full width) and a footer of icon buttons, each with an aria-label. data-reveal='hover' shows them on hover or focus of the row - always on touch screens."
+<div class="message-list" role="log" aria-label="Assistant" style="max-width:32rem;">
+  <div class="message" data-align="end">
+    <div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/kyr0.png" alt="You"><span class="avatar-fallback">AH</span></span></div>
+    <div class="message-content">
+      <div class="bubble"><div class="bubble-content">Summarize the release notes in one sentence.</div></div>
+    </div>
+  </div>
+  <div class="message">
+    <div class="message-avatar"><span class="avatar" data-size="sm"><span class="avatar-fallback"><i data-lucide="bot"></i></span></span></div>
+    <div class="message-content">
+      <div class="message-header"><span class="message-name">Assistant</span></div>
+      <div class="bubble" data-variant="ghost"><div class="bubble-content">v0.9.2 adds the Dock, FAB, Diff, Countdown and Text Rotate components, richer tables, trees, toasts and accordions, and a new install guide for AI coding agents.</div></div>
+      <div class="message-footer" data-reveal="hover"><button class="btn" data-variant="ghost" data-size="icon-xs" type="button" aria-label="Copy"><i data-lucide="copy"></i></button><button class="btn" data-variant="ghost" data-size="icon-xs" type="button" aria-label="Retry"><i data-lucide="rotate-ccw"></i></button><button class="btn" data-variant="ghost" data-size="icon-xs" type="button" aria-label="Good response"><i data-lucide="thumbs-up"></i></button><button class="btn" data-variant="ghost" data-size="icon-xs" type="button" aria-label="Bad response"><i data-lucide="thumbs-down"></i></button></div>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="Attachments" schema="none" hint="A media bubble (data-media) for an image, a .message-attachment card for a file - a real <a download> with an icon, the name and its meta."
+<div class="message-list" role="log" aria-label="Attachments" style="max-width:32rem;">
+  <div class="message">
+    <div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"><span class="avatar-fallback">SD</span></span></div>
+    <div class="message-content">
+      <div class="message-header"><span class="message-name">Sofia Davis</span><time class="message-time" datetime="2026-09-30T16:20">16:20</time></div>
+      <div class="bubble" data-variant="secondary"><div class="bubble-content" data-media style="width:15rem;"><img src="https://picsum.photos/id/1036/600/400" alt="Snowy mountain camp with tents" width="600" height="400" loading="lazy"><p class="bubble-caption">Base camp this morning 🏔️</p></div></div>
+    </div>
+  </div>
+  <div class="message" data-align="end">
+    <div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/kyr0.png" alt="You"><span class="avatar-fallback">AH</span></span></div>
+    <div class="message-content">
+      <a class="message-attachment" href="#q3-report" download>
+        <span class="message-attachment-icon" aria-hidden="true"><i data-lucide="file-text"></i></span>
+        <span class="message-attachment-body"><span class="message-attachment-name">Q3-expedition-budget.pdf</span><span class="message-attachment-meta">PDF · 2.4 MB</span></span>
+        <i data-lucide="download"></i>
+      </a>
+      <div class="message-footer"><time datetime="2026-09-30T16:22">16:22</time><span class="message-status" data-status="delivered"><i data-lucide="check-check"></i><span class="sr-only">Delivered</span></span></div>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="Typing" schema="none" hint="While the other side writes: a typing bubble in their row (role='status' with a label), or a marker with a spinner."
+<div class="message-list" role="log" aria-label="Typing" style="max-width:32rem;">
+  <div class="message" data-align="end">
+    <div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/kyr0.png" alt="You"><span class="avatar-fallback">AH</span></span></div>
+    <div class="message-content">
+      <div class="bubble"><div class="bubble-content">Any update on the invoice?</div></div>
+    </div>
+  </div>
+  <div class="message">
+    <div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"><span class="avatar-fallback">SD</span></span></div>
+    <div class="message-content">
+      <div class="bubble" data-variant="secondary" data-tail><div class="bubble-content" role="status" aria-label="Sofia is typing"><span class="bubble-typing" aria-hidden="true"><span></span><span></span><span></span></span></div></div>
+    </div>
+  </div>
+  <div class="marker" role="status"><span class="marker-icon" aria-hidden="true"><svg class="spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></span><span class="marker-content">Olivia is typing…</span></div>
+</div>
+```
+
+```html example label="Reactions" schema="none" hint="Bubble reactions hang on the surface inside a row as they do anywhere."
+<div class="message-list" role="log" aria-label="Reactions" style="max-width:32rem;">
+  <div class="message">
+    <div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"><span class="avatar-fallback">SD</span></span></div>
+    <div class="message-content">
+      <div class="message-header"><span class="message-name">Sofia Davis</span><time class="message-time" datetime="2026-09-30T11:05">11:05</time></div>
+      <div class="bubble" data-variant="secondary">
+        <div class="bubble-content">We hit 10,000 users this morning!</div>
+        <div class="bubble-reactions" role="img" aria-label="Reactions: party popper, clapping hands and 3 more"><span>🎉</span><span>👏</span><span class="bubble-reactions-count">+3</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="message" data-align="end">
+    <div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/kyr0.png" alt="You"><span class="avatar-fallback">AH</span></span></div>
+    <div class="message-content">
+      <div class="bubble"><div class="bubble-content">Incredible - drinks on me 🥂</div></div>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="A thread with markers" schema="none" hint="Messages, markers and separators compose a whole thread - the date, what the assistant did, the reply."
+<div class="message-list" role="log" aria-label="Support thread" style="max-width:32rem;">
+  <div class="marker" data-variant="separator"><span class="marker-content">Today</span></div>
+  <div class="message" data-align="end">
+    <div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/kyr0.png" alt="You"><span class="avatar-fallback">AH</span></span></div>
+    <div class="message-content">
+      <div class="bubble"><div class="bubble-content">Can you fix the failing route test?</div></div>
+    </div>
+  </div>
+  <div class="flex flex-col" style="padding-inline-start:2.5rem;">
+    <div class="marker"><span class="marker-icon" aria-hidden="true"><i data-lucide="folder-search"></i></span><span class="marker-content">Explored 4 files</span></div>
+    <div class="marker" data-tone="success"><span class="marker-icon" aria-hidden="true"><i data-lucide="circle-check"></i></span><span class="marker-content">Tests pass</span></div>
+  </div>
+  <div class="message">
+    <div class="message-avatar"><span class="avatar" data-size="sm"><span class="avatar-fallback"><i data-lucide="bot"></i></span></span></div>
+    <div class="message-content">
+      <div class="message-header"><span class="message-name">Assistant</span></div>
+      <div class="bubble" data-variant="ghost"><div class="bubble-content">Fixed - the route imported a module that was removed. I pointed it at the new one and the suite is green.</div></div>
+      <div class="message-footer" data-reveal="hover"><button class="btn" data-variant="ghost" data-size="icon-xs" type="button" aria-label="Copy"><i data-lucide="copy"></i></button><button class="btn" data-variant="ghost" data-size="icon-xs" type="button" aria-label="Retry"><i data-lucide="rotate-ccw"></i></button></div>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="Sizes" schema="none" hint="data-size sm · (default) · lg on the row scales the avatar column (1.5 / 2 / 2.5rem) and the gap; pair it with the bubble's own data-size."
+<div class="message-list" role="log" aria-label="Sizes" style="max-width:32rem;">
+  <div class="message" data-size="sm">
+    <div class="message-avatar"><span class="avatar" data-size="xs"><span class="avatar-fallback">OM</span></span></div>
+    <div class="message-content">
+      <div class="bubble" data-variant="secondary" data-size="sm"><div class="bubble-content">Small row</div></div>
+    </div>
+  </div>
+  <div class="message">
+    <div class="message-avatar"><span class="avatar" data-size="sm"><span class="avatar-fallback">OM</span></span></div>
+    <div class="message-content">
+      <div class="bubble" data-variant="secondary"><div class="bubble-content">Default row</div></div>
+    </div>
+  </div>
+  <div class="message" data-size="lg">
+    <div class="message-avatar"><span class="avatar" data-size="md"><span class="avatar-fallback">OM</span></span></div>
+    <div class="message-content">
+      <div class="bubble" data-variant="secondary" data-size="lg"><div class="bubble-content">Large row</div></div>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="Without avatars" schema="none" hint="data-avatar='none' drops the avatar column - a one-to-one chat where the side already says who wrote."
+<div class="message-list" role="log" aria-label="No avatars" style="max-width:32rem;">
+  <div class="message" data-avatar="none">
+    <div class="message-avatar"></div>
+    <div class="message-content">
+      <div class="bubble" data-variant="secondary"><div class="bubble-content">See you at 6?</div></div>
+      <div class="message-footer"><time datetime="2026-09-30T17:40">17:40</time></div>
+    </div>
+  </div>
+  <div class="message" data-align="end" data-avatar="none">
+    <div class="message-avatar"></div>
+    <div class="message-content">
+      <div class="bubble"><div class="bubble-content">Perfect 👍</div></div>
+      <div class="message-footer"><time datetime="2026-09-30T17:41">17:41</time><span class="message-status" data-status="read"><i data-lucide="check-check"></i><span class="sr-only">Read</span></span></div>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="Right to left" schema="none" hint="Logical throughout - in dir='rtl' received rows sit on the right with their avatar, sent ones on the left."
+<div dir="rtl" lang="ar">
+<div class="message-list" role="log" aria-label="محادثة" style="max-width:32rem;">
+  <div class="message">
+    <div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"><span class="avatar-fallback">SD</span></span></div>
+    <div class="message-content">
+      <div class="message-header"><span class="message-name">صوفيا</span><time class="message-time" datetime="2026-09-30T10:42">10:42</time></div>
+      <div class="bubble" data-variant="secondary"><div class="bubble-content">مرحبا! هل وصلت الطلبية؟</div></div>
+    </div>
+  </div>
+  <div class="message" data-align="end">
+    <div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/kyr0.png" alt="You"><span class="avatar-fallback">AH</span></span></div>
+    <div class="message-content">
+      <div class="bubble"><div class="bubble-content">نعم، وصلت قبل ساعة.</div></div>
+      <div class="message-footer"><time datetime="2026-09-30T10:43">10:43</time><span class="message-status" data-status="read"><i data-lucide="check-check"></i><span class="sr-only">تمت القراءة</span></span></div>
+    </div>
+  </div>
+</div>
+</div>
+```
+
+<SourceFiles component="message" section="css" />
+
+</DocPage>

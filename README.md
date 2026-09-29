@@ -11,13 +11,13 @@
 
 **A UI component system that scales with _(local)_ AI.** Themeable components built on semantic HTML, modern CSS, and vanilla JavaScript. No framework. No build step for consumers - `dist/` is committed and ready to use as-is. The simplest possible foundation for AI-driven prototyping.
 
-**89 components - 41 with JavaScript, 48 CSS-only - 155.8 KiB minified + compressed - 108.3 KiB as the all.css/all.js bundle.**
-48 of 89 components need no JavaScript - native HTML and modern CSS cover them entirely.
+**90 components - 41 with JavaScript, 49 CSS-only - 157.0 KiB minified + compressed - 109.1 KiB as the all.css/all.js bundle.**
+49 of 90 components need no JavaScript - native HTML and modern CSS cover them entirely.
 <!-- parity anchor: README ↔ index (AGENTS.md) - the footprint sentence and pillar set must match src/documentation/pages/index.mdx; commit both files together -->
 The footprint is measured from the shipped `dist/` files on every build and published as
 [`dist/stats.json`](dist/stats.json); `verify` fails the build if this sentence and that file disagree.
 
-The set includes 13 marketing blocks (Site Header, Hero, Pricing, Testimonials, Blog, Footer, …) - full-page sections composed from the same tokens and primitives, all CSS-only - and a new Chat section, with message bubbles (groups, tails, reactions, typing) and markers (inline status, spinners, separators).
+The set includes 13 marketing blocks (Site Header, Hero, Pricing, Testimonials, Blog, Footer, …) - full-page sections composed from the same tokens and primitives, all CSS-only - and a new Chat section: message rows (avatar, name, time, status, actions), bubbles (groups, tails, reactions, typing) and markers (inline status, spinners, separators).
 
 **[Documentation & Live Demos →](https://kyr0.github.io/defuss-shadcn/)** · [Architecture (ARCH.md)](ARCH.md) · [Agent skill (SKILL.md)](skills/defuss-shadcn/SKILL.md)
 
