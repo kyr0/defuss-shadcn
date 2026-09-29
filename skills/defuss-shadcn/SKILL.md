@@ -118,6 +118,7 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
 
 - [Getting Started](../../src/documentation/pages/index.mdx) - A UI component system built with semantic HTML, shadcn design tokens, and plain CSS. No frameworks, no build step - just native web platform.
 - [Installation](../../src/documentation/pages/installation.mdx) - Install defuss-shadcn - straight from the jsDelivr CDN into plain HTML, or with npm into a bundled project. No framework, no build step for the CDN path.
+- [Vibe Coding / Agentic Engineering](../../src/documentation/pages/vibe-coding.mdx) - Build with defuss-shadcn through an AI coding agent - install the Agent Skill into Claude Code, Codex, Cursor, Gemini CLI, Copilot or Windsurf, then describe the UI and let the agent write the HTML.
 - [How to Use](../../src/documentation/pages/how-to-use.mdx) - Built on five layers: semantic tokens, a component skill, CSS, HTML, and vanilla JavaScript - each a plain file you copy or link.
 - [Component Skills](../../src/documentation/pages/component-skills.mdx) - Component skill files are structured references that teach AI assistants and humans how to build each component's HTML correctly.
 - [Verified Agentic Engineering (VAE)](../../src/documentation/pages/architecture.mdx) - How defuss-shadcn scales with AI: AGENTS.md teaches, a deterministic verifier enforces, screenshots prove, humans review before release.

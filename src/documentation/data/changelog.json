@@ -5,6 +5,7 @@
       "date": "September 29, 2026",
       "commits": [
         "feat: daisyUI parity wave - Dock, FAB, Diff, Countdown, Text Rotate, Navbar, Indicator, Mermaid + richer tables, trees, toasts, accordions",
+        "feat(docs): Vibe Coding / Agentic Engineering - the AI Agent Skill install guide gets its own Introduction page, split from Installation",
         "feat(dock): new Navigation component - bottom / top / left / right docks, floating pill, badges and dots, raised FAB action with a semicircle speed dial, macOS magnify, autohide, CSS-only card views (.dock-view, card dock-view)",
         "feat(fab): new Actions component - speed dial up/down/left/right, flower + centered semicircle, extended FAB that shrinks on scroll; X and every action close it",
         "feat(diff, countdown, text-rotate, indicator, navbar): new components after daisyUI - image/text diff with real photos, CSS countdown digits, rotating words, indicators, responsive navbar with megamenu",

@@ -1150,7 +1150,7 @@ index, and TOC pick the page up automatically.
 ## Sidebar nav order
 
 The sidebar is ordered by dependency (primitives first):
-1. Introduction (Getting Started, Installation, How to Use, Component Skills, Verified Agentic Engineering (VAE), Changelog) - the only section open on first load (`ALWAYS_OPEN_SECTION` in `lib/nav.ts`)
+1. Introduction (Getting Started, Installation, Vibe Coding / Agentic Engineering, How to Use, Component Skills, Verified Agentic Engineering (VAE), Changelog) - the only section open on first load (`ALWAYS_OPEN_SECTION` in `lib/nav.ts`)
 2. Guides (Theming, Dark Mode, Data Attribute API, State API, Cascade Layers, JavaScript Modules, Native Web APIs, Animations → {Motion, Animation Canvas, Fade, Slide Up, Slide Down, Slide Left, Slide Right, Zoom, Zoom Out, Pop, Spin, Flip, Skew, Blur, Wipe, Wipe Up, Iris}, Sizing → {Width & Height, Spacing, Density}, Layout → {Container, Flex, Grid}, Shapes, Accessibility) - Sizing/Layout/Animations are parent pages with nested submenu children (`NavItem.children`)
 3. Primitives (Typography, Text Rotate, Separator, Icon, Heading Anchor)
 4. Actions (Button, FAB, Toggle, Toggle Group, Button Group, Toolbar)

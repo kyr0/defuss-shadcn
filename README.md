@@ -91,7 +91,7 @@ claude plugin install defuss-shadcn@defuss-shadcn
 npx skills add kyr0/defuss-shadcn --skill defuss-shadcn
 ```
 
-Per-agent flags, global installs and updates: [Installation → Install as an AI Agent Skill](https://kyr0.github.io/defuss-shadcn/installation.html#install-as-an-ai-agent-skill).
+Per-agent flags, global installs and updates: [Vibe Coding / Agentic Engineering → Install as an AI Agent Skill](https://kyr0.github.io/defuss-shadcn/vibe-coding.html#install-as-an-ai-agent-skill).
 
 ### Self-hosting
 

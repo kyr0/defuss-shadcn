@@ -41,6 +41,7 @@ export const NAV: NavSection[] = [
   { heading: 'Introduction', icon: 'book-open', items: [
     { label: 'Getting Started', href: 'index.html' },
     { label: 'Installation', href: 'installation.html' },
+    { label: 'Vibe Coding / Agentic Engineering', href: 'vibe-coding.html', isNew: true },
     { label: 'How to Use', href: 'how-to-use.html' },
     { label: 'Component Skills', href: 'component-skills.html' },
     { label: 'Verified Agentic Engineering (VAE)', href: 'architecture.html' },
