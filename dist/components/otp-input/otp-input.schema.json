@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "name": "otp-input",
+  "states": {
+    "value": {
+      "type": "string",
+      "default": "",
+      "target": {
+        "kind": "selector",
+        "selector": ".otp-input"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "default",
+        "args": {
+          "value": "@value"
+        }
+      },
+      "observation": {
+        "kind": "property",
+        "name": "value",
+        "target": {
+          "kind": "selector",
+          "selector": ".otp-input > input"
+        }
+      },
+      "editor": {
+        "component": "text"
+      }
+    },
+    "filled": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".otp-input"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "filled"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "invalid": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".otp-input"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "invalid"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

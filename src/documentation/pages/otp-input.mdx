@@ -1,0 +1,142 @@
+---
+title: "OTP Input"
+description: "OTP Input component - a one-time-code field: one real <input> under a row of slots, so paste, SMS autofill, selection, IME and form submission stay native and a screen reader hears one field."
+slug: "otp-input"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="otp-input" title="OTP Input" component="otp-input">
+  A short code typed once - SMS verification, email confirmation, a PIN. One real <code>&lt;input&gt;</code> covers a row of slots instead of one input per digit: paste, <code>one-time-code</code> autofill, selection, IME and the form value all stay the browser's, and a screen reader announces one labelled field rather than six. The slots only mirror the value.
+</PageHeader>
+
+<SkillPanel component="otp-input">
+  <SkillField label="Native basis">
+<SkillText>A <code>.otp-input</code> around one <code>&lt;input&gt;</code>; the script adds the <code>aria-hidden</code> slots, <code>maxlength</code>, <code>inputmode</code> and <code>autocomplete="one-time-code"</code> (unless you set them).</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete" title="SMS code autofill"><code>autocomplete="one-time-code"</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/inputmode" title="the numeric keypad"><code>inputmode</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/setSelectionRange" title="the caret stays put"><code>setSelectionRange()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="disabled styling from the input"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-invalid" title="the invalid state"><code>aria-invalid</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.otp-input</code>
+    <code>.otp-input-slots</code>
+    <code>.otp-input-slot</code>
+    <code>.otp-input-separator</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-length</code> (default 6), <code>data-pattern</code> (<code>digits</code>, <code>alphanumeric</code>), <code>data-group-size</code>, <code>data-mask</code>; <code>--otp-input-slot-size</code>; event <code>otp-complete</code> (<code>detail.value</code>).</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Verification code" hint="One real <input> under six slots: type, paste or let the phone autofill the SMS code (autocomplete='one-time-code' and inputmode='numeric' are set for you) - the slots mirror the value, the active slot stands in for the caret, and a screen reader hears one labelled field."
+<div class="flex flex-col gap-2 items-start">
+  <label class="label" for="otp-code">Verification code</label>
+  <div class="otp-input">
+    <input id="otp-code" name="code" type="text" aria-describedby="otp-code-hint">
+  </div>
+  <p class="field-description" id="otp-code-hint">We sent a code to your phone.</p>
+</div>
+```
+
+```html example label="Grouped" schema="none" hint="data-group-size='3' draws a separator every three slots - a 3-3 code reads faster."
+<div class="otp-input" data-group-size="3">
+  <input name="grouped" type="text" aria-label="Grouped code">
+</div>
+```
+
+```html example label="Letters allowed" schema="none" hint="data-length='4' and data-pattern='alphanumeric' - anything else is dropped as it arrives, with the caret kept where typing left it."
+<div class="otp-input" data-length="4" data-pattern="alphanumeric">
+  <input name="alpha" type="text" aria-label="Alphanumeric code">
+</div>
+```
+
+```html example label="Masked PIN" schema="none" hint="data-mask draws a dot instead of each character; the value underneath is unchanged."
+<div class="otp-input" data-length="4" data-mask>
+  <input name="pin" type="text" aria-label="PIN">
+</div>
+```
+
+```html example label="Disabled" schema="none" hint="disabled on the input: the surface dims but the digits keep their contrast - no opacity wash."
+<div class="otp-input" data-length="4">
+  <input name="disabled-code" type="text" value="1234" aria-label="Disabled code" disabled>
+</div>
+```
+
+```html example label="Verify on complete" schema="none" hint="otp-complete fires with the value the moment the last character lands - typed, pasted or autofilled. Here it checks the code (try 424242): a wrong code enters the invalid state (aria-invalid, not just a red border), a right one submits."
+<form class="flex flex-col gap-2 items-start" id="otp-form" onsubmit="event.preventDefault()">
+  <label class="label" for="otp-verify">Enter the code - hint: 424242</label>
+  <div class="otp-input" id="otp-verify-wrap" data-group-size="3">
+    <input id="otp-verify" name="code" type="text" aria-describedby="otp-verify-msg">
+  </div>
+  <p class="field-description" id="otp-verify-msg" aria-live="polite">6 digits</p>
+</form>
+<script>
+  const wrap = document.getElementById('otp-verify-wrap');
+  const msg = document.getElementById('otp-verify-msg');
+  wrap.addEventListener('otp-complete', (e) => {
+    if (e.detail.value === '424242') {
+      msg.textContent = 'Verified ✓';
+    } else {
+      wrap.api.setState('invalid');
+      msg.textContent = 'That code is not right - try again.';
+    }
+  });
+  wrap.querySelector('input').addEventListener('input', () => {
+    if (wrap.api?.getState().name === 'invalid' && wrap.querySelector('input').value.length < 6) {
+      wrap.api.setState('default');
+      msg.textContent = '6 digits';
+    }
+  });
+</script>
+```
+
+```html example label="Slot size" schema="none" hint="The public --otp-input-slot-size sizes every slot - a large PIN pad or a compact inline code."
+<div class="flex flex-col gap-4 items-start">
+  <div class="otp-input" data-length="4" style="--otp-input-slot-size: 3.5rem;">
+    <input name="large" type="text" aria-label="Large PIN">
+  </div>
+  <div class="otp-input" data-length="6" style="--otp-input-slot-size: 2.25rem;">
+    <input name="compact" type="text" aria-label="Compact code">
+  </div>
+</div>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - editable; <code>\{ value \}</code> presets the code</li>
+    <li><code>filled</code> - complete; entered automatically the moment the last character lands (<code>\{ value \}</code> optional)</li>
+    <li><code>invalid</code> - the code was rejected: <code>aria-invalid="true"</code> and destructive slots</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/otp-input-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a href="../schemas/otp-input.schema.json"><code>otp-input.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `value` | `string` | `—` | `""` | The code; set through the State API (`setState('default', { value })`), read from the input. |
+| `filled` | `boolean` | `true`, `false` | `false` | Complete - entered automatically when the last character lands. |
+| `invalid` | `boolean` | `true`, `false` | `false` | Rejected: `aria-invalid` and destructive slots. |
+```
+
+</StatesSection>
+
+<SourceFiles component="otp-input" section="css" />
+
+<SourceFiles component="otp-input" section="js" jsTitle="JS" />
+
+</DocPage>

@@ -25,6 +25,7 @@
     "mermaid": "./mermaid.schema.json",
     "navigation-menu": "./navigation-menu.schema.json",
     "number-input": "./number-input.schema.json",
+    "otp-input": "./otp-input.schema.json",
     "pagination": "./pagination.schema.json",
     "popover": "./popover.schema.json",
     "presentation": "./presentation.schema.json",

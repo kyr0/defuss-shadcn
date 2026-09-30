@@ -96,6 +96,7 @@ export const NAV = [
     { heading: 'Forms & Inputs', icon: 'text-cursor-input', items: [
             { label: 'Label', href: 'label.html' },
             { label: 'Input', href: 'input.html' },
+            { label: 'OTP Input', href: 'otp-input.html', isNew: true },
             { label: 'Textarea', href: 'textarea.html' },
             { label: 'Checkbox', href: 'checkbox.html' },
             { label: 'Radio Group', href: 'radio.html' },

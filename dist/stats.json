@@ -1,25 +1,25 @@
 {
-  "total": 92,
+  "total": 93,
   "byType": {
     "ATM": 56,
-    "MOL": 19,
+    "MOL": 20,
     "ORG": 2,
     "BLK": 13,
     "TPL": 2
   },
-  "withJs": 42,
+  "withJs": 43,
   "withoutJs": 50,
-  "totalSize": 1052106,
-  "totalSizeMinified": 492034,
-  "totalSizeGz": 326948,
-  "totalSizeGzMinified": 164998,
+  "totalSize": 1065029,
+  "totalSizeMinified": 497626,
+  "totalSizeGz": 331336,
+  "totalSizeGzMinified": 167188,
   "bundle": {
-    "jsSize": 397883,
-    "jsSizeMinified": 223527,
-    "cssSize": 542447,
-    "cssSizeMinified": 298891,
-    "totalSizeGz": 202580,
-    "totalSizeGzMinified": 114107
+    "jsSize": 402940,
+    "jsSizeMinified": 226534,
+    "cssSize": 546890,
+    "cssSizeMinified": 301189,
+    "totalSizeGz": 204888,
+    "totalSizeGzMinified": 115165
   },
   "core": {
     "jsSize": 88008,
@@ -692,6 +692,19 @@
       "totalSizeGzMinified": 3053,
       "totalSize": 21123,
       "totalSizeMinified": 8112
+    },
+    "otp-input": {
+      "name": "otp-input",
+      "type": "MOL",
+      "withJs": true,
+      "jsSize": 8536,
+      "jsSizeMinified": 3275,
+      "cssSize": 4387,
+      "cssSizeMinified": 2317,
+      "totalSizeGz": 4388,
+      "totalSizeGzMinified": 2190,
+      "totalSize": 12923,
+      "totalSizeMinified": 5592
     },
     "pagination": {
       "name": "pagination",
