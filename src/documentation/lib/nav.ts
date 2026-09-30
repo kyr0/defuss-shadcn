@@ -106,6 +106,7 @@ export const NAV: NavSection[] = [
     { label: 'Text Rotate', href: 'text-rotate.html', isNew: true },
     { label: 'Separator', href: 'separator.html' },
     { label: 'Icon', href: 'icon.html' },
+    { label: 'Kbd', href: 'kbd.html', isNew: true },
     { label: 'Heading Anchor', href: 'heading-anchor.html' },
   ]},
   { heading: 'Actions', icon: 'mouse-pointer-click', items: [

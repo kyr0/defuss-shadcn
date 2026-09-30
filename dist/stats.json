@@ -1,25 +1,25 @@
 {
-  "total": 91,
+  "total": 92,
   "byType": {
-    "ATM": 55,
+    "ATM": 56,
     "MOL": 19,
     "ORG": 2,
     "BLK": 13,
     "TPL": 2
   },
   "withJs": 42,
-  "withoutJs": 49,
-  "totalSize": 1048807,
-  "totalSizeMinified": 490321,
-  "totalSizeGz": 325751,
-  "totalSizeGzMinified": 164319,
+  "withoutJs": 50,
+  "totalSize": 1052106,
+  "totalSizeMinified": 492034,
+  "totalSizeGz": 326948,
+  "totalSizeGzMinified": 164998,
   "bundle": {
     "jsSize": 397883,
     "jsSizeMinified": 223527,
-    "cssSize": 539104,
-    "cssSizeMinified": 297197,
-    "totalSizeGz": 201792,
-    "totalSizeGzMinified": 113806
+    "cssSize": 542447,
+    "cssSizeMinified": 298891,
+    "totalSizeGz": 202580,
+    "totalSizeGzMinified": 114107
   },
   "core": {
     "jsSize": 88008,
@@ -387,12 +387,12 @@
       "withJs": true,
       "jsSize": 16631,
       "jsSizeMinified": 7090,
-      "cssSize": 9128,
-      "cssSizeMinified": 5041,
-      "totalSizeGz": 7521,
-      "totalSizeGzMinified": 3849,
-      "totalSize": 25759,
-      "totalSizeMinified": 12131
+      "cssSize": 9375,
+      "cssSizeMinified": 5156,
+      "totalSizeGz": 7597,
+      "totalSizeGzMinified": 3870,
+      "totalSize": 26006,
+      "totalSizeMinified": 12246
     },
     "fab": {
       "name": "fab",
@@ -549,6 +549,19 @@
       "totalSizeGzMinified": 1329,
       "totalSize": 10757,
       "totalSizeMinified": 5282
+    },
+    "kbd": {
+      "name": "kbd",
+      "type": "ATM",
+      "withJs": false,
+      "jsSize": 0,
+      "jsSizeMinified": 0,
+      "cssSize": 3052,
+      "cssSizeMinified": 1598,
+      "totalSizeGz": 1121,
+      "totalSizeGzMinified": 658,
+      "totalSize": 3052,
+      "totalSizeMinified": 1598
     },
     "label": {
       "name": "label",

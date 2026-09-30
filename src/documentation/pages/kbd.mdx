@@ -1,0 +1,117 @@
+---
+title: "Kbd"
+description: "Kbd component - keyboard keys on the native <kbd> element: single keys, combinations as nested <kbd> (as the HTML spec prescribes), an optional + separator, sizes, and keys that blend into buttons, menus and tooltips. CSS only."
+slug: "kbd"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="kbd" title="Kbd" component="kbd">
+  A keyboard key - for a shortcut in a menu item, a tooltip, a command palette row or a sentence. Built on the native <code>&lt;kbd&gt;</code> element; a combination is a <code>&lt;kbd&gt;</code> holding one <code>&lt;kbd&gt;</code> per key, exactly as the HTML spec prescribes, so the markup already says "these keys together". The thicker bottom edge is what makes a rectangle read as a key. CSS only.
+</PageHeader>
+
+<SkillPanel component="kbd">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;kbd class="kbd"&gt;</code> per key; <code>&lt;kbd class="kbd-group"&gt;</code> around several for a combination - the outer element is the chord and keeps none of the key styling.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/kbd" title="keyboard input; nested for combinations"><code>&lt;kbd&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix" title="a key's border inside a control"><code>color-mix()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast" title="solid border and text"><code>prefers-contrast</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" title="Windows High Contrast"><code>forced-colors</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.kbd</code>
+    <code>.kbd-group</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-size</code> (<code>sm</code>, <code>lg</code>) on a key; <code>data-separator</code> on a group draws a <code>+</code> between its keys; <code>--kbd-size</code> for any other key size.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Keys" schema="none" hint="One <kbd class='kbd'> per key - write the symbol you want read: ⌘, ⇧, ⌥, Ctrl, Enter, Esc."
+<div class="flex flex-wrap items-center gap-2">
+  <kbd class="kbd">Esc</kbd>
+  <kbd class="kbd">Enter</kbd>
+  <kbd class="kbd">⇧</kbd>
+  <kbd class="kbd">⌥</kbd>
+  <kbd class="kbd">Tab</kbd>
+  <kbd class="kbd">?</kbd>
+</div>
+```
+
+```html example label="Combination" schema="none" hint="A chord is a <kbd class='kbd-group'> holding one <kbd class='kbd'> per key - the nesting the HTML spec prescribes; the outer element is not a key itself."
+<div class="flex flex-wrap items-center gap-5">
+  <kbd class="kbd-group">
+    <kbd class="kbd">⌘</kbd>
+    <kbd class="kbd">K</kbd>
+  </kbd>
+  <kbd class="kbd-group">
+    <kbd class="kbd">⌘</kbd>
+    <kbd class="kbd">⇧</kbd>
+    <kbd class="kbd">P</kbd>
+  </kbd>
+</div>
+```
+
+```html example label="With a separator" schema="none" hint="data-separator on the group draws a + in the gap between keys - outside the key boxes, never inside one."
+<kbd class="kbd-group" data-separator>
+  <kbd class="kbd">Ctrl</kbd>
+  <kbd class="kbd">Shift</kbd>
+  <kbd class="kbd">P</kbd>
+</kbd>
+```
+
+```html example label="Sizes" schema="none" hint="data-size sm (inside buttons and menu items) · default · lg - or any size through --kbd-size."
+<div class="flex items-center gap-3">
+  <kbd class="kbd" data-size="sm">Esc</kbd>
+  <kbd class="kbd">Esc</kbd>
+  <kbd class="kbd" data-size="lg">Esc</kbd>
+</div>
+```
+
+```html example label="In a control" schema="none" hint="Inside a button the key drops its own surface and borrows the button's text colour through color-mix - one rule for every variant, legible on the dark primary button and the outline one alike."
+<div class="flex flex-wrap items-center gap-3">
+  <button class="btn" data-variant="outline">Search <kbd class="kbd" data-size="sm">⌘K</kbd></button>
+  <button class="btn" data-variant="default">Save <kbd class="kbd" data-size="sm">⌘S</kbd></button>
+  <button class="btn" data-variant="ghost">Undo <kbd class="kbd" data-size="sm">⌘Z</kbd></button>
+</div>
+```
+
+```html example label="In prose" schema="none" hint="Keys sit on the text baseline, so they read inside a sentence."
+<p class="p" style="max-width:28rem;">
+  Press <kbd class="kbd-group"><kbd class="kbd">⌘</kbd><kbd class="kbd">K</kbd></kbd> to open the command palette, or <kbd class="kbd">Esc</kbd> to dismiss it.
+</p>
+```
+
+```html example label="In a menu" schema="none" hint="Shortcuts in dropdown items blend in the same way - the key takes the item's colour, including the highlighted and destructive states." height="22"
+<button class="btn" data-variant="outline" data-dropdown-trigger="kbd-menu">Edit</button>
+<div id="kbd-menu" role="menu" popover class="dropdown-content" aria-label="Edit" style="min-width:13rem;">
+  <button role="menuitem" class="dropdown-item" tabindex="-1">Undo <span class="dropdown-shortcut"><kbd class="kbd-group"><kbd class="kbd" data-size="sm">⌘</kbd><kbd class="kbd" data-size="sm">Z</kbd></kbd></span></button>
+  <button role="menuitem" class="dropdown-item" tabindex="-1">Redo <span class="dropdown-shortcut"><kbd class="kbd-group"><kbd class="kbd" data-size="sm">⌘</kbd><kbd class="kbd" data-size="sm">⇧</kbd><kbd class="kbd" data-size="sm">Z</kbd></kbd></span></button>
+  <div class="dropdown-separator" role="separator"></div>
+  <button role="menuitem" class="dropdown-item" data-variant="destructive" tabindex="-1">Delete <span class="dropdown-shortcut"><kbd class="kbd" data-size="sm">⌫</kbd></span></button>
+</div>
+```
+
+```html example label="In a tooltip" schema="none" hint="On a tooltip's inverted surface the key borrows the tooltip's colours too - hover or focus the button."
+<button class="btn" data-variant="outline" data-tooltip-trigger="kbd-tip">Bold</button>
+<div class="tooltip" id="kbd-tip" popover="hint" role="tooltip">Bold <kbd class="kbd-group"><kbd class="kbd" data-size="sm">⌘</kbd><kbd class="kbd" data-size="sm">B</kbd></kbd></div>
+```
+
+```html example label="Decorative shortcuts" schema="none" hint="No ARIA: <kbd> carries the meaning and its text is the label. When the shortcut only decorates a control that already names its action, hide it with aria-hidden."
+<button class="btn" data-variant="secondary">Open command palette <kbd class="kbd" data-size="sm" aria-hidden="true">⌘K</kbd></button>
+```
+
+<SourceFiles component="kbd" section="css" />
+
+</DocPage>

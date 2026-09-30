@@ -208,6 +208,9 @@
     color: var(--muted-foreground);
     letter-spacing: 0.05em;
   }
+  /* on a destructive highlight the shortcut follows the item's foreground
+     (muted grey on red was unreadable) */
+  .dropdown-item[data-variant="destructive"]:is(:hover, [data-highlighted]) .dropdown-shortcut { color: inherit; opacity: 0.8; }
 
   /* -- Sizes ----------------------------------------------------
      data-size goes on the .dropdown-content popover; items, labels,
