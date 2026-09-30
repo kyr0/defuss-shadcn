@@ -21,7 +21,7 @@ The set includes 13 marketing blocks (Site Header, Hero, Pricing, Testimonials, 
 
 **[Documentation & Live Demos →](https://kyr0.github.io/defuss-shadcn/)** · [Architecture (ARCH.md)](ARCH.md) · [Agent skill (SKILL.md)](skills/defuss-shadcn/SKILL.md)
 
-The docs site dogfoods the CDN install: it loads its `all.css` / `all.js` bundle and theme from the jsDelivr CDN, the same URLs as the CDN quick start above - if it renders, the CDN install works.
+The docs site dogfoods the CDN install: it loads its `all.css` / `all.js` bundle and theme from the jsDelivr CDN, pinned to the release it documents (`@vX.Y.Z` - the CDN quick start above with the version filled in) - if it renders, the CDN install works.
 
 Why this system exists, from the agents who built it: [ARCH.md](ARCH.md).
 

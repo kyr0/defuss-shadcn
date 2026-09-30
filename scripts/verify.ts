@@ -10,7 +10,7 @@ import { provenanceNotice, provenancePointer } from './lib/provenance.ts';
 import { collectProvenance } from './lib/provenance-files.ts';
 import { STATS_FILE, statsClaimProblems, type StatsDoc } from './lib/stats.ts';
 import { buildStatsFileText } from './lib/stats-files.ts';
-import { mirrorHashes } from './lib/mirror.ts';
+import { RELEASE_STAMP, packageVersion, unpinnedRefs } from './lib/mirror.ts';
 import {
   changelogProblems,
   changelogDataMarkupProblems,
@@ -796,32 +796,33 @@ check(
   'fix the type errors above (bun run typecheck prints full output)',
 );
 
-// 15c. docs/ mirror freshness: GitHub Pages publishes ./docs - the documen-
-// tation site (dist/documentation/* + SEO files + the 404.html fallback copy
-// of index.html), with ../component & ../theme refs CDN-rewritten. Compared
-// against exactly what sync-docs.ts writes (shared lib/mirror.ts), so a green
-// gate means the published tree is current.
+// 15c. docs/ release snapshot: GitHub Pages publishes ./docs - the doc site
+// (dist/documentation/* + SEO files + the 404.html fallback) with its
+// ../component & ../theme refs rewritten to jsDelivr PINNED to the release
+// (lib/mirror.ts). It is a snapshot of the committed version, republished
+// only at a release: docs/release.json must name package.json's version and
+// every live asset reference must load from that tag - never @latest (a
+// 7-day browser cache kept visitors on the previous release) and never
+// another version (pages and assets must always come from one release).
 const docsProblems: string[] = [];
 const DOCS_OUT = join(ROOT, 'docs');
-if (existsSync(DOCS_OUT) && existsSync(DIST)) {
-  const expected = mirrorHashes(DIST);
-  const actual = new Map(
-    walk(DOCS_OUT, [''])
-      .filter((f) => !f.endsWith('.DS_Store'))
-      .map((f) => [relative(DOCS_OUT, f), createHash('sha256').update(readFileSync(f)).digest('hex')]),
-  );
-  for (const [rel, hash] of expected) {
-    if (!actual.has(rel)) docsProblems.push(`docs/${rel} missing`);
-    else if (actual.get(rel) !== hash) docsProblems.push(`docs/${rel} is stale (differs from the mirrored dist/)`);
+if (existsSync(DOCS_OUT)) {
+  const version = packageVersion(ROOT);
+  const stampFile = join(DOCS_OUT, RELEASE_STAMP);
+  const stamp = existsSync(stampFile) ? (JSON.parse(readFileSync(stampFile, 'utf8')) as { version?: string }).version : undefined;
+  if (stamp !== version) docsProblems.push(`docs/${RELEASE_STAMP} names ${stamp ?? 'no version'}, package.json is ${version} - the snapshot was not republished for this release`);
+  if (!existsSync(join(DOCS_OUT, 'index.html')) || !existsSync(join(DOCS_OUT, '404.html'))) docsProblems.push('docs/index.html or docs/404.html missing');
+  for (const file of walk(DOCS_OUT, ['.html'])) {
+    const bad = unpinnedRefs(readFileSync(file, 'utf8'), version);
+    if (bad.length) docsProblems.push(`docs/${relative(DOCS_OUT, file)} loads ${bad.length} asset(s) not pinned to v${version}, e.g. ${bad[0]}`);
   }
-  for (const rel of actual.keys()) if (!expected.has(rel)) docsProblems.push(`docs/${rel} is stale (not in the doc site)`);
-} else if (!existsSync(DOCS_OUT) && existsSync(DIST)) {
+} else {
   docsProblems.push('docs/ missing - GitHub Pages would publish nothing');
 }
 check(
-  'docs mirror fresh',
+  'docs release snapshot',
   docsProblems.slice(0, 8),
-  'run `bun run docs` (re-builds dist/ and re-mirrors the doc site to docs/ for GitHub Pages)',
+  'docs/ is republished at a release: deploy.sh bumps the version and `bun scripts/sync-docs.ts` re-snapshots it pinned to the new tag (`--force` to republish the current version)',
 );
 
 // 16. working tree cleanliness (warn): uncommitted changes make "green build"

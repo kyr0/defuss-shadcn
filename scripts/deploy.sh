@@ -20,10 +20,12 @@ set -euo pipefail
 #   4. Two-commit rule (verify's "changelog ↔ version" gate): commits the
 #      entry while the committed version is still the old one, then a SECOND
 #      commit stamps that commit's short hash into the entry and lands the bump
-#   5. Tags v<version>, pushes main + the tag (SSH, else HTTPS via gh - see
-#      scripts/lib/git-push.sh), creates the GitHub Release
-#   6. Purges the jsDelivr @latest cache, so the docs' CDN assets serve the
-#      new tag right away
+#   5. Tags v<version>, pushes the tag, then main (SSH, else HTTPS via gh -
+#      see scripts/lib/git-push.sh) - docs/ is the release snapshot pinned to
+#      that tag, so the tag must exist first - creates the GitHub Release
+#   6. Purges the jsDelivr @latest cache, so README's @latest quick start
+#      serves the new tag right away (the docs snapshot is pinned to the tag
+#      and needs no purge)
 #
 # For non-release changes (README, doc fixes, etc.), use:
 #   bun run push
@@ -99,24 +101,30 @@ echo "✅ Changelog entry for ${TAG} (${#COMMIT_LINES[@]} commits since ${LAST_T
 make build
 
 # 4a. first commit: the entry alone, while the COMMITTED version is still the
-# old one - every commit on main stays verify-green
-git add src/documentation/data/changelog.json dist/documentation/changelog.html docs/changelog.html
+# old one - every commit on main stays verify-green. docs/ is NOT part of it:
+# make build already re-snapshotted docs/ for the new version (pinned to the
+# new tag), which only matches the committed version after 4b.
+git add src/documentation/data/changelog.json dist/documentation/changelog.html
 git commit -m "docs(changelog): add ${TAG} entry"
 ENTRY_HASH=$(git rev-parse --short HEAD)
 
 # 4b. second commit: stamp that hash into the entry, regenerate, land the bump
 # (the tree was clean before step 1, so everything left is this release)
 bun scripts/changelog-entry.ts stamp-hash "${NEW_VERSION}" "${ENTRY_HASH}"
-bun scripts/build.ts && bun scripts/bundle.ts && bun scripts/minify.ts && bun scripts/stats.ts && bun run build:docs && bun scripts/sync-docs.ts
+# --force: docs/ already carries this version's stamp from make build, but
+# the changelog page just changed (the hash) - re-snapshot it
+bun scripts/build.ts && bun scripts/bundle.ts && bun scripts/minify.ts && bun scripts/stats.ts && bun run build:docs && bun scripts/sync-docs.ts --force
 PAGE_TIMEOUT_MS=60000 bun run screenshots
 bun scripts/verify.ts
 git add -A
 git commit -m "chore: bump version to ${TAG} (changelog ${ENTRY_HASH})"
 
-# 5. tag, push, GitHub Release
+# 5. tag, push, GitHub Release. The TAG goes first: the docs/ snapshot loads
+# its assets from jsDelivr @${TAG}, so the tag must exist before GitHub Pages
+# publishes main (a page going live before its tag would fetch 404s).
 git tag "${TAG}"
-push_ref main
 push_ref "${TAG}"
+push_ref main
 
 RELEASE_NOTES=$(echo "$COMMITS" | awk '!seen[$0]++' | grep . | sed 's/^/- /' || true)
 if [[ -z "$RELEASE_NOTES" ]]; then

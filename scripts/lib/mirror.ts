@@ -1,4 +1,3 @@
-import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { walk } from './audit.ts';
@@ -8,22 +7,31 @@ import { walk } from './audit.ts';
  * documentation site (dist/documentation/* + the SEO files), not a copy of
  * the whole dist/ tree. The pages still reference `../components/…` and
  * `../theme/…`, so the mirror rewrites those two prefixes to the jsDelivr
- * GitHub CDN - the same public URLs the documentation itself recommends for
- * consumers (see es-modules.html). Both sync-docs.ts and verify.ts use this
- * module so the "docs mirror fresh" gate compares against exactly what the
- * sync produces.
+ * GitHub CDN - PINNED to the release the snapshot documents (`@vX.Y.Z`),
+ * never `@latest`: `@latest` answers with a 7-day browser cache (a purge
+ * only clears jsDelivr's edge), so visitors kept the previous release's
+ * all.css / all.js for days, and pages published from main between
+ * releases referenced components the latest tag did not have yet. docs/ is
+ * therefore a RELEASE snapshot: sync-docs.ts republishes it only when the
+ * version changes (deploy.sh) and stamps docs/release.json; verify.ts checks
+ * the stamp and the pinning with this module.
  */
 
 /** Published Pages root: docs/ files sit at the site root, so the
  *  `…/documentation/…` URLs baked into og:url/sitemap lose their prefix. */
 export const PAGES_BASE = 'https://kyr0.github.io/defuss-shadcn';
-/** Component assets (CSS/JS/skills/themes) resolve here from the Pages root.
- *  @latest = newest git tag (deploy.sh creates one per release; jsDelivr
- *  falls back to the default-branch commit while no tags exist). */
-export const CDN_BASE = 'https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist';
-
-/** Text files whose contents get rewritten; everything else copies verbatim. */
-const TRANSFORMED = /\.(html|xml)$/;
+/** jsDelivr GitHub root of the repo (no version). */
+export const CDN_REPO = 'https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn';
+/** @latest (newest tag) - what README's quick start shows consumers and
+ *  what purge-cdn.ts refreshes; never used by the docs snapshot. */
+export const CDN_BASE = `${CDN_REPO}@latest/dist`;
+/** The immutable, release-pinned asset root the docs snapshot loads from. */
+export const cdnBase = (version: string): string => `${CDN_REPO}@v${version}/dist`;
+/** The version in package.json - the release a snapshot is published for. */
+export const packageVersion = (root: string): string =>
+  (JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')) as { version: string }).version;
+/** docs/release.json - the stamp of the release the snapshot belongs to. */
+export const RELEASE_STAMP = 'release.json';
 
 /**
  * Live reference to a dist sibling in an HTML tag - a real element attribute,
@@ -40,9 +48,9 @@ const LIVE_REF =
  * published page URLs drop the `/documentation/` path segment (docs/ IS the
  * site root now). Escaped code samples keep their dist-relative paths.
  */
-export function mirrorTransform(text: string): string {
+export function mirrorTransform(text: string, version: string): string {
   return text
-    .replace(LIVE_REF, `$1${CDN_BASE}/$2/`)
+    .replace(LIVE_REF, `$1${cdnBase(version)}/$2/`)
     .replaceAll(`${PAGES_BASE}/documentation/`, `${PAGES_BASE}/`);
 }
 
@@ -64,13 +72,11 @@ export function mirrorFiles(dist: string): Array<{ src: string; rel: string }> {
   return files;
 }
 
-/** SHA-256 of each file exactly as the mirror would write it to docs/. */
-export function mirrorHashes(dist: string): Map<string, string> {
-  const map = new Map<string, string>();
-  for (const { src, rel } of mirrorFiles(dist)) {
-    const raw = readFileSync(src);
-    const bytes = TRANSFORMED.test(src) ? Buffer.from(mirrorTransform(raw.toString('utf8')), 'utf8') : raw;
-    map.set(rel, createHash('sha256').update(bytes).digest('hex'));
-  }
-  return map;
+/** Live CDN asset references in a published page that are NOT pinned to
+ * `version` (`@latest`, another tag, a commit) - the snapshot gate. */
+export function unpinnedRefs(html: string, version: string): string[] {
+  const out: string[] = [];
+  const re = /<(?:a|link|script|img|iframe|source|span)\b[^>]*?(?:href|src|data-spec-href)="(https:\/\/cdn\.jsdelivr\.net\/gh\/kyr0\/defuss-shadcn@([^/"]+)\/dist\/[^"]*)"/g;
+  for (const m of html.matchAll(re)) if (m[2] !== `v${version}`) out.push(m[1]);
+  return out;
 }

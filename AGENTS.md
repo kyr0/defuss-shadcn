@@ -27,14 +27,20 @@ everything else 1:1, then renders the documentation site with
 GitHub Pages - its pages' `../components/…` and
 `../theme/…` references are rewritten to the jsDelivr GitHub CDN (shared transform in
 `scripts/lib/mirror.ts`), so the mirror carries no copies of the component assets.
-Refresh it with `bun run docs` (`make build` does this automatically and `verify`
-fails if the mirror drifts). Never edit `docs/` directly - like `dist/`, it is
-deleted and rebuilt on every `bun run docs`.
-Because the docs pages load their assets from jsDelivr `@latest` (newest git tag),
-a fresh release keeps serving the **previous** release's CSS/JS until jsDelivr's
-cache expires (12h edge, 7d browser). After `bun run deploy`, run
-`bun run purge-cdn` (`make purge-cdn`) to force `@latest` to re-resolve to the
-new tag immediately.
+The rewrite PINS the assets to the release (`@vX.Y.Z`, from package.json) -
+never `@latest`: `@latest` is sent with a 7-day browser cache (a purge only
+clears jsDelivr's edge), so visitors kept the previous release's CSS/JS for days,
+and pages pushed from main between releases referenced components the latest tag
+did not contain (broken live pages). `docs/` is therefore a **release snapshot**:
+`scripts/sync-docs.ts` republishes it only when package.json's version differs
+from `docs/release.json` - i.e. in `scripts/deploy.sh`, after the bump (and
+`--force` after the changelog hash) - so every other `bun run docs` /
+`make build` leaves the live site on the released version. `verify`'s
+`docs release snapshot` gate checks the stamp and that every live asset URL is
+pinned to that tag. deploy.sh pushes the tag BEFORE main, so the tag exists on
+jsDelivr when Pages publishes. Never edit `docs/` directly.
+`bun run purge-cdn` (`make purge-cdn`, run by deploy.sh) still refreshes
+`@latest` for README's CDN quick start; the pinned snapshot needs no purge.
 Never edit `dist/` directly; it is deleted and rebuilt on every build.
 
 ---
@@ -109,9 +115,9 @@ defuss-shadcn/
 │   ├── lib/stats.ts                   ← stats aggregation core (pure: counts + totals, no fs/zlib)
 │   ├── lib/stats-files.ts             ← dist/components/ byte+gzip measurement (writer + verify gate share it)
 │   ├── verify.ts                      ← static consistency gate (runs at end of build; `bun run verify`)
-│   ├── sync-docs.ts                   ← mirror dist/documentation → docs/ (CDN-rewritten; `bun run docs`)
+│   ├── sync-docs.ts                   ← the docs/ RELEASE snapshot: dist/documentation → docs/ with assets pinned to jsDelivr @vX.Y.Z; republishes only when the version changed (deploy.sh) or `--force`, stamps docs/release.json
 │   ├── changelog-entry.ts             ← changelog data surgery for deploy.sh (add entry / stamp hash - the two-commit rule)
-│   ├── lib/mirror.ts                  ← shared docs/ mirror transform (sync-docs + verify compare against it)
+│   ├── lib/mirror.ts                  ← shared docs/ snapshot transform: tag-pinned CDN base, release stamp, unpinnedRefs (sync-docs + verify's `docs release snapshot` gate)
 │   ├── lib/skill.ts                   ← SKILL.md generation core: frontmatter parser + index renderer (pure)
 │   ├── lib/skill-files.ts             ← dist/SKILL.md index generator from src/SKILL_tpl.md + skill frontmatter, and the repo-root SKILL.md from src/SKILL_root_tpl.md + nav.ts + page frontmatter (build.ts regenerates both every build)
 │   ├── create-screenshots.ts          ← parallel default-state screenshots for agent inspection
@@ -124,7 +130,7 @@ defuss-shadcn/
 │   ├── bump-version.ts                ← moves every version site (lib/version-sites.ts) to a new version
 │   ├── lib/version-sites.ts           ← every file that carries the release version (package.json, plugin.json, SHARED_ABI, deck cover) - bump-version writes, verify's `version sites` gate checks
 │   ├── lib/git-push.sh                ← push_ref: push to origin, falling back to HTTPS with gh credentials when SSH is unavailable
-│   └── purge-cdn.ts                   ← purge jsDelivr @latest cache for all dist assets (run after deploy)
+│   └── purge-cdn.ts                   ← purge jsDelivr @latest cache for all dist assets (README quick start; run by deploy.sh - the docs snapshot is pinned to the tag)
 ├── tests/                             ← UI tests (Vitest browser mode + Playwright)
 │   ├── helpers.ts                     ← loads real doc pages in a same-origin iframe
 │   ├── ui.test.ts                     ← end-to-end tests of the actual site UI
