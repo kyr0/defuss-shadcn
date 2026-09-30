@@ -4,7 +4,7 @@ description: "How interactive components ship as native ES modules on one runtim
 slug: "es-modules"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard, ComponentJsSplit } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Terminal, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard, ComponentJsSplit } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -141,7 +141,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5"> ES modules require HTTP due to browser CORS policy - they won't load from <code>file://</code> URLs. Use any local server: </p>
 
-<CodeCard title="any of these work" lang="bash" mb="2.5rem">{"make dev              # this repo: Vite dev server on :3000\nbun run dev           # same, without make\nbunx vite .           # bare Vite against dist/ in another project\nbunx serve dist/      # any static server works\npython3 -m http.server"}</CodeCard>
+<Terminal commands={"make dev              # this repo: Vite dev server on :3000\nbun run dev           # same, without make\nbunx vite .           # bare Vite against dist/ in another project\nbunx serve dist/      # any static server works\npython3 -m http.server"} title="any of these work" mb="2.5rem" />
 
 <div class="sep" />
 

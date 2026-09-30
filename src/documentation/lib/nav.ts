@@ -212,6 +212,9 @@ export const NAV: NavSection[] = [
     { label: 'Marker', href: 'marker.html', isNew: true },
     { label: 'Message', href: 'message.html', isNew: true },
   ]},
+  { heading: 'Mockup', icon: 'terminal', items: [
+    { label: 'Code', href: 'mockup-code.html', isNew: true },
+  ]},
   { heading: 'Presentations', icon: 'presentation', items: [
     { label: 'Presentation', href: 'presentation.html' },
     { label: 'Deck Gallery', href: 'presentations.html', children: [

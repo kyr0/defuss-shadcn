@@ -42,3 +42,30 @@ export function CodeBlock({
     </div>
   );
 }
+
+/** A command block for the guides, dogfooding the shipped mockup-code
+ * terminal. One command per line of `commands`; a line continuing a
+ * backslash-ended one gets an empty prompt so it lines up. The prompt is
+ * generated content, so the Copy button (innerText) copies the commands
+ * alone - a pasteable shell command, continuation backslashes included. */
+export function Terminal({
+  commands,
+  prompt = '$',
+  title,
+  variant,
+  mb,
+}: Props & { commands: string; prompt?: string; title?: string; variant?: string; mb?: string }) {
+  const lines = commands.split('\n');
+  return (
+    <div style={`position:relative;margin-top:0.5rem;${mb ? `margin-bottom:${mb};` : ''}`} data-code-static="">
+      <CopyButton />
+      <div class="mockup-code" {...(title ? { 'data-title': title } : {})} {...(variant ? { 'data-variant': variant } : {})}>
+        {lines.map((line, i) => (
+          <pre data-prefix={i > 0 && lines[i - 1].trimEnd().endsWith('\\') ? '' : prompt}>
+            <code>{line}</code>
+          </pre>
+        ))}
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>mockup-code e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/mockup-code/mockup-code.css" />
+  </head>
+  <body style="margin:0;padding:1.5rem;font-family:system-ui;width:480px;">
+    <!-- mirrors the doc page: prompt, output tones, highlights, long lines
+         (scroll + wrap), no prefix, variants, chrome + title, numbers,
+         continuation, cursor, sizes, RTL -->
+    <div class="mockup-code" id="m-basic">
+      <pre data-prefix="$" id="l-cmd"><code>npm i defuss-shadcn</code></pre>
+      <pre data-prefix=">" data-tone="warning" id="l-warn"><code>installing...</code></pre>
+      <pre data-prefix=">" data-tone="success" id="l-ok"><code>Done!</code></pre>
+      <pre data-prefix=">" data-tone="info" id="l-info"><code>info</code></pre>
+      <pre data-prefix=">" data-tone="destructive" id="l-bad"><code>bad</code></pre>
+      <pre data-prefix=">" data-tone="muted" id="l-muted"><code>muted</code></pre>
+      <pre id="l-plain"><code>without prefix</code></pre>
+      <pre data-prefix="2" data-tone="info" data-highlight id="l-hl"><code>tinted</code></pre>
+      <pre data-prefix="3" data-tone="warning" data-highlight="solid" id="l-solid"><code>Error!</code></pre>
+    </div>
+    <div class="mockup-code" id="m-long" style="margin-top:1rem;">
+      <pre data-prefix="~" id="l-long"><code>Magnam dolore beatae necessitatibus nemo ipsum itaque sit. Et porro quae qui et et dolore ratione.</code></pre>
+      <pre data-prefix="~" id="l-short"><code>short</code></pre>
+    </div>
+    <div class="mockup-code" id="m-wrap" data-wrap style="margin-top:1rem;">
+      <pre data-prefix="~" id="l-wrap"><code>Magnam dolore beatae necessitatibus nemo ipsum itaque sit. Et porro quae qui et et dolore ratione.</code></pre>
+    </div>
+    <div class="mockup-code" id="m-primary" data-variant="primary" style="margin-top:1rem;"><pre><code>primary</code></pre></div>
+    <div class="mockup-code" id="m-muted" data-variant="muted" style="margin-top:1rem;"><pre data-prefix=">" data-tone="success" id="l-muted-ok"><code>ok</code></pre></div>
+    <div class="mockup-code" id="m-outline" data-variant="outline" style="margin-top:1rem;"><pre><code>outline</code></pre></div>
+    <div class="mockup-code" id="m-mac" data-chrome="mac" data-title="zsh - project" style="margin-top:1rem;"><pre data-prefix="~"><code>git status</code></pre></div>
+    <div class="mockup-code" id="m-none" data-chrome="none" style="margin-top:1rem;"><pre data-prefix="$"><code>bun --version</code></pre></div>
+    <div class="mockup-code" id="m-num" data-numbers style="margin-top:1rem;">
+      <pre id="n1"><code>a</code></pre>
+      <pre id="n2"><code>b</code></pre>
+      <pre data-prefix="$" id="n3"><code>c</code></pre>
+      <pre id="n4"><code>d</code></pre>
+    </div>
+    <div class="mockup-code" id="m-cont" style="margin-top:1rem;">
+      <pre data-prefix="$" id="c1"><code>npx skills add kyr0/defuss-shadcn \</code></pre>
+      <pre data-prefix="" id="c2"><code>  --skill defuss-shadcn</code></pre>
+    </div>
+    <div class="mockup-code" id="m-cursor" style="margin-top:1rem;"><pre data-prefix="$" data-cursor id="cur"><code></code></pre></div>
+    <div class="mockup-code" id="s-sm" data-size="sm" style="margin-top:1rem;"><pre><code>sm</code></pre></div>
+    <div class="mockup-code" id="s-lg" data-size="lg" style="margin-top:1rem;"><pre><code>lg</code></pre></div>
+    <div dir="rtl" style="margin-top:1rem;"><div class="mockup-code" id="m-rtl"><pre data-prefix="$" id="rtl-l"><code>npm i x</code></pre></div></div>
+  </body>
+</html>

@@ -11,13 +11,13 @@
 
 **A UI component system that scales with _(local)_ AI.** Themeable components built on semantic HTML, modern CSS, and vanilla JavaScript. No framework. No build step for consumers - `dist/` is committed and ready to use as-is. The simplest possible foundation for AI-driven prototyping.
 
-**95 components - 44 with JavaScript, 51 CSS-only - 166.7 KiB minified + compressed - 114.6 KiB as the all.css/all.js bundle.**
-51 of 95 components need no JavaScript - native HTML and modern CSS cover them entirely.
+**96 components - 44 with JavaScript, 52 CSS-only - 168.1 KiB minified + compressed - 115.4 KiB as the all.css/all.js bundle.**
+52 of 96 components need no JavaScript - native HTML and modern CSS cover them entirely.
 <!-- parity anchor: README ↔ index (AGENTS.md) - the footprint sentence and pillar set must match src/documentation/pages/index.mdx; commit both files together -->
 The footprint is measured from the shipped `dist/` files on every build and published as
 [`dist/stats.json`](dist/stats.json); `verify` fails the build if this sentence and that file disagree.
 
-The set includes 13 marketing blocks (Site Header, Hero, Pricing, Testimonials, Blog, Footer, …) - full-page sections composed from the same tokens and primitives, all CSS-only - and a new Chat section: message rows (avatar, name, time, status, actions), bubbles (groups, tails, reactions, typing) and markers (inline status, spinners, separators).
+The set includes 13 marketing blocks (Site Header, Hero, Pricing, Testimonials, Blog, Footer, …) - full-page sections composed from the same tokens and primitives, all CSS-only - and a new Chat section: message rows (avatar, name, time, status, actions), bubbles (groups, tails, reactions, typing) and markers (inline status, spinners, separators) - plus a Mockup section, starting with a terminal window for commands and output.
 
 **[Documentation & Live Demos →](https://kyr0.github.io/defuss-shadcn/)** · [Architecture (ARCH.md)](ARCH.md) · [Agent skill (SKILL.md)](skills/defuss-shadcn/SKILL.md)
 

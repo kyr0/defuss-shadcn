@@ -1,25 +1,25 @@
 {
-  "total": 95,
+  "total": 96,
   "byType": {
-    "ATM": 57,
+    "ATM": 58,
     "MOL": 21,
     "ORG": 2,
     "BLK": 13,
     "TPL": 2
   },
   "withJs": 44,
-  "withoutJs": 51,
-  "totalSize": 1087951,
-  "totalSizeMinified": 507258,
-  "totalSizeGz": 339040,
-  "totalSizeGzMinified": 170714,
+  "withoutJs": 52,
+  "totalSize": 1094971,
+  "totalSizeMinified": 511271,
+  "totalSizeGz": 341214,
+  "totalSizeGzMinified": 172107,
   "bundle": {
     "jsSize": 409667,
     "jsSizeMinified": 230198,
-    "cssSize": 558533,
-    "cssSizeMinified": 306845,
-    "totalSizeGz": 209185,
-    "totalSizeGzMinified": 117303
+    "cssSize": 565613,
+    "cssSizeMinified": 310839,
+    "totalSizeGz": 210800,
+    "totalSizeGzMinified": 118202
   },
   "core": {
     "jsSize": 88008,
@@ -627,6 +627,19 @@
       "totalSizeGzMinified": 1230,
       "totalSize": 6716,
       "totalSizeMinified": 4036
+    },
+    "mockup-code": {
+      "name": "mockup-code",
+      "type": "ATM",
+      "withJs": false,
+      "jsSize": 0,
+      "jsSizeMinified": 0,
+      "cssSize": 7020,
+      "cssSizeMinified": 4013,
+      "totalSizeGz": 2174,
+      "totalSizeGzMinified": 1393,
+      "totalSize": 7020,
+      "totalSizeMinified": 4013
     },
     "motion": {
       "name": "motion",

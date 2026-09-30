@@ -533,6 +533,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/message.png
 **Skill:** [components/message/component-skill.md](components/message/component-skill.md)
 
+## Code Mockup
+
+**Type:** ATM
+**Why:** A terminal window is a stack of <pre> lines under CSS window chrome; prompts, line numbers and the cursor are generated content, so selecting and copying the commands never picks them up - no script, no copy clean-up.
+**When:** Showing commands and their output as a terminal - install steps, CLI docs, a session transcript. Source code with syntax colours takes a highlighted code block; a single inline key takes kbd.
+**Files:** dist/components/mockup-code/mockup-code.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/mockup-code.png
+**Skill:** [components/mockup-code/component-skill.md](components/mockup-code/component-skill.md)
+
 ## Motion
 
 **Type:** ATM

@@ -4,7 +4,7 @@ description: "Install defuss-shadcn - straight from the jsDelivr CDN into plain 
 slug: "installation"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Terminal, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -61,7 +61,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <div style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border);">
   <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.75rem;">With a package manager</h2>
   <p class="text-sm text-muted-foreground mb-3">In a project that already has a package manager and a bundler (Vite, webpack, Rollup, Parcel, esbuild, Bun), install the package and import the same files in the same order - side-effect imports, once, in the app entry. The package ships plain CSS and ES modules; the bundler only resolves the paths.</p>
-  <CodeBlock lang="bash" code={"npm install defuss-shadcn   # or: bun add / pnpm add / yarn add defuss-shadcn"} static />
+  <Terminal commands={"npm install defuss-shadcn   # or: bun add / pnpm add / yarn add defuss-shadcn"} />
   <CodeBlock lang="javascript" code={"// everything: tokens + utilities → all component CSS → runtime + all behavior\nimport 'defuss-shadcn/dist/components/core.css';\nimport 'defuss-shadcn/dist/components/all.css';\nimport 'defuss-shadcn/dist/components/all.js';\n\n// …or only what you need (core.js MUST precede every component .js)\nimport 'defuss-shadcn/dist/components/core.css';\nimport 'defuss-shadcn/dist/components/dialog/dialog.css';\nimport 'defuss-shadcn/dist/components/core.js';\nimport 'defuss-shadcn/dist/components/dialog/dialog.js';"} static />
   <p class="text-sm text-muted-foreground mt-2">Icons and charts stay separate packages: <code>npm install lucide</code> (then <code>createIcons(&#123; icons &#125;)</code>) for <code>&lt;i data-lucide&gt;</code>, and <code>npm install echarts</code> assigned to <code>globalThis.echarts</code> before a chart mounts. For AI agents, the package's <code>skills/defuss-shadcn/SKILL.md</code> condenses both install paths, the rules, and an index of every component skill and documentation page - install it into your coding agent with one command (see <DocLink href="vibe-coding.html#install-as-an-ai-agent-skill">Vibe Coding / Agentic Engineering</DocLink>).</p>
 </div>

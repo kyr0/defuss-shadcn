@@ -4,7 +4,7 @@ description: "Build with defuss-shadcn through an AI coding agent - install the 
 slug: "vibe-coding"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Terminal, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -23,48 +23,48 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
   <h3 style="margin:1.75rem 0 0.5rem;font-size:1rem;font-weight:500;">Claude Code</h3>
   <p class="text-sm text-muted-foreground mb-3">Claude Code can install <code>defuss-shadcn</code> directly from its native plugin marketplace. Inside Claude Code:</p>
-  <CodeBlock lang="text" code={"/plugin marketplace add kyr0/defuss-shadcn\n/plugin install defuss-shadcn@defuss-shadcn"} static />
+  <Terminal commands={"/plugin marketplace add kyr0/defuss-shadcn\n/plugin install defuss-shadcn@defuss-shadcn"} prompt="›" title="Claude Code" />
   <p class="text-sm text-muted-foreground mt-3 mb-3">Or from your shell:</p>
-  <CodeBlock lang="bash" code={"claude plugin marketplace add kyr0/defuss-shadcn\nclaude plugin install defuss-shadcn@defuss-shadcn"} static />
+  <Terminal commands={"claude plugin marketplace add kyr0/defuss-shadcn\nclaude plugin install defuss-shadcn@defuss-shadcn"} />
   <p class="text-sm text-muted-foreground mt-2">Start a new Claude Code session after installation.</p>
 
   <h3 style="margin:1.75rem 0 0.5rem;font-size:1rem;font-weight:500;">Codex, Cursor, Gemini CLI, Copilot, Windsurf, and others</h3>
   <p class="text-sm text-muted-foreground mb-3">The repository also exposes <code>defuss-shadcn</code> as a standard Agent Skill. The simplest cross-agent installation uses the open <DocLink href="https://skills.sh/" target="_blank"><code>skills</code></DocLink> CLI:</p>
-  <CodeBlock lang="bash" code={"npx skills add kyr0/defuss-shadcn --skill defuss-shadcn"} static />
+  <Terminal commands={"npx skills add kyr0/defuss-shadcn --skill defuss-shadcn"} />
   <p class="text-sm text-muted-foreground mt-2 mb-3">The installer detects/selects supported coding agents interactively.</p>
   <p class="text-sm text-muted-foreground mb-3">Install specifically for <strong>Codex</strong>:</p>
-  <CodeBlock lang="bash" code={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent codex"} static />
+  <Terminal commands={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent codex"} />
   <p class="text-sm text-muted-foreground mt-3 mb-3">For <strong>Claude Code</strong>:</p>
-  <CodeBlock lang="bash" code={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent claude-code"} static />
+  <Terminal commands={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent claude-code"} />
   <p class="text-sm text-muted-foreground mt-3 mb-3">For <strong>Cursor</strong>:</p>
-  <CodeBlock lang="bash" code={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent cursor"} static />
+  <Terminal commands={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent cursor"} />
   <p class="text-sm text-muted-foreground mt-3 mb-3">For <strong>Gemini CLI</strong>:</p>
-  <CodeBlock lang="bash" code={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent gemini-cli"} static />
+  <Terminal commands={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent gemini-cli"} />
   <p class="text-sm text-muted-foreground mt-3 mb-3">For <strong>GitHub Copilot</strong>:</p>
-  <CodeBlock lang="bash" code={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent github-copilot"} static />
+  <Terminal commands={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent github-copilot"} />
   <p class="text-sm text-muted-foreground mt-3 mb-3">For <strong>Windsurf</strong>:</p>
-  <CodeBlock lang="bash" code={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent windsurf"} static />
+  <Terminal commands={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent windsurf"} />
   <p class="text-sm text-muted-foreground mt-3 mb-3">Install for several agents at once:</p>
-  <CodeBlock lang="bash" code={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent claude-code \\\n  --agent codex \\\n  --agent cursor \\\n  --agent gemini-cli"} static />
+  <Terminal commands={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent claude-code \\\n  --agent codex \\\n  --agent cursor \\\n  --agent gemini-cli"} />
 
   <h3 style="margin:1.75rem 0 0.5rem;font-size:1rem;font-weight:500;">Global installation</h3>
   <p class="text-sm text-muted-foreground mb-3">By default, <code>skills</code> installs into the current project. Use <code>--global</code> / <code>-g</code> to make <code>defuss-shadcn</code> available across projects:</p>
-  <CodeBlock lang="bash" code={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent codex \\\n  --global"} static />
+  <Terminal commands={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent codex \\\n  --global"} />
   <p class="text-sm text-muted-foreground mt-3 mb-3">Or interactively choose an agent and global scope:</p>
-  <CodeBlock lang="bash" code={"npx skills add kyr0/defuss-shadcn"} static />
+  <Terminal commands={"npx skills add kyr0/defuss-shadcn"} />
 
   <h3 style="margin:1.75rem 0 0.5rem;font-size:1rem;font-weight:500;">Non-interactive installation</h3>
   <p class="text-sm text-muted-foreground mb-3">Useful for bootstrap scripts and development environments:</p>
-  <CodeBlock lang="bash" code={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent codex \\\n  --global \\\n  --yes"} static />
+  <Terminal commands={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent codex \\\n  --global \\\n  --yes"} />
 
   <h3 style="margin:1.75rem 0 0.5rem;font-size:1rem;font-weight:500;">Update installed skills</h3>
-  <CodeBlock lang="bash" code={"npx skills update"} static />
+  <Terminal commands={"npx skills update"} />
   <p class="text-sm text-muted-foreground mt-3 mb-3">For Claude Code's native marketplace:</p>
-  <CodeBlock lang="text" code={"/plugin marketplace update defuss-shadcn"} static />
+  <Terminal commands={"/plugin marketplace update defuss-shadcn"} prompt="›" title="Claude Code" />
 
   <h3 style="margin:1.75rem 0 0.5rem;font-size:1rem;font-weight:500;">Using the skill</h3>
   <p class="text-sm text-muted-foreground mb-3">Once installed, simply ask the agent to build UI with <code>defuss-shadcn</code>. Codex can also invoke the skill explicitly:</p>
-  <CodeBlock lang="text" code={"$defuss-shadcn build a settings page with a sidebar, tabs and a form"} static />
+  <Terminal commands={"$defuss-shadcn build a settings page with a sidebar, tabs and a form"} prompt="›" title="Codex" />
 </div>
 
 </DocPage>
