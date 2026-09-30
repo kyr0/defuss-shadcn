@@ -23,7 +23,7 @@
     padding: 0 0.5rem;
     min-width: 2.25rem;
 
-    &:hover {
+    &:hover:not(:disabled) {
       background-color: var(--muted);
       color: var(--muted-foreground);
     }
@@ -32,7 +32,7 @@
       background-color: var(--accent);
       color: var(--accent-foreground);
 
-      &:hover {
+      &:hover:not(:disabled) {
         background-color: color-mix(in oklch, var(--accent) 85%, var(--foreground));
       }
     }
@@ -42,9 +42,11 @@
       outline-offset: 2px;
     }
 
+    /* disabled: dimmed, with the not-allowed cursor - no pointer-events: none,
+       which would hide the cursor too (a disabled button fires no click) */
     &:disabled {
-      pointer-events: none;
       opacity: 0.5;
+      cursor: not-allowed;
     }
 
     & svg {
@@ -60,7 +62,7 @@
       background: transparent;
       box-shadow: var(--shadow-xs);
 
-      &:hover {
+      &:hover:not(:disabled) {
         background-color: var(--accent);
         color: var(--accent-foreground);
       }
@@ -69,7 +71,7 @@
         background-color: var(--accent);
         color: var(--accent-foreground);
 
-        &:hover {
+        &:hover:not(:disabled) {
           background-color: color-mix(in oklch, var(--accent) 85%, var(--foreground));
         }
       }

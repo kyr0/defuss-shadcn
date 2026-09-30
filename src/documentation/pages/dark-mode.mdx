@@ -4,7 +4,7 @@ description: "How dark mode works in defuss-shadcn: token pairs, system preferen
 slug: "dark-mode"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeWindow, CodeCard, TableCard } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -16,11 +16,11 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5">The token file (<code>default-semantic-tokens.css</code>) defines two complete sets of color values. The <code>:root</code> block provides light mode values. The <code>.dark</code> selector overrides every color token with its dark mode counterpart.</p>
 
-<CodeCard title="default-semantic-tokens.css - simplified" lang="css" mb="1.5rem"><Dim>{"/* Light mode (default) */"}</Dim>{"\n:root {\n  color-scheme: light;\n  --background: oklch(1 0 0);        "}<Dim>{"/* white */"}</Dim>{"\n  --foreground: oklch(0.145 0 0);    "}<Dim>{"/* near-black */"}</Dim>{"\n  --primary: oklch(0.205 0 0);\n  --primary-foreground: oklch(0.985 0 0);\n  "}<Dim>{"/* ... all other tokens ... */"}</Dim>{"\n}\n\n"}<Dim>{"/* Dark mode - every token flips */"}</Dim>{"\n.dark {\n  color-scheme: dark;\n  --background: oklch(0.145 0 0);    "}<Dim>{"/* near-black */"}</Dim>{"\n  --foreground: oklch(0.985 0 0);    "}<Dim>{"/* near-white */"}</Dim>{"\n  --primary: oklch(0.922 0 0);\n  --primary-foreground: oklch(0.205 0 0);\n  "}<Dim>{"/* ... all other tokens ... */"}</Dim>{"\n}"}</CodeCard>
+<CodeWindow lang="css" title="default-semantic-tokens.css - simplified" mb="1.5rem" code={"/* Light mode (default) */\n:root {\n  color-scheme: light;\n  --background: oklch(1 0 0);        /* white */\n  --foreground: oklch(0.145 0 0);    /* near-black */\n  --primary: oklch(0.205 0 0);\n  --primary-foreground: oklch(0.985 0 0);\n  /* ... all other tokens ... */\n}\n\n/* Dark mode - every token flips */\n.dark {\n  color-scheme: dark;\n  --background: oklch(0.145 0 0);    /* near-black */\n  --foreground: oklch(0.985 0 0);    /* near-white */\n  --primary: oklch(0.922 0 0);\n  --primary-foreground: oklch(0.205 0 0);\n  /* ... all other tokens ... */\n}"} />
 
 <p class="text-sm text-muted-foreground mb-5">Components reference tokens with <code>var(--background)</code>, <code>var(--foreground)</code>, etc. When the <code>.dark</code> class is present on <code>&lt;html&gt;</code>, the CSS cascade replaces every value. No component CSS needs to change.</p>
 
-<CodeCard title="toggling dark mode" lang="markup" mb="2.5rem"><Dim>{"<!-- Light mode -->"}</Dim>{"<"}{"html lang=\"en\""}{">"}<Dim>{"<!-- Dark mode - just add the class -->"}</Dim>{"<"}{"html lang=\"en\" class=\"dark\""}{">"}</CodeCard>
+<CodeWindow lang="markup" title="toggling dark mode" mb="2.5rem" code={"<!-- Light mode -->\n<html lang=\"en\">\n<!-- Dark mode - just add the class -->\n<html lang=\"en\" class=\"dark\">"} />
 
 <div class="sep" />
 
@@ -145,9 +145,9 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5">The <code>&lt;meta name="color-scheme"&gt;</code> tag and the <code>color-scheme</code> CSS property tell the browser which color schemes your page supports. This affects native UI elements like scrollbars, form controls, and the default background.</p>
 
-<CodeCard title="HTML meta tag" lang="markup" mb="1.5rem"><Dim>{"<!-- In <head> - tells browser both schemes are supported -->"}</Dim>{"<"}{"meta name=\"color-scheme\" content=\"light dark\""}{">"}</CodeCard>
+<CodeWindow lang="markup" title="HTML meta tag" mb="1.5rem" code={"<!-- In <head> - tells browser both schemes are supported -->\n<meta name=\"color-scheme\" content=\"light dark\">"} />
 
-<CodeCard title="CSS color-scheme property in tokens" lang="css" mb="2.5rem">{":root  { color-scheme: light; }\n.dark  { color-scheme: dark; }"}</CodeCard>
+<CodeWindow lang="css" title="CSS color-scheme property in tokens" mb="2.5rem" code={":root  { color-scheme: light; }\n.dark  { color-scheme: dark; }"} />
 
 <div class="sep" />
 
@@ -155,7 +155,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5">Use <code>prefers-color-scheme</code> to detect the user's OS-level dark mode preference. The JavaScript <code>matchMedia</code> API provides both initial detection and a live listener for real-time changes.</p>
 
-<CodeCard title="detect and react to OS theme" lang="javascript" mb="2.5rem"><Dim>{"// Check OS preference at page load"}</Dim>{"\nconst darkMQ = window.matchMedia('(prefers-color-scheme: dark)');\n\nif (darkMQ.matches) {\n  document.documentElement.classList.add('dark');\n}\n\n"}<Dim>{"// React to OS changes in real time\n// Skip if user has set a manual preference"}</Dim>{"\ndarkMQ.addEventListener('change', (e) => {\n  if (localStorage.getItem('defuss-shadcn-theme')) return;\n  document.documentElement.classList.toggle('dark', e.matches);\n  document.documentElement.style.colorScheme =\n    e.matches ? 'dark' : 'light';\n});"}</CodeCard>
+<CodeWindow lang="javascript" title="detect and react to OS theme" mb="2.5rem" code={"// after load, df$ (installed by core.js / all.js) does the DOM work\nconst darkMQ = matchMedia('(prefers-color-scheme: dark)');\n\n// Follow OS changes in real time -\n// unless the user picked a theme by hand\ndarkMQ.addEventListener('change', (e) => {\n  if (localStorage.getItem('defuss-shadcn-theme')) return;\n  df$('html')\n    .toggleClass('dark', e.matches)\n    .css('color-scheme', e.matches ? 'dark' : 'light');\n});"} />
 
 <div class="sep" />
 
@@ -163,7 +163,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5">When a user explicitly toggles dark mode, save their choice to <code>localStorage</code>. On page load, check localStorage first - if no preference is saved, fall back to the OS setting.</p>
 
-<CodeCard title="persistence logic - runs before first paint" lang="javascript" mb="1.5rem"><Dim>{"// This script must be in <head> (synchronous, no defer)\n// to prevent flash of wrong theme"}</Dim>{"\nconst saved = localStorage.getItem('defuss-shadcn-theme');\nconst prefersDark = window.matchMedia(\n  '(prefers-color-scheme: dark)'\n).matches;\n\nif (saved === 'dark' || (!saved "}{"&"}{"&"}{" prefersDark)) {\n  document.documentElement.classList.add('dark');\n  document.documentElement.style.colorScheme = 'dark';\n}"}</CodeCard>
+<CodeWindow lang="javascript" title="persistence logic - runs before first paint" mb="1.5rem" code={"// Synchronous in <head> (no defer, no module): it must run before the\n// first paint, so before any library - plain DOM on purpose, not df$\nconst saved = localStorage.getItem('defuss-shadcn-theme');\nconst prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;\n\nif (saved === 'dark' || (!saved && prefersDark)) {\n  document.documentElement.classList.add('dark');\n  document.documentElement.style.colorScheme = 'dark';\n}"} />
 
 <p class="text-sm text-muted-foreground mb-5"><strong>Key detail:</strong> This script runs synchronously in <code>&lt;head&gt;</code> (no <code>defer</code> or <code>type="module"</code>) so the dark class is applied before the browser paints. This prevents a flash of light theme on page load.</p>
 
@@ -173,11 +173,11 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5">A minimal dark mode toggle in three parts: the initialization script in <code>&lt;head&gt;</code>, the toggle button, and the click handler.</p>
 
-<CodeCard title="step 1 - initialization script (in &lt;head&gt;)" lang="markup" mb="1.5rem">{"<"}{"script"}{">"}<Dim>{"// Apply saved preference or OS default before paint"}</Dim>{"\n  const saved = localStorage.getItem('defuss-shadcn-theme');\n  const prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;\n  if (saved === 'dark' || (!saved "}{"&"}{"&"}{" prefersDark)) {\n    document.documentElement.classList.add('dark');\n    document.documentElement.style.colorScheme = 'dark';\n  }\n"}{"<"}{"/script"}{">"}</CodeCard>
+<CodeWindow lang="markup" title="step 1 - initialization script (in <head>)" mb="1.5rem" code={"<script>\n  // Before paint - before df$ exists: saved preference, else the OS default\n  const saved = localStorage.getItem('defuss-shadcn-theme');\n  const prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;\n  if (saved === 'dark' || (!saved && prefersDark)) {\n    document.documentElement.classList.add('dark');\n    document.documentElement.style.colorScheme = 'dark';\n  }\n</script>"} />
 
-<CodeCard title="step 2 - toggle button markup" lang="markup" mb="1.5rem">{"<"}{"button id=\"theme-toggle\" class=\"btn\"\n  data-size=\"icon\" aria-label=\"Toggle dark mode\""}{">"}<Dim>{"<!-- Sun icon (visible in dark mode) -->"}</Dim>{"<"}{"svg id=\"icon-sun\""}{">"}{"..."}{"<"}{"/svg"}{">"}<Dim>{"<!-- Moon icon (visible in light mode) -->"}</Dim>{"<"}{"svg id=\"icon-moon\" style=\"display:none\""}{">"}{"..."}{"<"}{"/svg"}{">"}{"<"}{"/button"}{">"}</CodeCard>
+<CodeWindow lang="html" title="step 2 - toggle button markup" mb="1.5rem" code={"<button id=\"theme-toggle\" class=\"btn\" data-size=\"icon\"\n        aria-label=\"Toggle dark mode\">\n  <!-- Sun icon (shown in dark mode) -->\n  <i data-lucide=\"sun\" class=\"theme-icon-sun\"></i>\n  <!-- Moon icon (shown in light mode) -->\n  <i data-lucide=\"moon\" class=\"theme-icon-moon\"></i>\n</button>\n\n<style>\n  /* the icons follow the class - no script touches them */\n  .theme-icon-sun { display: none; }\n  .dark .theme-icon-sun { display: inline; }\n  .dark .theme-icon-moon { display: none; }\n</style>"} />
 
-<CodeCard title="step 3 - click handler" lang="javascript" mb="2.5rem">{"document.getElementById('theme-toggle')\n  .addEventListener('click', () => {\n    const isDark = document.documentElement\n      .classList.toggle('dark');\n\n    document.documentElement.style.colorScheme =\n      isDark ? 'dark' : 'light';\n\n    localStorage.setItem('defuss-shadcn-theme',\n      isDark ? 'dark' : 'light');\n  });"}</CodeCard>
+<CodeWindow lang="javascript" title="step 3 - click handler" mb="2.5rem" code={"// df$ - the query runtime core installed - reads and writes the DOM\ndf$('#theme-toggle').on('click', () => {\n  const dark = !df$('html').hasClass('dark');\n  df$('html')\n    .toggleClass('dark', dark)\n    .css('color-scheme', dark ? 'dark' : 'light');\n  localStorage.setItem('defuss-shadcn-theme', dark ? 'dark' : 'light');\n});"} />
 
 <div class="sep" />
 

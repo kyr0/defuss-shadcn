@@ -4,7 +4,7 @@ description: "One shared, typing-safe document keydown listener - df$.shadcn.sha
 slug: "global-keys"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeWindow, CodeCard, TableCard } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -25,7 +25,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   ['Safe before a document exists', 'Binding outside a browser is a no-op that still returns a working unbind'],
 ]} />
 
-<CodeCard title="the API" lang="javascript" mb="2.5rem">{"const { bindGlobalKeys } = df$.shadcn.shared; // installed by core.js / all.js\n\nconst unbind = bindGlobalKeys((event) => {\n  if (event.key !== '?') return;      // not ours - let later handlers see it\n  event.preventDefault();\n  document.getElementById('help').showModal();\n  return true;                          // ours - stop here\n});\n\n// later, e.g. when the view that owns the shortcut goes away\nunbind();"}</CodeCard>
+<CodeWindow lang="javascript" title="the API" mb="2.5rem" code={"const { bindGlobalKeys } = df$.shadcn.shared; // installed by core.js / all.js\n\nconst unbind = bindGlobalKeys((event) => {\n  if (event.key !== '?') return;      // not ours - let later handlers see it\n  event.preventDefault();\n  df$('#help').get(0).showModal();    // df$ selects; showModal() stays native\n  return true;                        // ours - stop here\n});\n\n// later, e.g. when the view that owns the shortcut goes away\nunbind();"} />
 
 <H2>Your own shortcuts</H2>
 
@@ -40,7 +40,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <li><kbd>Esc</kbd> in the field leaves it (blur), so <kbd>?</kbd> / <kbd>/</kbd> work again right away</li>
 </ul>
 
-<CodeCard title="opting in to keys typed into fields" lang="javascript" mb="2.5rem">{"const { bindGlobalKeys, isEditableTarget } = df$.shadcn.shared;\n\nbindGlobalKeys((event) => {\n  const inField = isEditableTarget(event);\n  if (inField && event.target.value !== '' && event.key !== 'Escape') return; // typing - hands off\n  if (event.key === '?') { event.preventDefault(); openHelp(); return true; }\n  if (event.key === '/' && !inField) { event.preventDefault(); search.focus(); return true; }\n  if (event.key === 'Escape' && inField) { event.target.blur(); return true; }\n}, { editable: true }); // ← without this, keys typed into fields never arrive here"}</CodeCard>
+<CodeWindow lang="javascript" title="opting in to keys typed into fields" mb="2.5rem" code={"const { bindGlobalKeys, isEditableTarget } = df$.shadcn.shared;\n\nbindGlobalKeys((event) => {\n  const inField = isEditableTarget(event);\n  if (inField && event.target.value !== '' && event.key !== 'Escape') return; // typing - hands off\n  if (event.key === '?') { event.preventDefault(); openHelp(); return true; }\n  if (event.key === '/' && !inField) { event.preventDefault(); search.focus(); return true; }\n  if (event.key === 'Escape' && inField) { event.target.blur(); return true; }\n}, { editable: true }); // ← without this, keys typed into fields never arrive here"} />
 
 ```html example schema="none" label="Help on ?, search on /" hint="One bindGlobalKeys handler registered with { editable: true }: ? opens help everywhere except inside a field that already holds text, / jumps into the search, Esc leaves the field. Click into the example first - keyboard focus has to be inside it." height="16"
 <div class="flex flex-col gap-3" style="max-width:24rem;outline:none;" tabindex="-1" id="keys-demo">
@@ -61,32 +61,33 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </dialog>
 <script type="module">
   const { bindGlobalKeys, isEditableTarget } = df$.shadcn.shared;
-  const search = document.getElementById('keys-search');
-  const last = document.getElementById('keys-last');
+  // df$ selects (get(0) = the element); focus() and showModal() stay native
+  const search = df$('#keys-search').get(0);
+  const last = df$('#keys-last');
   bindGlobalKeys((event) => {
     const inField = isEditableTarget(event);
     // a field that holds text: ? and / are characters - let the browser type them
     if (inField && event.target.value !== '' && event.key !== 'Escape') return;
     if (event.key === '?') {
       event.preventDefault(); // keep a ? out of the empty field
-      document.getElementById('keys-help').showModal();
-      last.value = inField ? '? - help (from the empty field)' : '? - help';
+      df$('#keys-help').get(0).showModal();
+      last.val(inField ? '? - help (from the empty field)' : '? - help');
       return true;
     }
     if (event.key === '/' && !inField) {
       event.preventDefault(); // or the "/" would be typed into the field we focus
       search.focus();
-      last.value = '/ - search';
+      last.val('/ - search');
       return true;
     }
     if (event.key === 'Escape' && inField) {
       event.target.blur();
-      document.getElementById('keys-demo').focus();
-      last.value = 'Esc - left the field';
+      df$('#keys-demo').get(0).focus();
+      last.val('Esc - left the field');
       return true;
     }
   }, { editable: true });
-  document.getElementById('keys-demo').focus({ focusVisible: false });
+  df$('#keys-demo').get(0).focus({ focusVisible: false });
 </script>
 ```
 

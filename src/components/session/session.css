@@ -1,0 +1,175 @@
+/* -- Session component -------------------------------------------
+   A chat session: a scrolling transcript (role="log") that follows the
+   live edge, jumps back to it, keeps its place when history loads, anchors
+   new turns, and takes dropped files - plus a footer for the composer.
+   The runtime keeps the data-* state current; CSS draws from it. */
+
+@layer components {
+  .session {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    color: var(--card-foreground);
+  }
+
+  /* -- Viewport: the scroller --------------------------------------- */
+  .session-viewport {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    padding: 1rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    /* the runtime keeps the reader's place when history prepends - the
+       browser's own scroll anchoring would correct twice */
+    overflow-anchor: none;
+    scrollbar-gutter: stable;
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: -2px;
+    }
+  }
+
+  /* short threads sit at the bottom, like every chat */
+  .session-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-block-start: auto;
+  }
+
+  /* rows off screen skip rendering; their size is remembered */
+  .session-item {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 3.5rem;
+
+    &[data-current] { scroll-margin-block-start: 1rem; }
+  }
+
+  /* data-animate: new rows rise in */
+  .session[data-animate] .session-item {
+    transition: opacity 250ms ease, translate 250ms ease;
+
+    @starting-style {
+      opacity: 0;
+      translate: 0 0.5rem;
+    }
+  }
+
+  /* -- Scroll buttons: float over the transcript, stuck to its edge -- */
+  .session-scroll-button {
+    position: sticky;
+    z-index: 1;
+    align-self: center;
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--background);
+    color: var(--foreground);
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+    opacity: 0;
+    scale: 0.85;
+    visibility: hidden;
+    transition: opacity 150ms, scale 150ms, visibility 150ms allow-discrete, background-color 150ms;
+
+    /* a chevron, drawn */
+    &::before {
+      content: "";
+      width: 0.5rem;
+      height: 0.5rem;
+      border-inline-end: 2px solid currentColor;
+      border-block-end: 2px solid currentColor;
+      rotate: 45deg;
+      translate: 0 -0.125rem;
+    }
+
+    &:hover { background: var(--accent); color: var(--accent-foreground); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+    /* to the end: at the bottom edge, overlaying the last row */
+    &[data-to="end"] {
+      order: 2;
+      inset-block-end: 0.5rem;
+      margin-block-start: -2.25rem;
+    }
+    /* to the start: at the top edge, pointing up */
+    &[data-to="start"] {
+      order: -1;
+      inset-block-start: 0.5rem;
+      margin-block-end: -2.25rem;
+      &::before { rotate: -135deg; translate: 0 0.125rem; }
+    }
+  }
+
+  .session[data-scrollable~="end"] .session-scroll-button[data-to="end"],
+  .session[data-scrollable~="start"] .session-scroll-button[data-to="start"] {
+    opacity: 1;
+    scale: 1;
+    visibility: visible;
+  }
+
+  /* -- Footer: the composer, a status line ---------------------------- */
+  .session-footer {
+    flex: none;
+    padding: 0.75rem;
+    border-top: 1px solid var(--border);
+    background: var(--card);
+  }
+
+  .session-status {
+    padding: 0.375rem 1rem;
+    border-top: 1px solid var(--border);
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+  }
+
+  /* -- Drop target: files dragged over the session ----------------------- */
+  .session[data-drop-active]::after {
+    content: attr(data-drop-label);
+    position: absolute;
+    inset: 0.5rem;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    border: 2px dashed var(--ring);
+    border-radius: var(--radius-lg);
+    background: color-mix(in oklch, var(--background) 85%, transparent);
+    color: var(--foreground);
+    font-size: 0.875rem;
+    font-weight: 500;
+    pointer-events: none;
+  }
+
+  /* -- Accessibility -------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .session-scroll-button,
+    .session[data-animate] .session-item { transition: none; }
+  }
+
+  @media (prefers-contrast: more) {
+    .session,
+    .session-footer,
+    .session-scroll-button { border-color: var(--foreground); }
+  }
+
+  @media (forced-colors: active) {
+    .session { border: 1px solid CanvasText; }
+    .session-scroll-button { border: 1px solid ButtonText; }
+    .session[data-drop-active]::after { border-color: Highlight; forced-color-adjust: none; }
+  }
+}

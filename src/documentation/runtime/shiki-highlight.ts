@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
 // Uses dual themes (github-light / github-dark) with CSS-variable output
 // so dark mode toggles instantly via html.dark class.
 
-import { codeToHtml } from 'https://esm.sh/shiki@3.0.0'
+import { codeToHtml, codeToTokens } from 'https://esm.sh/shiki@3.0.0'
 
 var langMap = {
   'language-scss': 'css',
@@ -77,6 +77,28 @@ async function highlightAll() {
         var shikiStyle = newPre.getAttribute('style') || ''
         pre.setAttribute('style', authored ? authored.replace(/;?$/, ';') + shikiStyle : shikiStyle)
         pre.innerHTML = newPre.innerHTML
+      })
+    )
+  })
+
+  // guide code windows (the shipped mockup-code, one <pre> per line):
+  // colour each line in place so the CSS line numbers and the lines stay.
+  // The window is dark in both modes, so it takes the dark theme alone.
+  document.querySelectorAll('.mockup-code[data-lang]:not([data-highlighted])').forEach(function (win) {
+    win.setAttribute('data-highlighted', '')
+    var lines = Array.from(win.querySelectorAll(':scope > pre > code'))
+    var raw = lines.map(function (code) { return code.textContent }).join('\n')
+    jobs.push(
+      codeToTokens(raw, { lang: win.getAttribute('data-lang'), theme: 'github-dark' }).then(function (res) {
+        res.tokens.forEach(function (line, i) {
+          if (!lines[i]) return
+          lines[i].replaceChildren.apply(lines[i], line.map(function (token) {
+            var span = document.createElement('span')
+            span.textContent = token.content
+            if (token.color) span.style.color = token.color
+            return span
+          }))
+        })
       })
     )
   })

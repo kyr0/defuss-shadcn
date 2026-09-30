@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "name": "window",
+  "states": {
+    "maximized": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".window"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "maximized"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "minimized": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".window"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "minimized"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "closed": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".window"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "closed"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

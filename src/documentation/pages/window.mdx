@@ -1,0 +1,430 @@
+---
+title: "Window"
+description: "Window component - desktop-style windows on a non-modal dialog: title bar with icon and title, minimize / maximize / close, drag to move, click to raise, native resize, Windows / macOS / Linux / retro chrome, and df$.shadcn.win to create, arrange and drive them."
+slug: "window"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="window" title="Window" component="window">
+  A desktop-style window: a title bar with an icon and a title, minimize / maximize / close on the right, dragged by its bar and raised to the front when you press it - several on one page. It is a <strong>non-modal <code>&lt;dialog&gt;</code></strong>, so opening, closing and the <code>close</code> event are the browser's, the × is a <code>&lt;form method="dialog"&gt;</code> button that works without script, and resizing is native CSS. Windows, macOS, Linux and retro chrome; <code>df$.shadcn.win</code> creates and arranges windows from script.
+</PageHeader>
+
+<SkillPanel component="window">
+  <SkillField label="Native basis">
+<SkillText>A non-modal <code>&lt;dialog class="window" open&gt;</code> in a <code>.window-desktop</code>; the controls are a <code>&lt;form method="dialog"&gt;</code>, the resize handle is CSS <code>resize</code>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/show" title="non-modal windows"><code>dialog.show()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form#method" title="the × without script"><code>method="dialog"</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/resize" title="native resize handle"><code>resize</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture" title="dragging by the title bar"><code>setPointerCapture()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/touch-action" title="drag on touch screens"><code>touch-action</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.window-desktop</code>
+    <code>.window</code>
+    <code>.window-titlebar</code>
+    <code>.window-icon</code>
+    <code>.window-title</code>
+    <code>.window-controls</code>
+    <code>.window-toolbar</code>
+    <code>.window-body</code>
+    <code>.window-statusbar</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-chrome</code> (<code>windows</code>, <code>mac</code>, <code>linux</code>, <code>retro</code>), <code>data-resizable</code>, <code>data-maximized</code>, <code>data-minimized</code>, <code>data-active</code> (set by the runtime), <code>data-flush</code> on the body; <code>--window-x</code> / <code>--window-y</code> / <code>--window-w</code> / <code>--window-h</code>; events <code>window-focus</code>, <code>window-move</code>, <code>close</code>; API <code>df$.shadcn.win</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Window" hint="Drag the title bar to move it (it never leaves the desktop for good), double-click it to maximize, − rolls it up to its bar, □ fills the desktop, × closes it - a native <form method='dialog'>. The corner handle resizes (CSS resize). Focus the title bar and use the arrow keys to move it by keyboard."
+<div class="window-desktop" style="height:20rem;">
+  <dialog class="window" open data-resizable style="--window-x:2rem; --window-y:1.5rem; --window-w:22rem;">
+    <header class="window-titlebar">
+      <i data-lucide="notebook-pen" class="window-icon"></i>
+      <h2 class="window-title">Notes</h2>
+      <form method="dialog" class="window-controls">
+        <button type="button" class="window-minimize" aria-label="Minimize"></button>
+        <button type="button" class="window-maximize" aria-label="Maximize"></button>
+        <button class="window-close" aria-label="Close"></button>
+      </form>
+    </header>
+    <div class="window-body">
+      <p class="m-0 text-sm">Windows are non-modal dialogs: the page and every other window stay usable.</p>
+    </div>
+    <footer class="window-statusbar">1 note</footer>
+  </dialog>
+</div>
+```
+
+```html example label="Several windows" schema="none" hint="Press any window - its bar, its content - and it comes to the front; the others dim their title (data-active marks the front one). Stacking is shared across the page."
+<div class="window-desktop" style="height:22rem;">
+  <dialog class="window" open style="--window-x:1.5rem; --window-y:1.5rem; --window-w:16rem;">
+    <header class="window-titlebar">
+      <i data-lucide="folder" class="window-icon"></i>
+      <h2 class="window-title">Projects</h2>
+      <form method="dialog" class="window-controls">
+        <button type="button" class="window-minimize" aria-label="Minimize"></button>
+        <button type="button" class="window-maximize" aria-label="Maximize"></button>
+        <button class="window-close" aria-label="Close"></button>
+      </form>
+    </header>
+    <div class="window-body text-sm">design-system/<br>marketing-site/<br>prototypes/</div>
+  </dialog>
+  <dialog class="window" open style="--window-x:9rem; --window-y:4.5rem; --window-w:17rem;">
+    <header class="window-titlebar">
+      <i data-lucide="image" class="window-icon"></i>
+      <h2 class="window-title">Preview</h2>
+      <form method="dialog" class="window-controls">
+        <button type="button" class="window-minimize" aria-label="Minimize"></button>
+        <button type="button" class="window-maximize" aria-label="Maximize"></button>
+        <button class="window-close" aria-label="Close"></button>
+      </form>
+    </header>
+    <div class="window-body text-sm">hero.png - 1600 × 900</div>
+  </dialog>
+  <dialog class="window" open style="--window-x:17rem; --window-y:8rem; --window-w:16rem;">
+    <header class="window-titlebar">
+      <i data-lucide="terminal" class="window-icon"></i>
+      <h2 class="window-title">Terminal</h2>
+      <form method="dialog" class="window-controls">
+        <button type="button" class="window-minimize" aria-label="Minimize"></button>
+        <button type="button" class="window-maximize" aria-label="Maximize"></button>
+        <button class="window-close" aria-label="Close"></button>
+      </form>
+    </header>
+    <div class="window-body text-sm" style="font-family:var(--font-mono);">$ bun run build<br>verify: OK</div>
+  </dialog>
+</div>
+```
+
+```html example label="Chrome" schema="none" hint="data-chrome: windows (the default - wide controls, a red × on hover), mac (traffic lights on the left, glyphs on hover, centred title), linux (GNOME round buttons, centred title) and retro (a bevelled 9x window). Same markup, same behaviour."
+<div class="window-desktop" style="height:24rem;">
+  <dialog class="window" open style="--window-x:1rem; --window-y:1rem; --window-w:19rem;">
+    <header class="window-titlebar">
+      <i data-lucide="app-window" class="window-icon"></i>
+      <h2 class="window-title">Windows</h2>
+      <form method="dialog" class="window-controls">
+        <button type="button" class="window-minimize" aria-label="Minimize"></button>
+        <button type="button" class="window-maximize" aria-label="Maximize"></button>
+        <button class="window-close" aria-label="Close"></button>
+      </form>
+    </header>
+    <div class="window-body text-sm">data-chrome="windows"</div>
+  </dialog>
+  <dialog class="window" open data-chrome="mac" style="--window-x:21rem; --window-y:1rem; --window-w:19rem;">
+    <header class="window-titlebar">
+      <i data-lucide="apple" class="window-icon"></i>
+      <h2 class="window-title">macOS</h2>
+      <form method="dialog" class="window-controls">
+        <button type="button" class="window-minimize" aria-label="Minimize"></button>
+        <button type="button" class="window-maximize" aria-label="Maximize"></button>
+        <button class="window-close" aria-label="Close"></button>
+      </form>
+    </header>
+    <div class="window-body text-sm">data-chrome="mac"</div>
+  </dialog>
+  <dialog class="window" open data-chrome="linux" style="--window-x:1rem; --window-y:12rem; --window-w:19rem;">
+    <header class="window-titlebar">
+      <i data-lucide="terminal-square" class="window-icon"></i>
+      <h2 class="window-title">Linux</h2>
+      <form method="dialog" class="window-controls">
+        <button type="button" class="window-minimize" aria-label="Minimize"></button>
+        <button type="button" class="window-maximize" aria-label="Maximize"></button>
+        <button class="window-close" aria-label="Close"></button>
+      </form>
+    </header>
+    <div class="window-body text-sm">data-chrome="linux"</div>
+  </dialog>
+  <dialog class="window" open data-chrome="retro" style="--window-x:21rem; --window-y:12rem; --window-w:19rem;">
+    <header class="window-titlebar">
+      <i data-lucide="monitor" class="window-icon"></i>
+      <h2 class="window-title">Retro</h2>
+      <form method="dialog" class="window-controls">
+        <button type="button" class="window-minimize" aria-label="Minimize"></button>
+        <button type="button" class="window-maximize" aria-label="Maximize"></button>
+        <button class="window-close" aria-label="Close"></button>
+      </form>
+    </header>
+    <div class="window-body text-sm">data-chrome="retro"</div>
+    <footer class="window-statusbar">Ready</footer>
+  </dialog>
+</div>
+```
+
+```html example label="Driven from script" schema="none" hint="df$.shadcn.win.create() builds a window (title, icon, content, position, size, chrome) in the first desktop; cascade() and tile() arrange the open ones; close() takes an element, id or selector. The log reads window-focus, window-move and close."
+<div class="flex flex-col gap-3">
+  <div class="flex flex-wrap items-center gap-2">
+    <button class="btn" data-size="sm" id="w-new"><i data-lucide="plus"></i> New window</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="w-cascade">Cascade</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="w-tile">Tile</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="w-close">Close active</button>
+    <output class="text-sm text-muted-foreground" id="w-log"></output>
+  </div>
+  <div class="window-desktop" id="w-desk" style="height:22rem;"></div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const win = df$.shadcn.win;
+    const log = df$('#w-log');
+    const desk = df$('#w-desk').get(0);
+    const icons = ['file-text', 'image', 'music', 'calendar', 'mail'];
+    let n = 0;
+    const make = () => {
+      n += 1;
+      const w = win.create({
+        parent: desk, title: `Untitled ${n}`, icon: icons[n % icons.length],
+        content: `Window ${n} - created by df$.shadcn.win.create()`, statusbar: `#${n}`, width: 240,
+      });
+      df$(w).on('close', () => log.text(`closed ${df$(w).find('.window-title').text()}`));
+    };
+    df$(desk).on('window-focus', (e) => log.text(`front: ${e.detail.title}`));
+    df$(desk).on('window-move', (e) => log.text(`moved to ${e.detail.x}, ${e.detail.y}`));
+    df$('#w-new').on('click', make);
+    df$('#w-cascade').on('click', () => win.cascade(desk));
+    df$('#w-tile').on('click', () => win.tile(desk));
+    df$('#w-close').on('click', () => { const a = win.active(); if (a) win.close(a); });
+    make(); make();
+  });
+</script>
+```
+
+```html example label="Window states" schema="none" hint="The State API per window: default (open, normal size - also reopens a closed one), maximized, minimized (rolled up to the bar) and closed. The × and close() land in closed too - the state follows the native dialog."
+<div class="flex flex-col gap-3">
+  <div class="flex flex-wrap items-center gap-2">
+    <button class="btn" data-variant="outline" data-size="sm" data-to="default">default</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-to="maximized">maximized</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-to="minimized">minimized</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-to="closed">closed</button>
+    <output class="text-sm text-muted-foreground" id="st-out">default</output>
+  </div>
+  <div class="window-desktop" style="height:16rem;">
+    <dialog class="window" id="st-win" open data-chrome="mac" style="--window-x:2rem; --window-y:2rem; --window-w:20rem;">
+      <header class="window-titlebar">
+        <i data-lucide="settings" class="window-icon"></i>
+        <h2 class="window-title">Settings</h2>
+        <form method="dialog" class="window-controls">
+          <button type="button" class="window-minimize" aria-label="Minimize"></button>
+          <button type="button" class="window-maximize" aria-label="Maximize"></button>
+          <button class="window-close" aria-label="Close"></button>
+        </form>
+      </header>
+      <div class="window-body text-sm">el.api.setState(name) - or use the traffic lights.</div>
+    </dialog>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const w = df$('#st-win').get(0);
+    const show = () => df$('#st-out').text(w.api.getState().name);
+    df$('[data-to]').on('click', function () { w.api.setState(this.dataset.to); show(); });
+    df$(w).on('close', show);
+    df$(w).on('click', () => setTimeout(show));
+  });
+</script>
+```
+
+```html example label="A desktop app: an editor with its toolbar" schema="none" height="40" hint="The editor window carries its app toolbar under the title bar (.window-toolbar): a ghost menubar - File, Edit, Window, Help - and tool buttons, all driving the windows through df$.shadcn.win (Window → Tile / Cascade / Maximize, Help → About opens a retro window). The editor opens on the left, the Preview on the right; the editor is a textarea over a Shiki-highlighted copy (loaded from esm.sh, like these docs), re-highlighted as you type; the status bar follows the caret and the Preview window renders the page live."
+<style>
+  /* a textarea over a highlighted copy of its text - both in one grid cell,
+     same font, padding and wrapping, so every glyph sits on its twin */
+  .code-editor { display: grid; height: 100%; background: #24292e; font: 13px/1.6 var(--font-mono); }
+  .code-editor .code-editor-hl,
+  .code-editor .code-editor-input {
+    grid-area: 1 / 1; box-sizing: border-box; margin: 0; padding: 0.75rem 1rem;
+    border: 0; border-radius: 0; background: transparent; box-shadow: none;
+    font: inherit; letter-spacing: normal; white-space: pre; tab-size: 2; overflow: auto;
+  }
+  .code-editor .code-editor-hl { overflow: hidden; pointer-events: none; color: #e1e4e8; }
+  .code-editor .code-editor-input { resize: none; outline: none; color: transparent; caret-color: #fff; }
+  .code-editor .code-editor-input::selection { background: rgb(255 255 255 / 0.2); }
+</style>
+<div class="window-desktop" id="dk" style="height:32rem;">
+  <dialog class="window" id="dk-editor" open data-resizable style="--window-x:0.75rem; --window-y:0.75rem; --window-w:calc(100% - 22.25rem); --window-h:calc(100% - 1.5rem);">
+    <header class="window-titlebar">
+      <i data-lucide="code" class="window-icon"></i>
+      <h2 class="window-title">index.html - Studio</h2>
+      <form method="dialog" class="window-controls">
+        <button type="button" class="window-minimize" aria-label="Minimize"></button>
+        <button type="button" class="window-maximize" aria-label="Maximize"></button>
+        <button class="window-close" aria-label="Close"></button>
+      </form>
+    </header>
+    <div class="window-toolbar">
+      <div class="menubar" data-variant="ghost" role="menubar" aria-label="Studio" id="dk-menu">
+        <button class="menubar-trigger" data-dropdown-trigger="dk-file">File</button>
+        <div id="dk-file" role="menu" popover class="dropdown-content" aria-label="File" style="min-width:13rem;">
+          <button role="menuitem" class="dropdown-item" tabindex="-1" data-value="save">Save<span class="dropdown-shortcut">⌘S</span></button>
+          <button role="menuitem" class="dropdown-item" tabindex="-1" data-value="revert">Revert to saved</button>
+          <div class="dropdown-separator" role="separator"></div>
+          <button role="menuitem" class="dropdown-item" tabindex="-1" data-value="close">Close editor</button>
+        </div>
+        <button class="menubar-trigger" data-dropdown-trigger="dk-edit">Edit</button>
+        <div id="dk-edit" role="menu" popover class="dropdown-content" aria-label="Edit" style="min-width:13rem;">
+          <button role="menuitem" class="dropdown-item" tabindex="-1" data-value="select">Select all<span class="dropdown-shortcut">⌘A</span></button>
+          <button role="menuitem" class="dropdown-item" tabindex="-1" data-value="copy">Copy all</button>
+        </div>
+        <button class="menubar-trigger" data-dropdown-trigger="dk-window">Window</button>
+        <div id="dk-window" role="menu" popover class="dropdown-content" aria-label="Window" style="min-width:13rem;">
+          <button role="menuitem" class="dropdown-item" tabindex="-1" data-value="preview">Preview</button>
+          <div class="dropdown-separator" role="separator"></div>
+          <button role="menuitem" class="dropdown-item" tabindex="-1" data-value="tile">Tile</button>
+          <button role="menuitem" class="dropdown-item" tabindex="-1" data-value="cascade">Cascade</button>
+          <button role="menuitem" class="dropdown-item" tabindex="-1" data-value="maximize">Maximize / restore editor</button>
+        </div>
+        <button class="menubar-trigger" data-dropdown-trigger="dk-help">Help</button>
+        <div id="dk-help" role="menu" popover class="dropdown-content" aria-label="Help" style="min-width:13rem;">
+          <button role="menuitem" class="dropdown-item" tabindex="-1" data-value="about">About Studio</button>
+        </div>
+      </div>
+      <span class="flex-1"></span>
+      <button class="btn" data-variant="ghost" data-size="icon-sm" type="button" data-value="preview" aria-label="Show preview"><i data-lucide="eye"></i></button>
+      <button class="btn" data-variant="ghost" data-size="icon-sm" type="button" data-value="tile" aria-label="Tile windows"><i data-lucide="layout-grid"></i></button>
+    </div>
+    <div class="window-body" data-flush>
+      <div class="code-editor">
+        <pre class="code-editor-hl" aria-hidden="true"></pre>
+        <textarea class="code-editor-input" id="dk-code" spellcheck="false" aria-label="index.html source"><!doctype html>
+<html>
+  <body>
+    <h1>Hello, windows</h1>
+    <p>Edit me - the Preview window follows.</p>
+    <style>
+      body { font: 16px system-ui; padding: 1rem; }
+      h1 { color: #7c3aed; }
+    </style>
+  </body>
+</html></textarea>
+      </div>
+    </div>
+    <footer class="window-statusbar"><span>HTML</span><span id="dk-pos">Ln 1, Col 1</span><span id="dk-saved">Saved</span></footer>
+  </dialog>
+  <dialog class="window" id="dk-preview" open data-resizable style="--window-x:calc(100% - 20.75rem); --window-y:0.75rem; --window-w:20rem; --window-h:18rem;">
+    <header class="window-titlebar">
+      <i data-lucide="globe" class="window-icon"></i>
+      <h2 class="window-title">Preview</h2>
+      <form method="dialog" class="window-controls">
+        <button type="button" class="window-minimize" aria-label="Minimize"></button>
+        <button type="button" class="window-maximize" aria-label="Maximize"></button>
+        <button class="window-close" aria-label="Close"></button>
+      </form>
+    </header>
+    <div class="window-body" data-flush>
+      <iframe id="dk-frame" title="Preview" sandbox style="width:100%; height:100%; border:0; display:block; background:#fff;"></iframe>
+    </div>
+  </dialog>
+  <dialog class="window" id="dk-about" data-chrome="retro" style="--window-x:calc(50% - 9rem); --window-y:7rem; --window-w:18rem;">
+    <header class="window-titlebar">
+      <i data-lucide="info" class="window-icon"></i>
+      <h2 class="window-title">About Studio</h2>
+      <form method="dialog" class="window-controls">
+        <button class="window-close" aria-label="Close"></button>
+      </form>
+    </header>
+    <div class="window-body text-sm">Studio 1.0 - windows, a menubar and a Shiki editor, all defuss-shadcn.</div>
+    <footer class="window-statusbar">Ready</footer>
+  </dialog>
+</div>
+<script type="module">
+  import { codeToTokens } from 'https://esm.sh/shiki@3.0.0';
+  // modules run in document order; DOMContentLoaded waits for all of them,
+  // so df$ (all.js) is installed by then
+  document.addEventListener('DOMContentLoaded', () => {
+    const win = df$.shadcn.win;
+    const code = df$('#dk-code').get(0);
+    const hl = df$('#dk-editor .code-editor-hl').get(0);
+    let saved = code.value;
+
+    // the editor: a transparent textarea over a highlighted copy, painted
+    // from Shiki's tokens (one coloured span each)
+    let pending = 0;
+    const paint = async () => {
+      const run = ++pending;
+      const { tokens } = await codeToTokens(code.value + '\n', { lang: 'html', theme: 'github-dark' });
+      if (run !== pending) return; // a newer keystroke already repainted
+      const out = [];
+      tokens.forEach((line, i) => {
+        if (i) out.push('\n');
+        line.forEach((tok) => {
+          const s = document.createElement('span');
+          s.textContent = tok.content;
+          if (tok.color) s.style.color = tok.color;
+          out.push(s);
+        });
+      });
+      hl.replaceChildren(...out);
+      hl.scrollTop = code.scrollTop;
+      hl.scrollLeft = code.scrollLeft;
+    };
+    const preview = () => df$('#dk-frame').prop('srcdoc', code.value);
+    const status = () => {
+      const before = code.value.slice(0, code.selectionStart).split('\n');
+      df$('#dk-pos').text(`Ln ${before.length}, Col ${before[before.length - 1].length + 1}`);
+      df$('#dk-saved').text(code.value === saved ? 'Saved' : 'Edited');
+    };
+    df$(code).on('input', () => { paint(); preview(); status(); });
+    df$(code).on('scroll', () => { hl.scrollTop = code.scrollTop; hl.scrollLeft = code.scrollLeft; });
+    ['keyup', 'click', 'select'].forEach((type) => df$(code).on(type, status));
+    df$(code).on('keydown', (e) => {
+      if (e.key !== 'Tab') return;
+      e.preventDefault();
+      code.setRangeText('  ', code.selectionStart, code.selectionEnd, 'end');
+      code.dispatchEvent(new Event('input'));
+    });
+    paint(); preview();
+
+    // the toolbar - menubar items and tool buttons - drives the windows
+    const run = (action) => {
+      if (action === 'save') { saved = code.value; status(); }
+      else if (action === 'revert') { code.value = saved; code.dispatchEvent(new Event('input')); }
+      else if (action === 'close') win.close('dk-editor');
+      else if (action === 'select') { code.focus(); code.select(); }
+      else if (action === 'copy') navigator.clipboard?.writeText(code.value);
+      else if (action === 'preview') win.open('dk-preview');
+      else if (action === 'tile') win.tile('#dk');
+      else if (action === 'cascade') win.cascade('#dk');
+      else if (action === 'maximize') win.toggleMaximize('dk-editor');
+      else if (action === 'about') win.open('dk-about');
+    };
+    df$('#dk-menu').on('dropdown:select', (e) => run(e.detail.value));
+    df$('#dk-editor .window-toolbar > .btn').on('click', function () { run(this.dataset.value); });
+  });
+</script>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per window through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - open at its normal size; reopens a closed window, <code>\{ x, y \}</code> moves it</li>
+    <li><code>maximized</code> - fills the desktop</li>
+    <li><code>minimized</code> - rolled up to its title bar</li>
+    <li><code>closed</code> - the dialog is closed; also entered when the × or <code>close()</code> closes it</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/window-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a href="../schemas/window.schema.json"><code>window.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `maximized` | `boolean` | `true`, `false` | `false` | Fills the desktop. |
+| `minimized` | `boolean` | `true`, `false` | `false` | Rolled up to its title bar. |
+| `closed` | `boolean` | `true`, `false` | `false` | The dialog is closed - also by the × or `close()`. |
+```
+
+</StatesSection>
+
+<SourceFiles component="window" section="css" />
+
+<SourceFiles component="window" section="js" jsTitle="JS" />
+
+</DocPage>

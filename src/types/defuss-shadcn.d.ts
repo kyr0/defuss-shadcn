@@ -98,6 +98,29 @@ interface DefussShadcnRegistry {
   [key: `${string}Api`]: DefussShadcnComponentApi | undefined;
   [key: `${string}States`]: readonly string[] | undefined;
   toast?: DefussShadcnToastApi;
+  /** window imperative API (src/components/window/window.ts): every method
+   * takes a .window element, an id or a selector */
+  win?: {
+    create(options?: {
+      title?: string; icon?: string; content?: Node | string; html?: string; statusbar?: string; id?: string;
+      x?: number | string; y?: number | string; width?: number | string; height?: number | string;
+      chrome?: 'windows' | 'mac' | 'linux' | 'retro'; resizable?: boolean; parent?: Element | string;
+      focus?: boolean; flush?: boolean;
+    }): HTMLDialogElement;
+    open(target: Element | string, config?: { x?: number; y?: number }): HTMLDialogElement | null;
+    close(target: Element | string): HTMLDialogElement | null;
+    focus(target: Element | string): HTMLDialogElement | null;
+    move(target: Element | string, x: number, y: number): { x: number; y: number } | null;
+    resize(target: Element | string, width: number | string, height?: number | string): HTMLDialogElement | null;
+    maximize(target: Element | string): HTMLDialogElement | null;
+    minimize(target: Element | string): HTMLDialogElement | null;
+    restore(target: Element | string): HTMLDialogElement | null;
+    toggleMaximize(target: Element | string): HTMLDialogElement | null;
+    active(): HTMLDialogElement | null;
+    list(scope?: Element | string, all?: boolean): HTMLDialogElement[];
+    cascade(scope?: Element | string, step?: number): void;
+    tile(scope?: Element | string): void;
+  };
   /** chart imperative API (src/components/chart/chart.ts): mount/instance/theme/deck stage */
   chart?: {
     mount: typeof import('../components/chart/chart.js').mount;

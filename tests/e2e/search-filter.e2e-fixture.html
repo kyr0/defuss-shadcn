@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search & Filter e2e fixture</title>
+  <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css">
+  <link rel="stylesheet" href="/dist/components/kbd/kbd.css">
+  <link rel="stylesheet" href="/dist/components/search-filter/search-filter.css">
+  <style>
+    /* spacing only - never properties the checks assert */
+    body { font-family: system-ui, sans-serif; padding: 2rem; width: 480px; }
+    body > * { margin-bottom: 1.25rem; }
+    .catalog:has([value="design"]:checked) .catalog-item:not([data-cat="design"]),
+    .catalog:has([value="code"]:checked) .catalog-item:not([data-cat="code"]) { display: none; }
+  </style>
+</head>
+<body>
+  <!-- mirrors the doc page: search box (default, live results, searching,
+       kbd hint + pill, muted + hint, sizes, disabled, invalid) and filter
+       (form + reset, filter-reset radio, checkboxes, data-multiple,
+       :has() content filtering, variants, sizes, disabled chip) -->
+  <search>
+    <div class="search-box" id="sb">
+      <svg class="search-box-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/></svg>
+      <input type="search" name="q" placeholder="Search…" aria-label="Search" id="sb-in">
+      <button type="button" class="search-box-clear" aria-label="Clear search" id="sb-x"></button>
+    </div>
+  </search>
+  <div class="search-box" id="sb-filled">
+    <svg viewBox="0 0 24 24"></svg>
+    <input type="search" value="preset" aria-label="Preset">
+    <button type="button" class="search-box-clear" aria-label="Clear search"></button>
+  </div>
+  <div class="search-box" data-shape="pill" id="sb-kbd">
+    <svg viewBox="0 0 24 24"></svg>
+    <input type="search" placeholder="Search docs" aria-label="Search docs" id="sb-kbd-in">
+    <kbd class="kbd" data-size="sm" id="sb-kbd-k">⌘K</kbd>
+    <button type="button" class="search-box-clear" aria-label="Clear search"></button>
+  </div>
+  <div class="search-box" data-variant="muted" id="sb-muted">
+    <svg viewBox="0 0 24 24"></svg>
+    <input type="search" aria-label="Muted">
+    <span class="search-box-hint" id="sb-hint">in #general</span>
+    <button type="button" class="search-box-clear" aria-label="Clear search"></button>
+  </div>
+  <div class="search-box" data-size="sm" id="sb-sm"><input type="search" aria-label="Small"></div>
+  <div class="search-box" data-size="lg" id="sb-lg"><input type="search" aria-label="Large"></div>
+  <div class="search-box" id="sb-dis"><input type="search" aria-label="Disabled" disabled></div>
+  <div class="search-box" id="sb-inv"><input type="search" value="a" aria-label="Invalid" aria-invalid="true"></div>
+  <dialog id="dlg">
+    <div class="search-box" id="sb-dlg">
+      <input type="search" aria-label="In dialog" id="sb-dlg-in">
+      <button type="button" class="search-box-clear" aria-label="Clear search"></button>
+    </div>
+  </dialog>
+
+  <form class="filter" aria-label="Framework" id="f-form">
+    <input type="radio" name="framework" value="svelte" aria-label="Svelte" id="f-svelte">
+    <input type="radio" name="framework" value="vue" aria-label="Vue" id="f-vue">
+    <input type="radio" name="framework" value="react" aria-label="React" id="f-react">
+    <input type="reset" value="×" aria-label="Clear filter" id="f-reset">
+  </form>
+  <div class="filter" role="radiogroup" aria-label="Meta" id="f-noform">
+    <input type="radio" name="meta" aria-label="SvelteKit" id="m-kit">
+    <input type="radio" name="meta" aria-label="Nuxt" id="m-nuxt">
+    <input type="radio" name="meta" class="filter-reset" aria-label="All" id="m-all">
+  </div>
+  <form class="filter" aria-label="Frameworks" id="f-check">
+    <input type="checkbox" aria-label="Svelte" id="c-svelte">
+    <input type="checkbox" aria-label="Vue" id="c-vue">
+    <input type="reset" value="×" aria-label="Clear filters" id="c-reset">
+  </form>
+  <form class="filter" data-multiple data-shape="pill" aria-label="Categories" id="f-multi">
+    <input type="checkbox" value="design" aria-label="Design" id="x-design">
+    <input type="checkbox" value="code" aria-label="Code" id="x-code">
+    <input type="checkbox" value="writing" aria-label="Writing" id="x-writing">
+    <input type="reset" value="×" aria-label="Clear filters" id="x-reset">
+  </form>
+  <div class="catalog">
+    <div class="filter" role="radiogroup" aria-label="Category" data-size="sm" id="f-sm">
+      <input type="radio" name="catalog" value="design" aria-label="Design" id="k-design">
+      <input type="radio" name="catalog" value="code" aria-label="Code" id="k-code">
+      <input type="radio" name="catalog" class="filter-reset" aria-label="All" id="k-all">
+    </div>
+    <ul>
+      <li class="catalog-item" data-cat="design" id="i-design">Color systems</li>
+      <li class="catalog-item" data-cat="code" id="i-code">CSS nesting</li>
+    </ul>
+  </div>
+  <div class="filter" data-variant="secondary" role="radiogroup" aria-label="Plan" id="f-sec">
+    <input type="radio" name="plan" aria-label="Free" checked id="p-free">
+  </div>
+  <div class="filter" data-variant="outline" data-multiple role="group" aria-label="Status" id="f-out">
+    <input type="checkbox" aria-label="Open" checked id="o-open">
+    <input type="checkbox" aria-label="Closed" disabled id="o-closed">
+  </div>
+  <div class="filter" data-size="lg" data-multiple role="group" aria-label="Large" id="f-lg">
+    <input type="checkbox" aria-label="Large" id="l-large">
+  </div>
+
+  <script type="module" src="/dist/components/core.js"></script>
+  <script type="module" src="/dist/components/search-filter/search-filter.js"></script>
+</body>
+</html>

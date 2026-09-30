@@ -4,7 +4,7 @@ description: "Customize defuss-shadcn with CSS custom properties. Drop in any tw
 slug: "theming"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeWindow, CodeCard, TableCard } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -227,7 +227,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <div>
     <h3 style="font-size:1rem;font-weight:500;margin:0 0 0.375rem;">2. Override individual tokens</h3>
     <p class="text-sm text-muted-foreground mb-3">Add a stylesheet <strong>after</strong><code>default-semantic-tokens.css</code> and override specific variables:</p>
-    <pre><code class="language-markup">{"<link rel=\"stylesheet\" href=\"default-semantic-tokens.css\">\n<style>\n  :root {\n    --primary: oklch(0.55 0.2 250);\n    --primary-foreground: oklch(1 0 0);\n    --radius: 0.5rem;\n  }\n</style>"}</code></pre>
+    <CodeWindow lang="html" title="override tokens after the token file" code={"<link rel=\"stylesheet\" href=\"default-semantic-tokens.css\">\n<style>\n  :root {\n    --primary: oklch(0.55 0.2 250);\n    --primary-foreground: oklch(1 0 0);\n    --radius: 0.5rem;\n  }\n</style>"} />
   </div>
 </div>
 
@@ -237,9 +237,11 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5">Every <a href="https://tweakcn.com" target="_blank" style="text-decoration:underline;">tweakcn</a> preset ships as a generated stylesheet in <code>{"dist/theme/<id>.css"}</code> - the same <code>:root</code> + <code>.dark</code> token shape as <code>default-semantic-tokens.css</code>. Link one <em>instead of</em> the token file to ship a fixed theme:</p>
 
-<CodeCard lang="html" title="ship a preset">{'<!-- instead of theme/utils/default-semantic-tokens.css -->\n<link rel="stylesheet" href="theme/claude.css" />'}</CodeCard>
+<CodeWindow lang="html" title="ship a preset" code={"<!-- instead of theme/utils/default-semantic-tokens.css -->\n<link rel=\"stylesheet\" href=\"theme/claude.css\" />"} />
 
 <p class="text-sm text-muted-foreground mt-5 mb-5">…or load it at runtime on top of the token file - inserting a <code>{"<link id=\"theme-css\">"}</code> right after it re-themes every component instantly (later source order wins the cascade; the file's own <code>.dark</code> block keeps dark mode working, so no re-apply on toggle). The <DocLink href="theme-switcher.html">Theme Switcher</DocLink> component wraps exactly that mechanism in an accessible dropdown, with <code>localStorage</code> persistence and a State API. On this site the picker in the header does the same.</p>
+
+<CodeWindow lang="javascript" title="re-theme at runtime with df$" mb="1.5rem" code={"// the preset link sits right after the token file - later source order wins\ndf$('#theme-css').remove();\ndf$('link[href$=\"default-semantic-tokens.css\"]')\n  .after('<link id=\"theme-css\" rel=\"stylesheet\" href=\"theme/claude.css\">');\n\n// presets with fonts ship a resource sidecar - loadTheme() adds those <link>s too\ndf$.shadcn.loadTheme?.('claude');"} />
 
 <p class="text-sm text-muted-foreground mb-5">The preset files are generated from the docs' theme dataset (<code>src/documentation/runtime/themes.ts</code>) by <code>scripts/build.ts</code> - <code>verify</code>'s <code>theme files fresh</code> gate keeps them in lockstep. For your own themes, author a file in the token-file shape (or export one from tweakcn) and link it the same way.</p>
 

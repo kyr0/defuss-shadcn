@@ -5,6 +5,7 @@
     "alert-dialog": "./alert-dialog.schema.json",
     "anim-canvas": "./anim-canvas.schema.json",
     "avatar": "./avatar.schema.json",
+    "border-layout": "./border-layout.schema.json",
     "calendar": "./calendar.schema.json",
     "carousel": "./carousel.schema.json",
     "checkbox": "./checkbox.schema.json",
@@ -35,7 +36,9 @@
     "radio": "./radio.schema.json",
     "resizer": "./resizer.schema.json",
     "scroll-area": "./scroll-area.schema.json",
+    "search-filter": "./search-filter.schema.json",
     "select": "./select.schema.json",
+    "session": "./session.schema.json",
     "sheet": "./sheet.schema.json",
     "sidebar": "./sidebar.schema.json",
     "slider": "./slider.schema.json",
@@ -52,6 +55,8 @@
     "toolbar": "./toolbar.schema.json",
     "tooltip": "./tooltip.schema.json",
     "tree-view": "./tree-view.schema.json",
-    "virtual-list": "./virtual-list.schema.json"
+    "typewriter": "./typewriter.schema.json",
+    "virtual-list": "./virtual-list.schema.json",
+    "window": "./window.schema.json"
   }
 }

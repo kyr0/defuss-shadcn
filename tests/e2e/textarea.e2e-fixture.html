@@ -7,9 +7,28 @@
     <link rel="stylesheet" href="/dist/components/textarea/textarea.css" />
   </head>
   <body style="padding:2rem;">
-    <!-- mirrors the doc page: default, disabled, readonly, invalid -->
+    <!-- mirrors the doc page: default, disabled, readonly, invalid, rows +
+         limit, the composer group (chips, actions, count) and its inline layout -->
     <textarea class="textarea" id="ta-default" placeholder="Placeholder" rows="2"></textarea>
     <textarea class="textarea" id="ta-disabled" disabled style="margin-top:1rem;">Disabled</textarea>
     <textarea class="textarea" id="ta-invalid" aria-invalid="true" style="margin-top:1rem;">Invalid</textarea>
+    <textarea class="textarea" id="ta-rows" data-rows="2" data-max-rows="4" data-resize="none" style="margin-top:1rem;width:20rem;"></textarea>
+    <link rel="stylesheet" href="/dist/components/file-input/file-input.css" />
+    <form class="textarea-group" id="tg" aria-label="Composer" style="margin-top:1rem;width:28rem;">
+      <ul class="file-drop-list" id="tg-list"><li class="file-drop-item" id="tg-item"><span class="file-drop-thumb"></span><div class="file-drop-name">a.png</div><button type="button" class="file-drop-remove">x</button></li></ul>
+      <textarea class="textarea" id="tg-text" data-rows="1" data-max-rows="6" aria-label="Message"></textarea>
+      <div class="textarea-group-actions" id="tg-actions">
+        <button type="button" id="tg-attach">+</button>
+        <span class="textarea-group-spacer"></span>
+        <output class="textarea-group-count" id="tg-count">0 / 500</output>
+        <button type="submit" id="tg-send">Send</button>
+      </div>
+    </form>
+    <form class="textarea-group" id="tg-inline" data-layout="inline" aria-label="Inline" style="margin-top:1rem;width:28rem;">
+      <ul class="file-drop-list"></ul>
+      <div class="textarea-group-actions"><button type="button" id="tgi-attach">+</button></div>
+      <textarea class="textarea" id="tgi-text" data-rows="1" aria-label="Message"></textarea>
+      <div class="textarea-group-actions"><button type="submit" id="tgi-send">Send</button></div>
+    </form>
   </body>
 </html>

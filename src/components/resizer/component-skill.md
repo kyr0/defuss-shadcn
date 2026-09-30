@@ -48,6 +48,7 @@ The runtime appends the handles (`data-ce-chrome` marked - sandbox-safe):
 | `data-handles` | space list of `n e s w ne nw se sw`, or `all` | `se` | which handles get placed |
 | `data-resize-mode` | `px` \| `classes` \| `controlled` | `px` | inline px / w-N-h-N classes (sizing.css ladder, integer steps 16–96) / size owned by the consumer via `resizer-resize` events |
 | `data-axis` | `both` \| `w` \| `h` | `both` | which axes any handle resizes |
+| `data-keys` | `edge` | - | the arrows move the handle's edge (a divider - the window-splitter pattern): ArrowLeft grows a box from its `w` handle, ArrowDown from its `s` handle. Without it ArrowRight/Up grow |
 | `data-min` / `data-max` | px | `80` / `2000` | shared clamp; per-axis `data-min-w`/`data-max-w`/`data-min-h`/`data-max-h` override |
 | `data-step` | px | `1` | drag quantization (px mode) |
 | `data-w-classes` / `data-h-classes` | space list of tokens | integer `w-16…w-96` | custom classes-mode ladder |
@@ -73,7 +74,7 @@ equivalent to `setState('default')`.
 | Aspect | Handling |
 | --- | --- |
 | Handle role | `role="separator"` + `aria-label` naming the position (edge handles also get `aria-orientation`) |
-| Keyboard | Tab focuses handles; ArrowRight/Up grow, ArrowLeft/Down shrink (Shift ×10); Home/End jump to min/max |
+| Keyboard | Tab focuses handles; ArrowRight/Up grow, ArrowLeft/Down shrink (Shift ×10); Home/End jump to min/max. With `data-keys="edge"` an edge handle moves with the arrow that points its way |
 | Drag feedback | wrapper gets `data-resizing` - dashed outline + active handle highlight |
 
 ## Notes

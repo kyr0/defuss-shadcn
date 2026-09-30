@@ -4,7 +4,7 @@ description: "defuss-shadcn uses 50+ native browser APIs - Popover, Anchor Posit
 slug: "native-web-apis"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeWindow, CodeCard, TableCard } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -17,8 +17,8 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <p class="text-sm text-muted-foreground mb-5">Traditional component libraries ship thousands of lines of JavaScript to implement behaviors that browsers now provide natively - dropdown positioning, modal focus trapping, popover light-dismiss, auto-growing textareas. defuss-shadcn eliminates that JavaScript entirely by building on the platform.</p>
 
 <div class="grid grid-cols-auto gap-4 mb-10">
-  <CodeCard title="Traditional approach" lang="markup" column><Dim>{"<!-- Dropdown: Floating UI + JS toggle\n     + click-outside + focus trap\n     + scroll lock + virtual positioning -->"}</Dim>{"<"}{"div class=\"dropdown-trigger\" onclick=\"...\""}{">"}{"\n  Open Menu\n"}{"<"}{"/div"}{">"}{"<"}{"div class=\"dropdown-panel\"\n  style=\"position:absolute;top:...;left:...\""}{">"}{"\n  ...\n"}{"<"}{"/div"}{">"}</CodeCard>
-  <CodeCard title="defuss-shadcn approach" lang="markup" column><Dim>{"<!-- Popover API + CSS Anchor Positioning\n     Browser handles: positioning, light-dismiss,\n     top-layer, and auto-flip -->"}</Dim>{"<"}{"button popovertarget=\"menu\""}{">"}{"\n  Open Menu\n"}{"<"}{"/button"}{">"}{"<"}{"div id=\"menu\" popover\n  class=\"dropdown-content\""}{">"}{"\n  ...\n"}{"<"}{"/div"}{">"}</CodeCard>
+  <CodeWindow lang="html" title="Traditional approach" column code={"<!-- Dropdown: Floating UI + JS toggle\n     + click-outside + focus trap\n     + scroll lock + virtual positioning -->\n<div class=\"dropdown-trigger\" onclick=\"...\">\n  Open Menu\n</div>\n<div class=\"dropdown-panel\"\n  style=\"position:absolute;top:...;left:...\">\n  ...\n</div>"} />
+  <CodeWindow lang="html" title="defuss-shadcn approach" column code={"<!-- Popover API + CSS Anchor Positioning\n     Browser handles: positioning, light-dismiss,\n     top-layer, and auto-flip -->\n<button popovertarget=\"menu\">\n  Open Menu\n</button>\n<div id=\"menu\" popover class=\"dropdown-content\">\n  ...\n</div>"} />
 </div>
 
 <div class="sep" />

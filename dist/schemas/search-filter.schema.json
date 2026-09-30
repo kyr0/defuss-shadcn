@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "name": "search-filter",
+  "states": {
+    "value": {
+      "type": "string",
+      "default": "",
+      "target": {
+        "kind": "selector",
+        "selector": ".search-box"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "default",
+        "args": {
+          "value": "@value"
+        }
+      },
+      "observation": {
+        "kind": "property",
+        "name": "value",
+        "target": {
+          "kind": "selector",
+          "selector": ".search-box > input"
+        }
+      },
+      "editor": {
+        "component": "text"
+      }
+    },
+    "filled": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".search-box"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "filled"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "searching": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".search-box"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "searching"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {
+    "clear": {
+      "target": {
+        "kind": "selector",
+        "selector": ".search-box > .search-box-clear"
+      },
+      "operation": {
+        "kind": "method",
+        "name": "click"
+      }
+    }
+  }
+}

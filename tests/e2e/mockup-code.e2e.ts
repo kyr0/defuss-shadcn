@@ -20,7 +20,7 @@ await cssSmoke('mockup-code', [
         const m = getComputedStyle(document.getElementById('m-basic')!);
         const b = getComputedStyle(document.getElementById('m-basic')!, '::before');
         const l = getComputedStyle(document.getElementById('l-cmd')!);
-        return { font: /mono/i.test(m.fontFamily), dark: m.backgroundColor, dots: b.boxShadow.split('px 0px 0px').length - 1, lineBg: l.backgroundColor, lineBorder: l.borderTopWidth, ws: l.whiteSpace };
+        return { font: /mono/i.test(m.fontFamily) && m.fontVariantLigatures === 'none', dark: m.backgroundColor, dots: b.boxShadow.split('px 0px 0px').length - 1, lineBg: l.backgroundColor, lineBorder: l.borderTopWidth, ws: l.whiteSpace };
       });
       assert.equal(r.font, true);
       assert.notEqual(r.dark, 'rgba(0, 0, 0, 0)');
@@ -114,6 +114,55 @@ await cssSmoke('mockup-code', [
       assert.equal(new Set(r.bgs).size, 4);
       assert.notEqual(r.okDark, r.okLight);
       assert.equal(r.border, '1px');
+    },
+  },
+  {
+    label: 'diff: generated +/- in a sign column (context lines keep an empty one, numbers stay), tones, <ins>/<del>, data-strike, copy yields the code',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const g = (id: string, p?: string) => getComputedStyle(document.getElementById(id)!, p || null);
+        const sign = (id: string) => getComputedStyle(document.querySelector(`#${id} > code`)!, '::before');
+        const left = (id: string) => Math.round(document.querySelector(`#${id} > code`)!.getBoundingClientRect().left);
+        return {
+          signs: [sign('d-ctx').content, sign('d-rm').content, sign('d-add').content],
+          widths: [sign('d-ctx').width, sign('d-add').width],
+          aligned: left('d-ctx') === left('d-rm') && left('d-rm') === left('d-add'),
+          number: g('d-add', '::before').content,
+          colors: [g('d-ctx').color, g('d-rm').color, g('d-add').color],
+          bands: [g('d-ctx').backgroundColor, g('d-rm').backgroundColor, g('d-add').backgroundColor],
+          ins: g('d-ins').backgroundColor, del: g('d-del').textDecorationLine,
+          strike: getComputedStyle(document.querySelector('#d-rm > code')!).textDecorationLine,
+          text: (document.getElementById('m-diff') as HTMLElement).innerText,
+        };
+      });
+      assert.deepEqual(r.signs, ['""', '"-"', '"+"']);
+      assert.equal(r.widths[0], r.widths[1], 'context lines keep the sign column');
+      assert.ok(r.aligned, 'code starts in one column');
+      assert.match(r.number, /counter\(mockup-line/, 'numbers stay in their own gutter');
+      assert.equal(new Set(r.colors).size, 3);
+      assert.equal(r.bands[0], 'rgba(0, 0, 0, 0)');
+      assert.notEqual(r.bands[1], r.bands[2]);
+      assert.notEqual(r.ins, 'rgba(0, 0, 0, 0)');
+      assert.equal(r.del, 'line-through');
+      assert.equal(r.strike, 'line-through', 'data-strike');
+      assert.ok(!/^[+-]/m.test(r.text.replace(/^\s+/gm, '')) && r.text.includes('border-radius: var(--radius-md);'), 'signs are not copied');
+    },
+  },
+  {
+    label: 'animated diff: removed lines animate to red + strike, added lines slide in, staggered by position; context lines stay',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const g = (sel: string) => getComputedStyle(document.querySelector(sel)!);
+        return {
+          rm: g('#a-rm').animationName, strike: g('#a-rm > code').animationName, add: g('#a-add1').animationName,
+          ctx: g('#m-anim > pre:first-child').animationName,
+          d1: parseFloat(g('#a-add1').animationDelay), d2: parseFloat(g('#a-add2').animationDelay), d0: parseFloat(g('#a-rm').animationDelay),
+          implied: g('#a-rm > code').textDecorationLine,
+        };
+      });
+      assert.deepEqual([r.rm, r.strike, r.add, r.ctx], ['mockup-code-remove', 'mockup-code-strike', 'mockup-code-add', 'none']);
+      assert.ok(r.d0 < r.d1 && r.d1 < r.d2, `stagger ${r.d0} < ${r.d1} < ${r.d2}`);
+      assert.equal(r.implied, 'line-through', 'animated removals strike through');
     },
   },
   {

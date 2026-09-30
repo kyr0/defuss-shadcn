@@ -80,6 +80,15 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 ```
 
+```html example label="Keys move the edge" hint="data-keys='edge': the arrow keys move the focused edge the way they point - ArrowLeft on the w handle grows the box, ArrowRight shrinks it - the window-splitter pattern Border Layout builds on. Without it ArrowRight/Up always grow." component="resizer" height="14"
+<div class="resizer" data-handles="w" data-axis="w" data-keys="edge" data-min="140" data-max="520" style="margin-inline-start:auto;">
+  <div class="card" style="width:16rem;padding:1rem;">
+    <h3 class="card-title">Inspector</h3>
+    <p class="card-description" style="margin-top:0.5rem;">Tab to the left edge, then press ← / →.</p>
+  </div>
+</div>
+```
+
 ```html example label="Class-based sizing" hint="data-resize-mode='classes' snaps to the sizing.css ladder: the element's class attribute IS the size (open State/Code while dragging to watch w-*/h-* swap)." component="resizer" height="16"
 <div class="resizer" data-handles="all" data-resize-mode="classes">
   <div class="card w-64 h-40" style="padding:1rem;">

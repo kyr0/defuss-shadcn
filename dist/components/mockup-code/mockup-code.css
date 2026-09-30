@@ -26,6 +26,8 @@
     font-family: var(--font-mono);
     font-size: 0.875rem;
     line-height: 1.7;
+    /* code shows what is typed: no => → ⇒ or <!-- → arrow ligatures */
+    font-variant-ligatures: none;
     text-align: start;
     /* code reads left to right even inside an RTL page */
     direction: ltr;
@@ -135,6 +137,59 @@
       &::before { color: inherit; opacity: 0.7; }
     }
 
+    /* -- Diff: data-diff="add" / "remove" lines ----------------------
+       The sign sits in its own column before the code (generated, never
+       copied), so numbers and prompts keep theirs; every line of a diff
+       window gets the column, so context lines line up. Word changes
+       inside a line are native <ins> / <del>. */
+    &:where(:has(> pre[data-diff])) > pre > code::before {
+      content: "";
+      display: inline-block;
+      width: 2ch;
+      user-select: none;
+    }
+    & > pre[data-diff="add"] { --_tone: var(--_success); }
+    & > pre[data-diff="remove"] { --_tone: var(--_destructive); }
+    & > pre[data-diff] {
+      color: var(--_tone);
+      background: color-mix(in oklch, var(--_tone) 14%, transparent);
+    }
+    & > pre[data-diff="add"] > code::before { content: "+"; }
+    & > pre[data-diff="remove"] > code::before { content: "-"; }
+    & > pre > code :is(ins, del) {
+      border-radius: 0.2em;
+      color: inherit;
+      text-decoration: none;
+    }
+    & > pre > code ins { background: color-mix(in oklch, var(--_success) 32%, transparent); }
+    & > pre > code del {
+      background: color-mix(in oklch, var(--_destructive) 32%, transparent);
+      text-decoration: line-through;
+    }
+    /* data-strike (and the animated diff) strikes removed lines through */
+    &:is([data-strike], [data-animate]) > pre[data-diff="remove"] {
+      opacity: 0.8;
+      & > code {
+        text-decoration: line-through;
+        text-decoration-color: color-mix(in oklch, var(--_tone) 70%, transparent);
+      }
+    }
+
+    /* -- Animated diff: removed lines turn red and strike through, added
+       lines slide in green, one after another; context lines stay.
+       Replays whenever data-animate is set again. ------------------ */
+    &[data-animate] > pre {
+      --_stagger: var(--mockup-code-stagger, 140ms);
+      --_delay: calc(var(--mockup-code-delay, 300ms) + var(--_i, 0) * var(--_stagger));
+    }
+    &[data-animate] > pre[data-diff="remove"] {
+      animation: mockup-code-remove 450ms ease-out var(--_delay) both;
+      & > code { animation: mockup-code-strike 450ms ease-out var(--_delay) both; }
+    }
+    &[data-animate] > pre[data-diff="add"] {
+      animation: mockup-code-add 450ms cubic-bezier(0.2, 0.8, 0.2, 1) var(--_delay) both;
+    }
+
     /* -- Cursor: a blinking block after the line --------------------- */
     & > pre[data-cursor] > code::after {
       content: "";
@@ -189,11 +244,48 @@
   @keyframes mockup-code-cursor {
     50% { opacity: 0; }
   }
+  /* each keyframe starts neutral and ends on the line's own diff styles */
+  @keyframes mockup-code-remove {
+    from { color: var(--_fg); background: transparent; opacity: 1; }
+  }
+  @keyframes mockup-code-strike {
+    from { text-decoration-color: transparent; }
+  }
+  @keyframes mockup-code-add {
+    from { color: var(--_fg); background: transparent; opacity: 0; translate: -1.5rem 0; }
+  }
+
+  /* the line's position drives the stagger: sibling-index() where the
+     browser has it, a counted fallback for the first 24 lines elsewhere */
+  @supports (order: sibling-index()) {
+    .mockup-code[data-animate] > pre { --_i: sibling-index(); }
+  }
+  @supports not (order: sibling-index()) {
+    .mockup-code[data-animate] > pre:nth-child(2) { --_i: 2; }
+    .mockup-code[data-animate] > pre:nth-child(3) { --_i: 3; }
+    .mockup-code[data-animate] > pre:nth-child(4) { --_i: 4; }
+    .mockup-code[data-animate] > pre:nth-child(5) { --_i: 5; }
+    .mockup-code[data-animate] > pre:nth-child(6) { --_i: 6; }
+    .mockup-code[data-animate] > pre:nth-child(7) { --_i: 7; }
+    .mockup-code[data-animate] > pre:nth-child(8) { --_i: 8; }
+    .mockup-code[data-animate] > pre:nth-child(9) { --_i: 9; }
+    .mockup-code[data-animate] > pre:nth-child(10) { --_i: 10; }
+    .mockup-code[data-animate] > pre:nth-child(11) { --_i: 11; }
+    .mockup-code[data-animate] > pre:nth-child(12) { --_i: 12; }
+    .mockup-code[data-animate] > pre:nth-child(13) { --_i: 13; }
+    .mockup-code[data-animate] > pre:nth-child(14) { --_i: 14; }
+    .mockup-code[data-animate] > pre:nth-child(15) { --_i: 15; }
+    .mockup-code[data-animate] > pre:nth-child(16) { --_i: 16; }
+    .mockup-code[data-animate] > pre:nth-child(n + 17) { --_i: 17; }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   @layer components {
     .mockup-code > pre[data-cursor] > code::after { animation: none; }
+    /* the diff shows its end state at once */
+    .mockup-code[data-animate] > pre,
+    .mockup-code[data-animate] > pre > code { animation: none; }
   }
 }
 
@@ -207,5 +299,7 @@
   @layer components {
     .mockup-code { border: 1px solid CanvasText; }
     .mockup-code > pre[data-highlight] { forced-color-adjust: none; background: Highlight; color: HighlightText; }
+    /* the +/- signs carry the diff; <ins>/<del> get system marks */
+    .mockup-code > pre > code :is(ins, del) { outline: 1px solid CanvasText; }
   }
 }

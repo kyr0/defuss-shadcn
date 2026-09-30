@@ -1,6 +1,6 @@
 ---
 title: "Textarea"
-description: "Textarea component - multi-line text input with auto-growing via field-sizing."
+description: "Textarea component - multi-line text input that grows with its text (field-sizing), with row limits, a character count and a composer: attachments, drag and drop, send on Enter."
 slug: "textarea"
 ---
 
@@ -9,7 +9,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <DocPage meta={meta}>
 
 <PageHeader slug="textarea" title="Textarea" component="textarea">
-  Auto-growing multi-line text input. Built on native <code>&lt;textarea&gt;</code> with <code>field-sizing: content</code> for zero-JS auto-grow.
+  Auto-growing multi-line text input. Built on native <code>&lt;textarea&gt;</code> with <code>field-sizing: content</code> for zero-JS auto-grow - between <code>data-rows</code> and <code>data-max-rows</code>, after which it scrolls. A <code>.textarea-group</code> turns it into a composer: attachment chips, an action row, a drop target - the input of the <DocLink href="session.html">chat Session</DocLink>.
 </PageHeader>
 
 <SkillPanel component="textarea">
@@ -21,19 +21,26 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <SkillRow>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea" title="multi-line text input"><code>&lt;textarea&gt;</code></ApiPill>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/field-sizing" title="auto-growing textarea without JavaScript"><code>field-sizing: content</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/length#lh" title="row limits in lines"><code>lh</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API" title="drop files on the composer"><code>Drag and Drop API</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL_static" title="image previews"><code>URL.createObjectURL()</code></ApiPill>
   </SkillRow>
   </SkillField>
 
   <SkillField label="Classes">
 <SkillRow>
     <code>.textarea</code>
+    <code>.textarea-group</code>
+    <code>.textarea-group-actions</code>
+    <code>.textarea-group-spacer</code>
+    <code>.textarea-group-count</code>
   </SkillRow>
   </SkillField>
 
   <SkillField label="Notes">
 <SkillText dense>• Uses <code>field-sizing: content</code> for auto-growing - no JavaScript needed.</SkillText>
   <SkillText dense>• Shares the same border, focus, disabled, and invalid styles as <code>.input</code>.</SkillText>
-  <p class="text-muted-foreground m-0">• The textarea has a minimum height of 5rem (about 4 lines).</p>
+  <p class="text-muted-foreground m-0">• 5rem tall by default; <code>data-rows</code> (1-10) sets where it starts, <code>data-max-rows</code> (2-12) where it stops growing and scrolls; <code>data-resize="none"</code> drops the handle.</p>
   </SkillField>
 </SkillPanel>
 
@@ -49,6 +56,194 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <label class="label" for="bio">Bio</label>
 <textarea class="textarea" id="bio" placeholder="Tell us..." aria-describedby="bio-desc"></textarea>
 <p class="field-description" id="bio-desc">You can use markdown.</p>
+```
+
+```html example label="Rows and a limit" schema="none" hint="data-rows='2' is where it starts, data-max-rows='6' where it stops: in between it grows line by line with its text (field-sizing: content), past six lines it scrolls. Row sizes are in lh - true lines of this textarea at any font size."
+<div class="flex flex-col gap-2" style="max-width:28rem;">
+  <label class="label" for="notes">Notes</label>
+  <textarea class="textarea" id="notes" data-rows="2" data-max-rows="6" data-resize="none" placeholder="Type a few lines - it grows, then scrolls">Line one
+Line two
+Line three</textarea>
+</div>
+```
+
+```html example label="Character count" schema="none" hint="maxlength stops the typing natively; an <output> tied to the field (for=) shows the count, updated through df$ on every input - and turns destructive near the limit."
+<div class="flex flex-col gap-2" style="max-width:28rem;">
+  <label class="label" for="about">About you</label>
+  <textarea class="textarea" id="about" data-rows="3" maxlength="160" aria-describedby="about-count" placeholder="Tell people about yourself"></textarea>
+  <output class="field-description" id="about-count" for="about">0 / 160</output>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const about = df$('#about').get(0);
+    df$(about).on('input', () => {
+      const left = about.maxLength - about.value.length;
+      df$('#about-count')
+        .text(`${about.value.length} / ${about.maxLength}`)
+        .css('color', left < 20 ? 'var(--destructive)' : null);
+    });
+  });
+</script>
+```
+
+```html example label="Composer" schema="none" hint="A .textarea-group: the text grows from one line to six, + attaches images (the native picker), and so does dropping them anywhere on the composer (the Drag and Drop API - it lights up while you drag). Chips reuse the file input's .file-drop-item; ✕ removes one. Enter sends, Shift+Enter adds a line, and send stays disabled while there is nothing to send."
+<div class="flex flex-col gap-3" style="max-width:34rem;">
+  <form class="textarea-group" id="composer" aria-label="Message composer">
+    <ul class="file-drop-list" aria-label="Attachments"></ul>
+    <textarea class="textarea" data-rows="1" data-max-rows="6" name="message" placeholder="Write a message - Enter sends, Shift+Enter adds a line" aria-label="Message"></textarea>
+    <div class="textarea-group-actions">
+      <button class="btn" data-variant="ghost" data-size="icon-sm" type="button" data-attach aria-label="Attach images"><i data-lucide="plus"></i></button>
+      <input type="file" accept="image/*" multiple hidden data-files>
+      <span class="textarea-group-spacer"></span>
+      <output class="textarea-group-count" data-count>0 / 500</output>
+      <button class="btn" data-size="icon-sm" type="submit" data-send aria-label="Send" disabled><i data-lucide="arrow-up"></i></button>
+    </div>
+  </form>
+  <ul class="text-sm m-0 ps-5 flex flex-col gap-1" id="composer-log" aria-label="Sent"></ul>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = df$('#composer').get(0);
+    const text = df$(form).find('.textarea').get(0);
+    const list = df$(form).find('.file-drop-list');
+    const picker = df$(form).find('[data-files]').get(0);
+    const files = []; // { id, file, url }
+    const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+
+    // send is live only when there is something to send
+    const sync = () => {
+      df$(form).find('[data-send]').prop('disabled', !text.value.trim() && !files.length);
+      df$(form).find('[data-count]').text(`${text.value.length} / 500`);
+    };
+    // attachment chips: the file-input's own .file-drop-item markup, keyed by id
+    const render = () => list.morph(files.map((a) => `
+      <li class="file-drop-item" id="${a.id}">
+        <span class="file-drop-thumb" aria-hidden="true"><img src="${a.url}" alt=""></span>
+        <div class="file-drop-name">${esc(a.file.name)}<span class="file-drop-meta">${Math.ceil(a.file.size / 1024)} KB</span></div>
+        <button type="button" class="file-drop-remove" data-remove="${a.id}" aria-label="Remove ${esc(a.file.name)}">✕</button>
+      </li>`).join(''));
+    const add = (fileList) => {
+      for (const file of fileList) {
+        if (!file.type.startsWith('image/')) continue; // images only
+        files.push({ id: `att-${crypto.randomUUID()}`, file, url: URL.createObjectURL(file) });
+      }
+      render(); sync();
+    };
+
+    df$(text).on('input', sync);
+    // Enter sends, Shift+Enter is a new line (never mid-IME composition)
+    df$(text).on('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); form.requestSubmit(); }
+    });
+    // + opens the native picker
+    df$(form).find('[data-attach]').on('click', () => picker.click());
+    df$(picker).on('change', () => { add(picker.files); picker.value = ''; });
+    df$(list).on('click', (e) => {
+      const id = e.target.closest('[data-remove]')?.dataset.remove;
+      const i = files.findIndex((a) => a.id === id);
+      if (i < 0) return;
+      URL.revokeObjectURL(files[i].url);
+      files.splice(i, 1); render(); sync();
+    });
+
+    // drag and drop: the whole composer is the drop target
+    const hasFiles = (e) => [...(e.dataTransfer?.types ?? [])].includes('Files');
+    df$(form).on('dragenter', (e) => { if (hasFiles(e)) { e.preventDefault(); df$(form).attr('data-dragover', ''); } });
+    df$(form).on('dragover', (e) => { if (hasFiles(e)) { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; } });
+    df$(form).on('dragleave', (e) => { if (!form.contains(e.relatedTarget)) df$(form).attr('data-dragover', null); });
+    df$(form).on('drop', (e) => { e.preventDefault(); df$(form).attr('data-dragover', null); add(e.dataTransfer.files); });
+
+    df$(form).on('submit', (e) => {
+      e.preventDefault();
+      if (!text.value.trim() && !files.length) return;
+      df$('#composer-log').append(`<li>${esc(text.value.trim() || '(no text)')}${files.length ? ` - ${files.length} image${files.length > 1 ? 's' : ''}` : ''}</li>`);
+      files.splice(0).forEach((a) => URL.revokeObjectURL(a.url));
+      df$(text).val('');
+      render(); sync();
+      text.focus();
+    });
+  });
+</script>
+```
+
+```html example label="Inline composer" schema="none" hint="data-layout='inline': attach before the text, send after it, on one row and bottom-aligned - the field grows upward as it wraps, the chat input shape. The same script drives it."
+<div class="flex flex-col gap-3" style="max-width:34rem;">
+  <form class="textarea-group" data-layout="inline" id="composer-inline" aria-label="Message composer">
+    <ul class="file-drop-list" aria-label="Attachments"></ul>
+    <div class="textarea-group-actions">
+      <button class="btn" data-variant="ghost" data-size="icon-sm" type="button" data-attach aria-label="Attach images"><i data-lucide="plus"></i></button>
+      <input type="file" accept="image/*" multiple hidden data-files>
+    </div>
+    <textarea class="textarea" data-rows="1" data-max-rows="6" name="message" placeholder="Message - Enter sends" aria-label="Message"></textarea>
+    <div class="textarea-group-actions">
+      <button class="btn" data-size="icon-sm" type="submit" data-send aria-label="Send" disabled><i data-lucide="arrow-up"></i></button>
+    </div>
+  </form>
+  <ul class="text-sm m-0 ps-5 flex flex-col gap-1" id="composer-inline-log" aria-label="Sent"></ul>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = df$('#composer-inline').get(0);
+    const text = df$(form).find('.textarea').get(0);
+    const list = df$(form).find('.file-drop-list');
+    const picker = df$(form).find('[data-files]').get(0);
+    const files = []; // { id, file, url }
+    const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+
+    // send is live only when there is something to send
+    const sync = () => {
+      df$(form).find('[data-send]').prop('disabled', !text.value.trim() && !files.length);
+      df$(form).find('[data-count]').text(`${text.value.length} / 500`);
+    };
+    // attachment chips: the file-input's own .file-drop-item markup, keyed by id
+    const render = () => list.morph(files.map((a) => `
+      <li class="file-drop-item" id="${a.id}">
+        <span class="file-drop-thumb" aria-hidden="true"><img src="${a.url}" alt=""></span>
+        <div class="file-drop-name">${esc(a.file.name)}<span class="file-drop-meta">${Math.ceil(a.file.size / 1024)} KB</span></div>
+        <button type="button" class="file-drop-remove" data-remove="${a.id}" aria-label="Remove ${esc(a.file.name)}">✕</button>
+      </li>`).join(''));
+    const add = (fileList) => {
+      for (const file of fileList) {
+        if (!file.type.startsWith('image/')) continue; // images only
+        files.push({ id: `att-${crypto.randomUUID()}`, file, url: URL.createObjectURL(file) });
+      }
+      render(); sync();
+    };
+
+    df$(text).on('input', sync);
+    // Enter sends, Shift+Enter is a new line (never mid-IME composition)
+    df$(text).on('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); form.requestSubmit(); }
+    });
+    // + opens the native picker
+    df$(form).find('[data-attach]').on('click', () => picker.click());
+    df$(picker).on('change', () => { add(picker.files); picker.value = ''; });
+    df$(list).on('click', (e) => {
+      const id = e.target.closest('[data-remove]')?.dataset.remove;
+      const i = files.findIndex((a) => a.id === id);
+      if (i < 0) return;
+      URL.revokeObjectURL(files[i].url);
+      files.splice(i, 1); render(); sync();
+    });
+
+    // drag and drop: the whole composer is the drop target
+    const hasFiles = (e) => [...(e.dataTransfer?.types ?? [])].includes('Files');
+    df$(form).on('dragenter', (e) => { if (hasFiles(e)) { e.preventDefault(); df$(form).attr('data-dragover', ''); } });
+    df$(form).on('dragover', (e) => { if (hasFiles(e)) { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; } });
+    df$(form).on('dragleave', (e) => { if (!form.contains(e.relatedTarget)) df$(form).attr('data-dragover', null); });
+    df$(form).on('drop', (e) => { e.preventDefault(); df$(form).attr('data-dragover', null); add(e.dataTransfer.files); });
+
+    df$(form).on('submit', (e) => {
+      e.preventDefault();
+      if (!text.value.trim() && !files.length) return;
+      df$('#composer-inline-log').append(`<li>${esc(text.value.trim() || '(no text)')}${files.length ? ` - ${files.length} image${files.length > 1 ? 's' : ''}` : ''}</li>`);
+      files.splice(0).forEach((a) => URL.revokeObjectURL(a.url));
+      df$(text).val('');
+      render(); sync();
+      text.focus();
+    });
+  });
+</script>
 ```
 
 <StatesSection>

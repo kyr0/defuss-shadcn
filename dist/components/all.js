@@ -3221,12 +3221,305 @@ function init4() {
 init4();
 new MutationObserver(init4).observe(document, { childList: true, subtree: true });
 
-// src/components/calendar/calendar.ts
+// src/components/border-layout/border-layout.ts
 var df$5 = defussGlobals();
+var borderLayoutStates = ["default", "collapsed"];
+var SIDES = {
+  north: { handle: "s", axis: "h", size: "height" },
+  south: { handle: "n", axis: "h", size: "height" },
+  west: { handle: "e", axis: "w", size: "width" },
+  east: { handle: "w", axis: "w", size: "width" }
+};
+var REGIONS = Object.keys(SIDES);
+var num = (v, fallback) => {
+  const n = parseFloat(v);
+  return Number.isFinite(n) ? n : fallback;
+};
+var resolve = (t) => typeof t === "string" ? document.getElementById(t) ?? document.querySelector(t) : t;
+var regionOf = (layout, side) => layout.querySelector(`:scope > .border-layout-${side}`);
+var paneOf = (region) => region.classList.contains("resizer") ? Array.from(region.children).find((c) => !c.classList.contains("resizer-handle")) : region;
+var sizeOf = (region, side) => {
+  if (region.hasAttribute("data-collapsed"))
+    return 0;
+  const box = region.getBoundingClientRect();
+  return Math.round(SIDES[side].axis === "w" ? box.width : box.height);
+};
+function setSize(region, side, px) {
+  const { size } = SIDES[side];
+  const pane = paneOf(region);
+  if (!pane)
+    return;
+  const value = String(Math.round(px));
+  if (region.hasAttribute("data-init") && region.api)
+    region.dataset[size] = value;
+  else
+    pane.style[size] = `${value}px`;
+}
+function clamp(layout) {
+  const centerMin = num(layout.dataset.centerMin, 120);
+  const style = getComputedStyle(layout);
+  const gapW = num(style.columnGap, 0) * 2;
+  const gapH = num(style.rowGap, 0) * 2;
+  const pad = (a, b) => num(style[a], 0) + num(style[b], 0);
+  const innerW = layout.clientWidth - pad("paddingLeft", "paddingRight") - gapW;
+  const innerH = layout.clientHeight - pad("paddingTop", "paddingBottom") - gapH;
+  const OPPOSITE = { north: "south", south: "north", west: "east", east: "west" };
+  for (const side of REGIONS) {
+    const region = regionOf(layout, side);
+    if (!region?.classList.contains("resizer"))
+      continue;
+    const other = regionOf(layout, OPPOSITE[side]);
+    const taken = other ? sizeOf(other, OPPOSITE[side]) : 0;
+    const room = (SIDES[side].axis === "w" ? innerW : innerH) - taken - centerMin;
+    const authoredMax = num(region.dataset.maxAuthored, Infinity);
+    const max = Math.max(num(region.dataset.min, 48), Math.min(room, authoredMax));
+    region.dataset[SIDES[side].axis === "w" ? "maxW" : "maxH"] = String(Math.round(max));
+    if (!region.hasAttribute("data-collapsed") && sizeOf(region, side) > max + 1)
+      setSize(region, side, max);
+  }
+}
+function aria(layout) {
+  for (const side of REGIONS) {
+    const region = regionOf(layout, side);
+    const handle = region?.querySelector(":scope > .resizer-handle");
+    if (!handle)
+      continue;
+    const pane = paneOf(region);
+    if (pane && !pane.id)
+      pane.id = `${layout.id || "border-layout"}-${side}-${Math.random().toString(36).slice(2, 7)}`;
+    if (pane)
+      handle.setAttribute("aria-controls", pane.id);
+    const name = region.getAttribute("aria-label") || pane?.getAttribute("aria-label") || side;
+    handle.setAttribute("aria-label", `Resize ${name}`);
+    handle.setAttribute("aria-valuenow", String(sizeOf(region, side)));
+    handle.setAttribute("aria-valuemin", String(region.hasAttribute("data-collapsible") || layout.hasAttribute("data-collapsible") ? 0 : num(region.dataset.min, 48)));
+    handle.setAttribute("aria-valuemax", String(num(region.dataset[SIDES[side].axis === "w" ? "maxW" : "maxH"], 2000)));
+  }
+}
+var collapsible = (layout, region) => region.hasAttribute("data-collapsible") || layout.hasAttribute("data-collapsible");
+function collapse(layout, side, collapsed) {
+  const region = regionOf(layout, side);
+  if (!region)
+    return;
+  const was = region.hasAttribute("data-collapsed");
+  if (was === collapsed)
+    return;
+  region.toggleAttribute("data-collapsed", collapsed);
+  aria(layout);
+  save(layout);
+  layout.dispatchEvent(new CustomEvent("border-layout-collapse", { bubbles: true, detail: { region: side, collapsed } }));
+  syncState(layout);
+}
+function syncState(layout) {
+  const folded = REGIONS.filter((s) => regionOf(layout, s)?.hasAttribute("data-collapsed"));
+  layout.dataset.stateName = folded.length ? "collapsed" : "default";
+  layout._stateConfig = folded.length ? { regions: folded } : {};
+}
+var storeKey = (layout) => `defuss-shadcn:border-layout:${layout.dataset.save}`;
+function save(layout) {
+  if (!layout.dataset.save || layout._restoring)
+    return;
+  const data = {};
+  for (const side of REGIONS) {
+    const region = regionOf(layout, side);
+    if (!region?.classList.contains("resizer"))
+      continue;
+    const pane = paneOf(region);
+    const px = Math.round(num(pane?.style[SIDES[side].size], NaN));
+    data[side] = { size: Number.isFinite(px) ? px : null, collapsed: region.hasAttribute("data-collapsed") };
+  }
+  try {
+    localStorage.setItem(storeKey(layout), JSON.stringify(data));
+  } catch {}
+}
+function restore(layout) {
+  if (!layout.dataset.save)
+    return;
+  let data = null;
+  try {
+    data = JSON.parse(localStorage.getItem(storeKey(layout)) || "null");
+  } catch {
+    data = null;
+  }
+  if (!data)
+    return;
+  layout._restoring = true;
+  for (const side of REGIONS) {
+    const region = regionOf(layout, side);
+    const saved = data[side];
+    if (!region || !saved)
+      continue;
+    if (saved.size)
+      setSize(region, side, saved.size);
+    region.toggleAttribute("data-collapsed", !!saved.collapsed);
+  }
+  layout._restoring = false;
+}
+function triggerStateChange5(layout, stateName, config) {
+  if (stateName === "default") {
+    for (const side of REGIONS) {
+      const region = regionOf(layout, side);
+      if (!region)
+        continue;
+      region.removeAttribute("data-collapsed");
+      if (!region._authored)
+        continue;
+      region.dataset[SIDES[side].axis === "w" ? "maxW" : "maxH"] = region.dataset.maxAuthored ?? "2000";
+      setSize(region, side, region._authored);
+    }
+    clamp(layout);
+  } else {
+    const want = new Set(config.regions ?? (config.region ? [config.region] : []));
+    for (const side of REGIONS) {
+      const region = regionOf(layout, side);
+      if (region)
+        region.toggleAttribute("data-collapsed", want.has(side));
+    }
+  }
+  aria(layout);
+  save(layout);
+}
+var borderLayoutApi = {
+  setState(layout, stateName, config = {}) {
+    if (!borderLayoutStates.includes(stateName)) {
+      throw new Error(`border-layout: unknown state "${stateName}" (supported: ${borderLayoutStates.join(", ")})`);
+    }
+    triggerStateChange5(layout, stateName, config);
+    syncState(layout);
+  },
+  getState(layout) {
+    return { name: layout.dataset.stateName || "default", config: layout._stateConfig ?? {} };
+  }
+};
+df$5.borderLayoutApi = borderLayoutApi;
+df$5.borderLayoutStates = borderLayoutStates;
+function init5() {
+  document.querySelectorAll(".border-layout:not([data-init])").forEach((layout) => {
+    layout.dataset.init = "";
+    for (const side of REGIONS) {
+      const region = regionOf(layout, side);
+      if (!region?.classList.contains("resizer"))
+        continue;
+      const d = region.dataset;
+      d.handles ??= SIDES[side].handle;
+      d.axis ??= SIDES[side].axis;
+      d.keys ??= "edge";
+      d.min ??= "48";
+      if (d.max)
+        d.maxAuthored = d.max;
+      const pane = paneOf(region);
+      const prop = SIDES[side].size;
+      const authored = pane?.style[prop] ?? "";
+      if (authored.endsWith("%")) {
+        const inner = prop === "width" ? layout.clientWidth : layout.clientHeight;
+        pane.style[prop] = `${Math.round(parseFloat(authored) / 100 * inner)}px`;
+      }
+      region._authored = sizeOf(region, side) || null;
+    }
+    restore(layout);
+    const before = (e) => {
+      const handle = e.target.closest?.(".resizer-handle");
+      if (!handle || handle.parentElement?.parentElement !== layout)
+        return;
+      clamp(layout);
+      const side = REGIONS.find((s) => handle.parentElement.classList.contains(`border-layout-${s}`));
+      if (e.type === "pointerdown" && side && handle.parentElement.hasAttribute("data-collapsed"))
+        collapse(layout, side, false);
+    };
+    layout.addEventListener("pointerdown", before, true);
+    layout.addEventListener("keydown", before, true);
+    layout.addEventListener("focusin", (e) => {
+      before(e);
+      aria(layout);
+    });
+    const toggle = (handle) => {
+      const region = handle.parentElement;
+      const side = REGIONS.find((s) => region.classList.contains(`border-layout-${s}`));
+      if (!side || !collapsible(layout, region))
+        return;
+      collapse(layout, side, !region.hasAttribute("data-collapsed"));
+    };
+    layout.addEventListener("dblclick", (e) => {
+      const handle = e.target.closest(".resizer-handle");
+      if (handle && handle.parentElement?.parentElement === layout)
+        toggle(handle);
+    });
+    layout.addEventListener("keydown", (e) => {
+      const handle = e.target.closest?.(".resizer-handle");
+      if (e.key === "Enter" && handle && handle.parentElement?.parentElement === layout) {
+        e.preventDefault();
+        toggle(handle);
+      }
+    });
+    layout.addEventListener("resizer-resize", (e) => {
+      if (e.target.parentElement !== layout)
+        return;
+      aria(layout);
+      save(layout);
+    });
+    new ResizeObserver(() => {
+      clamp(layout);
+      aria(layout);
+    }).observe(layout);
+    layout.api = {
+      setState: (stateName, config) => borderLayoutApi.setState(layout, stateName, config),
+      getState: () => borderLayoutApi.getState(layout)
+    };
+    syncState(layout);
+    queueMicrotask(() => {
+      clamp(layout);
+      aria(layout);
+    });
+  });
+}
+df$5.borderLayout = {
+  collapse: (t, side) => {
+    const l = resolve(t);
+    if (l)
+      collapse(l, side, true);
+  },
+  expand: (t, side) => {
+    const l = resolve(t);
+    if (l)
+      collapse(l, side, false);
+  },
+  toggle: (t, side) => {
+    const l = resolve(t);
+    const region = l && regionOf(l, side);
+    if (!region)
+      return false;
+    collapse(l, side, !region.hasAttribute("data-collapsed"));
+    return region.hasAttribute("data-collapsed");
+  },
+  resize: (t, side, px) => {
+    const l = resolve(t);
+    const r = l && regionOf(l, side);
+    if (r) {
+      clamp(l);
+      setSize(r, side, px);
+    }
+  },
+  sizes: (t) => {
+    const l = resolve(t);
+    const out = {};
+    if (l)
+      for (const side of REGIONS) {
+        const r = regionOf(l, side);
+        if (r)
+          out[side] = sizeOf(r, side);
+      }
+    return out;
+  }
+};
+init5();
+new MutationObserver(init5).observe(document, { childList: true, subtree: true });
+
+// src/components/calendar/calendar.ts
+var df$6 = defussGlobals();
 var dfDollar2 = defussQuery();
 var calSeq = 0;
 var calendarStates = ["default"];
-function triggerStateChange5(cal, stateName, config) {
+function triggerStateChange6(cal, stateName, config) {
   const state = cal._calState;
   if (!state || stateName !== "default")
     return;
@@ -3270,7 +3563,7 @@ var calendarApi = {
     if (!calendarStates.includes(stateName)) {
       throw new Error(`calendar: unknown state "${stateName}" (supported: ${calendarStates.join(", ")})`);
     }
-    triggerStateChange5(cal, stateName, config);
+    triggerStateChange6(cal, stateName, config);
     cal.dataset.stateName = stateName;
     cal._stateConfig = config;
   },
@@ -3296,8 +3589,8 @@ var calendarApi = {
     };
   }
 };
-df$5.calendarApi = calendarApi;
-df$5.calendarStates = calendarStates;
+df$6.calendarApi = calendarApi;
+df$6.calendarStates = calendarStates;
 var DAYS = Array.from({ length: 7 }, (_, i) => new Intl.DateTimeFormat(undefined, { weekday: "short" }).format(new Date(2024, 0, i)));
 var MONTHS = Array.from({ length: 12 }, (_, i) => new Intl.DateTimeFormat(undefined, { month: "long" }).format(new Date(2024, i, 1)));
 var daysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
@@ -3411,8 +3704,8 @@ function dayData(days, iso) {
     attrs += " data-note";
   if (d.label)
     attrs += ` title="${esc(d.label)}"`;
-  const aria = ` aria-label="${esc([FULL_DATE.format(isoToDate(iso)), d.label, note].filter(Boolean).join(", "))}"`;
-  return { attrs, note: note ? `<span class="calendar-day-note">${esc(note)}</span>` : "", aria, blocked: d.disabled === true };
+  const aria2 = ` aria-label="${esc([FULL_DATE.format(isoToDate(iso)), d.label, note].filter(Boolean).join(", "))}"`;
+  return { attrs, note: note ? `<span class="calendar-day-note">${esc(note)}</span>` : "", aria: aria2, blocked: d.disabled === true };
 }
 var YEARS_PER_PAGE = 12;
 var pageStart = (year) => year - (year % YEARS_PER_PAGE + YEARS_PER_PAGE) % YEARS_PER_PAGE;
@@ -3649,7 +3942,7 @@ var renderCalendar = (el, year, month, selectedDay) => {
     el.dispatchEvent(new CustomEvent("calendar:view", { bubbles: true, detail: { view: "days", year, month } }));
   }
 };
-function init5() {
+function init6() {
   document.querySelectorAll(".calendar:not([data-init])").forEach((cal) => {
     cal.dataset.init = "";
     cal.dataset.calId = cal.id || `dfsc-${++calSeq}`;
@@ -3916,15 +4209,15 @@ function init5() {
     });
   });
 }
-init5();
-new MutationObserver(init5).observe(document, { childList: true, subtree: true });
+init6();
+new MutationObserver(init6).observe(document, { childList: true, subtree: true });
 
 // src/components/carousel/carousel.ts
-var df$6 = defussGlobals();
+var df$7 = defussGlobals();
 var dfDollar3 = defussQuery();
 var carSeq = 0;
 var carouselStates = ["default"];
-function triggerStateChange6(carousel, config) {
+function triggerStateChange7(carousel, config) {
   const index = Number(config?.index ?? 0);
   if (typeof carousel._goTo === "function")
     carousel._goTo(index);
@@ -3934,7 +4227,7 @@ var carouselApi = {
     if (!carouselStates.includes(stateName)) {
       throw new Error(`carousel: unknown state "${stateName}" (supported: ${carouselStates.join(", ")})`);
     }
-    triggerStateChange6(carousel, config);
+    triggerStateChange7(carousel, config);
     carousel.dataset.stateName = stateName;
     carousel._stateConfig = config;
   },
@@ -3945,9 +4238,9 @@ var carouselApi = {
     };
   }
 };
-df$6.carouselApi = carouselApi;
-df$6.carouselStates = carouselStates;
-function init6() {
+df$7.carouselApi = carouselApi;
+df$7.carouselStates = carouselStates;
+function init7() {
   document.querySelectorAll(".carousel:not([data-init])").forEach((carousel) => {
     carousel.dataset.init = "";
     carousel.api = {
@@ -4126,11 +4419,11 @@ function init6() {
     updateState(0);
   });
 }
-init6();
-new MutationObserver(init6).observe(document, { childList: true, subtree: true });
+init7();
+new MutationObserver(init7).observe(document, { childList: true, subtree: true });
 
 // src/components/chart/chart.ts
-var df$7 = defussGlobals();
+var df$8 = defussGlobals();
 var chartStates = ["default"];
 var ECHARTS_NOT_LOADED = 'chart: echarts is not loaded - add <script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script> before chart.js';
 function echartsRuntime() {
@@ -4541,7 +4834,7 @@ function chartDeck(deck, { base = {}, states }) {
     }
   };
 }
-function triggerStateChange7(el, stateName, config = {}) {
+function triggerStateChange8(el, stateName, config = {}) {
   if (!chartStates.includes(stateName)) {
     throw new Error(`chart: unknown state "${stateName}" (supported: ${chartStates.join(", ")})`);
   }
@@ -4555,7 +4848,7 @@ function triggerStateChange7(el, stateName, config = {}) {
 }
 var chartApi = {
   setState(el, stateName, config = {}) {
-    triggerStateChange7(el, stateName, config);
+    triggerStateChange8(el, stateName, config);
     el.dataset.stateName = stateName;
     el._stateConfig = config;
   },
@@ -4566,11 +4859,11 @@ var chartApi = {
     };
   }
 };
-df$7.chartApi = chartApi;
-df$7.chartStates = chartStates;
-df$7.chart = { mount, instance, theme: chartTheme, color: chartColor, deck: chartDeck };
-df$7.chartStory = chartStory;
-function init7() {
+df$8.chartApi = chartApi;
+df$8.chartStates = chartStates;
+df$8.chart = { mount, instance, theme: chartTheme, color: chartColor, deck: chartDeck };
+df$8.chartStory = chartStory;
+function init8() {
   document.querySelectorAll(".chart:not([data-init])").forEach((el) => {
     el.dataset.init = "";
     el.api = {
@@ -4598,15 +4891,15 @@ function init7() {
     boot();
   });
 }
-init7();
-new MutationObserver(init7).observe(document, { childList: true, subtree: true });
+init8();
+new MutationObserver(init8).observe(document, { childList: true, subtree: true });
 
 // src/components/color-picker/color-picker.ts
-var df$8 = defussGlobals();
+var df$9 = defussGlobals();
 var colorPickerStates = ["default"];
 var getInput = (picker) => picker.querySelector('input[type="color"]');
 var COLOR_FORMATS = ["hex", "rgb", "hsl", "oklch"];
-var num = (n, digits) => String(Number(n.toFixed(digits)));
+var num2 = (n, digits) => String(Number(n.toFixed(digits)));
 function formatColor(hex, format) {
   const m = /^#?([0-9a-f]{6})$/i.exec(hex.trim());
   if (!m)
@@ -4629,7 +4922,7 @@ function formatColor(hex, format) {
         h = max === rn ? (gn - bn) / d % 6 : max === gn ? (bn - rn) / d + 2 : (rn - gn) / d + 4;
         h = (h * 60 + 360) % 360;
       }
-      return `hsl(${num(h, 1)} ${num(sat * 100, 1)}% ${num(l * 100, 1)}%)`;
+      return `hsl(${num2(h, 1)} ${num2(sat * 100, 1)}% ${num2(l * 100, 1)}%)`;
     }
     case "oklch": {
       const lin = (c) => {
@@ -4645,9 +4938,9 @@ function formatColor(hex, format) {
       const B = 0.0259040371 * l_ + 0.7827717662 * m_ - 0.808675766 * s_;
       const C = Math.hypot(A, B);
       if (C < 0.00005)
-        return `oklch(${num(L, 4)} 0 0)`;
+        return `oklch(${num2(L, 4)} 0 0)`;
       const H = (Math.atan2(B, A) * 180 / Math.PI + 360) % 360;
-      return `oklch(${num(L, 4)} ${num(C, 4)} ${num(H, 2)})`;
+      return `oklch(${num2(L, 4)} ${num2(C, 4)} ${num2(H, 2)})`;
     }
     default:
       return `#${m[1].toLowerCase()}`;
@@ -4673,7 +4966,7 @@ function syncValue(picker) {
   if (switcher && switcher.value !== format)
     switcher.value = format;
 }
-function triggerStateChange8(picker, config) {
+function triggerStateChange9(picker, config) {
   if (typeof config?.format === "string" && COLOR_FORMATS.includes(config.format)) {
     picker.dataset.format = config.format;
     syncValue(picker);
@@ -4689,7 +4982,7 @@ var colorPickerApi = {
     if (!colorPickerStates.includes(stateName)) {
       throw new Error(`color-picker: unknown state "${stateName}" (supported: ${colorPickerStates.join(", ")})`);
     }
-    triggerStateChange8(picker, config);
+    triggerStateChange9(picker, config);
     picker.dataset.stateName = stateName;
     picker._stateConfig = config;
   },
@@ -4706,9 +4999,9 @@ var colorPickerApi = {
     };
   }
 };
-df$8.colorPickerApi = colorPickerApi;
-df$8.colorPickerStates = colorPickerStates;
-function init8() {
+df$9.colorPickerApi = colorPickerApi;
+df$9.colorPickerStates = colorPickerStates;
+function init9() {
   document.querySelectorAll(".color-picker:not([data-init])").forEach((picker) => {
     picker.dataset.init = "";
     picker.api = {
@@ -4729,14 +5022,14 @@ function init8() {
     new MutationObserver(() => syncValue(picker)).observe(picker, { attributes: true, attributeFilter: ["data-format"] });
   });
 }
-init8();
-new MutationObserver(init8).observe(document, { childList: true, subtree: true });
+init9();
+new MutationObserver(init9).observe(document, { childList: true, subtree: true });
 
 // src/components/combobox/combobox.ts
-var df$9 = defussGlobals();
+var df$10 = defussGlobals();
 var dfDollar4 = defussQuery();
 var comboboxStates = ["default", "open"];
-function triggerStateChange9(popover, stateName, _config) {
+function triggerStateChange10(popover, stateName, _config) {
   switch (stateName) {
     case "default":
       popover._close?.();
@@ -4751,7 +5044,7 @@ var comboboxApi = {
     if (!comboboxStates.includes(stateName)) {
       throw new Error(`combobox: unknown state "${stateName}" (supported: ${comboboxStates.join(", ")})`);
     }
-    triggerStateChange9(popover, stateName, config);
+    triggerStateChange10(popover, stateName, config);
     popover.dataset.stateName = stateName;
     popover._stateConfig = config;
   },
@@ -4769,8 +5062,8 @@ var comboboxApi = {
     };
   }
 };
-df$9.comboboxApi = comboboxApi;
-df$9.comboboxStates = comboboxStates;
+df$10.comboboxApi = comboboxApi;
+df$10.comboboxStates = comboboxStates;
 var esc2 = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 var idPart = (t) => t.replace(/[^\w-]/g, "_");
 var comboSeq = 0;
@@ -5001,7 +5294,7 @@ function initTags(wrapper) {
     dfDollar4(input).attr("aria-expanded", String(isOpen()));
   });
 }
-function init9() {
+function init10() {
   document.querySelectorAll(".combobox:not([data-init])").forEach((wrapper) => {
     wrapper.dataset.init = "";
     if (wrapper.hasAttribute("data-tags")) {
@@ -5236,14 +5529,14 @@ function init9() {
     });
   });
 }
-init9();
-new MutationObserver(init9).observe(document, { childList: true, subtree: true });
+init10();
+new MutationObserver(init10).observe(document, { childList: true, subtree: true });
 
 // src/components/command/command.ts
-var df$10 = defussGlobals();
+var df$11 = defussGlobals();
 var dfDollar5 = defussQuery();
 var commandStates = ["default", "open"];
-function triggerStateChange10(dialog, stateName, _config) {
+function triggerStateChange11(dialog, stateName, _config) {
   switch (stateName) {
     case "default":
       if (dialog.open)
@@ -5265,7 +5558,7 @@ var commandApi = {
     if (!commandStates.includes(stateName)) {
       throw new Error(`command: unknown state "${stateName}" (supported: ${commandStates.join(", ")})`);
     }
-    triggerStateChange10(dialog, stateName, config);
+    triggerStateChange11(dialog, stateName, config);
     dialog.dataset.stateName = stateName;
     dialog._stateConfig = config;
   },
@@ -5273,8 +5566,8 @@ var commandApi = {
     return { name: dialog.dataset.stateName || "default", config: dialog._stateConfig ?? {} };
   }
 };
-df$10.commandApi = commandApi;
-df$10.commandStates = commandStates;
+df$11.commandApi = commandApi;
+df$11.commandStates = commandStates;
 var commandKeydownAdded = false;
 if (!commandKeydownAdded) {
   commandKeydownAdded = true;
@@ -5308,7 +5601,7 @@ function highlightItem(list, index) {
   visible[clamped].scrollIntoView({ block: "nearest" });
   return clamped;
 }
-function init10() {
+function init11() {
   document.querySelectorAll("dialog.command:not([data-init])").forEach((dialog) => {
     dialog.dataset.init = "";
     dialog.api = {
@@ -5392,13 +5685,13 @@ function init10() {
     });
   });
 }
-init10();
-new MutationObserver(init10).observe(document, { childList: true, subtree: true });
+init11();
+new MutationObserver(init11).observe(document, { childList: true, subtree: true });
 
 // src/components/context-menu/context-menu.ts
-var df$11 = defussGlobals();
+var df$12 = defussGlobals();
 var contextMenuStates = ["default", "open"];
-function triggerStateChange11(menu, stateName, config) {
+function triggerStateChange12(menu, stateName, config) {
   switch (stateName) {
     case "default":
       menu.hidePopover();
@@ -5419,7 +5712,7 @@ var contextMenuApi = {
     if (!contextMenuStates.includes(stateName)) {
       throw new Error(`context-menu: unknown state "${stateName}" (supported: ${contextMenuStates.join(", ")})`);
     }
-    triggerStateChange11(menu, stateName, config);
+    triggerStateChange12(menu, stateName, config);
     menu.dataset.stateName = stateName;
     menu._stateConfig = config;
   },
@@ -5430,8 +5723,8 @@ var contextMenuApi = {
     };
   }
 };
-df$11.contextMenuApi = contextMenuApi;
-df$11.contextMenuStates = contextMenuStates;
+df$12.contextMenuApi = contextMenuApi;
+df$12.contextMenuStates = contextMenuStates;
 var pendingOpen = null;
 var lastRightUp = 0;
 if (!document.__ctxMenuReleaseInit) {
@@ -5457,7 +5750,7 @@ function openMenuAt(menu, x, y) {
   safeShowPopover(menu);
   menu.dataset.stateName = "open";
 }
-function init11() {
+function init12() {
   document.querySelectorAll("[data-context-menu]:not([data-init])").forEach((trigger2) => {
     trigger2.dataset.init = "";
     const menu = document.getElementById(trigger2.dataset.contextMenu);
@@ -5491,11 +5784,11 @@ function init11() {
     });
   });
 }
-init11();
-new MutationObserver(init11).observe(document, { childList: true, subtree: true });
+init12();
+new MutationObserver(init12).observe(document, { childList: true, subtree: true });
 
 // src/components/countdown/countdown.ts
-var df$12 = defussGlobals();
+var df$13 = defussGlobals();
 var countdownStates = ["default", "running", "paused", "finished"];
 var UNITS = [
   ["days", 86400],
@@ -5575,7 +5868,7 @@ function authoredDeadline(el) {
     return Date.parse(el.dataset.until);
   return Date.now() + parseFloat(el.dataset.duration || "0") * 1000;
 }
-function triggerStateChange12(el, stateName, config) {
+function triggerStateChange13(el, stateName, config) {
   switch (stateName) {
     case "default":
       if (isTimer(el)) {
@@ -5626,7 +5919,7 @@ var countdownApi = {
       throw new Error(`countdown: unknown state "${stateName}" (supported: ${countdownStates.join(", ")})`);
     }
     el._stateConfig = config;
-    triggerStateChange12(el, stateName, config);
+    triggerStateChange13(el, stateName, config);
   },
   getState(el) {
     const values = {};
@@ -5637,9 +5930,9 @@ var countdownApi = {
     return { name: el.dataset.stateName || "default", config };
   }
 };
-df$12.countdownApi = countdownApi;
-df$12.countdownStates = countdownStates;
-function init12() {
+df$13.countdownApi = countdownApi;
+df$13.countdownStates = countdownStates;
+function init13() {
   document.querySelectorAll(".countdown-group:not([data-init]), .countdown:not([data-init])").forEach((el) => {
     if (el.classList.contains("countdown") && !isTimer(el) && el.parentElement?.closest(".countdown-group[data-until], .countdown-group[data-duration]"))
       return;
@@ -5655,19 +5948,19 @@ function init12() {
       el._authorLabel = el.hasAttribute("aria-label");
       if (!el.hasAttribute("role"))
         el.setAttribute("role", "timer");
-      triggerStateChange12(el, "default", {});
+      triggerStateChange13(el, "default", {});
     } else {
       el.dataset.stateName = "default";
     }
   });
 }
-init12();
-new MutationObserver(init12).observe(document, { childList: true, subtree: true });
+init13();
+new MutationObserver(init13).observe(document, { childList: true, subtree: true });
 
 // src/components/dialog/dialog.ts
-var df$13 = defussGlobals();
+var df$14 = defussGlobals();
 var dialogStates = ["default", "open"];
-function triggerStateChange13(dialog, stateName, _config) {
+function triggerStateChange14(dialog, stateName, _config) {
   switch (stateName) {
     case "default":
       if (dialog.open)
@@ -5684,7 +5977,7 @@ var dialogApi = {
     if (!dialogStates.includes(stateName)) {
       throw new Error(`dialog: unknown state "${stateName}" (supported: ${dialogStates.join(", ")})`);
     }
-    triggerStateChange13(dialog, stateName, config);
+    triggerStateChange14(dialog, stateName, config);
     dialog.dataset.stateName = stateName;
     dialog._stateConfig = config;
   },
@@ -5692,9 +5985,9 @@ var dialogApi = {
     return { name: dialog.dataset.stateName || "default", config: dialog._stateConfig ?? {} };
   }
 };
-df$13.dialogApi = dialogApi;
-df$13.dialogStates = dialogStates;
-function init13() {
+df$14.dialogApi = dialogApi;
+df$14.dialogStates = dialogStates;
+function init14() {
   document.querySelectorAll("[data-dialog-trigger]:not([data-init])").forEach((trigger2) => {
     trigger2.dataset.init = "";
     const dialog = document.getElementById(trigger2.dataset.dialogTrigger);
@@ -5705,7 +5998,7 @@ function init13() {
       dialog.showModal();
     });
   });
-  document.querySelectorAll("dialog:not(.alert-dialog):not(.sheet):not(.command):not([data-init])").forEach((dialog) => {
+  document.querySelectorAll("dialog:not(.alert-dialog):not(.sheet):not(.command):not(.window):not([data-init])").forEach((dialog) => {
     dialog.dataset.init = "";
     dialog.api = {
       setState: (stateName, config) => dialogApi.setState(dialog, stateName, config),
@@ -5729,11 +6022,11 @@ function init13() {
     });
   });
 }
-init13();
-new MutationObserver(init13).observe(document, { childList: true, subtree: true });
+init14();
+new MutationObserver(init14).observe(document, { childList: true, subtree: true });
 
 // src/components/diff/diff.ts
-var df$14 = defussGlobals();
+var df$15 = defussGlobals();
 var diffStates = ["default", "before", "after"];
 var rangeOf = (el) => el.querySelector(":scope > .diff-range");
 function paint(el) {
@@ -5764,7 +6057,7 @@ function pointerPct(el, e) {
   const x = (e.clientX - r.left) / r.width * 100;
   return getComputedStyle(el).direction === "rtl" ? 100 - x : x;
 }
-function triggerStateChange14(el, stateName, config) {
+function triggerStateChange15(el, stateName, config) {
   switch (stateName) {
     case "default":
       setPosition(el, config?.position ?? el._defaultPosition ?? 50);
@@ -5782,7 +6075,7 @@ var diffApi = {
     if (!diffStates.includes(stateName)) {
       throw new Error(`diff: unknown state "${stateName}" (supported: ${diffStates.join(", ")})`);
     }
-    triggerStateChange14(el, stateName, config);
+    triggerStateChange15(el, stateName, config);
     el.dataset.stateName = stateName;
     el._stateConfig = config;
   },
@@ -5792,9 +6085,9 @@ var diffApi = {
     return { name, config: { ...el._stateConfig, position: Math.round(pct * 100) / 100 } };
   }
 };
-df$14.diffApi = diffApi;
-df$14.diffStates = diffStates;
-function init14() {
+df$15.diffApi = diffApi;
+df$15.diffStates = diffStates;
+function init15() {
   document.querySelectorAll(".diff:not([data-init])").forEach((el) => {
     el.dataset.init = "";
     const range = rangeOf(el);
@@ -5844,11 +6137,11 @@ function init14() {
     el.addEventListener("pointercancel", end);
   });
 }
-init14();
-new MutationObserver(init14).observe(document, { childList: true, subtree: true });
+init15();
+new MutationObserver(init15).observe(document, { childList: true, subtree: true });
 
 // src/components/dropdown/dropdown.ts
-var df$15 = defussGlobals();
+var df$16 = defussGlobals();
 var dropdownStates = ["default", "open"];
 var ITEM = '[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]';
 var isDisabled = (el) => el.disabled || el.getAttribute("aria-disabled") === "true";
@@ -5862,7 +6155,7 @@ var rootOf2 = (menu) => {
 };
 var HOVER_OPEN = 120;
 var HOVER_CLOSE = 220;
-function triggerStateChange15(menu, stateName, _config) {
+function triggerStateChange16(menu, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -5879,7 +6172,7 @@ var dropdownApi = {
     if (!dropdownStates.includes(stateName)) {
       throw new Error(`dropdown: unknown state "${stateName}" (supported: ${dropdownStates.join(", ")})`);
     }
-    triggerStateChange15(menu, stateName, config);
+    triggerStateChange16(menu, stateName, config);
     menu.dataset.stateName = stateName;
     menu._stateConfig = config;
   },
@@ -5887,8 +6180,8 @@ var dropdownApi = {
     return { name: menu.dataset.stateName || "default", config: menu._stateConfig ?? {} };
   }
 };
-df$15.dropdownApi = dropdownApi;
-df$15.dropdownStates = dropdownStates;
+df$16.dropdownApi = dropdownApi;
+df$16.dropdownStates = dropdownStates;
 var anchorSeq = 0;
 function highlight(menu, item, focus = true) {
   itemsOf(menu).forEach((i) => {
@@ -6111,7 +6404,7 @@ function wireSub(wrap) {
     highlight(parent, trigger2, false);
   });
 }
-function init15() {
+function init16() {
   document.querySelectorAll("[data-dropdown-trigger]:not([data-init])").forEach((trigger2) => {
     trigger2.dataset.init = "";
     const menu = document.getElementById(trigger2.dataset.dropdownTrigger);
@@ -6160,11 +6453,11 @@ function init15() {
     };
   });
 }
-init15();
-new MutationObserver(init15).observe(document, { childList: true, subtree: true });
+init16();
+new MutationObserver(init16).observe(document, { childList: true, subtree: true });
 
 // src/components/file-input/file-input.ts
-var df$16 = defussGlobals();
+var df$17 = defussGlobals();
 var fileInputStates = ["default", "dragover", "selected", "error"];
 var inputOf = (el) => el.querySelector(".file-drop-input");
 function accepts(input, file) {
@@ -6280,7 +6573,7 @@ function onPick(el) {
   el._kept = out;
   apply(el, rejected);
 }
-function triggerStateChange16(el, stateName, config) {
+function triggerStateChange17(el, stateName, config) {
   const input = inputOf(el);
   switch (stateName) {
     case "default":
@@ -6313,7 +6606,7 @@ var fileInputApi = {
       throw new Error(`file-input: unknown state "${stateName}" (supported: ${fileInputStates.join(", ")})`);
     }
     el._stateConfig = config;
-    triggerStateChange16(el, stateName, config);
+    triggerStateChange17(el, stateName, config);
   },
   getState(el) {
     const input = inputOf(el);
@@ -6323,9 +6616,9 @@ var fileInputApi = {
     };
   }
 };
-df$16.fileInputApi = fileInputApi;
-df$16.fileInputStates = fileInputStates;
-function init16() {
+df$17.fileInputApi = fileInputApi;
+df$17.fileInputStates = fileInputStates;
+function init17() {
   document.querySelectorAll(".file-drop:not([data-init])").forEach((el) => {
     const input = inputOf(el);
     if (!input)
@@ -6362,14 +6655,14 @@ function init16() {
     });
   });
 }
-init16();
-new MutationObserver(init16).observe(document, { childList: true, subtree: true });
+init17();
+new MutationObserver(init17).observe(document, { childList: true, subtree: true });
 
 // src/components/image/image.ts
-var df$17 = defussGlobals();
+var df$18 = defussGlobals();
 var dfDollar6 = defussQuery();
 var imageStates = ["default", "error"];
-function triggerStateChange17(figure, stateName, _config) {
+function triggerStateChange18(figure, stateName, _config) {
   const img = dfDollar6(figure).find("img")[0];
   if (!img)
     return;
@@ -6387,7 +6680,7 @@ var imageApi = {
     if (!imageStates.includes(stateName)) {
       throw new Error(`image: unknown state "${stateName}" (supported: ${imageStates.join(", ")})`);
     }
-    triggerStateChange17(figure, stateName, config);
+    triggerStateChange18(figure, stateName, config);
     figure.dataset.stateName = stateName;
     figure._stateConfig = config;
   },
@@ -6399,8 +6692,8 @@ var imageApi = {
     };
   }
 };
-df$17.imageApi = imageApi;
-df$17.imageStates = imageStates;
+df$18.imageApi = imageApi;
+df$18.imageStates = imageStates;
 var galleryIO = typeof IntersectionObserver === "function" ? new IntersectionObserver((entries) => {
   for (const e of entries) {
     if (!e.isIntersecting)
@@ -6432,7 +6725,7 @@ function initHoverGalleries() {
       readyGallery(gallery);
   });
 }
-function init17() {
+function init18() {
   initHoverGalleries();
   document.querySelectorAll(".image:not([data-init])").forEach((figure) => {
     figure.dataset.init = "";
@@ -6476,8 +6769,8 @@ function init17() {
     }
   });
 }
-init17();
-new MutationObserver(init17).observe(document, { childList: true, subtree: true });
+init18();
+new MutationObserver(init18).observe(document, { childList: true, subtree: true });
 var lightbox = null;
 var lightboxImg = null;
 var lightboxFigure = null;
@@ -6600,7 +6893,7 @@ if (!document.__imagePreviewInit) {
 }
 
 // src/components/menubar/menubar.ts
-var df$18 = defussGlobals();
+var df$19 = defussGlobals();
 var menubarStates = ["default", "open"];
 var triggersOf = (bar) => Array.from(bar.querySelectorAll(".menubar-trigger")).filter((t) => t.closest(".menubar") === bar && !t.disabled && t.getAttribute("aria-disabled") !== "true");
 var menuOf = (trigger2) => document.getElementById(trigger2.dataset.dropdownTrigger || trigger2.getAttribute("popovertarget") || "");
@@ -6630,7 +6923,7 @@ function focusItem(menu, last = false) {
   item?.setAttribute("data-highlighted", "");
   item?.focus({ preventScroll: true });
 }
-function triggerStateChange18(bar, stateName, config) {
+function triggerStateChange19(bar, stateName, config) {
   switch (stateName) {
     case "default": {
       const open = openMenuOf(bar);
@@ -6657,16 +6950,16 @@ var menubarApi = {
     }
     bar._stateConfig = config;
     bar.dataset.stateName = stateName;
-    triggerStateChange18(bar, stateName, config);
+    triggerStateChange19(bar, stateName, config);
   },
   getState(bar) {
     const open = openMenuOf(bar);
     return { name: open ? "open" : "default", config: { ...bar._stateConfig, menu: open?.id ?? null } };
   }
 };
-df$18.menubarApi = menubarApi;
-df$18.menubarStates = menubarStates;
-function init18() {
+df$19.menubarApi = menubarApi;
+df$19.menubarStates = menubarStates;
+function init19() {
   document.querySelectorAll(".menubar:not([data-init])").forEach((bar) => {
     bar.dataset.init = "";
     if (!bar.hasAttribute("role"))
@@ -6762,11 +7055,11 @@ function init18() {
     });
   });
 }
-init18();
-new MutationObserver(init18).observe(document, { childList: true, subtree: true });
+init19();
+new MutationObserver(init19).observe(document, { childList: true, subtree: true });
 
 // src/components/mermaid/mermaid.ts
-var df$19 = defussGlobals();
+var df$20 = defussGlobals();
 var mermaidStates = ["default", "rendered", "error"];
 var MERMAID_URL = "https://cdn.jsdelivr.net/npm/mermaid@12.0.0/dist/mermaid.esm.min.mjs";
 var modulePromise = null;
@@ -6971,7 +7264,7 @@ ${text.split(`
 function renderAll() {
   return Promise.all([...document.querySelectorAll(".mermaid-diagram[data-init]")].map(render2));
 }
-function triggerStateChange19(fig, stateName, config) {
+function triggerStateChange20(fig, stateName, config) {
   switch (stateName) {
     case "default":
       clearError(fig);
@@ -6992,15 +7285,15 @@ var mermaidApi = {
       throw new Error(`mermaid: unknown state "${stateName}" (supported: ${mermaidStates.join(", ")})`);
     }
     fig._stateConfig = config;
-    return triggerStateChange19(fig, stateName, config);
+    return triggerStateChange20(fig, stateName, config);
   },
   getState(fig) {
     return { name: fig.dataset.stateName || "default", config: fig._stateConfig ?? {} };
   }
 };
-df$19.mermaidApi = mermaidApi;
-df$19.mermaidStates = mermaidStates;
-df$19.mermaid = { load, render: render2, renderAll, theme: mermaidTheme, url: MERMAID_URL };
+df$20.mermaidApi = mermaidApi;
+df$20.mermaidStates = mermaidStates;
+df$20.mermaid = { load, render: render2, renderAll, theme: mermaidTheme, url: MERMAID_URL };
 var themeWatched2 = false;
 function watchTheme2() {
   if (themeWatched2)
@@ -7022,7 +7315,7 @@ function watchTheme2() {
     mo.observe(document.head, { childList: true, subtree: true, characterData: true });
   matchMedia("(prefers-color-scheme: dark)").addEventListener("change", schedule2);
 }
-function init19() {
+function init20() {
   document.querySelectorAll("pre.mermaid:not(.mermaid-diagram > pre)").forEach((pre) => {
     const fig = document.createElement("figure");
     fig.className = "mermaid-diagram";
@@ -7042,13 +7335,13 @@ function init19() {
     render2(fig);
   });
 }
-init19();
-new MutationObserver(init19).observe(document, { childList: true, subtree: true });
+init20();
+new MutationObserver(init20).observe(document, { childList: true, subtree: true });
 
 // src/components/navigation-menu/navigation-menu.ts
-var df$20 = defussGlobals();
+var df$21 = defussGlobals();
 var navigationMenuStates = ["default", "open"];
-function triggerStateChange20(content, stateName, _config) {
+function triggerStateChange21(content, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -7065,7 +7358,7 @@ var navigationMenuApi = {
     if (!navigationMenuStates.includes(stateName)) {
       throw new Error(`navigation-menu: unknown state "${stateName}" (supported: ${navigationMenuStates.join(", ")})`);
     }
-    triggerStateChange20(content, stateName, config);
+    triggerStateChange21(content, stateName, config);
     content.dataset.stateName = stateName;
     content._stateConfig = config;
   },
@@ -7073,9 +7366,9 @@ var navigationMenuApi = {
     return { name: content.dataset.stateName || "default", config: content._stateConfig ?? {} };
   }
 };
-df$20.navigationMenuApi = navigationMenuApi;
-df$20.navigationMenuStates = navigationMenuStates;
-function init20() {
+df$21.navigationMenuApi = navigationMenuApi;
+df$21.navigationMenuStates = navigationMenuStates;
+function init21() {
   document.querySelectorAll(".nav-menu-trigger[popovertarget]:not([data-init])").forEach((trigger2) => {
     trigger2.dataset.init = "";
     const content = document.getElementById(trigger2.getAttribute("popovertarget"));
@@ -7093,11 +7386,11 @@ function init20() {
     };
   });
 }
-init20();
-new MutationObserver(init20).observe(document, { childList: true, subtree: true });
+init21();
+new MutationObserver(init21).observe(document, { childList: true, subtree: true });
 
 // src/components/number-input/number-input.ts
-var df$21 = defussGlobals();
+var df$22 = defussGlobals();
 var numberInputStates = ["default"];
 var getInput2 = (wrapper) => wrapper.querySelector('input:not([type="hidden"])');
 function currencyConfig(wrapper) {
@@ -7218,7 +7511,7 @@ function formatDecimals(wrapper, input) {
   if (input.value !== fixed)
     input.value = fixed;
 }
-function triggerStateChange21(wrapper, config) {
+function triggerStateChange22(wrapper, config) {
   const input = getInput2(wrapper);
   if (!input || config?.value === undefined)
     return;
@@ -7238,7 +7531,7 @@ var numberInputApi = {
     if (!numberInputStates.includes(stateName)) {
       throw new Error(`number-input: unknown state "${stateName}" (supported: ${numberInputStates.join(", ")})`);
     }
-    triggerStateChange21(wrapper, config);
+    triggerStateChange22(wrapper, config);
     wrapper.dataset.stateName = stateName;
     wrapper._stateConfig = config;
   },
@@ -7254,9 +7547,9 @@ var numberInputApi = {
     };
   }
 };
-df$21.numberInputApi = numberInputApi;
-df$21.numberInputStates = numberInputStates;
-function init21() {
+df$22.numberInputApi = numberInputApi;
+df$22.numberInputStates = numberInputStates;
+function init22() {
   document.querySelectorAll(".number-input:not([data-init])").forEach((wrapper) => {
     wrapper.dataset.init = "";
     wrapper.api = {
@@ -7332,11 +7625,11 @@ function init21() {
       });
   });
 }
-init21();
-new MutationObserver(init21).observe(document, { childList: true, subtree: true });
+init22();
+new MutationObserver(init22).observe(document, { childList: true, subtree: true });
 
 // src/components/otp-input/otp-input.ts
-var df$22 = defussGlobals();
+var df$23 = defussGlobals();
 var otpInputStates = ["default", "filled", "invalid"];
 var PATTERNS = {
   digits: /[^0-9]/g,
@@ -7365,7 +7658,7 @@ function paint2(otp) {
 function announceComplete(otp) {
   otp.dispatchEvent(new CustomEvent("otp-complete", { bubbles: true, detail: { value: otp._field.value } }));
 }
-function triggerStateChange22(otp, stateName, config) {
+function triggerStateChange23(otp, stateName, config) {
   const field = otp._field;
   switch (stateName) {
     case "default":
@@ -7397,7 +7690,7 @@ var otpInputApi = {
     if (!otpInputStates.includes(stateName)) {
       throw new Error(`otp-input: unknown state "${stateName}" (supported: ${otpInputStates.join(", ")})`);
     }
-    triggerStateChange22(otp, stateName, config);
+    triggerStateChange23(otp, stateName, config);
     otp.dataset.stateName = stateName;
     otp._stateConfig = config;
   },
@@ -7405,9 +7698,9 @@ var otpInputApi = {
     return { name: otp.dataset.stateName || "default", config: otp._stateConfig ?? {} };
   }
 };
-df$22.otpInputApi = otpInputApi;
-df$22.otpInputStates = otpInputStates;
-function init22() {
+df$23.otpInputApi = otpInputApi;
+df$23.otpInputStates = otpInputStates;
+function init23() {
   document.querySelectorAll(".otp-input:not([data-init])").forEach((otp) => {
     otp.dataset.init = "";
     const field = otp.querySelector("input");
@@ -7467,11 +7760,11 @@ function init22() {
     otpInputApi.setState(otp, field.value.length === length ? "filled" : "default", {});
   });
 }
-init22();
-new MutationObserver(init22).observe(document, { childList: true, subtree: true });
+init23();
+new MutationObserver(init23).observe(document, { childList: true, subtree: true });
 
 // src/components/pagination/pagination.ts
-var df$23 = defussGlobals();
+var df$24 = defussGlobals();
 var dfDollar7 = defussQuery();
 var paginationStates = ["default"];
 var numAttr = (el, key, fallback) => {
@@ -7563,7 +7856,7 @@ function setPage(nav, page) {
   nav.dataset.activePage = String(next);
   nav.dispatchEvent(new CustomEvent("pagination-change", { bubbles: true, detail: { page: next } }));
 }
-function triggerStateChange23(nav, stateName, config = {}) {
+function triggerStateChange24(nav, stateName, config = {}) {
   if (stateName !== "default")
     return;
   const a = config.activePage ?? config.page;
@@ -7582,7 +7875,7 @@ var paginationApi = {
     if (!paginationStates.includes(stateName)) {
       throw new Error(`pagination: unknown state "${stateName}" (supported: ${paginationStates.join(", ")})`);
     }
-    triggerStateChange23(nav, stateName, config);
+    triggerStateChange24(nav, stateName, config);
     nav.dataset.stateName = stateName;
     nav._stateConfig = config;
   },
@@ -7599,9 +7892,9 @@ var paginationApi = {
     };
   }
 };
-df$23.paginationApi = paginationApi;
-df$23.paginationStates = paginationStates;
-function init23() {
+df$24.paginationApi = paginationApi;
+df$24.paginationStates = paginationStates;
+function init24() {
   document.querySelectorAll(".pagination:not([data-init])").forEach((nav) => {
     nav.dataset.init = "";
     nav.api = {
@@ -7634,13 +7927,13 @@ function init23() {
     nav.addEventListener("pagination-prev", () => setPage(nav, numAttr(nav, "activePage", 1) - 1));
   });
 }
-init23();
-new MutationObserver(init23).observe(document, { childList: true, subtree: true });
+init24();
+new MutationObserver(init24).observe(document, { childList: true, subtree: true });
 
 // src/components/popover/popover.ts
-var df$24 = defussGlobals();
+var df$25 = defussGlobals();
 var popoverStates = ["default", "open"];
-function triggerStateChange24(popover, stateName, _config) {
+function triggerStateChange25(popover, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -7657,7 +7950,7 @@ var popoverApi = {
     if (!popoverStates.includes(stateName)) {
       throw new Error(`popover: unknown state "${stateName}" (supported: ${popoverStates.join(", ")})`);
     }
-    triggerStateChange24(popover, stateName, config);
+    triggerStateChange25(popover, stateName, config);
     popover.dataset.stateName = stateName;
     popover._stateConfig = config;
   },
@@ -7665,9 +7958,9 @@ var popoverApi = {
     return { name: popover.dataset.stateName || "default", config: popover._stateConfig ?? {} };
   }
 };
-df$24.popoverApi = popoverApi;
-df$24.popoverStates = popoverStates;
-function init24() {
+df$25.popoverApi = popoverApi;
+df$25.popoverStates = popoverStates;
+function init25() {
   document.querySelectorAll("[popovertarget]:not([data-init])").forEach((trigger2) => {
     const id = trigger2.getAttribute("popovertarget");
     const popover = document.getElementById(id);
@@ -7686,11 +7979,11 @@ function init24() {
     };
   });
 }
-init24();
-new MutationObserver(init24).observe(document, { childList: true, subtree: true });
+init25();
+new MutationObserver(init25).observe(document, { childList: true, subtree: true });
 
 // src/components/presentation/presentation.ts
-var df$25 = defussGlobals();
+var df$26 = defussGlobals();
 var presentationStates = ["default", "notes", "fullscreen"];
 var DEFAULT_IN = "fadeIn";
 var DEFAULT_OUT = "fadeOut";
@@ -7705,18 +7998,18 @@ function animSpec(root, slide, phase, forward) {
   const pick = (suffix = "") => slide.dataset[p + suffix] ?? root.dataset[p + suffix];
   const travel = phase === "in" ? forward ? "east" : "west" : forward ? "west" : "east";
   const opts = { direction: pick("Direction") ?? travel };
-  const num2 = (suffix) => {
+  const num3 = (suffix) => {
     const n = parseFloat(pick(suffix) ?? "");
     return Number.isFinite(n) ? n : undefined;
   };
-  if (num2("Duration") !== undefined)
-    opts.duration = num2("Duration");
-  if (num2("Scale") !== undefined)
-    opts.scale = num2("Scale");
-  if (num2("Blocks") !== undefined)
-    opts.blocks = Math.round(num2("Blocks"));
-  if (num2("Stagger") !== undefined)
-    opts.stagger = num2("Stagger");
+  if (num3("Duration") !== undefined)
+    opts.duration = num3("Duration");
+  if (num3("Scale") !== undefined)
+    opts.scale = num3("Scale");
+  if (num3("Blocks") !== undefined)
+    opts.blocks = Math.round(num3("Blocks"));
+  if (num3("Stagger") !== undefined)
+    opts.stagger = num3("Stagger");
   if (pick("Easing"))
     opts.easing = pick("Easing");
   if (pick("Origin"))
@@ -7801,7 +8094,7 @@ function exitFullscreen(root) {
   if (nativeDeck === root)
     nativeDeck = null;
 }
-function triggerStateChange25(root, stateName, config = {}) {
+function triggerStateChange26(root, stateName, config = {}) {
   if (!presentationStates.includes(stateName)) {
     throw new Error(`presentation: unknown state "${stateName}" (supported: ${presentationStates.join(", ")})`);
   }
@@ -7825,7 +8118,7 @@ function triggerStateChange25(root, stateName, config = {}) {
 }
 var presentationApi = {
   setState(root, stateName, config = {}) {
-    triggerStateChange25(root, stateName, config);
+    triggerStateChange26(root, stateName, config);
     root.dataset.stateName = stateName;
     root._stateConfig = config;
   },
@@ -7841,8 +8134,8 @@ var presentationApi = {
     };
   }
 };
-df$25.presentationApi = presentationApi;
-df$25.presentationStates = presentationStates;
+df$26.presentationApi = presentationApi;
+df$26.presentationStates = presentationStates;
 var keysBound2 = false;
 function bindKeyboard() {
   if (keysBound2)
@@ -7887,7 +8180,7 @@ function bindKeyboard() {
         break;
       case "f":
       case "F":
-        triggerStateChange25(root, "fullscreen", { value: !root.hasAttribute("data-fullscreen") });
+        triggerStateChange26(root, "fullscreen", { value: !root.hasAttribute("data-fullscreen") });
         break;
       default:
         handled = false;
@@ -7928,7 +8221,7 @@ function bindFullscreen() {
     }
   });
 }
-function init25() {
+function init26() {
   document.querySelectorAll(".presentation:not([data-init])").forEach((root) => {
     root.dataset.init = "";
     root.api = {
@@ -8079,7 +8372,7 @@ function init25() {
           root.toggleAttribute("data-notes");
           break;
         case "fullscreen":
-          triggerStateChange25(root, "fullscreen", { value: !root.hasAttribute("data-fullscreen") });
+          triggerStateChange26(root, "fullscreen", { value: !root.hasAttribute("data-fullscreen") });
           break;
       }
     });
@@ -8092,13 +8385,13 @@ function init25() {
     applyScale();
   });
 }
-init25();
-new MutationObserver(init25).observe(document, { childList: true, subtree: true });
+init26();
+new MutationObserver(init26).observe(document, { childList: true, subtree: true });
 
 // src/components/product-showcase/product-showcase.ts
-var df$26 = defussGlobals();
+var df$27 = defussGlobals();
 var productShowcaseStates = ["default", "playing"];
-function triggerStateChange26(showcase, stateName, _config) {
+function triggerStateChange27(showcase, stateName, _config) {
   const video = showcase.querySelector("video");
   switch (stateName) {
     case "default":
@@ -8122,7 +8415,7 @@ var productShowcaseApi = {
     if (!productShowcaseStates.includes(stateName)) {
       throw new Error(`product-showcase: unknown state "${stateName}" (supported: ${productShowcaseStates.join(", ")})`);
     }
-    triggerStateChange26(showcase, stateName, config);
+    triggerStateChange27(showcase, stateName, config);
     showcase.dataset.stateName = stateName;
     showcase._stateConfig = config;
   },
@@ -8134,9 +8427,9 @@ var productShowcaseApi = {
     };
   }
 };
-df$26.productShowcaseApi = productShowcaseApi;
-df$26.productShowcaseStates = productShowcaseStates;
-function init26() {
+df$27.productShowcaseApi = productShowcaseApi;
+df$27.productShowcaseStates = productShowcaseStates;
+function init27() {
   document.querySelectorAll(".mk-showcase:not([data-init])").forEach((showcase) => {
     showcase.dataset.init = "";
     showcase.dataset.state = "default";
@@ -8153,16 +8446,16 @@ function init26() {
     });
   });
 }
-init26();
-new MutationObserver(init26).observe(document, { childList: true, subtree: true });
+init27();
+new MutationObserver(init27).observe(document, { childList: true, subtree: true });
 
 // src/components/progress/progress.ts
-var df$27 = defussGlobals();
+var df$28 = defussGlobals();
 var progressStates = ["default", "indeterminate", "complete"];
 var SELECTOR = "progress.progress";
 var reducedMotion4 = () => globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 var maxOf = (el) => el.max || 1;
-var clamp = (el, v) => Math.max(0, Math.min(maxOf(el), Number(v) || 0));
+var clamp2 = (el, v) => Math.max(0, Math.min(maxOf(el), Number(v) || 0));
 var round = (v) => Math.round(v * 10) / 10;
 var pctFmt = new Intl.NumberFormat(undefined, { style: "percent", maximumFractionDigits: 0 });
 var numFmt = new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 });
@@ -8254,12 +8547,12 @@ function tween(el, to, duration) {
 }
 var stepOf = (el) => parseFloat(el.dataset.step || "") || maxOf(el) / 10;
 var durationOf = (el) => parseFloat(el.dataset.duration || "") || 3000;
-function triggerStateChange27(el, stateName, config) {
+function triggerStateChange28(el, stateName, config) {
   switch (stateName) {
     case "default": {
       if (config.max != null)
         el.max = Number(config.max);
-      const to = config.value != null ? clamp(el, config.value) : clamp(el, el._authored ?? 0);
+      const to = config.value != null ? clamp2(el, config.value) : clamp2(el, el._authored ?? 0);
       if (config.duration > 0)
         tween(el, to, config.duration);
       else {
@@ -8293,7 +8586,7 @@ var progressApi = {
       throw new Error(`progress: unknown state "${stateName}" (supported: ${progressStates.join(", ")})`);
     }
     el._stateConfig = config;
-    triggerStateChange27(el, stateName, config);
+    triggerStateChange28(el, stateName, config);
   },
   getState(el) {
     const indeterminate = el.position < 0;
@@ -8303,8 +8596,8 @@ var progressApi = {
     };
   }
 };
-df$27.progressApi = progressApi;
-df$27.progressStates = progressStates;
+df$28.progressApi = progressApi;
+df$28.progressStates = progressStates;
 function run(el, command) {
   const now = el.position < 0 ? 0 : el.value;
   switch (command) {
@@ -8341,7 +8634,7 @@ function run(el, command) {
   return true;
 }
 var COMMANDS = ["reset", "increment", "decrement", "complete", "indeterminate", "play", "pause"];
-function init27() {
+function init28() {
   document.querySelectorAll(`${SELECTOR}:not([data-init])`).forEach((el) => {
     el.dataset.init = "";
     el.api = {
@@ -8378,17 +8671,17 @@ new MutationObserver((records) => {
     }
   }
 }).observe(document, { attributes: true, subtree: true, attributeFilter: ["value", "max"] });
-init27();
-new MutationObserver(init27).observe(document, { childList: true, subtree: true });
+init28();
+new MutationObserver(init28).observe(document, { childList: true, subtree: true });
 
 // src/components/radial-progress/radial-progress.ts
-var df$28 = defussGlobals();
+var df$29 = defussGlobals();
 var radialProgressStates = ["default", "indeterminate", "complete"];
 var SELECTOR2 = ".radial-progress";
 var reducedMotion5 = () => globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 var maxOf2 = (el) => parseFloat(el.getAttribute("aria-valuemax") || "") || 100;
 var valueOf = (el) => el.hasAttribute("aria-valuenow") ? parseFloat(el.getAttribute("aria-valuenow")) || 0 : null;
-var clamp2 = (el, v) => Math.max(0, Math.min(maxOf2(el), Number(v) || 0));
+var clamp3 = (el, v) => Math.max(0, Math.min(maxOf2(el), Number(v) || 0));
 var round2 = (v) => Math.round(v * 10) / 10;
 var pctFmt2 = new Intl.NumberFormat(undefined, { style: "percent", maximumFractionDigits: 0 });
 var numFmt2 = new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 });
@@ -8475,12 +8768,12 @@ function tween2(el, to, duration) {
 }
 var stepOf2 = (el) => parseFloat(el.dataset.step || "") || maxOf2(el) / 10;
 var durationOf2 = (el) => parseFloat(el.dataset.duration || "") || 3000;
-function triggerStateChange28(el, stateName, config) {
+function triggerStateChange29(el, stateName, config) {
   switch (stateName) {
     case "default": {
       if (config.max != null)
         el.setAttribute("aria-valuemax", String(config.max));
-      const to = clamp2(el, config.value != null ? config.value : el._authored ?? 0);
+      const to = clamp3(el, config.value != null ? config.value : el._authored ?? 0);
       if (config.duration > 0)
         tween2(el, to, config.duration);
       else {
@@ -8511,7 +8804,7 @@ var radialProgressApi = {
       throw new Error(`radial-progress: unknown state "${stateName}" (supported: ${radialProgressStates.join(", ")})`);
     }
     el._stateConfig = config;
-    triggerStateChange28(el, stateName, config);
+    triggerStateChange29(el, stateName, config);
   },
   getState(el) {
     const v = valueOf(el);
@@ -8521,8 +8814,8 @@ var radialProgressApi = {
     };
   }
 };
-df$28.radialProgressApi = radialProgressApi;
-df$28.radialProgressStates = radialProgressStates;
+df$29.radialProgressApi = radialProgressApi;
+df$29.radialProgressStates = radialProgressStates;
 function run2(el, command) {
   const now = valueOf(el) ?? 0;
   switch (command) {
@@ -8557,7 +8850,7 @@ function run2(el, command) {
   }
 }
 var COMMANDS2 = ["reset", "increment", "decrement", "complete", "indeterminate", "play", "pause"];
-function init28() {
+function init29() {
   document.querySelectorAll(`${SELECTOR2}:not([data-init])`).forEach((el) => {
     el.dataset.init = "";
     el.api = {
@@ -8602,15 +8895,15 @@ new MutationObserver((records) => {
     }
   }
 }).observe(document, { attributes: true, subtree: true, attributeFilter: ["aria-valuenow", "aria-valuemax"] });
-init28();
-new MutationObserver(init28).observe(document, { childList: true, subtree: true });
+init29();
+new MutationObserver(init29).observe(document, { childList: true, subtree: true });
 
 // src/components/resizer/resizer.ts
-var df$29 = defussGlobals();
+var df$30 = defussGlobals();
 var resizerStates = ["default"];
 var HANDLES = ["n", "e", "s", "w", "ne", "nw", "se", "sw"];
 var CLASS_NUMBERS = Array.from({ length: 81 }, (_, i) => i + 16);
-var clamp3 = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+var clamp4 = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 var numAttr2 = (el, key, fallback) => {
   const v = parseFloat(el.dataset[key] ?? "");
   return Number.isFinite(v) ? v : fallback;
@@ -8704,7 +8997,7 @@ function applySize(wrapper, axis, px) {
     return;
   const mode = wrapper.dataset.resizeMode || "px";
   const [min, max] = bounds(wrapper, axis);
-  const wanted = clamp3(px, min, max);
+  const wanted = clamp4(px, min, max);
   let resolved = wanted;
   if (mode === "classes") {
     const ladder = ladderTokens(wrapper, axis);
@@ -8730,7 +9023,7 @@ function applySize(wrapper, axis, px) {
     }
   }));
 }
-function triggerStateChange29(wrapper, stateName, config = {}) {
+function triggerStateChange30(wrapper, stateName, config = {}) {
   if (stateName !== "default")
     return;
   if (config.width !== undefined || wrapper._defaultSize)
@@ -8743,7 +9036,7 @@ var resizerApi = {
     if (!resizerStates.includes(stateName)) {
       throw new Error(`resizer: unknown state "${stateName}" (supported: ${resizerStates.join(", ")})`);
     }
-    triggerStateChange29(wrapper, stateName, config);
+    triggerStateChange30(wrapper, stateName, config);
     wrapper.dataset.stateName = stateName;
     wrapper._stateConfig = config;
   },
@@ -8759,8 +9052,8 @@ var resizerApi = {
     };
   }
 };
-df$29.resizerApi = resizerApi;
-df$29.resizerStates = resizerStates;
+df$30.resizerApi = resizerApi;
+df$30.resizerStates = resizerStates;
 var HANDLE_LABEL = {
   n: "top edge",
   s: "bottom edge",
@@ -8800,7 +9093,10 @@ function handleKeys(wrapper, handle, ev) {
   const sides = handle.dataset.handle;
   if (!sides)
     return;
-  const dir = ev.key === "ArrowRight" || ev.key === "ArrowUp" ? 1 : ev.key === "ArrowLeft" || ev.key === "ArrowDown" ? -1 : 0;
+  const edge = wrapper.dataset.keys === "edge" && sides.length === 1;
+  const OUT = { e: "ArrowRight", w: "ArrowLeft", s: "ArrowDown", n: "ArrowUp" };
+  const IN = { e: "ArrowLeft", w: "ArrowRight", s: "ArrowUp", n: "ArrowDown" };
+  const dir = edge ? ev.key === OUT[sides] ? 1 : ev.key === IN[sides] ? -1 : 0 : ev.key === "ArrowRight" || ev.key === "ArrowUp" ? 1 : ev.key === "ArrowLeft" || ev.key === "ArrowDown" ? -1 : 0;
   if (dir === 0 && ev.key !== "Home" && ev.key !== "End")
     return;
   ev.preventDefault();
@@ -8854,7 +9150,7 @@ function startDrag(wrapper, handle, ev) {
   handle.addEventListener("pointercancel", onUp);
   handle.addEventListener("lostpointercapture", onUp);
 }
-function init29() {
+function init30() {
   document.querySelectorAll(".resizer:not([data-init])").forEach((wrapper) => {
     wrapper.dataset.init = "";
     if (!targetOf(wrapper))
@@ -8882,13 +9178,490 @@ function init29() {
     wrapper.addEventListener("resizer-reset", () => resizerApi.setState(wrapper, "default"));
   });
 }
-init29();
-new MutationObserver(init29).observe(document, { childList: true, subtree: true });
+init30();
+new MutationObserver(init30).observe(document, { childList: true, subtree: true });
+
+// src/components/search-filter/search-filter.ts
+var df$31 = defussGlobals();
+var searchFilterStates = ["default", "filled", "searching"];
+function setValue2(box, value) {
+  const field = box._field;
+  if (field.value === value)
+    return;
+  field.value = value;
+  field.dispatchEvent(new Event("input", { bubbles: true }));
+}
+function triggerStateChange31(box, stateName, config) {
+  const field = box._field;
+  const value = typeof config.value === "string" ? config.value : undefined;
+  if (stateName === "searching")
+    field.setAttribute("aria-busy", "true");
+  else
+    field.removeAttribute("aria-busy");
+  switch (stateName) {
+    case "default":
+      setValue2(box, value ?? "");
+      break;
+    case "filled":
+    case "searching":
+      if (value !== undefined)
+        setValue2(box, value);
+      break;
+  }
+}
+var searchFilterApi = {
+  setState(box, stateName, config = {}) {
+    if (!searchFilterStates.includes(stateName)) {
+      throw new Error(`search-filter: unknown state "${stateName}" (supported: ${searchFilterStates.join(", ")})`);
+    }
+    box.dataset.stateName = stateName;
+    box._stateConfig = config;
+    triggerStateChange31(box, stateName, config);
+  },
+  getState(box) {
+    return { name: box.dataset.stateName || "default", config: box._stateConfig ?? {} };
+  }
+};
+df$31.searchFilterApi = searchFilterApi;
+df$31.searchFilterStates = searchFilterStates;
+function clear(box) {
+  searchFilterApi.setState(box, "default", {});
+  box._field.focus();
+  box.dispatchEvent(new CustomEvent("search-clear", { bubbles: true }));
+}
+function init31() {
+  document.querySelectorAll(".search-box:not([data-init])").forEach((box) => {
+    box.dataset.init = "";
+    const field = box.querySelector(":scope > input");
+    if (!field)
+      return;
+    box._field = field;
+    if (!field.getAttribute("enterkeyhint"))
+      field.setAttribute("enterkeyhint", "search");
+    field.addEventListener("input", () => {
+      const name = box.dataset.stateName;
+      if (field.value === "") {
+        if (name !== "default")
+          searchFilterApi.setState(box, "default", {});
+      } else if (name !== "searching" && name !== "filled") {
+        searchFilterApi.setState(box, "filled", {});
+      }
+    });
+    field.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && field.value !== "") {
+        e.preventDefault();
+        e.stopPropagation();
+        clear(box);
+      }
+    });
+    box.querySelector(":scope > .search-box-clear")?.addEventListener("click", () => clear(box));
+    box.addEventListener("mousedown", (e) => {
+      if (e.target !== field && !e.target.closest("button, a")) {
+        e.preventDefault();
+        field.focus();
+      }
+    });
+    box.api = {
+      setState: (stateName, config) => searchFilterApi.setState(box, stateName, config),
+      getState: () => searchFilterApi.getState(box)
+    };
+    searchFilterApi.setState(box, field.value === "" ? "default" : "filled", {});
+  });
+}
+init31();
+new MutationObserver(init31).observe(document, { childList: true, subtree: true });
+
+// src/components/session/session.ts
+var df$32 = defussGlobals();
+var sessionStates = ["default", "detached", "streaming"];
+var num3 = (el, key, fallback) => {
+  const v = parseFloat(el.dataset[key]);
+  return Number.isFinite(v) ? v : fallback;
+};
+var reduced = () => globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+var resolve2 = (t) => typeof t === "string" ? document.getElementById(t) ?? document.querySelector(t) : t;
+var parts = (s) => ({
+  viewport: s.querySelector(":scope > .session-viewport"),
+  content: s.querySelector(":scope > .session-viewport > .session-content")
+});
+var fromEnd = (v) => v.scrollHeight - v.scrollTop - v.clientHeight;
+function scrollViewport(s, top, smooth) {
+  const { viewport } = s._parts;
+  s.setAttribute("data-autoscrolling", "");
+  viewport.scrollTo({ top, behavior: smooth && !reduced() ? "smooth" : "instant" });
+  clearTimeout(s._settle);
+  s._settle = setTimeout(() => settle2(s), smooth ? 700 : 50);
+}
+function settle2(s) {
+  clearTimeout(s._settle);
+  s.removeAttribute("data-autoscrolling");
+  measure(s);
+}
+function measure(s) {
+  const { viewport } = s._parts;
+  if (!viewport)
+    return;
+  const threshold = num3(s, "threshold", 48);
+  const start = viewport.scrollTop > 1;
+  const end = fromEnd(viewport) > 1;
+  const tokens2 = [start && "start", end && "end"].filter(Boolean).join(" ");
+  if (tokens2)
+    s.setAttribute("data-scrollable", tokens2);
+  else
+    s.removeAttribute("data-scrollable");
+  s.querySelectorAll(".session-scroll-button").forEach((b) => {
+    const active2 = b.dataset.to === "start" ? start : end;
+    b.dataset.active = String(active2);
+    b.inert = !active2;
+  });
+  s._height = viewport.scrollHeight;
+  if (!s.hasAttribute("data-autoscrolling")) {
+    const reserved = parseFloat(s._parts.content.style.paddingBlockEnd) > 0;
+    const stick = fromEnd(viewport) <= threshold && !reserved;
+    setStick(s, stick);
+  }
+  track(s);
+}
+function setStick(s, stick) {
+  s.toggleAttribute("data-stick", stick);
+  const name = s.dataset.stateName;
+  if (name === "streaming")
+    return;
+  const next = stick ? "default" : "detached";
+  if (name !== next) {
+    s.dataset.stateName = next;
+    s._stateConfig = {};
+  }
+}
+function hold(s, target, ms) {
+  s._opening = target;
+  clearTimeout(s._holdTimer);
+  s._holdTimer = setTimeout(() => {
+    s._opening = null;
+  }, ms);
+}
+function anchorSpace(s) {
+  const a = s._anchor;
+  const { viewport, content } = s._parts;
+  if (!a || !content.contains(a)) {
+    if (content.style.paddingBlockEnd)
+      content.style.paddingBlockEnd = "";
+    s._anchor = null;
+    return;
+  }
+  const pad = parseFloat(content.style.paddingBlockEnd) || 0;
+  const vpPad = parseFloat(getComputedStyle(viewport).paddingBlockEnd) || 0;
+  const below = content.offsetTop + content.offsetHeight - pad - a.offsetTop;
+  const need = Math.max(0, Math.round(viewport.clientHeight - vpPad - num3(s, "peek", 48) - below));
+  if (need !== Math.round(pad))
+    content.style.paddingBlockEnd = need ? `${need}px` : "";
+  if (need) {
+    const short = anchorTop(s, a) - (viewport.scrollHeight - viewport.clientHeight);
+    if (short > 0)
+      content.style.paddingBlockEnd = `${need + Math.ceil(short)}px`;
+  }
+}
+var anchorTop = (s, item) => item.offsetTop - num3(s, "peek", 48);
+function scrollToEnd(s, { smooth = true } = {}) {
+  s.setAttribute("data-stick", "");
+  scrollViewport(s, s._parts.viewport.scrollHeight, smooth);
+}
+function scrollToStart(s, { smooth = true } = {}) {
+  s.removeAttribute("data-stick");
+  scrollViewport(s, 0, smooth);
+}
+function scrollToMessage(s, id, { smooth = true } = {}) {
+  const item = s._parts.content.querySelector(`.session-item[data-message-id="${CSS.escape(id)}"]`);
+  if (!item)
+    return false;
+  s.removeAttribute("data-stick");
+  scrollViewport(s, anchorTop(s, item), smooth);
+  hold(s, () => anchorTop(s, item), smooth ? 900 : 400);
+  return true;
+}
+function triggerStateChange32(s, stateName, config) {
+  const { content } = s._parts;
+  if (stateName === "streaming")
+    content.setAttribute("aria-busy", "true");
+  else
+    content.removeAttribute("aria-busy");
+  switch (stateName) {
+    case "default":
+      scrollToEnd(s, { smooth: config.smooth !== false });
+      break;
+    case "detached":
+      s.removeAttribute("data-stick");
+      if (config.to === "start")
+        scrollToStart(s);
+      else if (typeof config.to === "string")
+        scrollToMessage(s, config.to);
+      break;
+    case "streaming":
+      if (s.hasAttribute("data-stick"))
+        scrollToEnd(s, { smooth: false });
+      break;
+  }
+}
+var sessionApi = {
+  setState(s, stateName, config = {}) {
+    if (!sessionStates.includes(stateName)) {
+      throw new Error(`session: unknown state "${stateName}" (supported: ${sessionStates.join(", ")})`);
+    }
+    s.dataset.stateName = stateName;
+    s._stateConfig = config;
+    triggerStateChange32(s, stateName, config);
+  },
+  getState(s) {
+    return { name: s.dataset.stateName || "default", config: s._stateConfig ?? {} };
+  }
+};
+df$32.sessionApi = sessionApi;
+df$32.sessionStates = sessionStates;
+function onItems(s, records) {
+  const { viewport } = s._parts;
+  const before = s._height ?? viewport.scrollHeight;
+  let prepended = false;
+  let appended = false;
+  let anchored = null;
+  for (const r of records) {
+    if (!r.addedNodes.length)
+      continue;
+    if (r.nextSibling === null) {
+      appended = true;
+      for (const node of r.addedNodes)
+        if (node.nodeType === 1 && node.matches(".session-item[data-anchor]"))
+          anchored = node;
+    } else if (r.previousSibling === null)
+      prepended = true;
+  }
+  if (prepended && !appended) {
+    const added = records.flatMap((r) => [...r.addedNodes]).filter((n) => n.nodeType === 1);
+    added.forEach((n) => {
+      n.style.contentVisibility = "visible";
+    });
+    s.setAttribute("data-autoscrolling", "");
+    viewport.scrollTop += viewport.scrollHeight - before;
+    added.forEach((n) => {
+      n.style.contentVisibility = "";
+    });
+    settle2(s);
+    return;
+  }
+  if (anchored) {
+    s._anchor = anchored;
+    anchorSpace(s);
+    s.removeAttribute("data-stick");
+    scrollViewport(s, anchorTop(s, anchored), true);
+    hold(s, () => anchorTop(s, anchored), 900);
+    if (s.dataset.stateName !== "streaming") {
+      s.dataset.stateName = "detached";
+      s._stateConfig = {};
+    }
+    return;
+  }
+  if (appended && s.hasAttribute("data-stick"))
+    scrollViewport(s, viewport.scrollHeight, s.dataset.stateName !== "streaming");
+  else
+    measure(s);
+}
+function onResize(s) {
+  const { viewport } = s._parts;
+  anchorSpace(s);
+  if (s._opening) {
+    s.setAttribute("data-autoscrolling", "");
+    viewport.scrollTop = s._opening();
+    settle2(s);
+    return;
+  }
+  if (s.hasAttribute("data-stick") && fromEnd(viewport) > 1) {
+    s.setAttribute("data-autoscrolling", "");
+    viewport.scrollTop = viewport.scrollHeight;
+    settle2(s);
+  } else
+    measure(s);
+}
+function track(s) {
+  if (!s.hasAttribute("data-track"))
+    return;
+  const { viewport, content } = s._parts;
+  const top = viewport.getBoundingClientRect().top;
+  const bottom = top + viewport.clientHeight;
+  const items = Array.from(content.querySelectorAll(":scope > .session-item"));
+  const visible = items.filter((it) => {
+    const r = it.getBoundingClientRect();
+    return r.bottom > top && r.top < bottom;
+  });
+  const line = top + viewport.clientHeight / 3;
+  let current = null;
+  for (const it of items) {
+    if (!it.hasAttribute("data-anchor"))
+      continue;
+    if (it.getBoundingClientRect().top <= line)
+      current = it;
+    else
+      break;
+  }
+  current ??= items.find((it) => it.hasAttribute("data-anchor")) ?? null;
+  const ids = visible.map((it) => it.dataset.messageId).filter(Boolean);
+  const currentId = current?.dataset.messageId ?? null;
+  if (currentId === s._currentId && ids.join() === s._visibleIds)
+    return;
+  s._currentId = currentId;
+  s._visibleIds = ids.join();
+  items.forEach((it) => it.toggleAttribute("data-current", it === current));
+  s.dispatchEvent(new CustomEvent("session-visibility", { bubbles: true, detail: { currentAnchorId: currentId, visibleMessageIds: ids } }));
+}
+function bindDrop(s) {
+  const hasFiles = (e) => [...e.dataTransfer?.types ?? []].includes("Files");
+  if (!s.dataset.dropLabel)
+    s.dataset.dropLabel = "Drop files to attach";
+  const accept = (s.dataset.dropAccept || "").split(",").map((a) => a.trim()).filter(Boolean);
+  const ok = (file) => !accept.length || accept.some((a) => a.endsWith("/*") ? file.type.startsWith(a.slice(0, -1)) : a.startsWith(".") ? file.name.toLowerCase().endsWith(a.toLowerCase()) : file.type === a);
+  s.addEventListener("dragenter", (e) => {
+    if (hasFiles(e)) {
+      e.preventDefault();
+      s.setAttribute("data-drop-active", "");
+    }
+  });
+  s.addEventListener("dragover", (e) => {
+    if (hasFiles(e)) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "copy";
+    }
+  });
+  s.addEventListener("dragleave", (e) => {
+    if (!s.contains(e.relatedTarget))
+      s.removeAttribute("data-drop-active");
+  });
+  s.addEventListener("drop", (e) => {
+    if (!hasFiles(e))
+      return;
+    e.preventDefault();
+    s.removeAttribute("data-drop-active");
+    const files = [...e.dataTransfer.files].filter(ok);
+    if (files.length)
+      s.dispatchEvent(new CustomEvent("session-drop", { bubbles: true, detail: { files } }));
+  });
+}
+function follow(s, options = {}) {
+  if (s.dataset.stateName === "streaming")
+    scrollToEnd(s, options);
+  else
+    sessionApi.setState(s, "default", options);
+}
+function init32() {
+  document.querySelectorAll(".session:not([data-init])").forEach((s) => {
+    const p = parts(s);
+    if (!p.viewport || !p.content)
+      return;
+    s.dataset.init = "";
+    s._parts = p;
+    const { viewport, content } = p;
+    if (!viewport.hasAttribute("role"))
+      viewport.setAttribute("role", "region");
+    if (!viewport.hasAttribute("aria-label"))
+      viewport.setAttribute("aria-label", "Messages");
+    if (!viewport.hasAttribute("tabindex"))
+      viewport.tabIndex = 0;
+    if (!content.hasAttribute("role"))
+      content.setAttribute("role", "log");
+    if (!content.hasAttribute("aria-relevant"))
+      content.setAttribute("aria-relevant", "additions");
+    viewport.addEventListener("scroll", () => {
+      if (s.hasAttribute("data-autoscrolling"))
+        return track(s);
+      s._opening = null;
+      measure(s);
+    }, { passive: true });
+    ["wheel", "touchstart", "keydown", "pointerdown"].forEach((type) => viewport.addEventListener(type, () => {
+      s._opening = null;
+    }, { passive: true }));
+    viewport.addEventListener("scrollend", () => settle2(s));
+    new MutationObserver((records) => onItems(s, records)).observe(content, { childList: true });
+    new ResizeObserver(() => onResize(s)).observe(content);
+    new ResizeObserver(() => measure(s)).observe(viewport);
+    s.querySelectorAll(".session-scroll-button").forEach((b) => {
+      b.addEventListener("click", () => b.dataset.to === "start" ? scrollToStart(s) : follow(s));
+    });
+    if (s.hasAttribute("data-drop"))
+      bindDrop(s);
+    s.api = {
+      setState: (stateName, config) => sessionApi.setState(s, stateName, config),
+      getState: () => sessionApi.getState(s)
+    };
+    s.setAttribute("data-pending-scroll", "");
+    s.dataset.stateName = "default";
+    const where = s.dataset.defaultPosition || "end";
+    const last = [...content.querySelectorAll(":scope > .session-item[data-anchor]")].pop();
+    if (where === "start")
+      s._opening = () => 0;
+    else if (where === "last-anchor" && last)
+      s._opening = () => anchorTop(s, last);
+    if (s._opening) {
+      scrollViewport(s, s._opening(), false);
+      hold(s, s._opening, 1000);
+    } else {
+      s.setAttribute("data-stick", "");
+      scrollViewport(s, viewport.scrollHeight, false);
+    }
+    s.removeAttribute("data-pending-scroll");
+  });
+}
+function toItem(content, { id, anchor } = {}) {
+  let node = content;
+  if (typeof content === "string")
+    node = document.createRange().createContextualFragment(content);
+  const single = node instanceof Element && node.classList.contains("session-item");
+  const item = single ? node : document.createElement("div");
+  if (!single) {
+    item.className = "session-item";
+    item.append(node);
+  }
+  if (id)
+    item.dataset.messageId = id;
+  if (anchor)
+    item.setAttribute("data-anchor", "");
+  return item;
+}
+df$32.session = {
+  append(t, content, options) {
+    const s = resolve2(t);
+    const item = toItem(content, options);
+    s?._parts?.content.append(item);
+    return item;
+  },
+  prepend(t, content, options) {
+    const s = resolve2(t);
+    const items = (Array.isArray(content) ? content : [content]).map((c) => toItem(c, options));
+    s?._parts?.content.prepend(...items);
+    return items;
+  },
+  scrollToEnd: (t, o) => {
+    const s = resolve2(t);
+    if (s)
+      follow(s, o);
+  },
+  scrollToStart: (t, o) => {
+    const s = resolve2(t);
+    if (s)
+      scrollToStart(s, o);
+  },
+  scrollToMessage: (t, id, o) => {
+    const s = resolve2(t);
+    return s ? scrollToMessage(s, id, o) : false;
+  },
+  isAtEnd: (t) => {
+    const s = resolve2(t);
+    return !!s && fromEnd(s._parts.viewport) <= num3(s, "threshold", 48);
+  }
+};
+init32();
+new MutationObserver(init32).observe(document, { childList: true, subtree: true });
 
 // src/components/sheet/sheet.ts
-var df$30 = defussGlobals();
+var df$33 = defussGlobals();
 var sheetStates = ["default", "open"];
-function triggerStateChange30(sheet, stateName, _config) {
+function triggerStateChange33(sheet, stateName, _config) {
   switch (stateName) {
     case "default":
       if (sheet.open)
@@ -8905,7 +9678,7 @@ var sheetApi = {
     if (!sheetStates.includes(stateName)) {
       throw new Error(`sheet: unknown state "${stateName}" (supported: ${sheetStates.join(", ")})`);
     }
-    triggerStateChange30(sheet, stateName, config);
+    triggerStateChange33(sheet, stateName, config);
     sheet.dataset.stateName = stateName;
     sheet._stateConfig = config;
   },
@@ -8913,9 +9686,9 @@ var sheetApi = {
     return { name: sheet.dataset.stateName || "default", config: sheet._stateConfig ?? {} };
   }
 };
-df$30.sheetApi = sheetApi;
-df$30.sheetStates = sheetStates;
-function init30() {
+df$33.sheetApi = sheetApi;
+df$33.sheetStates = sheetStates;
+function init33() {
   document.querySelectorAll("[data-sheet-trigger]:not([data-init])").forEach((trigger2) => {
     trigger2.dataset.init = "";
     const sheet = document.getElementById(trigger2.dataset.sheetTrigger);
@@ -8950,13 +9723,13 @@ function init30() {
     });
   });
 }
-init30();
-new MutationObserver(init30).observe(document, { childList: true, subtree: true });
+init33();
+new MutationObserver(init33).observe(document, { childList: true, subtree: true });
 
 // src/components/sidebar/sidebar.ts
-var df$31 = defussGlobals();
+var df$34 = defussGlobals();
 var sidebarStates = ["default", "collapsed"];
-function triggerStateChange31(sidebar, stateName, _config) {
+function triggerStateChange34(sidebar, stateName, _config) {
   switch (stateName) {
     case "default":
       sidebar.dataset.state = sidebar._defaultState ?? "expanded";
@@ -8971,7 +9744,7 @@ var sidebarApi = {
     if (!sidebarStates.includes(stateName)) {
       throw new Error(`sidebar: unknown state "${stateName}" (supported: ${sidebarStates.join(", ")})`);
     }
-    triggerStateChange31(sidebar, stateName, config);
+    triggerStateChange34(sidebar, stateName, config);
     sidebar.dataset.stateName = stateName;
     sidebar._stateConfig = config;
   },
@@ -8982,9 +9755,9 @@ var sidebarApi = {
     };
   }
 };
-df$31.sidebarApi = sidebarApi;
-df$31.sidebarStates = sidebarStates;
-function init31() {
+df$34.sidebarApi = sidebarApi;
+df$34.sidebarStates = sidebarStates;
+function init34() {
   document.querySelectorAll(".app-sidebar:not([data-init])").forEach((sidebar) => {
     sidebar.dataset.init = "";
     sidebar._defaultState = sidebar.dataset.state || "expanded";
@@ -9040,8 +9813,8 @@ if (typeof ResizeObserver !== "undefined" && !document.__sidebarAutoRo) {
     }
   });
 }
-init31();
-new MutationObserver(init31).observe(document, { childList: true, subtree: true });
+init34();
+new MutationObserver(init34).observe(document, { childList: true, subtree: true });
 if (!document.__sidebarKbInit) {
   document.__sidebarKbInit = true;
   bindGlobalKeys((e) => {
@@ -9058,7 +9831,7 @@ if (!document.__sidebarKbInit) {
 }
 
 // src/components/slider/slider.ts
-var df$32 = defussGlobals();
+var df$35 = defussGlobals();
 var sliderStates = ["default", "disabled"];
 function percentOf(el) {
   const min = parseFloat(el.min || 0);
@@ -9138,7 +9911,7 @@ function initRange(range) {
   if (!lo || !hi)
     return;
   const gap = parseFloat(range.dataset.minGap || "0");
-  const clamp4 = (moved) => {
+  const clamp5 = (moved) => {
     const a = parseFloat(lo.value);
     const b = parseFloat(hi.value);
     if (b - a < gap || a > b) {
@@ -9152,8 +9925,8 @@ function initRange(range) {
     updateSliderValue(lo);
     updateSliderValue(hi);
   };
-  lo.addEventListener("input", () => clamp4(lo));
-  hi.addEventListener("input", () => clamp4(hi));
+  lo.addEventListener("input", () => clamp5(lo));
+  hi.addEventListener("input", () => clamp5(hi));
   for (const s of [lo, hi])
     s.addEventListener("pointerdown", () => {
       lo.toggleAttribute("data-active", s === lo);
@@ -9161,7 +9934,7 @@ function initRange(range) {
     });
   paintRange(range);
 }
-function triggerStateChange32(el, stateName, config) {
+function triggerStateChange35(el, stateName, config) {
   switch (stateName) {
     case "default":
       el.disabled = el._defaultDisabled ?? false;
@@ -9179,7 +9952,7 @@ var sliderApi = {
     if (!sliderStates.includes(stateName)) {
       throw new Error(`slider: unknown state "${stateName}" (supported: ${sliderStates.join(", ")})`);
     }
-    triggerStateChange32(el, stateName, config);
+    triggerStateChange35(el, stateName, config);
     el.dataset.stateName = stateName;
     el._stateConfig = config;
   },
@@ -9190,9 +9963,9 @@ var sliderApi = {
     };
   }
 };
-df$32.sliderApi = sliderApi;
-df$32.sliderStates = sliderStates;
-function init32() {
+df$35.sliderApi = sliderApi;
+df$35.sliderStates = sliderStates;
+function init35() {
   document.querySelectorAll(".slider-range:not([data-init])").forEach((range) => {
     range.dataset.init = "";
     initRange(range);
@@ -9210,16 +9983,16 @@ function init32() {
     el.addEventListener("input", () => updateSliderValue(el));
   });
 }
-init32();
-new MutationObserver(init32).observe(document, { childList: true, subtree: true });
+init35();
+new MutationObserver(init35).observe(document, { childList: true, subtree: true });
 
 // src/components/sortable/sortable.ts
-var df$33 = defussGlobals();
+var df$36 = defussGlobals();
 var dfDollar8 = defussQuery();
 var sortableStates = ["default"];
 var drag = null;
 var sortableLabels = (list) => dfDollar8(list).find(".sortable-item").map((item) => dfDollar8(item).find("span:not(.sortable-handle):not(.sortable-moves)").text().trim());
-function triggerStateChange33(list, stateName, config) {
+function triggerStateChange36(list, stateName, config) {
   if (stateName !== "default")
     return;
   dfDollar8(list).append(list._defaultOrder ?? []);
@@ -9234,7 +10007,7 @@ var sortableApi = {
     if (!sortableStates.includes(stateName)) {
       throw new Error(`sortable: unknown state "${stateName}" (supported: ${sortableStates.join(", ")})`);
     }
-    triggerStateChange33(list, stateName, config);
+    triggerStateChange36(list, stateName, config);
     list.dataset.stateName = stateName;
     list._stateConfig = config;
   },
@@ -9251,9 +10024,9 @@ var sortableApi = {
     };
   }
 };
-df$33.sortableApi = sortableApi;
-df$33.sortableStates = sortableStates;
-function init33() {
+df$36.sortableApi = sortableApi;
+df$36.sortableStates = sortableStates;
+function init36() {
   document.querySelectorAll(".sortable:not([data-init])").forEach((list) => {
     list.dataset.init = "";
     list.api = {
@@ -9532,11 +10305,11 @@ function init33() {
     });
   });
 }
-init33();
-new MutationObserver(init33).observe(document, { childList: true, subtree: true });
+init36();
+new MutationObserver(init36).observe(document, { childList: true, subtree: true });
 
 // src/components/steps/steps.ts
-var df$34 = defussGlobals();
+var df$37 = defussGlobals();
 var stepsStates = ["default"];
 var numAttr3 = (el, key, fallback) => {
   const v = parseInt(el.dataset[key] ?? "", 10);
@@ -9565,7 +10338,7 @@ function renderSteps(ol) {
       item.removeAttribute("aria-current");
   });
 }
-function triggerStateChange34(ol, stateName, config = {}) {
+function triggerStateChange37(ol, stateName, config = {}) {
   if (stateName !== "default")
     return;
   const a = config.activeStep ?? config.step ?? config.page;
@@ -9586,7 +10359,7 @@ var stepsApi = {
     if (!stepsStates.includes(stateName)) {
       throw new Error(`steps: unknown state "${stateName}" (supported: ${stepsStates.join(", ")})`);
     }
-    triggerStateChange34(ol, stateName, config);
+    triggerStateChange37(ol, stateName, config);
     ol.dataset.stateName = stateName;
     ol._stateConfig = config;
   },
@@ -9603,9 +10376,9 @@ var stepsApi = {
     };
   }
 };
-df$34.stepsApi = stepsApi;
-df$34.stepsStates = stepsStates;
-function init34() {
+df$37.stepsApi = stepsApi;
+df$37.stepsStates = stepsStates;
+function init37() {
   document.querySelectorAll(".steps:not([data-init])").forEach((ol) => {
     ol.dataset.init = "";
     ol.api = {
@@ -9640,11 +10413,11 @@ function init34() {
     });
   });
 }
-init34();
-new MutationObserver(init34).observe(document, { childList: true, subtree: true });
+init37();
+new MutationObserver(init37).observe(document, { childList: true, subtree: true });
 
 // src/components/table/table.ts
-var df$35 = defussGlobals();
+var df$38 = defussGlobals();
 var tableStates = ["default", "sorted", "selected"];
 var bodyOf = (table) => table.tBodies[0];
 var bodyRows = (table) => [...bodyOf(table)?.rows ?? []];
@@ -9726,7 +10499,7 @@ function moved(table, row) {
 }
 function initReorder(table) {
   let dragged = null;
-  const clear = () => table.querySelectorAll("[data-drop]").forEach((r) => r.removeAttribute("data-drop"));
+  const clear2 = () => table.querySelectorAll("[data-drop]").forEach((r) => r.removeAttribute("data-drop"));
   table.addEventListener("pointerdown", (e) => {
     const handle = e.target.closest?.(".table-handle");
     if (handle)
@@ -9750,7 +10523,7 @@ function initReorder(table) {
     const r = row.getBoundingClientRect();
     const where = e.clientY - r.top < r.height / 2 ? "before" : "after";
     if (row.dataset.drop !== where) {
-      clear();
+      clear2();
       row.dataset.drop = where;
     }
   });
@@ -9760,7 +10533,7 @@ function initReorder(table) {
       return;
     e.preventDefault();
     row.parentElement.insertBefore(dragged, row.dataset.drop === "before" ? row : row.nextSibling);
-    clear();
+    clear2();
     moved(table, dragged);
   });
   table.addEventListener("dragend", () => {
@@ -9769,7 +10542,7 @@ function initReorder(table) {
       dragged.draggable = false;
     }
     dragged = null;
-    clear();
+    clear2();
   });
   table.addEventListener("keydown", (e) => {
     if (!e.altKey || e.key !== "ArrowUp" && e.key !== "ArrowDown")
@@ -9796,7 +10569,7 @@ function measureLocks(table) {
   for (let i = 1;i < n; i++)
     table.style.setProperty(`--table-lock-${i}`, `${first.cells[i - 1]?.getBoundingClientRect().width ?? 0}px`);
 }
-function triggerStateChange35(table, stateName, config) {
+function triggerStateChange38(table, stateName, config) {
   switch (stateName) {
     case "default":
       unsort(table);
@@ -9815,7 +10588,7 @@ var tableApi = {
     if (!tableStates.includes(stateName)) {
       throw new Error(`table: unknown state "${stateName}" (supported: ${tableStates.join(", ")})`);
     }
-    triggerStateChange35(table, stateName, config);
+    triggerStateChange38(table, stateName, config);
     table.dataset.stateName = stateName;
     table._stateConfig = config;
   },
@@ -9824,9 +10597,9 @@ var tableApi = {
     return { name: table.dataset.stateName || "default", config: { ...table._stateConfig, sort: table._sort ?? null, selected } };
   }
 };
-df$35.tableApi = tableApi;
-df$35.tableStates = tableStates;
-function init35() {
+df$38.tableApi = tableApi;
+df$38.tableStates = tableStates;
+function init38() {
   document.querySelectorAll("table.table:not([data-init])").forEach((table) => {
     table.dataset.init = "";
     table.dataset.stateName = "default";
@@ -9894,11 +10667,11 @@ function init35() {
     }
   });
 }
-init35();
-new MutationObserver(init35).observe(document, { childList: true, subtree: true });
+init38();
+new MutationObserver(init38).observe(document, { childList: true, subtree: true });
 
 // src/components/tabs/tabs.ts
-var df$36 = defussGlobals();
+var df$39 = defussGlobals();
 var tabsStates = ["default", "active", "disabled"];
 var ICON = ":scope > :is(svg, img, i, .tab-icon)";
 var LUCIDE_NAME = /^[a-z][a-z0-9-]*$/;
@@ -9986,7 +10759,7 @@ var restoreTab = (tab) => {
   tab.dataset.stateName = tabName(tab);
 };
 var authoredTab = (triggers) => triggers.find((t) => t._authored.selected) || triggers.find((t) => !t.disabled);
-function triggerStateChange36(el, stateName, config) {
+function triggerStateChange39(el, stateName, config) {
   const triggers = triggersOf2(el);
   const isList = el.getAttribute("role") === "tablist";
   const reenter = Object.keys(config).length > 0 && tabsApi.getState(el).name === stateName;
@@ -10062,7 +10835,7 @@ var tabsApi = {
     if (!tabsStates.includes(stateName)) {
       throw new Error(`tabs: unknown state "${stateName}" (supported: ${tabsStates.join(", ")})`);
     }
-    triggerStateChange36(el, stateName, config);
+    triggerStateChange39(el, stateName, config);
     el._stateConfig = { ...el._stateConfig, ...config };
   },
   getState(el) {
@@ -10079,9 +10852,9 @@ var tabsApi = {
     };
   }
 };
-df$36.tabsApi = tabsApi;
-df$36.tabsStates = tabsStates;
-function init36() {
+df$39.tabsApi = tabsApi;
+df$39.tabsStates = tabsStates;
+function init39() {
   document.querySelectorAll('[role="tablist"]:not([data-init])').forEach((tablist) => {
     tablist.dataset.init = "";
     if (!tablist.querySelector(".tab-trigger"))
@@ -10162,11 +10935,11 @@ function init36() {
     });
   });
 }
-init36();
-new MutationObserver(init36).observe(document, { childList: true, subtree: true });
+init39();
+new MutationObserver(init39).observe(document, { childList: true, subtree: true });
 
 // src/components/theme-switcher/theme-switcher.ts
-var df$37 = defussGlobals();
+var df$40 = defussGlobals();
 var dfDollar9 = defussQuery();
 var themeSwitcherStates = ["default", "open"];
 var STORAGE_KEY = "defuss-shadcn-color-theme";
@@ -10241,7 +11014,7 @@ function syncTrigger(root, id) {
     dfDollar9(label2).text(active2?.dataset.themeLabel || "Default");
   root.dataset.themeId = id;
 }
-function triggerStateChange37(menu, stateName, _config) {
+function triggerStateChange40(menu, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -10258,7 +11031,7 @@ var themeSwitcherApi = {
     if (!themeSwitcherStates.includes(stateName)) {
       throw new Error(`theme-switcher: unknown state "${stateName}" (supported: ${themeSwitcherStates.join(", ")})`);
     }
-    triggerStateChange37(menu, stateName, config);
+    triggerStateChange40(menu, stateName, config);
     menu.dataset.stateName = stateName;
     menu._stateConfig = config;
   },
@@ -10272,9 +11045,9 @@ var themeSwitcherApi = {
     applyThemeId(root, id);
   }
 };
-df$37.themeSwitcherApi = themeSwitcherApi;
-df$37.themeSwitcherStates = themeSwitcherStates;
-function init37() {
+df$40.themeSwitcherApi = themeSwitcherApi;
+df$40.themeSwitcherStates = themeSwitcherStates;
+function init40() {
   document.querySelectorAll(".theme-switcher-menu:not([data-init])").forEach((menu) => {
     menu.dataset.init = "";
     const root = menu.closest(".theme-switcher");
@@ -10345,14 +11118,14 @@ document.addEventListener(THEME_EVENT, (e) => {
   const id = e.detail?.id || "default";
   document.querySelectorAll(".theme-switcher").forEach((root) => syncTrigger(root, id));
 });
-init37();
-new MutationObserver(init37).observe(document, { childList: true, subtree: true });
+init40();
+new MutationObserver(init40).observe(document, { childList: true, subtree: true });
 
 // src/components/toast/toast.ts
-var df$38 = defussGlobals();
+var df$41 = defussGlobals();
 var dfDollar10 = defussQuery();
 var toastStates = ["default"];
-function triggerStateChange38(container, stateName, _config) {
+function triggerStateChange41(container, stateName, _config) {
   if (stateName !== "default")
     return;
   container.querySelectorAll(".toast").forEach((el) => toastDismiss(el));
@@ -10362,7 +11135,7 @@ var toastApi = {
     if (!toastStates.includes(stateName)) {
       throw new Error(`toast: unknown state "${stateName}" (supported: ${toastStates.join(", ")})`);
     }
-    triggerStateChange38(container, stateName, config);
+    triggerStateChange41(container, stateName, config);
     container.dataset.stateName = stateName;
     container._stateConfig = config;
   },
@@ -10373,8 +11146,8 @@ var toastApi = {
     };
   }
 };
-df$38.toastApi = toastApi;
-df$38.toastStates = toastStates;
+df$41.toastApi = toastApi;
+df$41.toastStates = toastStates;
 var DURATION = 4000;
 var MAX_VISIBLE = 3;
 var toastCallbacks = new WeakMap;
@@ -10528,7 +11301,7 @@ var toastCreate = (options) => {
     toastDismiss(toasts[0]);
   return el;
 };
-function init38() {
+function init41() {
   document.querySelectorAll("#toast-container:not([data-init])").forEach((container) => {
     container.dataset.init = "";
     container.api = {
@@ -10581,8 +11354,8 @@ function init38() {
     });
   });
 }
-init38();
-new MutationObserver(init38).observe(document.body, { childList: true, subtree: true });
+init41();
+new MutationObserver(init41).observe(document.body, { childList: true, subtree: true });
 var toastConfigure = (opts = {}) => {
   if (opts.stack)
     toastContainer.dataset.stack = opts.stack;
@@ -10591,7 +11364,7 @@ var toastConfigure = (opts = {}) => {
   stackToasts(toastContainer);
   return { stack: toastContainer.dataset.stack || "list", position: toastContainer.dataset.position };
 };
-df$38.toast = {
+df$41.toast = {
   configure: toastConfigure,
   show: toastCreate,
   success: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "success" })),
@@ -10606,9 +11379,9 @@ df$38.toast = {
 };
 
 // src/components/toggle/toggle.ts
-var df$39 = defussGlobals();
+var df$42 = defussGlobals();
 var toggleStates = ["default", "pressed"];
-function triggerStateChange39(toggle, stateName, _config) {
+function triggerStateChange42(toggle, stateName, _config) {
   switch (stateName) {
     case "default":
       toggle.setAttribute("aria-pressed", toggle._defaultPressed ?? "false");
@@ -10623,7 +11396,7 @@ var toggleApi = {
     if (!toggleStates.includes(stateName)) {
       throw new Error(`toggle: unknown state "${stateName}" (supported: ${toggleStates.join(", ")})`);
     }
-    triggerStateChange39(toggle, stateName, config);
+    triggerStateChange42(toggle, stateName, config);
     toggle.dataset.stateName = stateName;
     toggle._stateConfig = config;
   },
@@ -10635,9 +11408,9 @@ var toggleApi = {
     };
   }
 };
-df$39.toggleApi = toggleApi;
-df$39.toggleStates = toggleStates;
-function init39() {
+df$42.toggleApi = toggleApi;
+df$42.toggleStates = toggleStates;
+function init42() {
   document.querySelectorAll(".toggle:not([data-init]):not(.toggle-group .toggle)").forEach((toggle) => {
     toggle.dataset.init = "";
     toggle._defaultPressed = toggle.getAttribute("aria-pressed") || "false";
@@ -10652,13 +11425,13 @@ function init39() {
     });
   });
 }
-init39();
-new MutationObserver(init39).observe(document, { childList: true, subtree: true });
+init42();
+new MutationObserver(init42).observe(document, { childList: true, subtree: true });
 
 // src/components/toggle-group/toggle-group.ts
-var df$40 = defussGlobals();
+var df$43 = defussGlobals();
 var toggleGroupStates = ["default", "disabled"];
-function triggerStateChange40(group, stateName, _config) {
+function triggerStateChange43(group, stateName, _config) {
   switch (stateName) {
     case "default":
       group.removeAttribute("data-disabled");
@@ -10673,7 +11446,7 @@ var toggleGroupApi = {
     if (!toggleGroupStates.includes(stateName)) {
       throw new Error(`toggle-group: unknown state "${stateName}" (supported: ${toggleGroupStates.join(", ")})`);
     }
-    triggerStateChange40(group, stateName, config);
+    triggerStateChange43(group, stateName, config);
     group.dataset.stateName = stateName;
     group._stateConfig = config;
   },
@@ -10684,9 +11457,9 @@ var toggleGroupApi = {
     };
   }
 };
-df$40.toggleGroupApi = toggleGroupApi;
-df$40.toggleGroupStates = toggleGroupStates;
-function init40() {
+df$43.toggleGroupApi = toggleGroupApi;
+df$43.toggleGroupStates = toggleGroupStates;
+function init43() {
   document.querySelectorAll(".toggle-group:not([data-init])").forEach((group) => {
     group.dataset.init = "";
     group.api = {
@@ -10754,13 +11527,13 @@ function init40() {
     });
   });
 }
-init40();
-new MutationObserver(init40).observe(document, { childList: true, subtree: true });
+init43();
+new MutationObserver(init43).observe(document, { childList: true, subtree: true });
 
 // src/components/toolbar/toolbar.ts
-var df$41 = defussGlobals();
+var df$44 = defussGlobals();
 var toolbarStates = ["default"];
-function triggerStateChange41(toolbar, items, stateName, config) {
+function triggerStateChange44(toolbar, items, stateName, config) {
   if (stateName !== "default" || items.length === 0)
     return;
   const target = items[Math.min(Number(config?.focus ?? 0), items.length - 1)] || items[0];
@@ -10774,7 +11547,7 @@ var toolbarApi = {
       throw new Error(`toolbar: unknown state "${stateName}" (supported: ${toolbarStates.join(", ")})`);
     }
     const items = toolbarItems(toolbar);
-    triggerStateChange41(toolbar, items, stateName, config);
+    triggerStateChange44(toolbar, items, stateName, config);
     toolbar.dataset.stateName = stateName;
     toolbar._stateConfig = config;
   },
@@ -10787,10 +11560,10 @@ var toolbarApi = {
     };
   }
 };
-df$41.toolbarApi = toolbarApi;
-df$41.toolbarStates = toolbarStates;
+df$44.toolbarApi = toolbarApi;
+df$44.toolbarStates = toolbarStates;
 var toolbarItems = (toolbar) => Array.from(toolbar.querySelectorAll('button:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])'));
-function init41() {
+function init44() {
   document.querySelectorAll('.toolbar[role="toolbar"]:not([data-init])').forEach((toolbar) => {
     toolbar.dataset.init = "";
     toolbar.api = {
@@ -10832,13 +11605,13 @@ function init41() {
     });
   });
 }
-init41();
-new MutationObserver(init41).observe(document, { childList: true, subtree: true });
+init44();
+new MutationObserver(init44).observe(document, { childList: true, subtree: true });
 
 // src/components/tooltip/tooltip.ts
-var df$42 = defussGlobals();
+var df$45 = defussGlobals();
 var tooltipStates = ["default", "visible"];
-function triggerStateChange42(tip, stateName, _config) {
+function triggerStateChange45(tip, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -10856,7 +11629,7 @@ var tooltipApi = {
     if (!tooltipStates.includes(stateName)) {
       throw new Error(`tooltip: unknown state "${stateName}" (supported: ${tooltipStates.join(", ")})`);
     }
-    triggerStateChange42(tip, stateName, config);
+    triggerStateChange45(tip, stateName, config);
     tip.dataset.stateName = stateName;
     tip._stateConfig = config;
   },
@@ -10864,8 +11637,8 @@ var tooltipApi = {
     return { name: tip.dataset.stateName || "default", config: tip._stateConfig ?? {} };
   }
 };
-df$42.tooltipApi = tooltipApi;
-df$42.tooltipStates = tooltipStates;
+df$45.tooltipApi = tooltipApi;
+df$45.tooltipStates = tooltipStates;
 var DELAY_DEFAULT = 700;
 var CLOSE_DELAY_DEFAULT = 0;
 var GROUP_TIMEOUT = 400;
@@ -10881,7 +11654,7 @@ function scheduleGroupReset() {
     groupOpen = false;
   }, GROUP_TIMEOUT);
 }
-function init42() {
+function init45() {
   document.querySelectorAll("[data-tooltip-trigger]:not([data-init])").forEach((trigger2) => {
     trigger2.dataset.init = "";
     const tip = document.getElementById(trigger2.dataset.tooltipTrigger);
@@ -10929,8 +11702,8 @@ function init42() {
     };
   });
 }
-init42();
-new MutationObserver(init42).observe(document, { childList: true, subtree: true });
+init45();
+new MutationObserver(init45).observe(document, { childList: true, subtree: true });
 if (!document.__tooltipScrollInit) {
   document.__tooltipScrollInit = true;
   document.addEventListener("scroll", () => {
@@ -10943,9 +11716,9 @@ if (!document.__tooltipScrollInit) {
 }
 
 // src/components/tree-view/tree-view.ts
-var df$43 = defussGlobals();
+var df$46 = defussGlobals();
 var treeViewStates = ["default", "expanded"];
-function triggerStateChange43(details, stateName, _config) {
+function triggerStateChange46(details, stateName, _config) {
   switch (stateName) {
     case "default":
       details.open = details._defaultOpen ?? false;
@@ -10960,7 +11733,7 @@ var treeViewApi = {
     if (!treeViewStates.includes(stateName)) {
       throw new Error(`tree-view: unknown state "${stateName}" (supported: ${treeViewStates.join(", ")})`);
     }
-    triggerStateChange43(details, stateName, config);
+    triggerStateChange46(details, stateName, config);
     details.dataset.stateName = stateName;
     details._stateConfig = config;
   },
@@ -10971,8 +11744,8 @@ var treeViewApi = {
     };
   }
 };
-df$43.treeViewApi = treeViewApi;
-df$43.treeViewStates = treeViewStates;
+df$46.treeViewApi = treeViewApi;
+df$46.treeViewStates = treeViewStates;
 var itemOf = (row) => row.closest('[role="treeitem"]');
 var isDisabled2 = (item) => item?.getAttribute("aria-disabled") === "true";
 function selectItem(tree, item) {
@@ -11144,7 +11917,7 @@ function moveByKey(tree, row, dir) {
   row.focus();
   announceMove2(tree, item);
 }
-function init43() {
+function init46() {
   document.querySelectorAll('.tree[role="tree"]:not([data-init])').forEach((tree) => {
     tree.dataset.init = "";
     const selectable = tree.hasAttribute("data-selectable");
@@ -11266,11 +12039,197 @@ function init43() {
     });
   });
 }
-init43();
-new MutationObserver(init43).observe(document, { childList: true, subtree: true });
+init46();
+new MutationObserver(init46).observe(document, { childList: true, subtree: true });
+
+// src/components/typewriter/typewriter.ts
+var df$47 = defussGlobals();
+var typewriterStates = ["default", "paused", "done"];
+var num4 = (el, key, fallback) => {
+  const v = parseFloat(el.dataset[key]);
+  return Number.isFinite(v) && v >= 0 ? v : fallback;
+};
+var reducedMotion6 = () => globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+var graphemes = (text3) => globalThis.Intl?.Segmenter ? Array.from(new Intl.Segmenter(undefined, { granularity: "grapheme" }).segment(text3), (s) => s.segment) : Array.from(text3);
+function paint5(tw, index, count) {
+  const src = tw._sources[index];
+  tw._text.textContent = src.chars.slice(0, count).join("");
+  tw._text.className = `typewriter-text${src.className ? ` ${src.className}` : ""}`;
+  tw._text.setAttribute("style", src.style);
+  tw.dataset.index = String(index);
+  tw._index = index;
+  tw._count = count;
+}
+var phase = (tw, name) => {
+  tw.dataset.phase = name;
+};
+function stop2(tw) {
+  clearTimeout(tw._timer);
+  tw._timer = 0;
+}
+function keyDelay(tw, base) {
+  if (!tw.hasAttribute("data-variable"))
+    return base;
+  return base * (0.5 + Math.random());
+}
+function step(tw) {
+  if (!tw.isConnected)
+    return stop2(tw);
+  const src = tw._sources[tw._index];
+  const last = tw._index === tw._sources.length - 1;
+  const loop = tw.hasAttribute("data-loop");
+  const next = (fn, ms) => {
+    tw._timer = setTimeout(() => fn(tw), ms);
+  };
+  if (tw._deleting) {
+    if (tw._count > 0) {
+      phase(tw, "deleting");
+      paint5(tw, tw._index, tw._count - 1);
+      return next(step, keyDelay(tw, num4(tw, "deleteSpeed", 35)));
+    }
+    tw._deleting = false;
+    paint5(tw, (tw._index + 1) % tw._sources.length, 0);
+    return next(step, num4(tw, "speed", 70));
+  }
+  if (tw._count < src.chars.length) {
+    phase(tw, "typing");
+    paint5(tw, tw._index, tw._count + 1);
+    return next(step, keyDelay(tw, num4(tw, "speed", 70)));
+  }
+  tw.dispatchEvent(new CustomEvent("typewriter-typed", { bubbles: true, detail: { index: tw._index, text: src.text } }));
+  if (last && !loop)
+    return finish2(tw);
+  phase(tw, "holding");
+  tw._deleting = true;
+  return next(step, num4(tw, "pause", 1500));
+}
+function finish2(tw) {
+  typewriterApi.setState(tw, "done", { index: tw._index });
+  tw.dispatchEvent(new CustomEvent("typewriter-done", { bubbles: true, detail: { index: tw._index } }));
+}
+function stepInstant(tw) {
+  if (!tw.isConnected)
+    return stop2(tw);
+  const last = tw._index === tw._sources.length - 1;
+  paint5(tw, tw._index, tw._sources[tw._index].chars.length);
+  phase(tw, "idle");
+  if (last && !tw.hasAttribute("data-loop"))
+    return finish2(tw);
+  tw._timer = setTimeout(() => {
+    paint5(tw, (tw._index + 1) % tw._sources.length, 0);
+    stepInstant(tw);
+  }, num4(tw, "pause", 1500) + 1000);
+}
+function run3(tw, delay = 0) {
+  stop2(tw);
+  const go = () => reducedMotion6() ? stepInstant(tw) : step(tw);
+  if (delay)
+    tw._timer = setTimeout(go, delay);
+  else
+    go();
+}
+function triggerStateChange47(tw, stateName, config, previous) {
+  const count = tw._sources.length;
+  const asked = config.index === undefined || config.index === "" ? NaN : Number(config.index);
+  const pick = Number.isInteger(asked) ? Math.min(Math.max(asked, 0), count - 1) : undefined;
+  switch (stateName) {
+    case "default":
+      if (pick === undefined && previous === "paused") {
+        run3(tw);
+        break;
+      }
+      tw._deleting = false;
+      paint5(tw, pick ?? 0, 0);
+      phase(tw, "idle");
+      run3(tw, config.immediate ? 0 : num4(tw, "startDelay", 0));
+      break;
+    case "paused":
+      stop2(tw);
+      phase(tw, "idle");
+      break;
+    case "done": {
+      stop2(tw);
+      const index = pick ?? tw._index ?? 0;
+      paint5(tw, index, tw._sources[index].chars.length);
+      phase(tw, "idle");
+      break;
+    }
+  }
+}
+var typewriterApi = {
+  setState(tw, stateName, config = {}) {
+    if (!typewriterStates.includes(stateName)) {
+      throw new Error(`typewriter: unknown state "${stateName}" (supported: ${typewriterStates.join(", ")})`);
+    }
+    const previous = tw.dataset.stateName;
+    tw.dataset.stateName = stateName;
+    tw._stateConfig = config;
+    triggerStateChange47(tw, stateName, config, previous);
+  },
+  getState(tw) {
+    return { name: tw.dataset.stateName || "default", config: tw._stateConfig ?? {} };
+  }
+};
+df$47.typewriterApi = typewriterApi;
+df$47.typewriterStates = typewriterStates;
+function init47() {
+  document.querySelectorAll(".typewriter:not([data-init])").forEach((tw) => {
+    tw.dataset.init = "";
+    const children = Array.from(tw.children);
+    if (!children.length)
+      return;
+    tw._sources = children.map((c) => ({
+      text: c.textContent ?? "",
+      chars: graphemes(c.textContent ?? ""),
+      className: c.getAttribute("class") ?? "",
+      style: c.getAttribute("style") ?? ""
+    }));
+    children.forEach((c) => c.classList.add("typewriter-source"));
+    const line = document.createElement("span");
+    line.className = "typewriter-line";
+    line.setAttribute("aria-hidden", "true");
+    tw._text = document.createElement("span");
+    tw._text.className = "typewriter-text";
+    const cursor = document.createElement("span");
+    cursor.className = "typewriter-cursor";
+    line.append(tw._text, cursor);
+    tw.append(line);
+    if (tw.hasAttribute("data-reserve")) {
+      const ghost = document.createElement("span");
+      ghost.className = "typewriter-ghost";
+      ghost.setAttribute("aria-hidden", "true");
+      tw._sources.forEach((s) => {
+        const g = document.createElement("span");
+        g.textContent = s.text;
+        ghost.appendChild(g);
+      });
+      tw.append(ghost);
+    }
+    tw.api = {
+      setState: (stateName, config) => typewriterApi.setState(tw, stateName, config),
+      getState: () => typewriterApi.getState(tw)
+    };
+    paint5(tw, 0, 0);
+    phase(tw, "idle");
+    tw.dataset.stateName = "default";
+    if (tw.dataset.trigger === "visible" && globalThis.IntersectionObserver) {
+      const io = new IntersectionObserver((entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          io.disconnect();
+          typewriterApi.setState(tw, "default", {});
+        }
+      });
+      io.observe(tw);
+    } else {
+      typewriterApi.setState(tw, "default", {});
+    }
+  });
+}
+init47();
+new MutationObserver(init47).observe(document, { childList: true, subtree: true });
 
 // src/components/virtual-list/virtual-list.ts
-var df$44 = defussGlobals();
+var df$48 = defussGlobals();
 var virtualListStates = ["default", "loading", "empty"];
 var OVERSCAN = 4;
 var MAX_SIZER_PX = 15000000;
@@ -11348,7 +12307,7 @@ function render3(list) {
 var defaultRenderRow = (row, index) => {
   row.textContent = `Row ${index + 1}`;
 };
-function triggerStateChange44(list, stateName, config) {
+function triggerStateChange48(list, stateName, config) {
   list.dataset.state = stateName;
   switch (stateName) {
     case "default":
@@ -11376,7 +12335,7 @@ var virtualListApi = {
     if (!virtualListStates.includes(stateName)) {
       throw new Error(`virtual-list: unknown state "${stateName}" (supported: ${virtualListStates.join(", ")})`);
     }
-    triggerStateChange44(list, stateName, config);
+    triggerStateChange48(list, stateName, config);
     list.dataset.stateName = stateName;
     list._stateConfig = config;
   },
@@ -11384,9 +12343,9 @@ var virtualListApi = {
     return { name: list.dataset.stateName || "default", config: list._stateConfig ?? {} };
   }
 };
-df$44.virtualListApi = virtualListApi;
-df$44.virtualListStates = virtualListStates;
-df$44.virtualList = {
+df$48.virtualListApi = virtualListApi;
+df$48.virtualListStates = virtualListStates;
+df$48.virtualList = {
   setData(list, count, renderRow) {
     list._count = Math.max(0, Math.floor(count) || 0);
     if (renderRow)
@@ -11404,7 +12363,7 @@ df$44.virtualList = {
     virtualListApi.setState(list, list._count ? "default" : "empty");
   }
 };
-function init44() {
+function init48() {
   document.querySelectorAll(".virtual-list:not([data-init])").forEach((list) => {
     list.dataset.init = "";
     let sizer = list.querySelector(".virtual-list-sizer");
@@ -11454,9 +12413,384 @@ function init44() {
     virtualListApi.setState(list, list._count ? "default" : "empty");
   });
 }
-init44();
-new MutationObserver(init44).observe(document, { childList: true, subtree: true });
+init48();
+new MutationObserver(init48).observe(document, { childList: true, subtree: true });
 
-//# debugId=897438A5A22B686364756E2164756E21
+// src/components/window/window.ts
+var df$49 = defussGlobals();
+var windowStates = ["default", "maximized", "minimized", "closed"];
+var topZ = 10;
+var KEEP = 48;
+var resolve3 = (target) => typeof target === "string" ? document.getElementById(target) ?? document.querySelector(target) : target;
+var titleOf = (w) => w.querySelector(".window-title")?.textContent?.trim() ?? "";
+var posOf = (w) => ({ x: w.offsetLeft, y: w.offsetTop });
+function moveTo(w, x, y) {
+  const parent = w.offsetParent;
+  const bar = w.querySelector(".window-titlebar");
+  if (parent) {
+    const ctl = w.querySelector(".window-controls")?.offsetWidth ?? 0;
+    const maxX = parent.clientWidth - KEEP - ctl;
+    const minX = KEEP + ctl - w.offsetWidth;
+    const maxY = parent.clientHeight - (bar?.offsetHeight ?? KEEP);
+    x = Math.min(Math.max(x, minX), maxX);
+    y = Math.min(Math.max(y, 0), Math.max(maxY, 0));
+  }
+  w.style.setProperty("--window-x", `${Math.round(x)}px`);
+  w.style.setProperty("--window-y", `${Math.round(y)}px`);
+  return { x: Math.round(x), y: Math.round(y) };
+}
+function raise(w) {
+  if (!w.open)
+    return;
+  if (w.hasAttribute("data-active") && Number(w.style.zIndex) === topZ)
+    return;
+  topZ += 1;
+  w.style.zIndex = String(topZ);
+  document.querySelectorAll(".window[data-active]").forEach((o) => {
+    if (o !== w)
+      o.removeAttribute("data-active");
+  });
+  w.setAttribute("data-active", "");
+  w.dispatchEvent(new CustomEvent("window-focus", { bubbles: true, detail: { title: titleOf(w) } }));
+}
+function showQuietly(w) {
+  const prev = document.activeElement;
+  w.show();
+  if (prev && prev !== document.body && prev.isConnected && prev.focus)
+    prev.focus({ preventScroll: true });
+  else if (w.contains(document.activeElement))
+    document.activeElement.blur();
+}
+function activateTopmost() {
+  const open = Array.from(document.querySelectorAll(".window[open]"));
+  if (!open.length)
+    return;
+  const top = open.reduce((a, b) => Number(b.style.zIndex || 0) > Number(a.style.zIndex || 0) ? b : a);
+  raise(top);
+}
+function stashSize(w) {
+  if (w._stash)
+    return;
+  w._stash = { width: w.style.width, height: w.style.height };
+  w.style.width = "";
+  w.style.height = "";
+}
+function restoreSize(w) {
+  if (!w._stash)
+    return;
+  w.style.width = w._stash.width;
+  w.style.height = w._stash.height;
+  w._stash = null;
+}
+function triggerStateChange49(w, stateName, config) {
+  const maxBtn = w.querySelector(".window-maximize");
+  if (stateName !== "closed" && !w.open)
+    showQuietly(w);
+  switch (stateName) {
+    case "default":
+      w.removeAttribute("data-maximized");
+      w.removeAttribute("data-minimized");
+      restoreSize(w);
+      if (config.x !== undefined && config.y !== undefined)
+        moveTo(w, Number(config.x), Number(config.y));
+      raise(w);
+      break;
+    case "maximized":
+      w.removeAttribute("data-minimized");
+      stashSize(w);
+      w.setAttribute("data-maximized", "");
+      raise(w);
+      break;
+    case "minimized":
+      w.removeAttribute("data-maximized");
+      stashSize(w);
+      w.setAttribute("data-minimized", "");
+      break;
+    case "closed":
+      if (w.open)
+        w.close();
+      break;
+  }
+  if (maxBtn)
+    maxBtn.setAttribute("aria-label", stateName === "maximized" ? "Restore" : "Maximize");
+  w.querySelector(".window-minimize")?.setAttribute("aria-label", stateName === "minimized" ? "Restore" : "Minimize");
+}
+var windowApi = {
+  setState(w, stateName, config = {}) {
+    if (!windowStates.includes(stateName)) {
+      throw new Error(`window: unknown state "${stateName}" (supported: ${windowStates.join(", ")})`);
+    }
+    w.dataset.stateName = stateName;
+    w._stateConfig = config;
+    triggerStateChange49(w, stateName, config);
+  },
+  getState(w) {
+    const name = !w.open ? "closed" : w.dataset.stateName || "default";
+    return { name, config: name === "closed" ? {} : w._stateConfig ?? {} };
+  }
+};
+df$49.windowApi = windowApi;
+df$49.windowStates = windowStates;
+function bindDrag(w, bar) {
+  bar.addEventListener("pointerdown", (e) => {
+    if (e.button !== 0 || e.target.closest("button, a, input, select, textarea"))
+      return;
+    raise(w);
+    if (w.hasAttribute("data-maximized"))
+      return;
+    e.preventDefault();
+    const start = posOf(w);
+    const { clientX: sx, clientY: sy } = e;
+    bar.setPointerCapture(e.pointerId);
+    w.setAttribute("data-dragging", "");
+    const onMove = (m) => moveTo(w, start.x + m.clientX - sx, start.y + m.clientY - sy);
+    const onUp = () => {
+      bar.removeEventListener("pointermove", onMove);
+      bar.removeEventListener("pointerup", onUp);
+      bar.removeEventListener("pointercancel", onUp);
+      w.removeAttribute("data-dragging");
+      w.dispatchEvent(new CustomEvent("window-move", { bubbles: true, detail: posOf(w) }));
+    };
+    bar.addEventListener("pointermove", onMove);
+    bar.addEventListener("pointerup", onUp);
+    bar.addEventListener("pointercancel", onUp);
+  });
+  bar.addEventListener("dblclick", (e) => {
+    if (e.target.closest("button"))
+      return;
+    windowApi.setState(w, w.hasAttribute("data-maximized") ? "default" : "maximized", {});
+  });
+  bar.addEventListener("keydown", (e) => {
+    const step2 = e.shiftKey ? 64 : 16;
+    const d = { ArrowLeft: [-step2, 0], ArrowRight: [step2, 0], ArrowUp: [0, -step2], ArrowDown: [0, step2] }[e.key];
+    if (!d || w.hasAttribute("data-maximized") || e.target !== bar)
+      return;
+    e.preventDefault();
+    const p = posOf(w);
+    moveTo(w, p.x + d[0], p.y + d[1]);
+    w.dispatchEvent(new CustomEvent("window-move", { bubbles: true, detail: posOf(w) }));
+  });
+}
+function init49() {
+  document.querySelectorAll("dialog.window:not([data-init])").forEach((w) => {
+    w.dataset.init = "";
+    const bar = w.querySelector(":scope > .window-titlebar");
+    if (bar) {
+      if (!bar.hasAttribute("tabindex"))
+        bar.tabIndex = 0;
+      bindDrag(w, bar);
+    }
+    if (!w.hasAttribute("aria-labelledby") && !w.hasAttribute("aria-label")) {
+      const title = w.querySelector(".window-title");
+      if (title) {
+        if (!title.id)
+          title.id = `window-title-${Math.random().toString(36).slice(2, 8)}`;
+        w.setAttribute("aria-labelledby", title.id);
+      }
+    }
+    w.addEventListener("pointerdown", () => raise(w), true);
+    w.addEventListener("focusin", () => raise(w));
+    w.querySelector(".window-maximize")?.addEventListener("click", () => windowApi.setState(w, w.hasAttribute("data-maximized") ? "default" : "maximized", {}));
+    w.querySelector(".window-close")?.addEventListener("click", (e) => {
+      e.preventDefault();
+      windowApi.setState(w, "closed", {});
+    });
+    w.querySelector(".window-minimize")?.addEventListener("click", () => windowApi.setState(w, w.hasAttribute("data-minimized") ? "default" : "minimized", {}));
+    w.addEventListener("close", () => {
+      if (w.open)
+        return;
+      w.dataset.stateName = "closed";
+      w.removeAttribute("data-active");
+      activateTopmost();
+    });
+    w.api = {
+      setState: (stateName, config) => windowApi.setState(w, stateName, config),
+      getState: () => windowApi.getState(w)
+    };
+    const initial = !w.open ? "closed" : w.hasAttribute("data-maximized") ? "maximized" : w.hasAttribute("data-minimized") ? "minimized" : "default";
+    w.dataset.stateName = initial;
+    if (w.open) {
+      w.style.zIndex = String(++topZ);
+      document.querySelectorAll(".window[data-active]").forEach((o) => o.removeAttribute("data-active"));
+      w.setAttribute("data-active", "");
+    }
+  });
+}
+function create(options = {}) {
+  const {
+    title = "Untitled",
+    icon,
+    content,
+    html,
+    statusbar,
+    id,
+    x,
+    y,
+    width,
+    height,
+    chrome,
+    resizable = true,
+    parent,
+    focus = true,
+    flush = false
+  } = options;
+  const host = resolve3(parent) ?? document.querySelector(".window-desktop") ?? document.body;
+  const w = document.createElement("dialog");
+  w.className = "window";
+  if (id)
+    w.id = id;
+  if (chrome)
+    w.dataset.chrome = chrome;
+  if (resizable)
+    w.setAttribute("data-resizable", "");
+  const count = host.querySelectorAll(":scope > .window").length;
+  w.style.setProperty("--window-x", typeof x === "number" ? `${x}px` : x ?? `${24 + count % 8 * 28}px`);
+  w.style.setProperty("--window-y", typeof y === "number" ? `${y}px` : y ?? `${24 + count % 8 * 28}px`);
+  if (width !== undefined)
+    w.style.setProperty("--window-w", typeof width === "number" ? `${width}px` : width);
+  if (height !== undefined)
+    w.style.setProperty("--window-h", typeof height === "number" ? `${height}px` : height);
+  const bar = document.createElement("header");
+  bar.className = "window-titlebar";
+  if (icon) {
+    const i = document.createElement("i");
+    i.className = "window-icon";
+    i.setAttribute("data-lucide", icon);
+    bar.append(i);
+  }
+  const h = document.createElement("h2");
+  h.className = "window-title";
+  h.textContent = title;
+  const controls = document.createElement("form");
+  controls.method = "dialog";
+  controls.className = "window-controls";
+  for (const [cls, label2, type] of [["window-minimize", "Minimize", "button"], ["window-maximize", "Maximize", "button"], ["window-close", "Close", "submit"]]) {
+    const b = document.createElement("button");
+    b.type = type;
+    b.className = cls;
+    b.setAttribute("aria-label", label2);
+    controls.append(b);
+  }
+  bar.append(h, controls);
+  const body = document.createElement("div");
+  body.className = "window-body";
+  if (flush)
+    body.setAttribute("data-flush", "");
+  if (content instanceof Node)
+    body.append(content);
+  else if (typeof html === "string")
+    body.append(document.createRange().createContextualFragment(html));
+  else if (content !== undefined)
+    body.textContent = String(content);
+  w.append(bar, body);
+  if (statusbar !== undefined) {
+    const s = document.createElement("footer");
+    s.className = "window-statusbar";
+    s.textContent = String(statusbar);
+    w.append(s);
+  }
+  host.append(w);
+  init49();
+  showQuietly(w);
+  if (focus)
+    windowApi.setState(w, "default", {});
+  if (icon)
+    globalThis.lucide?.createIcons?.();
+  return w;
+}
+var list = (scope, all = false) => Array.from((resolve3(scope) ?? document).querySelectorAll(all ? ".window" : ".window[open]"));
+function cascade(scope, step2 = 28) {
+  list(scope).sort((a, b) => Number(a.style.zIndex || 0) - Number(b.style.zIndex || 0)).forEach((w, i) => {
+    windowApi.setState(w, "default", {});
+    moveTo(w, 16 + i * step2, 16 + i * step2);
+  });
+}
+function tile(scope) {
+  const wins = list(scope);
+  if (!wins.length)
+    return;
+  const cols = Math.ceil(Math.sqrt(wins.length));
+  const rows = Math.ceil(wins.length / cols);
+  wins.forEach((w, i) => {
+    windowApi.setState(w, "default", {});
+    const p = w.offsetParent;
+    if (!p)
+      return;
+    const cw = p.clientWidth / cols, ch = p.clientHeight / rows;
+    w.style.width = "";
+    w.style.height = "";
+    w.style.setProperty("--window-w", `${Math.floor(cw)}px`);
+    w.style.setProperty("--window-h", `${Math.floor(ch)}px`);
+    moveTo(w, i % cols * cw, Math.floor(i / cols) * ch);
+  });
+}
+df$49.win = {
+  create,
+  open: (t, config = {}) => {
+    const w = resolve3(t);
+    if (w)
+      windowApi.setState(w, "default", config);
+    return w;
+  },
+  close: (t) => {
+    const w = resolve3(t);
+    if (w)
+      windowApi.setState(w, "closed", {});
+    return w;
+  },
+  focus: (t) => {
+    const w = resolve3(t);
+    if (w?.open)
+      raise(w);
+    return w;
+  },
+  move: (t, x, y) => {
+    const w = resolve3(t);
+    return w ? moveTo(w, x, y) : null;
+  },
+  resize: (t, width, height) => {
+    const w = resolve3(t);
+    if (!w)
+      return null;
+    w.style.width = "";
+    w.style.height = "";
+    w.style.setProperty("--window-w", typeof width === "number" ? `${width}px` : width);
+    if (height !== undefined)
+      w.style.setProperty("--window-h", typeof height === "number" ? `${height}px` : height);
+    return w;
+  },
+  maximize: (t) => {
+    const w = resolve3(t);
+    if (w)
+      windowApi.setState(w, "maximized", {});
+    return w;
+  },
+  minimize: (t) => {
+    const w = resolve3(t);
+    if (w)
+      windowApi.setState(w, "minimized", {});
+    return w;
+  },
+  restore: (t) => {
+    const w = resolve3(t);
+    if (w)
+      windowApi.setState(w, "default", {});
+    return w;
+  },
+  toggleMaximize: (t) => {
+    const w = resolve3(t);
+    if (w)
+      windowApi.setState(w, w.hasAttribute("data-maximized") ? "default" : "maximized", {});
+    return w;
+  },
+  active: () => document.querySelector(".window[open][data-active]"),
+  list,
+  cascade,
+  tile
+};
+init49();
+new MutationObserver(init49).observe(document, { childList: true, subtree: true });
+
+//# debugId=78EC2DD87D1E64C664756E2164756E21
 /* defuss-shadcn v0.9.2 runtime provenance: bundles defuss-morph@0.1.1 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.1.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=all.js.map

@@ -1162,8 +1162,10 @@ check(
 const windowProblems: string[] = [];
 for (const f of walk(SRC, ['.ts', '.js'])) {
   const src = readFileSync(f, 'utf8');
-  // matches window.x = / window['x'] = / window["x"] = assignment forms
-  for (const m of src.matchAll(/\bwindow\s*(?:\.|\[)?['"]?\s*([A-Za-z_$][\w$]*)['"]?\s*\]?\s*(=|\+=|-=)/g)) {
+  // matches window.x = / window['x'] = / window["x"] = assignment forms -
+  // the . or [ is REQUIRED: an identifier that merely starts with "window"
+  // (the window component's df$.windowApi / windowStates) is not the global
+  for (const m of src.matchAll(/\bwindow\s*(?:\.|\[)['"]?\s*([A-Za-z_$][\w$]*)['"]?\s*\]?\s*(=|\+=|-=)/g)) {
     windowProblems.push(`${relative(ROOT, f)} assigns window.${m[1]}`);
   }
 }
@@ -1239,13 +1241,13 @@ check(
   
   // 28. component boundary: dialog.js init() claims dialogs generically via a
   // :not(...) selector - every component that owns its own <dialog> (command,
-  // alert-dialog, sheet) must be excluded there, or dialog.js - loaded first on
+  // alert-dialog, sheet, window) must be excluded there, or dialog.js - loaded first on
   // every page - stamps data-init and the real owner's init() silently skips
   // the element (this exact bug disabled the docs search palette once).
   {
     const dialogSrc = readFileSync(join(COMPS, 'dialog', 'dialog.ts'), 'utf8');
     const claim = dialogSrc.match(/querySelectorAll\((['"])dialog:not\([\s\S]*?\1\)/);
-    const owned = ['alert-dialog', 'sheet', 'command'].filter(
+    const owned = ['alert-dialog', 'sheet', 'command', 'window'].filter(
       (c) => claim && !claim[0].includes(`not(.${c})`),
     );
     check(

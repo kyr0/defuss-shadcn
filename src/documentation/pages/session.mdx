@@ -1,0 +1,398 @@
+---
+title: "Session"
+description: "Session component - a whole chat session: a transcript that follows the newest message and lets go when you scroll up, a jump-to-latest button, history that loads without moving your place, anchored turns, streaming replies, turn tracking, drag and drop, and the auto-growing composer."
+slug: "session"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, DocLink, H2, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="session" title="Session" component="session">
+  A whole chat session, hosted and scrolled: a transcript (<code>role="log"</code>) of <DocLink href="message.html">messages</DocLink>, <DocLink href="bubble.html">bubbles</DocLink> and <DocLink href="marker.html">markers</DocLink> that follows the newest message while you are at the bottom and lets go the moment you scroll up, a button back to the latest, history that loads without moving your place, anchored turns, streaming replies, and files dropped anywhere on it - with the <DocLink href="textarea.html">Textarea</DocLink> page's auto-growing composer below. After shadcn's MessageScroller.
+</PageHeader>
+
+<SkillPanel component="session">
+  <SkillField label="Native basis">
+<SkillText>A focusable scroll region around a <code>role="log"</code> transcript - the keyboard scrolls it natively, new messages are announced; the runtime only decides where the scroll goes.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/log_role" title="new messages are announced"><code>role="log"</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollend_event" title="programmatic scrolling"><code>scrollend</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver" title="a streaming reply grows"><code>ResizeObserver</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow-anchor" title="the session keeps your place itself"><code>overflow-anchor</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/content-visibility" title="long threads stay cheap"><code>content-visibility</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API" title="files dropped on the transcript"><code>Drag and Drop API</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.session</code>
+    <code>.session-viewport</code>
+    <code>.session-content</code>
+    <code>.session-item</code>
+    <code>.session-scroll-button</code>
+    <code>.session-footer</code>
+    <code>.session-status</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-default-position</code> (<code>end</code>, <code>start</code>, <code>last-anchor</code>), <code>data-threshold</code>, <code>data-peek</code>, <code>data-anchor</code> (item), <code>data-message-id</code> (item), <code>data-track</code>, <code>data-drop</code> + <code>data-drop-accept</code> / <code>data-drop-label</code>, <code>data-animate</code>; set by the runtime: <code>data-stick</code>, <code>data-scrollable</code>, <code>data-autoscrolling</code>, <code>data-drop-active</code>; events <code>session-drop</code>, <code>session-visibility</code>; API <code>df$.shadcn.session</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Session" height="40" hint="A whole conversation: the transcript follows the newest message while you are at the bottom and lets go when you scroll up - the arrow brings you back. The composer is the Textarea page's .textarea-group with the same script: it grows, + attaches images, Enter sends. Drop images anywhere on the message window (data-drop) and they land in the composer; send, and Sofia types back."
+<section class="session" id="chat" aria-label="Chat with Sofia" data-drop data-drop-accept="image/*" data-drop-label="Drop images to attach" data-animate style="height:32rem;">
+  <div class="session-viewport" aria-label="Messages">
+    <div class="session-content">
+      <div class="session-item"><div class="marker" data-variant="separator"><span class="marker-content">Yesterday</span></div></div>
+      <div class="session-item" data-message-id="s1">
+        <div class="message"><div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"><span class="avatar-fallback">SD</span></span></div><div class="message-content"><div class="message-header"><span class="message-name">Sofia Davis</span><time class="message-time">17:02</time></div><div class="bubble" data-variant="secondary"><div class="bubble-content">Hey! Are we still on for the release review tomorrow?</div></div></div></div>
+      </div>
+      <div class="session-item" data-message-id="s2">
+        <div class="message" data-align="end"><div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/kyr0.png" alt="You"><span class="avatar-fallback">AH</span></span></div><div class="message-content"><div class="bubble"><div class="bubble-content">Yes - 10:00. I will bring the changelog.</div></div></div></div>
+      </div>
+      <div class="session-item" data-message-id="s3">
+        <div class="message"><div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"><span class="avatar-fallback">SD</span></span></div><div class="message-content"><div class="message-header"><span class="message-name">Sofia Davis</span><time class="message-time">17:04</time></div><div class="bubble" data-variant="secondary"><div class="bubble-content">Perfect. Can you also check the new chat components?</div></div></div></div>
+      </div>
+      <div class="session-item" data-message-id="s4">
+        <div class="message" data-align="end"><div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/kyr0.png" alt="You"><span class="avatar-fallback">AH</span></span></div><div class="message-content"><div class="bubble"><div class="bubble-content">Bubble, Marker and Message are in. Session is next.</div></div></div></div>
+      </div>
+      <div class="session-item"><div class="marker" data-variant="separator"><span class="marker-content">Today</span></div></div>
+      <div class="session-item" data-message-id="s5">
+        <div class="message"><div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"><span class="avatar-fallback">SD</span></span></div><div class="message-content"><div class="message-header"><span class="message-name">Sofia Davis</span><time class="message-time">09:12</time></div><div class="bubble" data-variant="secondary"><div class="bubble-content">Morning! How does the session scroll with a long thread?</div></div></div></div>
+      </div>
+      <div class="session-item" data-message-id="s6">
+        <div class="message" data-align="end"><div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/kyr0.png" alt="You"><span class="avatar-fallback">AH</span></span></div><div class="message-content"><div class="bubble"><div class="bubble-content">It follows the newest message while you are at the bottom - scroll up and it lets go.</div></div></div></div>
+      </div>
+      <div class="session-item" data-message-id="s7">
+        <div class="message"><div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"><span class="avatar-fallback">SD</span></span></div><div class="message-content"><div class="message-header"><span class="message-name">Sofia Davis</span><time class="message-time">09:13</time></div><div class="bubble" data-variant="secondary"><div class="bubble-content">And the arrow button brings me back?</div></div></div></div>
+      </div>
+      <div class="session-item" data-message-id="s8">
+        <div class="message" data-align="end"><div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/kyr0.png" alt="You"><span class="avatar-fallback">AH</span></span></div><div class="message-content"><div class="bubble"><div class="bubble-content">Exactly. Try it - and drop an image anywhere on this window.</div></div></div></div>
+      </div>
+    </div>
+    <button type="button" class="session-scroll-button" data-to="end" aria-label="Scroll to the latest message"></button>
+  </div>
+  <div class="session-footer">
+    <form class="textarea-group" data-layout="inline" id="chat-composer" aria-label="Message composer">
+      <ul class="file-drop-list" aria-label="Attachments"></ul>
+      <div class="textarea-group-actions">
+        <button class="btn" data-variant="ghost" data-size="icon-sm" type="button" data-attach aria-label="Attach images"><i data-lucide="plus"></i></button>
+        <input type="file" accept="image/*" multiple hidden data-files>
+      </div>
+      <textarea class="textarea" data-rows="1" data-max-rows="5" name="message" placeholder="Message - Enter sends, Shift+Enter adds a line" aria-label="Message"></textarea>
+      <div class="textarea-group-actions">
+        <button class="btn" data-size="icon-sm" type="submit" data-send aria-label="Send" disabled><i data-lucide="arrow-up"></i></button>
+      </div>
+    </form>
+  </div>
+</section>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const chat = df$('#chat').get(0);
+    const session = df$.shadcn.session;
+    const bubbleRow = (me, inner) => `<div class="message"${me ? ' data-align="end"' : ''}><div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/${me ? 'kyr0' : 'evilrabbit'}.png" alt="${me ? 'You' : 'Sofia Davis'}"><span class="avatar-fallback">${me ? 'AH' : 'SD'}</span></span></div><div class="message-content">${inner}</div></div>`;
+    const form = df$('#chat-composer').get(0);
+    const text = df$(form).find('.textarea').get(0);
+    const list = df$(form).find('.file-drop-list');
+    const picker = df$(form).find('[data-files]').get(0);
+    const files = []; // { id, file, url }
+    const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+
+    // send is live only when there is something to send
+    const sync = () => df$(form).find('[data-send]').prop('disabled', !text.value.trim() && !files.length);
+    // attachment chips: the file-input's own .file-drop-item markup, keyed by id
+    const render = () => list.morph(files.map((a) => `
+      <li class="file-drop-item" id="${a.id}">
+        <span class="file-drop-thumb" aria-hidden="true"><img src="${a.url}" alt=""></span>
+        <div class="file-drop-name">${esc(a.file.name)}<span class="file-drop-meta">${Math.ceil(a.file.size / 1024)} KB</span></div>
+        <button type="button" class="file-drop-remove" data-remove="${a.id}" aria-label="Remove ${esc(a.file.name)}">✕</button>
+      </li>`).join(''));
+    const add = (fileList) => {
+      for (const file of fileList) {
+        if (!file.type.startsWith('image/')) continue; // images only
+        files.push({ id: `att-${crypto.randomUUID()}`, file, url: URL.createObjectURL(file) });
+      }
+      render(); sync();
+    };
+
+    df$(text).on('input', sync);
+    // Enter sends, Shift+Enter is a new line (never mid-IME composition)
+    df$(text).on('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); form.requestSubmit(); }
+    });
+    // + opens the native picker
+    df$(form).find('[data-attach]').on('click', () => picker.click());
+    df$(picker).on('change', () => { add(picker.files); picker.value = ''; });
+    df$(list).on('click', (e) => {
+      const id = e.target.closest('[data-remove]')?.dataset.remove;
+      const i = files.findIndex((a) => a.id === id);
+      if (i < 0) return;
+      URL.revokeObjectURL(files[i].url);
+      files.splice(i, 1); render(); sync();
+    });
+    // files dropped on the whole message window join the composer (data-drop)
+    df$(chat).on('session-drop', (e) => add(e.detail.files));
+
+    df$(form).on('submit', (e) => {
+      e.preventDefault();
+      if (!text.value.trim() && !files.length) return;
+      // your message - text and images - at the end of the thread
+      const images = files.map((a) => `<div class="bubble"><div class="bubble-content" data-media style="max-width:14rem;"><img src="${a.url}" alt="${esc(a.file.name)}"></div></div>`).join('');
+      const words = text.value.trim() ? `<div class="bubble"><div class="bubble-content">${esc(text.value.trim()).replace(/\n/g, '<br>')}</div></div>` : '';
+      session.scrollToEnd(chat);
+      session.append(chat, bubbleRow(true, images + words), { id: `me-${Date.now()}` });
+      // Sofia types, then answers
+      const typing = session.append(chat, bubbleRow(false, '<div class="bubble" data-variant="secondary" data-tail><div class="bubble-content" role="status" aria-label="Sofia is typing"><span class="bubble-typing" aria-hidden="true"><span></span><span></span><span></span></span></div></div>'));
+      setTimeout(() => {
+        df$(typing).remove();
+        session.append(chat, bubbleRow(false, `<div class="bubble" data-variant="secondary"><div class="bubble-content">${images ? 'Nice picture! 📸' : 'Got it 👍'}</div></div>`), { id: `sofia-${Date.now()}` });
+      }, 1400);
+      files.splice(0); // the sent message keeps the image URLs
+      df$(text).val('');
+      render(); sync();
+      text.focus();
+    });
+  });
+</script>
+```
+
+```html example label="Assistant: anchored turns and streaming" schema="none" height="36" hint="Ask something: your question is a data-anchor turn - it settles near the top with a peek at the previous answer, instead of the window jumping to the very end - and the reply streams in word by word under the streaming state (aria-busy on the log, following the text while you are at the bottom)."
+<section class="session" id="assistant" aria-label="Assistant" data-default-position="last-anchor" style="height:28rem;">
+  <div class="session-viewport" aria-label="Conversation">
+    <div class="session-content">
+      <div class="session-item" data-message-id="a1" data-anchor><div class="message" data-align="end" data-avatar="none"><div class="message-content"><div class="bubble"><div class="bubble-content">What makes a session different from a plain message list?</div></div></div></div></div>
+      <div class="session-item" data-message-id="a1-r"><div class="message" data-avatar="none"><div class="message-content"><div class="bubble" data-variant="ghost"><div class="bubble-content">It scrolls like a chat: it follows new messages while you are at the bottom, lets go when you read history, and keeps your place when older messages load.</div></div></div></div></div>
+      <div class="session-item" data-message-id="a2" data-anchor><div class="message" data-align="end" data-avatar="none"><div class="message-content"><div class="bubble"><div class="bubble-content">What does data-anchor do?</div></div></div></div></div>
+      <div class="session-item" data-message-id="a2-r"><div class="message" data-avatar="none"><div class="message-content"><div class="bubble" data-variant="ghost"><div class="bubble-content">A turn marked data-anchor settles near the top of the window when it arrives, with a peek at the previous message - the answer then has the whole window to grow into.</div></div></div></div></div>
+      <div class="session-item" data-message-id="a3" data-anchor><div class="message" data-align="end" data-avatar="none"><div class="message-content"><div class="bubble"><div class="bubble-content">And while a reply streams?</div></div></div></div></div>
+      <div class="session-item" data-message-id="a3-r"><div class="message" data-avatar="none"><div class="message-content"><div class="bubble" data-variant="ghost"><div class="bubble-content">The streaming state sets aria-busy on the log, so a screen reader announces the reply once it is complete, and the window follows the growing text while you are at the end.</div></div></div></div></div>
+    </div>
+    <button type="button" class="session-scroll-button" data-to="end" aria-label="Scroll to the latest message"></button>
+  </div>
+  <div class="session-footer">
+    <form class="textarea-group" data-layout="inline" id="ask" aria-label="Ask">
+      <textarea class="textarea" data-rows="1" data-max-rows="4" placeholder="Ask anything" aria-label="Question">How long can a thread get?</textarea>
+      <div class="textarea-group-actions">
+        <button class="btn" data-size="icon-sm" type="submit" aria-label="Send"><i data-lucide="arrow-up"></i></button>
+      </div>
+    </form>
+  </div>
+</section>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const chat = df$('#assistant').get(0);
+    const session = df$.shadcn.session;
+    const answer = 'Content-visibility keeps rows that are off screen out of rendering, so hundreds to a few thousand turns stay smooth. Beyond that, virtualize the transcript - the virtual-list component does exactly that - and keep the session for the scrolling behaviour.';
+    const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+    df$('#ask').on('submit', (e) => {
+      e.preventDefault();
+      const q = df$('#ask .textarea').val().trim();
+      if (!q) return;
+      df$('#ask .textarea').val('');
+      const id = `q-${Date.now()}`;
+      // the question anchors near the top
+      session.append(chat, `<div class="message" data-align="end" data-avatar="none"><div class="message-content"><div class="bubble"><div class="bubble-content">${esc(q)}</div></div></div></div>`, { id, anchor: true });
+      const reply = session.append(chat, '<div class="message" data-avatar="none"><div class="message-content"><div class="bubble" data-variant="ghost"><div class="bubble-content"></div></div></div></div>', { id: `${id}-r` });
+      const out = df$(reply).find('.bubble-content');
+      chat.api.setState('streaming');
+      const words = answer.split(' ');
+      let n = 0;
+      const tick = setInterval(() => {
+        out.text(words.slice(0, ++n).join(' '));
+        if (n >= words.length) { clearInterval(tick); chat.api.setState(session.isAtEnd(chat) ? 'default' : 'detached'); }
+      }, 90);
+    });
+  });
+</script>
+```
+
+```html example label="Load older messages" schema="none" height="30" hint="History arrives above: df$.shadcn.session.prepend() adds older rows and shifts the scroll by exactly their height, so the message you were reading does not move. The session owns this (overflow-anchor: none) - the browser's own anchoring would correct twice."
+<div class="flex flex-col gap-2">
+  <div class="flex items-center gap-2">
+    <button class="btn" data-variant="outline" data-size="sm" type="button" id="load"><i data-lucide="history"></i> Load 5 older</button>
+    <output class="text-sm text-muted-foreground" id="load-out">Messages 21-30</output>
+  </div>
+  <section class="session" id="history" aria-label="Team channel" style="height:20rem;">
+    <div class="session-viewport" aria-label="Messages">
+      <div class="session-content">
+        <div class="session-item" data-message-id="h21">
+          <div class="message"><div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"><span class="avatar-fallback">SD</span></span></div><div class="message-content"><div class="message-header"><span class="message-name">Sofia Davis</span><time class="message-time">10:21</time></div><div class="bubble" data-variant="secondary"><div class="bubble-content">Message #21 - status update</div></div></div></div>
+        </div>
+        <div class="session-item" data-message-id="h22">
+          <div class="message" data-align="end"><div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/kyr0.png" alt="You"><span class="avatar-fallback">AH</span></span></div><div class="message-content"><div class="bubble"><div class="bubble-content">Message #22 - reply</div></div></div></div>
+        </div>
+        <div class="session-item" data-message-id="h23">
+          <div class="message"><div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"><span class="avatar-fallback">SD</span></span></div><div class="message-content"><div class="message-header"><span class="message-name">Sofia Davis</span><time class="message-time">10:23</time></div><div class="bubble" data-variant="secondary"><div class="bubble-content">Message #23 - status update</div></div></div></div>
+        </div>
+        <div class="session-item" data-message-id="h24">
+          <div class="message" data-align="end"><div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/kyr0.png" alt="You"><span class="avatar-fallback">AH</span></span></div><div class="message-content"><div class="bubble"><div class="bubble-content">Message #24 - reply</div></div></div></div>
+        </div>
+        <div class="session-item" data-message-id="h25">
+          <div class="message"><div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"><span class="avatar-fallback">SD</span></span></div><div class="message-content"><div class="message-header"><span class="message-name">Sofia Davis</span><time class="message-time">10:25</time></div><div class="bubble" data-variant="secondary"><div class="bubble-content">Message #25 - status update</div></div></div></div>
+        </div>
+        <div class="session-item" data-message-id="h26">
+          <div class="message" data-align="end"><div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/kyr0.png" alt="You"><span class="avatar-fallback">AH</span></span></div><div class="message-content"><div class="bubble"><div class="bubble-content">Message #26 - reply</div></div></div></div>
+        </div>
+        <div class="session-item" data-message-id="h27">
+          <div class="message"><div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"><span class="avatar-fallback">SD</span></span></div><div class="message-content"><div class="message-header"><span class="message-name">Sofia Davis</span><time class="message-time">10:27</time></div><div class="bubble" data-variant="secondary"><div class="bubble-content">Message #27 - status update</div></div></div></div>
+        </div>
+        <div class="session-item" data-message-id="h28">
+          <div class="message" data-align="end"><div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/kyr0.png" alt="You"><span class="avatar-fallback">AH</span></span></div><div class="message-content"><div class="bubble"><div class="bubble-content">Message #28 - reply</div></div></div></div>
+        </div>
+        <div class="session-item" data-message-id="h29">
+          <div class="message"><div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"><span class="avatar-fallback">SD</span></span></div><div class="message-content"><div class="message-header"><span class="message-name">Sofia Davis</span><time class="message-time">10:29</time></div><div class="bubble" data-variant="secondary"><div class="bubble-content">Message #29 - status update</div></div></div></div>
+        </div>
+        <div class="session-item" data-message-id="h30">
+          <div class="message" data-align="end"><div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/kyr0.png" alt="You"><span class="avatar-fallback">AH</span></span></div><div class="message-content"><div class="bubble"><div class="bubble-content">Message #30 - reply</div></div></div></div>
+        </div>
+      </div>
+      <button type="button" class="session-scroll-button" data-to="end" aria-label="Scroll to the latest message"></button>
+    </div>
+  </section>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const chat = df$('#history').get(0);
+    let first = 21;
+    df$('#load').on('click', () => {
+      if (first <= 1) return;
+      const from = Math.max(1, first - 5);
+      const rows = [];
+      for (let n = from; n < first; n++) {
+        rows.push(`<div class="message"${n % 2 === 0 ? ' data-align="end"' : ''}><div class="message-content"><div class="bubble"${n % 2 === 0 ? '' : ' data-variant="secondary"'}><div class="bubble-content">Message #${n} - older</div></div></div></div>`);
+      }
+      df$.shadcn.session.prepend(chat, rows.map((html, k) => `<div class="session-item" data-message-id="h${from + k}">${html}</div>`));
+      first = from;
+      df$('#load-out').text(`Messages ${first}-30`);
+      if (first <= 1) df$('#load').prop('disabled', true);
+    });
+  });
+</script>
+```
+
+```html example label="Jump to a turn" schema="none" height="32" hint="data-track reports the current turn (the last anchored question in the upper third) and the visible rows as session-visibility - the outline highlights it as you scroll. Click a question: scrollToMessage() anchors it with the peek. The session opens at the last anchored turn (data-default-position='last-anchor')."
+<div class="flex gap-3" style="height:24rem;">
+  <nav aria-label="Questions" style="width:13rem; flex:none;">
+    <ol class="text-sm m-0 ps-4 flex flex-col gap-2" id="outline">
+      <li><a href="#o1" data-jump="o1">How do I install it?</a></li>
+      <li><a href="#o2" data-jump="o2">Can I theme it?</a></li>
+      <li><a href="#o3" data-jump="o3">Does it work without JavaScript?</a></li>
+      <li><a href="#o4" data-jump="o4">How do agents use it?</a></li>
+      <li><a href="#o5" data-jump="o5">What checks the whole thing?</a></li>
+    </ol>
+  </nav>
+  <section class="session" id="faq" aria-label="FAQ chat" data-track data-default-position="last-anchor" style="flex:1; min-width:0;">
+    <div class="session-viewport" aria-label="Conversation">
+      <div class="session-content">
+        <div class="session-item" data-message-id="o1" data-anchor><div class="message" data-align="end" data-avatar="none"><div class="message-content"><div class="bubble"><div class="bubble-content">How do I install it?</div></div></div></div></div>
+        <div class="session-item" data-message-id="o1-r"><div class="message" data-avatar="none"><div class="message-content"><div class="bubble" data-variant="ghost"><div class="bubble-content">Add core.css and all.js from the CDN, or npm install defuss-shadcn and import them - the Installation guide shows both.</div></div></div></div></div>
+        <div class="session-item" data-message-id="o2" data-anchor><div class="message" data-align="end" data-avatar="none"><div class="message-content"><div class="bubble"><div class="bubble-content">Can I theme it?</div></div></div></div></div>
+        <div class="session-item" data-message-id="o2-r"><div class="message" data-avatar="none"><div class="message-content"><div class="bubble" data-variant="ghost"><div class="bubble-content">Load one of the 43 tweakcn presets after the token file, or override single tokens - every component follows.</div></div></div></div></div>
+        <div class="session-item" data-message-id="o3" data-anchor><div class="message" data-align="end" data-avatar="none"><div class="message-content"><div class="bubble"><div class="bubble-content">Does it work without JavaScript?</div></div></div></div></div>
+        <div class="session-item" data-message-id="o3-r"><div class="message" data-avatar="none"><div class="message-content"><div class="bubble" data-variant="ghost"><div class="bubble-content">Most components are CSS only; the interactive ones enhance native elements, so the basics keep working.</div></div></div></div></div>
+        <div class="session-item" data-message-id="o4" data-anchor><div class="message" data-align="end" data-avatar="none"><div class="message-content"><div class="bubble"><div class="bubble-content">How do agents use it?</div></div></div></div></div>
+        <div class="session-item" data-message-id="o4-r"><div class="message" data-avatar="none"><div class="message-content"><div class="bubble" data-variant="ghost"><div class="bubble-content">Every component ships a skill: the HTML structure, its states and their names - the agent reads it and writes the markup.</div></div></div></div></div>
+        <div class="session-item" data-message-id="o5" data-anchor><div class="message" data-align="end" data-avatar="none"><div class="message-content"><div class="bubble"><div class="bubble-content">What checks the whole thing?</div></div></div></div></div>
+        <div class="session-item" data-message-id="o5-r"><div class="message" data-avatar="none"><div class="message-content"><div class="bubble" data-variant="ghost"><div class="bubble-content">The verifier: every build must pass it - screenshots, e2e tests, docs parity, the lot.</div></div></div></div></div>
+      </div>
+      <button type="button" class="session-scroll-button" data-to="end" aria-label="Scroll to the latest message"></button>
+    </div>
+  </section>
+</div>
+<style>
+  #outline a { color: var(--muted-foreground); text-decoration: none; }
+  #outline a[aria-current] { color: var(--foreground); font-weight: 600; }
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const chat = df$('#faq').get(0);
+    df$(chat).on('session-visibility', (e) => {
+      df$('#outline a').attr('aria-current', null);
+      df$(`#outline a[data-jump="${e.detail.currentAnchorId}"]`).attr('aria-current', 'true');
+    });
+    df$('#outline a').on('click', function (e) {
+      e.preventDefault();
+      df$.shadcn.session.scrollToMessage(chat, this.dataset.jump);
+    });
+  });
+</script>
+```
+
+```html example label="Scroll status" schema="none" height="28" hint="Opened at the start (data-default-position='start'): the up button appears once there is something above, the down button while there is something below - each inert when there is nothing in its direction. The status line reads the state and data-scrollable."
+<section class="session" id="status-chat" aria-label="Release notes" data-default-position="start" style="height:18rem;">
+  <div class="session-viewport" aria-label="Notes">
+    <button type="button" class="session-scroll-button" data-to="start" aria-label="Scroll to the first message"></button>
+    <div class="session-content">
+      <div class="session-item" data-message-id="n1">
+        <div class="message"><div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"><span class="avatar-fallback">SD</span></span></div><div class="message-content"><div class="message-header"><span class="message-name">Sofia Davis</span><time class="message-time">00:00</time></div><div class="bubble" data-variant="secondary"><div class="bubble-content">Release note 1: search box</div></div></div></div>
+      </div>
+      <div class="session-item" data-message-id="n2">
+        <div class="message"><div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"><span class="avatar-fallback">SD</span></span></div><div class="message-content"><div class="message-header"><span class="message-name">Sofia Davis</span><time class="message-time">01:00</time></div><div class="bubble" data-variant="secondary"><div class="bubble-content">Release note 2: filter chips</div></div></div></div>
+      </div>
+      <div class="session-item" data-message-id="n3">
+        <div class="message"><div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"><span class="avatar-fallback">SD</span></span></div><div class="message-content"><div class="message-header"><span class="message-name">Sofia Davis</span><time class="message-time">02:00</time></div><div class="bubble" data-variant="secondary"><div class="bubble-content">Release note 3: typewriter</div></div></div></div>
+      </div>
+      <div class="session-item" data-message-id="n4">
+        <div class="message"><div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"><span class="avatar-fallback">SD</span></span></div><div class="message-content"><div class="message-header"><span class="message-name">Sofia Davis</span><time class="message-time">03:00</time></div><div class="bubble" data-variant="secondary"><div class="bubble-content">Release note 4: code diffs</div></div></div></div>
+      </div>
+      <div class="session-item" data-message-id="n5">
+        <div class="message"><div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"><span class="avatar-fallback">SD</span></span></div><div class="message-content"><div class="message-header"><span class="message-name">Sofia Davis</span><time class="message-time">04:00</time></div><div class="bubble" data-variant="secondary"><div class="bubble-content">Release note 5: windows</div></div></div></div>
+      </div>
+      <div class="session-item" data-message-id="n6">
+        <div class="message"><div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"><span class="avatar-fallback">SD</span></span></div><div class="message-content"><div class="message-header"><span class="message-name">Sofia Davis</span><time class="message-time">05:00</time></div><div class="bubble" data-variant="secondary"><div class="bubble-content">Release note 6: composer</div></div></div></div>
+      </div>
+      <div class="session-item" data-message-id="n7">
+        <div class="message"><div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"><span class="avatar-fallback">SD</span></span></div><div class="message-content"><div class="message-header"><span class="message-name">Sofia Davis</span><time class="message-time">06:00</time></div><div class="bubble" data-variant="secondary"><div class="bubble-content">Release note 7: session</div></div></div></div>
+      </div>
+      <div class="session-item" data-message-id="n8">
+        <div class="message"><div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"><span class="avatar-fallback">SD</span></span></div><div class="message-content"><div class="message-header"><span class="message-name">Sofia Davis</span><time class="message-time">07:00</time></div><div class="bubble" data-variant="secondary"><div class="bubble-content">Release note 8: drag and drop</div></div></div></div>
+      </div>
+      <div class="session-item" data-message-id="n9">
+        <div class="message"><div class="message-avatar"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"><span class="avatar-fallback">SD</span></span></div><div class="message-content"><div class="message-header"><span class="message-name">Sofia Davis</span><time class="message-time">08:00</time></div><div class="bubble" data-variant="secondary"><div class="bubble-content">Release note 9: row limits</div></div></div></div>
+      </div>
+    </div>
+    <button type="button" class="session-scroll-button" data-to="end" aria-label="Scroll to the latest message"></button>
+  </div>
+  <output class="session-status" id="status-line">default</output>
+</section>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const chat = df$('#status-chat').get(0);
+    const show = () => df$('#status-line').text(`${chat.api.getState().name} · more ${chat.dataset.scrollable || 'nowhere'}`);
+    df$(chat).find('.session-viewport').on('scroll', show);
+    setTimeout(show, 100);
+  });
+</script>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per session through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - following the live edge: new messages scroll into view</li>
+    <li><code>detached</code> - not following: the reader scrolled away or a turn anchored; <code>\{ to: 'start' | messageId \}</code> scrolls there</li>
+    <li><code>streaming</code> - a reply is being written: <code>aria-busy</code> on the log, the transcript follows it at the end</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/session-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a href="../schemas/session.schema.json"><code>session.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `detached` | `boolean` | `true`, `false` | `false` | Not following the live edge - the reader scrolled away or a turn anchored. |
+| `streaming` | `boolean` | `true`, `false` | `false` | A reply is being written: `aria-busy` on the log, following at the end. |
+```
+
+</StatesSection>
+
+<SourceFiles component="session" section="css" />
+
+<SourceFiles component="session" section="js" jsTitle="JS" />
+
+</DocPage>

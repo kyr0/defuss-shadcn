@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session e2e fixture</title>
+  <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css">
+  <link rel="stylesheet" href="/dist/components/message/message.css">
+  <link rel="stylesheet" href="/dist/components/bubble/bubble.css">
+  <link rel="stylesheet" href="/dist/components/textarea/textarea.css">
+  <link rel="stylesheet" href="/dist/components/session/session.css">
+  <style>
+    /* spacing only - never properties the checks assert */
+    body { font-family: system-ui, sans-serif; padding: 1rem; margin: 0; }
+    .session { width: 420px; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+  <!-- mirrors the doc page: a session that opens at the end with both scroll
+       buttons and a composer footer, opening at the start, at the last
+       anchor, tracking, a drop target, a status line -->
+  <section class="session" id="s1" aria-label="Main" data-animate style="height:300px;">
+    <div class="session-viewport">
+      <button type="button" class="session-scroll-button" data-to="start" id="s1-start" aria-label="Scroll to the first message"></button>
+      <div class="session-content" id="s1-content">
+        <div class="session-item" data-message-id="a1"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">a message 1</div></div></div></div></div>
+        <div class="session-item" data-message-id="a2"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">a message 2</div></div></div></div></div>
+        <div class="session-item" data-message-id="a3"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">a message 3</div></div></div></div></div>
+        <div class="session-item" data-message-id="a4"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">a message 4</div></div></div></div></div>
+        <div class="session-item" data-message-id="a5"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">a message 5</div></div></div></div></div>
+        <div class="session-item" data-message-id="a6"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">a message 6</div></div></div></div></div>
+        <div class="session-item" data-message-id="a7"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">a message 7</div></div></div></div></div>
+        <div class="session-item" data-message-id="a8"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">a message 8</div></div></div></div></div>
+        <div class="session-item" data-message-id="a9"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">a message 9</div></div></div></div></div>
+        <div class="session-item" data-message-id="a10"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">a message 10</div></div></div></div></div>
+        <div class="session-item" data-message-id="a11"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">a message 11</div></div></div></div></div>
+        <div class="session-item" data-message-id="a12"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">a message 12</div></div></div></div></div>
+        <div class="session-item" data-message-id="a13"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">a message 13</div></div></div></div></div>
+        <div class="session-item" data-message-id="a14"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">a message 14</div></div></div></div></div>
+        <div class="session-item" data-message-id="a15"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">a message 15</div></div></div></div></div>
+        <div class="session-item" data-message-id="a16"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">a message 16</div></div></div></div></div>
+        <div class="session-item" data-message-id="a17"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">a message 17</div></div></div></div></div>
+        <div class="session-item" data-message-id="a18"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">a message 18</div></div></div></div></div>
+        <div class="session-item" data-message-id="a19"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">a message 19</div></div></div></div></div>
+        <div class="session-item" data-message-id="a20"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">a message 20</div></div></div></div></div>
+      </div>
+      <button type="button" class="session-scroll-button" data-to="end" id="s1-end" aria-label="Scroll to the latest message"></button>
+    </div>
+    <div class="session-footer">
+      <form class="textarea-group" data-layout="inline" aria-label="Composer"><textarea class="textarea" data-rows="1" aria-label="Message"></textarea></form>
+    </div>
+  </section>
+  <section class="session" id="s2" aria-label="Start" data-default-position="start" style="height:200px;">
+    <div class="session-viewport"><div class="session-content">
+        <div class="session-item" data-message-id="b1"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">b message 1</div></div></div></div></div>
+        <div class="session-item" data-message-id="b2"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">b message 2</div></div></div></div></div>
+        <div class="session-item" data-message-id="b3"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">b message 3</div></div></div></div></div>
+        <div class="session-item" data-message-id="b4"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">b message 4</div></div></div></div></div>
+        <div class="session-item" data-message-id="b5"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">b message 5</div></div></div></div></div>
+        <div class="session-item" data-message-id="b6"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">b message 6</div></div></div></div></div>
+        <div class="session-item" data-message-id="b7"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">b message 7</div></div></div></div></div>
+        <div class="session-item" data-message-id="b8"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">b message 8</div></div></div></div></div>
+        <div class="session-item" data-message-id="b9"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">b message 9</div></div></div></div></div>
+        <div class="session-item" data-message-id="b10"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">b message 10</div></div></div></div></div>
+        <div class="session-item" data-message-id="b11"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">b message 11</div></div></div></div></div>
+        <div class="session-item" data-message-id="b12"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">b message 12</div></div></div></div></div>
+    </div></div>
+    <output class="session-status" id="s2-status">status</output>
+  </section>
+  <section class="session" id="s3" aria-label="Anchors" data-default-position="last-anchor" data-track style="height:200px;">
+    <div class="session-viewport"><div class="session-content">
+        <div class="session-item" data-message-id="c1" data-anchor><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">c message 1</div></div></div></div></div>
+        <div class="session-item" data-message-id="c2"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">c message 2</div></div></div></div></div>
+        <div class="session-item" data-message-id="c3"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">c message 3</div></div></div></div></div>
+        <div class="session-item" data-message-id="c4" data-anchor><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">c message 4</div></div></div></div></div>
+        <div class="session-item" data-message-id="c5"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">c message 5</div></div></div></div></div>
+        <div class="session-item" data-message-id="c6"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">c message 6</div></div></div></div></div>
+        <div class="session-item" data-message-id="c7" data-anchor><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">c message 7</div></div></div></div></div>
+        <div class="session-item" data-message-id="c8"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">c message 8</div></div></div></div></div>
+        <div class="session-item" data-message-id="c9"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">c message 9</div></div></div></div></div>
+        <div class="session-item" data-message-id="c10" data-anchor><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">c message 10</div></div></div></div></div>
+        <div class="session-item" data-message-id="c11"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">c message 11</div></div></div></div></div>
+        <div class="session-item" data-message-id="c12"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">c message 12</div></div></div></div></div>
+        <div class="session-item" data-message-id="c13" data-anchor><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">c message 13</div></div></div></div></div>
+        <div class="session-item" data-message-id="c14"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">c message 14</div></div></div></div></div>
+        <div class="session-item" data-message-id="c15"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">c message 15</div></div></div></div></div>
+        <div class="session-item" data-message-id="c16" data-anchor><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">c message 16</div></div></div></div></div>
+        <div class="session-item" data-message-id="c17"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">c message 17</div></div></div></div></div>
+        <div class="session-item" data-message-id="c18"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">c message 18</div></div></div></div></div>
+    </div></div>
+  </section>
+  <section class="session" id="s4" aria-label="Drop" data-drop data-drop-accept="image/*" data-drop-label="Drop images" style="height:160px;">
+    <div class="session-viewport"><div class="session-content">
+        <div class="session-item" data-message-id="d1"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">d message 1</div></div></div></div></div>
+        <div class="session-item" data-message-id="d2"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">d message 2</div></div></div></div></div>
+        <div class="session-item" data-message-id="d3"><div class="message"><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content">d message 3</div></div></div></div></div>
+    </div></div>
+  </section>
+
+  <script type="module" src="/dist/components/core.js"></script>
+  <script type="module" src="/dist/components/session/session.js"></script>
+</body>
+</html>

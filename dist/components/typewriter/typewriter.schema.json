@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "name": "typewriter",
+  "states": {
+    "index": {
+      "type": "number",
+      "default": 0,
+      "target": {
+        "kind": "selector",
+        "selector": ".typewriter"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "default",
+        "args": {
+          "index": "@value"
+        }
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-index"
+      },
+      "editor": {
+        "component": "number"
+      }
+    },
+    "paused": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".typewriter"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "paused"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "done": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".typewriter"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "done"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

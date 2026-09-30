@@ -114,12 +114,12 @@
     }
 
     /* -- Disabled group ----------------------------------------- */
+    /* the runtime ignores clicks in a disabled group; the cursor says so */
     &[data-disabled] {
-      pointer-events: none;
-
       & > .toggle {
-        pointer-events: none;
         opacity: 0.5;
+        cursor: not-allowed;
+        &:hover { background-color: transparent; color: inherit; }
       }
     }
   }

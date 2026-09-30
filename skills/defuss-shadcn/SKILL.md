@@ -9,7 +9,7 @@ description: Build UI prototypes and pages with defuss-shadcn - shadcn-style com
 
 # defuss-shadcn 0.9.2 - Agent Skill
 
-96 components (52 CSS-only, 44 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
+101 components (52 CSS-only, 49 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
 
 ## 0. Quick start - do exactly this, in this order
 
@@ -178,7 +178,7 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
 ### Presentations
 
 - [Deck Gallery](../../src/documentation/pages/presentations.mdx) - 33 presentation decks - the flagship System in Numbers plus 32 ECharts design studies, each a 12-slide English deck on its own topic with its own numbers, animated slide transitions and one morphing chart per deck.
-  - [The System in Numbers](../../src/documentation/pages/system-in-numbers.mdx) - defuss-shadcn presents itself - the flagship 10-slide deck with the system's real numbers (96 components, 54% CSS-only, 168.1 KiB min+gz): glyph cover, unit dots, gauge, tanks, chart staircase, taxonomy donut, stopwatch, branching route.
+  - [The System in Numbers](../../src/documentation/pages/system-in-numbers.mdx) - defuss-shadcn presents itself - the flagship 10-slide deck with the system's real numbers (101 components, 51% CSS-only, 187.0 KiB min+gz): glyph cover, unit dots, gauge, tanks, chart staircase, taxonomy donut, stopwatch, branching route.
   - [Editorial Highlight Bars](../../src/documentation/pages/editorial-highlight-bars.mdx) - Swiss International design language presenting a region’s commuting shift as a 10-slide deck - one highlighted bar, recolored, re-ranked by volume and folded into a mode-share donut on a single morphing chart.
   - [Lollipop Ranking](../../src/documentation/pages/lollipop-ranking.mdx) - Bauhaus Primary Poster design language presenting caffeine by brew method as a 10-slide deck - lollipops that re-rank per 100 ml, burst into a bubble scatter and settle into columns on one morphing chart.
   - [Dumbbell Before/After](../../src/documentation/pages/dumbbell-before-after.mdx) - Financial Broadsheet design language presenting a city’s rent rise 2019–2025 as a 12-slide deck - dumbbells that re-sort by growth, collapse into change bars and split into rent-burden columns on one morphing chart.
@@ -243,6 +243,12 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **Why:** One line at a time from a short list, rolling on an infinite CSS loop - a one-line window (1lh) and keyframes picked by the line count (:has()); no JavaScript, pauses on hover, readable by assistive tech as the full list.
 - **When:** A headline or sentence whose key word cycles ("Build faster / safer / together"), rotating taglines, a live-looking status word. For content the user must read at their own pace use a carousel or a list; for a number that counts use countdown.
 - **States:** `default` · **Skill:** [references/components/text-rotate.md](references/components/text-rotate.md) · **Examples:** [src/documentation/pages/text-rotate.mdx](../../src/documentation/pages/text-rotate.mdx)
+
+#### Typewriter · ATM · JS
+
+- **Why:** The strings are authored as elements - readable without script and read once, in full, by assistive tech - while the runtime types an aria-hidden copy behind a CSS cursor that is solid while typing and blinks idle.
+- **When:** A headline or hero line that types itself - cycling taglines ("Build design systems / prototypes / dashboards"), a terminal-style intro, a line that types once when it scrolls into view. For a word that rolls without typing use text-rotate; for a count use countdown.
+- **States:** `default`, `paused`, `done` · **Skill:** [references/components/typewriter.md](references/components/typewriter.md) · **Examples:** [src/documentation/pages/typewriter.mdx](../../src/documentation/pages/typewriter.mdx)
 
 #### Separator · ATM · CSS
 
@@ -334,8 +340,8 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 #### Textarea · ATM · CSS
 
-- **Why:** Native textarea with field-sizing: content - auto-grows with zero JavaScript.
-- **When:** Multi-line text input.
+- **Why:** Native textarea with field-sizing: content - auto-grows with zero JavaScript, between row limits in lh; a .textarea-group turns it into a composer frame.
+- **When:** Multi-line text input - notes, bios, comments; a chat or comment composer with attachments and a send button (.textarea-group). Single-line values take input.
 - **States:** `default` · **Skill:** [references/components/textarea.md](references/components/textarea.md) · **Examples:** [src/documentation/pages/textarea.mdx](../../src/documentation/pages/textarea.mdx)
 
 #### Checkbox · ATM · CSS
@@ -403,6 +409,12 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **Why:** Text input filtering an anchored list with the aria-activedescendant keyboard model.
 - **When:** Choosing from a long list the user narrows by typing - states, tags, users; data-multiple picks SEVERAL (tags, countries you ship to, people to invite, filter categories) with checkboxes + removable tags. For one value from a short list use select; for a handful of options checkboxes.
 - **States:** `default`, `open` · **Skill:** [references/components/combobox.md](references/components/combobox.md) · **Examples:** [src/documentation/pages/combobox.mdx](../../src/documentation/pages/combobox.mdx)
+
+#### Search & Filter · ATM · JS
+
+- **Why:** A native type="search" field and native radios / checkboxes - the value, the form submission, the radio group's arrow keys and the reset button stay the browser's; CSS draws the chips and hides the unchosen ones, JS only clears the box.
+- **When:** Narrowing a list - a search box with a clear (×) button for free text, filter chips for categories (one with radios, several with checkboxes). Use combobox when the text picks one item from suggestions, command for a command palette.
+- **States:** `default`, `filled`, `searching` · **Skill:** [references/components/search-filter.md](references/components/search-filter.md) · **Examples:** [src/documentation/pages/search-filter.mdx](../../src/documentation/pages/search-filter.mdx)
 
 #### Form · MOL · CSS
 
@@ -706,6 +718,18 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **When:** When a demo surface, canvas, or panel must be user-resizable on more than the native CSS `resize` corner - or when the size should stay expressed as w-/h- classes instead of inline px.
 - **States:** `default` · **Skill:** [references/components/resizer.md](references/components/resizer.md) · **Examples:** [src/documentation/pages/resizer.mdx](../../src/documentation/pages/resizer.mdx)
 
+#### Border Layout · MOL · JS
+
+- **Why:** A CSS grid with named areas places north, south, west and east around a center; each resizable region reuses the Resizer (pointer capture, keyboard, clamps) with its handle redrawn as a full-length divider - the runtime adds the layout rules: the center's minimum, collapsing, remembered sizes.
+- **When:** Application frames - an editor with a file tree and a terminal, a mail client, a dashboard with an inspector; any split that the user should be able to resize: two panes side by side (horizontal split), stacked (vertical split), three columns, nested splits. A single resizable box takes resizer; fixed columns take the grid utilities.
+- **States:** `default`, `collapsed` · **Skill:** [references/components/border-layout.md](references/components/border-layout.md) · **Examples:** [src/documentation/pages/border-layout.mdx](../../src/documentation/pages/border-layout.mdx)
+
+#### Window · ATM · JS
+
+- **Why:** A non-modal `<dialog>` - open / close, the close event and the × (a `<form method="dialog">` submit) are the browser's, and resizing is native CSS resize; the runtime only moves windows by their title bar, raises the clicked one to the front and maximizes / minimizes.
+- **When:** Desktop-style UIs - several movable panels over one area (an editor, an inspector, a chat), app mockups, retro pages, tool palettes. For a single blocking question use dialog / alert-dialog; for a panel from an edge use sheet; for splitting fixed panes use resizer.
+- **States:** `default`, `maximized`, `minimized`, `closed` · **Skill:** [references/components/window.md](references/components/window.md) · **Examples:** [src/documentation/pages/window.mdx](../../src/documentation/pages/window.mdx)
+
 ### Chat
 
 #### Bubble · ATM · CSS
@@ -726,12 +750,18 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **When:** Each row of a chat or an assistant thread - sender avatar, name and time, the bubble (or attachment), delivery status and actions. The bare surface is bubble; inline status lines between rows are marker.
 - **States:** `default` · **Skill:** [references/components/message.md](references/components/message.md) · **Examples:** [src/documentation/pages/message.mdx](../../src/documentation/pages/message.mdx)
 
+#### Session · ORG · JS
+
+- **Why:** A native scroll region with a role="log" transcript - the keyboard scrolls it, a screen reader hears new messages; the runtime only decides where the scroll goes - follow the live edge, let go when the reader scrolls away, keep the place when history loads, anchor new turns - and turns dropped files into an event.
+- **When:** A whole chat or assistant conversation - messages (message + bubble + marker) in a transcript that scrolls, with a composer (textarea-group) below. A short static exchange takes a plain .message-list; a feed of cards takes a list.
+- **States:** `default`, `detached`, `streaming` · **Skill:** [references/components/session.md](references/components/session.md) · **Examples:** [src/documentation/pages/session.mdx](../../src/documentation/pages/session.mdx)
+
 ### Mockup
 
 #### Code Mockup · ATM · CSS
 
-- **Why:** A terminal window is a stack of `<pre>` lines under CSS window chrome; prompts, line numbers and the cursor are generated content, so selecting and copying the commands never picks them up - no script, no copy clean-up.
-- **When:** Showing commands and their output as a terminal - install steps, CLI docs, a session transcript. Source code with syntax colours takes a highlighted code block; a single inline key takes kbd.
+- **Why:** A terminal window is a stack of `<pre>` lines under CSS window chrome; prompts, line numbers, diff signs and the cursor are generated content, so selecting and copying the commands never picks them up - no script, no copy clean-up.
+- **When:** Showing commands and their output as a terminal - install steps, CLI docs, a session transcript - or a change as a git-style diff (added / removed lines, word changes, an animated reveal). Source code with syntax colours takes a highlighted code block; a single inline key takes kbd.
 - **States:** `default` · **Skill:** [references/components/mockup-code.md](references/components/mockup-code.md) · **Examples:** [src/documentation/pages/mockup-code.mdx](../../src/documentation/pages/mockup-code.mdx)
 
 ### Presentations

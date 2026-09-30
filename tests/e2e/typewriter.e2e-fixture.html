@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Typewriter e2e fixture</title>
+  <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css">
+  <link rel="stylesheet" href="/dist/components/mockup-code/mockup-code.css">
+  <link rel="stylesheet" href="/dist/components/typewriter/typewriter.css">
+  <style>
+    /* spacing only - never properties the checks assert */
+    body { font-family: system-ui, sans-serif; padding: 2rem; font-size: 20px; }
+    body > * { margin: 0 0 1.25rem; }
+    .spacer { height: 2400px; }
+  </style>
+</head>
+<body>
+  <!-- mirrors the doc page: loop, colours per string, types once + done,
+       cursor styles (bar / block / underscore / none / hide typing), speed +
+       variable rhythm, reserved width + center, pause / resume / done,
+       trigger on scroll, inside a code mockup -->
+  <p>Build
+    <span class="typewriter" id="tw-loop" data-loop data-speed="10" data-delete-speed="5" data-pause="150">
+      <span>design</span>
+      <span style="color: rgb(200, 0, 0)" id="src-red">red</span>
+      <span>ok 👍🏽</span>
+    </span>
+  </p>
+  <p><span class="typewriter" id="tw-once" data-speed="10" data-cursor-hide="done"><span>Ship it.</span></span></p>
+  <p><span class="typewriter" id="tw-block" data-cursor="block" data-loop><span>block</span></span></p>
+  <p><span class="typewriter" id="tw-under" data-cursor="underscore" data-loop><span>under</span></span></p>
+  <p><span class="typewriter" id="tw-none" data-cursor="none" data-loop><span>none</span></span></p>
+  <p><span class="typewriter" id="tw-idle" data-cursor-hide="typing" data-loop data-speed="200"><span>idle only</span></span></p>
+  <p><span class="typewriter" id="tw-var" data-variable data-loop data-speed="60"><span>natural rhythm</span></span></p>
+  <p style="text-align:center">The
+    <span class="typewriter" id="tw-reserve" data-loop data-reserve data-align="center" data-speed="10">
+      <span>x</span>
+      <span>a much longer string</span>
+    </span> way.
+  </p>
+  <p><span class="typewriter" id="tw-ctl" data-loop data-speed="80">
+    <span>Pause me mid-word.</span><span>Then resume.</span><span>Or finish on me.</span>
+  </span></p>
+  <div class="mockup-code" id="m-term">
+    <pre data-prefix="$"><code><span class="typewriter" id="tw-term" data-cursor="block" data-speed="10"><span>npm i defuss-shadcn</span></span></code></pre>
+  </div>
+  <div class="spacer"></div>
+  <p><span class="typewriter" id="tw-visible" data-trigger="visible" data-speed="10"><span>seen</span></span></p>
+
+  <script type="module" src="/dist/components/core.js"></script>
+  <script type="module" src="/dist/components/typewriter/typewriter.js"></script>
+</body>
+</html>

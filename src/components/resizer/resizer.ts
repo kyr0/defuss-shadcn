@@ -281,7 +281,15 @@ function syncHandles(wrapper: HTMLElement): void {
 function handleKeys(wrapper: HTMLElement, handle: HTMLElement, ev: KeyboardEvent): void {
   const sides = handle.dataset.handle;
   if (!sides) return;
-  const dir = ev.key === 'ArrowRight' || ev.key === 'ArrowUp' ? 1 : ev.key === 'ArrowLeft' || ev.key === 'ArrowDown' ? -1 : 0;
+  // data-keys="edge" (a divider - the window-splitter pattern): the arrows
+  // move the handle's edge, so the key pointing away from the box grows it -
+  // ArrowLeft on a west edge, ArrowDown on a south edge. Default: Right/Up grow.
+  const edge = wrapper.dataset.keys === 'edge' && sides.length === 1;
+  const OUT: Record<string, string> = { e: 'ArrowRight', w: 'ArrowLeft', s: 'ArrowDown', n: 'ArrowUp' };
+  const IN: Record<string, string> = { e: 'ArrowLeft', w: 'ArrowRight', s: 'ArrowUp', n: 'ArrowDown' };
+  const dir = edge
+    ? ev.key === OUT[sides] ? 1 : ev.key === IN[sides] ? -1 : 0
+    : ev.key === 'ArrowRight' || ev.key === 'ArrowUp' ? 1 : ev.key === 'ArrowLeft' || ev.key === 'ArrowDown' ? -1 : 0;
   if (dir === 0 && ev.key !== 'Home' && ev.key !== 'End') return;
   ev.preventDefault();
   const step = (numAttr(wrapper, 'stepKey', 10) || 10) * (ev.shiftKey ? 10 : 1);

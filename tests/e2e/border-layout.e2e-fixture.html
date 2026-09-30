@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Border Layout e2e fixture</title>
+  <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css">
+  <link rel="stylesheet" href="/dist/components/resizer/resizer.css">
+  <link rel="stylesheet" href="/dist/components/border-layout/border-layout.css">
+  <style>
+    /* spacing only - never properties the checks assert */
+    body { font-family: system-ui, sans-serif; padding: 1rem; margin: 0; }
+    .border-layout { width: 800px; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+  <!-- mirrors the doc page: five regions (ns and we dominant), splits,
+       percent starts, a fixed region, grips, divider styles, gap,
+       collapsible + saved -->
+  <div class="border-layout" id="bl" data-collapsible style="height:400px;">
+    <div class="resizer border-layout-north" id="n"><header id="n-pane" style="height:50px" aria-label="North">N</header></div>
+    <div class="resizer border-layout-west" id="w"><nav id="w-pane" style="width:160px" aria-label="Files">W</nav></div>
+    <main class="border-layout-center" id="c">C</main>
+    <div class="resizer border-layout-east" id="e"><aside id="e-pane" style="width:140px" aria-label="Inspector">E</aside></div>
+    <div class="resizer border-layout-south" id="s"><footer id="s-pane" style="height:80px" aria-label="Terminal">S</footer></div>
+  </div>
+  <div class="border-layout" id="we" data-dominant="we" style="height:240px;">
+    <div class="resizer border-layout-north" id="we-n"><div style="height:40px">N</div></div>
+    <div class="resizer border-layout-west" id="we-w"><div style="width:120px">W</div></div>
+    <div class="border-layout-center">C</div>
+    <div class="resizer border-layout-east" id="we-e"><div style="width:120px">E</div></div>
+  </div>
+  <div class="border-layout" id="hs" style="height:120px;">
+    <div class="resizer border-layout-west" id="hs-w"><div id="hs-pane" style="width:50%">One</div></div>
+    <div class="border-layout-center" id="hs-c">Two</div>
+  </div>
+  <div class="border-layout" id="fixed" data-divider="dashed" data-grip="dots" style="height:120px;">
+    <div class="border-layout-north" id="fx-n" style="height:30px">fixed</div>
+    <div class="resizer border-layout-west" id="fx-w"><div style="width:120px">dashed + dots</div></div>
+    <div class="border-layout-center">C</div>
+    <div class="resizer border-layout-east" id="fx-e" data-grip="none" data-divider="double"><div style="width:120px">no grip, double</div></div>
+  </div>
+  <div class="border-layout" id="gap" data-divider="gap" style="height:120px;">
+    <div class="resizer border-layout-west"><div id="gap-pane" style="width:120px">gap</div></div>
+    <div class="border-layout-center" id="gap-c">C</div>
+  </div>
+  <div class="border-layout" id="saved" data-save="e2e" data-collapsible style="height:120px;">
+    <div class="resizer border-layout-west" id="sv-w"><div id="sv-pane" style="width:150px">saved</div></div>
+    <div class="border-layout-center">C</div>
+  </div>
+
+  <script type="module" src="/dist/components/core.js"></script>
+  <script type="module" src="/dist/components/resizer/resizer.js"></script>
+  <script type="module" src="/dist/components/border-layout/border-layout.js"></script>
+</body>
+</html>

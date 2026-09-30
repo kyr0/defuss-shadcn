@@ -143,6 +143,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/blog.png
 **Skill:** [components/blog/component-skill.md](components/blog/component-skill.md)
 
+## Border Layout
+
+**Type:** MOL
+**Why:** A CSS grid with named areas places north, south, west and east around a center; each resizable region reuses the Resizer (pointer capture, keyboard, clamps) with its handle redrawn as a full-length divider - the runtime adds the layout rules: the center's minimum, collapsing, remembered sizes.
+**When:** Application frames - an editor with a file tree and a terminal, a mail client, a dashboard with an inspector; any split that the user should be able to resize: two panes side by side (horizontal split), stacked (vertical split), three columns, nested splits. A single resizable box takes resizer; fixed columns take the grid utilities.
+**Files:** dist/components/border-layout/border-layout.css + dist/components/border-layout/border-layout.js (+ the resizer)
+**Supported states:** default, collapsed
+**Screenshots:** screenshots/{light,dark}/border-layout.png, screenshots/{light,dark}/border-layout-collapsed.png
+**Skill:** [components/border-layout/component-skill.md](components/border-layout/component-skill.md)
+
 ## Brand Logos
 
 **Type:** BLK
@@ -536,8 +546,8 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 ## Code Mockup
 
 **Type:** ATM
-**Why:** A terminal window is a stack of <pre> lines under CSS window chrome; prompts, line numbers and the cursor are generated content, so selecting and copying the commands never picks them up - no script, no copy clean-up.
-**When:** Showing commands and their output as a terminal - install steps, CLI docs, a session transcript. Source code with syntax colours takes a highlighted code block; a single inline key takes kbd.
+**Why:** A terminal window is a stack of <pre> lines under CSS window chrome; prompts, line numbers, diff signs and the cursor are generated content, so selecting and copying the commands never picks them up - no script, no copy clean-up.
+**When:** Showing commands and their output as a terminal - install steps, CLI docs, a session transcript - or a change as a git-style diff (added / removed lines, word changes, an animated reveal). Source code with syntax colours takes a highlighted code block; a single inline key takes kbd.
 **Files:** dist/components/mockup-code/mockup-code.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/mockup-code.png
@@ -713,6 +723,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/scroll-area.png
 **Skill:** [components/scroll-area/component-skill.md](components/scroll-area/component-skill.md)
 
+## Search & Filter
+
+**Type:** ATM
+**Why:** A native type="search" field and native radios / checkboxes - the value, the form submission, the radio group's arrow keys and the reset button stay the browser's; CSS draws the chips and hides the unchosen ones, JS only clears the box.
+**When:** Narrowing a list - a search box with a clear (×) button for free text, filter chips for categories (one with radios, several with checkboxes). Use combobox when the text picks one item from suggestions, command for a command palette.
+**Files:** dist/components/search-filter/search-filter.css + dist/components/search-filter/search-filter.js
+**Supported states:** default, filled, searching
+**Screenshots:** screenshots/{light,dark}/search-filter.png, screenshots/{light,dark}/search-filter-filled.png, screenshots/{light,dark}/search-filter-searching.png
+**Skill:** [components/search-filter/component-skill.md](components/search-filter/component-skill.md)
+
 ## Select
 
 **Type:** ATM
@@ -732,6 +752,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/separator.png
 **Skill:** [components/separator/component-skill.md](components/separator/component-skill.md)
+
+## Session
+
+**Type:** ORG
+**Why:** A native scroll region with a role="log" transcript - the keyboard scrolls it, a screen reader hears new messages; the runtime only decides where the scroll goes - follow the live edge, let go when the reader scrolls away, keep the place when history loads, anchor new turns - and turns dropped files into an event.
+**When:** A whole chat or assistant conversation - messages (message + bubble + marker) in a transcript that scrolls, with a composer (textarea-group) below. A short static exchange takes a plain .message-list; a feed of cards takes a list.
+**Files:** dist/components/session/session.css + dist/components/session/session.js
+**Supported states:** default, detached, streaming
+**Screenshots:** screenshots/{light,dark}/session.png, screenshots/{light,dark}/session-detached.png, screenshots/{light,dark}/session-streaming.png
+**Skill:** [components/session/component-skill.md](components/session/component-skill.md)
 
 ## Sheet
 
@@ -906,8 +936,8 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 ## Textarea
 
 **Type:** ATM
-**Why:** Native textarea with field-sizing: content - auto-grows with zero JavaScript.
-**When:** Multi-line text input.
+**Why:** Native textarea with field-sizing: content - auto-grows with zero JavaScript, between row limits in lh; a .textarea-group turns it into a composer frame.
+**When:** Multi-line text input - notes, bios, comments; a chat or comment composer with attachments and a send button (.textarea-group). Single-line values take input.
 **Files:** dist/components/textarea/textarea.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/textarea.png
@@ -1013,6 +1043,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/type-badge.png
 **Skill:** [components/type-badge/component-skill.md](components/type-badge/component-skill.md)
 
+## Typewriter
+
+**Type:** ATM
+**Why:** The strings are authored as elements - readable without script and read once, in full, by assistive tech - while the runtime types an aria-hidden copy behind a CSS cursor that is solid while typing and blinks idle.
+**When:** A headline or hero line that types itself - cycling taglines ("Build design systems / prototypes / dashboards"), a terminal-style intro, a line that types once when it scrolls into view. For a word that rolls without typing use text-rotate; for a count use countdown.
+**Files:** dist/components/typewriter/typewriter.css + dist/components/typewriter/typewriter.js
+**Supported states:** default, paused, done
+**Screenshots:** screenshots/{light,dark}/typewriter.png, screenshots/{light,dark}/typewriter-paused.png, screenshots/{light,dark}/typewriter-done.png
+**Skill:** [components/typewriter/component-skill.md](components/typewriter/component-skill.md)
+
 ## Typography
 
 **Type:** ATM
@@ -1032,3 +1072,13 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default, loading, empty
 **Screenshots:** screenshots/{light,dark}/virtual-list.png, screenshots/{light,dark}/virtual-list-loading.png, screenshots/{light,dark}/virtual-list-empty.png
 **Skill:** [components/virtual-list/component-skill.md](components/virtual-list/component-skill.md)
+
+## Window
+
+**Type:** ATM
+**Why:** A non-modal <dialog> - open / close, the close event and the × (a <form method="dialog"> submit) are the browser's, and resizing is native CSS resize; the runtime only moves windows by their title bar, raises the clicked one to the front and maximizes / minimizes.
+**When:** Desktop-style UIs - several movable panels over one area (an editor, an inspector, a chat), app mockups, retro pages, tool palettes. For a single blocking question use dialog / alert-dialog; for a panel from an edge use sheet; for splitting fixed panes use resizer.
+**Files:** dist/components/window/window.css + dist/components/window/window.js
+**Supported states:** default, maximized, minimized, closed
+**Screenshots:** screenshots/{light,dark}/window.png, screenshots/{light,dark}/window-maximized.png, screenshots/{light,dark}/window-minimized.png, screenshots/{light,dark}/window-closed.png
+**Skill:** [components/window/component-skill.md](components/window/component-skill.md)

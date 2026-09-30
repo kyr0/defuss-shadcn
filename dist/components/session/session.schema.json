@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "name": "session",
+  "states": {
+    "detached": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".session"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "detached",
+        "args": {
+          "to": "start"
+        }
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "streaming": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".session"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "streaming"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {
+    "scrollToEnd": {
+      "target": {
+        "kind": "selector",
+        "selector": ".session-scroll-button[data-to=\"end\"]"
+      },
+      "operation": {
+        "kind": "method",
+        "name": "click"
+      }
+    }
+  }
+}

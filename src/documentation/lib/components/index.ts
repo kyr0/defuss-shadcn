@@ -15,7 +15,7 @@ export { ChangelogEntries } from './changelog-entries';
 export { ArchBody } from './arch-body';
 export { Demo } from './demo';
 export { TypeBadge, NavTypeBadge } from './type-badge';
-export { CopyButton, CodeBlock, Terminal } from './copy-button';
+export { CopyButton, CodeBlock, CodeWindow, Terminal } from './copy-button';
 export { PageOverlay, DemoCode } from './markers';
 export { DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from './doc-blocks';
 export { DeckRail } from './deck-rail';

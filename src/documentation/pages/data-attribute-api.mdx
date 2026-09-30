@@ -4,7 +4,7 @@ description: "Use data attributes to configure component variants, sizes, and st
 slug: "data-attribute-api"
 ---
 
-import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeWindow, CodeCard, TableCard } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -17,8 +17,8 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <p class="text-sm text-muted-foreground mb-5">If you came from a component framework, this mapping should feel familiar.</p>
 
 <div class="grid grid-cols-auto gap-4 mb-10">
-  <CodeCard title="React / Solid (props)" lang="markup" column>{"<Button\n  variant=\"destructive\"\n  size=\"lg\"\n>\n  Delete\n</Button>"}</CodeCard>
-  <CodeCard title="defuss-shadcn (data attributes)" lang="markup" column>{"<button class=\"btn\"\n  data-variant=\"destructive\"\n  data-size=\"lg\"\n>\n  Delete\n</button>"}</CodeCard>
+  <CodeWindow lang="markup" title="React / Solid (props)" column code={"<Button\n  variant=\"destructive\"\n  size=\"lg\"\n>\n  Delete\n</Button>"} />
+  <CodeWindow lang="markup" title="defuss-shadcn (data attributes)" column code={"<button class=\"btn\"\n  data-variant=\"destructive\"\n  data-size=\"lg\"\n>\n  Delete\n</button>"} />
 </div>
 
 <div class="sep" />
@@ -47,8 +47,8 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <p class="text-sm text-muted-foreground mb-5">Traditional systems like Bootstrap and BEM use modifier classes: <code>.btn-primary</code>, <code>.btn--lg</code>, <code>.btn-outline-danger</code>. Here's why we don't.</p>
 
 <div class="grid grid-cols-auto gap-4 mb-10">
-  <CodeCard title="Modifier classes" lang="markup" column>{"<"}{"button class=\"btn btn-destructive btn-lg\""}{">"}{"\n  Delete\n"}{"<"}{"/button"}{">"}<Dim>{"/* Conflicting specificity */"}</Dim>{"\n.btn-primary { ... }\n.btn-lg { ... }\n.btn-primary.btn-lg { ... }"}</CodeCard>
-  <CodeCard title="Data attributes" lang="markup" column>{"<"}{"button class=\"btn\"\n  data-variant=\"destructive\"\n  data-size=\"lg\""}{">"}{"\n  Delete\n"}{"<"}{"/button"}{">"}<Dim>{"/* Flat specificity */"}</Dim>{"\n.btn[data-variant=\"destructive\"] { ... }\n.btn[data-size=\"lg\"] { ... }\n"}<Dim>{"/* no combo needed */"}</Dim></CodeCard>
+  <CodeWindow lang="html" title="Modifier classes" column code={"<button class=\"btn btn-destructive btn-lg\">\n  Delete\n</button>\n\n<style>\n  /* Conflicting specificity */\n  .btn-primary { ... }\n  .btn-lg { ... }\n  .btn-primary.btn-lg { ... }\n</style>"} />
+  <CodeWindow lang="html" title="Data attributes" column code={"<button class=\"btn\"\n  data-variant=\"destructive\"\n  data-size=\"lg\">\n  Delete\n</button>\n\n<style>\n  /* Flat specificity - no combos needed */\n  .btn[data-variant=\"destructive\"] { ... }\n  .btn[data-size=\"lg\"] { ... }\n</style>"} />
 </div>
 
 <div style="display:grid;grid-template-columns:auto 1fr;gap:0.5rem 1rem;margin-bottom:2.5rem;align-items:baseline;">
@@ -352,7 +352,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 <p class="text-sm text-muted-foreground mb-5">These wire up JavaScript interactions. They follow the pattern <code>data-\{component\}-trigger</code> and <code>data-\{component\}-close</code> - connecting a button to the element it controls.</p>
 
-<CodeCard title="trigger / close pattern" lang="markup" mb="1.5rem"><Dim>{"<!-- The trigger: its value is the ID of the target -->"}</Dim>{"<"}{"button class=\"btn\" data-dialog-trigger=\"confirm\""}{">"}{"\n  Open Dialog\n"}{"<"}{"/button"}{">"}<Dim>{"<!-- The target: matched by ID -->"}</Dim>{"<"}{"dialog id=\"confirm\" class=\"dialog\""}{">"}{"<"}{"div class=\"dialog-content\""}{">"}{"<"}{"p"}{">"}{"Are you sure?"}{"<"}{"/p"}{">"}<Dim>{"<!-- The close: placed inside, closes the nearest parent -->"}</Dim>{"<"}{"button class=\"btn\" data-dialog-close"}{">"}{"Cancel"}{"<"}{"/button"}{">"}{"<"}{"/div"}{">"}{"<"}{"/dialog"}{">"}</CodeCard>
+<CodeWindow lang="html" title="trigger / close pattern" mb="1.5rem" code={"<!-- The trigger: its value is the ID of the target -->\n<button class=\"btn\" data-dialog-trigger=\"confirm\">\n  Open Dialog\n</button>\n\n<!-- The target: matched by ID -->\n<dialog id=\"confirm\" class=\"dialog\">\n  <div class=\"dialog-content\">\n    <p>Are you sure?</p>\n    <!-- The close: placed inside, closes the nearest parent -->\n    <button class=\"btn\" data-dialog-close>Cancel</button>\n  </div>\n</dialog>"} />
 
 <div class="code-card" style="margin-bottom:1.5rem;">
   <div style="padding:0.625rem 1rem;background:var(--muted);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
@@ -495,7 +495,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 <p class="text-sm text-muted-foreground mb-5">Where the browser natively provides state APIs - like <code>aria-selected</code>, <code>aria-expanded</code>, or <code>disabled</code> - we style against those directly. No data attributes are needed because the browser already exposes the state.</p>
 
-<CodeCard title="native state as CSS selectors" lang="css" mb="1.5rem"><Dim>{"/* Tab is selected - use ARIA, not a data attribute */"}</Dim>{"\n.tab-trigger[aria-selected=\"true\"] {\n  color: var(--foreground);\n  border-color: var(--primary);\n}\n\n"}<Dim>{"/* Toggle is pressed - native ARIA attribute */"}</Dim>{"\n.toggle[aria-pressed=\"true\"] {\n  background: var(--accent);\n}\n\n"}<Dim>{"/* Button is disabled - native HTML attribute */"}</Dim>{"\n.btn:disabled {\n  opacity: 0.5;\n  pointer-events: none;\n}"}</CodeCard>
+<CodeWindow lang="css" title="native state as CSS selectors" mb="1.5rem" code={"/* Tab is selected - use ARIA, not a data attribute */\n.tab-trigger[aria-selected=\"true\"] {\n  color: var(--foreground);\n  border-color: var(--primary);\n}\n\n/* Toggle is pressed - native ARIA attribute */\n.toggle[aria-pressed=\"true\"] {\n  background: var(--accent);\n}\n\n/* Button is disabled - native HTML attribute */\n.btn:disabled {\n  opacity: 0.5;\n  cursor: not-allowed;\n}"} />
 
 <p class="text-sm text-muted-foreground mb-8"><strong>Rule of thumb:</strong> if the browser has a native attribute for a state (<code>disabled</code>, <code>aria-selected</code>, <code>aria-expanded</code>, <code>open</code>), we style against that. Data attributes are only used when no native equivalent exists. </p>
 
@@ -505,7 +505,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 <p class="text-sm text-muted-foreground mb-5">Every component follows this structure. Once you learn one, you know them all.</p>
 
-<CodeCard title="the universal component pattern" lang="markup" mb="1.5rem">{"<"}{"element\n  class=\"{component}\"             "}<Dim>{"← what it is"}</Dim>{"\n  data-variant=\"{variant}\"        "}<Dim>{"← visual style"}</Dim>{"\n  data-size=\"{size}\"              "}<Dim>{"← dimensions"}</Dim>{"\n  data-{axis}=\"{value}\"           "}<Dim>{"← other config"}</Dim>{"\n  data-{component}-trigger=\"{id}\" "}<Dim>{"← JS wiring"}</Dim>{"\n  aria-*/disabled/open            "}<Dim>{"← native state"}</Dim>{">"}{"\n  content\n"}{"<"}{"/element"}{">"}</CodeCard>
+<CodeWindow lang="text" title="the universal component pattern" mb="1.5rem" code={"<element\n  class=\"{component}\"             ← what it is\n  data-variant=\"{variant}\"        ← visual style\n  data-size=\"{size}\"              ← dimensions\n  data-{axis}=\"{value}\"           ← other config\n  data-{component}-trigger=\"{id}\" ← JS wiring\n  aria-*/disabled/open            ← native state\n>\n  content\n</element>"} />
 
 <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(12rem, 1fr));gap:1rem;margin-bottom:2.5rem;">
   <div class="code-card-col">

@@ -111,6 +111,22 @@ try {
     assert.deepEqual(await sizeOf(boxOf(page, 'rz-px-box')), [120, 120], 'Home jumps to data-min');
   });
 
+  await check('data-keys="edge": the arrow pointing away from the box grows it (w: ←, n: ↑), the other shrinks it', async () => {
+    await page.locator('#rz-edge .resizer-handle[data-handle="w"]').focus();
+    await page.keyboard.press('ArrowLeft');
+    assert.equal((await sizeOf(boxOf(page, 'rz-edge-box')))[0], 210, 'ArrowLeft grows from the w edge');
+    await page.keyboard.press('ArrowRight');
+    await page.keyboard.press('ArrowRight');
+    assert.equal((await sizeOf(boxOf(page, 'rz-edge-box')))[0], 190, 'ArrowRight shrinks it');
+    await page.keyboard.press('ArrowUp');
+    assert.equal((await sizeOf(boxOf(page, 'rz-edge-box')))[0], 190, 'ArrowUp does nothing on a w edge');
+    await page.locator('#rz-edge .resizer-handle[data-handle="n"]').focus();
+    await page.keyboard.press('ArrowUp');
+    assert.equal((await sizeOf(boxOf(page, 'rz-edge-box')))[1], 110, 'ArrowUp grows from the n edge');
+    // focusing scrolled the page - put it back for the pointer checks that follow
+    await page.evaluate(() => { (document.activeElement as HTMLElement | null)?.blur(); globalThis.scrollTo(0, 0); });
+  });
+
   await check("a document 'pointercancel' (sandbox bridge relay) ends a live drag", async () => {
     const h = page.locator('#rz-px .resizer-handle[data-handle="e"]');
     const r = (await h.boundingBox())!;

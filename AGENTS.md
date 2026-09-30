@@ -164,14 +164,14 @@ full rationale lives in [ARCH.md](ARCH.md).
 ### Each component owns its dialog
 
 `dialog.js`'s init claims plain `<dialog>` elements for backdrop-click close —
-via a `dialog:not(.alert-dialog):not(.sheet):not(.command):not([data-init])`
+via a `dialog:not(.alert-dialog):not(.sheet):not(.command):not(.window):not([data-init])`
 selector. **Any component that ships its own `<dialog class="…">` with custom
 behavior must be `:not()`-excluded there**, or dialog.js (loaded before every
 component script on all doc pages) stamps `data-init` first and the real
 owner's init silently skips the element - the docs search palette was dead
 exactly this way once. `verify`'s `dialog ownership boundary` gate enforces
-the exclusion list for the three dialog owners (alert-dialog, sheet, command);
-extend the list in both places when a fourth appears.
+the exclusion list for the four dialog owners (alert-dialog, sheet, command,
+window); extend the list in both places when a fifth appears.
 
 The docs header search is the shipped command component itself: clicking the
 input (or ⌘/Ctrl+K) opens `<dialog class="command" id="docs-palette">` (static
@@ -1158,17 +1158,17 @@ index, and TOC pick the page up automatically.
 The sidebar is ordered by dependency (primitives first):
 1. Introduction (Getting Started, Installation, Vibe Coding / Agentic Engineering, How to Use, Component Skills, Verified Agentic Engineering (VAE), Changelog) - the only section open on first load (`ALWAYS_OPEN_SECTION` in `lib/nav.ts`)
 2. Guides (Theming, Dark Mode, Data Attribute API, State API, Cascade Layers, JavaScript Modules, Native Web APIs, Animations → {Motion, Animation Canvas, Fade, Slide Up, Slide Down, Slide Left, Slide Right, Zoom, Zoom Out, Pop, Spin, Flip, Skew, Blur, Wipe, Wipe Up, Iris}, Sizing → {Width & Height, Spacing, Density}, Layout → {Container, Flex, Grid}, Shapes, Accessibility) - Sizing/Layout/Animations are parent pages with nested submenu children (`NavItem.children`)
-3. Primitives (Typography, Text Rotate, Separator, Icon, Kbd, Heading Anchor)
+3. Primitives (Typography, Text Rotate, Typewriter, Separator, Icon, Kbd, Heading Anchor)
 4. Actions (Button, FAB, Toggle, Swap, Toggle Group, Button Group, Toolbar)
-5. Forms & Inputs (Label, Input, OTP Input, Textarea, Checkbox, Radio Group, Switch, Slider, Rating, Select, Number Input, File Input, Color Picker, Date Picker, Combobox, Form)
+5. Forms & Inputs (Label, Input, OTP Input, Textarea, Checkbox, Radio Group, Switch, Slider, Rating, Select, Number Input, File Input, Color Picker, Date Picker, Combobox, Search & Filter, Form)
 6. Data Display (Badge, Avatar, Indicator, Diff, Countdown, Card, Image → {Image Gallery}, Statistic, Table, Virtual List, Collapsible, Timeline, Tree View, Calendar)
 7. Charts (Chart, Comparison, Change over time, Distribution, Composition, Election, Narrative)
 8. Diagrams (Mermaid) - text-first diagrams; a ```mermaid fence in any MDX page or ARCH.md renders through the same component (lib/mdx-example.ts, lib/arch-md.ts)
 9. Feedback & Status (Spinner, Skeleton, Progress, Radial Progress, Alert, Alert Dialog, Toast)
 10. Overlays (Popover, Tooltip, Context Menu, Dialog, Sheet, Accordion, Command)
 11. Navigation (Navbar, Dock, Breadcrumb, Pagination, Steps, Tabs, Dropdown Menu, Menubar, Navigation Menu)
-12. Application (Sidebar, Resizer)
-13. Chat (Bubble, Marker, Message) - the conversation surfaces: message rows (avatar, name, time, status, actions, groups), message bubbles (variants, groups, tails, reactions, typing) and markers (inline status, spinners, shimmer, separators)
+12. Application (Sidebar, Resizer, Border Layout, Window)
+13. Chat (Bubble, Marker, Message, Session) - the conversation surfaces: message rows (avatar, name, time, status, actions, groups), message bubbles (variants, groups, tails, reactions, typing), markers (inline status, spinners, shimmer, separators) and the session that hosts and scrolls a whole conversation (follow / detach, history, anchored turns, streaming, drop target) above the textarea composer
 14. Mockup (Code) - device and window mockups, starting with a terminal for commands and output (generated prompts never copied, tones, highlights, chrome)
 15. Presentations (Presentation, Deck Gallery → {The System in Numbers - flagship deck: defuss-shadcn presents itself as a newsroom study report (engine curtain transitions, section route, bespoke SVG set-pieces, real numbers from dist/stats.json); 32 design-study decks (all 32 echarts-feat studies): Editorial Highlight Bars, Lollipop Ranking, Dumbbell Before/After, Slopegraph, Diverging Bars, Waterfall, Normalized Stack, Bump Ranking, Bar Race, Confidence Band, Annotated Time Series, Small Multiples, Scatter Quadrants, Jittered Distribution, Heatmap Matrix, Calendar Heatmap, Theme River, Treemap, Sunburst, Sankey, Chord, Editorial Gauge, Parliament Hemicycle, Election Majority Bar, Election Hex Cartogram, Election Shift Arrows, Universal Transition, Waffle Dot Matrix, Boxplot, Violin - Custom Series, Custom Wind Vectors, Story State Machine}) - Deck Gallery is a parent page with nested submenu children (`NavItem.children`); every deck is a 12-slide English presentation on its own real-world topic with its own (synthetic) numbers, adapting one echarts-feat design study - every slide animates in and out through the df$.anim engine (data-anim-in/-out on the deck or slide; curtains in a colour that contrasts with both slide surfaces), every chart slide plays on ONE deck-level chart (`.chart.presentation-stage` + `df$.shadcn.chart.deck()`, slides name states via `data-chart-state`) so the charts morph into each other, and every deck includes photo or video, table, quote and accordion slides
 16. Marketing (Site Header, Hero, Product Showcase, Brand Logos, Feature Details, Testimonials, Stats, Pricing, Blog, FAQ, Get In Touch, Newsletter, Site Footer) - CSS-only page sections composed from the same tokens + primitives

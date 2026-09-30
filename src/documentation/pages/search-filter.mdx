@@ -1,0 +1,322 @@
+---
+title: "Search & Filter"
+description: "Search & Filter component - a search box with a clear (×) button that shows only while there is text, Escape to clear and a searching state; category filter chips on native radios and checkboxes with a reset, CSS only."
+slug: "search-filter"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="search-filter" title="Search & Filter" component="search-filter">
+  Two dedicated controls for narrowing a list. The <strong>search box</strong> frames a native <code>&lt;input type="search"&gt;</code> with an icon and a clear (×) button that appears only while there is text - the × and Escape empty the field through the same <code>input</code> event typing fires. The <strong>filter</strong> turns native radios and checkboxes into category chips: choose one and the others step aside behind a reset, CSS only - after daisyUI's filter.
+</PageHeader>
+
+<SkillPanel component="search-filter">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;input type="search"&gt;</code> inside <code>.search-box</code>; chips are <code>&lt;input type="radio|checkbox"&gt;</code> in a <code>.filter</code>, with <code>&lt;input type="reset"&gt;</code> (or a <code>.filter-reset</code> radio) as the ×.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/search" title="the search field"><code>type="search"</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/search" title="the search landmark"><code>&lt;search&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/reset" title="the filter's × without script"><code>type="reset"</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="hides the unchosen chips; filters content"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/interpolate-size" title="chips fold and grow back without a jump"><code>interpolate-size</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output" title="the results count"><code>&lt;output&gt;</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.search-box</code>
+    <code>.search-box-clear</code>
+    <code>.search-box-hint</code>
+    <code>.filter</code>
+    <code>.filter-reset</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText>Search box: <code>data-variant="muted"</code>, <code>data-shape="pill"</code>, <code>data-size</code> (<code>sm</code>, <code>lg</code>); filter: <code>data-multiple</code>, <code>data-variant</code> (<code>secondary</code>, <code>outline</code>), <code>data-shape="pill"</code>, <code>data-size</code> (<code>sm</code>, <code>lg</code>); events <code>input</code> (typing and clearing) and <code>search-clear</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Search box" hint="Type and the × appears; click it or press Escape and the field empties, keeps the focus and fires input - the same event as typing. The browser's own clear button is replaced by one that looks the same everywhere."
+<search style="max-width:22rem;">
+  <div class="search-box">
+    <i data-lucide="search"></i>
+    <input type="search" name="q" placeholder="Search…" aria-label="Search">
+    <button type="button" class="search-box-clear" aria-label="Clear search"></button>
+  </div>
+</search>
+```
+
+```html example label="Live results" schema="none" hint="One input listener filters the list - typing and clearing alike - and an <output> announces the count."
+<div class="flex flex-col gap-3" style="max-width:22rem;">
+  <div class="search-box">
+    <i data-lucide="search"></i>
+    <input type="search" id="people-q" placeholder="Filter people" aria-label="Filter people" aria-controls="people">
+    <button type="button" class="search-box-clear" aria-label="Clear search"></button>
+  </div>
+  <output for="people-q" class="text-sm text-muted-foreground" id="people-count">6 people</output>
+  <ul id="people" class="text-sm m-0 ps-5 flex flex-col gap-1">
+    <li>Ada Lovelace</li>
+    <li>Alan Turing</li>
+    <li>Grace Hopper</li>
+    <li>Katherine Johnson</li>
+    <li>Linus Torvalds</li>
+    <li>Margaret Hamilton</li>
+  </ul>
+</div>
+<script>
+  document.getElementById('people-q').addEventListener('input', (e) => {
+    const q = e.target.value.trim().toLowerCase();
+    let shown = 0;
+    document.querySelectorAll('#people li').forEach((li) => {
+      const match = li.textContent.toLowerCase().includes(q);
+      li.hidden = !match;
+      if (match) shown++;
+    });
+    document.getElementById('people-count').value = shown === 1 ? '1 person' : `${shown} people`;
+  });
+</script>
+```
+
+```html example label="Searching" schema="none" hint="The searching state: a spinner stands in for the icon and the field is aria-busy while the lookup runs; the page ends it with filled. Here every keystroke waits 600 ms for the (pretend) server."
+<div class="flex flex-col gap-3" style="max-width:22rem;">
+  <div class="search-box" id="remote-search">
+    <i data-lucide="search"></i>
+    <input type="search" placeholder="Search the archive" aria-label="Search the archive">
+    <button type="button" class="search-box-clear" aria-label="Clear search"></button>
+  </div>
+  <output class="text-sm text-muted-foreground" id="remote-result">Type to search 2,400 reports.</output>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const box = document.getElementById('remote-search');
+    const out = document.getElementById('remote-result');
+    let timer;
+    box.querySelector('input').addEventListener('input', (e) => {
+      clearTimeout(timer);
+      const q = e.target.value.trim();
+      if (!q) { out.value = 'Type to search 2,400 reports.'; return; }
+      box.api.setState('searching');
+      out.value = 'Searching…';
+      timer = setTimeout(() => {
+        box.api.setState('filled');
+        out.value = `${(q.length * 37) % 211 + 3} reports match "${q}".`;
+      }, 600);
+    });
+  });
+</script>
+```
+
+```html example label="Shortcut hint, pill and muted" schema="none" hint="A trailing <kbd> (or .search-box-hint) shows while the box is empty and gives way to the × once there is text. data-shape='pill' rounds the frame; data-variant='muted' drops border and shadow for a quieter surface."
+<div class="flex flex-col gap-4" style="max-width:22rem;">
+  <div class="search-box" data-shape="pill">
+    <i data-lucide="search"></i>
+    <input type="search" placeholder="Search docs" aria-label="Search docs">
+    <kbd class="kbd" data-size="sm">⌘K</kbd>
+    <button type="button" class="search-box-clear" aria-label="Clear search"></button>
+  </div>
+  <div class="search-box" data-variant="muted">
+    <i data-lucide="search"></i>
+    <input type="search" placeholder="Search messages" aria-label="Search messages">
+    <span class="search-box-hint">in #general</span>
+    <button type="button" class="search-box-clear" aria-label="Clear search"></button>
+  </div>
+</div>
+```
+
+```html example label="Search box sizes" schema="none" hint="data-size sm · (default) · lg - the same heights as input, so a search box lines up with the fields and buttons beside it."
+<div class="flex flex-col gap-3" style="max-width:22rem;">
+  <div class="search-box" data-size="sm">
+    <i data-lucide="search"></i>
+    <input type="search" value="small" aria-label="Small search">
+    <button type="button" class="search-box-clear" aria-label="Clear search"></button>
+  </div>
+  <div class="search-box">
+    <i data-lucide="search"></i>
+    <input type="search" value="default" aria-label="Default search">
+    <button type="button" class="search-box-clear" aria-label="Clear search"></button>
+  </div>
+  <div class="search-box" data-size="lg">
+    <i data-lucide="search"></i>
+    <input type="search" value="large" aria-label="Large search">
+    <button type="button" class="search-box-clear" aria-label="Clear search"></button>
+  </div>
+</div>
+```
+
+```html example label="Disabled and invalid" schema="none" hint="disabled on the input dims the whole box; aria-invalid='true' turns the frame destructive."
+<div class="flex flex-col gap-3" style="max-width:22rem;">
+  <div class="search-box">
+    <i data-lucide="search"></i>
+    <input type="search" placeholder="Search is offline" aria-label="Search" disabled>
+    <button type="button" class="search-box-clear" aria-label="Clear search"></button>
+  </div>
+  <div class="search-box">
+    <i data-lucide="search"></i>
+    <input type="search" value="a" aria-label="Search" aria-invalid="true" aria-describedby="short-q">
+    <button type="button" class="search-box-clear" aria-label="Clear search"></button>
+  </div>
+  <p class="field-error" id="short-q">Type at least 2 characters.</p>
+</div>
+```
+
+```html example label="Filter" schema="none" hint="Radios in a <form>: choose one and the others glide aside while the × grows in after it - nothing jumps under the pointer. The × is a native <input type='reset'>: it clears the form and the chips glide back. No script."
+<form class="filter" aria-label="Framework">
+  <input type="radio" name="framework" value="svelte" aria-label="Svelte">
+  <input type="radio" name="framework" value="vue" aria-label="Vue">
+  <input type="radio" name="framework" value="react" aria-label="React">
+  <input type="reset" value="×" aria-label="Clear filter">
+</form>
+```
+
+```html example label="Without a form" schema="none" hint="Outside a form, one radio of the group carries .filter-reset (authored last, like every reset): checking it means 'all', so it folds away and brings the others back."
+<div class="filter" role="radiogroup" aria-label="Meta framework">
+  <input type="radio" name="meta" value="sveltekit" aria-label="SvelteKit">
+  <input type="radio" name="meta" value="nuxt" aria-label="Nuxt">
+  <input type="radio" name="meta" value="next" aria-label="Next.js">
+  <input type="radio" name="meta" class="filter-reset" aria-label="All">
+</div>
+```
+
+```html example label="Checkboxes" schema="none" hint="Checkbox chips draw their box - empty, then ticked. Without data-multiple they behave like the radios (the first tick folds the rest away) until the reset clears them."
+<form class="filter" aria-label="Frameworks">
+  <input type="checkbox" name="frameworks" value="svelte" aria-label="Svelte">
+  <input type="checkbox" name="frameworks" value="vue" aria-label="Vue">
+  <input type="checkbox" name="frameworks" value="react" aria-label="React">
+  <input type="reset" value="×" aria-label="Clear filters">
+</form>
+```
+
+```html example label="Several at once" schema="none" hint="data-multiple keeps every chip in place: tick any number of categories; the reset grows in at the end as soon as one is ticked."
+<form class="filter" data-multiple data-shape="pill" aria-label="Categories">
+  <input type="checkbox" name="cat" value="design" aria-label="Design">
+  <input type="checkbox" name="cat" value="code" aria-label="Code">
+  <input type="checkbox" name="cat" value="writing" aria-label="Writing">
+  <input type="checkbox" name="cat" value="video" aria-label="Video">
+  <input type="checkbox" name="cat" value="audio" aria-label="Audio">
+  <input type="reset" value="×" aria-label="Clear filters">
+</form>
+```
+
+```html example label="Filtering content with :has()" schema="none" hint="No script: the list's container asks :has() which chip is checked and hides the cards that don't match. The reset radio shows everything again."
+<style>
+  .catalog:has([value="design"]:checked) .catalog-item:not([data-cat="design"]),
+  .catalog:has([value="code"]:checked) .catalog-item:not([data-cat="code"]),
+  .catalog:has([value="writing"]:checked) .catalog-item:not([data-cat="writing"]) { display: none; }
+</style>
+<div class="catalog flex flex-col gap-3">
+  <div class="filter" role="radiogroup" aria-label="Category" data-size="sm">
+    <input type="radio" name="catalog" value="design" aria-label="Design">
+    <input type="radio" name="catalog" value="code" aria-label="Code">
+    <input type="radio" name="catalog" value="writing" aria-label="Writing">
+    <input type="radio" name="catalog" class="filter-reset" aria-label="All">
+  </div>
+  <ul class="m-0 p-0 flex flex-wrap gap-2" style="list-style:none;">
+    <li class="catalog-item badge" data-variant="outline" data-cat="design">Color systems</li>
+    <li class="catalog-item badge" data-variant="outline" data-cat="code">CSS nesting</li>
+    <li class="catalog-item badge" data-variant="outline" data-cat="writing">Microcopy</li>
+    <li class="catalog-item badge" data-variant="outline" data-cat="design">Type scales</li>
+    <li class="catalog-item badge" data-variant="outline" data-cat="code">Popover API</li>
+    <li class="catalog-item badge" data-variant="outline" data-cat="writing">Release notes</li>
+  </ul>
+</div>
+```
+
+```html example label="Search and filter together" schema="none" hint="Both narrow the same list: the chips pick a category, the box matches text. One function re-runs on the box's input event and the form's change and reset events."
+<div class="flex flex-col gap-3" style="max-width:26rem;">
+  <div class="search-box">
+    <i data-lucide="search"></i>
+    <input type="search" id="lib-q" placeholder="Search articles" aria-label="Search articles" aria-controls="lib">
+    <button type="button" class="search-box-clear" aria-label="Clear search"></button>
+  </div>
+  <form class="filter" id="lib-filter" data-size="sm" aria-label="Category">
+    <input type="radio" name="cat" value="guide" aria-label="Guides">
+    <input type="radio" name="cat" value="api" aria-label="API">
+    <input type="radio" name="cat" value="news" aria-label="News">
+    <input type="reset" value="×" aria-label="Clear filter">
+  </form>
+  <output class="text-sm text-muted-foreground" id="lib-count">6 articles</output>
+  <ul id="lib" class="text-sm m-0 ps-5 flex flex-col gap-1">
+    <li data-cat="guide">Getting started with themes</li>
+    <li data-cat="guide">Dark mode in one attribute</li>
+    <li data-cat="api">The State API</li>
+    <li data-cat="api">Schema contracts</li>
+    <li data-cat="news">Release 0.9: chat and mockups</li>
+    <li data-cat="news">Search & Filter lands</li>
+  </ul>
+</div>
+<script>
+  const form = document.getElementById('lib-filter');
+  const apply = () => {
+    const q = document.getElementById('lib-q').value.trim().toLowerCase();
+    const cat = new FormData(form).get('cat');
+    let shown = 0;
+    document.querySelectorAll('#lib li').forEach((li) => {
+      const match = (!cat || li.dataset.cat === cat) && li.textContent.toLowerCase().includes(q);
+      li.hidden = !match;
+      if (match) shown++;
+    });
+    document.getElementById('lib-count').value = shown === 1 ? '1 article' : `${shown} articles`;
+  };
+  document.getElementById('lib-q').addEventListener('input', apply);
+  form.addEventListener('change', apply);
+  // reset fires before the form clears - run after it
+  form.addEventListener('reset', () => setTimeout(apply));
+</script>
+```
+
+```html example label="Filter variants and sizes" schema="none" hint="data-variant secondary and outline change the chosen chip; data-shape='pill' rounds; data-size sm · (default) · lg. disabled on a chip keeps it out of reach."
+<div class="flex flex-col gap-3">
+  <div class="filter" data-variant="secondary" role="radiogroup" aria-label="Plan">
+    <input type="radio" name="plan" aria-label="Free" checked>
+    <input type="radio" name="plan" aria-label="Pro">
+    <input type="radio" name="plan" class="filter-reset" aria-label="All plans">
+  </div>
+  <div class="filter" data-variant="outline" data-shape="pill" data-multiple role="group" aria-label="Status">
+    <input type="checkbox" aria-label="Open" checked>
+    <input type="checkbox" aria-label="In review">
+    <input type="checkbox" aria-label="Closed" disabled>
+  </div>
+  <div class="filter" data-size="sm" data-multiple role="group" aria-label="Small">
+    <input type="checkbox" aria-label="Small">
+    <input type="checkbox" aria-label="Chips">
+  </div>
+  <div class="filter" data-size="lg" data-multiple role="group" aria-label="Large">
+    <input type="checkbox" aria-label="Large">
+    <input type="checkbox" aria-label="Chips">
+  </div>
+</div>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states of the search box via the shared State API, driven per instance through the bound <code>api</code> (the filter is CSS only):</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - empty, no ×; setting it clears the field (<code>\{ value \}</code> presets one)</li>
+    <li><code>filled</code> - has text, the × shows; entered automatically as you type</li>
+    <li><code>searching</code> - a lookup is pending: a spinner replaces the icon and the field is <code>aria-busy</code>; the page ends it with <code>filled</code></li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/search-filter-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a href="../schemas/search-filter.schema.json"><code>search-filter.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `value` | `string` | `—` | `""` | The search text; set through the State API (`setState('default', { value })`), read from the input. |
+| `filled` | `boolean` | `true`, `false` | `false` | Has text - the × shows; entered automatically as you type. |
+| `searching` | `boolean` | `true`, `false` | `false` | A lookup is pending: spinner in place of the icon, `aria-busy` on the field. |
+```
+
+</StatesSection>
+
+<SourceFiles component="search-filter" section="css" />
+
+<SourceFiles component="search-filter" section="js" jsTitle="JS" />
+
+</DocPage>

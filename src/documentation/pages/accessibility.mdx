@@ -4,7 +4,7 @@ description: "Accessibility patterns in defuss-shadcn: ARIA roles, keyboard navi
 slug: "accessibility"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeWindow, CodeCard, TableCard } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -17,8 +17,8 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <p class="text-sm text-muted-foreground mb-5">Components start from the most semantic native element available. A <code>&lt;button&gt;</code> is already a button - no <code>role="button"</code> needed. A <code>&lt;dialog&gt;</code> already traps focus and handles Escape. ARIA is only added when the native element doesn't express the full semantics of the widget.</p>
 
 <div class="grid grid-cols-auto gap-4 mb-10">
-  <CodeCard title="Avoid: unnecessary ARIA" lang="markup" column><Dim>{"<!-- Don't add ARIA roles to native elements -->"}</Dim>{"<"}{"div role=\"button\" tabindex=\"0\"\n  onclick=\"...\""}{">"}{"\n  Click me\n"}{"<"}{"/div"}{">"}</CodeCard>
-  <CodeCard title="Prefer: native elements" lang="markup" column><Dim>{"<!-- Native button: focusable, keyboard\n     activatable, announced correctly -->"}</Dim>{"<"}{"button class=\"btn\""}{">"}{"\n  Click me\n"}{"<"}{"/button"}{">"}</CodeCard>
+  <CodeWindow lang="markup" title="Avoid: unnecessary ARIA" column code={"<!-- Don't add ARIA roles to native elements -->\n<div role=\"button\" tabindex=\"0\"\n  onclick=\"...\">\n  Click me\n</div>"} />
+  <CodeWindow lang="markup" title="Prefer: native elements" column code={"<!-- Native button: focusable, keyboard\n     activatable, announced correctly -->\n<button class=\"btn\">\n  Click me\n</button>"} />
 </div>
 
 <div class="sep" />
@@ -277,7 +277,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
       </tbody>
     </table></TableCard>
 
-<CodeCard title="tabs - relationship attributes in action" lang="markup" mb="2.5rem">{"<div role=\"tablist\" aria-label=\"Settings\">\n  <button role=\"tab\"\n    id=\"tab-1\"\n    aria-selected=\"true\"\n    aria-controls=\"panel-1\"\n    tabindex=\"0\">\n    General\n  </button>\n  <button role=\"tab\"\n    id=\"tab-2\"\n    aria-selected=\"false\"\n    aria-controls=\"panel-2\"\n    tabindex=\"-1\">\n    Advanced\n  </button>\n</div>\n\n<div role=\"tabpanel\"\n  id=\"panel-1\"\n  aria-labelledby=\"tab-1\">\n  General settings content\n</div>\n\n<div role=\"tabpanel\"\n  id=\"panel-2\"\n  aria-labelledby=\"tab-2\"\n  hidden>\n  Advanced settings content\n</div>"}</CodeCard>
+<CodeWindow lang="markup" title="tabs - relationship attributes in action" mb="2.5rem" code={"<div role=\"tablist\" aria-label=\"Settings\">\n  <button role=\"tab\"\n    id=\"tab-1\"\n    aria-selected=\"true\"\n    aria-controls=\"panel-1\"\n    tabindex=\"0\">\n    General\n  </button>\n  <button role=\"tab\"\n    id=\"tab-2\"\n    aria-selected=\"false\"\n    aria-controls=\"panel-2\"\n    tabindex=\"-1\">\n    Advanced\n  </button>\n</div>\n\n<div role=\"tabpanel\"\n  id=\"panel-1\"\n  aria-labelledby=\"tab-1\">\n  General settings content\n</div>\n\n<div role=\"tabpanel\"\n  id=\"panel-2\"\n  aria-labelledby=\"tab-2\"\n  hidden>\n  Advanced settings content\n</div>"} />
 
 <div class="sep" />
 
@@ -366,9 +366,9 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5">Composite widgets (tabs, toolbars, menus) use roving tabindex so the entire widget acts as a single tab stop. Only one item has <code>tabindex="0"</code> at a time - all others have <code>tabindex="-1"</code>. Arrow keys move focus between items.</p>
 
-<CodeCard title="roving tabindex pattern" lang="markup" mb="1.5rem"><Dim>{"<!-- Only the active tab is in the tab order -->"}</Dim>{"<"}{"div role=\"tablist\""}{">"}{"<"}{"button role=\"tab\" tabindex=\"0\"  aria-selected=\"true\""}{">"}{"Tab 1"}{"<"}{"/button"}{">"}{"<"}{"button role=\"tab\" tabindex=\"-1\" aria-selected=\"false\""}{">"}{"Tab 2"}{"<"}{"/button"}{">"}{"<"}{"button role=\"tab\" tabindex=\"-1\" aria-selected=\"false\""}{">"}{"Tab 3"}{"<"}{"/button"}{">"}{"<"}{"/div"}{">"}<Dim>{"<!-- User presses → arrow → focus moves to Tab 2:\n     Tab 1: tabindex=\"-1\", Tab 2: tabindex=\"0\" -->"}</Dim></CodeCard>
+<CodeWindow lang="html" title="roving tabindex pattern" mb="1.5rem" code={"<!-- Only the active tab is in the tab order -->\n<div role=\"tablist\">\n  <button role=\"tab\" tabindex=\"0\" aria-selected=\"true\">Tab 1</button>\n  <button role=\"tab\" tabindex=\"-1\" aria-selected=\"false\">Tab 2</button>\n  <button role=\"tab\" tabindex=\"-1\" aria-selected=\"false\">Tab 3</button>\n</div>\n\n<!-- User presses → - focus moves to Tab 2:\n     Tab 1: tabindex=\"-1\", Tab 2: tabindex=\"0\" -->"} />
 
-<CodeCard title="roving tabindex - JavaScript pattern" lang="javascript" mb="1.5rem"><Dim>{"// Move focus to the next item in the group"}</Dim>{"\nfunction focusItem(items, index) {\n  items.forEach((item, i) => {\n    item.setAttribute('tabindex', i === index ? '0' : '-1');\n  });\n  items[index].focus();\n}"}</CodeCard>
+<CodeWindow lang="javascript" title="roving tabindex - JavaScript pattern" mb="1.5rem" code={"// Move focus to the item at `index` - df$ writes the attributes\nfunction focusItem(items, index) {\n  df$(items).attr('tabindex', '-1');\n  df$(items[index]).attr('tabindex', '0');\n  items[index].focus(); // focus stays a native call\n}"} />
 
 <p class="text-sm text-muted-foreground mb-5"><strong>Used by:</strong> Tabs, Toolbar, Toggle Group, Dropdown Menu, Tree View</p>
 
@@ -387,7 +387,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <span class="text-sm text-muted-foreground"><code>:focus-visible</code> shows focus rings only on keyboard navigation, not mouse clicks. Applied to every interactive component.</span>
 </div>
 
-<CodeCard title="focus restoration pattern" lang="javascript" mb="2.5rem"><Dim>{"// Store trigger reference before opening"}</Dim>{"\ndialog._trigger = triggerButton;\ndialog.showModal();\n\n"}<Dim>{"// Restore focus when dialog closes"}</Dim>{"\ndialog.addEventListener('close', () => {\n  if (dialog._trigger) dialog._trigger.focus();\n});"}</CodeCard>
+<CodeWindow lang="javascript" title="focus restoration pattern" mb="2.5rem" code={"// Store the trigger before opening\ndialog._trigger = triggerButton;\ndialog.showModal();\n\n// Restore focus when the dialog closes\ndf$(dialog).on('close', () => dialog._trigger?.focus());"} />
 
 <div class="sep" />
 
@@ -404,7 +404,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <span class="text-sm text-muted-foreground">The entire region is announced as a whole, not just the changed parts.</span>
 </div>
 
-<CodeCard title="live region - toast notification" lang="markup" mb="2.5rem"><Dim>{"<!-- Success toast: polite announcement -->"}</Dim>{"<"}{"div class=\"toast\" role=\"status\"\n  aria-live=\"polite\" aria-atomic=\"true\""}{">"}{"\n  Settings saved successfully.\n"}{"<"}{"/div"}{">"}<Dim>{"<!-- Error toast: assertive (immediate) announcement -->"}</Dim>{"<"}{"div class=\"toast\" data-variant=\"destructive\"\n  role=\"alert\" aria-live=\"assertive\" aria-atomic=\"true\""}{">"}{"\n  Failed to save. Please try again.\n"}{"<"}{"/div"}{">"}</CodeCard>
+<CodeWindow lang="markup" title="live region - toast notification" mb="2.5rem" code={"<!-- Success toast: polite announcement -->\n<div class=\"toast\" role=\"status\"\n  aria-live=\"polite\" aria-atomic=\"true\">\n  Settings saved successfully.\n</div>\n<!-- Error toast: assertive (immediate) announcement -->\n<div class=\"toast\" data-variant=\"destructive\"\n  role=\"alert\" aria-live=\"assertive\" aria-atomic=\"true\">\n  Failed to save. Please try again.\n</div>"} />
 
 <div class="sep" />
 
@@ -423,7 +423,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <span class="text-sm text-muted-foreground">Every form input has a visible <code>&lt;label&gt;</code> element with a matching <code>for</code>/<code>id</code> pair, or <code>aria-label</code> for unlabeled inputs.</span>
 </div>
 
-<CodeCard title="icon button accessibility" lang="markup" mb="2.5rem"><Dim>{"<!-- Icon-only button: needs aria-label -->"}</Dim>{"<"}{"button class=\"btn\" data-size=\"icon\" aria-label=\"Close\""}{">"}{"<"}{"svg aria-hidden=\"true\""}{">"}{"..."}{"<"}{"/svg"}{">"}{"<"}{"/button"}{">"}<Dim>{"<!-- Button with text: icon is decorative -->"}</Dim>{"<"}{"button class=\"btn\""}{">"}{"<"}{"svg aria-hidden=\"true\""}{">"}{"..."}{"<"}{"/svg"}{">"}{"\n  Save Changes\n"}{"<"}{"/button"}{">"}</CodeCard>
+<CodeWindow lang="html" title="icon button accessibility" mb="2.5rem" code={"<!-- Icon-only button: needs aria-label -->\n<button class=\"btn\" data-size=\"icon\" aria-label=\"Close\">\n  <svg aria-hidden=\"true\">...</svg>\n</button>\n\n<!-- Button with text: the icon is decorative -->\n<button class=\"btn\">\n  <svg aria-hidden=\"true\">...</svg>\n  Save Changes\n</button>"} />
 
 <div class="sep" />
 

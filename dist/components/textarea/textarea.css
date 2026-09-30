@@ -19,6 +19,28 @@
     transition: border-color 150ms, box-shadow 150ms;
     resize: vertical;
     field-sizing: content;
+    line-height: 1.5;
+
+    /* -- Rows: data-rows is the height it starts at, data-max-rows where it
+       stops growing and scrolls instead (field-sizing grows it in between).
+       1lh = one line of this textarea, + the padding and border. -------- */
+    &[data-rows="1"] { min-height: calc(1lh + 1rem + 2px); }
+    &[data-rows="2"] { min-height: calc(2lh + 1rem + 2px); }
+    &[data-rows="3"] { min-height: calc(3lh + 1rem + 2px); }
+    &[data-rows="4"] { min-height: calc(4lh + 1rem + 2px); }
+    &[data-rows="5"] { min-height: calc(5lh + 1rem + 2px); }
+    &[data-rows="6"] { min-height: calc(6lh + 1rem + 2px); }
+    &[data-rows="8"] { min-height: calc(8lh + 1rem + 2px); }
+    &[data-rows="10"] { min-height: calc(10lh + 1rem + 2px); }
+    &[data-max-rows="2"] { max-height: calc(2lh + 1rem + 2px); }
+    &[data-max-rows="3"] { max-height: calc(3lh + 1rem + 2px); }
+    &[data-max-rows="4"] { max-height: calc(4lh + 1rem + 2px); }
+    &[data-max-rows="5"] { max-height: calc(5lh + 1rem + 2px); }
+    &[data-max-rows="6"] { max-height: calc(6lh + 1rem + 2px); }
+    &[data-max-rows="8"] { max-height: calc(8lh + 1rem + 2px); }
+    &[data-max-rows="10"] { max-height: calc(10lh + 1rem + 2px); }
+    &[data-max-rows="12"] { max-height: calc(12lh + 1rem + 2px); }
+    &[data-resize="none"] { resize: none; }
 
     &:focus {
       border-color: var(--ring);
@@ -57,17 +79,112 @@
     }
   }
 
+  /* -- Textarea group: a composer --------------------------------
+     The GROUP draws the frame (border, radius, focus ring, drop target);
+     the .textarea inside goes frameless and grows. Children in order: an
+     optional .file-drop-list (attachment chips, the file-input's own
+     items), the textarea, a .textarea-group-actions row (attach, send,
+     a counter). data-layout="inline" puts the actions beside the text -
+     a one-line chat composer that grows upward. */
+  .textarea-group {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-lg);
+    background: var(--background);
+    box-shadow: var(--shadow-xs);
+    transition: border-color 150ms, box-shadow 150ms, background-color 150ms;
+
+    & > .textarea {
+      min-height: calc(2lh + 1rem);
+      border: 0;
+      border-radius: inherit;
+      background: transparent;
+      box-shadow: none;
+      resize: none;
+      padding: 0.75rem 0.875rem 0.25rem;
+
+      &:focus { box-shadow: none; }
+    }
+
+    &:has(> .textarea:focus) {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
+    }
+
+    &:has(> .textarea:disabled) {
+      background: var(--muted);
+      box-shadow: none;
+    }
+
+    /* attachment chips above the text - a wrapping row of file items */
+    & > .file-drop-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      padding: 0.625rem 0.625rem 0;
+
+      &:empty { display: none; }
+      & > .file-drop-item { width: 13rem; max-width: 100%; box-sizing: border-box; }
+    }
+
+    & > .textarea-group-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.375rem;
+
+      /* everything after the spacer sits at the end - usually send */
+      & > .textarea-group-spacer { flex: 1; }
+    }
+
+    & .textarea-group-count {
+      padding-inline: 0.375rem;
+      color: var(--muted-foreground);
+      font-size: 0.75rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* inline: [actions] text [actions] on one row, aligned to the last line */
+    &[data-layout="inline"] {
+      flex-flow: row wrap;
+      align-items: flex-end;
+
+      & > .file-drop-list { flex-basis: 100%; }
+      & > .textarea {
+        flex: 1;
+        min-width: 0;
+        min-height: calc(1lh + 1rem);
+        padding: 0.5rem 0.25rem;
+      }
+      & > .textarea:first-child { padding-inline-start: 0.875rem; }
+      & > .textarea-group-actions { padding: 0.3125rem; }
+    }
+
+    /* a file dragged over the composer: the page sets data-dragover */
+    &[data-dragover] {
+      border-style: dashed;
+      border-color: var(--ring);
+      background: color-mix(in oklch, var(--accent) 45%, var(--background));
+    }
+  }
+
   /* -- Accessibility ---------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
-    .textarea {
+    .textarea,
+    .textarea-group {
       transition: none;
     }
   }
 
   @media (prefers-contrast: more) {
-    .textarea {
+    .textarea,
+    .textarea-group {
       border-width: 2px;
     }
+    .textarea-group > .textarea { border-width: 0; }
 
     .textarea:disabled {
       border-color: var(--muted-foreground);
@@ -75,6 +192,10 @@
   }
 
   @media (forced-colors: active) {
+    .textarea-group { border-color: ButtonBorder; }
+    .textarea-group:has(> .textarea:focus) { outline: 2px solid Highlight; outline-offset: 1px; }
+    .textarea-group > .textarea:focus { outline: none; }
+
     .textarea {
       border-color: ButtonBorder;
       color: ButtonText;

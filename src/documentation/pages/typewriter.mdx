@@ -1,0 +1,186 @@
+---
+title: "Typewriter"
+description: "Typewriter component - a line typed character by character behind a cursor, held, deleted and cycled through a list of strings: speed, pause, natural rhythm, colours per string, cursor styles, reserved width, start on scroll, pause / resume - the strings stay readable for assistive tech and without script."
+slug: "typewriter"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="typewriter" title="Typewriter" component="typewriter">
+  A line that types itself: character by character behind a cursor, held, deleted and on to the next string. The strings are authored as elements - without script the first one shows as text, and a screen reader hears the whole list once, never a keystroke at a time; the typed copy is <code>aria-hidden</code>. The cursor is solid while typing and blinks while idle, like a real one. Next to <DocLink href="text-rotate.html">Text Rotate</DocLink>, which rolls words without typing.
+</PageHeader>
+
+<SkillPanel component="typewriter">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;span class="typewriter"&gt;</code> with one child per string; the runtime hides them visually and types an <code>aria-hidden</code> copy with a CSS cursor.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Segmenter" title="one keystroke per grapheme"><code>Intl.Segmenter</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver" title="start on scroll"><code>IntersectionObserver</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent" title="typewriter-typed / typewriter-done"><code>CustomEvent</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-hidden" title="the typed copy is silent"><code>aria-hidden</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="whole strings swap instead"><code>prefers-reduced-motion</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.typewriter</code>
+    <code>.typewriter-cursor</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-loop</code>, <code>data-speed</code> (70), <code>data-delete-speed</code> (35), <code>data-pause</code> (1500), <code>data-start-delay</code>, <code>data-variable</code>, <code>data-trigger="visible"</code>, <code>data-cursor</code> (<code>block</code>, <code>underscore</code>, <code>none</code>), <code>data-cursor-hide</code> (<code>typing</code>, <code>done</code>), <code>data-reserve</code>, <code>data-align</code>; <code>--typewriter-cursor-color</code>; events <code>typewriter-typed</code>, <code>typewriter-done</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Typewriter" hint="data-loop cycles the strings: type, hold (data-pause), delete, next. The cursor is solid while typing and blinks while idle. A screen reader hears 'Build design systems. prototypes. dashboards.' once."
+<p class="h2 m-0">
+  Build
+  <span class="typewriter" data-loop>
+    <span>design systems.</span>
+    <span>prototypes.</span>
+    <span>dashboards.</span>
+  </span>
+</p>
+```
+
+```html example label="A colour per string" schema="none" hint="Each string's class or style goes with it: the typed line takes that colour while the string is on screen. --typewriter-cursor-color sets the cursor apart."
+<p class="h2 m-0">
+  Made for
+  <span class="typewriter" data-loop style="--typewriter-cursor-color: var(--muted-foreground)">
+    <span style="color: var(--primary)">designers</span>
+    <span style="color: oklch(0.6 0.16 250)">developers</span>
+    <span style="color: oklch(0.62 0.17 150)">agents</span>
+  </span>
+</p>
+```
+
+```html example label="Types once" schema="none" hint="One string, no data-loop: it types, then stops in the done state and fires typewriter-done - data-cursor-hide='done' lets the cursor go. Replay sets the default state again."
+<div class="flex flex-col gap-3 items-start">
+  <p class="h3 m-0">
+    <span class="typewriter" id="once" data-cursor-hide="done" data-speed="45">
+      <span>Ship the page, not the framework.</span>
+    </span>
+  </p>
+  <div class="flex items-center gap-3">
+    <button class="btn" data-variant="outline" data-size="sm" id="once-replay">Replay</button>
+    <output class="text-sm text-muted-foreground" id="once-status">typing…</output>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tw = document.getElementById('once');
+    const status = document.getElementById('once-status');
+    tw.addEventListener('typewriter-done', () => { status.value = 'done'; });
+    document.getElementById('once-replay').addEventListener('click', () => {
+      status.value = 'typing…';
+      tw.api.setState('default');
+    });
+  });
+</script>
+```
+
+```html example label="Cursor styles" schema="none" hint="data-cursor: the default bar, block, underscore or none; data-cursor-hide='typing' shows it only while the line is idle."
+<div class="flex flex-col gap-2 text-lg">
+  <p class="m-0">bar: <span class="typewriter" data-loop><span>a thin bar</span><span>the default</span></span></p>
+  <p class="m-0">block: <span class="typewriter" data-loop data-cursor="block"><span>a solid block</span><span>like a terminal</span></span></p>
+  <p class="m-0">underscore: <span class="typewriter" data-loop data-cursor="underscore"><span>an underscore</span><span>old school</span></span></p>
+  <p class="m-0">idle only: <span class="typewriter" data-loop data-cursor-hide="typing"><span>hidden while typing</span><span>back when idle</span></span></p>
+  <p class="m-0">none: <span class="typewriter" data-loop data-cursor="none"><span>no cursor at all</span><span>just the text</span></span></p>
+</div>
+```
+
+```html example label="Speed and natural rhythm" schema="none" hint="data-speed / data-delete-speed set the ms per character, data-pause the hold; data-variable jitters every keystroke (0.5×-1.5×) so it reads like a person typing, not a metronome."
+<div class="flex flex-col gap-2 text-lg">
+  <p class="m-0">steady: <span class="typewriter" data-loop data-speed="80" data-pause="1200"><span>every key the same</span><span>tick, tick, tick</span></span></p>
+  <p class="m-0">natural: <span class="typewriter" data-loop data-variable data-speed="80" data-pause="1200"><span>a little uneven</span><span>like a real hand</span></span></p>
+  <p class="m-0">fast: <span class="typewriter" data-loop data-speed="25" data-delete-speed="12" data-pause="900"><span>in a hurry</span><span>no time to waste</span></span></p>
+</div>
+```
+
+```html example label="Reserved width" schema="none" hint="In centred text a growing line pushes its neighbours around; data-reserve makes the box as wide as the longest string from the start, and data-align='center' centres the shorter ones inside it."
+<p class="h3 m-0" style="text-align:center;">
+  The
+  <span class="typewriter" data-loop data-reserve data-align="center">
+    <span>fastest</span>
+    <span>most accessible</span>
+    <span>smallest</span>
+  </span>
+  way to prototype.
+</p>
+```
+
+```html example label="Pause and resume" schema="none" hint="The State API drives it: paused freezes the line where it is, default resumes it, done stops on a string in full. typewriter-typed reports each completed string."
+<div class="flex flex-col gap-3 items-start">
+  <p class="h3 m-0">
+    <span class="typewriter" id="ctl" data-loop>
+      <span>Pause me mid-word.</span>
+      <span>Then resume.</span>
+      <span>Or finish on me.</span>
+    </span>
+  </p>
+  <div class="flex flex-wrap items-center gap-2">
+    <button class="btn" data-variant="outline" data-size="sm" data-set="paused">Pause</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-set="default">Resume</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-set="done">Finish on the last</button>
+    <output class="text-sm text-muted-foreground" id="ctl-log"></output>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tw = document.getElementById('ctl');
+    tw.addEventListener('typewriter-typed', (e) => { document.getElementById('ctl-log').value = `typed #${e.detail.index + 1}`; });
+    document.querySelectorAll('[data-set]').forEach((b) => b.addEventListener('click', () => {
+      const s = b.dataset.set;
+      tw.api.setState(s, s === 'done' ? { index: 2 } : {});
+    }));
+  });
+</script>
+```
+
+```html example label="When it scrolls into view" schema="none" hint="data-trigger='visible' waits for the line to enter the viewport (IntersectionObserver), with data-start-delay before the first key - scroll down the page and back to see it wait."
+<p class="h3 m-0">
+  <span class="typewriter" data-trigger="visible" data-start-delay="400" data-cursor-hide="done">
+    <span>I start when you can see me.</span>
+  </span>
+</p>
+```
+
+```html example label="In a terminal" schema="none" hint="Inside a code mockup line: the command types itself behind a block cursor - the mockup draws the prompt, the typewriter the keystrokes."
+<div class="mockup-code" data-chrome="mac" data-title="zsh">
+  <pre data-prefix="$"><code><span class="typewriter" data-cursor="block" data-loop data-pause="2000" data-speed="60"><span>npm i defuss-shadcn</span><span>bun run build</span><span>bun run deploy</span></span></code></pre>
+</div>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - running; restarts from the first string (or <code>\{ index \}</code>), resumes when coming from <code>paused</code></li>
+    <li><code>paused</code> - frozen where it is, the cursor blinks</li>
+    <li><code>done</code> - stopped with a string in full (<code>\{ index \}</code>); entered by itself at the end of a run without <code>data-loop</code></li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/typewriter-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a href="../schemas/typewriter.schema.json"><code>typewriter.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `index` | `number` | `—` | `0` | The string on screen; `setState('default', { index })` restarts from it. |
+| `paused` | `boolean` | `true`, `false` | `false` | Frozen where it is; the cursor blinks. |
+| `done` | `boolean` | `true`, `false` | `false` | Stopped with a string in full; entered at the end of a run without `data-loop`. |
+```
+
+</StatesSection>
+
+<SourceFiles component="typewriter" section="css" />
+
+<SourceFiles component="typewriter" section="js" jsTitle="JS" />
+
+</DocPage>

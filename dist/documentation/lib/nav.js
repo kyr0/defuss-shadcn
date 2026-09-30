@@ -79,6 +79,7 @@ export const NAV = [
     { heading: 'Primitives', icon: 'shapes', items: [
             { label: 'Typography', href: 'typography.html' },
             { label: 'Text Rotate', href: 'text-rotate.html', isNew: true },
+            { label: 'Typewriter', href: 'typewriter.html', isNew: true },
             { label: 'Separator', href: 'separator.html' },
             { label: 'Icon', href: 'icon.html' },
             { label: 'Kbd', href: 'kbd.html', isNew: true },
@@ -109,6 +110,7 @@ export const NAV = [
             { label: 'Color Picker', href: 'color-picker.html' },
             { label: 'Date Picker', href: 'date-picker.html' },
             { label: 'Combobox', href: 'combobox.html' },
+            { label: 'Search & Filter', href: 'search-filter.html', isNew: true },
             { label: 'Form', href: 'form.html' },
         ] },
     { heading: 'Data Display', icon: 'layout-grid', items: [
@@ -181,11 +183,14 @@ export const NAV = [
     { heading: 'Application', icon: 'app-window', items: [
             { label: 'Sidebar', href: 'sidebar.html' },
             { label: 'Resizer', href: 'resizer.html' },
+            { label: 'Border Layout', href: 'border-layout.html', isNew: true },
+            { label: 'Window', href: 'window.html', isNew: true },
         ] },
     { heading: 'Chat', icon: 'messages-square', items: [
             { label: 'Bubble', href: 'bubble.html', isNew: true },
             { label: 'Marker', href: 'marker.html', isNew: true },
             { label: 'Message', href: 'message.html', isNew: true },
+            { label: 'Session', href: 'session.html', isNew: true },
         ] },
     { heading: 'Mockup', icon: 'terminal', items: [
             { label: 'Code', href: 'mockup-code.html', isNew: true },

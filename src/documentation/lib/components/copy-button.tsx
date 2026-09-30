@@ -43,6 +43,52 @@ export function CodeBlock({
   );
 }
 
+/** Shiki language ids for the names the pages use. */
+const LANG: Record<string, string> = { markup: 'html', js: 'javascript', ts: 'typescript', shell: 'bash', sh: 'bash', text: '' };
+/** The window title when a block has none: its language. */
+const LANG_TITLE: Record<string, string> = { html: 'HTML', css: 'CSS', javascript: 'JavaScript', typescript: 'TypeScript', bash: 'Shell', json: 'JSON' };
+
+/** A source file for the guides, dogfooding the shipped mockup-code window:
+ * one numbered <pre> per line of `code`, `title` in the window bar (default:
+ * the language). With `lang`, shiki-highlight.ts colours the lines in place
+ * (codeToTokens - one token list per line, so the numbers and lines
+ * survive); the Copy button joins the lines' text, never the numbers.
+ * `numbers={false}` for text whose lines are not addressed (a folder tree);
+ * `column` for a window that fills a flex column (side-by-side pairs). */
+export function CodeWindow({
+  code,
+  lang,
+  title,
+  numbers = true,
+  column,
+  mb,
+}: Props & { code: string; lang?: string; title?: string; numbers?: boolean; column?: boolean; mb?: string }) {
+  const shiki = lang === undefined ? undefined : (LANG[lang] ?? lang) || undefined;
+  const name = title ?? (shiki ? LANG_TITLE[shiki] ?? shiki : undefined);
+  const lines = code.replace(/\n+$/, '').split('\n');
+  const outer = column
+    ? `position:relative;flex:1;min-width:0;display:flex;flex-direction:column;`
+    : `position:relative;margin-top:0.5rem;${mb ? `margin-bottom:${mb};` : ''}`;
+  return (
+    <div style={outer} data-code-static="">
+      <CopyButton />
+      <div
+        class="mockup-code"
+        {...(column ? { style: 'flex:1;' } : {})}
+        {...(numbers ? { 'data-numbers': '' } : {})}
+        {...(name ? { 'data-title': name } : {})}
+        {...(shiki ? { 'data-lang': shiki } : {})}
+      >
+        {lines.map((line) => (
+          <pre>
+            <code>{line}</code>
+          </pre>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /** A command block for the guides, dogfooding the shipped mockup-code
  * terminal. One command per line of `commands`; a line continuing a
  * backslash-ended one gets an empty prompt so it lines up. The prompt is

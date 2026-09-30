@@ -4,7 +4,7 @@ description: "Every interactive component declares its UI states by name and exp
 slug: "state-api"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard, DeclaredStatesTable } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeWindow, CodeCard, TableCard, DeclaredStatesTable } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -16,7 +16,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5"> Each component instance binds a tiny API directly on the element. State lives <em>on the element</em> (never in module scope), so twenty components on one page can each hold a different state: </p>
 
-<CodeCard title="the shape - any JS component" lang="javascript" mb="2.5rem">{"// set a declared state by name - throws on unknown names\nel.api.setState('open', { /* optional config */ });\n\n// read it back - always reflects the real UI\nel.api.getState(); // → { name: 'open', config: { ... } }"}</CodeCard>
+<CodeWindow lang="javascript" title="the shape - any JS component" mb="2.5rem" code={"// the element - df$ selects it (get(0) = the node itself)\nconst el = df$('#confirm').get(0);\n\n// set a declared state by name - throws on unknown names\nel.api.setState('open', { /* optional config */ });\n\n// read it back - always reflects the real UI\nel.api.getState(); // → { name: 'open', config: { ... } }"} />
 
 <p class="text-sm text-muted-foreground mb-5"> Three guarantees, verified by <DocLink href="https://github.com/kyr0/defuss-shadcn/blob/main/scripts/verify.ts" target="_blank">the build's verifier</DocLink> for every component: </p>
 
@@ -39,59 +39,45 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5"> The buttons below call <code>api.setState()</code> and print what <code>api.getState()</code> reads back. Closing the dialog with Escape or the backdrop flips the observed state to <code>default</code> on its own - the read always matches the UI. </p>
 
-<Example first>
-  <ExampleLabel>Drive the dialog by name</ExampleLabel>
-  <ExampleHint>The same API keyboard users, tests, and agents use.</ExampleHint>
-  <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;width:100%;">
-    <button class="btn" data-variant="default" type="button" onclick="const d=document.getElementById('state-api-dialog');d.api.setState('open');document.getElementById('state-api-out').textContent=d.api.getState().name">api.setState('open')</button>
-    <button class="btn" data-variant="outline" type="button" onclick="const d=document.getElementById('state-api-dialog');d.api.setState('default');document.getElementById('state-api-out').textContent=d.api.getState().name">api.setState('default')</button>
-    <output class="badge" data-variant="secondary" id="state-api-out" aria-live="polite">default</output>
-  </div>
-  <ExampleCode>{`<!-- dialog.js binds el.api per instance on load -->
-<button class="btn" data-variant="default" type="button"
-        onclick="const d = document.getElementById('state-api-dialog'),
-                 o = document.getElementById('state-api-out');
-                 d.api.setState('open');   // by name - no showModal()
-                 o.textContent = d.api.getState().name">
-  api.setState('open')
-</button>
-<button class="btn" data-variant="outline" type="button"
-        onclick="const d = document.getElementById('state-api-dialog'),
-                 o = document.getElementById('state-api-out');
-                 d.api.setState('default');
-                 o.textContent = d.api.getState().name">
-  api.setState('default')
-</button>
-<output class="badge" data-variant="secondary"
-         id="state-api-out" aria-live="polite">default</output>
-
-<!-- the dialog: closes via Escape/backdrop/close-button; dialog.js
-     reflects that into the named state, so a deferred getState()
-     reads 'default' again -->
-<dialog id="state-api-dialog" class="dialog"
-        role="dialog" aria-modal="true" aria-labelledby="sa-title"
-        onclose="const d = this, o = document.getElementById('state-api-out');
-                 queueMicrotask(function () { o.textContent = d.api.getState().name; });">
+```html example label="Drive the dialog by name" schema="none" height="24" hint="The same API keyboard users, tests and agents use: the buttons call api.setState() and print what api.getState() reads back. Close the dialog with Escape, the backdrop or its button - the named state follows the UI, so the badge flips back to default on its own."
+<div class="flex flex-wrap items-center gap-2">
+  <button class="btn" type="button" id="sa-open">api.setState('open')</button>
+  <button class="btn" data-variant="outline" type="button" id="sa-default">api.setState('default')</button>
+  <output class="badge" data-variant="secondary" id="sa-out" aria-live="polite">default</output>
+</div>
+<dialog id="sa-dialog" class="dialog" aria-labelledby="sa-title">
   <div class="dialog-content">
     <div class="dialog-header">
       <h2 class="dialog-title" id="sa-title">Named state</h2>
+      <p class="dialog-description">Opened via api.setState('open') - close it and watch the badge flip back to default.</p>
     </div>
     <div class="dialog-footer">
       <button class="btn" data-variant="outline" data-dialog-close>Close</button>
     </div>
   </div>
-</dialog>`}</ExampleCode>
-</Example>
+</dialog>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // df$ selects; dialog.js has bound dialog.api on the element
+    const dialog = df$('#sa-dialog').get(0);
+    const show = () => df$('#sa-out').text(dialog.api.getState().name);
+    df$('#sa-open').on('click', () => { dialog.api.setState('open'); show(); });
+    df$('#sa-default').on('click', () => { dialog.api.setState('default'); show(); });
+    // Escape / backdrop / close button: the state follows the dialog
+    df$(dialog).on('close', () => queueMicrotask(show));
+  });
+</script>
+```
 
 <H2>Discovering the states</H2>
 
 <p class="text-sm text-muted-foreground mb-5"> Three places name the same list. The skill frontmatter is the machine-readable source - <code>dist/SKILL.md</code> indexes it, and every component's doc page shows the states with a live demo: </p>
 
-<CodeCard title="dialog/component-skill.md" lang="markdown" mb="1.5rem">{"---\nname: Dialog\ntype: MOL\n...\nsupportedStates: default, open\n---\n\n## States\n- `default` - closed (authored initial state)\n- `open` - shown modally via showModal()\n\n```js\ndocument.querySelector('#confirm')\n  .api.setState('open');\n```"}</CodeCard>
+<CodeWindow lang="markdown" title="dialog/component-skill.md" mb="1.5rem" code={"---\nname: Dialog\ntype: MOL\n...\nsupportedStates: default, open\n---\n\n## States\n- `default` - closed (authored initial state)\n- `open` - shown modally via showModal()\n\n```js\ndf$('#confirm').get(0).api.setState('open');\n```"} />
 
 <p class="text-sm text-muted-foreground mb-5"> The component scripts also register their states and a registry-level API on <code>globalThis.df$</code> - useful when you have no element handle yet: </p>
 
-<CodeCard title="registry globals (set by each component .js)" lang="javascript" mb="2.5rem">{"globalThis.df$.shadcn.dialogStates;  // ['default', 'open']\n\n// registry form - element passed explicitly, same contract as el.api\nconst { dialogApi } = globalThis.df$;\ndialogApi.setState(document.querySelector('#confirm'), 'open');\ndialogApi.getState(document.querySelector('#confirm'));\n// → { name: 'open', config: {} }"}</CodeCard>
+<CodeWindow lang="javascript" title="registry globals (set by each component .js)" mb="2.5rem" code={"df$.shadcn.dialogStates;  // ['default', 'open']\n\n// registry form - element passed explicitly, same contract as el.api\nconst { dialogApi } = df$.shadcn;\nconst confirm = df$('#confirm').get(0);\ndialogApi.setState(confirm, 'open');\ndialogApi.getState(confirm);\n// → { name: 'open', config: {} }"} />
 
 <H2>States across components</H2>
 
@@ -107,18 +93,5 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-8"> See also: <DocLink href="how-to-use.html">How to Use</DocLink> (where the <code>.js</code> layer sits), <DocLink href="data-attribute-api.html">Data Attribute API</DocLink> (markup configuration, as opposed to runtime state). </p>
 
-<PageOverlay>
-  <dialog id="state-api-dialog" class="dialog" role="dialog" aria-modal="true" aria-labelledby="sa-title" onclose="queueMicrotask(function () { const o = document.getElementById('state-api-out'); if (o) o.textContent = document.getElementById('state-api-dialog').api.getState().name; });">
-    <div class="dialog-content">
-      <div class="dialog-header">
-        <h2 class="dialog-title" id="sa-title">Named state</h2>
-        <p class="dialog-description">Opened via <code>api.setState('open')</code> - close it with Escape and watch the badge flip back to <code>default</code>.</p>
-      </div>
-      <div class="dialog-footer">
-        <button class="btn" data-variant="outline" data-dialog-close>Close</button>
-      </div>
-    </div>
-  </dialog>
-</PageOverlay>
 
 </DocPage>

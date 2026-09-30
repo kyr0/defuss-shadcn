@@ -167,10 +167,46 @@ function mermaidNode(node: CodeNode): unknown {
   return { type: 'mdxJsxFlowElement', name: 'MermaidDiagram', attributes, children: [] };
 }
 
+/**
+ * A plain code fence (```html / ```css / ```js … - no `example`) → the docs'
+ * <CodeWindow>: the shipped mockup-code window, numbered, Shiki-coloured,
+ * with a Copy button. Meta: title="…" names the window (default: the
+ * language). Imported under an alias, so a page's own CodeWindow import
+ * never collides with the injected one.
+ */
+const FENCE_WINDOW = 'FenceCodeWindow';
+function codeWindowNode(node: CodeNode): unknown {
+  const attrs = fenceAttrs(node.meta ?? '');
+  const attributes = [jsxAttr('code', node.value)];
+  if (node.lang) attributes.push(jsxAttr('lang', node.lang));
+  if (attrs.title) attributes.push(jsxAttr('title', attrs.title));
+  return { type: 'mdxJsxFlowElement', name: FENCE_WINDOW, attributes, children: [] };
+}
+function fenceWindowImport(): unknown {
+  const from = '../lib/components/copy-button';
+  return {
+    type: 'mdxjsEsm',
+    value: `import { CodeWindow as ${FENCE_WINDOW} } from '${from}';`,
+    data: {
+      estree: {
+        type: 'Program',
+        sourceType: 'module',
+        body: [{
+          type: 'ImportDeclaration',
+          specifiers: [{ type: 'ImportSpecifier', imported: { type: 'Identifier', name: 'CodeWindow' }, local: { type: 'Identifier', name: FENCE_WINDOW } }],
+          source: { type: 'Literal', value: from },
+        }],
+        comments: [],
+      },
+    },
+  };
+}
+
 /** True once the page contains at least one transformed fence (import injected once). */
 function transform(tree: MdastParent, pageComponent: string): boolean {
   let used = false;
   let mermaid = false;
+  let windows = false;
   const visit = (node: MdastParent) => {
     if (!Array.isArray(node.children)) return;
     for (let i = 0; i < node.children.length; i++) {
@@ -193,6 +229,9 @@ function transform(tree: MdastParent, pageComponent: string): boolean {
           mermaid = true;
           continue;
         }
+        node.children[i] = codeWindowNode(child);
+        windows = true;
+        continue;
       } else if (child.children) {
         visit(child);
       }
@@ -201,10 +240,11 @@ function transform(tree: MdastParent, pageComponent: string): boolean {
   visit(tree);
   if (used) tree.children.unshift(importNode());
   if (mermaid) tree.children.unshift(importNode(['MermaidDiagram'], '../lib/components/mermaid-diagram'));
-  return used || mermaid;
+  if (windows) tree.children.unshift(fenceWindowImport());
+  return used || mermaid || windows;
 }
 
-/** remark plugin: ```… example / ```states / ```mermaid fences → CodeExample / StatesTable / MermaidDiagram. */
+/** remark plugin: ```… example / ```states / ```mermaid / plain fences → CodeExample / StatesTable / MermaidDiagram / CodeWindow. */
 export function remarkDocExamples() {
   return (tree: MdastParent, file: { basename?: string }) => {
     // pages/{name}.mdx → the page's own component (plan §23)

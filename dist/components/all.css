@@ -961,6 +961,238 @@
   }
 }
 
+/* ── components/border-layout/border-layout.css ── */
+/* -- Border Layout component --------------------------------------
+   An application frame in five regions - north, south, west, east around a
+   center - on a CSS grid. Every side region that should resize is a
+   .resizer wrapping its pane: inside a border layout the resizer's handle
+   becomes a full-length divider (line, optional grip), dragged or moved with
+   the arrow keys. Regions left out collapse, so the same frame is a
+   horizontal split, a vertical split, three columns... */
+
+@layer components {
+  .border-layout {
+    /* the divider, themable per layout or per region */
+    --_line-width: var(--border-layout-divider-width, 1px);
+    --_line-style: solid;
+    --_line-color: var(--border-layout-divider-color, var(--border));
+    --_accent: var(--border-layout-accent, var(--ring));
+    --_hit: 0.75rem;
+    --_gap: 0px;
+
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    /* north and south dominate: they span the full width */
+    grid-template-areas:
+      "north north north"
+      "west  center east"
+      "south south south";
+    gap: var(--_gap);
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+
+    /* west and east dominate: they span the full height */
+    &[data-dominant="we"] {
+      grid-template-areas:
+        "west north  east"
+        "west center east"
+        "west south  east";
+    }
+
+    /* no frame of its own - fills a window or a page */
+    &[data-frame="none"] {
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+    }
+  }
+
+  .border-layout > .border-layout-north { grid-area: north; }
+  .border-layout > .border-layout-south { grid-area: south; }
+  .border-layout > .border-layout-west { grid-area: west; }
+  .border-layout > .border-layout-east { grid-area: east; }
+  .border-layout > .border-layout-center {
+    grid-area: center;
+    min-width: 0;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  /* -- Regions ------------------------------------------------------ */
+  /* a resizable region: the resizer wrapper fills its grid cell, its pane
+     stretches across the other axis and carries the size on its own */
+  .border-layout > .resizer {
+    display: flex;
+    width: auto;
+    min-width: 0;
+    min-height: 0;
+  }
+  .border-layout > :is(.border-layout-north, .border-layout-south).resizer { flex-direction: column; }
+  .border-layout > .resizer > :not(.resizer-handle) {
+    flex: none;
+    box-sizing: border-box;
+    min-width: 0;
+    min-height: 0;
+    overflow: auto;
+  }
+  /* the pane of a collapsed region is gone; its divider stays to bring it back */
+  .border-layout > .resizer[data-collapsed] > :not(.resizer-handle) { display: none; }
+
+  /* a region that does not resize still gets the divider line */
+  .border-layout > .border-layout-north:not(.resizer) { border-block-end: var(--_line-width) var(--_line-style) var(--_line-color); }
+  .border-layout > .border-layout-south:not(.resizer) { border-block-start: var(--_line-width) var(--_line-style) var(--_line-color); }
+  .border-layout > .border-layout-west:not(.resizer) { border-inline-end: var(--_line-width) var(--_line-style) var(--_line-color); }
+  .border-layout > .border-layout-east:not(.resizer) { border-inline-start: var(--_line-width) var(--_line-style) var(--_line-color); }
+
+  /* padding for panes that hold text (optional) */
+  .border-layout-pane { padding: 0.75rem; }
+
+  /* -- Dividers: the resizer handle, redrawn --------------------------- */
+  .border-layout > .resizer > .resizer-handle {
+    z-index: 5;
+    width: auto;
+    height: auto;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    opacity: 1;
+    color: var(--muted-foreground);
+
+    /* the line */
+    &::before {
+      content: "";
+      position: absolute;
+      transition: border-color 120ms;
+    }
+    /* the grip - hidden unless data-grip asks for one */
+    &::after {
+      content: none;
+      inset: auto;
+    }
+
+    &:hover,
+    &:focus-visible { background: transparent; outline: none; }
+    &:is(:hover, :focus-visible)::before { border-color: var(--_accent); }
+    &:focus-visible::after { outline: 2px solid var(--_accent); outline-offset: 1px; }
+
+    /* vertical dividers: west's east edge, east's west edge */
+    &:is([data-handle="e"], [data-handle="w"]) {
+      top: 0;
+      bottom: 0;
+      width: var(--_hit);
+      cursor: col-resize;
+      &::before {
+        inset-block: 0;
+        left: 50%;
+        border-inline-start: var(--_line-width) var(--_line-style) var(--_line-color);
+        translate: -50% 0;
+      }
+    }
+    &[data-handle="e"] { right: 0; left: auto; translate: calc(50% + var(--_gap) / 2) 0; }
+    &[data-handle="w"] { left: 0; right: auto; translate: calc(-50% - var(--_gap) / 2) 0; }
+
+    /* horizontal dividers: north's south edge, south's north edge */
+    &:is([data-handle="n"], [data-handle="s"]) {
+      left: 0;
+      right: 0;
+      height: var(--_hit);
+      cursor: row-resize;
+      &::before {
+        inset-inline: 0;
+        top: 50%;
+        border-block-start: var(--_line-width) var(--_line-style) var(--_line-color);
+        translate: 0 -50%;
+      }
+    }
+    &[data-handle="s"] { bottom: 0; top: auto; translate: 0 calc(50% + var(--_gap) / 2); }
+    &[data-handle="n"] { top: 0; bottom: auto; translate: 0 calc(-50% - var(--_gap) / 2); }
+  }
+
+  /* dragging: the divider lights up; the resizer's own box outline stays off */
+  .border-layout > .resizer[data-resizing] {
+    outline: none;
+    & > .resizer-handle { background: transparent; }
+    & > .resizer-handle::before { border-color: var(--_accent); }
+  }
+
+  /* -- Grips: data-grip on the layout (every divider) or on one region -- */
+  :is(.border-layout[data-grip] > .resizer, .border-layout > .resizer[data-grip]) > .resizer-handle::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    box-sizing: border-box;
+    border-radius: var(--radius-sm);
+  }
+  /* dots: a small card with a dotted grip */
+  :is(.border-layout[data-grip="dots"] > .resizer, .border-layout > .resizer[data-grip="dots"]) > .resizer-handle::after {
+    width: 0.75rem;
+    height: 1.25rem;
+    border: 1px solid var(--_line-color);
+    background:
+      radial-gradient(circle, currentColor 0.75px, transparent 1.25px) center / 4px 4px,
+      var(--background);
+  }
+  /* bar: a pill across the line */
+  :is(.border-layout[data-grip="bar"] > .resizer, .border-layout > .resizer[data-grip="bar"]) > .resizer-handle::after {
+    width: 0.25rem;
+    height: 2rem;
+    border-radius: 999px;
+    background: color-mix(in oklch, var(--foreground) 35%, var(--_line-color));
+  }
+  /* data-grip="none" - on the layout (regions without their own grip) or one
+     region - switches it off; more specific than the rules above */
+  :is(.border-layout[data-grip="none"] > .resizer:not([data-grip]), .border-layout > .resizer[data-grip="none"]) > .resizer-handle::after { content: none; }
+  /* horizontal dividers turn the grip sideways */
+  .border-layout .resizer > .resizer-handle:is([data-handle="n"], [data-handle="s"])::after { rotate: 90deg; }
+  .border-layout .resizer > .resizer-handle:is(:hover, :focus-visible)::after { border-color: var(--_accent); }
+
+  /* -- Divider styles (data-divider on the layout or one region) ----------- */
+  :is(.border-layout, .border-layout > .resizer, .border-layout > [class*="border-layout-"]) {
+    &[data-divider="dashed"] { --_line-style: dashed; }
+    &[data-divider="dotted"] { --_line-style: dotted; --_line-width: var(--border-layout-divider-width, 2px); }
+    &[data-divider="double"] { --_line-style: double; --_line-width: var(--border-layout-divider-width, 4px); }
+    &[data-divider="thick"] { --_line-width: var(--border-layout-divider-width, 4px); --_line-color: var(--border-layout-divider-color, var(--muted)); }
+    &[data-divider="none"] { --_line-width: 0px; }
+  }
+  /* gap: the regions float as cards in a gutter, the divider lives in the gutter */
+  .border-layout[data-divider="gap"] {
+    --_gap: 0.5rem;
+    --_line-width: 0px;
+    padding: var(--_gap);
+    background: var(--muted);
+
+    & > :is(.border-layout-north, .border-layout-south, .border-layout-west, .border-layout-east, .border-layout-center):not(.resizer),
+    & > .resizer > :not(.resizer-handle) {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--card);
+    }
+  }
+
+  /* -- Accessibility -------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .border-layout > .resizer > .resizer-handle::before { transition: none; }
+  }
+
+  @media (prefers-contrast: more) {
+    .border-layout { --_line-color: var(--foreground); }
+  }
+
+  @media (forced-colors: active) {
+    .border-layout { border: 1px solid CanvasText; --_line-color: CanvasText; --_accent: Highlight; }
+    .border-layout > .resizer > .resizer-handle::before { forced-color-adjust: none; }
+  }
+}
+
 /* ── components/brand-logos/brand-logos.css ── */
 /* -- Brand Logos (marketing) ---------------------------------------
    "Trusted by" row: inline SVG marks inherit currentColor so logos
@@ -7948,6 +8180,8 @@
     font-family: var(--font-mono);
     font-size: 0.875rem;
     line-height: 1.7;
+    /* code shows what is typed: no => → ⇒ or <!-- → arrow ligatures */
+    font-variant-ligatures: none;
     text-align: start;
     /* code reads left to right even inside an RTL page */
     direction: ltr;
@@ -8057,6 +8291,59 @@
       &::before { color: inherit; opacity: 0.7; }
     }
 
+    /* -- Diff: data-diff="add" / "remove" lines ----------------------
+       The sign sits in its own column before the code (generated, never
+       copied), so numbers and prompts keep theirs; every line of a diff
+       window gets the column, so context lines line up. Word changes
+       inside a line are native <ins> / <del>. */
+    &:where(:has(> pre[data-diff])) > pre > code::before {
+      content: "";
+      display: inline-block;
+      width: 2ch;
+      user-select: none;
+    }
+    & > pre[data-diff="add"] { --_tone: var(--_success); }
+    & > pre[data-diff="remove"] { --_tone: var(--_destructive); }
+    & > pre[data-diff] {
+      color: var(--_tone);
+      background: color-mix(in oklch, var(--_tone) 14%, transparent);
+    }
+    & > pre[data-diff="add"] > code::before { content: "+"; }
+    & > pre[data-diff="remove"] > code::before { content: "-"; }
+    & > pre > code :is(ins, del) {
+      border-radius: 0.2em;
+      color: inherit;
+      text-decoration: none;
+    }
+    & > pre > code ins { background: color-mix(in oklch, var(--_success) 32%, transparent); }
+    & > pre > code del {
+      background: color-mix(in oklch, var(--_destructive) 32%, transparent);
+      text-decoration: line-through;
+    }
+    /* data-strike (and the animated diff) strikes removed lines through */
+    &:is([data-strike], [data-animate]) > pre[data-diff="remove"] {
+      opacity: 0.8;
+      & > code {
+        text-decoration: line-through;
+        text-decoration-color: color-mix(in oklch, var(--_tone) 70%, transparent);
+      }
+    }
+
+    /* -- Animated diff: removed lines turn red and strike through, added
+       lines slide in green, one after another; context lines stay.
+       Replays whenever data-animate is set again. ------------------ */
+    &[data-animate] > pre {
+      --_stagger: var(--mockup-code-stagger, 140ms);
+      --_delay: calc(var(--mockup-code-delay, 300ms) + var(--_i, 0) * var(--_stagger));
+    }
+    &[data-animate] > pre[data-diff="remove"] {
+      animation: mockup-code-remove 450ms ease-out var(--_delay) both;
+      & > code { animation: mockup-code-strike 450ms ease-out var(--_delay) both; }
+    }
+    &[data-animate] > pre[data-diff="add"] {
+      animation: mockup-code-add 450ms cubic-bezier(0.2, 0.8, 0.2, 1) var(--_delay) both;
+    }
+
     /* -- Cursor: a blinking block after the line --------------------- */
     & > pre[data-cursor] > code::after {
       content: "";
@@ -8111,11 +8398,48 @@
   @keyframes mockup-code-cursor {
     50% { opacity: 0; }
   }
+  /* each keyframe starts neutral and ends on the line's own diff styles */
+  @keyframes mockup-code-remove {
+    from { color: var(--_fg); background: transparent; opacity: 1; }
+  }
+  @keyframes mockup-code-strike {
+    from { text-decoration-color: transparent; }
+  }
+  @keyframes mockup-code-add {
+    from { color: var(--_fg); background: transparent; opacity: 0; translate: -1.5rem 0; }
+  }
+
+  /* the line's position drives the stagger: sibling-index() where the
+     browser has it, a counted fallback for the first 24 lines elsewhere */
+  @supports (order: sibling-index()) {
+    .mockup-code[data-animate] > pre { --_i: sibling-index(); }
+  }
+  @supports not (order: sibling-index()) {
+    .mockup-code[data-animate] > pre:nth-child(2) { --_i: 2; }
+    .mockup-code[data-animate] > pre:nth-child(3) { --_i: 3; }
+    .mockup-code[data-animate] > pre:nth-child(4) { --_i: 4; }
+    .mockup-code[data-animate] > pre:nth-child(5) { --_i: 5; }
+    .mockup-code[data-animate] > pre:nth-child(6) { --_i: 6; }
+    .mockup-code[data-animate] > pre:nth-child(7) { --_i: 7; }
+    .mockup-code[data-animate] > pre:nth-child(8) { --_i: 8; }
+    .mockup-code[data-animate] > pre:nth-child(9) { --_i: 9; }
+    .mockup-code[data-animate] > pre:nth-child(10) { --_i: 10; }
+    .mockup-code[data-animate] > pre:nth-child(11) { --_i: 11; }
+    .mockup-code[data-animate] > pre:nth-child(12) { --_i: 12; }
+    .mockup-code[data-animate] > pre:nth-child(13) { --_i: 13; }
+    .mockup-code[data-animate] > pre:nth-child(14) { --_i: 14; }
+    .mockup-code[data-animate] > pre:nth-child(15) { --_i: 15; }
+    .mockup-code[data-animate] > pre:nth-child(16) { --_i: 16; }
+    .mockup-code[data-animate] > pre:nth-child(n + 17) { --_i: 17; }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   @layer components {
     .mockup-code > pre[data-cursor] > code::after { animation: none; }
+    /* the diff shows its end state at once */
+    .mockup-code[data-animate] > pre,
+    .mockup-code[data-animate] > pre > code { animation: none; }
   }
 }
 
@@ -8129,6 +8453,8 @@
   @layer components {
     .mockup-code { border: 1px solid CanvasText; }
     .mockup-code > pre[data-highlight] { forced-color-adjust: none; background: Highlight; color: HighlightText; }
+    /* the +/- signs carry the diff; <ins>/<del> get system marks */
+    .mockup-code > pre > code :is(ins, del) { outline: 1px solid CanvasText; }
   }
 }
 
@@ -11150,6 +11476,367 @@
   }
 }
 
+/* ── components/search-filter/search-filter.css ── */
+/* -- Search & Filter component ----------------------------------
+   Two form controls for narrowing a list:
+   .search-box - a search field with a leading icon and a clear (×) button
+                 that shows only while there is something to clear
+   .filter     - category chips on native radios / checkboxes: pick one and
+                 the others step aside behind a reset (×) - CSS only */
+
+@layer components {
+  /* -- Search box ------------------------------------------------ */
+  .search-box {
+    /* the BOX draws the field frame; the input inside is bare, so the icon
+       and the clear button sit inside the border like one control */
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    height: 2.25rem;
+    padding-inline: 0.75rem 0.375rem;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    color: var(--foreground);
+    font-size: 0.875rem;
+    font-family: var(--font-sans);
+    box-shadow: var(--shadow-xs);
+    cursor: text;
+    transition: border-color 150ms, box-shadow 150ms;
+
+    &:focus-within {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
+    }
+
+    /* the leading icon (an <svg> or a lucide <i> before the input) */
+    & > :is(svg, i, .search-box-icon) {
+      flex: none;
+      width: 1em;
+      height: 1em;
+      color: var(--muted-foreground);
+    }
+
+    & > input {
+      flex: 1;
+      min-width: 0;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      outline: none;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      appearance: none;
+
+      &::placeholder { color: var(--muted-foreground); }
+      /* the box brings its own clear button - drop the UA's */
+      &::-webkit-search-cancel-button,
+      &::-webkit-search-decoration { appearance: none; display: none; }
+      &:disabled { cursor: not-allowed; }
+    }
+
+    &:has(> input:disabled) {
+      background: var(--muted);
+      color: var(--muted-foreground);
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    &:has(> input[aria-invalid="true"]) {
+      border-color: var(--destructive);
+      &:focus-within { box-shadow: 0 0 0 2px oklch(from var(--destructive) l c h / 0.2); }
+    }
+
+    /* -- Clear button: a CSS-drawn ×, only while there is text -------- */
+    & > .search-box-clear {
+      position: relative;
+      flex: none;
+      display: none;
+      width: 1.5rem;
+      height: 1.5rem;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted-foreground);
+      cursor: pointer;
+      transition: background-color 150ms, color 150ms;
+
+      &::before,
+      &::after {
+        content: "";
+        position: absolute;
+        inset: 50% auto auto 50%;
+        width: 0.75rem;
+        height: 1.5px;
+        border-radius: 1px;
+        background: currentColor;
+        translate: -50% -50%;
+        rotate: 45deg;
+      }
+      &::after { rotate: -45deg; }
+
+      &:hover { background: var(--accent); color: var(--accent-foreground); }
+      &:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+    }
+
+    /* the runtime names the state: filled / searching = there is a value */
+    &:is([data-state-name="filled"], [data-state-name="searching"]) {
+      & > .search-box-clear { display: block; }
+      /* a trailing hint (a <kbd> shortcut, a scope label) steps aside */
+      & > :is(kbd, .search-box-hint) { display: none; }
+    }
+
+    & > :is(kbd, .search-box-hint) {
+      flex: none;
+      margin-inline-end: 0.125rem;
+    }
+
+    & > .search-box-hint {
+      color: var(--muted-foreground);
+      font-size: 0.75em;
+    }
+
+    /* -- Searching: a spinner stands in for the leading icon ---------- */
+    &::before {
+      content: "";
+      display: none;
+      flex: none;
+      box-sizing: border-box;
+      width: 1em;
+      height: 1em;
+      border: 2px solid color-mix(in oklch, var(--muted-foreground) 30%, transparent);
+      border-top-color: var(--muted-foreground);
+      border-radius: 50%;
+      animation: search-box-spin 700ms linear infinite;
+    }
+
+    &[data-state-name="searching"] {
+      &::before { display: block; }
+      & > :is(svg, i, .search-box-icon) { display: none; }
+    }
+
+    /* -- Variants / shape / sizes ------------------------------------- */
+    &[data-variant="muted"] {
+      background: var(--muted);
+      border-color: transparent;
+      box-shadow: none;
+    }
+
+    &[data-shape="pill"] {
+      border-radius: 999px;
+      padding-inline-start: 0.875rem;
+    }
+
+    &[data-size="sm"] {
+      height: 2rem;
+      padding-inline: 0.625rem 0.25rem;
+      font-size: 0.8125rem;
+      & > .search-box-clear { width: 1.25rem; height: 1.25rem; }
+    }
+
+    &[data-size="lg"] {
+      height: 2.75rem;
+      padding-inline: 1rem 0.5rem;
+      font-size: 1rem;
+      & > .search-box-clear { width: 1.75rem; height: 1.75rem; }
+    }
+  }
+
+  /* -- Filter ------------------------------------------------------ */
+  .filter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    /* chips space themselves (margin, not gap): a collapsed chip must take
+       no room at all, and a gap would stay behind it */
+    row-gap: 0.375rem;
+    /* chips collapse to and grow from width 0 - animate to/from auto */
+    interpolate-size: allow-keywords;
+    /* a <form> or <fieldset> host carries no box of its own */
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+
+    /* every chip is a native radio / checkbox (or the reset button) -
+       appearance: none, the label drawn from aria-label */
+    & > input {
+      appearance: none;
+      box-sizing: border-box;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: none;
+      min-width: 0;
+      width: auto;
+      height: 2rem;
+      margin: 0 0.375rem 0 0;
+      padding: 0 0.875rem;
+      border: 1px solid var(--input);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: var(--background);
+      color: var(--foreground);
+      font: 500 0.875rem/1 var(--font-sans);
+      white-space: nowrap;
+      cursor: pointer;
+      box-shadow: var(--shadow-xs);
+      /* choosing a chip never jumps: the others shrink to nothing and the
+         reset grows, all in one glide, and the chosen chip slides along */
+      transition:
+        background-color 150ms, color 150ms, border-color 150ms,
+        width 250ms ease, padding 250ms ease, margin 250ms ease, border-width 250ms ease,
+        opacity 200ms, scale 250ms ease, visibility 250ms allow-discrete;
+
+      &:is([type="radio"], [type="checkbox"]):not(.filter-reset)::after { content: attr(aria-label); }
+
+      /* a checkbox chip shows its box: several may be ticked */
+      &[type="checkbox"]::before {
+        content: "";
+        flex: none;
+        box-sizing: border-box;
+        width: 0.875em;
+        height: 0.875em;
+        margin-inline-end: 0.5em;
+        border: 1.5px solid currentColor;
+        border-radius: 0.25em;
+        opacity: 0.7;
+      }
+      &[type="checkbox"]:checked::before {
+        opacity: 1;
+        background: currentColor;
+        /* the tick is cut out of the filled box, so it shows the chip colour */
+        mask:
+          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-6.5' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 85% no-repeat,
+          linear-gradient(#000 0 0);
+        mask-composite: exclude;
+      }
+
+      &:hover {
+        background: var(--accent);
+        color: var(--accent-foreground);
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: 2px;
+      }
+
+      &:checked {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: var(--primary-foreground);
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        &:hover { background: var(--background); color: var(--foreground); }
+      }
+    }
+
+    /* the reset: <input type="reset" value="×"> in a form, or a radio of
+       the group with .filter-reset outside one - a square ×, authored LAST
+       so it appears after the chosen chip and nothing moves under the
+       pointer */
+    & > :is(input[type="reset"], .filter-reset) {
+      width: 2rem;
+      padding: 0;
+      font-size: 1.25rem;
+      font-weight: 400;
+      color: var(--muted-foreground);
+    }
+    & > .filter-reset::after { content: "×"; }
+
+    /* -- Variants / shape / sizes ------------------------------------- */
+    &[data-variant="secondary"] > input:checked {
+      background: var(--secondary);
+      border-color: var(--secondary);
+      color: var(--secondary-foreground);
+    }
+
+    &[data-variant="outline"] > input:checked {
+      background: var(--background);
+      border-color: var(--foreground);
+      color: var(--foreground);
+      box-shadow: inset 0 0 0 1px var(--foreground);
+    }
+
+    &[data-shape="pill"] > input { border-radius: 999px; }
+
+    &[data-size="sm"] > input {
+      height: 1.75rem;
+      padding-inline: 0.625rem;
+      font-size: 0.75rem;
+      &:is([type="reset"], .filter-reset) { width: 1.75rem; padding: 0; font-size: 1rem; }
+    }
+
+    &[data-size="lg"] > input {
+      height: 2.5rem;
+      padding-inline: 1.125rem;
+      font-size: 1rem;
+      &:is([type="reset"], .filter-reset) { width: 2.5rem; padding: 0; font-size: 1.5rem; }
+    }
+
+    /* -- Collapsed chips (after the sizes: these win) --------------------
+       nothing chosen yet (or the reset radio is the choice): no reset;
+       one chosen: the others step aside until the reset brings them back.
+       Collapsed = no width, no box, hidden from pointer, focus and the
+       radio group's arrow keys (visibility flips at the END of the glide
+       when hiding, at the start when showing). */
+    &:not(:has(> input:checked:not(.filter-reset))) > :is(input[type="reset"], .filter-reset),
+    &:not([data-multiple]):has(> input:checked:not(.filter-reset)) > input:not(:checked, .filter-reset, [type="reset"]) {
+      width: 0;
+      padding-inline: 0;
+      margin-inline-end: 0;
+      border-inline-width: 0;
+      opacity: 0;
+      scale: 0.8;
+      box-shadow: none;
+      visibility: hidden;
+      pointer-events: none;
+    }
+  }
+
+  @keyframes search-box-spin {
+    to { rotate: 360deg; }
+  }
+
+  /* -- Accessibility -------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .search-box,
+    .search-box > .search-box-clear,
+    .filter > input { transition: none; }
+    /* the spinner still says "working" - slowly */
+    .search-box::before { animation-duration: 2s; }
+  }
+
+  @media (prefers-contrast: more) {
+    .search-box { border-color: var(--foreground); }
+    .search-box > .search-box-clear { color: var(--foreground); }
+    .filter > input { border-color: var(--foreground); }
+  }
+
+  @media (forced-colors: active) {
+    .search-box { border: 1px solid CanvasText; }
+    .search-box:focus-within { outline: 2px solid Highlight; }
+    .search-box > .search-box-clear::before,
+    .search-box > .search-box-clear::after { background: ButtonText; }
+    .filter > input { border: 1px solid ButtonText; }
+    .filter > input:checked {
+      background: Highlight;
+      color: HighlightText;
+      forced-color-adjust: none;
+    }
+  }
+}
+
 /* ── components/select/select.css ── */
 /* -- Select component ------------------------------------------- */
 
@@ -11451,6 +12138,183 @@
   @media (prefers-contrast: more) {
     .separator:not([data-variant]) { --_line: var(--foreground); }
     .separator:not([data-size]) { --_thick: 2px; }
+  }
+}
+
+/* ── components/session/session.css ── */
+/* -- Session component -------------------------------------------
+   A chat session: a scrolling transcript (role="log") that follows the
+   live edge, jumps back to it, keeps its place when history loads, anchors
+   new turns, and takes dropped files - plus a footer for the composer.
+   The runtime keeps the data-* state current; CSS draws from it. */
+
+@layer components {
+  .session {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    color: var(--card-foreground);
+  }
+
+  /* -- Viewport: the scroller --------------------------------------- */
+  .session-viewport {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    padding: 1rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    /* the runtime keeps the reader's place when history prepends - the
+       browser's own scroll anchoring would correct twice */
+    overflow-anchor: none;
+    scrollbar-gutter: stable;
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: -2px;
+    }
+  }
+
+  /* short threads sit at the bottom, like every chat */
+  .session-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-block-start: auto;
+  }
+
+  /* rows off screen skip rendering; their size is remembered */
+  .session-item {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 3.5rem;
+
+    &[data-current] { scroll-margin-block-start: 1rem; }
+  }
+
+  /* data-animate: new rows rise in */
+  .session[data-animate] .session-item {
+    transition: opacity 250ms ease, translate 250ms ease;
+
+    @starting-style {
+      opacity: 0;
+      translate: 0 0.5rem;
+    }
+  }
+
+  /* -- Scroll buttons: float over the transcript, stuck to its edge -- */
+  .session-scroll-button {
+    position: sticky;
+    z-index: 1;
+    align-self: center;
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--background);
+    color: var(--foreground);
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+    opacity: 0;
+    scale: 0.85;
+    visibility: hidden;
+    transition: opacity 150ms, scale 150ms, visibility 150ms allow-discrete, background-color 150ms;
+
+    /* a chevron, drawn */
+    &::before {
+      content: "";
+      width: 0.5rem;
+      height: 0.5rem;
+      border-inline-end: 2px solid currentColor;
+      border-block-end: 2px solid currentColor;
+      rotate: 45deg;
+      translate: 0 -0.125rem;
+    }
+
+    &:hover { background: var(--accent); color: var(--accent-foreground); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+    /* to the end: at the bottom edge, overlaying the last row */
+    &[data-to="end"] {
+      order: 2;
+      inset-block-end: 0.5rem;
+      margin-block-start: -2.25rem;
+    }
+    /* to the start: at the top edge, pointing up */
+    &[data-to="start"] {
+      order: -1;
+      inset-block-start: 0.5rem;
+      margin-block-end: -2.25rem;
+      &::before { rotate: -135deg; translate: 0 0.125rem; }
+    }
+  }
+
+  .session[data-scrollable~="end"] .session-scroll-button[data-to="end"],
+  .session[data-scrollable~="start"] .session-scroll-button[data-to="start"] {
+    opacity: 1;
+    scale: 1;
+    visibility: visible;
+  }
+
+  /* -- Footer: the composer, a status line ---------------------------- */
+  .session-footer {
+    flex: none;
+    padding: 0.75rem;
+    border-top: 1px solid var(--border);
+    background: var(--card);
+  }
+
+  .session-status {
+    padding: 0.375rem 1rem;
+    border-top: 1px solid var(--border);
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+  }
+
+  /* -- Drop target: files dragged over the session ----------------------- */
+  .session[data-drop-active]::after {
+    content: attr(data-drop-label);
+    position: absolute;
+    inset: 0.5rem;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    border: 2px dashed var(--ring);
+    border-radius: var(--radius-lg);
+    background: color-mix(in oklch, var(--background) 85%, transparent);
+    color: var(--foreground);
+    font-size: 0.875rem;
+    font-weight: 500;
+    pointer-events: none;
+  }
+
+  /* -- Accessibility -------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .session-scroll-button,
+    .session[data-animate] .session-item { transition: none; }
+  }
+
+  @media (prefers-contrast: more) {
+    .session,
+    .session-footer,
+    .session-scroll-button { border-color: var(--foreground); }
+  }
+
+  @media (forced-colors: active) {
+    .session { border: 1px solid CanvasText; }
+    .session-scroll-button { border: 1px solid ButtonText; }
+    .session[data-drop-active]::after { border-color: Highlight; forced-color-adjust: none; }
   }
 }
 
@@ -13512,15 +14376,16 @@
     }
 
     /* -- Interaction states --------------------------------- */
-    &:hover { background-color: var(--accent); color: var(--accent-foreground); }
+    &:hover:not(:has(> input:disabled)) { background-color: var(--accent); color: var(--accent-foreground); }
 
     &:has(> input:focus-visible) {
       outline: 2px solid var(--ring);
       outline-offset: 2px;
     }
 
+    /* a disabled input never toggles - no pointer-events: none, so the
+       not-allowed cursor shows */
     &:has(> input:disabled) {
-      pointer-events: none;
       opacity: 0.5;
       cursor: not-allowed;
     }
@@ -14994,6 +15859,28 @@
     transition: border-color 150ms, box-shadow 150ms;
     resize: vertical;
     field-sizing: content;
+    line-height: 1.5;
+
+    /* -- Rows: data-rows is the height it starts at, data-max-rows where it
+       stops growing and scrolls instead (field-sizing grows it in between).
+       1lh = one line of this textarea, + the padding and border. -------- */
+    &[data-rows="1"] { min-height: calc(1lh + 1rem + 2px); }
+    &[data-rows="2"] { min-height: calc(2lh + 1rem + 2px); }
+    &[data-rows="3"] { min-height: calc(3lh + 1rem + 2px); }
+    &[data-rows="4"] { min-height: calc(4lh + 1rem + 2px); }
+    &[data-rows="5"] { min-height: calc(5lh + 1rem + 2px); }
+    &[data-rows="6"] { min-height: calc(6lh + 1rem + 2px); }
+    &[data-rows="8"] { min-height: calc(8lh + 1rem + 2px); }
+    &[data-rows="10"] { min-height: calc(10lh + 1rem + 2px); }
+    &[data-max-rows="2"] { max-height: calc(2lh + 1rem + 2px); }
+    &[data-max-rows="3"] { max-height: calc(3lh + 1rem + 2px); }
+    &[data-max-rows="4"] { max-height: calc(4lh + 1rem + 2px); }
+    &[data-max-rows="5"] { max-height: calc(5lh + 1rem + 2px); }
+    &[data-max-rows="6"] { max-height: calc(6lh + 1rem + 2px); }
+    &[data-max-rows="8"] { max-height: calc(8lh + 1rem + 2px); }
+    &[data-max-rows="10"] { max-height: calc(10lh + 1rem + 2px); }
+    &[data-max-rows="12"] { max-height: calc(12lh + 1rem + 2px); }
+    &[data-resize="none"] { resize: none; }
 
     &:focus {
       border-color: var(--ring);
@@ -15032,17 +15919,112 @@
     }
   }
 
+  /* -- Textarea group: a composer --------------------------------
+     The GROUP draws the frame (border, radius, focus ring, drop target);
+     the .textarea inside goes frameless and grows. Children in order: an
+     optional .file-drop-list (attachment chips, the file-input's own
+     items), the textarea, a .textarea-group-actions row (attach, send,
+     a counter). data-layout="inline" puts the actions beside the text -
+     a one-line chat composer that grows upward. */
+  .textarea-group {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-lg);
+    background: var(--background);
+    box-shadow: var(--shadow-xs);
+    transition: border-color 150ms, box-shadow 150ms, background-color 150ms;
+
+    & > .textarea {
+      min-height: calc(2lh + 1rem);
+      border: 0;
+      border-radius: inherit;
+      background: transparent;
+      box-shadow: none;
+      resize: none;
+      padding: 0.75rem 0.875rem 0.25rem;
+
+      &:focus { box-shadow: none; }
+    }
+
+    &:has(> .textarea:focus) {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
+    }
+
+    &:has(> .textarea:disabled) {
+      background: var(--muted);
+      box-shadow: none;
+    }
+
+    /* attachment chips above the text - a wrapping row of file items */
+    & > .file-drop-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      padding: 0.625rem 0.625rem 0;
+
+      &:empty { display: none; }
+      & > .file-drop-item { width: 13rem; max-width: 100%; box-sizing: border-box; }
+    }
+
+    & > .textarea-group-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.375rem;
+
+      /* everything after the spacer sits at the end - usually send */
+      & > .textarea-group-spacer { flex: 1; }
+    }
+
+    & .textarea-group-count {
+      padding-inline: 0.375rem;
+      color: var(--muted-foreground);
+      font-size: 0.75rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* inline: [actions] text [actions] on one row, aligned to the last line */
+    &[data-layout="inline"] {
+      flex-flow: row wrap;
+      align-items: flex-end;
+
+      & > .file-drop-list { flex-basis: 100%; }
+      & > .textarea {
+        flex: 1;
+        min-width: 0;
+        min-height: calc(1lh + 1rem);
+        padding: 0.5rem 0.25rem;
+      }
+      & > .textarea:first-child { padding-inline-start: 0.875rem; }
+      & > .textarea-group-actions { padding: 0.3125rem; }
+    }
+
+    /* a file dragged over the composer: the page sets data-dragover */
+    &[data-dragover] {
+      border-style: dashed;
+      border-color: var(--ring);
+      background: color-mix(in oklch, var(--accent) 45%, var(--background));
+    }
+  }
+
   /* -- Accessibility ---------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
-    .textarea {
+    .textarea,
+    .textarea-group {
       transition: none;
     }
   }
 
   @media (prefers-contrast: more) {
-    .textarea {
+    .textarea,
+    .textarea-group {
       border-width: 2px;
     }
+    .textarea-group > .textarea { border-width: 0; }
 
     .textarea:disabled {
       border-color: var(--muted-foreground);
@@ -15050,6 +16032,10 @@
   }
 
   @media (forced-colors: active) {
+    .textarea-group { border-color: ButtonBorder; }
+    .textarea-group:has(> .textarea:focus) { outline: 2px solid Highlight; outline-offset: 1px; }
+    .textarea-group > .textarea:focus { outline: none; }
+
     .textarea {
       border-color: ButtonBorder;
       color: ButtonText;
@@ -15840,7 +16826,7 @@
     padding: 0 0.5rem;
     min-width: 2.25rem;
 
-    &:hover {
+    &:hover:not(:disabled) {
       background-color: var(--muted);
       color: var(--muted-foreground);
     }
@@ -15849,7 +16835,7 @@
       background-color: var(--accent);
       color: var(--accent-foreground);
 
-      &:hover {
+      &:hover:not(:disabled) {
         background-color: color-mix(in oklch, var(--accent) 85%, var(--foreground));
       }
     }
@@ -15859,9 +16845,11 @@
       outline-offset: 2px;
     }
 
+    /* disabled: dimmed, with the not-allowed cursor - no pointer-events: none,
+       which would hide the cursor too (a disabled button fires no click) */
     &:disabled {
-      pointer-events: none;
       opacity: 0.5;
+      cursor: not-allowed;
     }
 
     & svg {
@@ -15877,7 +16865,7 @@
       background: transparent;
       box-shadow: var(--shadow-xs);
 
-      &:hover {
+      &:hover:not(:disabled) {
         background-color: var(--accent);
         color: var(--accent-foreground);
       }
@@ -15886,7 +16874,7 @@
         background-color: var(--accent);
         color: var(--accent-foreground);
 
-        &:hover {
+        &:hover:not(:disabled) {
           background-color: color-mix(in oklch, var(--accent) 85%, var(--foreground));
         }
       }
@@ -16052,12 +17040,12 @@
     }
 
     /* -- Disabled group ----------------------------------------- */
+    /* the runtime ignores clicks in a disabled group; the cursor says so */
     &[data-disabled] {
-      pointer-events: none;
-
       & > .toggle {
-        pointer-events: none;
         opacity: 0.5;
+        cursor: not-allowed;
+        &:hover { background-color: transparent; color: inherit; }
       }
     }
   }
@@ -16645,6 +17633,99 @@
   }
 }
 
+/* ── components/typewriter/typewriter.css ── */
+/* -- Typewriter component ---------------------------------------
+   A line typed character by character behind a cursor, deleted and
+   cycled through a list of strings. The authored strings stay in the DOM
+   for assistive tech (visually hidden); the runtime paints an aria-hidden
+   copy. Without script, the first string shows as plain text. */
+
+@layer components {
+  .typewriter {
+    --_cursor: var(--typewriter-cursor-color, currentColor);
+    position: relative;
+    display: inline;
+
+    /* no script (or not yet initialized): the first string, as text */
+    &:not([data-init]) > :not(:first-child) { display: none; }
+
+    /* initialized: the authored strings are read, not seen */
+    & > .typewriter-source {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    & > .typewriter-line { white-space: pre-wrap; }
+
+    /* -- Cursor: a bar by default; solid while typing, blinking idle -- */
+    & .typewriter-cursor {
+      display: inline-block;
+      width: max(2px, 0.08em);
+      height: 1.1em;
+      margin-inline-start: 0.06em;
+      vertical-align: -0.15em;
+      background: var(--_cursor);
+      animation: typewriter-blink 1s steps(1) infinite;
+    }
+    &:is([data-phase="typing"], [data-phase="deleting"]) .typewriter-cursor { animation: none; }
+
+    &[data-cursor="block"] .typewriter-cursor { width: 0.55em; opacity: 0.85; }
+    &[data-cursor="underscore"] .typewriter-cursor {
+      width: 0.6em;
+      height: max(2px, 0.1em);
+      vertical-align: -0.1em;
+    }
+    &[data-cursor="none"] .typewriter-cursor { display: none; }
+    /* data-cursor-hide: "typing" = only while idle; "done" = gone at the end */
+    &[data-cursor-hide="typing"]:is([data-phase="typing"], [data-phase="deleting"]) .typewriter-cursor,
+    &[data-cursor-hide="done"][data-state-name="done"] .typewriter-cursor { visibility: hidden; }
+
+    /* -- data-reserve: as wide as the longest string from the start --- */
+    &[data-reserve] {
+      display: inline-grid;
+      justify-items: start;
+      vertical-align: bottom;
+      & > :is(.typewriter-line, .typewriter-ghost) { grid-area: 1 / 1; }
+      & > .typewriter-ghost {
+        display: grid;
+        visibility: hidden;
+        pointer-events: none;
+        /* room for the cursor after the longest string */
+        padding-inline-end: 0.2em;
+        & > span { grid-area: 1 / 1; white-space: pre; }
+      }
+      & > .typewriter-line { white-space: pre; }
+    }
+    &[data-reserve][data-align="center"] { justify-items: center; }
+    &[data-reserve][data-align="end"] { justify-items: end; }
+  }
+
+  @keyframes typewriter-blink {
+    50% { opacity: 0; }
+  }
+
+  /* -- Accessibility -------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    /* the runtime swaps whole strings instead of typing; the cursor stays still */
+    .typewriter .typewriter-cursor { animation: none; }
+  }
+
+  @media (prefers-contrast: more) {
+    .typewriter[data-cursor="block"] .typewriter-cursor { opacity: 1; }
+  }
+
+  @media (forced-colors: active) {
+    .typewriter .typewriter-cursor { background: CanvasText; forced-color-adjust: none; }
+  }
+}
+
 /* ── components/typography/typography.css ── */
 /* -- Typography component --------------------------------------- */
 
@@ -17104,5 +18185,387 @@
     .virtual-list:focus-visible {
       outline-color: Highlight;
     }
+  }
+}
+
+/* ── components/window/window.css ── */
+/* -- Window component --------------------------------------------
+   A desktop-style window: a non-modal <dialog> with a title bar (icon,
+   title, minimize / maximize / close), moved by dragging the bar, raised to
+   the front on click, resized natively. Chrome styles after Windows, macOS,
+   Linux (GNOME) and a retro 9x look. The controls are a
+   <form method="dialog">, so the × closes the window without script. */
+
+@layer components {
+  /* the area windows live in: positioned, clipped - a desktop */
+  .window-desktop {
+    position: relative;
+    overflow: hidden;
+    min-height: 18rem;
+    border-radius: var(--radius-lg);
+    background:
+      radial-gradient(circle at 1px 1px, color-mix(in oklch, var(--foreground) 12%, transparent) 1px, transparent 0) 0 0 / 1.25rem 1.25rem,
+      var(--muted);
+    isolation: isolate;
+  }
+
+  .window {
+    /* the UA dialog defaults (centered, padded, bordered) - replaced */
+    --_titlebar: 2.25rem;
+    --_ctl: 2.75rem;
+    position: absolute;
+    inset: auto;
+    left: var(--window-x, 2rem);
+    top: var(--window-y, 2rem);
+    box-sizing: border-box;
+    width: var(--window-w, 24rem);
+    height: var(--window-h, auto);
+    max-width: none;
+    max-height: none;
+    min-width: 12rem;
+    margin: 0;
+    padding: 0;
+    display: none;
+    flex-direction: column;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    transition: box-shadow 150ms;
+
+    &[open] { display: flex; }
+
+    /* native resize handle, bottom-right */
+    &[data-resizable] {
+      resize: both;
+      min-height: calc(var(--_titlebar) + 4rem);
+    }
+
+    /* -- Title bar ---------------------------------------------------- */
+    & > .window-titlebar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex: none;
+      height: var(--_titlebar);
+      padding-inline-start: 0.75rem;
+      background: var(--muted);
+      border-bottom: 1px solid var(--border);
+      cursor: default;
+      user-select: none;
+      touch-action: none;
+
+      &:focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: -2px;
+      }
+    }
+
+    & .window-icon {
+      flex: none;
+      width: 1rem;
+      height: 1rem;
+      object-fit: contain;
+      color: var(--muted-foreground);
+    }
+
+    & .window-title {
+      flex: 1;
+      min-width: 0;
+      margin: 0;
+      overflow: hidden;
+      font: inherit;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    /* -- Controls: CSS-drawn glyphs --------------------------------------- */
+    & .window-controls {
+      display: flex;
+      align-self: stretch;
+      flex: none;
+      margin: 0;
+    }
+
+    & .window-controls > button {
+      position: relative;
+      box-sizing: border-box;
+      width: var(--_ctl);
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--foreground);
+      cursor: default;
+      transition: background-color 120ms, color 120ms;
+
+      &::before,
+      &::after {
+        content: "";
+        position: absolute;
+        inset: 50% auto auto 50%;
+        translate: -50% -50%;
+        box-sizing: border-box;
+      }
+
+      &:hover { background: color-mix(in oklch, var(--foreground) 10%, transparent); }
+      &:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; }
+    }
+
+    /* minimize: a bar */
+    & .window-minimize::before {
+      width: 0.625rem;
+      height: 1px;
+      background: currentColor;
+    }
+    /* maximize: a box; restore (while maximized): two boxes */
+    & .window-maximize::before {
+      width: 0.625rem;
+      height: 0.625rem;
+      border: 1px solid currentColor;
+      border-radius: 1px;
+    }
+    &[data-maximized] .window-maximize {
+      &::before { translate: -40% -60%; width: 0.5rem; height: 0.5rem; }
+      &::after {
+        translate: -65% -35%;
+        width: 0.5rem;
+        height: 0.5rem;
+        border: 1px solid currentColor;
+        border-radius: 1px;
+        background: var(--muted);
+      }
+    }
+    /* close: an × */
+    & .window-close {
+      &::before,
+      &::after {
+        width: 0.75rem;
+        height: 1px;
+        background: currentColor;
+        rotate: 45deg;
+      }
+      &::after { rotate: -45deg; }
+    }
+    /* Windows chrome: the × turns red with a white glyph. Stated through
+       .window-controls > so it outranks the shared control hover (a light
+       tint) - otherwise the white glyph landed on light grey. The other
+       chromes style their own close button. */
+    &:not([data-chrome="mac"], [data-chrome="linux"], [data-chrome="retro"]) .window-controls > .window-close:hover {
+      background: oklch(0.58 0.21 27);
+      color: oklch(0.99 0 0);
+    }
+
+    /* -- Toolbar: an app's menubar / buttons under the title bar -------- */
+    & > .window-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      flex: none;
+      min-height: 2.25rem;
+      padding: 0.125rem 0.375rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--background);
+      overflow-x: auto;
+    }
+
+    /* -- Body / status bar -------------------------------------------- */
+    & > .window-body {
+      flex: 1;
+      min-height: 0;
+      padding: 1rem;
+      overflow: auto;
+      overscroll-behavior: contain;
+    }
+    & > .window-body[data-flush] { padding: 0; }
+
+    & > .window-statusbar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex: none;
+      padding: 0.25rem 0.75rem;
+      border-top: 1px solid var(--border);
+      background: var(--muted);
+      color: var(--muted-foreground);
+      font-size: 0.75rem;
+    }
+
+    /* -- Active / inactive ---------------------------------------------- */
+    &:not([data-active]) {
+      box-shadow: var(--shadow-sm);
+      & > .window-titlebar { color: var(--muted-foreground); }
+    }
+
+    /* -- Maximized: fill the desktop; minimized: rolled up to the bar -- */
+    &[data-maximized] {
+      inset: 0;
+      width: auto;
+      height: auto;
+      border-radius: 0;
+      border-width: 0;
+      resize: none;
+      box-shadow: none;
+    }
+    &[data-minimized] {
+      height: auto;
+      min-height: 0;
+      resize: none;
+      & > :not(.window-titlebar) { display: none; }
+      & > .window-titlebar { border-bottom: 0; }
+    }
+    &[data-dragging] { transition: none; }
+
+    /* -- Chrome: macOS - traffic lights on the left, centred title ------- */
+    &[data-chrome="mac"] {
+      --_ctl: 1.25rem;
+      & > .window-titlebar { padding-inline: 0.75rem; }
+      & .window-controls {
+        order: -1;
+        align-self: center;
+        gap: 0.5rem;
+        margin-inline-end: 0.25rem;
+      }
+      & .window-controls > button {
+        width: 0.75rem;
+        height: 0.75rem;
+        border-radius: 999px;
+        color: oklch(0.3 0.05 30 / 0);
+        &:hover { background: var(--_light); }
+        &::before,
+        &::after { scale: 0.7; }
+      }
+      /* the glyphs appear when the pointer is over the lights */
+      & .window-controls:hover > button { color: oklch(0.3 0.05 30 / 0.8); }
+      & .window-close { order: 1; --_light: oklch(0.68 0.2 25); }
+      & .window-minimize { order: 2; --_light: oklch(0.82 0.16 85); }
+      & .window-maximize { order: 3; --_light: oklch(0.74 0.17 145); }
+      & .window-controls > button { background: var(--_light); }
+      & .window-close:hover { color: oklch(0.3 0.05 30 / 0.8); }
+      & .window-title { text-align: center; }
+      /* the icon sits beside the centred title */
+      & .window-icon { order: 1; }
+      & .window-title { order: 0; }
+      &[data-maximized] .window-maximize::after { background: var(--_light); }
+      &:not([data-active]) .window-controls:not(:hover) > button { background: color-mix(in oklch, var(--muted-foreground) 35%, transparent); }
+    }
+
+    /* -- Chrome: Linux (GNOME) - round grey buttons on the right --------- */
+    &[data-chrome="linux"] {
+      --_ctl: 1.5rem;
+      & > .window-titlebar { padding-inline-end: 0.5rem; }
+      & .window-title { text-align: center; font-weight: 600; }
+      & .window-controls { align-self: center; gap: 0.5rem; }
+      & .window-controls > button {
+        width: var(--_ctl);
+        height: var(--_ctl);
+        border-radius: 999px;
+        background: color-mix(in oklch, var(--foreground) 9%, transparent);
+        &::before,
+        &::after { scale: 0.8; }
+        &:hover { background: color-mix(in oklch, var(--foreground) 16%, transparent); }
+      }
+      & .window-close:hover { background: color-mix(in oklch, var(--foreground) 16%, transparent); color: var(--foreground); }
+      &[data-maximized] .window-maximize::after { background: transparent; }
+    }
+
+    /* -- Chrome: retro - a bevelled 9x window with a gradient title ------ */
+    &[data-chrome="retro"] {
+      --_face: oklch(0.8 0 0);
+      --_hi: oklch(1 0 0);
+      --_lo: oklch(0.5 0 0);
+      --_ctl: 1.125rem;
+      padding: 3px;
+      border: 0;
+      border-radius: 0;
+      background: var(--_face);
+      color: oklch(0.15 0 0);
+      box-shadow:
+        inset -1px -1px 0 oklch(0.1 0 0), inset 1px 1px 0 var(--_face),
+        inset -2px -2px 0 var(--_lo), inset 2px 2px 0 var(--_hi);
+      & > .window-titlebar {
+        height: 1.375rem;
+        padding-inline: 0.25rem 0.125rem;
+        gap: 0.25rem;
+        border: 0;
+        background: linear-gradient(90deg, oklch(0.3 0.16 264), oklch(0.62 0.12 240));
+        color: oklch(1 0 0);
+      }
+      & .window-icon { color: inherit; }
+      & .window-title { font-weight: 700; font-size: 0.75rem; }
+      & .window-controls { align-self: center; gap: 2px; }
+      & .window-controls > button {
+        width: calc(var(--_ctl) + 2px);
+        height: var(--_ctl);
+        background: var(--_face);
+        color: oklch(0.1 0 0);
+        box-shadow:
+          inset -1px -1px 0 oklch(0.1 0 0), inset 1px 1px 0 var(--_hi),
+          inset -2px -2px 0 var(--_lo);
+        &:hover { background: var(--_face); color: oklch(0.1 0 0); }
+        &:active { box-shadow: inset 1px 1px 0 oklch(0.1 0 0), inset -1px -1px 0 var(--_hi), inset 2px 2px 0 var(--_lo); }
+        &::before,
+        &::after { scale: 0.75; }
+      }
+      & .window-close { margin-inline-start: 2px; }
+      & .window-minimize::before { height: 2px; translate: -50% 150%; }
+      & .window-maximize::before { border-top-width: 2px; }
+      & .window-close::before,
+      & .window-close::after { height: 2px; }
+      &[data-maximized] .window-maximize::after { background: var(--_face); border-top-width: 2px; }
+      & > .window-body {
+        margin-top: 2px;
+        background: oklch(1 0 0);
+        box-shadow: inset 1px 1px 0 var(--_lo), inset -1px -1px 0 var(--_hi), inset 2px 2px 0 oklch(0.1 0 0);
+      }
+      & > .window-toolbar {
+        margin-top: 2px;
+        border: 0;
+        background: var(--_face);
+        color: oklch(0.15 0 0);
+      }
+      & > .window-statusbar {
+        margin-top: 2px;
+        border: 0;
+        background: var(--_face);
+        color: oklch(0.15 0 0);
+        box-shadow: inset 1px 1px 0 var(--_lo), inset -1px -1px 0 var(--_hi);
+      }
+      &:not([data-active]) > .window-titlebar {
+        background: linear-gradient(90deg, oklch(0.55 0 0), oklch(0.72 0 0));
+        color: oklch(0.85 0 0);
+      }
+      &[data-maximized] { padding: 3px; }
+    }
+  }
+
+  /* -- Accessibility -------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .window,
+    .window .window-controls > button { transition: none; }
+  }
+
+  @media (prefers-contrast: more) {
+    .window { border-color: var(--foreground); }
+    .window > .window-titlebar { border-bottom-color: var(--foreground); }
+    .window:not([data-active]) > .window-titlebar { color: var(--foreground); }
+  }
+
+  @media (forced-colors: active) {
+    .window { border: 1px solid CanvasText; }
+    .window[data-active] > .window-titlebar {
+      background: Highlight;
+      color: HighlightText;
+      forced-color-adjust: none;
+    }
+    .window .window-controls > button::before,
+    .window .window-controls > button::after { border-color: ButtonText; }
   }
 }

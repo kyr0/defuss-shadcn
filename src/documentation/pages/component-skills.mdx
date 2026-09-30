@@ -4,7 +4,7 @@ description: "Component skill files are structured references that teach AI assi
 slug: "component-skills"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeWindow, CodeCard, TableCard } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -18,7 +18,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5">Component skills don't contain CSS or JavaScript code - those live in their own files alongside the skill. The skill focuses purely on the HTML structure and its configuration options.</p>
 
-<CodeCard title="file location" lang="bash" mb="2.5rem">{"dist/components/{name}/\n├── component-skill.md   "}<Dim>{"← the skill file (HTML reference)"}</Dim>{"\n├── {name}.css            "}<Dim>{"← component stylesheet"}</Dim>{"\n└── {name}.js             "}<Dim>{"← interaction JS (if needed)"}</Dim></CodeCard>
+<CodeWindow lang="text" title="file location" mb="2.5rem" code={"dist/components/{name}/\n├── component-skill.md   ← the skill file (HTML reference)\n├── {name}.css           ← component stylesheet\n└── {name}.js            ← interaction JS (if needed)"} />
 
 <div class="sep" />
 
@@ -108,7 +108,7 @@ flowchart LR
 
 <p class="text-sm text-muted-foreground mb-5">Here's the complete skill file for the Badge component - one of the simplest components in the system.</p>
 
-<CodeCard title="dist/components/badge/component-skill.md" lang="markdown" mb="2.5rem">{"---\nname: Badge\ntype: ATM\nwhy: Pure-CSS "}<span>{" chip with emphasis variants —\n     nothing to wire up.\nwhen: Short status, version, or count labels next to\n      content - not for actions.\nwhere: dist/components/badge/badge.css\nsupportedStates: default\n---\n\n# Pattern: Badge\n\n## Native basis\n`<span>` element. No interactivity required —\npure visual indicator.\n\n---\n\n## Native Web APIs\n- [`<span>`](https://developer.mozilla.org/...)\n  - inline container for phrasing content\n\n---\n\n## Structure\n\n```html\n<span class=\"badge\" data-variant=\"default\">\n  Badge\n</span>\n```\n\n---\n\n## Variants\n\n| `data-variant` | Purpose                    |\n|----------------|----------------------------|\n| `default`      | Primary bg, high emphasis  |\n| `secondary`    | Secondary bg, medium       |\n| `outline`      | Border only, low emphasis  |\n\n```html\n<span class=\"badge\" data-variant=\"default\">\n  New\n</span>\n<span class=\"badge\" data-variant=\"secondary\">\n  Draft\n</span>\n<span class=\"badge\" data-variant=\"outline\">\n  v0.1.0\n</span>\n```\n\n---\n\n## Accessibility\n\n- Use descriptive text content - badges are\n  read inline by screen readers.\n- If the badge is purely decorative, add\n  `aria-hidden=\"true\"`."}</span></CodeCard>
+<CodeWindow lang="markdown" title="dist/components/badge/component-skill.md" mb="2.5rem" code={"---\nname: Badge\ntype: ATM\nwhy: Pure-CSS <span> chip with emphasis variants —\n     nothing to wire up.\nwhen: Short status, version, or count labels next to\n      content - not for actions.\nwhere: dist/components/badge/badge.css\nsupportedStates: default\n---\n\n# Pattern: Badge\n\n## Native basis\n`<span>` element. No interactivity required —\npure visual indicator.\n\n---\n\n## Native Web APIs\n- [`<span>`](https://developer.mozilla.org/...)\n  - inline container for phrasing content\n\n---\n\n## Structure\n\n```html\n<span class=\"badge\" data-variant=\"default\">\n  Badge\n</span>\n```\n\n---\n\n## Variants\n\n| `data-variant` | Purpose                    |\n|----------------|----------------------------|\n| `default`      | Primary bg, high emphasis  |\n| `secondary`    | Secondary bg, medium       |\n| `outline`      | Border only, low emphasis  |\n\n```html\n<span class=\"badge\" data-variant=\"default\">\n  New\n</span>\n<span class=\"badge\" data-variant=\"secondary\">\n  Draft\n</span>\n<span class=\"badge\" data-variant=\"outline\">\n  v0.1.0\n</span>\n```\n\n---\n\n## Accessibility\n\n- Use descriptive text content - badges are\n  read inline by screen readers.\n- If the badge is purely decorative, add\n  `aria-hidden=\"true\"`."} />
 
 <div class="sep" />
 
@@ -127,7 +127,7 @@ flowchart LR
   <span class="text-sm text-muted-foreground">For pages with multiple components, provide all relevant skill files. The AI will compose them correctly.</span>
 </div>
 
-<CodeCard title="example AI prompt" lang="markdown" mb="2.5rem">{"Using the defuss-shadcn component system, build a\nsettings page with:\n- A card containing a form with two text inputs\n- A destructive button to delete the account\n- A toast notification on save\n\nHere are the component skills:\n[paste card, form, input, button, and toast skills]"}</CodeCard>
+<CodeWindow lang="markdown" title="example AI prompt" mb="2.5rem" code={"Using the defuss-shadcn component system, build a\nsettings page with:\n- A card containing a form with two text inputs\n- A destructive button to delete the account\n- A toast notification on save\n\nHere are the component skills:\n[paste card, form, input, button, and toast skills]"} />
 
 <div class="sep" />
 

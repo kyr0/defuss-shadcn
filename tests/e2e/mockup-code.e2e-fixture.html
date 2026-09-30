@@ -46,6 +46,17 @@
     <div class="mockup-code" id="m-cursor" style="margin-top:1rem;"><pre data-prefix="$" data-cursor id="cur"><code></code></pre></div>
     <div class="mockup-code" id="s-sm" data-size="sm" style="margin-top:1rem;"><pre><code>sm</code></pre></div>
     <div class="mockup-code" id="s-lg" data-size="lg" style="margin-top:1rem;"><pre><code>lg</code></pre></div>
+    <div class="mockup-code" id="m-diff" data-numbers data-strike style="margin-top:1rem;">
+      <pre id="d-ctx"><code>.btn {</code></pre>
+      <pre data-diff="remove" id="d-rm"><code>  border-radius: <del id="d-del">4px</del>;</code></pre>
+      <pre data-diff="add" id="d-add"><code>  border-radius: <ins id="d-ins">var(--radius-md)</ins>;</code></pre>
+    </div>
+    <div class="mockup-code" id="m-anim" data-animate style="margin-top:1rem;">
+      <pre><code>context</code></pre>
+      <pre data-diff="remove" id="a-rm"><code>old</code></pre>
+      <pre data-diff="add" id="a-add1"><code>new</code></pre>
+      <pre data-diff="add" id="a-add2"><code>newer</code></pre>
+    </div>
     <div dir="rtl" style="margin-top:1rem;"><div class="mockup-code" id="m-rtl"><pre data-prefix="$" id="rtl-l"><code>npm i x</code></pre></div></div>
   </body>
 </html>

@@ -4,7 +4,7 @@ description: "How defuss-shadcn uses CSS @layer to keep component styles predict
 slug: "cascade-layers"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeWindow, CodeCard, TableCard } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -16,7 +16,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5"><DocLink href="https://developer.mozilla.org/en-US/docs/Web/CSS/@layer" target="_blank">CSS Cascade Layers</DocLink> are a native browser feature that lets stylesheets declare <em>which bucket</em> their rules belong to. When two selectors have the same specificity, the browser uses layer order to decide which one wins. The key insight: <strong>for normal rules, unlayered styles beat layered styles</strong>, regardless of selector specificity. </p>
 
-<CodeCard title="the rule in one sentence" lang="css" mb="2.5rem"><Dim>{"/* Layered - from a component stylesheet */"}</Dim>{"\n@layer components {\n  .btn { background: var(--primary); }\n}\n\n"}<Dim>{"/* Unlayered - your CSS */"}</Dim>{"\n.btn { background: tomato; }\n\n"}<Dim>{"/* Result: tomato wins. Always. No !important needed. */"}</Dim></CodeCard>
+<CodeWindow lang="css" title="the rule in one sentence" mb="2.5rem" code={"/* Layered - from a component stylesheet */\n@layer components {\n  .btn { background: var(--primary); }\n}\n\n/* Unlayered - your CSS */\n.btn { background: tomato; }\n\n/* Result: tomato wins. Always. No !important needed. */"} />
 
 <div class="sep" />
 
@@ -25,8 +25,8 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <p class="text-sm text-muted-foreground mb-5">Every component CSS file - button, card, dialog, all of them - wraps all of its rules inside a single layer declaration:</p>
 
 <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(16rem, 1fr));gap:1rem;margin-bottom:1.5rem;">
-  <CodeCard title="components/button/button.css" lang="css" column>{"@layer components {\n  .btn {\n    display: inline-flex;\n    align-items: center;\n    justify-content: center;\n    background: var(--primary);\n    color: var(--primary-foreground);\n    border-radius: var(--radius-md);\n    /* ... all button rules ... */\n  }\n\n  .btn[data-variant=\"outline\"] {\n    background: transparent;\n    border: 1px solid var(--border);\n  }\n}"}</CodeCard>
-  <CodeCard title="components/card/card.css" lang="css" column>{"@layer components {\n  .card {\n    background-color: var(--card);\n    color: var(--card-foreground);\n    border: 1px solid var(--border);\n    border-radius: var(--radius-xl);\n    /* ... all card rules ... */\n  }\n\n  .card-header {\n    padding: 1.5rem;\n  }\n}"}</CodeCard>
+  <CodeWindow lang="css" title="components/button/button.css" column code={"@layer components {\n  .btn {\n    display: inline-flex;\n    align-items: center;\n    justify-content: center;\n    background: var(--primary);\n    color: var(--primary-foreground);\n    border-radius: var(--radius-md);\n    /* ... all button rules ... */\n  }\n\n  .btn[data-variant=\"outline\"] {\n    background: transparent;\n    border: 1px solid var(--border);\n  }\n}"} />
+  <CodeWindow lang="css" title="components/card/card.css" column code={"@layer components {\n  .card {\n    background-color: var(--card);\n    color: var(--card-foreground);\n    border: 1px solid var(--border);\n    border-radius: var(--radius-xl);\n    /* ... all card rules ... */\n  }\n\n  .card-header {\n    padding: 1.5rem;\n  }\n}"} />
 </div>
 
 <p class="text-sm text-muted-foreground mb-8">The design tokens file (<code>default-semantic-tokens.css</code>) is intentionally <strong>not</strong> layered - token values sit at the top of the cascade so they're always available to both component and user styles.</p>
@@ -72,13 +72,13 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <p class="text-sm text-muted-foreground mb-5">Write your overrides in a regular, unlayered stylesheet. They'll always take precedence.</p>
 
 <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(16rem, 1fr));gap:1rem;margin-bottom:1.5rem;">
-  <CodeCard title="components/button/button.css (layered)" lang="css" column>{"@layer components {\n  .btn {\n    border-radius: var(--radius-md);\n    font-weight: 500;\n    height: 2.25rem;\n  }\n}"}</CodeCard>
-  <CodeCard title="my-overrides.css (unlayered - wins)" lang="css" column><Dim>{"/* Make buttons fully rounded */"}</Dim>{"\n.btn {\n  border-radius: 9999px;\n}\n\n"}<Dim>{"/* Make outline buttons thicker */"}</Dim>{"\n.btn[data-variant=\"outline\"] {\n  border-width: 2px;\n}"}</CodeCard>
+  <CodeWindow lang="css" title="components/button/button.css (layered)" column code={"@layer components {\n  .btn {\n    border-radius: var(--radius-md);\n    font-weight: 500;\n    height: 2.25rem;\n  }\n}"} />
+  <CodeWindow lang="css" title="my-overrides.css (unlayered - wins)" column code={"/* Make buttons fully rounded */\n.btn {\n  border-radius: 9999px;\n}\n\n/* Make outline buttons thicker */\n.btn[data-variant=\"outline\"] {\n  border-width: 2px;\n}"} />
 </div>
 
 <p class="text-sm text-muted-foreground mb-3">Include your override file <strong>after</strong> the component stylesheets:</p>
 
-<CodeCard title="HTML - load order" lang="markup" mb="2.5rem">{"<"}{"link rel=\"stylesheet\" href=\"theme/utils/default-semantic-tokens.css\""}{">"}{"<"}{"link rel=\"stylesheet\" href=\"components/button/button.css\""}{">"}{"<"}{"link rel=\"stylesheet\" href=\"components/card/card.css\""}{">"}<Dim>{"<!-- Your overrides - unlayered, beats the component layer -->"}</Dim>{"<"}{"link rel=\"stylesheet\" href=\"my-overrides.css\""}{">"}</CodeCard>
+<CodeWindow lang="html" title="HTML - load order" mb="2.5rem" code={"<link rel=\"stylesheet\" href=\"theme/utils/default-semantic-tokens.css\">\n<link rel=\"stylesheet\" href=\"components/button/button.css\">\n<link rel=\"stylesheet\" href=\"components/card/card.css\">\n\n<!-- Your overrides - unlayered, beats the component layer -->\n<link rel=\"stylesheet\" href=\"my-overrides.css\">"} />
 
 <div class="sep" />
 
@@ -86,7 +86,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5"> If you're mixing defuss-shadcn components with another CSS framework that uses its own <code>@layer</code> declarations, you can declare an explicit layer order at the top of your main stylesheet to control priority: </p>
 
-<CodeCard title="main.css - explicit layer order" lang="css" mb="1.5rem"><Dim>{"/* Declare layer order: first listed = lowest priority */"}</Dim>{"\n@layer components, utilities;\n\n"}<Dim>{"/* Now framework utilities beat defuss-shadcn component styles,\n   and your unlayered CSS beats everything. */"}</Dim></CodeCard>
+<CodeWindow lang="css" title="main.css - explicit layer order" mb="1.5rem" code={"/* Declare layer order: first listed = lowest priority */\n@layer components, utilities;\n\n/* Now framework utilities beat defuss-shadcn component styles,\n   and your unlayered CSS beats everything. */"} />
 
 <p class="text-sm text-muted-foreground mb-8"> Without an explicit order declaration, layers are ordered by first appearance in the stylesheet. The explicit declaration gives you full control regardless of import order. </p>
 
@@ -97,8 +97,8 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <p class="text-sm text-muted-foreground mb-5">Traditional CSS libraries (Bootstrap, Bulma) ship unlayered styles. That creates problems when you try to customize them.</p>
 
 <div class="grid grid-cols-auto gap-4 mb-10">
-  <CodeCard title="Without @layer" lang="css" column><Dim>{"/* Library: high specificity */"}</Dim>{"\n.btn.btn-primary { background: blue; }\n\n"}<Dim>{"/* Your override: loses */"}</Dim>{"\n.btn { background: tomato; }  "}<Dim>{"/* ✗ */"}</Dim><Dim>{"/* Forced to escalate */"}</Dim>{"\n.btn { background: tomato !important; }"}</CodeCard>
-  <CodeCard title="With @layer (defuss-shadcn)" lang="css" column><Dim>{"/* Library: layered */"}</Dim>{"\n@layer components {\n  .btn { background: var(--primary); }\n}\n\n"}<Dim>{"/* Your override: unlayered */"}</Dim>{"\n.btn { background: tomato; }  "}<Dim>{"/* ✓ wins */"}</Dim><Dim>{"/* No !important needed. */"}</Dim></CodeCard>
+  <CodeWindow lang="css" title="Without @layer" column code={"/* Library: high specificity */\n.btn.btn-primary { background: blue; }\n\n/* Your override: loses */\n.btn { background: tomato; }  /* ✗ */\n/* Forced to escalate */\n.btn { background: tomato !important; }"} />
+  <CodeWindow lang="css" title="With @layer (defuss-shadcn)" column code={"/* Library: layered */\n@layer components {\n  .btn { background: var(--primary); }\n}\n\n/* Your override: unlayered */\n.btn { background: tomato; }  /* ✓ wins */\n/* No !important needed. */"} />
 </div>
 
 <div style="display:grid;grid-template-columns:auto 1fr;gap:0.5rem 1rem;margin-bottom:2.5rem;align-items:baseline;">

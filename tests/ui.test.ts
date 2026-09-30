@@ -206,33 +206,26 @@ test('index states the current stats.json footprint and dogfoods the Statistic c
   expect(values).toContain(String(stats.withoutJs));
 });
 
-test('SPA router migrates body-level dialogs so triggers work after nav', async () => {
-  // regression: PageOverlay dialogs live OUTSIDE <main> (direct children of
-  // body). The router swaps main.innerHTML only, so without migrating them
-  // the trigger click found no dialog and "nothing happened" after nav.
-  // (dialog/sheet moved into self-contained CodeExample fences; the State API
-  // guide page still demos the page-level pattern with a live dialog.)
+const textOf = (el: Element | null) => (el as HTMLTextAreaElement | null)?.value ?? el?.textContent ?? '';
+
+test('SPA navigation boots the State API example (dialog inside its own sandbox)', async () => {
+  // The State API demo used to be a page-level dialog (PageOverlay) the
+  // router had to migrate; it is now a self-contained executable example -
+  // its dialog lives in the sandbox and df$ wires it. After an SPA hop the
+  // card must boot without an error, and no page-level dialog is left over.
   const { doc } = await openDocPage('index.html');
   await waitFor(() => doc.querySelector('.site-header button#theme-toggle'), 'shell to render');
 
   await expandSection(doc, 'Guides');
   await clickSelector(doc, '.site-sidebar a[href="state-api.html"]');
   await waitFor(() => doc.querySelector('main h1')?.textContent?.includes('State API'), 'state-api page content');
-  await waitFor(() => doc.getElementById('state-api-dialog'), 'migrated dialog in DOM');
-
-  const dialog = doc.getElementById('state-api-dialog') as HTMLDialogElement;
-  expect(dialog.closest('main'), 'dialog must be adopted at body level').toBeNull();
-
-  // plain CSS: the open button is the one whose inline handler names 'open'
-  await clickSelector(doc, "button[onclick*=\"setState('open')\"]");
-  await waitFor(() => dialog.open, 'dialog to open after SPA navigation');
-  await clickSelector(doc, '#state-api-dialog [data-dialog-close]');
-  await waitFor(() => !dialog.open, 'dialog to close');
-
-  // navigating away must drop the previous page's dialogs (no duplicate ids)
-  await clickSelector(doc, '.site-sidebar a[href="sheet.html"]');
-  await waitFor(() => doc.querySelector('main h1')?.textContent?.includes('Sheet'), 'sheet page content');
-  expect(doc.getElementById('state-api-dialog'), 'dialog of the previous page removed').toBeNull();
+  await waitFor(() => doc.querySelector('main .code-example'), 'example card');
+  const card = doc.querySelector('main .code-example') as HTMLElement;
+  await waitFor(() => card.querySelector('iframe.code-example-frame'), 'sandbox frame');
+  const err = card.querySelector('.code-example-error') as HTMLElement | null;
+  expect(err?.hidden ?? true, `sandbox error: ${err?.textContent}`).toBe(true);
+  expect(textOf(card.querySelector('.code-example-src'))).toContain("df$('#sa-dialog')");
+  expect(doc.querySelector('body > dialog#state-api-dialog'), 'no page-level demo dialog').toBeNull();
 });
 
 test('sidebar sections are collapsible (dogfood of the sidebar-group pattern)', async () => {

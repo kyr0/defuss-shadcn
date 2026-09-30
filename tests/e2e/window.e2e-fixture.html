@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Window e2e fixture</title>
+  <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css">
+  <link rel="stylesheet" href="/dist/components/dialog/dialog.css">
+  <link rel="stylesheet" href="/dist/components/window/window.css">
+  <style>
+    /* spacing only - never properties the checks assert */
+    body { font-family: system-ui, sans-serif; padding: 1rem; margin: 0; }
+  </style>
+</head>
+<body>
+  <!-- mirrors the doc page: a resizable window with icon + status bar,
+       several windows, the four chromes, a closed and a maximized window,
+       windows created by df$.shadcn.win; dialog.js loads first and must
+       leave .window dialogs alone -->
+  <div class="window-desktop" id="desk" style="width: 800px; height: 480px;">
+    <dialog class="window" id="w1" open data-resizable style="--window-x: 20px; --window-y: 20px; --window-w: 300px;">
+      <header class="window-titlebar">
+        <svg class="window-icon" viewBox="0 0 16 16"><rect width="16" height="16"/></svg>
+        <h2 class="window-title">Notes</h2>
+        <form method="dialog" class="window-controls">
+          <button type="button" class="window-minimize" aria-label="Minimize"></button>
+          <button type="button" class="window-maximize" aria-label="Maximize"></button>
+          <button class="window-close" aria-label="Close"></button>
+        </form>
+      </header>
+      <div class="window-toolbar" id="w1-toolbar"><button type="button">Tool</button></div>
+      <div class="window-body" id="w1-body">Body</div>
+      <footer class="window-statusbar">1 note</footer>
+    </dialog>
+    <dialog class="window" id="w-mac" open data-chrome="mac" style="--window-x: 360px; --window-y: 20px; --window-w: 260px;">
+      <header class="window-titlebar">
+        <h2 class="window-title">Mac</h2>
+        <form method="dialog" class="window-controls">
+          <button type="button" class="window-minimize" aria-label="Minimize"></button>
+          <button type="button" class="window-maximize" aria-label="Maximize"></button>
+          <button class="window-close" aria-label="Close"></button>
+        </form>
+      </header>
+      <div class="window-body">mac</div>
+    </dialog>
+    <dialog class="window" id="w-linux" open data-chrome="linux" style="--window-x: 20px; --window-y: 240px; --window-w: 260px;">
+      <header class="window-titlebar">
+        <h2 class="window-title">Linux</h2>
+        <form method="dialog" class="window-controls">
+          <button type="button" class="window-minimize" aria-label="Minimize"></button>
+          <button type="button" class="window-maximize" aria-label="Maximize"></button>
+          <button class="window-close" aria-label="Close"></button>
+        </form>
+      </header>
+      <div class="window-body">linux</div>
+    </dialog>
+    <dialog class="window" id="w-retro" open data-chrome="retro" style="--window-x: 360px; --window-y: 240px; --window-w: 260px;">
+      <header class="window-titlebar">
+        <h2 class="window-title">Retro</h2>
+        <form method="dialog" class="window-controls">
+          <button class="window-close" aria-label="Close"></button>
+        </form>
+      </header>
+      <div class="window-body">retro</div>
+      <footer class="window-statusbar">Ready</footer>
+    </dialog>
+    <dialog class="window" id="w-closed" style="--window-x: 100px; --window-y: 100px;">
+      <header class="window-titlebar"><h2 class="window-title">Closed</h2></header>
+      <div class="window-body">closed</div>
+    </dialog>
+  </div>
+  <div class="window-desktop" id="desk2" style="width: 600px; height: 300px; margin-top: 1rem;">
+    <dialog class="window" id="w-max" open data-maximized>
+      <header class="window-titlebar">
+        <h2 class="window-title">Max</h2>
+        <form method="dialog" class="window-controls">
+          <button type="button" class="window-maximize" aria-label="Maximize"></button>
+        </form>
+      </header>
+      <div class="window-body">maximized from markup</div>
+    </dialog>
+  </div>
+  <div class="window-desktop" id="desk3" style="width: 600px; height: 300px; margin-top: 1rem;"></div>
+
+  <script type="module" src="/dist/components/core.js"></script>
+  <script type="module" src="/dist/components/dialog/dialog.js"></script>
+  <script type="module" src="/dist/components/window/window.js"></script>
+</body>
+</html>

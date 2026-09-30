@@ -20,8 +20,14 @@
   // The frame allows forms so examples' submit / invalid handlers run; the
   // navigation a submit would start is always cancelled here (document,
   // bubble phase - after the example's own form listeners) because it would
-  // replace the example document with a blank one.
-  document.addEventListener('submit', function (e) { e.preventDefault(); });
+  // replace the example document with a blank one. method="dialog" is the
+  // exception: it never navigates - it closes the dialog (a window's ×, a
+  // dialog's form buttons), so cancelling it would break the example.
+  document.addEventListener('submit', function (e) {
+    var method = (e.submitter && e.submitter.getAttribute('formmethod')) || e.target.getAttribute('method');
+    if ((method || '').toLowerCase() === 'dialog') return;
+    e.preventDefault();
+  });
 
   function post(kind, extra) {
     var msg = { type: 'ce', ch: ch, kind: kind };

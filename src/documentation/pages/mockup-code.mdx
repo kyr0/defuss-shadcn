@@ -34,7 +34,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 
   <SkillField label="Data attributes">
-<SkillText>Window: <code>data-chrome</code> (<code>mac</code>, <code>none</code>), <code>data-title</code>, <code>data-numbers</code>, <code>data-wrap</code>, <code>data-variant</code> (<code>muted</code>, <code>outline</code>, <code>primary</code>), <code>data-size</code> (<code>sm</code>, <code>lg</code>); lines: <code>data-prefix</code>, <code>data-tone</code> (<code>success</code>, <code>warning</code>, <code>info</code>, <code>destructive</code>, <code>muted</code>), <code>data-highlight</code> (<code>solid</code>), <code>data-cursor</code>.</SkillText>
+<SkillText>Window: <code>data-chrome</code> (<code>mac</code>, <code>none</code>), <code>data-title</code>, <code>data-numbers</code>, <code>data-wrap</code>, <code>data-strike</code>, <code>data-animate</code>, <code>data-variant</code> (<code>muted</code>, <code>outline</code>, <code>primary</code>), <code>data-size</code> (<code>sm</code>, <code>lg</code>); lines: <code>data-prefix</code>, <code>data-tone</code> (<code>success</code>, <code>warning</code>, <code>info</code>, <code>destructive</code>, <code>muted</code>), <code>data-highlight</code> (<code>solid</code>), <code>data-cursor</code>, <code>data-diff</code> (<code>add</code>, <code>remove</code>); <code>&lt;ins&gt;</code> / <code>&lt;del&gt;</code> for word changes.</SkillText>
   </SkillField>
 </SkillPanel>
 
@@ -106,13 +106,60 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 ```
 
-```html example label="Line numbers" schema="none" hint="data-numbers numbers every line without its own prefix - CSS counters, nothing to keep in sync when lines change."
-<div class="mockup-code" data-numbers data-title="button.html">
+```html example label="Line numbers and syntax highlighting" schema="none" hint="data-numbers numbers every line without its own prefix - CSS counters, nothing to keep in sync. The colours come from Shiki (the highlighter these docs use): codeToTokens returns one token list per line, which maps one-to-one onto the window's <pre> lines - plain text until it loads, and the numbers and the highlighted line keep working."
+<div class="mockup-code" data-numbers data-title="button.html" id="mc-source">
   <pre><code>&lt;button class="btn" data-variant="outline"&gt;</code></pre>
   <pre><code>  Search</code></pre>
   <pre><code>  &lt;kbd class="kbd" data-size="sm"&gt;⌘K&lt;/kbd&gt;</code></pre>
   <pre data-highlight><code>&lt;/button&gt;</code></pre>
 </div>
+<script type="module">
+  import { codeToTokens } from 'https://esm.sh/shiki@3.0.0';
+  const lines = [...document.querySelectorAll('#mc-source > pre > code')];
+  const { tokens } = await codeToTokens(lines.map((code) => code.textContent).join('\n'), { lang: 'html', theme: 'github-dark' });
+  tokens.forEach((line, i) => lines[i].replaceChildren(...line.map((token) => {
+    const span = document.createElement('span');
+    span.textContent = token.content;
+    span.style.color = token.color;
+    return span;
+  })));
+</script>
+```
+
+```html example label="Diff" schema="none" hint="data-diff='remove' and 'add' mark the lines - a generated -/+ in its own sign column, red and green bands; lines without it are context and line up. <del> and <ins> inside a line mark the words that changed. Numbers and the sign column combine."
+<div class="mockup-code" data-numbers data-title="button.css">
+  <pre><code>.btn {</code></pre>
+  <pre><code>  display: inline-flex;</code></pre>
+  <pre data-diff="remove"><code>  border-radius: <del>4px</del>;</code></pre>
+  <pre data-diff="remove"><code>  background: #111;</code></pre>
+  <pre data-diff="add"><code>  border-radius: <ins>var(--radius-md)</ins>;</code></pre>
+  <pre data-diff="add"><code>  background: var(--primary);</code></pre>
+  <pre data-diff="add"><code>  color: var(--primary-foreground);</code></pre>
+  <pre><code>}</code></pre>
+</div>
+```
+
+```html example label="Animated diff" schema="none" hint="data-animate plays the change: removed lines turn red and strike through, then the added lines slide in green, one after another (sibling-index() staggers them; --mockup-code-delay / --mockup-code-stagger tune it). CSS only - the script here only starts it when the window scrolls into view and replays it on click."
+<div class="flex flex-col gap-3 items-start">
+  <div class="mockup-code w-full" id="diff-demo" data-chrome="mac" data-title="release.md">
+    <pre><code>Release 0.9.3</code></pre>
+    <pre><code></code></pre>
+    <pre data-diff="remove"><code>Search box: planned</code></pre>
+    <pre data-diff="remove"><code>Typewriter: planned</code></pre>
+    <pre data-diff="add"><code>Search &amp; Filter: a search box with a clear button</code></pre>
+    <pre data-diff="add"><code>Typewriter: typed, deleted, cycled</code></pre>
+    <pre data-diff="add"><code>Code mockup: git-style diffs</code></pre>
+  </div>
+  <button class="btn" data-variant="outline" data-size="sm" id="diff-replay">Replay</button>
+</div>
+<script>
+  const win = document.getElementById('diff-demo');
+  const play = () => { win.removeAttribute('data-animate'); void win.offsetWidth; win.setAttribute('data-animate', ''); };
+  new IntersectionObserver((entries, io) => {
+    if (entries.some((e) => e.isIntersecting)) { play(); io.disconnect(); }
+  }).observe(win);
+  document.getElementById('diff-replay').addEventListener('click', play);
+</script>
 ```
 
 ```html example label="Multi-line commands" schema="none" hint="One command per line; a command continued with a backslash goes on lines with data-prefix='' - the prompt column stays empty, so everything lines up, and a copy is still a valid shell command."

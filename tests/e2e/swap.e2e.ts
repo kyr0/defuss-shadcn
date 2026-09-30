@@ -102,9 +102,14 @@ await cssSmoke('swap', [
     },
   },
   {
-    label: 'a disabled checkbox dims the label and blocks pointer events',
-    selector: '#sw-disabled',
-    css: { opacity: '0.5', 'pointer-events': 'none' },
+    label: 'a disabled checkbox dims the label, shows the not-allowed cursor and never toggles',
+    run: async (page) => {
+      assert.equal(await prop(page, '#sw-disabled', 'opacity'), '0.5');
+      assert.equal(await prop(page, '#sw-disabled', 'cursor'), 'not-allowed');
+      const before = await page.$eval('#sw-disabled input', (e) => (e as HTMLInputElement).checked);
+      await page.click('#sw-disabled', { force: true });
+      assert.equal(await page.$eval('#sw-disabled input', (e) => (e as HTMLInputElement).checked), before, 'a click changes nothing');
+    },
   },
   {
     label: 'hovering tints the control with the accent token',
