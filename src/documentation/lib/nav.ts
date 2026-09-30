@@ -151,6 +151,7 @@ export const NAV: NavSection[] = [
     },
     { label: 'Statistic', href: 'statistic.html' },
     { label: 'Table', href: 'table.html' },
+    { label: 'Virtual List', href: 'virtual-list.html', isNew: true },
     { label: 'Collapsible', href: 'collapsible.html' },
     { label: 'Timeline', href: 'timeline.html' },
     { label: 'Tree View', href: 'tree-view.html' },

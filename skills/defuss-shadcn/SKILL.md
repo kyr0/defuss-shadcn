@@ -9,7 +9,7 @@ description: Build UI prototypes and pages with defuss-shadcn - shadcn-style com
 
 # defuss-shadcn 0.9.2 - Agent Skill
 
-94 components (51 CSS-only, 43 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
+95 components (51 CSS-only, 44 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
 
 ## 0. Quick start - do exactly this, in this order
 
@@ -178,7 +178,7 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
 ### Presentations
 
 - [Deck Gallery](../../src/documentation/pages/presentations.mdx) - 33 presentation decks - the flagship System in Numbers plus 32 ECharts design studies, each a 12-slide English deck on its own topic with its own numbers, animated slide transitions and one morphing chart per deck.
-  - [The System in Numbers](../../src/documentation/pages/system-in-numbers.mdx) - defuss-shadcn presents itself - the flagship 10-slide deck with the system's real numbers (94 components, 54% CSS-only, 164.1 KiB min+gz): glyph cover, unit dots, gauge, tanks, chart staircase, taxonomy donut, stopwatch, branching route.
+  - [The System in Numbers](../../src/documentation/pages/system-in-numbers.mdx) - defuss-shadcn presents itself - the flagship 10-slide deck with the system's real numbers (95 components, 54% CSS-only, 166.7 KiB min+gz): glyph cover, unit dots, gauge, tanks, chart staircase, taxonomy donut, stopwatch, branching route.
   - [Editorial Highlight Bars](../../src/documentation/pages/editorial-highlight-bars.mdx) - Swiss International design language presenting a region’s commuting shift as a 10-slide deck - one highlighted bar, recolored, re-ranked by volume and folded into a mode-share donut on a single morphing chart.
   - [Lollipop Ranking](../../src/documentation/pages/lollipop-ranking.mdx) - Bauhaus Primary Poster design language presenting caffeine by brew method as a 10-slide deck - lollipops that re-rank per 100 ml, burst into a bubble scatter and settle into columns on one morphing chart.
   - [Dumbbell Before/After](../../src/documentation/pages/dumbbell-before-after.mdx) - Financial Broadsheet design language presenting a city’s rent rise 2019–2025 as a 12-slide deck - dumbbells that re-sort by growth, collapse into change bars and split into rent-burden columns on one morphing chart.
@@ -471,6 +471,12 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **Why:** Semantic `<table>` - headers, captions and sort state stay accessible; table.js adds sorting (aria-sort, Intl.Collator), row selection, drag reordering and locked-column offsets on top.
 - **When:** Tabular data in rows and columns - from a plain list to a data grid with sort, select, reorder and actions; never div grids.
 - **States:** `default`, `sorted`, `selected` · **Skill:** [references/components/table.md](references/components/table.md) · **Examples:** [src/documentation/pages/table.mdx](../../src/documentation/pages/table.mdx)
+
+#### Virtual List · ATM · JS
+
+- **Why:** Only the rows on screen exist in the DOM and their elements are recycled, so ten rows and ten million cost the same.
+- **When:** Lists too long to render — search results, logs, pickers over large sets. Use a plain list or table when every row can exist at once.
+- **States:** `default`, `loading`, `empty` · **Skill:** [references/components/virtual-list.md](references/components/virtual-list.md) · **Examples:** [src/documentation/pages/virtual-list.mdx](../../src/documentation/pages/virtual-list.mdx)
 
 #### Collapsible · ATM · CSS
 

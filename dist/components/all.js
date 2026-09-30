@@ -11269,6 +11269,194 @@ function init43() {
 init43();
 new MutationObserver(init43).observe(document, { childList: true, subtree: true });
 
-//# debugId=6A4DF1A44C3D563964756E2164756E21
+// src/components/virtual-list/virtual-list.ts
+var df$44 = defussGlobals();
+var virtualListStates = ["default", "loading", "empty"];
+var OVERSCAN = 4;
+var MAX_SIZER_PX = 15000000;
+var columnsOf = (list) => Math.max(1, parseInt(list.dataset.columns || "1", 10) || 1);
+var rowCount = (list) => Math.ceil(list._count / columnsOf(list));
+var contentHeight = (list) => rowCount(list) * list._rowHeight;
+var sizerHeight = (list) => Math.min(contentHeight(list), MAX_SIZER_PX);
+function virtualOffset(list) {
+  const viewport = list.clientHeight;
+  const real = contentHeight(list) - viewport;
+  const capped = sizerHeight(list) - viewport;
+  if (real <= 0 || capped <= 0)
+    return 0;
+  return list.scrollTop / capped * real;
+}
+function render3(list) {
+  const rows = list._rows;
+  if (!rows)
+    return;
+  const count = list._count;
+  const cols = columnsOf(list);
+  const total = rowCount(list);
+  const rowHeight = list._rowHeight;
+  const visible = Math.ceil(list.clientHeight / rowHeight) + OVERSCAN * 2;
+  const offset = virtualOffset(list);
+  let first = Math.max(0, Math.floor(offset / rowHeight) - OVERSCAN);
+  if (first + visible > total)
+    first = Math.max(0, total - visible);
+  while (rows.children.length < Math.min(visible, total)) {
+    const row = document.createElement("div");
+    row.className = "virtual-list-row";
+    row.setAttribute("role", cols > 1 ? "row" : "listitem");
+    rows.appendChild(row);
+  }
+  while (rows.children.length > Math.min(visible, total)) {
+    rows.lastElementChild.remove();
+  }
+  const shift = first * rowHeight - (offset - list.scrollTop);
+  rows.style.translate = `0 ${shift}px`;
+  for (let i = 0;i < rows.children.length; i++) {
+    const row = rows.children[i];
+    const index = first + i;
+    if (row._index === index)
+      continue;
+    row._index = index;
+    row.dataset.index = String(index);
+    if (cols === 1) {
+      row.setAttribute("aria-posinset", String(index + 1));
+      row.setAttribute("aria-setsize", String(count));
+      list._renderRow(row, index);
+      continue;
+    }
+    row.setAttribute("aria-rowindex", String(index + 1));
+    while (row.children.length < cols) {
+      const cell = document.createElement("div");
+      cell.className = "virtual-list-cell";
+      cell.setAttribute("role", "gridcell");
+      row.appendChild(cell);
+    }
+    for (let c = 0;c < cols; c++) {
+      const cell = row.children[c];
+      const itemIndex = index * cols + c;
+      cell.setAttribute("aria-colindex", String(c + 1));
+      if (itemIndex >= count) {
+        cell.hidden = true;
+        cell.dataset.index = "";
+        continue;
+      }
+      cell.hidden = false;
+      cell.dataset.index = String(itemIndex);
+      list._renderRow(cell, itemIndex);
+    }
+  }
+}
+var defaultRenderRow = (row, index) => {
+  row.textContent = `Row ${index + 1}`;
+};
+function triggerStateChange44(list, stateName, config) {
+  list.dataset.state = stateName;
+  switch (stateName) {
+    case "default":
+      list.removeAttribute("aria-busy");
+      render3(list);
+      if (typeof config.index === "number") {
+        const item = Math.max(0, Math.min(list._count - 1, config.index));
+        const real = Math.floor(item / columnsOf(list)) * list._rowHeight;
+        const viewport = list.clientHeight;
+        const ratio = Math.max(0, contentHeight(list) - viewport) ? (sizerHeight(list) - viewport) / (contentHeight(list) - viewport) : 0;
+        list.scrollTop = real * ratio;
+        render3(list);
+      }
+      break;
+    case "loading":
+      list.setAttribute("aria-busy", "true");
+      break;
+    case "empty":
+      list.removeAttribute("aria-busy");
+      break;
+  }
+}
+var virtualListApi = {
+  setState(list, stateName, config = {}) {
+    if (!virtualListStates.includes(stateName)) {
+      throw new Error(`virtual-list: unknown state "${stateName}" (supported: ${virtualListStates.join(", ")})`);
+    }
+    triggerStateChange44(list, stateName, config);
+    list.dataset.stateName = stateName;
+    list._stateConfig = config;
+  },
+  getState(list) {
+    return { name: list.dataset.stateName || "default", config: list._stateConfig ?? {} };
+  }
+};
+df$44.virtualListApi = virtualListApi;
+df$44.virtualListStates = virtualListStates;
+df$44.virtualList = {
+  setData(list, count, renderRow) {
+    list._count = Math.max(0, Math.floor(count) || 0);
+    if (renderRow)
+      list._renderRow = renderRow;
+    const sizer = list.querySelector(".virtual-list-sizer");
+    if (sizer)
+      sizer.style.height = `${sizerHeight(list)}px`;
+    if (columnsOf(list) > 1)
+      list.setAttribute("aria-rowcount", String(rowCount(list)));
+    if (list._rows) {
+      Array.from(list._rows.children).forEach((row) => {
+        row._index = -1;
+      });
+    }
+    virtualListApi.setState(list, list._count ? "default" : "empty");
+  }
+};
+function init44() {
+  document.querySelectorAll(".virtual-list:not([data-init])").forEach((list) => {
+    list.dataset.init = "";
+    let sizer = list.querySelector(".virtual-list-sizer");
+    if (!sizer) {
+      sizer = document.createElement("div");
+      sizer.className = "virtual-list-sizer";
+      list.appendChild(sizer);
+    }
+    let rows = sizer.querySelector(".virtual-list-rows");
+    if (!rows) {
+      rows = document.createElement("div");
+      rows.className = "virtual-list-rows";
+      sizer.appendChild(rows);
+    }
+    list._rows = rows;
+    list._renderRow = list._renderRow || defaultRenderRow;
+    list._rowHeight = parseFloat(getComputedStyle(list).getPropertyValue("--virtual-list-row-height")) || 40;
+    if (typeof list._count !== "number") {
+      list._count = parseInt(list.dataset.count || "0", 10) || 0;
+    }
+    const cols = columnsOf(list);
+    list.setAttribute("role", cols > 1 ? "grid" : "list");
+    if (cols > 1)
+      list.setAttribute("aria-colcount", String(cols));
+    if (!list.hasAttribute("tabindex"))
+      list.tabIndex = 0;
+    sizer.style.height = `${sizerHeight(list)}px`;
+    let queued = false;
+    list.addEventListener("scroll", () => {
+      if (queued)
+        return;
+      queued = true;
+      requestAnimationFrame(() => {
+        queued = false;
+        if (list.dataset.state !== "loading" && list.dataset.state !== "empty")
+          render3(list);
+      });
+    }, { passive: true });
+    new ResizeObserver(() => {
+      if (list.dataset.state !== "loading" && list.dataset.state !== "empty")
+        render3(list);
+    }).observe(list);
+    list.api = {
+      setState: (stateName, config) => virtualListApi.setState(list, stateName, config),
+      getState: () => virtualListApi.getState(list)
+    };
+    virtualListApi.setState(list, list._count ? "default" : "empty");
+  });
+}
+init44();
+new MutationObserver(init44).observe(document, { childList: true, subtree: true });
+
+//# debugId=897438A5A22B686364756E2164756E21
 /* defuss-shadcn v0.9.2 runtime provenance: bundles defuss-morph@0.1.1 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.1.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=all.js.map

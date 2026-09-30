@@ -51,6 +51,7 @@
     "toggle-group": "./toggle-group.schema.json",
     "toolbar": "./toolbar.schema.json",
     "tooltip": "./tooltip.schema.json",
-    "tree-view": "./tree-view.schema.json"
+    "tree-view": "./tree-view.schema.json",
+    "virtual-list": "./virtual-list.schema.json"
   }
 }

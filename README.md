@@ -11,8 +11,8 @@
 
 **A UI component system that scales with _(local)_ AI.** Themeable components built on semantic HTML, modern CSS, and vanilla JavaScript. No framework. No build step for consumers - `dist/` is committed and ready to use as-is. The simplest possible foundation for AI-driven prototyping.
 
-**94 components - 43 with JavaScript, 51 CSS-only - 164.1 KiB minified + compressed - 113.0 KiB as the all.css/all.js bundle.**
-51 of 94 components need no JavaScript - native HTML and modern CSS cover them entirely.
+**95 components - 44 with JavaScript, 51 CSS-only - 166.7 KiB minified + compressed - 114.6 KiB as the all.css/all.js bundle.**
+51 of 95 components need no JavaScript - native HTML and modern CSS cover them entirely.
 <!-- parity anchor: README ↔ index (AGENTS.md) - the footprint sentence and pillar set must match src/documentation/pages/index.mdx; commit both files together -->
 The footprint is measured from the shipped `dist/` files on every build and published as
 [`dist/stats.json`](dist/stats.json); `verify` fails the build if this sentence and that file disagree.
@@ -32,7 +32,7 @@ A portable UI component system built on the [shadcn/ui](https://ui.shadcn.com) t
 - **Themeable** - full shadcn semantic token model. 43 [tweakcn](https://tweakcn.com) presets ship as drop-in theme files - swap one and every component updates instantly
 - **Component Skills** - every component includes a structured skill - markup, variants, sizes, density, named states, ARIA, and wiring conventions - grounded in web standards; every interactive component also ships a machine-readable `*.schema.json` contract (states, types, defaults, actions) that drives its docs controls and is verifier-enforced
 - **Observable state** - interactive components expose a State API (`el.api.setState('open')`, `el.api.getState()`), so agents and tests can drive every documented state by name without knowing the implementation
-- **Accessible** - built on native HTML elements and WAI-ARIA patterns (menus and menubars with nested submenus, tabs, dialogs, trees, comboboxes, one-time-code fields). Keyboard navigation, focus management, and screen reader support by default
+- **Accessible** - built on native HTML elements and WAI-ARIA patterns (menus and menubars with nested submenus, tabs, dialogs, trees, comboboxes, one-time-code fields, virtualized lists). Keyboard navigation, focus management, and screen reader support by default
 - **Framework Free** - runs in any browser, zero dependencies, no build pipeline required
 
 ## Quick start

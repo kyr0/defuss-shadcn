@@ -1,25 +1,25 @@
 {
-  "total": 94,
+  "total": 95,
   "byType": {
-    "ATM": 56,
+    "ATM": 57,
     "MOL": 21,
     "ORG": 2,
     "BLK": 13,
     "TPL": 2
   },
-  "withJs": 43,
+  "withJs": 44,
   "withoutJs": 51,
-  "totalSize": 1070423,
-  "totalSizeMinified": 500234,
-  "totalSizeGz": 333131,
-  "totalSizeGzMinified": 168054,
+  "totalSize": 1087951,
+  "totalSizeMinified": 507258,
+  "totalSizeGz": 339040,
+  "totalSizeGzMinified": 170714,
   "bundle": {
-    "jsSize": 402940,
-    "jsSizeMinified": 226534,
-    "cssSize": 552334,
-    "cssSizeMinified": 303778,
-    "totalSizeGz": 206164,
-    "totalSizeGzMinified": 115667
+    "jsSize": 409667,
+    "jsSizeMinified": 230198,
+    "cssSize": 558533,
+    "cssSizeMinified": 306845,
+    "totalSizeGz": 209185,
+    "totalSizeGzMinified": 117303
   },
   "core": {
     "jsSize": 88008,
@@ -1251,6 +1251,19 @@
       "totalSizeGzMinified": 858,
       "totalSize": 6541,
       "totalSizeMinified": 2981
+    },
+    "virtual-list": {
+      "name": "virtual-list",
+      "type": "ATM",
+      "withJs": true,
+      "jsSize": 11391,
+      "jsSizeMinified": 3938,
+      "cssSize": 6137,
+      "cssSizeMinified": 3086,
+      "totalSizeGz": 5909,
+      "totalSizeGzMinified": 2660,
+      "totalSize": 17528,
+      "totalSizeMinified": 7024
     }
   }
 }

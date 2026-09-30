@@ -1,0 +1,236 @@
+---
+title: "Virtual List"
+description: "Virtual List component - windowed rows for lists of any size: only the rows on screen exist and are recycled as you scroll, so ten rows and ten million cost the same. Lists and grids, jump to any row, loading and empty states, full ARIA set sizes."
+slug: "virtual-list"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="virtual-list" title="Virtual List" component="virtual-list">
+  A list too long to render. Only the rows on screen exist in the DOM, and their elements are recycled as you scroll - ten rows and ten million cost the same, the frame rate holds, and the last row is reachable even past the browser's element-height cap. One engine for lists and grids; screen readers still hear "row 5,000,099 of 10,000,000".
+</PageHeader>
+
+<SkillPanel component="virtual-list">
+  <SkillField label="Native basis">
+<SkillText>A focusable scroll container (<code>role="list"</code> or <code>"grid"</code>): a sizer gives the scrollbar its full length, a small pool of recycled rows rides inside it; <code>df$.shadcn.virtualList.setData(el, count, renderRow)</code> hands it the data.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/contain" title="paint and layout stay inside the list"><code>contain: strict</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver" title="the window follows the container height"><code>ResizeObserver</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-setsize" title="the real length for screen readers"><code>aria-setsize</code> / <code>aria-posinset</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior" title="the page does not scroll along"><code>overscroll-behavior</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.virtual-list</code>
+    <code>.virtual-list-sizer</code>
+    <code>.virtual-list-rows</code>
+    <code>.virtual-list-row</code>
+    <code>.virtual-list-cell</code>
+    <code>.virtual-list-row-meta</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-columns</code> (a grid), <code>data-count</code> (a count from markup), <code>data-empty-text</code>; <code>--virtual-list-row-height</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Ten million rows" hint="Only the rows on screen exist in the DOM - about sixteen at any scroll position - and they are recycled as you scroll, so ten rows and ten million cost the same. Past the browser's height cap the scroll range is mapped, so the last row stays reachable. Every row carries aria-posinset / aria-setsize against the real length."
+<div class="virtual-list" id="vl-main" data-empty-text="No results found" aria-label="Ten million rows" style="height:20rem;max-width:28rem;"></div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { virtualList } = df$.shadcn;
+    // rows are recycled: overwrite everything, never append to what was there
+    const renderRow = (row, index) => {
+      row.textContent = '';
+      const label = document.createElement('span');
+      label.textContent = 'Item ' + (index + 1).toLocaleString();
+      const meta = document.createElement('span');
+      meta.className = 'virtual-list-row-meta';
+      meta.textContent = '#' + (index + 1).toLocaleString();
+      row.append(label, meta);
+    };
+    virtualList.setData(document.getElementById('vl-main'), 10_000_000, renderRow);
+  });
+</script>
+```
+
+```html example label="Row height" schema="none" hint="--virtual-list-row-height sets the uniform row height the scroll maths reads - a continuous measurement, so no size scale: compact 28px, roomy 64px."
+<div class="flex flex-wrap gap-4">
+  <div class="virtual-list" id="vl-sm" aria-label="Compact rows" style="--virtual-list-row-height:28px;height:12rem;width:13rem;"></div>
+  <div class="virtual-list" id="vl-lg" aria-label="Roomy rows" style="--virtual-list-row-height:64px;height:12rem;width:13rem;"></div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { virtualList } = df$.shadcn;
+    // rows are recycled: overwrite everything, never append to what was there
+    const renderRow = (row, index) => {
+      row.textContent = '';
+      const label = document.createElement('span');
+      label.textContent = 'Item ' + (index + 1).toLocaleString();
+      const meta = document.createElement('span');
+      meta.className = 'virtual-list-row-meta';
+      meta.textContent = '#' + (index + 1).toLocaleString();
+      row.append(label, meta);
+    };
+    virtualList.setData(document.getElementById('vl-sm'), 1000, renderRow);
+    virtualList.setData(document.getElementById('vl-lg'), 1000, renderRow);
+  });
+</script>
+```
+
+```html example label="Jump to a row" schema="none" hint="setState('default', with an index) scrolls any row into view - even row 5,000,000 of ten million."
+<div class="flex flex-col gap-3" style="max-width:28rem;">
+  <div class="flex flex-wrap gap-2">
+    <button class="btn" data-variant="outline" data-size="sm" type="button" data-jump="0">First</button>
+    <button class="btn" data-variant="outline" data-size="sm" type="button" data-jump="5000000">5,000,000</button>
+    <button class="btn" data-variant="outline" data-size="sm" type="button" data-jump="9999999">Last</button>
+  </div>
+  <div class="virtual-list" id="vl-jump" aria-label="Jump demo" style="height:12rem;"></div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { virtualList } = df$.shadcn;
+    // rows are recycled: overwrite everything, never append to what was there
+    const renderRow = (row, index) => {
+      row.textContent = '';
+      const label = document.createElement('span');
+      label.textContent = 'Item ' + (index + 1).toLocaleString();
+      const meta = document.createElement('span');
+      meta.className = 'virtual-list-row-meta';
+      meta.textContent = '#' + (index + 1).toLocaleString();
+      row.append(label, meta);
+    };
+    const list = document.getElementById('vl-jump');
+    virtualList.setData(list, 10_000_000, renderRow);
+    document.querySelectorAll('[data-jump]').forEach((btn) =>
+      btn.addEventListener('click', () => list.api.setState('default', { index: Number(btn.dataset.jump) })));
+  });
+</script>
+```
+
+```html example label="Grid" schema="none" hint="data-columns puts several items in a row (role='grid', aria-rowcount / aria-colcount); the renderer is called per cell with the ITEM index. A million photos - each cell composes the image component; seeded URLs give a recycled cell its own picture back."
+<div class="virtual-list" id="vl-grid" data-columns="3" aria-label="Photo grid" style="--virtual-list-row-height:96px;height:18rem;max-width:28rem;"></div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { virtualList } = df$.shadcn;
+    virtualList.setData(document.getElementById('vl-grid'), 1_000_000, (cell, index) => {
+      cell.textContent = '';
+      const figure = document.createElement('figure');
+      figure.className = 'image';
+      figure.dataset.ratio = '1/1';
+      const img = document.createElement('img');
+      img.src = 'https://picsum.photos/seed/' + index + '/88/88';
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      img.alt = '';
+      figure.append(img);
+      const label = document.createElement('span');
+      label.textContent = 'Photo ' + (index + 1).toLocaleString();
+      cell.append(figure, label);
+    });
+  });
+</script>
+```
+
+```html example label="Rich rows and one listener" schema="none" hint="Rows can hold anything - an avatar, a name, a badge. Because the elements are recycled, never attach a listener per row: one delegated listener on the list reads row.dataset.index."
+<div class="flex flex-col gap-2" style="max-width:28rem;">
+  <div class="virtual-list" id="vl-people" aria-label="Contacts" style="--virtual-list-row-height:52px;height:16rem;"></div>
+  <p class="text-sm text-muted-foreground m-0" id="vl-picked" aria-live="polite">Click a contact.</p>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { virtualList } = df$.shadcn;
+    const names = ['Sofia Davis', 'Jackson Lee', 'Isabella Nguyen', 'William Kim', 'Olivia Martin', 'Liam Chen'];
+    const list = document.getElementById('vl-people');
+    virtualList.setData(list, 250_000, (row, index) => {
+      row.textContent = '';
+      const name = names[index % names.length] + ' ' + (Math.floor(index / names.length) + 1);
+      const avatar = document.createElement('span');
+      avatar.className = 'avatar';
+      avatar.dataset.size = 'sm';
+      avatar.innerHTML = '<span class="avatar-fallback"></span>';
+      avatar.firstChild.textContent = name.split(' ').map((w) => w[0]).slice(0, 2).join('');
+      const label = document.createElement('span');
+      label.textContent = name;
+      const badge = document.createElement('span');
+      badge.className = 'badge';
+      badge.dataset.variant = index % 7 === 0 ? 'default' : 'secondary';
+      badge.textContent = index % 7 === 0 ? 'Online' : 'Away';
+      badge.style.marginInlineStart = 'auto';
+      row.append(avatar, label, badge);
+    });
+    list.addEventListener('click', (e) => {
+      const row = e.target.closest('.virtual-list-row');
+      if (row) document.getElementById('vl-picked').textContent = 'Picked contact #' + (Number(row.dataset.index) + 1).toLocaleString();
+    });
+  });
+</script>
+```
+
+```html example label="Loading" schema="none" hint="setState('loading') marks the list aria-busy and shows placeholder rows; the next setData (or setState('default')) shows the rows."
+<div class="flex flex-col gap-3" style="max-width:28rem;">
+  <button class="btn" data-variant="outline" data-size="sm" type="button" id="vl-reload" style="align-self:flex-start;">Reload</button>
+  <div class="virtual-list" id="vl-loading" aria-label="Loading list" style="height:12rem;"></div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { virtualList } = df$.shadcn;
+    // rows are recycled: overwrite everything, never append to what was there
+    const renderRow = (row, index) => {
+      row.textContent = '';
+      const label = document.createElement('span');
+      label.textContent = 'Item ' + (index + 1).toLocaleString();
+      const meta = document.createElement('span');
+      meta.className = 'virtual-list-row-meta';
+      meta.textContent = '#' + (index + 1).toLocaleString();
+      row.append(label, meta);
+    };
+    const list = document.getElementById('vl-loading');
+    const load = () => {
+      list.api.setState('loading');
+      setTimeout(() => virtualList.setData(list, 5000, renderRow), 1500);
+    };
+    document.getElementById('vl-reload').addEventListener('click', load);
+    virtualList.setData(list, 0);
+    load();
+  });
+</script>
+```
+
+```html example label="Empty" schema="none" hint="A list with no items enters the empty state and shows its data-empty-text."
+<div class="virtual-list" data-empty-text="No results found" aria-label="Empty list" style="height:10rem;max-width:28rem;"></div>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - the rows; <code>\{ index \}</code> scrolls that row into view</li>
+    <li><code>loading</code> - <code>aria-busy="true"</code> and placeholder rows</li>
+    <li><code>empty</code> - no items: the <code>data-empty-text</code> message</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/virtual-list-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a href="../schemas/virtual-list.schema.json"><code>virtual-list.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `loading` | `boolean` | `true`, `false` | `false` | aria-busy with placeholder rows (`setState('loading')`). |
+| `empty` | `boolean` | `true`, `false` | `false` | No items - shows data-empty-text (`setState('empty')`). |
+```
+
+</StatesSection>
+
+<SourceFiles component="virtual-list" section="css" />
+
+<SourceFiles component="virtual-list" section="js" jsTitle="JS" />
+
+</DocPage>

@@ -1161,7 +1161,7 @@ The sidebar is ordered by dependency (primitives first):
 3. Primitives (Typography, Text Rotate, Separator, Icon, Kbd, Heading Anchor)
 4. Actions (Button, FAB, Toggle, Swap, Toggle Group, Button Group, Toolbar)
 5. Forms & Inputs (Label, Input, OTP Input, Textarea, Checkbox, Radio Group, Switch, Slider, Rating, Select, Number Input, File Input, Color Picker, Date Picker, Combobox, Form)
-6. Data Display (Badge, Avatar, Indicator, Diff, Countdown, Card, Image → {Image Gallery}, Statistic, Table, Collapsible, Timeline, Tree View, Calendar)
+6. Data Display (Badge, Avatar, Indicator, Diff, Countdown, Card, Image → {Image Gallery}, Statistic, Table, Virtual List, Collapsible, Timeline, Tree View, Calendar)
 7. Charts (Chart, Comparison, Change over time, Distribution, Composition, Election, Narrative)
 8. Diagrams (Mermaid) - text-first diagrams; a ```mermaid fence in any MDX page or ARCH.md renders through the same component (lib/mdx-example.ts, lib/arch-md.ts)
 9. Feedback & Status (Spinner, Skeleton, Progress, Radial Progress, Alert, Alert Dialog, Toast)
