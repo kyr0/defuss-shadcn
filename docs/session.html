@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="color-scheme" content="light dark" /><link rel="icon" href="images/favicon.webp" type="image/webp" /><meta name="description" content="Session component - a whole chat session: a transcript that follows the newest message and lets go when you scroll up, a jump-to-latest button, history that loads without moving your place, anchored turns, streaming replies, turn tracking, drag and drop, and the auto-growing composer." /><meta property="og:title" content="Session - defuss-shadcn" /><meta property="og:description" content="Session component - a whole chat session: a transcript that follows the newest message and lets go when you scroll up, a jump-to-latest button, history that loads without moving your place, anchored turns, streaming replies, turn tracking, drag and drop, and the auto-growing composer." /><meta property="og:type" content="website" /><meta property="og:url" content="https://kyr0.github.io/defuss-shadcn/session.html" /><meta property="og:site_name" content="defuss-shadcn" /><meta name="twitter:card" content="summary" /><meta name="twitter:title" content="Session - defuss-shadcn" /><meta name="twitter:description" content="Session component - a whole chat session: a transcript that follows the newest message and lets go when you scroll up, a jump-to-latest button, history that loads without moving your place, anchored turns, streaming replies, turn tracking, drag and drop, and the auto-growing composer." /><title>Session - defuss-shadcn</title><link id="tokens-css" rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@v0.9.3/dist/theme/utils/default-semantic-tokens.css" /><script src="js/themes.js"></script><script src="js/theme-switcher.js"></script><script src="js/layout.js"></script><script src="js/search-index.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@v0.9.3/dist/theme/utils/sizing.css" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@v0.9.3/dist/theme/utils/layout.css" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@v0.9.3/dist/theme/utils/accessibility.css" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@v0.9.3/dist/theme/utils/shapes.css" /><link rel="stylesheet" href="css/docs-theme.css" /><link rel="stylesheet" href="css/docs-utilities.css" /><link rel="stylesheet" href="css/layout.css" /><link rel="stylesheet" href="css/code-example.css" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@v0.9.3/dist/components/all.css" /></head><body><header class="site-header"><a href="index.html" class="header-brand"><span class="header-brand-mark"><img src="images/favicon.webp" alt="defuss-shadcn logo" class="header-brand-logo" /><span class="badge header-version" data-variant="outline">v0.9.3</span></span><span class="header-brand-name">defuss<em>-shadcn</em></span></a><button class="sidebar-toggle" id="sidebar-toggle" type="button" aria-label="Collapse sidebar" title="Collapse sidebar (⌘B)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg></button><div class="header-search" role="search"><svg class="header-search-icon" aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="text" class="header-search-input" placeholder="Search docs… (⌘K)" aria-label="Search documentation" autocomplete="off" readonly="" /></div><div style="flex:1;"></div><nav style="display:flex;align-items:center;gap:0.5rem;"><a href="https://github.com/kyr0/defuss-shadcn" target="_blank" rel="noopener" class="header-action"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg><span class="github-label">GitHub</span><span class="github-stars"></span></a><span class="separator" data-orientation="vertical" role="none" aria-hidden="true"></span><button id="theme-toggle" class="header-action theme-toggle-btn" aria-label="Toggle dark mode"><svg id="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg><svg id="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button><button id="theme-selector-btn" class="header-action theme-toggle-btn" aria-label="Change color theme" popovertarget="theme-popover"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="0.5" fill="currentColor"/><circle cx="17.5" cy="10.5" r="0.5" fill="currentColor"/><circle cx="8.5" cy="7.5" r="0.5" fill="currentColor"/><circle cx="6.5" cy="12" r="0.5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></button></nav></header><div id="theme-popover" popover="" class="theme-popover"><div class="theme-popover-header"><span class="theme-popover-title">Theme</span><button class="theme-reset-btn" id="theme-reset-btn">Reset</button></div><div class="theme-grid" id="theme-grid"></div></div><dialog id="docs-palette" class="command" aria-label="Search documentation"><div class="command-content"><div class="command-input-wrapper"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input class="command-input" type="text" placeholder="Search documentation…" autocomplete="off" autocorrect="off" spellcheck="false" /></div><div class="command-list" id="docs-palette-list"></div><div class="command-empty" hidden="">No results found.</div></div></dialog><div class="flex" style="margin-top: 3.5rem; min-height: calc(100vh - 3.5rem);"><aside class="app-sidebar site-sidebar" id="docs-sidebar" data-state="expanded"><div class="sidebar-content"><details class="sidebar-group nav-section" open="" data-nav-always-open="" data-nav-section="Introduction"><summary><span class="sidebar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span><span>Introduction</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="index.html"><span>Getting Started</span></a><a class="nav-link sidebar-link" href="installation.html"><span>Installation</span></a><a class="nav-link sidebar-link" href="vibe-coding.html"><span>Vibe Coding / Agentic Engineering</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span></a><a class="nav-link sidebar-link" href="how-to-use.html"><span>How to Use</span></a><a class="nav-link sidebar-link" href="component-skills.html"><span>Component Skills</span></a><a class="nav-link sidebar-link" href="architecture.html"><span>Verified Agentic Engineering (VAE)</span></a><a class="nav-link sidebar-link" href="changelog.html"><span>Changelog</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Guides"><summary><span class="sidebar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"/><circle cx="12" cy="12" r="10"/></svg></span><span>Guides</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="theming.html"><span>Theming</span></a><a class="nav-link sidebar-link" href="dark-mode.html"><span>Dark Mode</span></a><a class="nav-link sidebar-link" href="data-attribute-api.html"><span>Data Attribute API</span></a><a class="nav-link sidebar-link" href="state-api.html"><span>State API</span></a><a class="nav-link sidebar-link" href="dom-querying.html"><span>DOM Querying &amp; Morphing</span></a><a class="nav-link sidebar-link" href="global-keys.html"><span>Global Key Commands</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span></a><a class="nav-link sidebar-link" href="cascade-layers.html"><span>Cascade Layers</span></a><a class="nav-link sidebar-link" href="es-modules.html"><span>JavaScript Modules</span></a><a class="nav-link sidebar-link" href="native-web-apis.html"><span>Native Web APIs</span></a><details class="sidebar-submenu"><summary><a class="nav-link sidebar-link" href="animations.html"><span>Animations</span></a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="motion.html"><span>Motion</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-canvas.html"><span>Animation Canvas</span><span class="type-badge" data-type="TPL" title="TPL">TPL</span></a><a class="nav-link sidebar-link" href="anim-fade.html"><span>Fade</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-up.html"><span>Slide Up</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-down.html"><span>Slide Down</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-left.html"><span>Slide Left</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-right.html"><span>Slide Right</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-zoom.html"><span>Zoom</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-zoom-out.html"><span>Zoom Out</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-pop.html"><span>Pop</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-spin.html"><span>Spin</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-flip.html"><span>Flip</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-skew.html"><span>Skew</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-blur.html"><span>Blur</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-wipe.html"><span>Wipe</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-wipe-up.html"><span>Wipe Up</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="anim-iris.html"><span>Iris</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="sidebar-submenu"><summary><a class="nav-link sidebar-link" href="sizing.html"><span>Sizing</span></a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="width-height.html"><span>Width &amp; Height</span></a><a class="nav-link sidebar-link" href="spacing.html"><span>Spacing</span></a><a class="nav-link sidebar-link" href="density.html"><span>Density</span></a></nav></details><details class="sidebar-submenu"><summary><a class="nav-link sidebar-link" href="layout.html"><span>Layout</span></a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="container.html"><span>Container</span></a><a class="nav-link sidebar-link" href="flex.html"><span>Flex</span></a><a class="nav-link sidebar-link" href="grid.html"><span>Grid</span></a></nav></details><a class="nav-link sidebar-link" href="shapes.html"><span>Shapes</span></a><a class="nav-link sidebar-link" href="accessibility.html"><span>Accessibility</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Primitives"><summary><span class="sidebar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.7.7 0 0 1 1.198-.043L16.3 8.9a.7.7 0 0 1-.572 1.1Z"/><rect x="3" y="14" width="7" height="7" rx="1"/><circle cx="17.5" cy="17.5" r="3.5"/></svg></span><span>Primitives</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="typography.html"><span>Typography</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="text-rotate.html"><span>Text Rotate</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="typewriter.html"><span>Typewriter</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="separator.html"><span>Separator</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="icon.html"><span>Icon</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="kbd.html"><span>Kbd</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="heading-anchor.html"><span>Heading Anchor</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Actions"><summary><span class="sidebar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg></span><span>Actions</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="button.html"><span>Button</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="fab.html"><span>FAB</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="toggle.html"><span>Toggle</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="swap.html"><span>Swap</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="toggle-group.html"><span>Toggle Group</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="button-group.html"><span>Button Group</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="toolbar.html"><span>Toolbar</span><span class="type-badge" data-type="ORG" title="ORG">ORG</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Forms &amp; Inputs"><summary><span class="sidebar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h1a3 3 0 0 1 3 3 3 3 0 0 1 3-3h1"/><path d="M13 20h-1a3 3 0 0 1-3-3 3 3 0 0 1-3 3H5"/><path d="M5 16H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h1"/><path d="M13 8h7a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-7"/><path d="M9 7v10"/></svg></span><span>Forms &amp; Inputs</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="label.html"><span>Label</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="input.html"><span>Input</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="otp-input.html"><span>OTP Input</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="textarea.html"><span>Textarea</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="checkbox.html"><span>Checkbox</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="radio.html"><span>Radio Group</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="switch.html"><span>Switch</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="slider.html"><span>Slider</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="rating.html"><span>Rating</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="select.html"><span>Select</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="number-input.html"><span>Number Input</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="file-input.html"><span>File Input</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="color-picker.html"><span>Color Picker</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="date-picker.html"><span>Date Picker</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="combobox.html"><span>Combobox</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="search-filter.html"><span>Search &amp; Filter</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="form.html"><span>Form</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Data Display"><summary><span class="sidebar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg></span><span>Data Display</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="badge.html"><span>Badge</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="type-badge.html"><span>Type Badge</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="avatar.html"><span>Avatar</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="indicator.html"><span>Indicator</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="diff.html"><span>Diff</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="countdown.html"><span>Countdown</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="card.html"><span>Card</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><details class="sidebar-submenu"><summary><a class="nav-link sidebar-link" href="image.html"><span>Image</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="image-gallery.html"><span>Image Gallery</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><a class="nav-link sidebar-link" href="statistic.html"><span>Statistic</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="table.html"><span>Table</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="virtual-list.html"><span>Virtual List</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="collapsible.html"><span>Collapsible</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="timeline.html"><span>Timeline</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="tree-view.html"><span>Tree View</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="calendar.html"><span>Calendar</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="carousel.html"><span>Carousel</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="scroll-area.html"><span>Scroll Area</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="sortable.html"><span>Sortable</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Charts"><summary><span class="sidebar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></span><span>Charts</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="chart.html"><span>Chart</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="charts-comparison.html"><span>Comparison</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="charts-change.html"><span>Change over time</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="charts-distribution.html"><span>Distribution</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="charts-composition.html"><span>Composition</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="charts-election.html"><span>Election</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="charts-narrative.html"><span>Narrative</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Diagrams"><summary><span class="sidebar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="8" x="3" y="3" rx="2"/><path d="M7 11v4a2 2 0 0 0 2 2h4"/><rect width="8" height="8" x="13" y="13" rx="2"/></svg></span><span>Diagrams</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="mermaid.html"><span>Mermaid</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Feedback &amp; Status"><summary><span class="sidebar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M22 8c0-2.3-.8-4.3-2-6"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/><path d="M4 2C2.8 3.7 2 5.7 2 8"/></svg></span><span>Feedback &amp; Status</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="spinner.html"><span>Spinner</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="skeleton.html"><span>Skeleton</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="progress.html"><span>Progress</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="radial-progress.html"><span>Radial Progress</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="alert.html"><span>Alert</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="alert-dialog.html"><span>Alert Dialog</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="toast.html"><span>Toast</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Overlays"><summary><span class="sidebar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg></span><span>Overlays</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="popover.html"><span>Popover</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="tooltip.html"><span>Tooltip</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="context-menu.html"><span>Context Menu</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="dialog.html"><span>Dialog</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="sheet.html"><span>Sheet</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="accordion.html"><span>Accordion</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="command.html"><span>Command</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Navigation"><summary><span class="sidebar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></span><span>Navigation</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="navbar.html"><span>Navbar</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><span class="type-badge" data-type="ORG" title="ORG">ORG</span></a><a class="nav-link sidebar-link" href="dock.html"><span>Dock</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="breadcrumb.html"><span>Breadcrumb</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="toc.html"><span>Table of Contents</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="pagination.html"><span>Pagination</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="steps.html"><span>Steps</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="tabs.html"><span>Tabs</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="dropdown.html"><span>Dropdown Menu</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="menubar.html"><span>Menubar</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="navigation-menu.html"><span>Navigation Menu</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="theme-switcher.html"><span>Theme Switcher</span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Application"><summary><span class="sidebar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 4v4"/><path d="M2 8h20"/><path d="M6 4v4"/></svg></span><span>Application</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="sidebar.html"><span>Sidebar</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="resizer.html"><span>Resizer</span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="border-layout.html"><span>Border Layout</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link" href="window.html"><span>Window</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="sidebar-group nav-section" open="" data-nav-section="Chat"><summary><span class="sidebar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></svg></span><span>Chat</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="bubble.html"><span>Bubble</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="marker.html"><span>Marker</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a><a class="nav-link sidebar-link" href="message.html"><span>Message</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><span class="type-badge" data-type="MOL" title="MOL">MOL</span></a><a class="nav-link sidebar-link active" href="session.html" aria-current="page"><span>Session</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><span class="type-badge" data-type="ORG" title="ORG">ORG</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Mockup"><summary><span class="sidebar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg></span><span>Mockup</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="mockup-code.html"><span>Code</span><span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span><span class="type-badge" data-type="ATM" title="ATM">ATM</span></a></nav></details><details class="sidebar-group nav-section" data-nav-section="Presentations"><summary><span class="sidebar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg></span><span>Presentations</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="presentation.html"><span>Presentation</span><span class="type-badge" data-type="TPL" title="TPL">TPL</span></a><details class="sidebar-submenu"><summary><a class="nav-link sidebar-link" href="presentations.html"><span>Deck Gallery</span></a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="system-in-numbers.html"><span>The System in Numbers</span></a><a class="nav-link sidebar-link" href="editorial-highlight-bars.html"><span>Editorial Highlight Bars</span></a><a class="nav-link sidebar-link" href="lollipop-ranking.html"><span>Lollipop Ranking</span></a><a class="nav-link sidebar-link" href="dumbbell-before-after.html"><span>Dumbbell Before/After</span></a><a class="nav-link sidebar-link" href="slopegraph.html"><span>Slopegraph</span></a><a class="nav-link sidebar-link" href="diverging-bars.html"><span>Diverging Bars</span></a><a class="nav-link sidebar-link" href="waterfall.html"><span>Waterfall</span></a><a class="nav-link sidebar-link" href="normalized-stack.html"><span>Normalized Stack</span></a><a class="nav-link sidebar-link" href="bump-ranking.html"><span>Bump Ranking</span></a><a class="nav-link sidebar-link" href="bar-race.html"><span>Bar Race</span></a><a class="nav-link sidebar-link" href="confidence-band.html"><span>Confidence Band</span></a><a class="nav-link sidebar-link" href="annotated-timeseries.html"><span>Annotated Time Series</span></a><a class="nav-link sidebar-link" href="small-multiples.html"><span>Small Multiples</span></a><a class="nav-link sidebar-link" href="scatter-quadrants.html"><span>Scatter Quadrants</span></a><a class="nav-link sidebar-link" href="jittered-distribution.html"><span>Jittered Distribution</span></a><a class="nav-link sidebar-link" href="heatmap-matrix.html"><span>Heatmap Matrix</span></a><a class="nav-link sidebar-link" href="calendar-heatmap.html"><span>Calendar Heatmap</span></a><a class="nav-link sidebar-link" href="theme-river.html"><span>Theme River</span></a><a class="nav-link sidebar-link" href="treemap.html"><span>Treemap</span></a><a class="nav-link sidebar-link" href="sunburst.html"><span>Sunburst</span></a><a class="nav-link sidebar-link" href="sankey.html"><span>Sankey</span></a><a class="nav-link sidebar-link" href="chord.html"><span>Chord</span></a><a class="nav-link sidebar-link" href="editorial-gauge.html"><span>Editorial Gauge</span></a><a class="nav-link sidebar-link" href="parliament-hemicycle.html"><span>Parliament Hemicycle</span></a><a class="nav-link sidebar-link" href="election-majority-bar.html"><span>Election Majority Bar</span></a><a class="nav-link sidebar-link" href="election-hex-cartogram.html"><span>Election Hex Cartogram</span></a><a class="nav-link sidebar-link" href="election-shift-arrows.html"><span>Election Shift Arrows</span></a><a class="nav-link sidebar-link" href="universal-transition.html"><span>Universal Transition</span></a><a class="nav-link sidebar-link" href="waffle-dot-matrix.html"><span>Waffle Dot Matrix</span></a><a class="nav-link sidebar-link" href="boxplot.html"><span>Boxplot</span></a><a class="nav-link sidebar-link" href="violin-custom.html"><span>Violin - Custom Series</span></a><a class="nav-link sidebar-link" href="custom-wind-vectors.html"><span>Custom Wind Vectors</span></a><a class="nav-link sidebar-link" href="story-state-machine.html"><span>Story State Machine</span></a></nav></details></nav></details><details class="sidebar-group nav-section" data-nav-section="Marketing"><summary><span class="sidebar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></span><span>Marketing</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></summary><nav class="sidebar-nav"><a class="nav-link sidebar-link" href="site-header.html"><span>Site Header</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="hero.html"><span>Hero</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="product-showcase.html"><span>Product Showcase</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="brand-logos.html"><span>Brand Logos</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="feature-details.html"><span>Feature Details</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="testimonials.html"><span>Testimonials</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="stats.html"><span>Stats</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="pricing.html"><span>Pricing</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="blog.html"><span>Blog</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="faq.html"><span>FAQ</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="get-in-touch.html"><span>Get In Touch</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="newsletter.html"><span>Newsletter</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a><a class="nav-link sidebar-link" href="site-footer.html"><span>Site Footer</span><span class="type-badge" data-type="BLK" title="BLK">BLK</span></a></nav></details></div></aside><main style="flex: 1; min-width: 0; max-width: 44rem; padding: 2rem 3.5rem 8rem;"><div class="page-header"><div class="flex items-baseline justify-between mb-1"><p class="text-sm text-muted-foreground" style="font-family:var(--font-mono);">defuss-shadcn / Chat / session</p><div style="display:flex;align-items:baseline;gap:0.375rem;"><span class="text-xs text-muted-foreground" style="font-family:var(--font-mono);white-space:nowrap;">Built with:</span> <a href="#source-css" class="badge built-with-pill" data-variant="outline">CSS</a> <a href="#source-js" class="badge built-with-pill" data-variant="outline">JS</a></div></div><div class="page-header-title-row"><h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:400;letter-spacing:-0.035em;margin:0;">Session<span class="type-badge" data-type="ORG" title="Organism">ORG</span></h1><div class="page-header-actions"></div></div><p class="text-muted-foreground leading-relaxed mb-6">A whole chat session, hosted and scrolled: a transcript (<code>role="log"</code>) of <a href="message.html" style="color:var(--primary);text-decoration:underline;text-underline-offset:4px;">messages</a>, <a href="bubble.html" style="color:var(--primary);text-decoration:underline;text-underline-offset:4px;">bubbles</a> and <a href="marker.html" style="color:var(--primary);text-decoration:underline;text-underline-offset:4px;">markers</a> that follows the newest message while you are at the bottom and lets go the moment you scroll up, a button back to the latest, history that loads without moving your place, anchored turns, streaming replies, and files dropped anywhere on it - with the <a href="textarea.html" style="color:var(--primary);text-decoration:underline;text-underline-offset:4px;">Textarea</a> page's auto-growing composer below. After shadcn's MessageScroller.</p></div><details class="page-toc" open=""><summary>On this page (8)</summary><nav class="page-toc-links" aria-label="On this page"><a class="toc-link" href="#toc-session">Session</a><a class="toc-link" href="#toc-assistant-anchored-turns-and-streaming">Assistant: anchored turns and streaming</a><a class="toc-link" href="#toc-load-older-messages">Load older messages</a><a class="toc-link" href="#toc-jump-to-a-turn">Jump to a turn</a><a class="toc-link" href="#toc-scroll-status">Scroll status</a><a class="toc-link" href="#toc-states">States</a><a class="toc-link" href="#toc-css">CSS</a><a class="toc-link" href="#toc-js">JS</a></nav></details><details style="margin-bottom:2rem;border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;"><summary style="padding:0.875rem 1.25rem;background:var(--muted);cursor:pointer;font-size:0.8125rem;font-weight:600;font-family:var(--font-mono);color:var(--muted-foreground);list-style:none;display:flex;align-items:center;gap:0.5rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 200ms;"><path d="m9 18 6-6-6-6"/></svg>Component Skill — <span data-spec-href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@v0.9.3/dist/components/session/component-skill.md" style="text-decoration:underline;text-underline-offset:3px;">components/session/component-skill.md</span></summary><div style="padding:1.5rem;font-size:0.875rem;line-height:1.85;"><p class="skill-field-label">Native basis</p><p class="text-muted-foreground" style="margin:0 0 1.25rem;">A focusable scroll region around a <code>role="log"</code> transcript - the keyboard scrolls it natively, new messages are announced; the runtime only decides where the scroll goes.</p><p class="skill-field-label">Web Platform APIs</p><div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;"><a href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/log_role" target="_blank" rel="noopener" title="new messages are announced" class="api-pill"><code>role="log"</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollend_event" target="_blank" rel="noopener" title="programmatic scrolling" class="api-pill"><code>scrollend</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver" target="_blank" rel="noopener" title="a streaming reply grows" class="api-pill"><code>ResizeObserver</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow-anchor" target="_blank" rel="noopener" title="the session keeps your place itself" class="api-pill"><code>overflow-anchor</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/content-visibility" target="_blank" rel="noopener" title="long threads stay cheap" class="api-pill"><code>content-visibility</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a><a href="https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API" target="_blank" rel="noopener" title="files dropped on the transcript" class="api-pill"><code>Drag and Drop API</code><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a></div><p class="skill-field-label">Classes</p><div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1.25rem;"><code>.session</code><code>.session-viewport</code><code>.session-content</code><code>.session-item</code><code>.session-scroll-button</code><code>.session-footer</code><code>.session-status</code></div><p class="skill-field-label">Data attributes</p><p class="text-muted-foreground" style="margin:0 0 1.25rem;"><code>data-default-position</code> (<code>end</code>, <code>start</code>, <code>last-anchor</code>), <code>data-threshold</code>, <code>data-peek</code>, <code>data-anchor</code> (item), <code>data-message-id</code> (item), <code>data-track</code>, <code>data-drop</code> + <code>data-drop-accept</code> / <code>data-drop-label</code>, <code>data-animate</code>; set by the runtime: <code>data-stick</code>, <code>data-scrollable</code>, <code>data-autoscrolling</code>, <code>data-drop-active</code>; events <code>session-drop</code>, <code>session-visibility</code>; API <code>df$.shadcn.session</code>.</p></div></details><div class="code-example" data-component="session" data-schema="{&#xA;  &quot;schemaVersion&quot;: 1,&#xA;  &quot;name&quot;: &quot;session&quot;,&#xA;  &quot;states&quot;: {&#xA;    &quot;detached&quot;: {&#xA;      &quot;type&quot;: &quot;boolean&quot;,&#xA;      &quot;default&quot;: false,&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.session&quot;&#xA;      },&#xA;      &quot;mutation&quot;: {&#xA;        &quot;kind&quot;: &quot;api&quot;,&#xA;        &quot;name&quot;: &quot;detached&quot;,&#xA;        &quot;args&quot;: {&#xA;          &quot;to&quot;: &quot;start&quot;&#xA;        }&#xA;      },&#xA;      &quot;observation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-state-name&quot;&#xA;      },&#xA;      &quot;editor&quot;: {&#xA;        &quot;component&quot;: &quot;checkbox&quot;&#xA;      }&#xA;    },&#xA;    &quot;streaming&quot;: {&#xA;      &quot;type&quot;: &quot;boolean&quot;,&#xA;      &quot;default&quot;: false,&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.session&quot;&#xA;      },&#xA;      &quot;mutation&quot;: {&#xA;        &quot;kind&quot;: &quot;api&quot;,&#xA;        &quot;name&quot;: &quot;streaming&quot;&#xA;      },&#xA;      &quot;observation&quot;: {&#xA;        &quot;kind&quot;: &quot;attribute&quot;,&#xA;        &quot;name&quot;: &quot;data-state-name&quot;&#xA;      },&#xA;      &quot;editor&quot;: {&#xA;        &quot;component&quot;: &quot;checkbox&quot;&#xA;      }&#xA;    }&#xA;  },&#xA;  &quot;actions&quot;: {&#xA;    &quot;scrollToEnd&quot;: {&#xA;      &quot;target&quot;: {&#xA;        &quot;kind&quot;: &quot;selector&quot;,&#xA;        &quot;selector&quot;: &quot;.session-scroll-button[data-to=\&quot;end\&quot;]&quot;&#xA;      },&#xA;      &quot;operation&quot;: {&#xA;        &quot;kind&quot;: &quot;method&quot;,&#xA;        &quot;name&quot;: &quot;click&quot;&#xA;      }&#xA;    }&#xA;  }&#xA;}&#xA;" data-state-demo="" data-height="40"><p class="text-sm font-medium mb-2" id="toc-session"><a class="heading-anchor" href="#toc-session" aria-label="Link to section: Session">§</a>Session</p><p class="text-xs text-muted-foreground mb-3">A whole conversation: the transcript follows the newest message while you are at the bottom and lets go when you scroll up - the arrow brings you back. The composer is the Textarea page's .textarea-group with the same script: it grows, + attaches images, Enter sends. Drop images anywhere on the message window (data-drop) and they land in the composer; send, and Sofia types back.</p><div class="preview" style="padding:0.75rem;overflow:hidden;"><div class="ce-screen" data-mode="full"><div class="resizer ce-resizer" data-handles="all" data-resize-mode="controlled" data-axis="both" data-min="240" data-max="1600" data-min-h="240" data-max-h="1400"><div class="ce-device"><iframe class="code-example-frame" sandbox="allow-scripts allow-forms" allow="clipboard-write" title="Session" style="width:100%;min-height:8rem;border:0;display:block;"></iframe><span class="ce-device-island" aria-hidden="true"></span><span class="ce-device-home" aria-hidden="true"></span></div></div></div><output class="code-example-error" role="alert" hidden=""></output><button class="code-example-full-exit" title="Exit fullscreen (Esc)" aria-label="Exit fullscreen"><i data-lucide="x"></i></button></div><div class="code-example-toolbar"><span class="code-example-viewport" role="group" aria-label="Preview device"><button class="code-example-vp" data-vp="rotate" title="Swap orientation (phone/tablet)" aria-disabled="true"><i data-lucide="rotate-cw"></i><span>Rotate</span></button><button class="code-example-vp" data-vp="phone" aria-pressed="false" title="Phone 390×844"><i data-lucide="smartphone"></i><span>Phone</span></button><button class="code-example-vp" data-vp="tablet" aria-pressed="false" title="Tablet 834×1112"><i data-lucide="tablet"></i><span>Tablet</span></button><button class="code-example-vp" data-vp="desktop" aria-pressed="false" title="Desktop 1024"><i data-lucide="monitor"></i><span>Desktop</span></button><button class="code-example-vp" data-vp="full" aria-pressed="true" title="Full width (source default)"><i data-lucide="app-window"></i><span>Full</span></button></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-w" type="number" min="240" step="10" inputmode="numeric" placeholder="Width" aria-label="Custom preview width (px)" /><span class="code-example-vp-x" aria-hidden="true">×</span><input class="code-example-vp-h" type="number" min="240" step="10" inputmode="numeric" placeholder="Full" aria-label="Custom preview height (px)" disabled="" /></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-z" type="number" min="25" max="100" step="5" inputmode="numeric" placeholder="Auto" aria-label="Preview zoom (%)" /><span class="code-example-vp-x" aria-hidden="true">%</span></span><span class="code-example-spacer"></span><button class="code-example-tab" data-tab="code" aria-pressed="false" title="Show or hide the example source"><i data-lucide="code-xml"></i><span>Code</span></button><button class="code-example-tab" data-tab="state" aria-pressed="false" title="Show or hide the state contract"><i data-lucide="sliders-horizontal"></i><span>State</span></button><button class="code-example-reset" title="Restore the original source and rerun"><i data-lucide="rotate-ccw"></i><span>Reset</span></button><button class="code-example-full" title="Preview fullscreen (Esc to exit)"><i data-lucide="maximize"></i><span>Fullscreen</span></button></div><div class="code-example-panel" data-panel="code" hidden=""><button class="code-example-copy" title="Copy the example source"><i data-lucide="copy"></i><span>Copy</span></button><textarea class="code-example-src" spellcheck="false" aria-label="Editable source for: Session" rows="10">&lt;section class="session" id="chat" aria-label="Chat with Sofia" data-drop data-drop-accept="image/*" data-drop-label="Drop images to attach" data-animate style="height:32rem;"&gt;
+  &lt;div class="session-viewport" aria-label="Messages"&gt;
+    &lt;div class="session-content"&gt;
+      &lt;div class="session-item"&gt;&lt;div class="marker" data-variant="separator"&gt;&lt;span class="marker-content"&gt;Yesterday&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;div class="session-item" data-message-id="s1"&gt;
+        &lt;div class="message"&gt;&lt;div class="message-avatar"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"&gt;&lt;span class="avatar-fallback"&gt;SD&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class="message-content"&gt;&lt;div class="message-header"&gt;&lt;span class="message-name"&gt;Sofia Davis&lt;/span&gt;&lt;time class="message-time"&gt;17:02&lt;/time&gt;&lt;/div&gt;&lt;div class="bubble" data-variant="secondary"&gt;&lt;div class="bubble-content"&gt;Hey! Are we still on for the release review tomorrow?&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="session-item" data-message-id="s2"&gt;
+        &lt;div class="message" data-align="end"&gt;&lt;div class="message-avatar"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/kyr0.png" alt="You"&gt;&lt;span class="avatar-fallback"&gt;AH&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class="message-content"&gt;&lt;div class="bubble"&gt;&lt;div class="bubble-content"&gt;Yes - 10:00. I will bring the changelog.&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="session-item" data-message-id="s3"&gt;
+        &lt;div class="message"&gt;&lt;div class="message-avatar"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"&gt;&lt;span class="avatar-fallback"&gt;SD&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class="message-content"&gt;&lt;div class="message-header"&gt;&lt;span class="message-name"&gt;Sofia Davis&lt;/span&gt;&lt;time class="message-time"&gt;17:04&lt;/time&gt;&lt;/div&gt;&lt;div class="bubble" data-variant="secondary"&gt;&lt;div class="bubble-content"&gt;Perfect. Can you also check the new chat components?&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="session-item" data-message-id="s4"&gt;
+        &lt;div class="message" data-align="end"&gt;&lt;div class="message-avatar"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/kyr0.png" alt="You"&gt;&lt;span class="avatar-fallback"&gt;AH&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class="message-content"&gt;&lt;div class="bubble"&gt;&lt;div class="bubble-content"&gt;Bubble, Marker and Message are in. Session is next.&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="session-item"&gt;&lt;div class="marker" data-variant="separator"&gt;&lt;span class="marker-content"&gt;Today&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;div class="session-item" data-message-id="s5"&gt;
+        &lt;div class="message"&gt;&lt;div class="message-avatar"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"&gt;&lt;span class="avatar-fallback"&gt;SD&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class="message-content"&gt;&lt;div class="message-header"&gt;&lt;span class="message-name"&gt;Sofia Davis&lt;/span&gt;&lt;time class="message-time"&gt;09:12&lt;/time&gt;&lt;/div&gt;&lt;div class="bubble" data-variant="secondary"&gt;&lt;div class="bubble-content"&gt;Morning! How does the session scroll with a long thread?&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="session-item" data-message-id="s6"&gt;
+        &lt;div class="message" data-align="end"&gt;&lt;div class="message-avatar"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/kyr0.png" alt="You"&gt;&lt;span class="avatar-fallback"&gt;AH&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class="message-content"&gt;&lt;div class="bubble"&gt;&lt;div class="bubble-content"&gt;It follows the newest message while you are at the bottom - scroll up and it lets go.&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="session-item" data-message-id="s7"&gt;
+        &lt;div class="message"&gt;&lt;div class="message-avatar"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"&gt;&lt;span class="avatar-fallback"&gt;SD&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class="message-content"&gt;&lt;div class="message-header"&gt;&lt;span class="message-name"&gt;Sofia Davis&lt;/span&gt;&lt;time class="message-time"&gt;09:13&lt;/time&gt;&lt;/div&gt;&lt;div class="bubble" data-variant="secondary"&gt;&lt;div class="bubble-content"&gt;And the arrow button brings me back?&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="session-item" data-message-id="s8"&gt;
+        &lt;div class="message" data-align="end"&gt;&lt;div class="message-avatar"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/kyr0.png" alt="You"&gt;&lt;span class="avatar-fallback"&gt;AH&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class="message-content"&gt;&lt;div class="bubble"&gt;&lt;div class="bubble-content"&gt;Exactly. Try it - and drop an image anywhere on this window.&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;button type="button" class="session-scroll-button" data-to="end" aria-label="Scroll to the latest message"&gt;&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;div class="session-footer"&gt;
+    &lt;form class="textarea-group" data-layout="inline" id="chat-composer" aria-label="Message composer"&gt;
+      &lt;ul class="file-drop-list" aria-label="Attachments"&gt;&lt;/ul&gt;
+      &lt;div class="textarea-group-actions"&gt;
+        &lt;button class="btn" data-variant="ghost" data-size="icon-sm" type="button" data-attach aria-label="Attach images"&gt;&lt;i data-lucide="plus"&gt;&lt;/i&gt;&lt;/button&gt;
+        &lt;input type="file" accept="image/*" multiple hidden data-files&gt;
+      &lt;/div&gt;
+      &lt;textarea class="textarea" data-rows="1" data-max-rows="5" name="message" placeholder="Message - Enter sends, Shift+Enter adds a line" aria-label="Message"&gt;&lt;/textarea&gt;
+      &lt;div class="textarea-group-actions"&gt;
+        &lt;button class="btn" data-size="icon-sm" type="submit" data-send aria-label="Send" disabled&gt;&lt;i data-lucide="arrow-up"&gt;&lt;/i&gt;&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/form&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+&lt;script&gt;
+  document.addEventListener('DOMContentLoaded', () =&gt; {
+    const chat = df$('#chat').get(0);
+    const session = df$.shadcn.session;
+    const bubbleRow = (me, inner) =&gt; `&lt;div class="message"${me ? ' data-align="end"' : ''}&gt;&lt;div class="message-avatar"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/${me ? 'kyr0' : 'evilrabbit'}.png" alt="${me ? 'You' : 'Sofia Davis'}"&gt;&lt;span class="avatar-fallback"&gt;${me ? 'AH' : 'SD'}&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class="message-content"&gt;${inner}&lt;/div&gt;&lt;/div&gt;`;
+    const form = df$('#chat-composer').get(0);
+    const text = df$(form).find('.textarea').get(0);
+    const list = df$(form).find('.file-drop-list');
+    const picker = df$(form).find('[data-files]').get(0);
+    const files = []; // { id, file, url }
+    const esc = (s) =&gt; s.replace(/[&amp;&lt;&gt;"]/g, (c) =&gt; ({ '&amp;': '&amp;amp;', '&lt;': '&amp;lt;', '&gt;': '&amp;gt;', '"': '&amp;quot;' })[c]);
+
+    // send is live only when there is something to send
+    const sync = () =&gt; df$(form).find('[data-send]').prop('disabled', !text.value.trim() &amp;&amp; !files.length);
+    // attachment chips: the file-input's own .file-drop-item markup, keyed by id
+    const render = () =&gt; list.morph(files.map((a) =&gt; `
+      &lt;li class="file-drop-item" id="${a.id}"&gt;
+        &lt;span class="file-drop-thumb" aria-hidden="true"&gt;&lt;img src="${a.url}" alt=""&gt;&lt;/span&gt;
+        &lt;div class="file-drop-name"&gt;${esc(a.file.name)}&lt;span class="file-drop-meta"&gt;${Math.ceil(a.file.size / 1024)} KB&lt;/span&gt;&lt;/div&gt;
+        &lt;button type="button" class="file-drop-remove" data-remove="${a.id}" aria-label="Remove ${esc(a.file.name)}"&gt;✕&lt;/button&gt;
+      &lt;/li&gt;`).join(''));
+    const add = (fileList) =&gt; {
+      for (const file of fileList) {
+        if (!file.type.startsWith('image/')) continue; // images only
+        files.push({ id: `att-${crypto.randomUUID()}`, file, url: URL.createObjectURL(file) });
+      }
+      render(); sync();
+    };
+
+    df$(text).on('input', sync);
+    // Enter sends, Shift+Enter is a new line (never mid-IME composition)
+    df$(text).on('keydown', (e) =&gt; {
+      if (e.key === 'Enter' &amp;&amp; !e.shiftKey &amp;&amp; !e.isComposing) { e.preventDefault(); form.requestSubmit(); }
+    });
+    // + opens the native picker
+    df$(form).find('[data-attach]').on('click', () =&gt; picker.click());
+    df$(picker).on('change', () =&gt; { add(picker.files); picker.value = ''; });
+    df$(list).on('click', (e) =&gt; {
+      const id = e.target.closest('[data-remove]')?.dataset.remove;
+      const i = files.findIndex((a) =&gt; a.id === id);
+      if (i &lt; 0) return;
+      URL.revokeObjectURL(files[i].url);
+      files.splice(i, 1); render(); sync();
+    });
+    // files dropped on the whole message window join the composer (data-drop)
+    df$(chat).on('session-drop', (e) =&gt; add(e.detail.files));
+
+    df$(form).on('submit', (e) =&gt; {
+      e.preventDefault();
+      if (!text.value.trim() &amp;&amp; !files.length) return;
+      // your message - text and images - at the end of the thread
+      const images = files.map((a) =&gt; `&lt;div class="bubble"&gt;&lt;div class="bubble-content" data-media style="max-width:14rem;"&gt;&lt;img src="${a.url}" alt="${esc(a.file.name)}"&gt;&lt;/div&gt;&lt;/div&gt;`).join('');
+      const words = text.value.trim() ? `&lt;div class="bubble"&gt;&lt;div class="bubble-content"&gt;${esc(text.value.trim()).replace(/\n/g, '&lt;br&gt;')}&lt;/div&gt;&lt;/div&gt;` : '';
+      session.scrollToEnd(chat);
+      session.append(chat, bubbleRow(true, images + words), { id: `me-${Date.now()}` });
+      // Sofia types, then answers
+      const typing = session.append(chat, bubbleRow(false, '&lt;div class="bubble" data-variant="secondary" data-tail&gt;&lt;div class="bubble-content" role="status" aria-label="Sofia is typing"&gt;&lt;span class="bubble-typing" aria-hidden="true"&gt;&lt;span&gt;&lt;/span&gt;&lt;span&gt;&lt;/span&gt;&lt;span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;'));
+      setTimeout(() =&gt; {
+        df$(typing).remove();
+        session.append(chat, bubbleRow(false, `&lt;div class="bubble" data-variant="secondary"&gt;&lt;div class="bubble-content"&gt;${images ? 'Nice picture! 📸' : 'Got it 👍'}&lt;/div&gt;&lt;/div&gt;`), { id: `sofia-${Date.now()}` });
+      }, 1400);
+      files.splice(0); // the sent message keeps the image URLs
+      df$(text).val('');
+      render(); sync();
+      text.focus();
+    });
+  });
+&lt;/script&gt;
+</textarea></div><div class="code-example-panel" data-panel="state" hidden=""></div></div><div class="code-example" data-height="36"><p class="text-sm font-medium mb-2" id="toc-assistant-anchored-turns-and-streaming"><a class="heading-anchor" href="#toc-assistant-anchored-turns-and-streaming" aria-label="Link to section: Assistant: anchored turns and streaming">§</a>Assistant: anchored turns and streaming</p><p class="text-xs text-muted-foreground mb-3">Ask something: your question is a data-anchor turn - it settles near the top with a peek at the previous answer, instead of the window jumping to the very end - and the reply streams in word by word under the streaming state (aria-busy on the log, following the text while you are at the bottom).</p><div class="preview" style="padding:0.75rem;overflow:hidden;"><div class="ce-screen" data-mode="full"><div class="resizer ce-resizer" data-handles="all" data-resize-mode="controlled" data-axis="both" data-min="240" data-max="1600" data-min-h="240" data-max-h="1400"><div class="ce-device"><iframe class="code-example-frame" sandbox="allow-scripts allow-forms" allow="clipboard-write" title="Assistant: anchored turns and streaming" style="width:100%;min-height:8rem;border:0;display:block;"></iframe><span class="ce-device-island" aria-hidden="true"></span><span class="ce-device-home" aria-hidden="true"></span></div></div></div><output class="code-example-error" role="alert" hidden=""></output><button class="code-example-full-exit" title="Exit fullscreen (Esc)" aria-label="Exit fullscreen"><i data-lucide="x"></i></button></div><div class="code-example-toolbar"><span class="code-example-viewport" role="group" aria-label="Preview device"><button class="code-example-vp" data-vp="rotate" title="Swap orientation (phone/tablet)" aria-disabled="true"><i data-lucide="rotate-cw"></i><span>Rotate</span></button><button class="code-example-vp" data-vp="phone" aria-pressed="false" title="Phone 390×844"><i data-lucide="smartphone"></i><span>Phone</span></button><button class="code-example-vp" data-vp="tablet" aria-pressed="false" title="Tablet 834×1112"><i data-lucide="tablet"></i><span>Tablet</span></button><button class="code-example-vp" data-vp="desktop" aria-pressed="false" title="Desktop 1024"><i data-lucide="monitor"></i><span>Desktop</span></button><button class="code-example-vp" data-vp="full" aria-pressed="true" title="Full width (source default)"><i data-lucide="app-window"></i><span>Full</span></button></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-w" type="number" min="240" step="10" inputmode="numeric" placeholder="Width" aria-label="Custom preview width (px)" /><span class="code-example-vp-x" aria-hidden="true">×</span><input class="code-example-vp-h" type="number" min="240" step="10" inputmode="numeric" placeholder="Full" aria-label="Custom preview height (px)" disabled="" /></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-z" type="number" min="25" max="100" step="5" inputmode="numeric" placeholder="Auto" aria-label="Preview zoom (%)" /><span class="code-example-vp-x" aria-hidden="true">%</span></span><span class="code-example-spacer"></span><button class="code-example-tab" data-tab="code" aria-pressed="false" title="Show or hide the example source"><i data-lucide="code-xml"></i><span>Code</span></button><button class="code-example-reset" title="Restore the original source and rerun"><i data-lucide="rotate-ccw"></i><span>Reset</span></button><button class="code-example-full" title="Preview fullscreen (Esc to exit)"><i data-lucide="maximize"></i><span>Fullscreen</span></button></div><div class="code-example-panel" data-panel="code" hidden=""><button class="code-example-copy" title="Copy the example source"><i data-lucide="copy"></i><span>Copy</span></button><textarea class="code-example-src" spellcheck="false" aria-label="Editable source for: Assistant: anchored turns and streaming" rows="10">&lt;section class="session" id="assistant" aria-label="Assistant" data-default-position="last-anchor" style="height:28rem;"&gt;
+  &lt;div class="session-viewport" aria-label="Conversation"&gt;
+    &lt;div class="session-content"&gt;
+      &lt;div class="session-item" data-message-id="a1" data-anchor&gt;&lt;div class="message" data-align="end" data-avatar="none"&gt;&lt;div class="message-content"&gt;&lt;div class="bubble"&gt;&lt;div class="bubble-content"&gt;What makes a session different from a plain message list?&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;div class="session-item" data-message-id="a1-r"&gt;&lt;div class="message" data-avatar="none"&gt;&lt;div class="message-content"&gt;&lt;div class="bubble" data-variant="ghost"&gt;&lt;div class="bubble-content"&gt;It scrolls like a chat: it follows new messages while you are at the bottom, lets go when you read history, and keeps your place when older messages load.&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;div class="session-item" data-message-id="a2" data-anchor&gt;&lt;div class="message" data-align="end" data-avatar="none"&gt;&lt;div class="message-content"&gt;&lt;div class="bubble"&gt;&lt;div class="bubble-content"&gt;What does data-anchor do?&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;div class="session-item" data-message-id="a2-r"&gt;&lt;div class="message" data-avatar="none"&gt;&lt;div class="message-content"&gt;&lt;div class="bubble" data-variant="ghost"&gt;&lt;div class="bubble-content"&gt;A turn marked data-anchor settles near the top of the window when it arrives, with a peek at the previous message - the answer then has the whole window to grow into.&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;div class="session-item" data-message-id="a3" data-anchor&gt;&lt;div class="message" data-align="end" data-avatar="none"&gt;&lt;div class="message-content"&gt;&lt;div class="bubble"&gt;&lt;div class="bubble-content"&gt;And while a reply streams?&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;div class="session-item" data-message-id="a3-r"&gt;&lt;div class="message" data-avatar="none"&gt;&lt;div class="message-content"&gt;&lt;div class="bubble" data-variant="ghost"&gt;&lt;div class="bubble-content"&gt;The streaming state sets aria-busy on the log, so a screen reader announces the reply once it is complete, and the window follows the growing text while you are at the end.&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;button type="button" class="session-scroll-button" data-to="end" aria-label="Scroll to the latest message"&gt;&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;div class="session-footer"&gt;
+    &lt;form class="textarea-group" data-layout="inline" id="ask" aria-label="Ask"&gt;
+      &lt;textarea class="textarea" data-rows="1" data-max-rows="4" placeholder="Ask anything" aria-label="Question"&gt;How long can a thread get?&lt;/textarea&gt;
+      &lt;div class="textarea-group-actions"&gt;
+        &lt;button class="btn" data-size="icon-sm" type="submit" aria-label="Send"&gt;&lt;i data-lucide="arrow-up"&gt;&lt;/i&gt;&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/form&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+&lt;script&gt;
+  document.addEventListener('DOMContentLoaded', () =&gt; {
+    const chat = df$('#assistant').get(0);
+    const session = df$.shadcn.session;
+    const answer = 'Content-visibility keeps rows that are off screen out of rendering, so hundreds to a few thousand turns stay smooth. Beyond that, virtualize the transcript - the virtual-list component does exactly that - and keep the session for the scrolling behaviour.';
+    const esc = (s) =&gt; s.replace(/[&amp;&lt;&gt;"]/g, (c) =&gt; ({ '&amp;': '&amp;amp;', '&lt;': '&amp;lt;', '&gt;': '&amp;gt;', '"': '&amp;quot;' })[c]);
+    df$('#ask').on('submit', (e) =&gt; {
+      e.preventDefault();
+      const q = df$('#ask .textarea').val().trim();
+      if (!q) return;
+      df$('#ask .textarea').val('');
+      const id = `q-${Date.now()}`;
+      // the question anchors near the top
+      session.append(chat, `&lt;div class="message" data-align="end" data-avatar="none"&gt;&lt;div class="message-content"&gt;&lt;div class="bubble"&gt;&lt;div class="bubble-content"&gt;${esc(q)}&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;`, { id, anchor: true });
+      const reply = session.append(chat, '&lt;div class="message" data-avatar="none"&gt;&lt;div class="message-content"&gt;&lt;div class="bubble" data-variant="ghost"&gt;&lt;div class="bubble-content"&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;', { id: `${id}-r` });
+      const out = df$(reply).find('.bubble-content');
+      chat.api.setState('streaming');
+      const words = answer.split(' ');
+      let n = 0;
+      const tick = setInterval(() =&gt; {
+        out.text(words.slice(0, ++n).join(' '));
+        if (n &gt;= words.length) { clearInterval(tick); chat.api.setState(session.isAtEnd(chat) ? 'default' : 'detached'); }
+      }, 90);
+    });
+  });
+&lt;/script&gt;
+</textarea></div></div><div class="code-example" data-height="30"><p class="text-sm font-medium mb-2" id="toc-load-older-messages"><a class="heading-anchor" href="#toc-load-older-messages" aria-label="Link to section: Load older messages">§</a>Load older messages</p><p class="text-xs text-muted-foreground mb-3">History arrives above: df$.shadcn.session.prepend() adds older rows and shifts the scroll by exactly their height, so the message you were reading does not move. The session owns this (overflow-anchor: none) - the browser's own anchoring would correct twice.</p><div class="preview" style="padding:0.75rem;overflow:hidden;"><div class="ce-screen" data-mode="full"><div class="resizer ce-resizer" data-handles="all" data-resize-mode="controlled" data-axis="both" data-min="240" data-max="1600" data-min-h="240" data-max-h="1400"><div class="ce-device"><iframe class="code-example-frame" sandbox="allow-scripts allow-forms" allow="clipboard-write" title="Load older messages" style="width:100%;min-height:8rem;border:0;display:block;"></iframe><span class="ce-device-island" aria-hidden="true"></span><span class="ce-device-home" aria-hidden="true"></span></div></div></div><output class="code-example-error" role="alert" hidden=""></output><button class="code-example-full-exit" title="Exit fullscreen (Esc)" aria-label="Exit fullscreen"><i data-lucide="x"></i></button></div><div class="code-example-toolbar"><span class="code-example-viewport" role="group" aria-label="Preview device"><button class="code-example-vp" data-vp="rotate" title="Swap orientation (phone/tablet)" aria-disabled="true"><i data-lucide="rotate-cw"></i><span>Rotate</span></button><button class="code-example-vp" data-vp="phone" aria-pressed="false" title="Phone 390×844"><i data-lucide="smartphone"></i><span>Phone</span></button><button class="code-example-vp" data-vp="tablet" aria-pressed="false" title="Tablet 834×1112"><i data-lucide="tablet"></i><span>Tablet</span></button><button class="code-example-vp" data-vp="desktop" aria-pressed="false" title="Desktop 1024"><i data-lucide="monitor"></i><span>Desktop</span></button><button class="code-example-vp" data-vp="full" aria-pressed="true" title="Full width (source default)"><i data-lucide="app-window"></i><span>Full</span></button></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-w" type="number" min="240" step="10" inputmode="numeric" placeholder="Width" aria-label="Custom preview width (px)" /><span class="code-example-vp-x" aria-hidden="true">×</span><input class="code-example-vp-h" type="number" min="240" step="10" inputmode="numeric" placeholder="Full" aria-label="Custom preview height (px)" disabled="" /></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-z" type="number" min="25" max="100" step="5" inputmode="numeric" placeholder="Auto" aria-label="Preview zoom (%)" /><span class="code-example-vp-x" aria-hidden="true">%</span></span><span class="code-example-spacer"></span><button class="code-example-tab" data-tab="code" aria-pressed="false" title="Show or hide the example source"><i data-lucide="code-xml"></i><span>Code</span></button><button class="code-example-reset" title="Restore the original source and rerun"><i data-lucide="rotate-ccw"></i><span>Reset</span></button><button class="code-example-full" title="Preview fullscreen (Esc to exit)"><i data-lucide="maximize"></i><span>Fullscreen</span></button></div><div class="code-example-panel" data-panel="code" hidden=""><button class="code-example-copy" title="Copy the example source"><i data-lucide="copy"></i><span>Copy</span></button><textarea class="code-example-src" spellcheck="false" aria-label="Editable source for: Load older messages" rows="10">&lt;div class="flex flex-col gap-2"&gt;
+  &lt;div class="flex items-center gap-2"&gt;
+    &lt;button class="btn" data-variant="outline" data-size="sm" type="button" id="load"&gt;&lt;i data-lucide="history"&gt;&lt;/i&gt; Load 5 older&lt;/button&gt;
+    &lt;output class="text-sm text-muted-foreground" id="load-out"&gt;Messages 21-30&lt;/output&gt;
+  &lt;/div&gt;
+  &lt;section class="session" id="history" aria-label="Team channel" style="height:20rem;"&gt;
+    &lt;div class="session-viewport" aria-label="Messages"&gt;
+      &lt;div class="session-content"&gt;
+        &lt;div class="session-item" data-message-id="h21"&gt;
+          &lt;div class="message"&gt;&lt;div class="message-avatar"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"&gt;&lt;span class="avatar-fallback"&gt;SD&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class="message-content"&gt;&lt;div class="message-header"&gt;&lt;span class="message-name"&gt;Sofia Davis&lt;/span&gt;&lt;time class="message-time"&gt;10:21&lt;/time&gt;&lt;/div&gt;&lt;div class="bubble" data-variant="secondary"&gt;&lt;div class="bubble-content"&gt;Message #21 - status update&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="session-item" data-message-id="h22"&gt;
+          &lt;div class="message" data-align="end"&gt;&lt;div class="message-avatar"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/kyr0.png" alt="You"&gt;&lt;span class="avatar-fallback"&gt;AH&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class="message-content"&gt;&lt;div class="bubble"&gt;&lt;div class="bubble-content"&gt;Message #22 - reply&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="session-item" data-message-id="h23"&gt;
+          &lt;div class="message"&gt;&lt;div class="message-avatar"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"&gt;&lt;span class="avatar-fallback"&gt;SD&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class="message-content"&gt;&lt;div class="message-header"&gt;&lt;span class="message-name"&gt;Sofia Davis&lt;/span&gt;&lt;time class="message-time"&gt;10:23&lt;/time&gt;&lt;/div&gt;&lt;div class="bubble" data-variant="secondary"&gt;&lt;div class="bubble-content"&gt;Message #23 - status update&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="session-item" data-message-id="h24"&gt;
+          &lt;div class="message" data-align="end"&gt;&lt;div class="message-avatar"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/kyr0.png" alt="You"&gt;&lt;span class="avatar-fallback"&gt;AH&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class="message-content"&gt;&lt;div class="bubble"&gt;&lt;div class="bubble-content"&gt;Message #24 - reply&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="session-item" data-message-id="h25"&gt;
+          &lt;div class="message"&gt;&lt;div class="message-avatar"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"&gt;&lt;span class="avatar-fallback"&gt;SD&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class="message-content"&gt;&lt;div class="message-header"&gt;&lt;span class="message-name"&gt;Sofia Davis&lt;/span&gt;&lt;time class="message-time"&gt;10:25&lt;/time&gt;&lt;/div&gt;&lt;div class="bubble" data-variant="secondary"&gt;&lt;div class="bubble-content"&gt;Message #25 - status update&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="session-item" data-message-id="h26"&gt;
+          &lt;div class="message" data-align="end"&gt;&lt;div class="message-avatar"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/kyr0.png" alt="You"&gt;&lt;span class="avatar-fallback"&gt;AH&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class="message-content"&gt;&lt;div class="bubble"&gt;&lt;div class="bubble-content"&gt;Message #26 - reply&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="session-item" data-message-id="h27"&gt;
+          &lt;div class="message"&gt;&lt;div class="message-avatar"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"&gt;&lt;span class="avatar-fallback"&gt;SD&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class="message-content"&gt;&lt;div class="message-header"&gt;&lt;span class="message-name"&gt;Sofia Davis&lt;/span&gt;&lt;time class="message-time"&gt;10:27&lt;/time&gt;&lt;/div&gt;&lt;div class="bubble" data-variant="secondary"&gt;&lt;div class="bubble-content"&gt;Message #27 - status update&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="session-item" data-message-id="h28"&gt;
+          &lt;div class="message" data-align="end"&gt;&lt;div class="message-avatar"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/kyr0.png" alt="You"&gt;&lt;span class="avatar-fallback"&gt;AH&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class="message-content"&gt;&lt;div class="bubble"&gt;&lt;div class="bubble-content"&gt;Message #28 - reply&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="session-item" data-message-id="h29"&gt;
+          &lt;div class="message"&gt;&lt;div class="message-avatar"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"&gt;&lt;span class="avatar-fallback"&gt;SD&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class="message-content"&gt;&lt;div class="message-header"&gt;&lt;span class="message-name"&gt;Sofia Davis&lt;/span&gt;&lt;time class="message-time"&gt;10:29&lt;/time&gt;&lt;/div&gt;&lt;div class="bubble" data-variant="secondary"&gt;&lt;div class="bubble-content"&gt;Message #29 - status update&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="session-item" data-message-id="h30"&gt;
+          &lt;div class="message" data-align="end"&gt;&lt;div class="message-avatar"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/kyr0.png" alt="You"&gt;&lt;span class="avatar-fallback"&gt;AH&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class="message-content"&gt;&lt;div class="bubble"&gt;&lt;div class="bubble-content"&gt;Message #30 - reply&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;button type="button" class="session-scroll-button" data-to="end" aria-label="Scroll to the latest message"&gt;&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+&lt;/div&gt;
+&lt;script&gt;
+  document.addEventListener('DOMContentLoaded', () =&gt; {
+    const chat = df$('#history').get(0);
+    let first = 21;
+    df$('#load').on('click', () =&gt; {
+      if (first &lt;= 1) return;
+      const from = Math.max(1, first - 5);
+      const rows = [];
+      for (let n = from; n &lt; first; n++) {
+        rows.push(`&lt;div class="message"${n % 2 === 0 ? ' data-align="end"' : ''}&gt;&lt;div class="message-content"&gt;&lt;div class="bubble"${n % 2 === 0 ? '' : ' data-variant="secondary"'}&gt;&lt;div class="bubble-content"&gt;Message #${n} - older&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;`);
+      }
+      df$.shadcn.session.prepend(chat, rows.map((html, k) =&gt; `&lt;div class="session-item" data-message-id="h${from + k}"&gt;${html}&lt;/div&gt;`));
+      first = from;
+      df$('#load-out').text(`Messages ${first}-30`);
+      if (first &lt;= 1) df$('#load').prop('disabled', true);
+    });
+  });
+&lt;/script&gt;
+</textarea></div></div><div class="code-example" data-height="32"><p class="text-sm font-medium mb-2" id="toc-jump-to-a-turn"><a class="heading-anchor" href="#toc-jump-to-a-turn" aria-label="Link to section: Jump to a turn">§</a>Jump to a turn</p><p class="text-xs text-muted-foreground mb-3">data-track reports the current turn (the last anchored question in the upper third) and the visible rows as session-visibility - the outline highlights it as you scroll. Click a question: scrollToMessage() anchors it with the peek. The session opens at the last anchored turn (data-default-position='last-anchor').</p><div class="preview" style="padding:0.75rem;overflow:hidden;"><div class="ce-screen" data-mode="full"><div class="resizer ce-resizer" data-handles="all" data-resize-mode="controlled" data-axis="both" data-min="240" data-max="1600" data-min-h="240" data-max-h="1400"><div class="ce-device"><iframe class="code-example-frame" sandbox="allow-scripts allow-forms" allow="clipboard-write" title="Jump to a turn" style="width:100%;min-height:8rem;border:0;display:block;"></iframe><span class="ce-device-island" aria-hidden="true"></span><span class="ce-device-home" aria-hidden="true"></span></div></div></div><output class="code-example-error" role="alert" hidden=""></output><button class="code-example-full-exit" title="Exit fullscreen (Esc)" aria-label="Exit fullscreen"><i data-lucide="x"></i></button></div><div class="code-example-toolbar"><span class="code-example-viewport" role="group" aria-label="Preview device"><button class="code-example-vp" data-vp="rotate" title="Swap orientation (phone/tablet)" aria-disabled="true"><i data-lucide="rotate-cw"></i><span>Rotate</span></button><button class="code-example-vp" data-vp="phone" aria-pressed="false" title="Phone 390×844"><i data-lucide="smartphone"></i><span>Phone</span></button><button class="code-example-vp" data-vp="tablet" aria-pressed="false" title="Tablet 834×1112"><i data-lucide="tablet"></i><span>Tablet</span></button><button class="code-example-vp" data-vp="desktop" aria-pressed="false" title="Desktop 1024"><i data-lucide="monitor"></i><span>Desktop</span></button><button class="code-example-vp" data-vp="full" aria-pressed="true" title="Full width (source default)"><i data-lucide="app-window"></i><span>Full</span></button></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-w" type="number" min="240" step="10" inputmode="numeric" placeholder="Width" aria-label="Custom preview width (px)" /><span class="code-example-vp-x" aria-hidden="true">×</span><input class="code-example-vp-h" type="number" min="240" step="10" inputmode="numeric" placeholder="Full" aria-label="Custom preview height (px)" disabled="" /></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-z" type="number" min="25" max="100" step="5" inputmode="numeric" placeholder="Auto" aria-label="Preview zoom (%)" /><span class="code-example-vp-x" aria-hidden="true">%</span></span><span class="code-example-spacer"></span><button class="code-example-tab" data-tab="code" aria-pressed="false" title="Show or hide the example source"><i data-lucide="code-xml"></i><span>Code</span></button><button class="code-example-reset" title="Restore the original source and rerun"><i data-lucide="rotate-ccw"></i><span>Reset</span></button><button class="code-example-full" title="Preview fullscreen (Esc to exit)"><i data-lucide="maximize"></i><span>Fullscreen</span></button></div><div class="code-example-panel" data-panel="code" hidden=""><button class="code-example-copy" title="Copy the example source"><i data-lucide="copy"></i><span>Copy</span></button><textarea class="code-example-src" spellcheck="false" aria-label="Editable source for: Jump to a turn" rows="10">&lt;div class="flex gap-3" style="height:24rem;"&gt;
+  &lt;nav aria-label="Questions" style="width:13rem; flex:none;"&gt;
+    &lt;ol class="text-sm m-0 ps-4 flex flex-col gap-2" id="outline"&gt;
+      &lt;li&gt;&lt;a href="#o1" data-jump="o1"&gt;How do I install it?&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="#o2" data-jump="o2"&gt;Can I theme it?&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="#o3" data-jump="o3"&gt;Does it work without JavaScript?&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="#o4" data-jump="o4"&gt;How do agents use it?&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="#o5" data-jump="o5"&gt;What checks the whole thing?&lt;/a&gt;&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/nav&gt;
+  &lt;section class="session" id="faq" aria-label="FAQ chat" data-track data-default-position="last-anchor" style="flex:1; min-width:0;"&gt;
+    &lt;div class="session-viewport" aria-label="Conversation"&gt;
+      &lt;div class="session-content"&gt;
+        &lt;div class="session-item" data-message-id="o1" data-anchor&gt;&lt;div class="message" data-align="end" data-avatar="none"&gt;&lt;div class="message-content"&gt;&lt;div class="bubble"&gt;&lt;div class="bubble-content"&gt;How do I install it?&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;div class="session-item" data-message-id="o1-r"&gt;&lt;div class="message" data-avatar="none"&gt;&lt;div class="message-content"&gt;&lt;div class="bubble" data-variant="ghost"&gt;&lt;div class="bubble-content"&gt;Add core.css and all.js from the CDN, or npm install defuss-shadcn and import them - the Installation guide shows both.&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;div class="session-item" data-message-id="o2" data-anchor&gt;&lt;div class="message" data-align="end" data-avatar="none"&gt;&lt;div class="message-content"&gt;&lt;div class="bubble"&gt;&lt;div class="bubble-content"&gt;Can I theme it?&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;div class="session-item" data-message-id="o2-r"&gt;&lt;div class="message" data-avatar="none"&gt;&lt;div class="message-content"&gt;&lt;div class="bubble" data-variant="ghost"&gt;&lt;div class="bubble-content"&gt;Load one of the 43 tweakcn presets after the token file, or override single tokens - every component follows.&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;div class="session-item" data-message-id="o3" data-anchor&gt;&lt;div class="message" data-align="end" data-avatar="none"&gt;&lt;div class="message-content"&gt;&lt;div class="bubble"&gt;&lt;div class="bubble-content"&gt;Does it work without JavaScript?&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;div class="session-item" data-message-id="o3-r"&gt;&lt;div class="message" data-avatar="none"&gt;&lt;div class="message-content"&gt;&lt;div class="bubble" data-variant="ghost"&gt;&lt;div class="bubble-content"&gt;Most components are CSS only; the interactive ones enhance native elements, so the basics keep working.&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;div class="session-item" data-message-id="o4" data-anchor&gt;&lt;div class="message" data-align="end" data-avatar="none"&gt;&lt;div class="message-content"&gt;&lt;div class="bubble"&gt;&lt;div class="bubble-content"&gt;How do agents use it?&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;div class="session-item" data-message-id="o4-r"&gt;&lt;div class="message" data-avatar="none"&gt;&lt;div class="message-content"&gt;&lt;div class="bubble" data-variant="ghost"&gt;&lt;div class="bubble-content"&gt;Every component ships a skill: the HTML structure, its states and their names - the agent reads it and writes the markup.&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;div class="session-item" data-message-id="o5" data-anchor&gt;&lt;div class="message" data-align="end" data-avatar="none"&gt;&lt;div class="message-content"&gt;&lt;div class="bubble"&gt;&lt;div class="bubble-content"&gt;What checks the whole thing?&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;div class="session-item" data-message-id="o5-r"&gt;&lt;div class="message" data-avatar="none"&gt;&lt;div class="message-content"&gt;&lt;div class="bubble" data-variant="ghost"&gt;&lt;div class="bubble-content"&gt;The verifier: every build must pass it - screenshots, e2e tests, docs parity, the lot.&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;button type="button" class="session-scroll-button" data-to="end" aria-label="Scroll to the latest message"&gt;&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+&lt;/div&gt;
+&lt;style&gt;
+  #outline a { color: var(--muted-foreground); text-decoration: none; }
+  #outline a[aria-current] { color: var(--foreground); font-weight: 600; }
+&lt;/style&gt;
+&lt;script&gt;
+  document.addEventListener('DOMContentLoaded', () =&gt; {
+    const chat = df$('#faq').get(0);
+    df$(chat).on('session-visibility', (e) =&gt; {
+      df$('#outline a').attr('aria-current', null);
+      df$(`#outline a[data-jump="${e.detail.currentAnchorId}"]`).attr('aria-current', 'true');
+    });
+    df$('#outline a').on('click', function (e) {
+      e.preventDefault();
+      df$.shadcn.session.scrollToMessage(chat, this.dataset.jump);
+    });
+  });
+&lt;/script&gt;
+</textarea></div></div><div class="code-example" data-height="28"><p class="text-sm font-medium mb-2" id="toc-scroll-status"><a class="heading-anchor" href="#toc-scroll-status" aria-label="Link to section: Scroll status">§</a>Scroll status</p><p class="text-xs text-muted-foreground mb-3">Opened at the start (data-default-position='start'): the up button appears once there is something above, the down button while there is something below - each inert when there is nothing in its direction. The status line reads the state and data-scrollable.</p><div class="preview" style="padding:0.75rem;overflow:hidden;"><div class="ce-screen" data-mode="full"><div class="resizer ce-resizer" data-handles="all" data-resize-mode="controlled" data-axis="both" data-min="240" data-max="1600" data-min-h="240" data-max-h="1400"><div class="ce-device"><iframe class="code-example-frame" sandbox="allow-scripts allow-forms" allow="clipboard-write" title="Scroll status" style="width:100%;min-height:8rem;border:0;display:block;"></iframe><span class="ce-device-island" aria-hidden="true"></span><span class="ce-device-home" aria-hidden="true"></span></div></div></div><output class="code-example-error" role="alert" hidden=""></output><button class="code-example-full-exit" title="Exit fullscreen (Esc)" aria-label="Exit fullscreen"><i data-lucide="x"></i></button></div><div class="code-example-toolbar"><span class="code-example-viewport" role="group" aria-label="Preview device"><button class="code-example-vp" data-vp="rotate" title="Swap orientation (phone/tablet)" aria-disabled="true"><i data-lucide="rotate-cw"></i><span>Rotate</span></button><button class="code-example-vp" data-vp="phone" aria-pressed="false" title="Phone 390×844"><i data-lucide="smartphone"></i><span>Phone</span></button><button class="code-example-vp" data-vp="tablet" aria-pressed="false" title="Tablet 834×1112"><i data-lucide="tablet"></i><span>Tablet</span></button><button class="code-example-vp" data-vp="desktop" aria-pressed="false" title="Desktop 1024"><i data-lucide="monitor"></i><span>Desktop</span></button><button class="code-example-vp" data-vp="full" aria-pressed="true" title="Full width (source default)"><i data-lucide="app-window"></i><span>Full</span></button></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-w" type="number" min="240" step="10" inputmode="numeric" placeholder="Width" aria-label="Custom preview width (px)" /><span class="code-example-vp-x" aria-hidden="true">×</span><input class="code-example-vp-h" type="number" min="240" step="10" inputmode="numeric" placeholder="Full" aria-label="Custom preview height (px)" disabled="" /></span><span class="code-example-sep" aria-hidden="true"></span><span class="code-example-size"><input class="code-example-vp-z" type="number" min="25" max="100" step="5" inputmode="numeric" placeholder="Auto" aria-label="Preview zoom (%)" /><span class="code-example-vp-x" aria-hidden="true">%</span></span><span class="code-example-spacer"></span><button class="code-example-tab" data-tab="code" aria-pressed="false" title="Show or hide the example source"><i data-lucide="code-xml"></i><span>Code</span></button><button class="code-example-reset" title="Restore the original source and rerun"><i data-lucide="rotate-ccw"></i><span>Reset</span></button><button class="code-example-full" title="Preview fullscreen (Esc to exit)"><i data-lucide="maximize"></i><span>Fullscreen</span></button></div><div class="code-example-panel" data-panel="code" hidden=""><button class="code-example-copy" title="Copy the example source"><i data-lucide="copy"></i><span>Copy</span></button><textarea class="code-example-src" spellcheck="false" aria-label="Editable source for: Scroll status" rows="10">&lt;section class="session" id="status-chat" aria-label="Release notes" data-default-position="start" style="height:18rem;"&gt;
+  &lt;div class="session-viewport" aria-label="Notes"&gt;
+    &lt;button type="button" class="session-scroll-button" data-to="start" aria-label="Scroll to the first message"&gt;&lt;/button&gt;
+    &lt;div class="session-content"&gt;
+      &lt;div class="session-item" data-message-id="n1"&gt;
+        &lt;div class="message"&gt;&lt;div class="message-avatar"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"&gt;&lt;span class="avatar-fallback"&gt;SD&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class="message-content"&gt;&lt;div class="message-header"&gt;&lt;span class="message-name"&gt;Sofia Davis&lt;/span&gt;&lt;time class="message-time"&gt;00:00&lt;/time&gt;&lt;/div&gt;&lt;div class="bubble" data-variant="secondary"&gt;&lt;div class="bubble-content"&gt;Release note 1: search box&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="session-item" data-message-id="n2"&gt;
+        &lt;div class="message"&gt;&lt;div class="message-avatar"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"&gt;&lt;span class="avatar-fallback"&gt;SD&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class="message-content"&gt;&lt;div class="message-header"&gt;&lt;span class="message-name"&gt;Sofia Davis&lt;/span&gt;&lt;time class="message-time"&gt;01:00&lt;/time&gt;&lt;/div&gt;&lt;div class="bubble" data-variant="secondary"&gt;&lt;div class="bubble-content"&gt;Release note 2: filter chips&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="session-item" data-message-id="n3"&gt;
+        &lt;div class="message"&gt;&lt;div class="message-avatar"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"&gt;&lt;span class="avatar-fallback"&gt;SD&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class="message-content"&gt;&lt;div class="message-header"&gt;&lt;span class="message-name"&gt;Sofia Davis&lt;/span&gt;&lt;time class="message-time"&gt;02:00&lt;/time&gt;&lt;/div&gt;&lt;div class="bubble" data-variant="secondary"&gt;&lt;div class="bubble-content"&gt;Release note 3: typewriter&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="session-item" data-message-id="n4"&gt;
+        &lt;div class="message"&gt;&lt;div class="message-avatar"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"&gt;&lt;span class="avatar-fallback"&gt;SD&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class="message-content"&gt;&lt;div class="message-header"&gt;&lt;span class="message-name"&gt;Sofia Davis&lt;/span&gt;&lt;time class="message-time"&gt;03:00&lt;/time&gt;&lt;/div&gt;&lt;div class="bubble" data-variant="secondary"&gt;&lt;div class="bubble-content"&gt;Release note 4: code diffs&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="session-item" data-message-id="n5"&gt;
+        &lt;div class="message"&gt;&lt;div class="message-avatar"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"&gt;&lt;span class="avatar-fallback"&gt;SD&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class="message-content"&gt;&lt;div class="message-header"&gt;&lt;span class="message-name"&gt;Sofia Davis&lt;/span&gt;&lt;time class="message-time"&gt;04:00&lt;/time&gt;&lt;/div&gt;&lt;div class="bubble" data-variant="secondary"&gt;&lt;div class="bubble-content"&gt;Release note 5: windows&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="session-item" data-message-id="n6"&gt;
+        &lt;div class="message"&gt;&lt;div class="message-avatar"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"&gt;&lt;span class="avatar-fallback"&gt;SD&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class="message-content"&gt;&lt;div class="message-header"&gt;&lt;span class="message-name"&gt;Sofia Davis&lt;/span&gt;&lt;time class="message-time"&gt;05:00&lt;/time&gt;&lt;/div&gt;&lt;div class="bubble" data-variant="secondary"&gt;&lt;div class="bubble-content"&gt;Release note 6: composer&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="session-item" data-message-id="n7"&gt;
+        &lt;div class="message"&gt;&lt;div class="message-avatar"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"&gt;&lt;span class="avatar-fallback"&gt;SD&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class="message-content"&gt;&lt;div class="message-header"&gt;&lt;span class="message-name"&gt;Sofia Davis&lt;/span&gt;&lt;time class="message-time"&gt;06:00&lt;/time&gt;&lt;/div&gt;&lt;div class="bubble" data-variant="secondary"&gt;&lt;div class="bubble-content"&gt;Release note 7: session&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="session-item" data-message-id="n8"&gt;
+        &lt;div class="message"&gt;&lt;div class="message-avatar"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"&gt;&lt;span class="avatar-fallback"&gt;SD&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class="message-content"&gt;&lt;div class="message-header"&gt;&lt;span class="message-name"&gt;Sofia Davis&lt;/span&gt;&lt;time class="message-time"&gt;07:00&lt;/time&gt;&lt;/div&gt;&lt;div class="bubble" data-variant="secondary"&gt;&lt;div class="bubble-content"&gt;Release note 8: drag and drop&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="session-item" data-message-id="n9"&gt;
+        &lt;div class="message"&gt;&lt;div class="message-avatar"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis"&gt;&lt;span class="avatar-fallback"&gt;SD&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class="message-content"&gt;&lt;div class="message-header"&gt;&lt;span class="message-name"&gt;Sofia Davis&lt;/span&gt;&lt;time class="message-time"&gt;08:00&lt;/time&gt;&lt;/div&gt;&lt;div class="bubble" data-variant="secondary"&gt;&lt;div class="bubble-content"&gt;Release note 9: row limits&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;button type="button" class="session-scroll-button" data-to="end" aria-label="Scroll to the latest message"&gt;&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;output class="session-status" id="status-line"&gt;default&lt;/output&gt;
+&lt;/section&gt;
+&lt;script&gt;
+  document.addEventListener('DOMContentLoaded', () =&gt; {
+    const chat = df$('#status-chat').get(0);
+    const show = () =&gt; df$('#status-line').text(`${chat.api.getState().name} · more ${chat.dataset.scrollable || 'nowhere'}`);
+    df$(chat).find('.session-viewport').on('scroll', show);
+    setTimeout(show, 100);
+  });
+&lt;/script&gt;
+</textarea></div></div><section style="margin-top:3rem;" id="states"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-states"><a class="heading-anchor" href="#toc-states" aria-label="Link to section: States">§</a>States</h2><p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per session through the bound <code>api</code>:</p><ul class="text-sm text-muted-foreground m-0 mb-3 ps-5"><li><code>default</code> - following the live edge: new messages scroll into view</li><li><code>detached</code> - not following: the reader scrolled away or a turn anchored; <code>{ to: 'start' | messageId }</code> scrolls there</li><li><code>streaming</code> - a reply is being written: <code>aria-busy</code> on the log, the transcript follows it at the end</li></ul><p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/{mode}/session-{state}.png</code>.</p><p>Machine contract - verified against <a href="../schemas/session.schema.json"><code>session.schema.json</code></a> by <code>bun run verify</code>:</p><div class="states-table-wrap"><table class="table states-table" data-variant="simple"><thead><tr><th scope="col" class="st-state">State</th><th scope="col" class="st-type">Type</th><th scope="col" class="st-values">Values</th><th scope="col" class="st-default">Default</th><th scope="col" class="st-desc">Description</th></tr></thead><tbody><tr><td class="st-state"><code>detached</code></td><td class="st-type"><code>boolean</code></td><td class="st-values"><code>true</code>, <code>false</code></td><td class="st-default"><code>false</code></td><td class="st-desc">Not following the live edge - the reader scrolled away or a turn anchored.</td></tr><tr><td class="st-state"><code>streaming</code></td><td class="st-type"><code>boolean</code></td><td class="st-values"><code>true</code>, <code>false</code></td><td class="st-default"><code>false</code></td><td class="st-desc">A reply is being written: <code>aria-busy</code> on the log, following at the end.</td></tr></tbody></table></div></section><section style="margin-top:3rem;" id="source-css"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-css"><a class="heading-anchor" href="#toc-css" aria-label="Link to section: CSS">§</a>CSS <a href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@v0.9.3/dist/components/session/session.css" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-scss">/* -- Session component -------------------------------------------
+   A chat session: a scrolling transcript (role="log") that follows the
+   live edge, jumps back to it, keeps its place when history loads, anchors
+   new turns, and takes dropped files - plus a footer for the composer.
+   The runtime keeps the data-* state current; CSS draws from it. */
+
+@layer components {
+  .session {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    color: var(--card-foreground);
+  }
+
+  /* -- Viewport: the scroller --------------------------------------- */
+  .session-viewport {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    padding: 1rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    /* the runtime keeps the reader's place when history prepends - the
+       browser's own scroll anchoring would correct twice */
+    overflow-anchor: none;
+    scrollbar-gutter: stable;
+
+    &amp;:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: -2px;
+    }
+  }
+
+  /* short threads sit at the bottom, like every chat */
+  .session-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-block-start: auto;
+  }
+
+  /* rows off screen skip rendering; their size is remembered */
+  .session-item {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 3.5rem;
+
+    &amp;[data-current] { scroll-margin-block-start: 1rem; }
+  }
+
+  /* data-animate: new rows rise in */
+  .session[data-animate] .session-item {
+    transition: opacity 250ms ease, translate 250ms ease;
+
+    @starting-style {
+      opacity: 0;
+      translate: 0 0.5rem;
+    }
+  }
+
+  /* -- Scroll buttons: float over the transcript, stuck to its edge -- */
+  .session-scroll-button {
+    position: sticky;
+    z-index: 1;
+    align-self: center;
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--background);
+    color: var(--foreground);
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+    opacity: 0;
+    scale: 0.85;
+    visibility: hidden;
+    transition: opacity 150ms, scale 150ms, visibility 150ms allow-discrete, background-color 150ms;
+
+    /* a chevron, drawn */
+    &amp;::before {
+      content: "";
+      width: 0.5rem;
+      height: 0.5rem;
+      border-inline-end: 2px solid currentColor;
+      border-block-end: 2px solid currentColor;
+      rotate: 45deg;
+      translate: 0 -0.125rem;
+    }
+
+    &amp;:hover { background: var(--accent); color: var(--accent-foreground); }
+    &amp;:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+    /* to the end: at the bottom edge, overlaying the last row */
+    &amp;[data-to="end"] {
+      order: 2;
+      inset-block-end: 0.5rem;
+      margin-block-start: -2.25rem;
+    }
+    /* to the start: at the top edge, pointing up */
+    &amp;[data-to="start"] {
+      order: -1;
+      inset-block-start: 0.5rem;
+      margin-block-end: -2.25rem;
+      &amp;::before { rotate: -135deg; translate: 0 0.125rem; }
+    }
+  }
+
+  .session[data-scrollable~="end"] .session-scroll-button[data-to="end"],
+  .session[data-scrollable~="start"] .session-scroll-button[data-to="start"] {
+    opacity: 1;
+    scale: 1;
+    visibility: visible;
+  }
+
+  /* -- Footer: the composer, a status line ---------------------------- */
+  .session-footer {
+    flex: none;
+    padding: 0.75rem;
+    border-top: 1px solid var(--border);
+    background: var(--card);
+  }
+
+  .session-status {
+    padding: 0.375rem 1rem;
+    border-top: 1px solid var(--border);
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+  }
+
+  /* -- Drop target: files dragged over the session ----------------------- */
+  .session[data-drop-active]::after {
+    content: attr(data-drop-label);
+    position: absolute;
+    inset: 0.5rem;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    border: 2px dashed var(--ring);
+    border-radius: var(--radius-lg);
+    background: color-mix(in oklch, var(--background) 85%, transparent);
+    color: var(--foreground);
+    font-size: 0.875rem;
+    font-weight: 500;
+    pointer-events: none;
+  }
+
+  /* -- Accessibility -------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .session-scroll-button,
+    .session[data-animate] .session-item { transition: none; }
+  }
+
+  @media (prefers-contrast: more) {
+    .session,
+    .session-footer,
+    .session-scroll-button { border-color: var(--foreground); }
+  }
+
+  @media (forced-colors: active) {
+    .session { border: 1px solid CanvasText; }
+    .session-scroll-button { border: 1px solid ButtonText; }
+    .session[data-drop-active]::after { border-color: Highlight; forced-color-adjust: none; }
+  }
+}
+</code></pre></div></section><section style="margin-top:3rem;" id="source-js"><h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.375rem;" id="toc-js"><a class="heading-anchor" href="#toc-js" aria-label="Link to section: JS">§</a>JS <a href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@v0.9.3/dist/components/session/session.js" target="_blank" style="font-size:0.75rem;font-weight:400;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin-left:0.5rem;">view file</a></h2><div style="position:relative;margin-top:0.5rem;"><button class="copy-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button><pre><code class="language-javascript">// -- Session ----------------------------------------------------
+// A chat transcript that behaves like one: it follows the live edge while
+// the reader is there and lets go the moment they scroll away; a button
+// brings them back; history loaded above keeps their place; a new turn can
+// anchor near the top with a peek at the one before; files dropped on it
+// arrive as an event. The scrolling is native (a focusable region, the
+// keyboard's own keys) - this module only decides where to put it.
+// Plus the named-state API (AGENTS.md "State API") and df$.shadcn.session.
+
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
+import { defussGlobals } from '../../shared/state-api.js';
+
+const df$ = defussGlobals();
+
+/** default = following the live edge; detached = the reader scrolled away
+ *  (or a turn anchored); streaming = a reply is being written (aria-busy),
+ *  the transcript follows it. */
+const sessionStates = ['default', 'detached', 'streaming'];
+
+const num = (el, key, fallback) =&gt; {
+  const v = parseFloat(el.dataset[key]);
+  return Number.isFinite(v) ? v : fallback;
+};
+const reduced = () =&gt; globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+const resolve = (t) =&gt; (typeof t === 'string' ? document.getElementById(t) ?? document.querySelector(t) : t);
+
+const parts = (s) =&gt; ({
+  viewport: s.querySelector(':scope &gt; .session-viewport'),
+  content: s.querySelector(':scope &gt; .session-viewport &gt; .session-content'),
+});
+
+/** How far from the end the reader is, in px. */
+const fromEnd = (v) =&gt; v.scrollHeight - v.scrollTop - v.clientHeight;
+
+/** Scrolls the viewport without the reader's scroll logic reacting to it. */
+function scrollViewport(s, top, smooth) {
+  const { viewport } = s._parts;
+  s.setAttribute('data-autoscrolling', '');
+  viewport.scrollTo({ top, behavior: smooth &amp;&amp; !reduced() ? 'smooth' : 'instant' });
+  clearTimeout(s._settle);
+  // scrollend where the browser has it; a timeout covers the rest
+  s._settle = setTimeout(() =&gt; settle(s), smooth ? 700 : 50);
+}
+
+function settle(s) {
+  clearTimeout(s._settle);
+  s.removeAttribute('data-autoscrolling');
+  measure(s);
+}
+
+/** Recomputes what lies beyond each edge and the follow flag. */
+function measure(s) {
+  const { viewport } = s._parts;
+  if (!viewport) return;
+  const threshold = num(s, 'threshold', 48);
+  const start = viewport.scrollTop &gt; 1;
+  const end = fromEnd(viewport) &gt; 1;
+  const tokens = [start &amp;&amp; 'start', end &amp;&amp; 'end'].filter(Boolean).join(' ');
+  if (tokens) s.setAttribute('data-scrollable', tokens);
+  else s.removeAttribute('data-scrollable');
+  s.querySelectorAll('.session-scroll-button').forEach((b) =&gt; {
+    const active = b.dataset.to === 'start' ? start : end;
+    b.dataset.active = String(active);
+    b.inert = !active;
+  });
+  s._height = viewport.scrollHeight;
+  // only the reader's own scrolling moves the follow flag
+  if (!s.hasAttribute('data-autoscrolling')) {
+    // room reserved under an anchored turn is not a live edge to follow
+    const reserved = parseFloat(s._parts.content.style.paddingBlockEnd) &gt; 0;
+    const stick = fromEnd(viewport) &lt;= threshold &amp;&amp; !reserved;
+    setStick(s, stick);
+  }
+  track(s);
+}
+
+function setStick(s, stick) {
+  s.toggleAttribute('data-stick', stick);
+  const name = s.dataset.stateName;
+  if (name === 'streaming') return; // streaming stays the named state
+  const next = stick ? 'default' : 'detached';
+  if (name !== next) {
+    s.dataset.stateName = next;
+    s._stateConfig = {};
+  }
+}
+
+/** Keeps a target position while rows settle - see onResize. */
+function hold(s, target, ms) {
+  s._opening = target;
+  clearTimeout(s._holdTimer);
+  s._holdTimer = setTimeout(() =&gt; { s._opening = null; }, ms);
+}
+
+/**
+ * Room under the latest anchored turn: a short reply leaves nothing to
+ * scroll into, so the turn could never reach the top. The content's end
+ * padding is exactly what is missing - it shrinks to 0 as the reply grows
+ * past the window.
+ */
+function anchorSpace(s) {
+  const a = s._anchor;
+  const { viewport, content } = s._parts;
+  if (!a || !content.contains(a)) {
+    if (content.style.paddingBlockEnd) content.style.paddingBlockEnd = '';
+    s._anchor = null;
+    return;
+  }
+  const pad = parseFloat(content.style.paddingBlockEnd) || 0;
+  const vpPad = parseFloat(getComputedStyle(viewport).paddingBlockEnd) || 0;
+  // layout offsets, not rects: a row rising in (data-animate) is translated
+  const below = content.offsetTop + content.offsetHeight - pad - a.offsetTop;
+  const need = Math.max(0, Math.round(viewport.clientHeight - vpPad - num(s, 'peek', 48) - below));
+  if (need !== Math.round(pad)) content.style.paddingBlockEnd = need ? `${need}px` : '';
+  // measure, don't assume: top up whatever the real scroll range still lacks
+  if (need) {
+    const short = anchorTop(s, a) - (viewport.scrollHeight - viewport.clientHeight);
+    if (short &gt; 0) content.style.paddingBlockEnd = `${need + Math.ceil(short)}px`;
+  }
+}
+
+/** Where an anchored item settles: near the top, a peek of the previous one. */
+const anchorTop = (s, item) =&gt; item.offsetTop - num(s, 'peek', 48);
+
+// -- Imperative scrolling ----------------------------------------------------
+
+function scrollToEnd(s, { smooth = true } = {}) {
+  s.setAttribute('data-stick', '');
+  scrollViewport(s, s._parts.viewport.scrollHeight, smooth);
+}
+function scrollToStart(s, { smooth = true } = {}) {
+  s.removeAttribute('data-stick');
+  scrollViewport(s, 0, smooth);
+}
+function scrollToMessage(s, id, { smooth = true } = {}) {
+  const item = s._parts.content.querySelector(`.session-item[data-message-id="${CSS.escape(id)}"]`);
+  if (!item) return false;
+  s.removeAttribute('data-stick');
+  scrollViewport(s, anchorTop(s, item), smooth);
+  // rows it passes may only now render at their real size: keep aiming at
+  // the message for a moment (the reader's own scroll cancels the hold)
+  hold(s, () =&gt; anchorTop(s, item), smooth ? 900 : 400);
+  return true;
+}
+
+/**
+ * UI side of setState. 'default' re-engages following and scrolls to the
+ * end (ends streaming); 'detached' lets go - `{ to: 'start' | messageId }`
+ * scrolls there; 'streaming' marks the log busy and follows the growing
+ * reply while the reader is at the end.
+ */
+function triggerStateChange(s, stateName, config) {
+  const { content } = s._parts;
+  if (stateName === 'streaming') content.setAttribute('aria-busy', 'true');
+  else content.removeAttribute('aria-busy');
+  switch (stateName) {
+    case 'default':
+      scrollToEnd(s, { smooth: config.smooth !== false });
+      break;
+    case 'detached':
+      s.removeAttribute('data-stick');
+      if (config.to === 'start') scrollToStart(s);
+      else if (typeof config.to === 'string') scrollToMessage(s, config.to);
+      break;
+    case 'streaming':
+      if (s.hasAttribute('data-stick')) scrollToEnd(s, { smooth: false });
+      break;
+  }
+}
+
+/** Registry-level API; pass the .session element explicitly. Unknown names throw. */
+export const sessionApi = {
+  setState(s, stateName, config = {}) {
+    if (!sessionStates.includes(stateName)) {
+      throw new Error(`session: unknown state "${stateName}" (supported: ${sessionStates.join(', ')})`);
+    }
+    s.dataset.stateName = stateName;
+    s._stateConfig = config;
+    triggerStateChange(s, stateName, config);
+  },
+  getState(s) {
+    return { name: s.dataset.stateName || 'default', config: s._stateConfig ?? {} };
+  },
+};
+
+df$.sessionApi = sessionApi;
+df$.sessionStates = sessionStates;
+
+// -- Reacting to the transcript changing ------------------------------------
+
+/**
+ * Items added: a prepend (history) keeps the reader's place; an append
+ * follows the live edge when the reader is there - or anchors the turn
+ * near the top when it carries data-anchor.
+ */
+function onItems(s, records) {
+  const { viewport } = s._parts;
+  const before = s._height ?? viewport.scrollHeight;
+  let prepended = false;
+  let appended = false;
+  let anchored = null;
+  for (const r of records) {
+    if (!r.addedNodes.length) continue;
+    // nothing after the insertion = an append; nothing before it = a prepend
+    if (r.nextSibling === null) {
+      appended = true;
+      for (const node of r.addedNodes) if (node.nodeType === 1 &amp;&amp; node.matches('.session-item[data-anchor]')) anchored = node;
+    } else if (r.previousSibling === null) prepended = true;
+  }
+  if (prepended &amp;&amp; !appended) {
+    // history above: shift by exactly what was added, the visible row stays
+    // put. Off-screen rows skip rendering (content-visibility) and count at
+    // an estimate - render the new ones once so the shift is their real
+    // height; 'auto' then remembers it, so nothing moves later.
+    const added = records.flatMap((r) =&gt; [...r.addedNodes]).filter((n) =&gt; n.nodeType === 1);
+    added.forEach((n) =&gt; { n.style.contentVisibility = 'visible'; });
+    s.setAttribute('data-autoscrolling', '');
+    viewport.scrollTop += viewport.scrollHeight - before;
+    added.forEach((n) =&gt; { n.style.contentVisibility = ''; });
+    settle(s);
+    return;
+  }
+  if (anchored) {
+    s._anchor = anchored;
+    anchorSpace(s);
+    s.removeAttribute('data-stick');
+    scrollViewport(s, anchorTop(s, anchored), true);
+    // rows above may still settle to their real height - keep aiming at the turn
+    hold(s, () =&gt; anchorTop(s, anchored), 900);
+    if (s.dataset.stateName !== 'streaming') { s.dataset.stateName = 'detached'; s._stateConfig = {}; }
+    return;
+  }
+  if (appended &amp;&amp; s.hasAttribute('data-stick')) scrollViewport(s, viewport.scrollHeight, s.dataset.stateName !== 'streaming');
+  else measure(s);
+}
+
+/** Content grew in place (a streaming reply): stay on the live edge. */
+function onResize(s) {
+  const { viewport } = s._parts;
+  anchorSpace(s);
+  // opening at the start / an anchor: rows above render at their real size
+  // after the first frames - hold the opening position until the reader moves
+  if (s._opening) {
+    s.setAttribute('data-autoscrolling', '');
+    viewport.scrollTop = s._opening();
+    settle(s);
+    return;
+  }
+  if (s.hasAttribute('data-stick') &amp;&amp; fromEnd(viewport) &gt; 1) {
+    s.setAttribute('data-autoscrolling', '');
+    viewport.scrollTop = viewport.scrollHeight;
+    settle(s);
+  } else measure(s);
+}
+
+// -- Visibility tracking (data-track: pay only when asked) -------------------
+
+function track(s) {
+  if (!s.hasAttribute('data-track')) return;
+  const { viewport, content } = s._parts;
+  const top = viewport.getBoundingClientRect().top;
+  const bottom = top + viewport.clientHeight;
+  const items = Array.from(content.querySelectorAll(':scope &gt; .session-item'));
+  const visible = items.filter((it) =&gt; {
+    const r = it.getBoundingClientRect();
+    return r.bottom &gt; top &amp;&amp; r.top &lt; bottom;
+  });
+  // the current turn: the last anchor that has reached the upper third
+  const line = top + viewport.clientHeight / 3;
+  let current = null;
+  for (const it of items) {
+    if (!it.hasAttribute('data-anchor')) continue;
+    if (it.getBoundingClientRect().top &lt;= line) current = it;
+    else break;
+  }
+  current ??= items.find((it) =&gt; it.hasAttribute('data-anchor')) ?? null;
+  const ids = visible.map((it) =&gt; it.dataset.messageId).filter(Boolean);
+  const currentId = current?.dataset.messageId ?? null;
+  if (currentId === s._currentId &amp;&amp; ids.join() === s._visibleIds) return;
+  s._currentId = currentId;
+  s._visibleIds = ids.join();
+  items.forEach((it) =&gt; it.toggleAttribute('data-current', it === current));
+  s.dispatchEvent(new CustomEvent('session-visibility', { bubbles: true, detail: { currentAnchorId: currentId, visibleMessageIds: ids } }));
+}
+
+// -- Drop target (data-drop) ----------------------------------------------------
+
+function bindDrop(s) {
+  const hasFiles = (e) =&gt; [...(e.dataTransfer?.types ?? [])].includes('Files');
+  if (!s.dataset.dropLabel) s.dataset.dropLabel = 'Drop files to attach';
+  const accept = (s.dataset.dropAccept || '').split(',').map((a) =&gt; a.trim()).filter(Boolean);
+  const ok = (file) =&gt; !accept.length || accept.some((a) =&gt;
+    a.endsWith('/*') ? file.type.startsWith(a.slice(0, -1)) : a.startsWith('.') ? file.name.toLowerCase().endsWith(a.toLowerCase()) : file.type === a);
+  s.addEventListener('dragenter', (e) =&gt; { if (hasFiles(e)) { e.preventDefault(); s.setAttribute('data-drop-active', ''); } });
+  s.addEventListener('dragover', (e) =&gt; { if (hasFiles(e)) { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; } });
+  s.addEventListener('dragleave', (e) =&gt; { if (!s.contains(e.relatedTarget)) s.removeAttribute('data-drop-active'); });
+  s.addEventListener('drop', (e) =&gt; {
+    if (!hasFiles(e)) return;
+    e.preventDefault();
+    s.removeAttribute('data-drop-active');
+    const files = [...e.dataTransfer.files].filter(ok);
+    if (files.length) s.dispatchEvent(new CustomEvent('session-drop', { bubbles: true, detail: { files } }));
+  });
+}
+
+/** Back to the live edge: re-engage following (a streaming reply stays streaming). */
+function follow(s, options = {}) {
+  if (s.dataset.stateName === 'streaming') scrollToEnd(s, options);
+  else sessionApi.setState(s, 'default', options);
+}
+
+// -- init ---------------------------------------------------------------------
+
+function init() {
+  document.querySelectorAll('.session:not([data-init])').forEach((s) =&gt; {
+    const p = parts(s);
+    if (!p.viewport || !p.content) return; // not a session yet
+    s.dataset.init = '';
+    s._parts = p;
+    const { viewport, content } = p;
+
+    // accessible defaults, unless authored
+    if (!viewport.hasAttribute('role')) viewport.setAttribute('role', 'region');
+    if (!viewport.hasAttribute('aria-label')) viewport.setAttribute('aria-label', 'Messages');
+    if (!viewport.hasAttribute('tabindex')) viewport.tabIndex = 0;
+    if (!content.hasAttribute('role')) content.setAttribute('role', 'log');
+    if (!content.hasAttribute('aria-relevant')) content.setAttribute('aria-relevant', 'additions');
+
+    viewport.addEventListener('scroll', () =&gt; {
+      if (s.hasAttribute('data-autoscrolling')) return track(s);
+      s._opening = null; // the reader moved - the opening position is theirs now
+      measure(s);
+    }, { passive: true });
+    // any reader input ends the opening hold too
+    ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach((type) =&gt; viewport.addEventListener(type, () =&gt; { s._opening = null; }, { passive: true }));
+    viewport.addEventListener('scrollend', () =&gt; settle(s));
+    new MutationObserver((records) =&gt; onItems(s, records)).observe(content, { childList: true });
+    new ResizeObserver(() =&gt; onResize(s)).observe(content);
+    new ResizeObserver(() =&gt; measure(s)).observe(viewport);
+
+    s.querySelectorAll('.session-scroll-button').forEach((b) =&gt; {
+      b.addEventListener('click', () =&gt; (b.dataset.to === 'start' ? scrollToStart(s) : follow(s)));
+    });
+    if (s.hasAttribute('data-drop')) bindDrop(s);
+
+    s.api = {
+      setState: (stateName, config) =&gt; sessionApi.setState(s, stateName, config),
+      getState: () =&gt; sessionApi.getState(s),
+    };
+
+    // the opening position - applied once, before anyone reads the thread
+    s.setAttribute('data-pending-scroll', '');
+    s.dataset.stateName = 'default';
+    const where = s.dataset.defaultPosition || 'end';
+    const last = [...content.querySelectorAll(':scope &gt; .session-item[data-anchor]')].pop();
+    if (where === 'start') s._opening = () =&gt; 0;
+    else if (where === 'last-anchor' &amp;&amp; last) s._opening = () =&gt; anchorTop(s, last);
+    if (s._opening) {
+      scrollViewport(s, s._opening(), false);
+      // rows settle within the first frames; after that the position is free
+      hold(s, s._opening, 1000);
+    } else {
+      s.setAttribute('data-stick', '');
+      scrollViewport(s, viewport.scrollHeight, false);
+    }
+    s.removeAttribute('data-pending-scroll');
+  });
+}
+
+// -- df$.shadcn.session: the imperative surface ---------------------------------
+
+/** Wraps content in a .session-item (unless it is one) with an id / anchor. */
+function toItem(content, { id, anchor } = {}) {
+  let node = content;
+  if (typeof content === 'string') node = document.createRange().createContextualFragment(content);
+  const single = node instanceof Element &amp;&amp; node.classList.contains('session-item');
+  const item = single ? node : document.createElement('div');
+  if (!single) {
+    item.className = 'session-item';
+    item.append(node);
+  }
+  if (id) item.dataset.messageId = id;
+  if (anchor) item.setAttribute('data-anchor', '');
+  return item;
+}
+
+df$.session = {
+  /** Adds a message at the end; follows (or anchors) as the session decides. */
+  append(t, content, options) {
+    const s = resolve(t);
+    const item = toItem(content, options);
+    s?._parts?.content.append(item);
+    return item;
+  },
+  /** Adds older messages at the start; the reader's place is kept. */
+  prepend(t, content, options) {
+    const s = resolve(t);
+    const items = (Array.isArray(content) ? content : [content]).map((c) =&gt; toItem(c, options));
+    s?._parts?.content.prepend(...items);
+    return items;
+  },
+  scrollToEnd: (t, o) =&gt; { const s = resolve(t); if (s) follow(s, o); },
+  scrollToStart: (t, o) =&gt; { const s = resolve(t); if (s) scrollToStart(s, o); },
+  scrollToMessage: (t, id, o) =&gt; { const s = resolve(t); return s ? scrollToMessage(s, id, o) : false; },
+  isAtEnd: (t) =&gt; { const s = resolve(t); return !!s &amp;&amp; fromEnd(s._parts.viewport) &lt;= num(s, 'threshold', 48); },
+};
+
+init();
+new MutationObserver(init).observe(document, { childList: true, subtree: true });
+</code></pre></div></section><nav class="page-nav"><a class="page-nav-link page-nav-prev" href="message.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><div><span class="page-nav-label">Previous</span><span class="page-nav-title">Message</span></div></a><a class="page-nav-link page-nav-next" href="mockup-code.html"><div><span class="page-nav-label">Next</span><span class="page-nav-title">Code</span></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a></nav><p class="page-edit">Comments, ideas or improvements? <a href="https://github.com/kyr0/defuss-shadcn/blob/main/src/documentation/pages/session.mdx" target="_blank" rel="noopener"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>Edit this page's source on GitHub</a></p></main><aside class="site-toc"><div class="site-toc-content"><p class="toc-title">On This Page</p><a class="toc-link" href="#toc-session">Session</a><a class="toc-link" href="#toc-assistant-anchored-turns-and-streaming">Assistant: anchored turns and streaming</a><a class="toc-link" href="#toc-load-older-messages">Load older messages</a><a class="toc-link" href="#toc-jump-to-a-turn">Jump to a turn</a><a class="toc-link" href="#toc-scroll-status">Scroll status</a><a class="toc-link" href="#toc-states">States</a><a class="toc-link" href="#toc-css">CSS</a><a class="toc-link" href="#toc-js">JS</a></div></aside></div><script>try {
+  var c = JSON.parse(localStorage.getItem('defuss-shadcn-nav-collapsed') || '{}');
+  if (c && typeof c === 'object' && !Array.isArray(c)) {
+    var d = document.querySelector('details[data-nav-always-open]');
+    if (d && c[d.dataset.navSection] === '0' && !d.querySelector('a.nav-link.active')) d.open = false;
+  }
+  if (localStorage.getItem('defuss-shadcn-nav-docked') === '1') {
+    var sb = document.querySelector('.site-sidebar');
+    /* stateName pins it: the sidebar component's auto-collapse treats a
+       set stateName as a deliberate user choice and leaves it alone */
+    if (sb) { sb.dataset.state = 'collapsed'; sb.dataset.stateName = 'collapsed'; }
+  }
+} catch (e) {}</script><footer class="site-footer"><p class="site-footer-tagline">Agentically engineered with local Qwen3.8-Flash-Next/vLLM, quality-gated automatically, and human-reviewed before release.</p><p class="site-footer-tagline" style="margin-top:0;">Reworked, enhanced and maintained by <a href="https://aron-homberg.de" target="_blank" rel="noopener">Aron Homberg</a></p><span class="site-footer-dot"> · </span>MIT Licensed<span class="site-footer-dot"> · </span><a href="https://github.com/kyr0/defuss-shadcn" target="_blank" rel="noopener">Source on GitHub</a></footer><script src="js/site.js" defer=""></script><script src="js/code-example.js" defer=""></script><script type="module" src="js/shiki-highlight.js"></script><script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@v0.9.3/dist/components/all.js"></script><script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script><script>globalThis.lucide?.createIcons();</script></body></html>

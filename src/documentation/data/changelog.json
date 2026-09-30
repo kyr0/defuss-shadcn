@@ -27,7 +27,8 @@
         "feat(radial-progress): tones, % / x-of-n / template labels, State API, step jumps + linear glide, reset/step/play buttons",
         "feat(progress): tones, live % / x-of-n readouts, State API, step jumps + linear glide, reset/step/play buttons",
         "feat: Swap + Radial Progress, pagination outline/joined/split, slider marks (from PR #65)"
-      ]
+      ],
+      "hash": "0067c38a"
     },
     {
       "version": "v0.9.2",

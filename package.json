@@ -1,6 +1,6 @@
 {
   "name": "defuss-shadcn",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "type": "module",
   "description": "A modular, fully static, semantic shadcn design token library with extremely low complexity, easy debuggability and tiny bundle size for agentic engineering and AI agents.",
   "packageManager": "bun@1.3.9",

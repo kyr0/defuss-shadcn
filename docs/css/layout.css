@@ -334,8 +334,10 @@ details[open] > summary svg:first-child:not(.sidebar-icon > svg) {
   position: relative;
 }
 
-/* -- Code block -------------------------------------------- */
-pre {
+/* -- Code block --------------------------------------------
+   Terminal lines (.mockup-code > pre) are exempt: this sheet is unlayered
+   and would outrank the component's own layered styles. */
+pre:not(.mockup-code > pre) {
   background: var(--muted);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
@@ -346,7 +348,7 @@ pre {
   font-size: 0.8125rem;
   line-height: 1.8;
 }
-code {
+code:not(.mockup-code code) {
   font-family: var(--font-mono);
   font-size: 0.8125em;
   background: var(--muted);
@@ -519,6 +521,9 @@ html.dark pre.shiki span {
 /* -- Copy button ------------------------------------------- */
 .copy-btn {
   position: absolute;
+  /* above a positioned block it labels (a .mockup-code terminal is
+     position: relative and would paint over the button) */
+  z-index: 1;
   top: 0.625rem;
   right: 0.625rem;
   height: 1.875rem;

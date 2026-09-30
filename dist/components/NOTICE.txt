@@ -1,7 +1,7 @@
 defuss-shadcn NOTICE
 =====================
 
-Version: 0.9.2
+Version: 0.9.3
 Embedded runtime packages (bundled into dist/components/core.js, core.min.js,
 all.js and all.min.js by scripts/bundle.ts + scripts/minify.ts):
 
