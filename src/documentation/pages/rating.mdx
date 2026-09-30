@@ -1,0 +1,175 @@
+---
+title: "Rating"
+description: "Rating component - a score out of five on a native radio group: :has() fills the stars up to the checked or hovered one, read-only fractions by clipping, hearts or any glyph, sizes, colours. CSS only."
+slug: "rating"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="rating" title="Rating" component="rating">
+  A score out of five. The interactive form is a native radio group - one transparent radio per star - so keyboard navigation, one-of-many exclusivity and form submission are the browser's, and <code>:has()</code> fills every star up to the checked (or hovered) one. The read-only form clips a filled layer of stars to the value, so 3.5 draws a half star with no extra markup. CSS only.
+</PageHeader>
+
+<SkillPanel component="rating">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;fieldset class="rating"&gt;</code> of <code>&lt;label class="rating-item"&gt;</code>s, each with a transparent <code>&lt;input type="radio"&gt;</code>; read-only: a <code>&lt;div class="rating" data-readonly role="img"&gt;</code> with <code>--rating-value</code>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio" title="keyboard, exclusivity, form value"><code>&lt;input type="radio"&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset" title="disabled propagates"><code>&lt;fieldset disabled&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="fill up to the checked / hovered star"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/hover" title="hover preview only where there is hover"><code>@media (hover)</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.rating</code>
+    <code>.rating-item</code>
+    <code>.rating-input</code>
+    <code>.rating-value</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-readonly</code>, <code>data-size</code> (<code>sm</code>, <code>lg</code>), <code>data-glyph="heart"</code>; custom properties <code>--rating-value</code>, <code>--rating-color</code>, <code>--rating-empty</code>, <code>--rating-size</code>, <code>--rating-glyph</code> / <code>--rating-glyphs</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Rating" schema="none" hint="A native radio group: one transparent radio per star, so a click, the arrow keys and form submission are the browser's. :has() fills every star up to the checked one - and up to the hovered one while you point. No JavaScript."
+<fieldset class="rating" aria-label="Rate this product">
+  <label class="rating-item"><input class="rating-input" type="radio" name="score" value="1" aria-label="1 star"></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="score" value="2" aria-label="2 stars"></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="score" value="3" aria-label="3 stars"></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="score" value="4" aria-label="4 stars"></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="score" value="5" aria-label="5 stars"></label>
+</fieldset>
+```
+
+```html example label="Sizes" schema="none" hint="data-size sm · (default) · lg - or any size through --rating-size."
+<div class="flex flex-col gap-4 items-start">
+<fieldset class="rating" data-size="sm" aria-label="sm rating">
+  <label class="rating-item"><input class="rating-input" type="radio" name="size-sm" value="1" aria-label="1 star"></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="size-sm" value="2" aria-label="2 stars"></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="size-sm" value="3" aria-label="3 stars" checked></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="size-sm" value="4" aria-label="4 stars"></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="size-sm" value="5" aria-label="5 stars"></label>
+</fieldset>
+<fieldset class="rating" aria-label="md rating">
+  <label class="rating-item"><input class="rating-input" type="radio" name="size-md" value="1" aria-label="1 star"></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="size-md" value="2" aria-label="2 stars"></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="size-md" value="3" aria-label="3 stars" checked></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="size-md" value="4" aria-label="4 stars"></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="size-md" value="5" aria-label="5 stars"></label>
+</fieldset>
+<fieldset class="rating" data-size="lg" aria-label="lg rating">
+  <label class="rating-item"><input class="rating-input" type="radio" name="size-lg" value="1" aria-label="1 star"></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="size-lg" value="2" aria-label="2 stars"></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="size-lg" value="3" aria-label="3 stars" checked></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="size-lg" value="4" aria-label="4 stars"></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="size-lg" value="5" aria-label="5 stars"></label>
+</fieldset>
+</div>
+```
+
+```html example label="Read-only" schema="none" hint="data-readonly with --rating-value: two layers of five stars, the filled one clipped to the value - fractions need no extra markup. role='img' with an aria-label says the score once; a .rating-value beside it shows it."
+<div class="flex flex-col gap-3 items-start">
+  <div class="flex items-center"><div class="rating" data-readonly style="--rating-value:5" role="img" aria-label="Rated 5 out of 5"></div><span class="rating-value">5.0</span></div>
+  <div class="flex items-center"><div class="rating" data-readonly style="--rating-value:4.2" role="img" aria-label="Rated 4.2 out of 5"></div><span class="rating-value">4.2 (128 reviews)</span></div>
+  <div class="flex items-center"><div class="rating" data-readonly style="--rating-value:3.5" role="img" aria-label="Rated 3.5 out of 5"></div><span class="rating-value">3.5</span></div>
+  <div class="flex items-center"><div class="rating" data-readonly style="--rating-value:0" role="img" aria-label="Not yet rated"></div><span class="rating-value">No ratings yet</span></div>
+</div>
+```
+
+```html example label="Disabled" schema="none" hint="disabled on the <fieldset> propagates to every radio natively: dimmed, no hover preview, not focusable."
+<fieldset class="rating" disabled aria-label="Rating (not editable)">
+  <label class="rating-item"><input class="rating-input" type="radio" name="disabled" value="1" aria-label="1 star" disabled></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="disabled" value="2" aria-label="2 stars" disabled></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="disabled" value="3" aria-label="3 stars" disabled></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="disabled" value="4" aria-label="4 stars" checked disabled></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="disabled" value="5" aria-label="5 stars" disabled></label>
+</fieldset>
+```
+
+```html example label="Colors" schema="none" hint="--rating-color per instance - amber has no theme token, so the fill is a component-local knob: the primary colour, the destructive one, anything."
+<div class="flex flex-col gap-3 items-start">
+  <div class="rating" data-readonly style="--rating-value:4;--rating-color:var(--primary)" role="img" aria-label="Rated 4 out of 5"></div>
+  <div class="rating" data-readonly style="--rating-value:4;--rating-color:oklch(0.6 0.15 150)" role="img" aria-label="Rated 4 out of 5"></div>
+  <fieldset class="rating" style="--rating-color: oklch(0.6 0.16 250);" aria-label="Rate in blue">
+  <label class="rating-item"><input class="rating-input" type="radio" name="color" value="1" aria-label="1 star"></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="color" value="2" aria-label="2 stars" checked></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="color" value="3" aria-label="3 stars"></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="color" value="4" aria-label="4 stars"></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="color" value="5" aria-label="5 stars"></label>
+</fieldset>
+</div>
+```
+
+```html example label="Hearts and other glyphs" schema="none" hint="data-glyph='heart' draws hearts in the destructive colour, for both forms; --rating-glyph (and --rating-glyphs for read-only) takes any text glyph."
+<div class="flex flex-col gap-3 items-start">
+  <fieldset class="rating" data-glyph="heart" data-size="lg" aria-label="How much do you love it?">
+  <label class="rating-item"><input class="rating-input" type="radio" name="heart" value="1" aria-label="1 heart"></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="heart" value="2" aria-label="2 hearts"></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="heart" value="3" aria-label="3 hearts"></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="heart" value="4" aria-label="4 hearts" checked></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="heart" value="5" aria-label="5 hearts"></label>
+</fieldset>
+  <div class="rating" data-readonly data-glyph="heart" style="--rating-value:3.5" role="img" aria-label="Loved 3.5 out of 5"></div>
+  <fieldset class="rating" style="--rating-glyph: '●'; --rating-color: var(--foreground);" aria-label="Difficulty">
+  <label class="rating-item"><input class="rating-input" type="radio" name="dots" value="1" aria-label="1 dot"></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="dots" value="2" aria-label="2 dots" checked></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="dots" value="3" aria-label="3 dots"></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="dots" value="4" aria-label="4 dots"></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="dots" value="5" aria-label="5 dots"></label>
+</fieldset>
+</div>
+```
+
+```html example label="In a form" schema="none" hint="The value is the radio group's: FormData / form.elements.score.value - nothing to sync. Submit to see it."
+<form class="flex flex-col gap-3 items-start" onsubmit="event.preventDefault(); document.getElementById('rating-out').value = 'Submitted score: ' + (new FormData(this).get('review') ?? 'none');">
+  <label class="label">Your review</label>
+  <fieldset class="rating" aria-label="Your review">
+  <label class="rating-item"><input class="rating-input" type="radio" name="review" value="1" aria-label="1 star"></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="review" value="2" aria-label="2 stars"></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="review" value="3" aria-label="3 stars"></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="review" value="4" aria-label="4 stars"></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="review" value="5" aria-label="5 stars"></label>
+</fieldset>
+  <button class="btn" data-size="sm" type="submit">Submit</button>
+  <output class="text-sm text-muted-foreground" id="rating-out"></output>
+</form>
+```
+
+```html example label="In a card" schema="none" hint="A small read-only rating with its count - .card needs width:100% beside max-width inside a flex preview (it is a size container)."
+<div class="card" style="max-width:22rem;width:100%;">
+  <div class="card-header">
+    <h3 class="card-title">Ergonomic Keyboard</h3>
+    <p class="card-description">Mechanical, hot-swappable, low profile.</p>
+  </div>
+  <div class="card-content flex items-center">
+    <div class="rating" data-readonly data-size="sm" style="--rating-value:4.5" role="img" aria-label="Rated 4.5 out of 5"></div>
+    <span class="rating-value">4.5 · 312 reviews</span>
+  </div>
+</div>
+```
+
+```html example label="Right to left" schema="none" hint="In dir='rtl' the stars run from the right - the interactive group and the read-only clip both follow the inline direction."
+<div dir="rtl" lang="ar" class="flex flex-col gap-3 items-start">
+  <fieldset class="rating" aria-label="قيّم المنتج">
+  <label class="rating-item"><input class="rating-input" type="radio" name="rtl" value="1" aria-label="1 star"></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="rtl" value="2" aria-label="2 stars"></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="rtl" value="3" aria-label="3 stars" checked></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="rtl" value="4" aria-label="4 stars"></label>
+  <label class="rating-item"><input class="rating-input" type="radio" name="rtl" value="5" aria-label="5 stars"></label>
+</fieldset>
+  <div class="flex items-center"><div class="rating" data-readonly style="--rating-value:3.5" role="img" aria-label="التقييم 3.5 من 5"></div><span class="rating-value">3.5</span></div>
+</div>
+```
+
+<SourceFiles component="rating" section="css" />
+
+</DocPage>

@@ -1160,7 +1160,7 @@ The sidebar is ordered by dependency (primitives first):
 2. Guides (Theming, Dark Mode, Data Attribute API, State API, Cascade Layers, JavaScript Modules, Native Web APIs, Animations → {Motion, Animation Canvas, Fade, Slide Up, Slide Down, Slide Left, Slide Right, Zoom, Zoom Out, Pop, Spin, Flip, Skew, Blur, Wipe, Wipe Up, Iris}, Sizing → {Width & Height, Spacing, Density}, Layout → {Container, Flex, Grid}, Shapes, Accessibility) - Sizing/Layout/Animations are parent pages with nested submenu children (`NavItem.children`)
 3. Primitives (Typography, Text Rotate, Separator, Icon, Kbd, Heading Anchor)
 4. Actions (Button, FAB, Toggle, Swap, Toggle Group, Button Group, Toolbar)
-5. Forms & Inputs (Label, Input, OTP Input, Textarea, Checkbox, Radio Group, Switch, Slider, Select, Number Input, File Input, Color Picker, Date Picker, Combobox, Form)
+5. Forms & Inputs (Label, Input, OTP Input, Textarea, Checkbox, Radio Group, Switch, Slider, Rating, Select, Number Input, File Input, Color Picker, Date Picker, Combobox, Form)
 6. Data Display (Badge, Avatar, Indicator, Diff, Countdown, Card, Image → {Image Gallery}, Statistic, Table, Collapsible, Timeline, Tree View, Calendar)
 7. Charts (Chart, Comparison, Change over time, Distribution, Composition, Election, Narrative)
 8. Diagrams (Mermaid) - text-first diagrams; a ```mermaid fence in any MDX page or ARCH.md renders through the same component (lib/mdx-example.ts, lib/arch-md.ts)

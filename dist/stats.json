@@ -1,25 +1,25 @@
 {
-  "total": 93,
+  "total": 94,
   "byType": {
     "ATM": 56,
-    "MOL": 20,
+    "MOL": 21,
     "ORG": 2,
     "BLK": 13,
     "TPL": 2
   },
   "withJs": 43,
-  "withoutJs": 50,
-  "totalSize": 1065029,
-  "totalSizeMinified": 497626,
-  "totalSizeGz": 331336,
-  "totalSizeGzMinified": 167188,
+  "withoutJs": 51,
+  "totalSize": 1070423,
+  "totalSizeMinified": 500234,
+  "totalSizeGz": 333131,
+  "totalSizeGzMinified": 168054,
   "bundle": {
     "jsSize": 402940,
     "jsSizeMinified": 226534,
-    "cssSize": 546890,
-    "cssSizeMinified": 301189,
-    "totalSizeGz": 204888,
-    "totalSizeGzMinified": 115165
+    "cssSize": 552334,
+    "cssSizeMinified": 303778,
+    "totalSizeGz": 206164,
+    "totalSizeGzMinified": 115667
   },
   "core": {
     "jsSize": 88008,
@@ -809,6 +809,19 @@
       "totalSizeGzMinified": 990,
       "totalSize": 6478,
       "totalSizeMinified": 3238
+    },
+    "rating": {
+      "name": "rating",
+      "type": "MOL",
+      "withJs": false,
+      "jsSize": 0,
+      "jsSizeMinified": 0,
+      "cssSize": 5394,
+      "cssSizeMinified": 2608,
+      "totalSizeGz": 1795,
+      "totalSizeGzMinified": 866,
+      "totalSize": 5394,
+      "totalSizeMinified": 2608
     },
     "resizer": {
       "name": "resizer",

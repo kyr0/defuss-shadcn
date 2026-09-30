@@ -102,6 +102,7 @@ export const NAV = [
             { label: 'Radio Group', href: 'radio.html' },
             { label: 'Switch', href: 'switch.html' },
             { label: 'Slider', href: 'slider.html' },
+            { label: 'Rating', href: 'rating.html', isNew: true },
             { label: 'Select', href: 'select.html' },
             { label: 'Number Input', href: 'number-input.html' },
             { label: 'File Input', href: 'file-input.html' },
