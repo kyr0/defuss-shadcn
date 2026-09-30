@@ -1,6 +1,35 @@
 {
   "entries": [
     {
+      "version": "v0.9.3",
+      "date": "September 30, 2026",
+      "commits": [
+        "feat(border-layout): new Border Layout - north / south / west / east around a center with draggable dividers (it reuses the Resizer): north-south or west-east dominant, horizontal / vertical / nested splits, grips, dashed / dotted / double / thick / gap dividers, custom handles, collapsible and remembered panels, window-splitter ARIA, df$.shadcn.borderLayout",
+        "feat(resizer): data-keys=&quot;edge&quot; - the arrow keys move a divider's edge the way they point (the window-splitter pattern)",
+        "feat(session): new Session - a whole chat conversation hosted and scrolled: follows the newest message and lets go when you scroll up, a jump-back button, history that loads without moving your place, anchored turns, streaming replies, turn tracking, drag and drop, df$.shadcn.session",
+        "feat(textarea): row limits (grow, then scroll) and a composer - attachment chips, drag and drop, send on Enter, an inline layout - reused by the Session",
+        "feat(window): new Window - desktop windows on a non-modal dialog: drag by the title bar, raise on press, maximize / minimize / close, native resize, a toolbar, Windows / macOS / Linux / retro chrome, df$.shadcn.win",
+        "feat(mockup-code): git-style diffs - added / removed lines, word changes, an animated reveal - and Shiki-coloured lines",
+        "feat(typewriter): new Typewriter - lines that type, hold, delete and cycle behind a real cursor; read once, in full, by assistive tech",
+        "feat(search-filter): new Search &amp; Filter - a search box with a clear button and a searching state; category filter chips on native radios and checkboxes that fold away behind a reset",
+        "fix(swap, toggle, toggle-group): disabled items show the not-allowed cursor",
+        "docs: every guide's code in a Shiki-coloured code window, broken formatting fixed, DOM examples promote df$; Getting Started trimmed",
+        "feat(mockup-code): new Mockup section - a terminal window for commands and output; the guides dogfood it",
+        "feat(virtual-list): windowed rows for lists of any size (from PR #62)",
+        "feat(rating): CSS-only star rating on a native radio group (from PR #60)",
+        "fix(docs): the published site is a release snapshot, pinned to its tag",
+        "feat(otp-input): one-time-code field - one real input under a row of slots (from PR #63)",
+        "feat(kbd): keyboard keys on the native &lt;kbd&gt; (from PR #64)",
+        "feat(dropdown, menubar): nested submenus, live checkbox / radio items, disabled items; new Menubar",
+        "feat(message): conversation rows - avatar, name, time, bubble, status and actions together (after shadcn/ui's Message)",
+        "feat(marker): inline conversation status - after shadcn/ui's Marker, plus tones, sizes and a stacked layout",
+        "feat(bubble): new Chat section - message bubbles after shadcn/ui's Bubble, plus tails, sizes, media and typing",
+        "feat(radial-progress): tones, % / x-of-n / template labels, State API, step jumps + linear glide, reset/step/play buttons",
+        "feat(progress): tones, live % / x-of-n readouts, State API, step jumps + linear glide, reset/step/play buttons",
+        "feat: Swap + Radial Progress, pagination outline/joined/split, slider marks (from PR #65)"
+      ]
+    },
+    {
       "version": "v0.9.2",
       "date": "September 29, 2026",
       "commits": [
