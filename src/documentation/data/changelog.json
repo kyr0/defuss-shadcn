@@ -1,6 +1,28 @@
 {
   "entries": [
     {
+      "version": "v0.9.4",
+      "date": "October 02, 2026",
+      "commits": [
+        "feat(scaffolds): new Application Scaffolds - whole clickable applications built only from the shipped components; each gets a full-screen page (app-*.html) generated from its docs example, and an e2e test that drives it",
+        "feat(scaffolds): Admin Dashboard - sidebar and ⌘K palette, KPIs with live charts, orders with tabs and bulk actions, customers, settings with a guarded danger zone",
+        "feat(scaffolds): Messenger - a WhatsApp-style chat: filters, voice notes, photos, replies and reactions, live sending with read receipts and typing replies, calls, contact info and a resizable chat list",
+        "feat(scaffolds): Issue Tracker - a Linear-style tracker: issues as a list or a drag-and-drop board, issue pages with editable properties and comments, right-click actions, C / J / K shortcuts, inbox, cycles with a burn-up chart, projects",
+        "feat(scaffolds): Notes &amp; Docs - a Notion-style workspace: page tree, block editor with a slash menu, markdown shortcuts, a format bar and drag to move, sharing, favorites, trash, and a database with table / board / gallery views",
+        "feat(scaffolds): Status Page - a Statuspage-style page: overall status, incident timelines, a maintenance countdown, 90-day uptime bars and metrics - plus the console that creates, updates and resolves incidents live",
+        "feat(scaffolds): Desktop - a Windows-style desktop: movable windows, taskbar, start menu with search, quick settings, a calendar clock, context menus for layout and theme, an editor, a calculator, a real iframe browser, settings, a recycle bin and a lock screen",
+        "feat(website): seven new Website sections - Company, Events &amp; Promotions, Media, Shop, Account &amp; States (with a 404 page), Docs &amp; Help, Search &amp; Navigation - 98 new CSS-only blocks, each section with a live template page",
+        "feat(website): more variants for Site Header, Hero, Product Showcase, Testimonials, Feature Details, Pricing, Stats, Newsletter, Get In Touch, Blog, FAQ and Site Footer",
+        "feat(resizer): data-variant=&quot;divider&quot; - a split pane's edge: a full-length strip that shows a line on hover, focus and drag, and resets on double-click",
+        "fix(context-menu): near the viewport edge the menu opens toward the other side of the pointer, like a native menu, instead of running off screen",
+        "fix(chart, sidebar, table): resize work runs on the next frame - no more &quot;ResizeObserver loop completed with undelivered notifications&quot;",
+        "fix(session): bubble tails, reactions and focus rings are no longer clipped by the rows' paint containment",
+        "fix(badge): a badge never wraps its label or shrinks in a flex row (as in shadcn/ui)",
+        "fix(table): row headers (th.table-cell scope=&quot;row&quot;) align to the start like a cell",
+        "fix(docs): code blocks inside Website blocks keep their own styling; the Form page's switch rows get their gap"
+      ]
+    },
+    {
       "version": "v0.9.3",
       "date": "September 30, 2026",
       "commits": [
